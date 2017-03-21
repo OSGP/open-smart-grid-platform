@@ -13,8 +13,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceWriteCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -46,7 +46,7 @@ public class Iec61850HeatPumpSystemService implements SystemService {
 
         for (final MeasurementFilterDto filter : systemFilter.getMeasurementFilters()) {
 
-            final LogicalDeviceReadCommand<MeasurementDto> command = Iec61850HeatPumpCommandFactory.getInstance()
+            final RtuReadCommand<MeasurementDto> command = Iec61850HeatPumpCommandFactory.getInstance()
                     .getCommand(filter);
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
@@ -69,7 +69,7 @@ public class Iec61850HeatPumpSystemService implements SystemService {
 
         for (final SetPointDto sp : systemIdentifier.getSetPoints()) {
 
-            final LogicalDeviceWriteCommand<SetPointDto> command = Iec61850LogicalDeviceSetPointCommandFactory.getInstance()
+            final RtuWriteCommand<SetPointDto> command = Iec61850LogicalDeviceSetPointCommandFactory.getInstance()
                     .getCommand(sp.getNode() + sp.getId());
 
             if (command == null) {
@@ -80,7 +80,7 @@ public class Iec61850HeatPumpSystemService implements SystemService {
         }
 
         for (final ProfileDto p : systemIdentifier.getProfiles()) {
-            final LogicalDeviceWriteCommand<ProfileDto> command = Iec61850LogicalDeviceWriteProfileCommandFactory.getInstance()
+            final RtuWriteCommand<ProfileDto> command = Iec61850LogicalDeviceWriteProfileCommandFactory.getInstance()
                     .getCommand(p.getNode() + p.getId());
             if (command == null) {
                 LOGGER.warn("Unsupported profile [{}], skip set data for it.", p.getNode() + p.getId());

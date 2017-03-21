@@ -13,8 +13,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceWriteCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.SystemService;
@@ -46,7 +46,7 @@ public class Iec61850RtuSystemService implements SystemService {
 
         for (final MeasurementFilterDto filter : systemFilter.getMeasurementFilters()) {
 
-            final LogicalDeviceReadCommand<MeasurementDto> command = Iec61850RtuCommandFactory.getInstance().getCommand(filter);
+            final RtuReadCommand<MeasurementDto> command = Iec61850RtuCommandFactory.getInstance().getCommand(filter);
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
             } else {
@@ -59,7 +59,7 @@ public class Iec61850RtuSystemService implements SystemService {
 
         for (final ProfileFilterDto filter : systemFilter.getProfileFilters()) {
 
-            final LogicalDeviceReadCommand<ProfileDto> command = Iec61850RtuReadProfileCommandFactory.getInstance()
+            final RtuReadCommand<ProfileDto> command = Iec61850RtuReadProfileCommandFactory.getInstance()
                     .getCommand(filter);
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
@@ -82,7 +82,7 @@ public class Iec61850RtuSystemService implements SystemService {
         LOGGER.info("Set data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);
 
         for (final SetPointDto sp : systemIdentifier.getSetPoints()) {
-            final LogicalDeviceWriteCommand<SetPointDto> command = Iec61850LogicalDeviceSetPointCommandFactory.getInstance()
+            final RtuWriteCommand<SetPointDto> command = Iec61850LogicalDeviceSetPointCommandFactory.getInstance()
                     .getCommand(sp.getNode() + sp.getId());
             if (command == null) {
                 LOGGER.warn("Unsupported set point [{}], skip set data for it.", sp.getNode() + sp.getId());
@@ -92,7 +92,7 @@ public class Iec61850RtuSystemService implements SystemService {
         }
 
         for (final ProfileDto p : systemIdentifier.getProfiles()) {
-            final LogicalDeviceWriteCommand<ProfileDto> command = Iec61850LogicalDeviceWriteProfileCommandFactory.getInstance()
+            final RtuWriteCommand<ProfileDto> command = Iec61850LogicalDeviceWriteProfileCommandFactory.getInstance()
                     .getCommand(p.getNode() + p.getId());
             if (command == null) {
                 LOGGER.warn("Unsupported profile [{}], skip set data for it.", p.getNode() + p.getId());

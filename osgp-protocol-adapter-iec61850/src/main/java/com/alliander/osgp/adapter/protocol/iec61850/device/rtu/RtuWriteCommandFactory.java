@@ -5,9 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice;
+package com.alliander.osgp.adapter.protocol.iec61850.device.rtu;
 
-public interface LogicalDeviceWriteCommandFactory<T> {
+public interface RtuWriteCommandFactory<T> {
 
-    LogicalDeviceWriteCommand<T> getCommand(final String node);
+    RtuWriteCommand<T> getCommand(final String node);
 }

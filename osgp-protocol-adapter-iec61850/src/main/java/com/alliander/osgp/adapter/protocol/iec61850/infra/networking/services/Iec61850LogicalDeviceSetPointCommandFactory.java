@@ -13,22 +13,22 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceWriteCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceWriteCommandFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleCatCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleIdCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleTypeCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 
-public final class Iec61850LogicalDeviceSetPointCommandFactory implements LogicalDeviceWriteCommandFactory<SetPointDto> {
+public final class Iec61850LogicalDeviceSetPointCommandFactory implements RtuWriteCommandFactory<SetPointDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LogicalDeviceSetPointCommandFactory.class);
 
     private static final int ID_START = 1;
     private static final int ID_END = 4;
 
-    private static final Map<String, LogicalDeviceWriteCommand<SetPointDto>> RTU_COMMAND_MAP = new HashMap<>();
+    private static final Map<String, RtuWriteCommand<SetPointDto>> RTU_COMMAND_MAP = new HashMap<>();
 
     static {
         initializeLogicalDeviceCommandMap();
@@ -47,9 +47,9 @@ public final class Iec61850LogicalDeviceSetPointCommandFactory implements Logica
     }
 
     @Override
-    public LogicalDeviceWriteCommand<SetPointDto> getCommand(final String node) {
+    public RtuWriteCommand<SetPointDto> getCommand(final String node) {
 
-        final LogicalDeviceWriteCommand<SetPointDto> command = RTU_COMMAND_MAP.get(node);
+        final RtuWriteCommand<SetPointDto> command = RTU_COMMAND_MAP.get(node);
 
         if (command == null) {
             LOGGER.warn("No command found for data attribute {}", node);

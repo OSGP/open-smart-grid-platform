@@ -5,11 +5,11 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice;
+package com.alliander.osgp.adapter.protocol.iec61850.device.rtu;
 
-public interface LogicalDeviceReadCommandFactory<T, U> {
+public interface RtuReadCommandFactory<T, U> {
 
-    LogicalDeviceReadCommand<T> getCommand(final U filter);
+    RtuReadCommand<T> getCommand(final U filter);
 
-    LogicalDeviceReadCommand<T> getCommand(final String node);
+    RtuReadCommand<T> getCommand(final String node);
 }

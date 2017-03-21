@@ -14,7 +14,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -44,7 +44,7 @@ public class Iec61850EngineSystemService implements SystemService {
 
         for (final MeasurementFilterDto filter : systemFilter.getMeasurementFilters()) {
 
-            final LogicalDeviceReadCommand<MeasurementDto> command = Iec61850EngineCommandFactory.getInstance()
+            final RtuReadCommand<MeasurementDto> command = Iec61850EngineCommandFactory.getInstance()
                     .getCommand(filter);
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());

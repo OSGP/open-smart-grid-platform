@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice;
+package com.alliander.osgp.adapter.protocol.iec61850.device.rtu;
 
 import javax.jms.JMSException;
 
@@ -17,7 +17,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDat
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
 
-public interface LogicalDeviceService {
+public interface RtuDeviceService {
     /**
      * Reads the {@link GetDataRequestDto} from the device.
      *
