@@ -12,7 +12,7 @@ Feature: AdminDeviceManagement Update Key
     Then the update key response contains
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario: Update Key For Not Existing Device
+  Scenario: Update Key with unknown device identification
     When receiving an update key request
       | DeviceIdentification | TEST1024000000002 |
       | PublicKey            | abcdef123456      |

@@ -4,9 +4,10 @@ Feature: CoreDeviceInstallation Device Stopping
   In order to ...
 
   @OslpMockServer
-  Scenario: Stop an ssld oslp Device
+  Scenario Outline: Stop an ssld oslp Device
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
     And the device returns a stop device response "OK" over OSLP
     When receiving a stop device test request
       | DeviceIdentification | TEST1024000000001 |
@@ -15,7 +16,12 @@ Feature: CoreDeviceInstallation Device Stopping
     And a stop device OSLP message is sent to device "TEST1024000000001"
     And the platform buffers a stop device response message for device "TEST1024000000001"
       | Result | OK |
-      
+
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
+
   Scenario Outline: Stop device with incorrect parameters
     Given an ssld device
       | DeviceIdentification       | TEST1024000000001            |

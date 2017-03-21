@@ -15,6 +15,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.DaliConfiguration;
 import com.alliander.osgp.oslp.Oslp.GetConfigurationResponse;
@@ -86,6 +88,9 @@ public class MockOslpServer {
     @Value("${oslp.port.server}")
     private int oslpPortServer;
 
+    @Value("${oslp.elster.port.server}")
+    private int oslpElsterPortServer;
+
     @Value("${oslp.security.signature}")
     private String oslpSignature;
 
@@ -116,31 +121,47 @@ public class MockOslpServer {
     @Value("${response.delay.random.range}")
     private Long reponseDelayRandomRange;
 
-    private ServerBootstrap server;
+    private ServerBootstrap serverOslp;
+    private ServerBootstrap serverOslpElster;
 
     // TODO split channel handler in client/server
     private MockOslpChannelHandler channelHandler;
 
     private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses = new ConcurrentHashMap<>();
     private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests = new ConcurrentHashMap<>();
+    private final List<Message> receivedResponses = new ArrayList<>();
+
+    public Integer getSequenceNumber() {
+        return this.channelHandler.getSequenceNumber();
+    }
 
     public void start() throws Throwable {
         this.channelHandler = new MockOslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
                 this.connectionTimeout, this.sequenceNumberWindow, this.sequenceNumberMaximum, this.responseDelayTime,
                 this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockResponses,
-                this.receivedRequests);
+                this.receivedRequests, this.receivedResponses);
 
         LOGGER.info("OSLP Mock server starting on port {}", this.oslpPortServer);
-        this.server = this.serverBootstrap();
-        this.server.bind(new InetSocketAddress(this.oslpPortServer));
-        LOGGER.info("OSLP Mock server started.");
+        this.serverOslp = this.serverBootstrap();
+        this.serverOslp.bind(new InetSocketAddress(this.oslpPortServer));
+        LOGGER.info("OSLP Elster Mock server starting on port {}", this.oslpElsterPortServer);
+        this.serverOslpElster = this.serverBootstrap();
+        this.serverOslpElster.bind(new InetSocketAddress(this.oslpElsterPortServer));
+        LOGGER.info("OSLP Mock servers started.");
     }
 
     public void stop() {
-        if (this.server != null) {
-            this.server.shutdown();
+        if (this.serverOslp != null) {
+            this.serverOslp.releaseExternalResources();
+            this.serverOslp.shutdown();
         }
-        LOGGER.info("OSLP Mock server shutdown.");
+        if (this.serverOslpElster != null) {
+            this.serverOslpElster.releaseExternalResources();
+            this.serverOslpElster.shutdown();
+        }
+        this.channelHandler = null;
+        this.resetServer();
+        LOGGER.info("OSLP Mock servers shutdown.");
     }
 
     public void resetServer() {
@@ -165,6 +186,11 @@ public class MockOslpServer {
         }
 
         return this.receivedRequests.get(requestType);
+    }
+
+    public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
+            final String deviceIdentification) throws IOException, DeviceSimulatorException {
+        return this.channelHandler.send(address, request, deviceIdentification);
     }
 
     public Message sendRequest(final Message message) throws DeviceSimulatorException, IOException, ParseException {
@@ -230,6 +256,7 @@ public class MockOslpServer {
         pipeline.addLast("oslpDecoder", new OslpDecoder(this.oslpSignature, this.oslpSignatureProvider));
         pipeline.addLast("oslpSecurity", new OslpSecurityHandler(this.publicKey()));
         pipeline.addLast("oslpChannelHandler", this.channelHandler);
+
         return pipeline;
     }
 
@@ -238,9 +265,16 @@ public class MockOslpServer {
         return CertificateHelper.createPublicKey(this.verifyKeyPath, this.keytype, this.oslpSignatureProvider);
     }
 
-    private PrivateKey privateKey()
-            throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
-        return CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
+    public PrivateKey privateKey() {
+        PrivateKey privateKey = null;
+
+        try {
+            privateKey = CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
+        } catch (final Exception ex) {
+            //
+        }
+
+        return privateKey;
     }
 
     public void mockGetConfigurationResponse(final Oslp.Status oslpStatus, final LightType lightType,
@@ -518,5 +552,27 @@ public class MockOslpServer {
 
         this.mockResponses.put(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY,
                 Oslp.Message.newBuilder().setGetPowerUsageHistoryResponse(response).build());
+    }
+
+    public String getOslpSignature() {
+        return this.oslpSignature;
+    }
+
+    public String getOslpSignatureProvider() {
+        return this.oslpSignatureProvider;
+    }
+
+    public Message waitForResponse() {
+        return Wait.until(() -> {
+            if (this.receivedResponses.isEmpty()) {
+                throw new Exception("no response yet");
+            }
+
+            return this.receivedResponses.get(0);
+        });
+    }
+
+    public void doNextSequenceNumber() {
+        this.channelHandler.doGetNextSequence();
     }
 }

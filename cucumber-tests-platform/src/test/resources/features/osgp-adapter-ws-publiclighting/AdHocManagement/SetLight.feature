@@ -1,12 +1,13 @@
 Feature: PublicLightingAdhocManagement Set Light
   As a platform 
   I want to asynchronously handle set light requests
-  In order to ... 
+  In order to ...
 
   @OslpMockServer
   Scenario Outline: Receive A Set Light Request With A Single Light Value
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
     And the device returns a set light response "OK" over OSLP
     When receiving a set light request
       | DeviceIdentification | TEST1024000000001 |
@@ -23,14 +24,21 @@ Feature: PublicLightingAdhocManagement Set Light
       | Result | OK |
 
     Examples: 
-      | Index | On    | DimValue |
-      |     0 | true  |          |
-      |     1 | true  |          |
-      |     6 | true  |          |
-      |     1 | false |          |
-      |     1 | true  |        1 |
-      |     1 | true  |       75 |
-      |     1 | true  |      100 |
+      | Protocol    | Index | On    | DimValue |
+      | OSLP        |     0 | true  |          |
+      | OSLP        |     1 | true  |          |
+      | OSLP        |     6 | true  |          |
+      | OSLP        |     1 | false |          |
+      | OSLP        |     1 | true  |        1 |
+      | OSLP        |     1 | true  |       75 |
+      | OSLP        |     1 | true  |      100 |
+      | OSLP ELSTER |     0 | true  |          |
+      | OSLP ELSTER |     1 | true  |          |
+      | OSLP ELSTER |     6 | true  |          |
+      | OSLP ELSTER |     1 | false |          |
+      | OSLP ELSTER |     1 | true  |        1 |
+      | OSLP ELSTER |     1 | true  |       75 |
+      | OSLP ELSTER |     1 | true  |      100 |
 
   Scenario Outline: Receive A Set Light Request With An Invalid Single Light Value
     Given a device
@@ -67,6 +75,7 @@ Feature: PublicLightingAdhocManagement Set Light
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | relayType            | LIGHT             |
+      | Protocol             | <Protocol>        |
     And the device returns a set light response "OK" over OSLP
     When receiving a set light request with "<nofLightValues>" light values
       | DeviceIdentification | TEST1024000000001 |
@@ -77,9 +86,11 @@ Feature: PublicLightingAdhocManagement Set Light
       | Result | OK |
 
     Examples: 
-      | nofLightValues |
-      |              1 |
-      |              6 |
+      | Protocol    | nofLightValues |
+      | OSLP        |              1 |
+      | OSLP        |              6 |
+      | OSLP ELSTER |              1 |
+      | OSLP ELSTER |              6 |
 
   Scenario Outline: Receive A Set Light Request With Invalid Multiple Light Values
     Given a device
