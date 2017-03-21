@@ -71,7 +71,11 @@ Feature: SmartMetering Bundle
       | DaylightSavingsEnd       | FFFF0AFE07020000000078FF |
       | DaylightSavingsDeviation |                      -60 |
       | DaylightSavingsEnabled   | TRUE                     |
+    And a synchronize time action is part of a bundled request
+      | Deviation |  -60 |
+      | DST       | true |
     When the bundle request is received
     Then the bundle response contains a set clock configuration response
-      | DeviceIdentification | TEST1024000000001 |
-      | Result               | OK                |
+      | Result | OK |
+    And the bundle response contains a synchronize time response
+      | Result | OK |

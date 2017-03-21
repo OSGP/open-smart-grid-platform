@@ -52,10 +52,4 @@ public class SetClockConfiguration {
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());
     }
-
-    @Then("^a get synchronize time request synchronizes date and time on the device$")
-    public void aGetSynchronizeTimeRequestSynchronizesDateAndTimeOnTheDevice(final Map<String, String> settings)
-            throws Throwable {
-        // TODO: fire and assert a synchronize time request
-    }
 }

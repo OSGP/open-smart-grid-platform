@@ -8,6 +8,7 @@
 package com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.smartmeteringbundle;
 
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -23,6 +24,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleAsyncResp
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetClockConfigurationRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.cucumber.platform.core.Helpers;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.dlms.Defaults;
@@ -39,8 +43,9 @@ import ma.glasnost.orika.MapperFacade;
 public class BundleWithoutSoapUi {
 
     private static final String KEY_BUNDLE_RESPONSE = "BundleResponse";
-
     private static final String KEY_BUNDLE_REQUEST = "BundleRequest";
+    private static final String KEY_BUNDLE_ACTIONS = "BundleActions";
+    private static final String KEY_BUNDLE_RESPONSES = "BundleResponses";
 
     @Autowired
     private SmartMeteringBundleClient client;
@@ -71,6 +76,20 @@ public class BundleWithoutSoapUi {
                 SetClockConfigurationRequestDataFactory.fromParameterMap(settings), SetClockConfigurationRequest.class);
 
         request.getActions().getActionList().add(action);
+        this.increaseCount(KEY_BUNDLE_ACTIONS);
+    }
+
+    @Given("^a synchronize time action is part of a bundled request$")
+    public void aSynchronizeTimeActionIsPartOfABundledRequest(final Map<String, String> settings) throws Throwable {
+
+        final BundleRequest request = (BundleRequest) ScenarioContext.Current().get(KEY_BUNDLE_REQUEST);
+
+        final SynchronizeTimeRequest action = new SynchronizeTimeRequest();
+        action.setDeviation(-60);
+        action.setDst(false);
+
+        request.getActions().getActionList().add(action);
+        this.increaseCount(KEY_BUNDLE_ACTIONS);
     }
 
     @When("^the bundle request is received$")
@@ -90,9 +109,25 @@ public class BundleWithoutSoapUi {
         this.ensureBundleResponse(settings);
 
         final BundleResponse response = (BundleResponse) ScenarioContext.Current().get(KEY_BUNDLE_RESPONSE);
+
+        final Response actionResponse = response.getAllResponses().getResponseList()
+                .get(this.getAndIncreaseCount(KEY_BUNDLE_RESPONSES));
+
+        assertEquals(OsgpResultType.fromValue(settings.get(Keys.RESULT)), actionResponse.getResult());
+    }
+
+    @Then("^the bundle response contains a synchronize time response$")
+    public void theBundleResponseContainsASynchronizeTimeResponse(final Map<String, String> settings) throws Throwable {
+
+        this.ensureBundleResponse(settings);
+
+        final BundleResponse response = (BundleResponse) ScenarioContext.Current().get(KEY_BUNDLE_RESPONSE);
         assertNotEquals(0, response.getAllResponses().getResponseList().size());
 
-        // TODO: expand assertions
+        final Response actionResponse = response.getAllResponses().getResponseList()
+                .get(this.getAndIncreaseCount(KEY_BUNDLE_RESPONSES));
+
+        assertEquals(OsgpResultType.fromValue(settings.get(Keys.RESULT)), actionResponse.getResult());
     }
 
     private void ensureBundleResponse(final Map<String, String> settings)
@@ -101,11 +136,32 @@ public class BundleWithoutSoapUi {
             final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
             final BundleAsyncRequest asyncRequest = new BundleAsyncRequest();
             asyncRequest.setCorrelationUid(correlationUid);
-            asyncRequest.setDeviceIdentification(
-                    getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+            asyncRequest.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
 
             final BundleResponse response = this.client.retrieveBundleResponse(asyncRequest);
             ScenarioContext.Current().put(KEY_BUNDLE_RESPONSE, response);
+
+            assertEquals(ScenarioContext.Current().get(KEY_BUNDLE_ACTIONS),
+                    response.getAllResponses().getResponseList().size());
         }
+    }
+
+    private void increaseCount(final String key) {
+        if (ScenarioContext.Current().get(key) == null) {
+            ScenarioContext.Current().put(key, 1);
+        } else {
+            ScenarioContext.Current().put(key, (Integer) ScenarioContext.Current().get(key) + 1);
+        }
+    }
+
+    private int getAndIncreaseCount(final String key) {
+        if (ScenarioContext.Current().get(key) == null) {
+            ScenarioContext.Current().put(key, 1);
+            return 0;
+        }
+        final Integer value = (Integer) ScenarioContext.Current().get(key);
+        ScenarioContext.Current().put(key, value + 1);
+
+        return value;
     }
 }

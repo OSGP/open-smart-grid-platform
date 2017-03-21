@@ -152,6 +152,3 @@ Feature: SmartMetering Configuration
     Then the set clock configuration response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And a get synchronize time request synchronizes date and time on the device
-      | DeviceIdentification | TEST1024000000001 |
-      | Result               | OK                |
