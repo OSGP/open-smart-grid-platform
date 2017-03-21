@@ -34,7 +34,7 @@ public class CoreLogItemRequestMessageSender {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage();
-                objectMessage.setJMSType(Constants.DLMS_LOG_ITEM_REQUEST);
+                objectMessage.setJMSType(Constants.CORE_LOG_ITEM_REQUEST);
                 objectMessage.setStringProperty(Constants.DECODED_MESSAGE,
                         coreLogItemRequestMessage.getDecodedMessage());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,

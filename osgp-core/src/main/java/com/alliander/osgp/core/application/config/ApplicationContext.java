@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -24,7 +25,6 @@ import com.alliander.osgp.core.infra.jms.domain.in.DomainRequestMessageSender;
 import com.alliander.osgp.core.infra.jms.protocol.ProtocolRequestMessageSender;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageSender;
 import com.alliander.osgp.core.infra.messaging.CoreLogItemRequestMessageSender;
-import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
@@ -33,9 +33,11 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.core", })
+@ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.core" })
 @EnableTransactionManagement()
-public class ApplicationContext extends AbstractMessagingConfig {
+@Import({ MessagingConfig.class })
+
+public class ApplicationContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 

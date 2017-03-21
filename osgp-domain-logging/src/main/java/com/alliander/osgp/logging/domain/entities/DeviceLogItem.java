@@ -46,8 +46,8 @@ public class DeviceLogItem extends AbstractEntity {
     }
 
     public DeviceLogItem(final String organisationIdentification, final String deviceUid,
-            final String deviceIdentification, final boolean incoming, final boolean valid, final String encodedMessage,
-            final String decodedMessage, final int payloadMessageSerializedSize) {
+            final String deviceIdentification, final boolean incoming, final boolean valid,
+            final String encodedMessage, final String decodedMessage, final int payloadMessageSerializedSize) {
         this.organisationIdentification = organisationIdentification;
         this.deviceUid = deviceUid;
         this.deviceIdentification = deviceIdentification;

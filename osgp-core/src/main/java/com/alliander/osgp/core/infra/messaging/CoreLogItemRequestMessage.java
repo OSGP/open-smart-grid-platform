@@ -19,8 +19,9 @@ public class CoreLogItemRequestMessage {
 
     private final String organisationIdentification;
 
+    // mandatory field in device_log_item table
     private final boolean valid;
-
+    // mandatory field default '0'
     private int payloadMessageSerializedSize;
 
     public CoreLogItemRequestMessage(final String deviceIdentification, final String organisationIdentification,

@@ -13,7 +13,7 @@ import javax.jms.ObjectMessage;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
-public class CoreDeviceMessageMetadata {
+public class CoreMessageMetadata {
 
     private String correlationUid;
     private String domain;
@@ -28,7 +28,7 @@ public class CoreDeviceMessageMetadata {
     @Override
     public String toString() {
         return String.format(
-                "DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d, messagePriority=%d]",
+                "CoreMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d, messagePriority=%d]",
                 this.correlationUid, this.domain, this.domainVersion, this.messageType, this.organisationIdentification,
                 this.deviceIdentification, this.ipAddress, this.retryCount, this.messagePriority);
     }
