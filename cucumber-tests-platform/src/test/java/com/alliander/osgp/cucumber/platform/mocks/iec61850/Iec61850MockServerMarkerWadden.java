@@ -9,7 +9,6 @@ package com.alliander.osgp.cucumber.platform.mocks.iec61850;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import org.openmuc.openiec61850.SclParseException;
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ public class Iec61850MockServerMarkerWadden {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850MockServerMarkerWadden.class);
 
-    @Value("${iec61850.mock.icd.filename.marker.wadden:MarkerWadden_0_1_1_reporting_hack.icd}")
+    @Value("${iec61850.mock.icd.filename.marker.wadden:MarkerWadden_0_1_1.icd}")
     private String icdFilename;
 
     @Value("${iec61850.mock.port:63102}")
@@ -45,7 +44,6 @@ public class Iec61850MockServerMarkerWadden {
     }
 
     public Iec61850MockServerMarkerWadden(final String serverName, final String icdFilename, final int port) {
-        super();
         this.serverName = serverName;
         this.icdFilename = icdFilename;
         this.port = port;
@@ -110,24 +108,6 @@ public class Iec61850MockServerMarkerWadden {
             throw new AssertionError("RtuSimulator has not yet been initialised.");
         }
         this.rtuSimulator.assertValue(logicalDeviceName, node, value);
-    }
-
-    /**
-     * This method can be used to stop the running simulator, that was started
-     * (in @Before) with all default parameters, and start it again with the
-     * supplied parameters in the feature file. Only the provided feature
-     * parameters will override the default parameter from the property file.
-     * Currently the properties can be overwritten: ServerName, Port and/or
-     * IcdFilename.
-     *
-     * @param settings
-     *            the feature file parameters.
-     *
-     */
-    public void restart(final Map<String, String> settings) {
-        this.stop();
-        this.rtuSimulator = null;
-        this.start();
     }
 
 }
