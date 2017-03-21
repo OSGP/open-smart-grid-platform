@@ -31,7 +31,10 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     private Connection connection;
 
     @Value("${osgpadapterwssmartmeteringdbs.url}")
-    private String jdbcUrl;
+    private String jdbcUrlOsgpAdapterWsSmartmetering;
+
+    @Value("${osgploggingdbs.url}")
+    private String jdbcUrlOsgpLogging;
 
     @Value("${db.username}")
     private String username;
@@ -43,9 +46,9 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     public boolean waitForResponse(final String correlid, final int timeout, final int maxtime) {
         Statement statement = null;
         try {
-            statement = this.conn().createStatement();
+            statement = this.conn(this.jdbcUrlOsgpAdapterWsSmartmetering).createStatement();
 
-            //check if we have (almost) immediate response
+            // check if we have (almost) immediate response
             Thread.sleep(FIRST_WAIT_TIME);
             PollResult pollres = this.pollDatabase(statement, correlid);
             if (pollres.equals(PollResult.OK)) {
@@ -57,6 +60,44 @@ public class ResponseNotifierImpl implements ResponseNotifier {
                 Thread.sleep(timeout);
                 if ((delayedtime += timeout) < maxtime) {
                     pollres = this.pollDatabase(statement, correlid);
+                    if (pollres.equals(PollResult.OK)) {
+                        return true;
+                    } else if (pollres.equals(PollResult.ERROR)) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        } catch (final SQLException se) {
+            LOGGER.error(se.getMessage());
+            return false;
+        } catch (final InterruptedException intex) {
+            LOGGER.error(intex.getMessage());
+            return false;
+        } finally {
+            this.closeStatement(statement);
+        }
+    }
+
+    @Override
+    public boolean waitForLog(final String deviceId, final int timeout, final int maxtime) {
+        Statement statement = null;
+        try {
+            statement = this.conn(this.jdbcUrlOsgpLogging).createStatement();
+
+            // check if we have (almost) immediate response
+            Thread.sleep(FIRST_WAIT_TIME);
+            PollResult pollres = this.pollLogDatabase(statement, deviceId);
+            if (pollres.equals(PollResult.OK)) {
+                return true;
+            }
+
+            int delayedtime = 0;
+            while (true) {
+                Thread.sleep(timeout);
+                if ((delayedtime += timeout) < maxtime) {
+                    pollres = this.pollLogDatabase(statement, deviceId);
                     if (pollres.equals(PollResult.OK)) {
                         return true;
                     } else if (pollres.equals(PollResult.ERROR)) {
@@ -97,6 +138,26 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         }
     }
 
+    private PollResult pollLogDatabase(final Statement statement, final String deviceId) {
+        ResultSet rs = null;
+        PollResult result = PollResult.NOT_OK;
+        try {
+            rs = statement.executeQuery(
+                    "SELECT count(*) FROM device_log_item WHERE device_identification = '" + deviceId + "'");
+            while (rs.next()) {
+                if (rs.getInt(1) > 1) {
+                    result = PollResult.OK;
+                }
+            }
+            return result;
+        } catch (final SQLException se) {
+            LOGGER.error(se.getMessage());
+            return PollResult.ERROR;
+        } finally {
+            this.closeResultSet(rs);
+        }
+    }
+
     private void closeStatement(final Statement statement) {
         if (statement != null) {
             try {
@@ -118,17 +179,17 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         }
     }
 
-    private Connection conn() {
+    private Connection conn(final String dbUrl) {
         if (this.connection == null) {
-            this.connection = this.connectToDatabaseOrDie();
+            this.connection = this.connectToDatabaseOrDie(dbUrl);
         }
         return this.connection;
     }
 
-    private Connection connectToDatabaseOrDie() {
+    private Connection connectToDatabaseOrDie(final String dbUrl) {
         try {
             Class.forName("org.postgresql.Driver");
-            this.connection = DriverManager.getConnection(this.jdbcUrl, this.username, this.password);
+            this.connection = DriverManager.getConnection(dbUrl, this.username, this.password);
         } catch (final ClassNotFoundException e) {
             LOGGER.error(e.getMessage());
             System.exit(1);

@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
+import com.alliander.osgp.cucumber.platform.dlms.support.ResponseNotifier;
 import com.alliander.osgp.cucumber.platform.dlms.support.ServiceEndpoint;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
@@ -42,11 +42,16 @@ public class AuditTrail extends SmartMeteringStepsBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarm.class);
 
+    private static final Integer MULTIPLE_RETRY_COUNT = 2;
+
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
 
     @Autowired
     private ServiceEndpoint serviceEndpoint;
+
+    @Autowired
+    protected ResponseNotifier responseNotifier;
 
     @Then("^the audit trail contains multiple retry log records$")
     public void theAuditTrailContainsMultipleRetryLogRecords(final Map<String, String> settings) throws Throwable {
@@ -55,12 +60,13 @@ public class AuditTrail extends SmartMeteringStepsBase {
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
                 Defaults.DEFAULT_DEVICE_IDENTIFICATION);
 
-        final List<DeviceLogItem> deviceLogItems = this.findDeviceLogItems(deviceIdentification, 2);
-        if (null == deviceLogItems) {
-            Assert.fail("DeviceLogItems where not found in the database");
-        }
+        assertTrue("DeviceLogItems are found in the database",
+                this.responseNotifier.waitForLog(deviceIdentification, 0, 3000000));
 
-        for (int i = 0; i < 2; i++) {
+        final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
+                .findByDeviceIdentification(deviceIdentification, new PageRequest(0, 2)).getContent();
+
+        for (int i = 0; i < MULTIPLE_RETRY_COUNT; i++) {
             final DeviceLogItem item = deviceLogItems.get(i);
             LOGGER.info("CreationTime: {}", item.getCreationTime().toString());
             LOGGER.info("DecodedMessage: {}", item.getDecodedMessage());
@@ -70,28 +76,4 @@ public class AuditTrail extends SmartMeteringStepsBase {
         }
     }
 
-    /*
-     * it may take some time before the records are to the dev_log_item table,
-     * so we have to poll.
-     */
-    private List<DeviceLogItem> findDeviceLogItems(final String deviceIdentification, final int minExcepted) {
-        int loopCount = 0;
-        while (loopCount++ < 150) {
-            this.sleep(2000L);
-            final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
-                    .findByDeviceIdentification(deviceIdentification, new PageRequest(0, 2)).getContent();
-            if (deviceLogItems != null && deviceLogItems.size() >= minExcepted) {
-                return deviceLogItems;
-            }
-        }
-        return null;
-    }
-
-    private void sleep(final long sleepTime) {
-        try {
-            Thread.sleep(sleepTime);
-        } catch (final InterruptedException e) {
-            LOGGER.error("thread sleep was interruped " + e);
-        }
-    }
 }
