@@ -66,7 +66,7 @@ public class Iec61850BoilerSystemService implements SystemService {
 
         for (final SetPointDto sp : systemIdentifier.getSetPoints()) {
 
-            final RtuWriteCommand<SetPointDto> command = Iec61850LogicalDeviceSetPointCommandFactory.getInstance()
+            final RtuWriteCommand<SetPointDto> command = Iec61850SetPointCommandFactory.getInstance()
                     .getCommand(sp.getNode() + sp.getId());
 
             if (command == null) {
@@ -77,7 +77,7 @@ public class Iec61850BoilerSystemService implements SystemService {
         }
 
         for (final ProfileDto p : systemIdentifier.getProfiles()) {
-            final RtuWriteCommand<ProfileDto> command = Iec61850LogicalDeviceWriteProfileCommandFactory.getInstance()
+            final RtuWriteCommand<ProfileDto> command = Iec61850WriteProfileCommandFactory.getInstance()
                     .getCommand(p.getNode() + p.getId());
             if (command == null) {
                 LOGGER.warn("Unsupported profile [{}], skip set data for it.", p.getNode() + p.getId());

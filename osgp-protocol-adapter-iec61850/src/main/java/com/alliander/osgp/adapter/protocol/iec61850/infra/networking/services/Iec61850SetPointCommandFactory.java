@@ -21,9 +21,9 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleTypeCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 
-public final class Iec61850LogicalDeviceSetPointCommandFactory implements RtuWriteCommandFactory<SetPointDto> {
+public final class Iec61850SetPointCommandFactory implements RtuWriteCommandFactory<SetPointDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LogicalDeviceSetPointCommandFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850SetPointCommandFactory.class);
 
     private static final int ID_START = 1;
     private static final int ID_END = 4;
@@ -34,14 +34,14 @@ public final class Iec61850LogicalDeviceSetPointCommandFactory implements RtuWri
         initializeLogicalDeviceCommandMap();
     }
 
-    private static Iec61850LogicalDeviceSetPointCommandFactory instance;
+    private static Iec61850SetPointCommandFactory instance;
 
-    private Iec61850LogicalDeviceSetPointCommandFactory() {
+    private Iec61850SetPointCommandFactory() {
     }
 
-    public static synchronized Iec61850LogicalDeviceSetPointCommandFactory getInstance() {
+    public static synchronized Iec61850SetPointCommandFactory getInstance() {
         if (instance == null) {
-            instance = new Iec61850LogicalDeviceSetPointCommandFactory();
+            instance = new Iec61850SetPointCommandFactory();
         }
         return instance;
     }

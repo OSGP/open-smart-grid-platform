@@ -19,9 +19,9 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Data
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleAbsTimeCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileDto;
 
-public final class Iec61850LogicalDeviceWriteProfileCommandFactory implements RtuWriteCommandFactory<ProfileDto> {
+public final class Iec61850WriteProfileCommandFactory implements RtuWriteCommandFactory<ProfileDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LogicalDeviceWriteProfileCommandFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850WriteProfileCommandFactory.class);
 
     private static final int ID_START = 1;
     private static final int ID_END = 4;
@@ -32,14 +32,14 @@ public final class Iec61850LogicalDeviceWriteProfileCommandFactory implements Rt
         initializeLogicalDeviceCommandMap();
     }
 
-    private static Iec61850LogicalDeviceWriteProfileCommandFactory instance;
+    private static Iec61850WriteProfileCommandFactory instance;
 
-    private Iec61850LogicalDeviceWriteProfileCommandFactory() {
+    private Iec61850WriteProfileCommandFactory() {
     }
 
-    public static synchronized Iec61850LogicalDeviceWriteProfileCommandFactory getInstance() {
+    public static synchronized Iec61850WriteProfileCommandFactory getInstance() {
         if (instance == null) {
-            instance = new Iec61850LogicalDeviceWriteProfileCommandFactory();
+            instance = new Iec61850WriteProfileCommandFactory();
         }
         return instance;
     }
