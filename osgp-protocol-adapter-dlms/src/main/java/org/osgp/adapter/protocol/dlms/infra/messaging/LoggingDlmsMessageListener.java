@@ -66,6 +66,11 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
 
     private byte[] determineEncodedMessage(final Apdu apdu) {
         if (apdu == null) {
+            /*
+             * Not returning an empty array, because that would look like an
+             * empty message, while there is no message to be returned at all
+             * here.
+             */
             return null;
         }
 
@@ -79,6 +84,11 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
 
     private byte[] determineEncodedMessage(final CosemPdu cosemPdu) {
         if (cosemPdu == null) {
+            /*
+             * Not returning an empty array, because that would look like an
+             * empty message, while there is no message to be returned at all
+             * here.
+             */
             return null;
         }
 
