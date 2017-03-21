@@ -50,6 +50,7 @@ import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.LongTermIntervalType;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.MeterType;
+import com.alliander.osgp.oslp.Oslp.RegisterDeviceResponse;
 import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
@@ -884,6 +885,21 @@ public class OslpDeviceSteps {
 
         Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
     }
+    
+    /**
+     * Verify that we have received a response over OSLP/OSLP ELSTER
+     * 
+     * @param expectedResponse
+     */
+    @Then("^the register device response contains$")
+    public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse) {
+        final Message responseMessage = this.oslpMockServer.waitForResponse();
+
+        final RegisterDeviceResponse response = responseMessage.getRegisterDeviceResponse();
+        //TODO check response for data
+        Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
+    }
+
 
     public OslpEnvelope.Builder createEnvelopeBuilder(final String deviceUid, final Integer sequenceNumber) {
         final byte[] sequenceNumberBytes = new byte[2];
