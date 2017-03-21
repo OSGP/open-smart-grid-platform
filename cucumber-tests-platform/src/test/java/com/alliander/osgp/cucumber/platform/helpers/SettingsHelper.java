@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.helpers;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,6 +101,14 @@ public class SettingsHelper {
         return Double.valueOf(stringValue);
     }
 
+    public static Byte getByteValue(final Map<String, String> settings, final String keyPrefix, final int... indexes) {
+        final String stringValue = getStringValue(settings, keyPrefix, indexes);
+        if (stringValue == null) {
+            return null;
+        }
+        return Byte.valueOf(stringValue);
+    }
+
     public static Integer getIntegerValue(final Map<String, String> settings, final String keyPrefix,
             final int... indexes) {
         final String stringValue = getStringValue(settings, keyPrefix, indexes);
@@ -107,6 +116,23 @@ public class SettingsHelper {
             return null;
         }
         return Integer.valueOf(stringValue);
+    }
+
+    public static Long getLongValue(final Map<String, String> settings, final String keyPrefix, final int... indexes) {
+        final String stringValue = getStringValue(settings, keyPrefix, indexes);
+        if (stringValue == null) {
+            return null;
+        }
+        return Long.valueOf(stringValue);
+    }
+
+    public static BigInteger getBigIntegerValue(final Map<String, String> settings, final String keyPrefix,
+            final int... indexes) {
+        final String stringValue = getStringValue(settings, keyPrefix, indexes);
+        if (stringValue == null) {
+            return null;
+        }
+        return new BigInteger(stringValue);
     }
 
     public static String getStringValue(final Map<String, String> settings, final String keyPrefix,

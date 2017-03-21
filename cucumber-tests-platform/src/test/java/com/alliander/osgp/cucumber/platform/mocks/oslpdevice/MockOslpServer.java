@@ -152,11 +152,15 @@ public class MockOslpServer {
 
     public void stop() {
         if (this.serverOslp != null) {
+            this.serverOslp.releaseExternalResources();
             this.serverOslp.shutdown();
         }
         if (this.serverOslpElster != null) {
+            this.serverOslpElster.releaseExternalResources();
             this.serverOslpElster.shutdown();
         }
+        this.channelHandler = null;
+        this.resetServer();
         LOGGER.info("OSLP Mock servers shutdown.");
     }
 
@@ -252,6 +256,7 @@ public class MockOslpServer {
         pipeline.addLast("oslpDecoder", new OslpDecoder(this.oslpSignature, this.oslpSignatureProvider));
         pipeline.addLast("oslpSecurity", new OslpSecurityHandler(this.publicKey()));
         pipeline.addLast("oslpChannelHandler", this.channelHandler);
+
         return pipeline;
     }
 
