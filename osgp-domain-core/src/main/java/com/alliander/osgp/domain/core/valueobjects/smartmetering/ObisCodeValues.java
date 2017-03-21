@@ -10,6 +10,7 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class ObisCodeValues implements Serializable {
 
@@ -23,7 +24,6 @@ public class ObisCodeValues implements Serializable {
     private byte f;
 
     public ObisCodeValues(final byte a, final byte b, final byte c, final byte d, final byte e, final byte f) {
-        super();
         this.a = a;
         this.b = b;
         this.c = c;
@@ -57,16 +57,14 @@ public class ObisCodeValues implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return String.format("%d.%d.%d.%d.%d.%d", this.a & 0xFF, this.b & 0xFF, this.c & 0xFF, this.d & 0xFF,
+                this.e & 0xFF, this.f & 0xFF);
+    }
+
+    @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.a;
-        result = prime * result + this.b;
-        result = prime * result + this.c;
-        result = prime * result + this.d;
-        result = prime * result + this.e;
-        result = prime * result + this.f;
-        return result;
+        return Objects.hash(this.a, this.b, this.c, this.d, this.e, this.f);
     }
 
     @Override
@@ -74,31 +72,11 @@ public class ObisCodeValues implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
+        if (!(obj instanceof ObisCodeValues)) {
             return false;
         }
         final ObisCodeValues other = (ObisCodeValues) obj;
-        if (this.a != other.a) {
-            return false;
-        }
-        if (this.b != other.b) {
-            return false;
-        }
-        if (this.c != other.c) {
-            return false;
-        }
-        if (this.d != other.d) {
-            return false;
-        }
-        if (this.e != other.e) {
-            return false;
-        }
-        if (this.f != other.f) {
-            return false;
-        }
-        return true;
+        return this.a == other.a && this.b == other.b && this.c == other.c && this.d == other.d && this.e == other.e
+                && this.f == other.f;
     }
 }

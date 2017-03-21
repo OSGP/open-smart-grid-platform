@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
@@ -22,6 +24,9 @@ import com.alliander.osgp.core.infra.jms.domain.DomainResponseMessageSender;
 import com.alliander.osgp.core.infra.jms.domain.in.DomainRequestMessageSender;
 import com.alliander.osgp.core.infra.jms.protocol.ProtocolRequestMessageSender;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageSender;
+import com.alliander.osgp.core.infra.messaging.CoreLogItemRequestMessageSender;
+import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -30,6 +35,8 @@ import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageSend
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.core" })
 @EnableTransactionManagement()
+@Import({ MessagingConfig.class })
+
 public class ApplicationContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
@@ -62,4 +69,18 @@ public class ApplicationContext {
         return new DomainRequestMessageSender();
     }
 
+    @Bean
+    public JmsConfiguration coreLogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.dlms.log.item.requests");
+    }
+
+    @Bean
+    public JmsTemplate coreLogItemRequestsJmsTemplate(final JmsConfiguration coreLogItemRequestJmsConfiguration) {
+        return coreLogItemRequestJmsConfiguration.getJmsTemplate();
+    }
+
+    @Bean
+    public CoreLogItemRequestMessageSender coreLogItemRequestMessageSender() {
+        return new CoreLogItemRequestMessageSender();
+    }
 }

@@ -7,12 +7,13 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
@@ -44,6 +45,18 @@ public class MonitoringMapper extends ConfigurableMapper {
 
         // This converter is needed because it contains logic.
         mapperFactory.getConverterFactory().registerConverter(new PeriodicReadsRequestGasQueryConverter());
+
+        /*
+         * The XML construct with the selected values is a bit more complex than
+         * the one in the rest of the code. The "selectedValues.captureObject"
+         * in XML is the actual list of the objects to be mapped to the
+         * "selectedValues" in the rest of the code and vice versa.
+         */
+        mapperFactory
+                .classMap(ProfileGenericDataRequest.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class)
+                .fieldAToB("selectedValues.captureObject", "selectedValues")
+                .fieldBToA("selectedValues", "selectedValues.captureObject").byDefault().register();
 
         mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
 

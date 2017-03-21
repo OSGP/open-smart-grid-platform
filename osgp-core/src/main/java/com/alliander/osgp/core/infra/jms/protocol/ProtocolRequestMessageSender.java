@@ -19,6 +19,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import com.alliander.osgp.core.domain.model.protocol.ProtocolRequestService;
+import com.alliander.osgp.core.infra.messaging.CoreLogItemRequestMessage;
+import com.alliander.osgp.core.infra.messaging.CoreLogItemRequestMessageSender;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -31,6 +33,9 @@ import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageSender.class);
+
+    @Autowired
+    private CoreLogItemRequestMessageSender coreLogItemRequestMessageSender;
 
     @Autowired
     private ProtocolRequestMessageJmsTemplateFactory protocolRequestMessageJmsTemplateFactory;
@@ -89,6 +94,17 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
             }
 
         });
+
+        if (requestMessage.getRetryCount() != 0) {
+            final String decodedMessageWithDescription = String.format("retry count= %s, correlationuid= %s ",
+                    requestMessage.getRetryCount(), requestMessage.getCorrelationUid());
+
+            final CoreLogItemRequestMessage coreLogItemRequestMessage = new CoreLogItemRequestMessage(
+                    requestMessage.getDeviceIdentification(), requestMessage.getOrganisationIdentification(),
+                    decodedMessageWithDescription);
+
+            this.coreLogItemRequestMessageSender.send(coreLogItemRequestMessage);
+        }
 
         if (isCustomTimeToLiveSet) {
             jmsTemplate.setTimeToLive(originalTimeToLive);

@@ -10,7 +10,11 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -23,13 +27,22 @@ public class ProfileGenericDataRequest implements Serializable, ActionRequest {
     private final ObisCodeValues obisCode;
     private final Date beginDate;
     private final Date endDate;
+    private final List<CaptureObjectDefinition> selectedValues = new ArrayList<>();
+
+    public ProfileGenericDataRequest(final ObisCodeValues obisCode, final Date beginDate, final Date endDate,
+            final List<CaptureObjectDefinition> selectedValues, final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+        this.obisCode = obisCode;
+        this.beginDate = new Date(beginDate.getTime());
+        this.endDate = new Date(endDate.getTime());
+        if (selectedValues != null) {
+            this.selectedValues.addAll(selectedValues);
+        }
+    }
 
     public ProfileGenericDataRequest(final ObisCodeValues obisCode, final Date beginDate, final Date endDate,
             final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-        this.obisCode = obisCode;
-        this.beginDate = beginDate;
-        this.endDate = endDate;
+        this(obisCode, beginDate, endDate, Collections.emptyList(), deviceIdentification);
     }
 
     public String getDeviceIdentification() {
@@ -41,11 +54,15 @@ public class ProfileGenericDataRequest implements Serializable, ActionRequest {
     }
 
     public Date getBeginDate() {
-        return this.beginDate;
+        return new Date(this.beginDate.getTime());
     }
 
     public Date getEndDate() {
-        return this.endDate;
+        return new Date(this.endDate.getTime());
+    }
+
+    public List<CaptureObjectDefinition> getSelectedValues() {
+        return new ArrayList<>(this.selectedValues);
     }
 
     @Override
@@ -59,56 +76,32 @@ public class ProfileGenericDataRequest implements Serializable, ActionRequest {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((this.beginDate == null) ? 0 : this.beginDate.hashCode());
-        result = prime * result + ((this.deviceIdentification == null) ? 0 : this.deviceIdentification.hashCode());
-        result = prime * result + ((this.endDate == null) ? 0 : this.endDate.hashCode());
-        result = prime * result + ((this.obisCode == null) ? 0 : this.obisCode.hashCode());
-        return result;
+    public String toString() {
+        return String.format(
+                "%s[device=%s, obisCode=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
+                ProfileGenericDataRequest.class.getSimpleName(), this.deviceIdentification, this.obisCode,
+                this.beginDate, this.endDate,
+                this.selectedValues.isEmpty() ? "all capture objects" : this.selectedValues);
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public int hashCode() {
+        return Objects.hash(this.deviceIdentification, this.obisCode, this.beginDate, this.endDate,
+                this.selectedValues);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+        if (!(obj instanceof ProfileGenericDataRequest)) {
             return false;
         }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        ProfileGenericDataRequest other = (ProfileGenericDataRequest) obj;
-        if (this.beginDate == null) {
-            if (other.beginDate != null) {
-                return false;
-            }
-        } else if (!this.beginDate.equals(other.beginDate)) {
-            return false;
-        }
-        if (this.deviceIdentification == null) {
-            if (other.deviceIdentification != null) {
-                return false;
-            }
-        } else if (!this.deviceIdentification.equals(other.deviceIdentification)) {
-            return false;
-        }
-        if (this.endDate == null) {
-            if (other.endDate != null) {
-                return false;
-            }
-        } else if (!this.endDate.equals(other.endDate)) {
-            return false;
-        }
-        if (this.obisCode == null) {
-            if (other.obisCode != null) {
-                return false;
-            }
-        } else if (!this.obisCode.equals(other.obisCode)) {
-            return false;
-        }
-        return true;
+        final ProfileGenericDataRequest other = (ProfileGenericDataRequest) obj;
+        return Objects.equals(this.deviceIdentification, other.deviceIdentification)
+                && Objects.equals(this.obisCode, other.obisCode) && Objects.equals(this.beginDate, other.beginDate)
+                && Objects.equals(this.endDate, other.endDate)
+                && Objects.equals(this.selectedValues, other.selectedValues);
     }
 }
