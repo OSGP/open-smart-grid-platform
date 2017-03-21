@@ -365,6 +365,7 @@ message EventNotification {
     required Event event = 1;
     optional bytes index = 2; // [(nanopb).max_size=1];
     optional string description = 3; // [(nanopb).max_size = 81];
+    optional string timestamp = 4; // [(nanopb).max_size = 15]; // - Format YYYYMMDDhhmmss UTC, indicates the date and time of the event.
 }
 
 message Schedule {

@@ -12,9 +12,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.lang.model.UnknownEntityException;
-
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
@@ -129,12 +128,12 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     payload = this.handleConfirmRegisterDeviceRequest(message.getDeviceId(),
                             message.getSequenceNumber(), message.getPayloadMessage().getConfirmRegisterDeviceRequest());
                 } else if (message.getPayloadMessage().hasEventNotificationRequest()) {
-                    payload = (this.handleEventNotificationRequest(message.getDeviceId(), message.getSequenceNumber(),
-                            message.getPayloadMessage().getEventNotificationRequest()));
+                    payload = this.handleEventNotificationRequest(message.getDeviceId(), message.getSequenceNumber(),
+                            message.getPayloadMessage().getEventNotificationRequest());
                 } else {
                     LOGGER.warn("{} Received unknown payload. Received: {}.", channelId, message.getPayloadMessage()
                             .toString());
-                    // TODO return error code to device.
+                    // Optional extra: return error code to device.
                     return;
                 }
 
@@ -182,11 +181,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
         final String deviceIdentification = registerRequest.getDeviceIdentification();
         InetAddress inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
-        if (this.testDeviceId != null && this.testDeviceIp != null) {
-            if (deviceIdentification.equals(this.testDeviceId)) {
-                LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", this.testDeviceId, this.testDeviceIp);
-                inetAddress = InetAddress.getByName(this.testDeviceIp);
-            }
+        if (this.testDeviceId != null && this.testDeviceIp != null && deviceIdentification.equals(this.testDeviceId)) {
+            LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", this.testDeviceId, this.testDeviceIp);
+            inetAddress = InetAddress.getByName(this.testDeviceIp);
         }
         final String deviceType = registerRequest.getDeviceType().toString();
         final boolean hasSchedule = registerRequest.getHasSchedule();
@@ -247,9 +244,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                                .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
-                                .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                                .setSequenceWindow(this.sequenceNumberWindow)).build();
+                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+                        .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
+                        .setSequenceWindow(this.sequenceNumberWindow)).build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,
@@ -268,22 +265,22 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         }
 
         // Send event notifications to osgp core
-        Oslp.Status oslpStatus = Oslp.Status.OK;
+        final Oslp.Status oslpStatus = Oslp.Status.OK;
         for (final EventNotification event : request.getNotificationsList()) {
             Integer index = null;
             if (!event.getIndex().isEmpty()) {
                 index = (int) event.getIndex().byteAt(0);
             }
-
-            try {
-                // Send the event notification to OSGP-CORE to save in the
-                // database.
-                this.deviceManagementService.addEventNotification(Base64.encodeBase64String(deviceId), event.getEvent()
-                        .name(), event.getDescription(), index);
-            } catch (final UnknownEntityException ex) {
-                LOGGER.error("handle event notification request exception", ex);
-                oslpStatus = Oslp.Status.REJECTED;
+            // Determine if the event notification contains a timestamp. Older
+            // version of OSLP don't use this variable.
+            String timestamp = null;
+            if (StringUtils.isNotEmpty(event.getTimestamp())) {
+                timestamp = event.getTimestamp();
             }
+            // Send the event notification to OSGP-CORE to save in the
+            // database.
+            this.deviceManagementService.addEventNotification(Base64.encodeBase64String(deviceId), event.getEvent()
+                    .name(), event.getDescription(), index, timestamp);
         }
 
         return Oslp.Message.newBuilder()

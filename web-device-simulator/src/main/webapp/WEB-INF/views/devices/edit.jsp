@@ -265,6 +265,12 @@ body {
 									<div class="controls">
 										<input id="index" />
 									</div>
+									<div class="control-label">
+										<spring:message code="device.edit.page.commands.sendnotification.hastimestamp.label" />
+									</div>
+									<div class="controls">
+										<input type="checkbox" id="hasTimestamp" checked />
+									</div>
 									<button id="sendNotification" class="btn">
 										<spring:message code="device.edit.page.commands.sendnotification.label" />
 									</button>
@@ -429,6 +435,7 @@ body {
                 request.event = $('#event').val();
                 request.description = $('#description').val();
                 request.index = $('#index').val();
+                request.hasTimestamp = $('#hasTimestamp').attr('checked') ? "true" : "false";
 
                 $.ajax({
                     type : 'POST',

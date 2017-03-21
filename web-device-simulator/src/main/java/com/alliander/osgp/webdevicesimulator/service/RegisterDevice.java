@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.webdevicesimulator.service;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -18,9 +19,14 @@ import javax.annotation.Resource;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.DeviceType;
@@ -78,10 +84,10 @@ public class RegisterDevice {
 
     public DeviceMessageStatus sendRegisterDeviceCommand(final long deviceId, final Boolean hasSchedule) {
 
-        // Find device
+        // Find device.
         Device device = this.deviceManagementService.findDevice(deviceId);
         if (device == null) {
-            // Set the DeviceMessageStatus NOT_FOUND as the Device is NOT_FOUND
+            // Set the DeviceMessageStatus NOT_FOUND as the Device is not found.
             return DeviceMessageStatus.NOT_FOUND;
         }
 
@@ -94,78 +100,62 @@ public class RegisterDevice {
             // or 2) delete all devices and create new devices (with a 12 byte
             // deviceUID).
             // There seems no problem with creating a new deviceUID for every
-            // register of the device.
+            // registration attempt of the device.
             // However, NOTE: THIS BEHAVIOUR IS NOT EQUAL TO THE REAL SSLD/PSLD.
             device.setDeviceUid(this.createRandomDeviceUid());
             device = this.deviceManagementService.updateDevice(device);
 
-            // Generate random sequence number and random device number
+            // Generate random sequence number and random device number.
             final Integer sequenceNumber = device.doGenerateRandomNumber();
             final Integer randomDevice = device.doGenerateRandomNumber();
 
-            // Create registration message
-            final OslpEnvelope olspRequest = this
+            // Create registration message.
+            final OslpEnvelope oslpRequest = this
                     .createEnvelopeBuilder(device.getDeviceUid(), sequenceNumber)
                     .withPayloadMessage(
                             Message.newBuilder()
-                            .setRegisterDeviceRequest(
-                                    Oslp.RegisterDeviceRequest
-                                    .newBuilder()
-                                    .setDeviceIdentification(device.getDeviceIdentification())
-                                    .setIpAddress(
-                                            ByteString.copyFrom(InetAddress.getByName(
-                                                    device.getIpAddress()).getAddress()))
+                                    .setRegisterDeviceRequest(
+                                            Oslp.RegisterDeviceRequest
+                                                    .newBuilder()
+                                                    .setDeviceIdentification(device.getDeviceIdentification())
+                                                    .setIpAddress(
+                                                            ByteString.copyFrom(InetAddress.getByName(
+                                                                    device.getIpAddress()).getAddress()))
                                                     .setDeviceType(
                                                             device.getDeviceType().isEmpty() ? DeviceType.PSLD
                                                                     : DeviceType.valueOf(device.getDeviceType()))
-                                                                    .setHasSchedule(hasSchedule).setRandomDevice(randomDevice)).build())
-                                                                    .build();
+                                                    .setHasSchedule(hasSchedule).setRandomDevice(randomDevice)).build())
+                    .build();
 
-            // Write request log
-            OslpLogItem logItem = new OslpLogItem(olspRequest.getDeviceId(), device.getDeviceIdentification(), false,
-                    olspRequest.getPayloadMessage());
-            this.oslpLogItemRepository.save(logItem);
+            // Write outgoing request to log.
+            this.writeOslpLogItem(oslpRequest, device, false);
 
-            OslpEnvelope response = null;
-            if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
-                // Send registration message
-                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                        this.oslpPortClient), olspRequest, device.getDeviceIdentification());
+            final OslpEnvelope response = this.sendRequest(device, oslpRequest);
 
-            } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
-                // Send registration message
-                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                        this.oslpElsterPortClient), olspRequest, device.getDeviceIdentification());
-            }
-
-            LOGGER.debug("Controller Received Send Register Device Command: " + response.getPayloadMessage().toString());
-
-            // Write request log
-            logItem = new OslpLogItem(response.getDeviceId(), device.getDeviceIdentification(), false,
-                    response.getPayloadMessage());
-            this.oslpLogItemRepository.save(logItem);
+            // Write incoming response to log.
+            this.writeOslpLogItem(response, device, true);
 
             this.currentTime = response.getPayloadMessage().getRegisterDeviceResponse().getCurrentTime();
 
-            // Get the sequence number from the response envelope and check it
+            // Get the sequence number from the response envelope and check it.
             this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
 
-            // Get the two random numbers and check them both
+            // Get the two random numbers and check them both.
             this.checkRandomDeviceAndRandomPlatform(randomDevice, response.getPayloadMessage()
                     .getRegisterDeviceResponse().getRandomDevice(), response.getPayloadMessage()
                     .getRegisterDeviceResponse().getRandomPlatform());
 
-            // Set the sequence number and persist it
+            // Set the sequence number and persist it.
             device.setSequenceNumber(sequenceNumber);
 
-            // Get the two random numbers and persist them both
+            // Get the two random numbers and persist them both.
             device.setRandomDevice(response.getPayloadMessage().getRegisterDeviceResponse().getRandomDevice());
             device.setRandomPlatform(response.getPayloadMessage().getRegisterDeviceResponse().getRandomPlatform());
 
-            // Save the entity
+            // Save the entity.
             device = this.deviceManagementService.updateDevice(device);
 
-            // Set the DeviceMessageStatus OK as the registration is success
+            // Set the DeviceMessageStatus OK as the registration is successful.
             return DeviceMessageStatus.OK;
         } catch (final UnknownHostException ex) {
             LOGGER.error("incorrect IP address format", ex);
@@ -173,7 +163,7 @@ public class RegisterDevice {
             LOGGER.error("register device exception", e);
             this.errorMessage = e.getMessage();
             // Set the DeviceMessageStatus FAILURE as the registration is NOT
-            // success
+            // successful.
             return DeviceMessageStatus.FAILURE;
         }
 
@@ -181,165 +171,195 @@ public class RegisterDevice {
     }
 
     public DeviceMessageStatus sendConfirmDeviceRegistrationCommand(final long deviceId) {
-
-        // Find device
+        // Find device.
         Device device = this.deviceManagementService.findDevice(deviceId);
         if (device == null) {
-            // Set the DeviceMessageStatus NOT_FOUND as the device is NOT_FOUND
+            // Set the DeviceMessageStatus NOT_FOUND as the device is not found.
             return DeviceMessageStatus.NOT_FOUND;
         }
         this.errorMessage = "";
+
         try {
             final Integer sequenceNumber = device.doGetNextSequence();
-
-            // Create registration confirm message
-            final OslpEnvelope olspRequest = this
+            // Create registration confirmation message.
+            final OslpEnvelope oslpRequest = this
                     .createEnvelopeBuilder(device.getDeviceUid(), sequenceNumber)
                     .withPayloadMessage(
                             Message.newBuilder()
-                            .setConfirmRegisterDeviceRequest(
-                                    Oslp.ConfirmRegisterDeviceRequest.newBuilder()
-                                    .setRandomDevice(device.getRandomDevice())
-                                    .setRandomPlatform(device.getRandomPlatform())).build()).build();
+                                    .setConfirmRegisterDeviceRequest(
+                                            Oslp.ConfirmRegisterDeviceRequest.newBuilder()
+                                                    .setRandomDevice(device.getRandomDevice())
+                                                    .setRandomPlatform(device.getRandomPlatform())).build()).build();
 
-            OslpEnvelope response = null;
-            if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
-                // Send registration message
-                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                        this.oslpPortClient), olspRequest, device.getDeviceIdentification());
+            // Write outgoing request to log.
+            this.writeOslpLogItem(oslpRequest, device, false);
 
-            } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
-                // Send registration message
-                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                        this.oslpElsterPortClient), olspRequest, device.getDeviceIdentification());
-            }
+            final OslpEnvelope response = this.sendRequest(device, oslpRequest);
 
-            LOGGER.debug("Controller Received Send Confirm Device Registration Command: "
-                    + response.getPayloadMessage().toString());
+            // Write incoming response to log.
+            this.writeOslpLogItem(response, device, true);
 
-            // Get the sequence number from the response envelope and check it
+            // Get the sequence number from the response envelope and check it.
             this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
 
-            // Get the two random numbers and check them both
+            // Get the two random numbers and check them both.
             this.checkRandomDeviceAndRandomPlatform(device.getRandomDevice(), response.getPayloadMessage()
                     .getConfirmRegisterDeviceResponse().getRandomDevice(), device.getRandomPlatform(), response
                     .getPayloadMessage().getConfirmRegisterDeviceResponse().getRandomPlatform());
 
-            // Success
+            // Successful.
             device.setSequenceNumber(sequenceNumber);
             device = this.deviceManagementService.updateDevice(device);
 
-            // Check if there has been an out of sequence security event
+            // Check if there has been an out of sequence security event.
             OutOfSequenceEvent outOfSequenceEvent = this.oslpChannelHandler.hasOutOfSequenceEventForDevice(device
                     .getId());
             while (outOfSequenceEvent != null) {
                 // An event has occurred, send
-                // SECURITY_EVENTS_OUT_OF_SEQUENCE_VALUE event notification
+                // SECURITY_EVENTS_OUT_OF_SEQUENCE_VALUE event notification.
                 this.sendEventNotificationCommand(outOfSequenceEvent.getDeviceId(),
                         Oslp.Event.SECURITY_EVENTS_OUT_OF_SEQUENCE_VALUE,
                         "out of sequence event occurred at time stamp: " + outOfSequenceEvent.getTimestamp().toString()
-                        + " for request: " + outOfSequenceEvent.getRequest(), null);
+                                + " for request: " + outOfSequenceEvent.getRequest(), null);
 
                 // Check if there has been another event, this will return null
-                // if no more events are present in the list
+                // if no more events are present in the list.
                 outOfSequenceEvent = this.oslpChannelHandler.hasOutOfSequenceEventForDevice(device.getId());
             }
 
             // Set the DeviceMessageStatus OK as the confirm registration is
-            // success
+            // successful.
             return DeviceMessageStatus.OK;
         } catch (final Exception e) {
             LOGGER.error("confirm device registration exception", e);
             this.errorMessage = e.getMessage();
 
             // Set the DeviceMessageStatus FAILURE as the confirm registration
-            // is NOT success
+            // is NOT successful.
             return DeviceMessageStatus.FAILURE;
 
         }
     }
 
+    private int determineRelayIndexForEventNotification(final Integer index) {
+        // Test the index provided in request.
+        if (index == null) {
+            return 0;
+        } else {
+            return index;
+        }
+    }
+
+    private String getFormattedCurrentTimestamp() {
+        final String format = "yyyyMMddHHmmss";
+        final DateTime dateTime = DateTime.now().toDateTime(DateTimeZone.UTC);
+        final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(format);
+        final String timestamp = dateTimeFormatter.print(dateTime);
+        LOGGER.info("generated timestamp for EventNotificationRequest: {} using format: {}", timestamp, format);
+        return timestamp;
+    }
+
+    private OslpEnvelope createEventNotificationRequest(final Device device, final int sequenceNumber,
+            final Oslp.Event event, final String description, final Integer index, final String timestamp,
+            final boolean hasTimestamp) {
+        final String deviceUid = device.getDeviceUid();
+
+        // Create an event notification depending on device protocol (for now
+        // with 1 event).
+        Oslp.EventNotification eventNotification = null;
+        if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
+            eventNotification = EventNotification.newBuilder().setEvent(event)
+                    .setDescription(description == null ? "" : description)
+                    .setIndex(ByteString.copyFrom(new byte[] { index.byteValue() })).build();
+        } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString()) && hasTimestamp) {
+            eventNotification = EventNotification.newBuilder().setEvent(event)
+                    .setDescription(description == null ? "" : description)
+                    .setIndex(ByteString.copyFrom(new byte[] { index.byteValue() })).setTimestamp(timestamp).build();
+        } else {
+            eventNotification = EventNotification.newBuilder().setEvent(event)
+                    .setDescription(description == null ? "" : description)
+                    .setIndex(ByteString.copyFrom(new byte[] { index.byteValue() })).build();
+        }
+        Assert.notNull(eventNotification,
+                "Failed to create EventNotification. Is the protocol for the simulated device supported?");
+
+        // Create event notification request.
+        final Oslp.EventNotificationRequest eventNotificationRequest = Oslp.EventNotificationRequest.newBuilder()
+                .addNotifications(eventNotification).build();
+
+        return this.createEnvelopeBuilder(deviceUid, sequenceNumber)
+                .withPayloadMessage(Message.newBuilder().setEventNotificationRequest(eventNotificationRequest).build())
+                .build();
+    }
+
+    private void writeOslpLogItem(final OslpEnvelope oslpEnvelope, final Device device, final boolean incoming) {
+        final OslpLogItem logItem = new OslpLogItem(oslpEnvelope.getDeviceId(), device.getDeviceIdentification(),
+                incoming, oslpEnvelope.getPayloadMessage());
+        this.oslpLogItemRepository.save(logItem);
+    }
+
+    private OslpEnvelope sendRequest(final Device device, final OslpEnvelope request) throws IOException,
+            DeviceSimulatorException {
+        // Original protocol port.
+        int port = this.oslpPortClient;
+        // Newer protocol port.
+        if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
+            port = this.oslpElsterPortClient;
+        }
+
+        // Attempt to send the request and receive response.
+        LOGGER.info("Trying to send request: {}", request.getPayloadMessage().toString());
+        final OslpEnvelope response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer, port),
+                request, device.getDeviceIdentification());
+        LOGGER.info("Received response: {}", response.getPayloadMessage().toString());
+        return response;
+    }
+
     public DeviceMessageStatus sendEventNotificationCommand(final Long id, final Integer event,
             final String description, final Integer index) {
-        // Find device
+        return this.sendEventNotificationCommand(id, event, description, index, true);
+    }
+
+    public DeviceMessageStatus sendEventNotificationCommand(final Long id, final Integer event,
+            final String description, final Integer index, final boolean hasTimestamp) {
+        // Find device.
         Device device = this.deviceManagementService.findDevice(id);
         if (device == null) {
-
-            // Set the DeviceMessageStatus NOT_FOUND as the device is NOT_FOUND
+            // Set the DeviceMessageStatus NOT_FOUND as the device is not found.
             return DeviceMessageStatus.NOT_FOUND;
         }
         this.errorMessage = "";
 
         try {
             // Set index when provided in request.
-            Integer idx;
-            if (index == null) {
-                idx = 0;
-            } else {
-                idx = index;
-            }
-
+            final Integer idx = this.determineRelayIndexForEventNotification(index);
             final int sequenceNumber = device.doGetNextSequence();
+            final String timestamp = this.getFormattedCurrentTimestamp();
+            final Oslp.Event oslpEvent = Oslp.Event.valueOf(event);
 
-            // Create registration message (for now with 1 event)
-            final OslpEnvelope request = this
-                    .createEnvelopeBuilder(device.getDeviceUid(), sequenceNumber)
-                    .withPayloadMessage(
-                            Message.newBuilder()
-                            .setEventNotificationRequest(
-                                    Oslp.EventNotificationRequest.newBuilder()
-                                    .addNotifications(
-                                            EventNotification
-                                            .newBuilder()
-                                            .setEvent(Oslp.Event.valueOf(event))
-                                            .setDescription(
-                                                    description == null ? "" : description)
-                                                    .setIndex(
-                                                            ByteString.copyFrom(new byte[] { idx
-                                                                    .byteValue() })))).build()).build();
+            // Create request and write outgoing request to log.
+            final OslpEnvelope request = this.createEventNotificationRequest(device, sequenceNumber, oslpEvent,
+                    description, idx, timestamp, hasTimestamp);
+            this.writeOslpLogItem(request, device, false);
 
-            // Write request log
-            OslpLogItem logItem = new OslpLogItem(request.getDeviceId(), device.getDeviceIdentification(), false,
-                    request.getPayloadMessage());
-            this.oslpLogItemRepository.save(logItem);
+            // Send event notification message and receive response.
+            final OslpEnvelope response = this.sendRequest(device, request);
+            // Write incoming response to log.
+            this.writeOslpLogItem(response, device, true);
 
-            OslpEnvelope response = null;
-            if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
-                // Send registration message
-                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                        this.oslpPortClient), request, device.getDeviceIdentification());
-
-            } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
-                // Send registration message
-                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                        this.oslpElsterPortClient), request, device.getDeviceIdentification());
-            }
-
-            LOGGER.debug("Controller Received Send Event Notification Command: "
-                    + response.getPayloadMessage().toString());
-
-            // Write request log
-            logItem = new OslpLogItem(response.getDeviceId(), device.getDeviceIdentification(), false,
-                    response.getPayloadMessage());
-            this.oslpLogItemRepository.save(logItem);
-
-            // Get the sequence number from the response envelope and check it
+            // Get the sequence number from the response envelope and check it.
             this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
-
-            // Success
+            // Success, update the sequence number of the device.
             device.setSequenceNumber(sequenceNumber);
             device = this.deviceManagementService.updateDevice(device);
-
             // Set the DeviceMessageStatus OK as the SendEvent is Success.
             return DeviceMessageStatus.OK;
         } catch (final Exception e) {
             LOGGER.error("send event notification exception", e);
             this.errorMessage = e.getMessage();
-
             // Set the DeviceMessageStatus FAILURE as the SendEvent is NOT
-            // Success.
+            // successful.
             return DeviceMessageStatus.FAILURE;
-
         }
     }
 
@@ -380,7 +400,7 @@ public class RegisterDevice {
             throw new DeviceSimulatorException("sequence number Integer is null");
         }
 
-        final Integer num = ((bytes[0] & 0xFF) << 8) | ((bytes[1] & 0xFF));
+        final Integer num = ((bytes[0] & 0xFF) << 8) | (bytes[1] & 0xFF);
 
         if (sequenceNumber - num != 0) {
             throw new DeviceSimulatorException(MessageFormat.format(
@@ -400,8 +420,8 @@ public class RegisterDevice {
         if (randomDevice - responseRandomDevice != 0) {
             throw new DeviceSimulatorException(
                     MessageFormat
-                    .format("random device number incorrect - expected random device number: {0} actual random device number: {1}",
-                            randomDevice, responseRandomDevice));
+                            .format("random device number incorrect - expected random device number: {0} actual random device number: {1}",
+                                    randomDevice, responseRandomDevice));
         }
         if (responseRandomPlatform == null) {
             throw new DeviceSimulatorException("random platform Integer is null");
@@ -418,8 +438,8 @@ public class RegisterDevice {
         if (randomPlatform - responseRandomPlatform != 0) {
             throw new DeviceSimulatorException(
                     MessageFormat
-                    .format("random platform number incorrect - expected random platform number: {0} actual random platform number: {1}",
-                            randomPlatform, responseRandomPlatform));
+                            .format("random platform number incorrect - expected random platform number: {0} actual random platform number: {1}",
+                                    randomPlatform, responseRandomPlatform));
         }
     }
 

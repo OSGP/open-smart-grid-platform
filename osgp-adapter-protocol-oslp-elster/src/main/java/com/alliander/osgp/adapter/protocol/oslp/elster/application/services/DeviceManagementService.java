@@ -7,11 +7,16 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.services;
 
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import com.alliander.osgp.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
@@ -53,25 +58,40 @@ public class DeviceManagementService {
      * Send a new event notification to OSGP Core with the given arguments.
      *
      * @param deviceId
-     *            The Uid of the device
+     *            The Uid of the device.
      * @param eventType
-     *            The event type
+     *            The event type. May not be empty or null.
      * @param description
      *            The description which came along with the event from the
-     *            device.
+     *            device. May be an empty string, but not null.
      * @param index
      *            The index of the device.
+     * @param timestamp
+     *            The date and time of the event. May be an empty string or
+     *            null.
      */
     public void addEventNotification(final String deviceUid, final String eventType, final String description,
-            final Integer index) {
+            final int index, final String timestamp) {
+        Assert.notNull(eventType);
+        Assert.notNull(description);
 
         final OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByUid(deviceUid);
 
         LOGGER.info("addEventNotification called for device: {} with eventType: {}, description: {} and index: {}",
                 oslpDevice.getDeviceIdentification(), eventType, description, index);
 
-        final EventNotificationDto eventNotification = new EventNotificationDto(deviceUid, EventTypeDto.valueOf(eventType),
-                description, index);
+        DateTime dateTime;
+        if (StringUtils.isEmpty(timestamp)) {
+            dateTime = DateTime.now();
+            LOGGER.info("timestamp is empty, using DateTime.now(): {}", dateTime);
+        } else {
+            final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss Z");
+            dateTime = dateTimeFormatter.withOffsetParsed().parseDateTime(timestamp.concat(" +0000"));
+            LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
+        }
+
+        final EventNotificationDto eventNotification = new EventNotificationDto(deviceUid, dateTime,
+                EventTypeDto.valueOf(eventType), description, index);
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 oslpDevice.getDeviceIdentification(), eventNotification);
 
