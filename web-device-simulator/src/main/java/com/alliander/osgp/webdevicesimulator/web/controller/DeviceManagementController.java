@@ -293,7 +293,7 @@ public class DeviceManagementController extends AbstractController {
         // Find device
         final Device device = this.deviceManagementService.findDevice(request.getDeviceId());
         final DeviceMessageStatus status = this.registerDevice.sendEventNotificationCommand(request.getDeviceId(),
-                request.getEvent(), request.getDescription(), request.getIndex());
+                request.getEvent(), request.getDescription(), request.getIndex(), request.getHasTimestamp());
         if (status == DeviceMessageStatus.OK) {
             return this.getFeedbackMessage(FEEDBACK_MESSAGE_KEY_EVENTNOTIFICATION_SENT,
                     device.getDeviceIdentification());

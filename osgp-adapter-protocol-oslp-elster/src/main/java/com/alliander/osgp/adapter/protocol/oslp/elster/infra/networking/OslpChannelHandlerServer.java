@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
@@ -243,9 +244,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                                .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
-                                .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                                .setSequenceWindow(this.sequenceNumberWindow)).build();
+                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+                        .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
+                        .setSequenceWindow(this.sequenceNumberWindow)).build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,
@@ -270,10 +271,16 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             if (!event.getIndex().isEmpty()) {
                 index = (int) event.getIndex().byteAt(0);
             }
+            // Determine if the event notification contains a timestamp. Older
+            // version of OSLP don't use this variable.
+            String timestamp = null;
+            if (StringUtils.isNotEmpty(event.getTimestamp())) {
+                timestamp = event.getTimestamp();
+            }
             // Send the event notification to OSGP-CORE to save in the
             // database.
             this.deviceManagementService.addEventNotification(Base64.encodeBase64String(deviceId), event.getEvent()
-                    .name(), event.getDescription(), index, event.getTimestamp());
+                    .name(), event.getDescription(), index, timestamp);
         }
 
         return Oslp.Message.newBuilder()

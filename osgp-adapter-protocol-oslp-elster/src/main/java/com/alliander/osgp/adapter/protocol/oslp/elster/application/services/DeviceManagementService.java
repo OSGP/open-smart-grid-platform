@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.services;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -66,22 +67,28 @@ public class DeviceManagementService {
      * @param index
      *            The index of the device.
      * @param timestamp
-     *            The date and time of the event.
+     *            The date and time of the event. May be an empty string or
+     *            null.
      */
     public void addEventNotification(final String deviceUid, final String eventType, final String description,
             final int index, final String timestamp) {
         Assert.notNull(eventType);
         Assert.notNull(description);
-        Assert.notNull(timestamp);
 
         final OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByUid(deviceUid);
 
         LOGGER.info("addEventNotification called for device: {} with eventType: {}, description: {} and index: {}",
                 oslpDevice.getDeviceIdentification(), eventType, description, index);
 
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss Z");
-        final DateTime dateTime = dateTimeFormatter.withOffsetParsed().parseDateTime(timestamp.concat(" +0000"));
-        LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
+        DateTime dateTime;
+        if (StringUtils.isEmpty(timestamp)) {
+            dateTime = DateTime.now();
+            LOGGER.info("timestamp is empty, using DateTime.now(): {}", dateTime);
+        } else {
+            final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss Z");
+            dateTime = dateTimeFormatter.withOffsetParsed().parseDateTime(timestamp.concat(" +0000"));
+            LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
+        }
 
         final EventNotificationDto eventNotification = new EventNotificationDto(deviceUid, dateTime,
                 EventTypeDto.valueOf(eventType), description, index);

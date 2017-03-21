@@ -250,7 +250,7 @@ public class RegisterDevice {
         }
     }
 
-    private String formatTimestamp() {
+    private String getFormattedCurrentTimestamp() {
         final String format = "yyyyMMddHHmmss";
         final DateTime dateTime = DateTime.now().toDateTime(DateTimeZone.UTC);
         final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(format);
@@ -260,7 +260,8 @@ public class RegisterDevice {
     }
 
     private OslpEnvelope createEventNotificationRequest(final Device device, final int sequenceNumber,
-            final Oslp.Event event, final String description, final Integer index, final String timestamp) {
+            final Oslp.Event event, final String description, final Integer index, final String timestamp,
+            final boolean hasTimestamp) {
         final String deviceUid = device.getDeviceUid();
 
         // Create an event notification depending on device protocol (for now
@@ -270,10 +271,14 @@ public class RegisterDevice {
             eventNotification = EventNotification.newBuilder().setEvent(event)
                     .setDescription(description == null ? "" : description)
                     .setIndex(ByteString.copyFrom(new byte[] { index.byteValue() })).build();
-        } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
+        } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString()) && hasTimestamp) {
             eventNotification = EventNotification.newBuilder().setEvent(event)
                     .setDescription(description == null ? "" : description)
                     .setIndex(ByteString.copyFrom(new byte[] { index.byteValue() })).setTimestamp(timestamp).build();
+        } else {
+            eventNotification = EventNotification.newBuilder().setEvent(event)
+                    .setDescription(description == null ? "" : description)
+                    .setIndex(ByteString.copyFrom(new byte[] { index.byteValue() })).build();
         }
         Assert.notNull(eventNotification,
                 "Failed to create EventNotification. Is the protocol for the simulated device supported?");
@@ -312,6 +317,11 @@ public class RegisterDevice {
 
     public DeviceMessageStatus sendEventNotificationCommand(final Long id, final Integer event,
             final String description, final Integer index) {
+        return this.sendEventNotificationCommand(id, event, description, index, true);
+    }
+
+    public DeviceMessageStatus sendEventNotificationCommand(final Long id, final Integer event,
+            final String description, final Integer index, final boolean hasTimestamp) {
         // Find device.
         Device device = this.deviceManagementService.findDevice(id);
         if (device == null) {
@@ -324,12 +334,12 @@ public class RegisterDevice {
             // Set index when provided in request.
             final Integer idx = this.determineRelayIndexForEventNotification(index);
             final int sequenceNumber = device.doGetNextSequence();
-            final String timestamp = this.formatTimestamp();
+            final String timestamp = this.getFormattedCurrentTimestamp();
             final Oslp.Event oslpEvent = Oslp.Event.valueOf(event);
 
             // Create request and write outgoing request to log.
             final OslpEnvelope request = this.createEventNotificationRequest(device, sequenceNumber, oslpEvent,
-                    description, idx, timestamp);
+                    description, idx, timestamp, hasTimestamp);
             this.writeOslpLogItem(request, device, false);
 
             // Send event notification message and receive response.
