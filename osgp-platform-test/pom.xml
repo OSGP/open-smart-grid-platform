@@ -207,12 +207,6 @@
       <artifactId>bonecp</artifactId>
     </dependency>
 
-    <!-- Flyway (DB Migration) -->
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-core</artifactId>
-    </dependency>
-
     <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
