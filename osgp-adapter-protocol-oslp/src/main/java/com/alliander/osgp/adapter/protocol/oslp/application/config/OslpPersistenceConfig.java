@@ -12,6 +12,8 @@ import java.util.Properties;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.ejb.HibernatePersistence;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
@@ -31,7 +33,6 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.adapter.protocol.oslp.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
-import com.googlecode.flyway.core.Flyway;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
@@ -149,10 +150,11 @@ public class OslpPersistenceConfig extends AbstractConfig {
         final Flyway flyway = new Flyway();
 
         // Initialization for non-empty schema with no metadata table
-        flyway.setInitVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION));
-        flyway.setInitDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-        flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
+        flyway.setBaselineVersion(MigrationVersion
+                .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)));
+        flyway.setBaselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
+        flyway.setBaselineOnMigrate(
+                Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
 
         flyway.setDataSource(this.getOslpDataSource());
 
