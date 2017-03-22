@@ -64,6 +64,7 @@ import com.alliander.osgp.oslp.Oslp.Weekday;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.OslpUtils;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -876,6 +877,8 @@ public class OslpDeviceSteps {
      * Verify that we have received a response over OSLP/OSLP ELSTER
      * 
      * @param expectedResponse
+     * @throws DeviceSimulatorException 
+     * @throws IOException 
      */
     @Then("^the event notification response contains$")
     public void theEventNotificationResponseContains(final Map<String, String> expectedResponse) {
@@ -892,11 +895,16 @@ public class OslpDeviceSteps {
      * @param expectedResponse
      */
     @Then("^the register device response contains$")
-    public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse) {
+    public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse) throws IOException, DeviceSimulatorException {
         final Message responseMessage = this.oslpMockServer.waitForResponse();
 
         final RegisterDeviceResponse response = responseMessage.getRegisterDeviceResponse();
-        //TODO check response for data
+
+        Assert.assertNotNull(response.getCurrentTime()); 
+        Assert.assertNotNull(response.getLocationInfo().getLongitude());
+        Assert.assertNotNull(response.getLocationInfo().getLatitude());
+        Assert.assertNotNull(response.getLocationInfo().getTimeOffset());
+        
         Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
     }
 

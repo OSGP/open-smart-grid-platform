@@ -44,27 +44,22 @@ Feature: CoreDeviceInstallation Device Registration
   #| Protocol    | DeviceUid  | DeviceIdentification | DeviceType | GpsLatitude | GpsLongitude | NetworkAddress | CurrentTime | TimeZone | Result |
   #| OSLP        | 1234567890 | TEST1024000000001    |            |           0 |            0 | 0.0.0.0        |             |          | OK     |
   #| OSLP ELSTER | 1234567890 | TEST1024000000001    |            |           0 |            0 | 0.0.0.0        |             |          | OK     |
-  
-  #Note: the "Then" method: theRegisterDeviceResponseContains does not respond with the 
-  #Note: expected variables: DeviceUID, IP Address, device type and timezone of platform.
-  #Note: it does contain the expected: GPS Location, UTC Time
   @OslpMockServer
   Scenario Outline: A device which performs subsequent registration.
     Given an ssld oslp device
-      | DeviceIdentification | <DeviceIdentification> |
-      | Protocol             | <Protocol>             |
+      | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
+    And the device sends a register device request to the platform
+      | DeviceIdentification | TEST1024000000001 |
     When the device sends a register device request to the platform
-      | DeviceIdentification | <DeviceIdentification> |
-      | Protocol             | <Protocol>             |
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceUid            | eHW0eEFzN0R2Okd5  |
+      | IpAddress            | 127.0.0.2         |
+      | DeviceType           | SSLD              |
     Then the register device response contains
-      | DeviceUID  | <DeviceUID>  |
-      | IPAddress  | <IPAddress>  |
-      | DeviceType | <DeviceType> |
-      | Longtitude | <Longtitude> |
-      | Latitute   | <Latitude>   |
-      | Status     | OK           |
-      | RandomDevice|	<RandomDevice>|
+      | Status | OK |
 
     Examples: 
-      | DeviceIdentification | Protocol | DeviceUID        | IPAddress | DeviceType | Longtitude | Latitude |
-      | TEST1024000000001    | OSLP     | dGVzdDEyMzQ1Njc4 | localhost | PSLD       |          0 |        0 |
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
