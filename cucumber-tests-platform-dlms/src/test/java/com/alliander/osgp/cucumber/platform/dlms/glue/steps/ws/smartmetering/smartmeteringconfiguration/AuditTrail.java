@@ -60,7 +60,7 @@ public class AuditTrail extends SmartMeteringStepsBase {
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
                 Defaults.DEFAULT_DEVICE_IDENTIFICATION);
 
-        assertTrue("DeviceLogItems are found in the database",
+        assertTrue("DeviceLogItems are not found in the database",
                 this.responseNotifier.waitForLog(deviceIdentification, 0, 3000000));
 
         final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
