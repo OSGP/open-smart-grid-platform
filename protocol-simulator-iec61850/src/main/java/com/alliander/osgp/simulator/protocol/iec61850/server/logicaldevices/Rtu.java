@@ -260,7 +260,7 @@ public class Rtu extends LogicalDevice {
         values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
         values.add(this.setTime(DSCH4_SCHDABSTM_TIME_2, Fc.MX, timestamp));
         values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_3, Fc.MX, timestamp));
 
         return values;
     }

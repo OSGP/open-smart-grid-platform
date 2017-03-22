@@ -435,7 +435,7 @@ public class HeatPump extends LogicalDevice {
         values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
         values.add(this.setTime(DSCH4_SCHDABSTM_TIME_2, Fc.MX, timestamp));
         values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_3, Fc.MX, timestamp));
 
         values.add(this.setRandomFloat(MMXU1_TOTW_MAG_F, Fc.MX, 0, 1000));
         values.add(this.setQuality(MMXU1_TOTW_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
