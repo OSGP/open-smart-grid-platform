@@ -27,7 +27,6 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     private final int retryCount;
     private final RetryHeader retryHeader;
-    private boolean bypassRetry;
 
     /**
      * @deprecated Use builder in stead
@@ -205,7 +204,4 @@ public class ProtocolResponseMessage extends ResponseMessage {
         return this.retryHeader;
     }
 
-    public boolean bypassRetry() {
-        return this.bypassRetry;
-    }
 }
