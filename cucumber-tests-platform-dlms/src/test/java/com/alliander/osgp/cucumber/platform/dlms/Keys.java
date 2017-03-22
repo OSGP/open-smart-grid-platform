@@ -78,4 +78,8 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String WITH_LIST_SUPPORTED = "WithListSupported";
     public static final String MODULE_ACTIVE_FIRMWARE_VERSION = "ModuleActiveFirmwareVersion";
 
+    // Keys for SchedulerSteps
+    public static final String SCHEDULED_FOR = "scheduledfor";
+    public static final String DEVICEOPERATION_TAG = "deviceoperation";
+    public static final String KEY_SCHEDULED_DATE = "ScheduledDateKey";
 }

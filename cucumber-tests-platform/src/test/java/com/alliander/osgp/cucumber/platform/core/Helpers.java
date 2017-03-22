@@ -143,14 +143,10 @@ public class Helpers {
 
     /**
      * This is a generic method which will translate the given string to a
-     * datetime. Supported: 
-     * 
-     * now + 3 months 
-     * tomorrow - 1 year 
-     * yesterday + 2 weeks
-     * today at midday
-     * yesterday at midnight
-     * now at midday + 1 week
+     * datetime. Supported:
+     *
+     * now + 3 months tomorrow - 1 year yesterday + 2 weeks today at midday
+     * yesterday at midnight now at midday + 1 week now + 1 minutes
      *
      * @param dateString
      * @return
@@ -199,13 +195,14 @@ public class Helpers {
             retval = DateTime.now();
             break;
         default:
-            throw new Exception("Incorrect dateString [" + dateString + "], expected the string to begin with tomorrow, yesterday or now or today");
+            throw new Exception("Incorrect dateString [" + dateString
+                    + "], expected the string to begin with tomorrow, yesterday or now or today");
         }
-        
+
         if (whenMatcher.groupCount() > 1 && whenMatcher.group(2).equals("at")) {
-            
+
             switch (whenMatcher.group(3)) {
-            case "midday": 
+            case "midday":
                 retval = retval.withHourOfDay(12);
                 break;
             case "midnight":
@@ -222,12 +219,19 @@ public class Helpers {
             switch (what) {
             case "days":
                 retval = retval.plusDays(numberToAddOrSubstract);
+                break;
+            case "minutes":
+                retval = retval.plusMinutes(numberToAddOrSubstract);
+                break;
             case "hours":
                 retval = retval.plusHours(numberToAddOrSubstract);
+                break;
             case "weeks":
                 retval = retval.plusWeeks(numberToAddOrSubstract);
+                break;
             case "months":
                 retval = retval.plusMonths(numberToAddOrSubstract);
+                break;
             case "years":
                 retval = retval.plusYears(numberToAddOrSubstract);
             }
@@ -235,12 +239,19 @@ public class Helpers {
             switch (what) {
             case "days":
                 retval = retval.minusDays(numberToAddOrSubstract);
+                break;
+            case "minutes":
+                retval = retval.minusMinutes(numberToAddOrSubstract);
+                break;
             case "hours":
                 retval = retval.minusHours(numberToAddOrSubstract);
+                break;
             case "weeks":
                 retval = retval.minusWeeks(numberToAddOrSubstract);
+                break;
             case "months":
                 retval = retval.minusMonths(numberToAddOrSubstract);
+                break;
             case "years":
                 retval = retval.minusYears(numberToAddOrSubstract);
             }
