@@ -39,7 +39,7 @@ public class Rtu extends LogicalDevice {
 
     private static final String DSCH2_SCHDID_SETVAL = "DSCH2.SchdId.setVal";
     private static final String DSCH2_SCHDTYP_SETVAL = "DSCH2.SchdTyp.setVal";
-    private static final String DSCH2_SCHCAT_SETVAL = "DSCH2.SchCat.setVal";
+    private static final String DSCH2_SCHDCAT_SETVAL = "DSCH2.SchCat.setVal";
     private static final String DSCH2_SCHDABSTM_VAL_0 = "DSCH2.SchdAbsTm.val.0";
     private static final String DSCH2_SCHDABSTM_TIME_0 = "DSCH2.SchdAbsTm.time.0";
     private static final String DSCH2_SCHDABSTM_VAL_1 = "DSCH2.SchdAbsTm.val.1";
@@ -84,7 +84,7 @@ public class Rtu extends LogicalDevice {
     private static final Set<String> INT32_NODES = Collections
             .unmodifiableSet(
                     new TreeSet<>(Arrays.asList(DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHCAT_SETVAL,
-                            DSCH2_SCHDID_SETVAL, DSCH2_SCHDTYP_SETVAL, DSCH2_SCHCAT_SETVAL,
+                            DSCH2_SCHDID_SETVAL, DSCH2_SCHDTYP_SETVAL, DSCH2_SCHDCAT_SETVAL,
                             DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL, DSCH3_SCHCAT_SETVAL,
                             DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHCAT_SETVAL)));
 
@@ -117,7 +117,7 @@ public class Rtu extends LogicalDevice {
 
         fcByNode.put(DSCH2_SCHDID_SETVAL, Fc.SP);
         fcByNode.put(DSCH2_SCHDTYP_SETVAL, Fc.SP);
-        fcByNode.put(DSCH2_SCHCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH2_SCHDCAT_SETVAL, Fc.SP);
         fcByNode.put(DSCH2_SCHDABSTM_VAL_0, Fc.SP);
         fcByNode.put(DSCH2_SCHDABSTM_TIME_0, Fc.SP);
         fcByNode.put(DSCH2_SCHDABSTM_VAL_1, Fc.SP);
@@ -217,50 +217,50 @@ public class Rtu extends LogicalDevice {
         values.add(this.setRandomInt(DSCH1_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH1_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH1_SCHCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomInt(DSCH2_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH2_SCHDTYP_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomInt(DSCH2_SCHCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomInt(DSCH2_SCHDCAT_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomInt(DSCH3_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH3_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH3_SCHCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomInt(DSCH4_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH4_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH4_SCHCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         return values;
     }

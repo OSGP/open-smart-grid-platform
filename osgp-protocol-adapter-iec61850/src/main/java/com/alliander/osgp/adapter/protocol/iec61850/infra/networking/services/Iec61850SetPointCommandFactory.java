@@ -31,7 +31,7 @@ public final class Iec61850SetPointCommandFactory implements RtuWriteCommandFact
     private static final Map<String, RtuWriteCommand<SetPointDto>> RTU_COMMAND_MAP = new HashMap<>();
 
     static {
-        initializeLogicalDeviceCommandMap();
+        initializeCommandMap();
     }
 
     private static Iec61850SetPointCommandFactory instance;
@@ -57,7 +57,7 @@ public final class Iec61850SetPointCommandFactory implements RtuWriteCommandFact
         return command;
     }
 
-    private static void initializeLogicalDeviceCommandMap() {
+    private static void initializeCommandMap() {
         for (int i = ID_START; i <= ID_END; i++) {
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_ID, i), new Iec61850ScheduleIdCommand(i));
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_TYPE, i), new Iec61850ScheduleTypeCommand(i));

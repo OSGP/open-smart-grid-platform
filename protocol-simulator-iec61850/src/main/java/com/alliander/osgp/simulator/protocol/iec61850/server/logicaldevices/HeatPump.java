@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -392,50 +392,50 @@ public class HeatPump extends LogicalDevice {
         values.add(this.setRandomInt(DSCH1_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH1_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH1_SCHDCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomInt(DSCH2_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH2_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH2_SCHDCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomInt(DSCH3_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH3_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH3_SCHDCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomInt(DSCH4_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH4_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH4_SCHDCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomFloat(MMXU1_TOTW_MAG_F, Fc.MX, 0, 1000));
         values.add(this.setQuality(MMXU1_TOTW_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));

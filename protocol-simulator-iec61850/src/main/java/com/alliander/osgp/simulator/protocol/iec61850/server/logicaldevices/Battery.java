@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -39,7 +39,7 @@ public class Battery extends LogicalDevice {
 
     private static final String DSCH2_SCHDID_SETVAL = "DSCH2.SchdId.setVal";
     private static final String DSCH2_SCHDTYP_SETVAL = "DSCH2.SchdTyp.setVal";
-    private static final String DSCH2_SCHCAT_SETVAL = "DSCH2.SchCat.setVal";
+    private static final String DSCH2_SCHDCAT_SETVAL = "DSCH2.SchCat.setVal";
     private static final String DSCH2_SCHDABSTM_VAL_0 = "DSCH2.SchdAbsTm.val.0";
     private static final String DSCH2_SCHDABSTM_TIME_0 = "DSCH2.SchdAbsTm.time.0";
     private static final String DSCH2_SCHDABSTM_VAL_1 = "DSCH2.SchdAbsTm.val.1";
@@ -177,7 +177,7 @@ public class Battery extends LogicalDevice {
             .unmodifiableSet(new TreeSet<>(Arrays.asList(DGEN1_OPTMSRS_STVAL, GGIO1_INTIN1_STVAL, GGIO1_INTIN2_STVAL,
                     GGIO1_WRN1_STVAL, GGIO1_WRN2_STVAL, GGIO1_WRN3_STVAL, GGIO1_WRN4_STVAL,
                     DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHCAT_SETVAL,
-                    DSCH2_SCHDID_SETVAL, DSCH2_SCHDTYP_SETVAL, DSCH2_SCHCAT_SETVAL,
+                    DSCH2_SCHDID_SETVAL, DSCH2_SCHDTYP_SETVAL, DSCH2_SCHDCAT_SETVAL,
                     DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL, DSCH3_SCHCAT_SETVAL,
                     DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHCAT_SETVAL)));
 
@@ -218,7 +218,7 @@ public class Battery extends LogicalDevice {
 
         fcByNode.put(DSCH2_SCHDID_SETVAL, Fc.SP);
         fcByNode.put(DSCH2_SCHDTYP_SETVAL, Fc.SP);
-        fcByNode.put(DSCH2_SCHCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH2_SCHDCAT_SETVAL, Fc.SP);
         fcByNode.put(DSCH2_SCHDABSTM_VAL_0, Fc.SP);
         fcByNode.put(DSCH2_SCHDABSTM_TIME_0, Fc.SP);
         fcByNode.put(DSCH2_SCHDABSTM_VAL_1, Fc.SP);
@@ -432,50 +432,50 @@ public class Battery extends LogicalDevice {
         values.add(this.setRandomInt(DSCH1_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH1_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH1_SCHCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomInt(DSCH2_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH2_SCHDTYP_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomInt(DSCH2_SCHCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomInt(DSCH2_SCHDCAT_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomInt(DSCH3_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH3_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH3_SCHCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         values.add(this.setRandomInt(DSCH4_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH4_SCHDTYP_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH4_SCHCAT_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_0, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_0, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_1, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_1, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_2, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_2, Fc.MX, timestamp));
-        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_3, Fc.MX, 0, 1000));
-        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_3, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         return values;
     }

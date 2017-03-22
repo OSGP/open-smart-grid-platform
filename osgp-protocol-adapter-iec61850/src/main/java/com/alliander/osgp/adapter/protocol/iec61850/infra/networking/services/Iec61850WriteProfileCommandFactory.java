@@ -29,7 +29,7 @@ public final class Iec61850WriteProfileCommandFactory implements RtuWriteCommand
     private static final Map<String, RtuWriteCommand<ProfileDto>> RTU_COMMAND_MAP = new HashMap<>();
 
     static {
-        initializeLogicalDeviceCommandMap();
+        initializeCommandMap();
     }
 
     private static Iec61850WriteProfileCommandFactory instance;
@@ -55,7 +55,7 @@ public final class Iec61850WriteProfileCommandFactory implements RtuWriteCommand
         return command;
     }
 
-    private static void initializeLogicalDeviceCommandMap() {
+    private static void initializeCommandMap() {
         for (int i = ID_START; i <= ID_END; i++) {
 
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_ABS_TIME, i),
