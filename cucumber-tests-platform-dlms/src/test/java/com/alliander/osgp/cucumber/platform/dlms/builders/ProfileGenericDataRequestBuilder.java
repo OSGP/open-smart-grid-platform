@@ -10,6 +10,7 @@ package com.alliander.osgp.cucumber.platform.dlms.builders;
 import org.joda.time.DateTime;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObjectDefinitions;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.cucumber.platform.helpers.DateConverter;
@@ -20,6 +21,7 @@ public class ProfileGenericDataRequestBuilder {
     private ObisCodeValues obisCode;
     private DateTime beginDate = new DateTime();
     private DateTime endDate = new DateTime();
+    private CaptureObjectDefinitions captureObjectDefinitions;
 
     Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
@@ -47,12 +49,19 @@ public class ProfileGenericDataRequestBuilder {
         return this;
     }
 
+    public ProfileGenericDataRequestBuilder withSelectedValues(
+            final CaptureObjectDefinitions captureObjectDefinitions) {
+        this.captureObjectDefinitions = captureObjectDefinitions;
+        return this;
+    }
+
     public ProfileGenericDataRequest build() {
         final ProfileGenericDataRequest result = new ProfileGenericDataRequest();
         result.setDeviceIdentification(this.deviceIdentification);
         result.setObisCode(this.obisCode);
         result.setBeginDate(DateConverter.createXMLGregorianCalendar(this.beginDate.toDate()));
         result.setEndDate(DateConverter.createXMLGregorianCalendar(this.endDate.toDate()));
+        result.setSelectedValues(this.captureObjectDefinitions);
         return result;
     }
 
