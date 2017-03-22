@@ -25,6 +25,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetClockConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.cucumber.platform.core.Helpers;
@@ -74,6 +75,9 @@ public class BundleWithoutSoapUi {
 
         final SetClockConfigurationRequest action = this.defaultMapper.map(
                 SetClockConfigurationRequestDataFactory.fromParameterMap(settings), SetClockConfigurationRequest.class);
+
+        new Action() {
+        };
 
         request.getActions().getActionList().add(action);
         this.increaseCount(KEY_BUNDLE_ACTIONS);
