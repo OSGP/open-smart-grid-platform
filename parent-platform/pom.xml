@@ -143,6 +143,11 @@
         <artifactId>osgp-ws-microgrids</artifactId>
         <version>${shared.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.smartsocietyservices.osgp</groupId>
+        <artifactId>osgp-ws-distributionautomation</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
@@ -165,6 +170,11 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.smartsocietyservices.osgp</groupId>
+        <artifactId>osgp-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
@@ -191,6 +201,12 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.smartsocietyservices.osgp</groupId>
+        <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
@@ -230,6 +246,12 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.smartsocietyservices.osgp</groupId>
+        <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
