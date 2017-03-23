@@ -85,7 +85,7 @@ public class RtuSimulatorSteps extends GlueBase {
         }
     }
 
-    @Then("^a MarkerWadden RTU simulator should be returning$")
+    @Then("^a MarkerWadden RTU simulator should contain$")
     public void aMarkerWaddenRTUSimulatorReturning(final List<List<String>> mockValues) throws Throwable {
         for (final List<String> mockValue : mockValues) {
             if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
