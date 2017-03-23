@@ -275,23 +275,8 @@ public class DlmsDeviceSteps {
             dlmsDeviceBuilder.getPasswordBuilder().enable();
         } else {
             dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().enable();
-            dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().withSettings(inputSettings);
-            if (inputSettings.containsKey(Keys.SECURITY_KEY_E)) {
-                dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().setKey(inputSettings.get(Keys.SECURITY_KEY_E));
-            }
-
             dlmsDeviceBuilder.getMasterSecurityKeyBuilder().enable();
-            dlmsDeviceBuilder.getMasterSecurityKeyBuilder().withSettings(inputSettings);
-            if (inputSettings.containsKey(Keys.SECURITY_KEY_M)) {
-                dlmsDeviceBuilder.getMasterSecurityKeyBuilder().setKey(inputSettings.get(Keys.SECURITY_KEY_M));
-            }
-
             dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
-            dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().withSettings(inputSettings);
-            if (inputSettings.containsKey(Keys.SECURITY_KEY_A)) {
-                dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().setKey(inputSettings.get(Keys.SECURITY_KEY_A));
-            }
-
         }
 
         final DlmsDevice dlmsDevice = dlmsDeviceBuilder.build();

@@ -146,10 +146,16 @@ public class Helpers {
     /**
      * This is a generic method which will translate the given string to a
      * datetime. Supported:
+     * <p>
+     * <ul>
+     * <li>now + 3 months
+     * <li>tomorrow - 1 year
+     * <li>yesterday + 2 weeks
+     * <li>today at midday
+     * <li>yesterday at midnight
+     * <li>now at midday + 1 week
+     * </ul>
      * 
-     * now + 3 months tomorrow - 1 year yesterday + 2 weeks today at midday
-     * yesterday at midnight now at midday + 1 week
-     *
      * @param dateString
      * @return
      * @throws Exception

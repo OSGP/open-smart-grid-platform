@@ -43,10 +43,10 @@ import ma.glasnost.orika.MapperFacade;
 
 public class BundleWithoutSoapUi {
 
-    private static final String KEY_BUNDLE_RESPONSE = "BundleResponse";
-    private static final String KEY_BUNDLE_REQUEST = "BundleRequest";
-    private static final String KEY_BUNDLE_ACTIONS = "BundleActions";
-    private static final String KEY_BUNDLE_RESPONSES = "BundleResponses";
+    private static final String SCENARIO_CONTEXT_BUNDLE_RESPONSE = "BundleResponse";
+    private static final String SCENARIO_CONTEXT_BUNDLE_REQUEST = "BundleRequest";
+    private static final String SCENARIO_CONTEXT_BUNDLE_ACTIONS = "BundleActions";
+    private static final String SCENARIO_CONTEXT_BUNDLE_RESPONSES = "BundleResponses";
 
     @Autowired
     private SmartMeteringBundleClient client;
@@ -64,14 +64,14 @@ public class BundleWithoutSoapUi {
         final Actions actions = new Actions();
         request.setActions(actions);
 
-        ScenarioContext.Current().put(KEY_BUNDLE_REQUEST, request);
+        ScenarioContext.Current().put(SCENARIO_CONTEXT_BUNDLE_REQUEST, request);
     }
 
     @Given("^a set clock configuration action is part of a bundled request$")
     public void aSetClockConfigurationActionIsPartOfABundledRequest(final Map<String, String> settings)
             throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.Current().get(KEY_BUNDLE_REQUEST);
+        final BundleRequest request = (BundleRequest) ScenarioContext.Current().get(SCENARIO_CONTEXT_BUNDLE_REQUEST);
 
         final SetClockConfigurationRequest action = this.defaultMapper.map(
                 SetClockConfigurationRequestDataFactory.fromParameterMap(settings), SetClockConfigurationRequest.class);
@@ -80,25 +80,25 @@ public class BundleWithoutSoapUi {
         };
 
         request.getActions().getActionList().add(action);
-        this.increaseCount(KEY_BUNDLE_ACTIONS);
+        this.increaseCount(SCENARIO_CONTEXT_BUNDLE_ACTIONS);
     }
 
     @Given("^a synchronize time action is part of a bundled request$")
     public void aSynchronizeTimeActionIsPartOfABundledRequest(final Map<String, String> settings) throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.Current().get(KEY_BUNDLE_REQUEST);
+        final BundleRequest request = (BundleRequest) ScenarioContext.Current().get(SCENARIO_CONTEXT_BUNDLE_REQUEST);
 
         final SynchronizeTimeRequest action = new SynchronizeTimeRequest();
         action.setDeviation(-60);
         action.setDst(false);
 
         request.getActions().getActionList().add(action);
-        this.increaseCount(KEY_BUNDLE_ACTIONS);
+        this.increaseCount(SCENARIO_CONTEXT_BUNDLE_ACTIONS);
     }
 
     @When("^the bundle request is received$")
     public void theBundleRequestIsReceived() throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.Current().get(KEY_BUNDLE_REQUEST);
+        final BundleRequest request = (BundleRequest) ScenarioContext.Current().get(SCENARIO_CONTEXT_BUNDLE_REQUEST);
 
         final BundleAsyncResponse asyncResponse = this.client.bundleRequest(request);
 
@@ -112,10 +112,10 @@ public class BundleWithoutSoapUi {
 
         this.ensureBundleResponse(settings);
 
-        final BundleResponse response = (BundleResponse) ScenarioContext.Current().get(KEY_BUNDLE_RESPONSE);
+        final BundleResponse response = (BundleResponse) ScenarioContext.Current().get(SCENARIO_CONTEXT_BUNDLE_RESPONSE);
 
         final Response actionResponse = response.getAllResponses().getResponseList()
-                .get(this.getAndIncreaseCount(KEY_BUNDLE_RESPONSES));
+                .get(this.getAndIncreaseCount(SCENARIO_CONTEXT_BUNDLE_RESPONSES));
 
         assertEquals(OsgpResultType.fromValue(settings.get(Keys.RESULT)), actionResponse.getResult());
     }
@@ -125,27 +125,27 @@ public class BundleWithoutSoapUi {
 
         this.ensureBundleResponse(settings);
 
-        final BundleResponse response = (BundleResponse) ScenarioContext.Current().get(KEY_BUNDLE_RESPONSE);
+        final BundleResponse response = (BundleResponse) ScenarioContext.Current().get(SCENARIO_CONTEXT_BUNDLE_RESPONSE);
         assertNotEquals(0, response.getAllResponses().getResponseList().size());
 
         final Response actionResponse = response.getAllResponses().getResponseList()
-                .get(this.getAndIncreaseCount(KEY_BUNDLE_RESPONSES));
+                .get(this.getAndIncreaseCount(SCENARIO_CONTEXT_BUNDLE_RESPONSES));
 
         assertEquals(OsgpResultType.fromValue(settings.get(Keys.RESULT)), actionResponse.getResult());
     }
 
     private void ensureBundleResponse(final Map<String, String> settings)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        if (ScenarioContext.Current().get(KEY_BUNDLE_RESPONSE) == null) {
+        if (ScenarioContext.Current().get(SCENARIO_CONTEXT_BUNDLE_RESPONSE) == null) {
             final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
             final BundleAsyncRequest asyncRequest = new BundleAsyncRequest();
             asyncRequest.setCorrelationUid(correlationUid);
             asyncRequest.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
 
             final BundleResponse response = this.client.retrieveBundleResponse(asyncRequest);
-            ScenarioContext.Current().put(KEY_BUNDLE_RESPONSE, response);
+            ScenarioContext.Current().put(SCENARIO_CONTEXT_BUNDLE_RESPONSE, response);
 
-            assertEquals(ScenarioContext.Current().get(KEY_BUNDLE_ACTIONS),
+            assertEquals(ScenarioContext.Current().get(SCENARIO_CONTEXT_BUNDLE_ACTIONS),
                     response.getAllResponses().getResponseList().size());
         }
     }

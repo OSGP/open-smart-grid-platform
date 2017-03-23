@@ -37,7 +37,7 @@ public class SmartMeteringInstallationWebServiceConfig extends BaseWebServiceCon
 
     /**
      * Method for creating the Marshaller for SmartMetering Installation
-     * webservoce.
+     * webservice.
      *
      * @return Jaxb2Marshaller
      */
