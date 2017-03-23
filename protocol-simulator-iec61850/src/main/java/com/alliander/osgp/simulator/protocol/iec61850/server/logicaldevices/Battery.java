@@ -27,7 +27,7 @@ public class Battery extends LogicalDevice {
 
     private static final String DSCH1_SCHDID_SETVAL = "DSCH1.SchdId.setVal";
     private static final String DSCH1_SCHDTYP_SETVAL = "DSCH1.SchdTyp.setVal";
-    private static final String DSCH1_SCHCAT_SETVAL = "DSCH1.SchCat.setVal";
+    private static final String DSCH1_SCHDCAT_SETVAL = "DSCH1.SchCat.setVal";
     private static final String DSCH1_SCHDABSTM_VAL_0 = "DSCH1.SchdAbsTm.val.0";
     private static final String DSCH1_SCHDABSTM_TIME_0 = "DSCH1.SchdAbsTm.time.0";
     private static final String DSCH1_SCHDABSTM_VAL_1 = "DSCH1.SchdAbsTm.val.1";
@@ -51,7 +51,7 @@ public class Battery extends LogicalDevice {
 
     private static final String DSCH3_SCHDID_SETVAL = "DSCH3.SchdId.setVal";
     private static final String DSCH3_SCHDTYP_SETVAL = "DSCH3.SchdTyp.setVal";
-    private static final String DSCH3_SCHCAT_SETVAL = "DSCH3.SchCat.setVal";
+    private static final String DSCH3_SCHDCAT_SETVAL = "DSCH3.SchCat.setVal";
     private static final String DSCH3_SCHDABSTM_VAL_0 = "DSCH3.SchdAbsTm.val.0";
     private static final String DSCH3_SCHDABSTM_TIME_0 = "DSCH3.SchdAbsTm.time.0";
     private static final String DSCH3_SCHDABSTM_VAL_1 = "DSCH3.SchdAbsTm.val.1";
@@ -63,7 +63,7 @@ public class Battery extends LogicalDevice {
 
     private static final String DSCH4_SCHDID_SETVAL = "DSCH4.SchdId.setVal";
     private static final String DSCH4_SCHDTYP_SETVAL = "DSCH4.SchdTyp.setVal";
-    private static final String DSCH4_SCHCAT_SETVAL = "DSCH4.SchCat.setVal";
+    private static final String DSCH4_SCHDCAT_SETVAL = "DSCH4.SchCat.setVal";
     private static final String DSCH4_SCHDABSTM_VAL_0 = "DSCH4.SchdAbsTm.val.0";
     private static final String DSCH4_SCHDABSTM_TIME_0 = "DSCH4.SchdAbsTm.time.0";
     private static final String DSCH4_SCHDABSTM_VAL_1 = "DSCH4.SchdAbsTm.val.1";
@@ -176,10 +176,10 @@ public class Battery extends LogicalDevice {
     private static final Set<String> INT32_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(DGEN1_OPTMSRS_STVAL, GGIO1_INTIN1_STVAL, GGIO1_INTIN2_STVAL,
                     GGIO1_WRN1_STVAL, GGIO1_WRN2_STVAL, GGIO1_WRN3_STVAL, GGIO1_WRN4_STVAL,
-                    DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHCAT_SETVAL,
+                    DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHDCAT_SETVAL,
                     DSCH2_SCHDID_SETVAL, DSCH2_SCHDTYP_SETVAL, DSCH2_SCHDCAT_SETVAL,
-                    DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL, DSCH3_SCHCAT_SETVAL,
-                    DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHCAT_SETVAL)));
+                    DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL, DSCH3_SCHDCAT_SETVAL,
+                    DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHDCAT_SETVAL)));
 
     private static final Set<String> QUALITY_NODES = Collections.unmodifiableSet(
             new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q, LLN0_BEH_Q, LLN0_MOD_Q, MMXU1_MAXWPHS_Q, MMXU1_MINWPHS_Q,
@@ -206,7 +206,7 @@ public class Battery extends LogicalDevice {
         final Map<String, Fc> fcByNode = new TreeMap<>();
         fcByNode.put(DSCH1_SCHDID_SETVAL, Fc.SP);
         fcByNode.put(DSCH1_SCHDTYP_SETVAL, Fc.SP);
-        fcByNode.put(DSCH1_SCHCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH1_SCHDCAT_SETVAL, Fc.SP);
         fcByNode.put(DSCH1_SCHDABSTM_VAL_0, Fc.SP);
         fcByNode.put(DSCH1_SCHDABSTM_TIME_0, Fc.SP);
         fcByNode.put(DSCH1_SCHDABSTM_VAL_1, Fc.SP);
@@ -230,7 +230,7 @@ public class Battery extends LogicalDevice {
 
         fcByNode.put(DSCH3_SCHDID_SETVAL, Fc.SP);
         fcByNode.put(DSCH3_SCHDTYP_SETVAL, Fc.SP);
-        fcByNode.put(DSCH3_SCHCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH3_SCHDCAT_SETVAL, Fc.SP);
         fcByNode.put(DSCH3_SCHDABSTM_VAL_0, Fc.SP);
         fcByNode.put(DSCH3_SCHDABSTM_TIME_0, Fc.SP);
         fcByNode.put(DSCH3_SCHDABSTM_VAL_1, Fc.SP);
@@ -242,7 +242,7 @@ public class Battery extends LogicalDevice {
 
         fcByNode.put(DSCH4_SCHDID_SETVAL, Fc.SP);
         fcByNode.put(DSCH4_SCHDTYP_SETVAL, Fc.SP);
-        fcByNode.put(DSCH4_SCHCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH4_SCHDCAT_SETVAL, Fc.SP);
         fcByNode.put(DSCH4_SCHDABSTM_VAL_0, Fc.SP);
         fcByNode.put(DSCH4_SCHDABSTM_TIME_0, Fc.SP);
         fcByNode.put(DSCH4_SCHDABSTM_VAL_1, Fc.SP);
@@ -431,7 +431,7 @@ public class Battery extends LogicalDevice {
 
         values.add(this.setRandomInt(DSCH1_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH1_SCHDTYP_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomInt(DSCH1_SCHCAT_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH1_SCHDCAT_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
         values.add(this.setTime(DSCH1_SCHDABSTM_TIME_0, Fc.SP, timestamp));
         values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
@@ -455,7 +455,7 @@ public class Battery extends LogicalDevice {
 
         values.add(this.setRandomInt(DSCH3_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH3_SCHDTYP_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomInt(DSCH3_SCHCAT_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH3_SCHDCAT_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
         values.add(this.setTime(DSCH3_SCHDABSTM_TIME_0, Fc.SP, timestamp));
         values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
@@ -467,7 +467,7 @@ public class Battery extends LogicalDevice {
 
         values.add(this.setRandomInt(DSCH4_SCHDID_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH4_SCHDTYP_SETVAL, Fc.SP, 1, 100));
-        values.add(this.setRandomInt(DSCH4_SCHCAT_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH4_SCHDCAT_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
         values.add(this.setTime(DSCH4_SCHDABSTM_TIME_0, Fc.SP, timestamp));
         values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
