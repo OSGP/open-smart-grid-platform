@@ -115,9 +115,8 @@ public class SetClockConfigurationCommandExecutor
             final AccessResultCode result = conn.getConnection().set(parameter);
             if (!result.equals(AccessResultCode.SUCCESS)) {
                 throw new ProtocolAdapterException(String
-                        .format("Attribute '%s' of the clock configuration could be set successfully.", attributeName));
+                        .format("Attribute '%s' of the clock configuration was not set successfully.", attributeName));
             }
-
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
