@@ -7,12 +7,8 @@ Feature: PublicLightingAdhocManagement Set Light
   Scenario Outline: Receive A Set Light Request With A Single Light Value
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
-<<<<<<< HEAD
     And the device returns a set light response "OK" over "<Protocol>"
-=======
-      | Protocol             | <Protocol>        |
-    And the device returns a set light response "OK" over OSLP
->>>>>>> 76c6afcb0629c87fe1d06d4a03676232a5caf27b
+      | Protocol | <Protocol> |
     When receiving a set light request
       | DeviceIdentification | TEST1024000000001 |
       | Index                | <Index>           |
@@ -79,12 +75,8 @@ Feature: PublicLightingAdhocManagement Set Light
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | relayType            | LIGHT             |
-<<<<<<< HEAD
     And the device returns a set light response "OK" over "<Protocol>"
-=======
-      | Protocol             | <Protocol>        |
-    And the device returns a set light response "OK" over OSLP
->>>>>>> 76c6afcb0629c87fe1d06d4a03676232a5caf27b
+      | Protocol | <Protocol> |
     When receiving a set light request with "<nofLightValues>" light values
       | DeviceIdentification | TEST1024000000001 |
     Then the set light async response contains
