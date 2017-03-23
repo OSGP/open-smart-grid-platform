@@ -85,8 +85,8 @@ public class OslpDeviceSteps {
      * Verify that a get actual power usage OSLP message is sent to the device.
      *
      */
-    @Then("^a get actual power usage \"([^\"]*)\" message is sent to the device$")
-    public void aGetActualPowerUsageOslpMessageIsSentToTheDevice(final String protocol) {
+    @Then("^a get actual power usage OSLP message is sent to the device$")
+    public void aGetActualPowerUsageOslpMessageIsSentToTheDevice() {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetActualPowerUsageRequest());

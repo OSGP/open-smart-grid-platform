@@ -27,7 +27,7 @@ Feature: PublicLightingDeviceMonitoring Get Actual Power Usage
       | DeviceIdentification | TEST1024000000001 |
     Then the get actual power usage async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a get actual power usage "<Protocol>" message is sent to the device
+    And a get actual power usage OSLP message is sent to the device
     And the platform buffers a get actual power usage response message for device "TEST1024000000001"
       | Status              | OK                    |
       | Description         |                       |
