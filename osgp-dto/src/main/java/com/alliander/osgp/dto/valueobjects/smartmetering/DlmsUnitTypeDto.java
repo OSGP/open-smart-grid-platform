@@ -90,7 +90,7 @@ public enum DlmsUnitTypeDto {
     private static final Map<Integer, DlmsUnitTypeDto> UNIT_TYPES_MAP = new HashMap<>();
 
     static {
-        for (DlmsUnitTypeDto unitType : DlmsUnitTypeDto.values()) {
+        for (final DlmsUnitTypeDto unitType : DlmsUnitTypeDto.values()) {
             UNIT_TYPES_MAP.put(unitType.getIndex(), unitType);
         }
     }
@@ -108,11 +108,11 @@ public enum DlmsUnitTypeDto {
     }
 
     public static DlmsUnitTypeDto getUnitType(final int index) {
-        return UNIT_TYPES_MAP.get(index);
+        return UNIT_TYPES_MAP.get(index & 0xFF);
     }
 
     public static String getUnit(final int index) {
-        DlmsUnitTypeDto unitType = getUnitType(index);
+        final DlmsUnitTypeDto unitType = getUnitType(index);
         return unitType == null ? UNDEFINED.getUnit() : unitType.getUnit();
     }
 

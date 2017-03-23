@@ -682,6 +682,28 @@
     </xsd:sequence>
   </xsd:complexType>
 
+  <xsd:complexType name="CaptureObjectDefinitions">
+    <xsd:sequence>
+      <xsd:element name="CaptureObject" type="tns:CaptureObjectDefinition"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="CaptureObjectDefinition">
+    <xsd:sequence>
+      <xsd:element name="ClassId" type="xsd:unsignedShort" />
+      <xsd:element name="LogicalName" type="tns:ObisCodeValues" />
+      <xsd:element name="AttributeIndex">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:byte">
+            <xsd:minInclusive value="0" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="DataIndex" type="xsd:unsignedShort"
+        minOccurs="0" default="0" />
+    </xsd:sequence>
+  </xsd:complexType>
 
   <xsd:complexType name="ProfileEntries">
     <xsd:sequence>
