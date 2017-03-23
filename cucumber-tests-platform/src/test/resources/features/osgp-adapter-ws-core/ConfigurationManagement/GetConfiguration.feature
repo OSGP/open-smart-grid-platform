@@ -8,7 +8,7 @@ Feature: CoreConfigurationManagement GetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a get configuration status over OSLP
+    And the device returns a get configuration status over "<Protocol>"
       | Status            | OK                  |
       | LightType         | <LightType>         |
       | DcLights          | <DcLights>          |
@@ -24,7 +24,7 @@ Feature: CoreConfigurationManagement GetConfiguration
       | DeviceIdentification | TEST1024000000001 |
     Then the get configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a get configuration OSLP message is sent to device "TEST1024000000001"
+    And a get configuration "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a get configuration response message for device "TEST1024000000001"
       | Result            | OK                  |
       | Description       |                     |
@@ -81,7 +81,7 @@ Feature: CoreConfigurationManagement GetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a get configuration status over OSLP
+    And the device returns a get configuration status over "<Protocol>"
       | Status            | FAILURE  |
       | LightType         | RELAY    |
       | DcLights          |          |
@@ -97,7 +97,7 @@ Feature: CoreConfigurationManagement GetConfiguration
       | DeviceIdentification | TEST1024000000001 |
     Then the get configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a get configuration OSLP message is sent to device "TEST1024000000001"
+    And a get configuration "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a get configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
 
@@ -111,7 +111,7 @@ Feature: CoreConfigurationManagement GetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a get configuration status over OSLP
+    And the device returns a get configuration status over "<Protocol>"
       | Status            | REJECTED |
       | LightType         | RELAY    |
       | DcLights          |          |
@@ -127,7 +127,7 @@ Feature: CoreConfigurationManagement GetConfiguration
       | DeviceIdentification | TEST1024000000001 |
     Then the get configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a get configuration OSLP message is sent to device "TEST1024000000001"
+    And a get configuration "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a get configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |
 

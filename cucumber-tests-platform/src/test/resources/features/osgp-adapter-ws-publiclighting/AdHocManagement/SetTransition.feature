@@ -9,14 +9,14 @@ Feature: PublicLightingAdhocManagement Set Transition
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set transition response "OK" over OSLP
+    And the device returns a set transition response "OK" over "<Protocol>"
     When receiving a set transition request
       | DeviceIdentification | TEST1024000000001 |
       | TransitionType       | <TransitionType>  |
       | Time                 | <Time>            |
     Then the set transition async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set transition OSLP message is sent to device "TEST1024000000001"
+    And a set transition "<Protocol>" message is sent to device "TEST1024000000001"
       | TransitionType | <TransitionType> |
       | Time           | <Time>           |
     And the platform buffers a set transition response message for device "TEST1024000000001"

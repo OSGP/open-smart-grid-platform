@@ -9,14 +9,14 @@ Feature: PublicLightingAdhocManagement Resume Schedule
       | DeviceIdentification | TEST1024000000001 |
       | HasSchedule          | true              |
       | Protocol             | <Protocol>        |
-    And the device returns a resume schedule response "OK" over OSLP
+    And the device returns a resume schedule response "OK" over "<Protocol>"
     When receiving a resume schedule request
       | DeviceIdentification | TEST1024000000001 |
       | Index                | <Index>           |
       | IsImmediate          | <IsImmediate>     |
     Then the resume schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a resume schedule OSLP message is sent to device "TEST1024000000001"
+    And a resume schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | Index       | <Index>       |
       | IsImmediate | <IsImmediate> |
     And the platform buffers a resume schedule response message for device "TEST1024000000001"

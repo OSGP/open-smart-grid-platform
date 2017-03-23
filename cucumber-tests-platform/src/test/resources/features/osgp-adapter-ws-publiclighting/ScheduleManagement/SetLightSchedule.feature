@@ -7,8 +7,8 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
   Scenario Outline: Set light schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | Protocol |<Protocol>|
-    And the device returns a set light schedule response "OK" over OSLP
+      | Protocol             | <Protocol>        |
+    And the device returns a set light schedule response "OK" over "<Protocol>"
     When receiving a set light schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | <WeekDay>         |
@@ -21,7 +21,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerWindow        | <TriggerWindow>   |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set light schedule OSLP message is sent to device "TEST1024000000001"
+    And a set light schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay       | <WeekDay>       |
       | StartDay      | <StartDay>      |
       | EndDay        | <EndDay>        |
@@ -34,24 +34,24 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | Result | OK |
 
     Examples: 
-      |Protocol| WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues       | TriggerType   |
-      |OSLP| MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
-      |OSLP| MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 1,true,;2,true,50 |               |
-      |OSLP| ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
-      |OSLP| MONDAY      |            |            | SUNSET       |              |         30,30 | 0,true,           | LIGHT_TRIGGER |
-      |OSLP| ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
-      |OSLP ELSTER| MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
-      |OSLP ELSTER| MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 1,true,;2,true,50 |               |
-      |OSLP ELSTER| ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
-      |OSLP ELSTER| MONDAY      |            |            | SUNSET       |              |         30,30 | 0,true,           | LIGHT_TRIGGER |
-      |OSLP ELSTER| ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
+      | Protocol    | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues       | TriggerType   |
+      | OSLP        | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
+      | OSLP        | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 1,true,;2,true,50 |               |
+      | OSLP        | ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
+      | OSLP        | MONDAY      |            |            | SUNSET       |              |         30,30 | 0,true,           | LIGHT_TRIGGER |
+      | OSLP        | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
+      | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
+      | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 1,true,;2,true,50 |               |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
+      | OSLP ELSTER | MONDAY      |            |            | SUNSET       |              |         30,30 | 0,true,           | LIGHT_TRIGGER |
+      | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
 
   @OslpMockServer
   Scenario Outline: Failed set light schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | Protocol | <Protocol> |
-    And the device returns a set light schedule response "FAILURE" over OSLP
+      | Protocol             | <Protocol>        |
+    And the device returns a set light schedule response "FAILURE" over "<Protocol>"
     When receiving a set light schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
@@ -76,18 +76,18 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     # Note: The platform throws a TechnicalException when the status is 'FAILURE'.
     And the platform buffers a set light schedule response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
-      
-    Examples:
-    	|Protocol|
-    	|OSLP|
-    	|OSLP ELSTER|
+
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
 
   @OslpMockServer
   Scenario Outline: Rejected set light schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | Protocol | <Protocol>|
-    And the device returns a set light schedule response "REJECTED" over OSLP
+      | Protocol             | <Protocol>        |
+    And the device returns a set light schedule response "REJECTED" over "<Protocol>"
     When receiving a set light schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
@@ -100,7 +100,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerWindow        |                   |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set light schedule OSLP message is sent to device "TEST1024000000001"
+    And a set light schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay       | MONDAY       |
       | StartDay      |              |
       | EndDay        |              |
@@ -112,11 +112,11 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     # Note: The platform throws a TechnicalException when the status is 'REJECTED'.
     And the platform buffers a set light schedule response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |
-      
-    Examples:
-    	|Protocol|
-    	|OSLP|
-    	|OSLP ELSTER|
+
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
 
   Scenario Outline: Set light schedule with invalid schedule
     Given an ssld device
@@ -148,8 +148,8 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
   Scenario Outline: Set light schedule with 50 schedules # Success
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | Protocol | <Protocol>|
-    And the device returns a set light schedule response "OK" over OSLP
+      | Protocol             | <Protocol>        |
+    And the device returns a set light schedule response "OK" over "<Protocol>"
     When receiving a set light schedule request for 50 schedules
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | <WeekDay>         |
@@ -162,7 +162,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerWindow        | <TriggerWindow>   |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set light schedule OSLP message is sent to device "TEST1024000000001"
+    And a set light schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay       | <WeekDay>       |
       | StartDay      | <StartDay>      |
       | EndDay        | <EndDay>        |
@@ -176,9 +176,9 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | Result | NOT_FOUND |
 
     Examples: 
-      |Protocol| WeekDay     | StartDay   | EndDay     | ScheduledTime | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |
-      |OSLP| ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 2016-12-15    | ABSOLUTETIME | 18:00:00.000 |         30,30 | 0,true,     | LIGHT_TRIGGER |
-      |OSLP ELSTER| ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 2016-12-15    | ABSOLUTETIME | 18:00:00.000 |         30,30 | 0,true,     | LIGHT_TRIGGER |
+      | Protocol    | WeekDay     | StartDay   | EndDay     | ScheduledTime | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |
+      | OSLP        | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 2016-12-15    | ABSOLUTETIME | 18:00:00.000 |         30,30 | 0,true,     | LIGHT_TRIGGER |
+      | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 2016-12-15    | ABSOLUTETIME | 18:00:00.000 |         30,30 | 0,true,     | LIGHT_TRIGGER |
 
   Scenario Outline: Set light schedule with 51 schedules # Fail
     Given an ssld device
