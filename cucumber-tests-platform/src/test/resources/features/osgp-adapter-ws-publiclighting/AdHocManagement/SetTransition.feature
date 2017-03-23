@@ -8,30 +8,30 @@ Feature: PublicLightingAdhocManagement Set Transition
   Scenario Outline: Set Transition
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | Protocol | <Protocol> |
-    And the device returns a set transition response "OK" over OSLP
+      | Protocol             | <Protocol>        |
+    And the device returns a set transition response "OK" over "<Protocol>"
     When receiving a set transition request
       | DeviceIdentification | TEST1024000000001 |
       | TransitionType       | <TransitionType>  |
       | Time                 | <Time>            |
     Then the set transition async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set transition OSLP message is sent to device "TEST1024000000001"
+    And a set transition "<Protocol>" message is sent to device "TEST1024000000001"
       | TransitionType | <TransitionType> |
       | Time           | <Time>           |
     And the platform buffers a set transition response message for device "TEST1024000000001"
       | Result | OK |
 
     Examples: 
-      |Protocol| TransitionType | Time   |
-      |OSLP| DAY_NIGHT      |        |
-      |OSLP| DAY_NIGHT      | 200000 |
-      |OSLP| NIGHT_DAY      |        |
-      |OSLP| NIGHT_DAY      | 080000 |
-      |OSLP ELSTER| DAY_NIGHT      |        |
-      |OSLP ESLTER| DAY_NIGHT      | 200000 |
-      |OSLP ELSTER| NIGHT_DAY      |        |
-      |OSLP ELSTER| NIGHT_DAY      | 080000 |
+      | Protocol    | TransitionType | Time   |
+      | OSLP        | DAY_NIGHT      |        |
+      | OSLP        | DAY_NIGHT      | 200000 |
+      | OSLP        | NIGHT_DAY      |        |
+      | OSLP        | NIGHT_DAY      | 080000 |
+      | OSLP ELSTER | DAY_NIGHT      |        |
+      | OSLP ESLTER | DAY_NIGHT      | 200000 |
+      | OSLP ELSTER | NIGHT_DAY      |        |
+      | OSLP ELSTER | NIGHT_DAY      | 080000 |
 
   Scenario: Set transition as an unknown organization
     When receiving a set transition request by an unknown organization

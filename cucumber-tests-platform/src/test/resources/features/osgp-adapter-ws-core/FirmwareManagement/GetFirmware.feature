@@ -12,12 +12,12 @@ Feature: FirmwareManagement get firmware
       | Organization         | TestOrganization  |
       | IsActivated          | true              |
       | Protocol             | <Protocol>        |
-    And the device returns firmware version "<Firmware Version>" over OSLP
+    And the device returns firmware version "<Firmware Version>" over "<Protocol>"
     When receiving a get firmware version request
       | DeviceIdentification | TEST1024000000001 |
     Then the get firmware version async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a get firmware version OSLP message is sent to device "TEST1024000000001"
+    And a get firmware version "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a get firmware version response message for device "TEST1024000000001"
       | Result             | OK                 |
       | FirmwareVersion    | <Firmware Version> |

@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.DeviceSimulatorException;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.MockOslpServer;
@@ -75,6 +76,9 @@ import cucumber.api.java.en.When;
 public class OslpDeviceSteps {
 
     @Autowired
+    private CoreDeviceConfiguration configuration;
+
+    @Autowired
     private MockOslpServer oslpMockServer;
 
     /**
@@ -97,8 +101,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a get configuration OSLP message is sent to device \"([^\"]*)\"$")
-    public void aGetConfigurationOSLPMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^a get configuration \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aGetConfigurationOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_CONFIGURATION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetConfigurationRequest());
@@ -111,8 +115,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a get firmware version OSLP message is sent to device \"([^\"]*)\"$")
-    public void aGetFirmwareVersionOSLPMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^a get firmware version \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aGetFirmwareVersionOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetFirmwareVersionRequest());
@@ -126,8 +130,9 @@ public class OslpDeviceSteps {
      * @param expectedParameters
      *            The parameters expected in the message of the device.
      */
-    @Then("^a get power usage history OSLP message is sent to the device$")
-    public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final Map<String, String> expectedParameters) {
+    @Then("^a get power usage history \"([^\"]*)\" message is sent to the device$")
+    public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final String protocol,
+            final Map<String, String> expectedParameters) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
@@ -155,8 +160,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a get status OSLP message is sent to device \"([^\"]*)\"$")
-    public void aGetStatusOSLPMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^a get status \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aGetStatusOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_STATUS);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetStatusRequest());
@@ -169,8 +174,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^an update firmware OSLP message is sent to the device$")
-    public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^an update firmware \"([^\"]*)\" message is sent to the device$")
+    public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasUpdateFirmwareRequest());
@@ -178,8 +183,8 @@ public class OslpDeviceSteps {
         message.getUpdateFirmwareRequest();
     }
 
-    @Then("^an update key OSLP message is sent to device \"([^\"]*)\"$")
-    public void anUpdateKeyOSLPMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^an update key \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void anUpdateKeyOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_KEY);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetDeviceVerificationKeyRequest());
@@ -192,8 +197,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a resume schedule OSLP message is sent to device \"([^\"]*)\"$")
-    public void aResumeScheduleOSLPMessageIsSentToDevice(final String deviceIdentification,
+    @Then("^a resume schedule \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aResumeScheduleOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedRequest) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.RESUME_SCHEDULE);
         Assert.assertNotNull(message);
@@ -213,8 +218,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a set configuration OSLP message is sent to device \"([^\"]*)\"$")
-    public void aSetConfigurationOSLPMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^a set configuration \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aSetConfigurationOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_CONFIGURATION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetConfigurationRequest());
@@ -227,8 +232,9 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a set event notification OSLP message is sent to device \"([^\"]*)\"")
-    public void aSetEventNotificationOslpMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^a set event notification \"([^\"]*)\" message is sent to device \"([^\"]*)\"")
+    public void aSetEventNotificationOslpMessageIsSentToDevice(final String protocol,
+            final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetEventNotificationsRequest());
@@ -240,8 +246,8 @@ public class OslpDeviceSteps {
      * @param nofLightValues
      *            The parameters expected in the message of the device.
      */
-    @Then("^a set light OSLP message with \"([^\"]*)\" lightvalues is sent to the device$")
-    public void aSetLightOslpMessageWithLightValuesIsSentToTheDevice(final int nofLightValues) {
+    @Then("^a set light \"([^\"]*)\" message with \"([^\"]*)\" lightvalues is sent to the device$")
+    public void aSetLightOslpMessageWithLightValuesIsSentToTheDevice(final String protocol, final int nofLightValues) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetLightRequest());
@@ -255,8 +261,9 @@ public class OslpDeviceSteps {
      * @param expectedParameters
      *            The parameters expected in the message of the device.
      */
-    @Then("^a set light OSLP message with one light value is sent to the device$")
-    public void aSetLightOSLPMessageWithOneLightvalueIsSentToTheDevice(final Map<String, String> expectedParameters) {
+    @Then("^a set light \"([^\"]*)\" message with one light value is sent to the device$")
+    public void aSetLightOSLPMessageWithOneLightvalueIsSentToTheDevice(final String protocol,
+            final Map<String, String> expectedParameters) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetLightRequest());
@@ -280,8 +287,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device. @
      */
-    @Then("^a set light schedule OSLP message is sent to device \"([^\"]*)\"$")
-    public void aSetLightScheduleOSLPMessageIsSentToDevice(final String deviceIdentification,
+    @Then("^a set light schedule \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aSetLightScheduleOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedRequest) {
         this.checkAndValidateRequest(DeviceRequestMessageType.SET_LIGHT_SCHEDULE, expectedRequest);
     }
@@ -293,8 +300,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a set reboot OSLP message is sent to device \"([^\"]*)\"$")
-    public void aSetRebootOSLPMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^a set reboot \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aSetRebootOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_REBOOT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetRebootRequest());
@@ -313,10 +320,10 @@ public class OslpDeviceSteps {
      * @param expectedRequest
      *            The request parameters expected in the message to the device.
      */
-    @Then("^a set reverse tariff schedule OSLP message is sent to device \"(?:([^\"]*))\"$")
-    public void aSetReverseTariffScheduleOSLPMessageIsSentToDevice(final String deviceIdentification,
-            final Map<String, String> expectedRequest) {
-        this.aSetTariffScheduleOSLPMessageIsSentToDevice(deviceIdentification, expectedRequest);
+    @Then("^a set reverse tariff schedule \"([^\"]*)\" message is sent to device \"(?:([^\"]*))\"$")
+    public void aSetReverseTariffScheduleOSLPMessageIsSentToDevice(final String protocol,
+            final String deviceIdentification, final Map<String, String> expectedRequest) {
+        this.aSetTariffScheduleOSLPMessageIsSentToDevice(protocol, deviceIdentification, expectedRequest);
     }
 
     /**
@@ -326,8 +333,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a set tariff schedule OSLP message is sent to device \"(?:([^\"]*))\"$")
-    public void aSetTariffScheduleOSLPMessageIsSentToDevice(final String deviceIdentification,
+    @Then("^a set tariff schedule \"([^\"]*)\" message is sent to device \"(?:([^\"]*))\"$")
+    public void aSetTariffScheduleOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedRequest) {
         this.checkAndValidateRequest(DeviceRequestMessageType.SET_TARIFF_SCHEDULE, expectedRequest);
     }
@@ -339,8 +346,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a set transition OSLP message is sent to device \"([^\"]*)\"$")
-    public void aSetTransitionOSLPMessageIsSentToDevice(final String deviceIdentification,
+    @Then("^a set transition \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aSetTransitionOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedResult) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_TRANSITION);
         Assert.assertNotNull(message);
@@ -364,8 +371,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a start device OSLP message is sent to device \"([^\"]*)\"$")
-    public void aStartDeviceOSLPMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^a start device \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aStartDeviceOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         // TODO: Sent an OSLP start device message to device
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.START_SELF_TEST);
         Assert.assertNotNull(message);
@@ -379,8 +386,8 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^a stop device OSLP message is sent to device \"([^\"]*)\"$")
-    public void aStopDeviceOSLPMessageIsSentToDevice(final String deviceIdentification) {
+    @Then("^a stop device \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void aStopDeviceOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
         // TODO: Sent an OSLP start device message to device
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.STOP_SELF_TEST);
         Assert.assertNotNull(message);
@@ -471,8 +478,8 @@ public class OslpDeviceSteps {
      * @throws IOException
      * @throws ParseException
      */
-    @When("^receiving an OSLP event notification message$")
-    public void receivingAnOSLPEventNotificationMessage(final Map<String, String> settings)
+    @When("^receiving an \"([^\"]*)\" event notification message$")
+    public void receivingAnOSLPEventNotificationMessage(final String protocol, final Map<String, String> settings)
             throws DeviceSimulatorException, IOException, ParseException {
 
         final EventNotification eventNotification = EventNotification.newBuilder()
@@ -526,10 +533,12 @@ public class OslpDeviceSteps {
                 getString(responseData, Keys.RELAY_DATA, null));
     }
 
-    @Given("^the device returns a get configuration status over OSLP$")
-    public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final Map<String, String> requestParameters) {
+    @Given("^the device returns a get configuration status over \"([^\"]*)\"$")
+    public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final String protocol,
+            final Map<String, String> requestParameters) {
         this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(
-                getEnum(requestParameters, Keys.KEY_STATUS, Status.class, Status.OK).name(), requestParameters);
+                getEnum(requestParameters, Keys.KEY_STATUS, Status.class, Status.OK).name(), protocol,
+                requestParameters);
     }
 
     /**
@@ -539,8 +548,8 @@ public class OslpDeviceSteps {
      * @param status
      *            The status to respond.
      */
-    @Given("^the device returns a get configuration status \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result,
+    @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result, final String protocol,
             final Map<String, String> requestParameters) {
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
@@ -571,8 +580,8 @@ public class OslpDeviceSteps {
      *
      * @param requestParameters
      */
-    @Given("^the device returns a get power usage history response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final String result,
+    @Given("^the device returns a get power usage history response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final String result, final String protocol,
             final Map<String, String> requestParameters) {
         this.oslpMockServer.mockGetPowerUsageHistoryResponse(Enum.valueOf(Status.class, result),
                 getString(requestParameters, Keys.RECORD_TIME), getInteger(requestParameters, Keys.KEY_INDEX),
@@ -598,8 +607,8 @@ public class OslpDeviceSteps {
      * @param result
      *            The get status to respond.
      */
-    @Given("^the device returns a get status response over OSLP$")
-    public void theDeviceReturnsAGetStatusResponseOverOSLP(final Map<String, String> result) {
+    @Given("^the device returns a get status response over \"([^\"]*)\"$")
+    public void theDeviceReturnsAGetStatusResponseOverOSLP(final String protocol, final Map<String, String> result) {
         int eventNotificationTypes = 0;
         final String eventNotificationTypesString = getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES,
                 Defaults.DEFAULT_EVENTNOTIFICATIONTYPES);
@@ -641,8 +650,8 @@ public class OslpDeviceSteps {
      *
      * @param result
      */
-    @Given("^the device returns a get status response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsAGetStatusResponseWithResultOverOSLP(final String result,
+    @Given("^the device returns a get status response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsAGetStatusResponseWithResultOverOSLP(final String result, final String protocol,
             final Map<String, String> requestParameters) {
 
         int eventNotificationTypes = 0;
@@ -688,15 +697,16 @@ public class OslpDeviceSteps {
      *
      * @param result
      */
-    @Given("^the device returns a resume schedule response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsAResumeScheduleResponseOverOSLP(final String result) {
+    @Given("^the device returns a resume schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsAResumeScheduleResponseOverOSLP(final String result, final String protocol) {
         this.oslpMockServer.mockResumeScheduleResponse(Enum.valueOf(Status.class, result));
     }
 
-    @Given("^the device returns a set configuration status over OSLP$")
-    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final Map<String, String> settings) {
+    @Given("^the device returns a set configuration status over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final String protocol,
+            final Map<String, String> settings) {
         this.theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(
-                getEnum(settings, Keys.KEY_STATUS, Status.class).name());
+                getEnum(settings, Keys.KEY_STATUS, Status.class).name(), protocol);
     }
 
     /**
@@ -706,8 +716,8 @@ public class OslpDeviceSteps {
      * @param status
      *            The status to respond.
      */
-    @Given("^the device returns a set configuration status \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(final String result) {
+    @Given("^the device returns a set configuration status \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(final String result, final String protocol) {
         this.oslpMockServer.mockSetConfigurationResponse(Enum.valueOf(Status.class, result));
     }
 
@@ -717,8 +727,8 @@ public class OslpDeviceSteps {
      *
      * @param result
      */
-    @Given("^the device returns a set event notification \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetEventNotificationOverOSLP(final String result) {
+    @Given("^the device returns a set event notification \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetEventNotificationOverOSLP(final String result, final String protocol) {
         this.oslpMockServer.mockSetEventNotificationResponse(Enum.valueOf(Status.class, result));
     }
 
@@ -727,8 +737,8 @@ public class OslpDeviceSteps {
      *
      * @param result
      */
-    @Given("^the device returns a set light response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetLightOverOSLP(final String result) {
+    @Given("^the device returns a set light response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetLightOverOSLP(final String result, final String protocol) {
         this.oslpMockServer.mockSetLightResponse(Enum.valueOf(Status.class, result));
     }
 
@@ -737,8 +747,8 @@ public class OslpDeviceSteps {
      *
      * @param result
      */
-    @Given("^the device returns a set light schedule response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final String result) {
+    @Given("^the device returns a set light schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final String result, final String protocol) {
         this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
     }
 
@@ -748,18 +758,18 @@ public class OslpDeviceSteps {
      * @param resultEnum.valueOf(Status.class,
      *            result) The stop device to respond.
      */
-    @Given("^the device returns a set reboot response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetRebootResponseOverOSLP(final String result) {
+    @Given("^the device returns a set reboot response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetRebootResponseOverOSLP(final String result, final String protocol) {
         this.oslpMockServer.mockSetRebootResponse(Enum.valueOf(Status.class, result));
     }
 
-    @Given("^the device returns a set reverse tariff schedule response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetReverseTariffScheduleResponseOverOSLP(final String result) {
-        this.theDeviceReturnsASetTariffScheduleResponseOverOSLP(result);
+    @Given("^the device returns a set reverse tariff schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetReverseTariffScheduleResponseOverOSLP(final String result, final String protocol) {
+        this.theDeviceReturnsASetTariffScheduleResponseOverOSLP(result, protocol);
     }
 
-    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result) {
+    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result, final String protocol) {
         this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
     }
 
@@ -768,8 +778,8 @@ public class OslpDeviceSteps {
      *
      * @param result
      */
-    @Given("^the device returns a set transition response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetTransitionResponseOverOSLP(final String result) {
+    @Given("^the device returns a set transition response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsASetTransitionResponseOverOSLP(final String result, final String protocol) {
         this.oslpMockServer.mockSetTransitionResponse(Enum.valueOf(Status.class, result));
     }
 
@@ -778,8 +788,8 @@ public class OslpDeviceSteps {
      *
      * @param result
      */
-    @Given("^the device returns a start device response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsAStartDeviceResponseOverOSLP(final String result) {
+    @Given("^the device returns a start device response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsAStartDeviceResponseOverOSLP(final String result, final String protocol) {
         this.oslpMockServer.mockStartDeviceResponse(Enum.valueOf(Status.class, result));
     }
 
@@ -788,8 +798,8 @@ public class OslpDeviceSteps {
      *
      * @param result
      */
-    @Given("^the device returns a stop device response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsAStopDeviceResponseOverOSLP(final String result) {
+    @Given("^the device returns a stop device response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsAStopDeviceResponseOverOSLP(final String result, final String protocol) {
         // TODO: Check if ByteString.EMPTY must be something else
         this.oslpMockServer.mockStopDeviceResponse(ByteString.EMPTY, Enum.valueOf(Status.class, result));
     }
@@ -800,8 +810,8 @@ public class OslpDeviceSteps {
      * @param firmwareVersion
      *            The firmware to respond.
      */
-    @Given("^the device returns firmware version \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsFirmwareVersionOverOSLP(final String firmwareVersion) {
+    @Given("^the device returns firmware version \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsFirmwareVersionOverOSLP(final String firmwareVersion, final String protocol) {
         this.oslpMockServer.mockGetFirmwareVersionResponse(firmwareVersion);
     }
 
@@ -811,13 +821,14 @@ public class OslpDeviceSteps {
      * @param firmwareVersion
      *            The firmware to respond.
      */
-    @Given("^the device returns update firmware response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsUpdateFirmwareResponseOverOSLP(final String result) {
+    @Given("^the device returns update firmware response \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsUpdateFirmwareResponseOverOSLP(final String result, final String protocol) {
         this.oslpMockServer.mockUpdateFirmwareResponse(Enum.valueOf(Status.class, result));
     }
 
-    @Then("^the OSLP event notification response contains$")
-    public void theOSLPEventNotificationResponseContains(final Map<String, String> expectedResponse) {
+    @Then("^the \"([^\"]*)\" event notification response contains$")
+    public void theOSLPEventNotificationResponseContains(final String protocol,
+            final Map<String, String> expectedResponse) {
         final Message responseMessage = (Message) ScenarioContext.Current().get(Keys.RESPONSE);
 
         final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
@@ -825,9 +836,9 @@ public class OslpDeviceSteps {
         Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus());
     }
 
-    @Given("^the device sends a register device request to the platform$")
-    public void theDeviceSendsARegisterDeviceRequestToThePlatform(final Map<String, String> settings)
-            throws IOException, DeviceSimulatorException {
+    @Given("^the device sends a register device request to the platform over \"([^\"]*)\"$")
+    public void theDeviceSendsARegisterDeviceRequestToThePlatform(final String protocol,
+            final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
         final OslpEnvelope request = this
                 .createEnvelopeBuilder(
@@ -848,9 +859,9 @@ public class OslpDeviceSteps {
         this.send(request, settings);
     }
 
-    @Given("^the device sends an event notification request to the platform$")
-    public void theDeviceSendsAnEventNotificationRequestToThePlatform(final Map<String, String> settings)
-            throws IOException, DeviceSimulatorException {
+    @Given("^the device sends an event notification request to the platform over \"([^\"]*)\"$")
+    public void theDeviceSendsAnEventNotificationRequestToThePlatform(final String protocol,
+            final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
         this.oslpMockServer.doNextSequenceNumber();
 
@@ -873,7 +884,7 @@ public class OslpDeviceSteps {
 
     /**
      * Verify that we have received a response over OSLP/OSLP ELSTER
-     * 
+     *
      * @param expectedResponse
      */
     @Then("^the event notification response contains$")
@@ -899,7 +910,7 @@ public class OslpDeviceSteps {
     private OslpEnvelope send(final OslpEnvelope request, final Map<String, String> settings)
             throws IOException, DeviceSimulatorException {
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
-        final String hostname = getString(settings, Keys.HOSTNAME, Defaults.LOCALHOST);
+        final String hostname = this.configuration.getPlatform();
         final String protocol = getString(settings, Keys.KEY_PROTOCOL, Defaults.DEFAULT_PROTOCOL);
 
         InetSocketAddress address = null;
