@@ -10,7 +10,6 @@ Feature: PublicLightingAdhocManagement Set Transition
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
     And the device returns a set transition response "OK" over "<Protocol>"
-      | Protocol | <Protocol> |
     When receiving a set transition request
       | DeviceIdentification | TEST1024000000001 |
       | TransitionType       | <TransitionType>  |
