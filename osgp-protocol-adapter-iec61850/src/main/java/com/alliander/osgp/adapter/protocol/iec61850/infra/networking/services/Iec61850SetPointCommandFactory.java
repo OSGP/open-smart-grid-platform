@@ -21,9 +21,9 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleTypeCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 
-public final class Iec61850RtuSetPointCommandFactory implements RtuWriteCommandFactory<SetPointDto> {
+public final class Iec61850SetPointCommandFactory implements RtuWriteCommandFactory<SetPointDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RtuSetPointCommandFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850SetPointCommandFactory.class);
 
     private static final int ID_START = 1;
     private static final int ID_END = 4;
@@ -31,17 +31,17 @@ public final class Iec61850RtuSetPointCommandFactory implements RtuWriteCommandF
     private static final Map<String, RtuWriteCommand<SetPointDto>> RTU_COMMAND_MAP = new HashMap<>();
 
     static {
-        initializeRtuCommandMap();
+        initializeCommandMap();
     }
 
-    private static Iec61850RtuSetPointCommandFactory instance;
+    private static Iec61850SetPointCommandFactory instance;
 
-    private Iec61850RtuSetPointCommandFactory() {
+    private Iec61850SetPointCommandFactory() {
     }
 
-    public static synchronized Iec61850RtuSetPointCommandFactory getInstance() {
+    public static synchronized Iec61850SetPointCommandFactory getInstance() {
         if (instance == null) {
-            instance = new Iec61850RtuSetPointCommandFactory();
+            instance = new Iec61850SetPointCommandFactory();
         }
         return instance;
     }
@@ -57,9 +57,8 @@ public final class Iec61850RtuSetPointCommandFactory implements RtuWriteCommandF
         return command;
     }
 
-    private static void initializeRtuCommandMap() {
+    private static void initializeCommandMap() {
         for (int i = ID_START; i <= ID_END; i++) {
-
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_ID, i), new Iec61850ScheduleIdCommand(i));
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_TYPE, i), new Iec61850ScheduleTypeCommand(i));
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_CAT, i), new Iec61850ScheduleCatCommand(i));
