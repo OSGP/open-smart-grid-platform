@@ -8,8 +8,13 @@ Feature: PublicLightingAdhocManagement Set Transition
   Scenario Outline: Set Transition
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
+<<<<<<< HEAD
       | Protocol             | <Protocol>        |
     And the device returns a set transition response "OK" over "<Protocol>"
+=======
+      | Protocol | <Protocol> |
+    And the device returns a set transition response "OK" over OSLP
+>>>>>>> 76c6afcb0629c87fe1d06d4a03676232a5caf27b
     When receiving a set transition request
       | DeviceIdentification | TEST1024000000001 |
       | TransitionType       | <TransitionType>  |
@@ -23,15 +28,15 @@ Feature: PublicLightingAdhocManagement Set Transition
       | Result | OK |
 
     Examples: 
-      | Protocol    | TransitionType | Time   |
-      | OSLP        | DAY_NIGHT      |        |
-      | OSLP        | DAY_NIGHT      | 200000 |
-      | OSLP        | NIGHT_DAY      |        |
-      | OSLP        | NIGHT_DAY      | 080000 |
-      | OSLP ELSTER | DAY_NIGHT      |        |
-      | OSLP ELSTER | DAY_NIGHT      | 200000 |
-      | OSLP ELSTER | NIGHT_DAY      |        |
-      | OSLP ELSTER | NIGHT_DAY      | 080000 |
+      |Protocol| TransitionType | Time   |
+      |OSLP| DAY_NIGHT      |        |
+      |OSLP| DAY_NIGHT      | 200000 |
+      |OSLP| NIGHT_DAY      |        |
+      |OSLP| NIGHT_DAY      | 080000 |
+      |OSLP ELSTER| DAY_NIGHT      |        |
+      |OSLP ESLTER| DAY_NIGHT      | 200000 |
+      |OSLP ELSTER| NIGHT_DAY      |        |
+      |OSLP ELSTER| NIGHT_DAY      | 080000 |
 
   Scenario: Set transition as an unknown organization
     When receiving a set transition request by an unknown organization
