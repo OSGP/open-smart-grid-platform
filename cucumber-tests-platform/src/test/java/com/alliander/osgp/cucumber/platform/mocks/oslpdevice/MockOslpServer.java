@@ -202,8 +202,8 @@ public class MockOslpServer {
     }
 
     private ServerBootstrap serverBootstrap() {
-        final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
+        final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newFixedThreadPool(1),
+                Executors.newFixedThreadPool(1));
 
         final ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
