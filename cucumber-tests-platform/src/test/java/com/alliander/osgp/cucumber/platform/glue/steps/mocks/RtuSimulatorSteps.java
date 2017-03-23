@@ -85,8 +85,8 @@ public class RtuSimulatorSteps extends GlueBase {
         }
     }
 
-    @Then("^a MarkerWadden RTU simulator should contain$")
-    public void aMarkerWaddenRTUSimulatorReturning(final List<List<String>> mockValues) throws Throwable {
+    @Then("^the Marker Wadden RTU simulator should contain$")
+    public void theMarkerWaddenRTUSimulatorShouldContain(final List<List<String>> mockValues) throws Throwable {
         for (final List<String> mockValue : mockValues) {
             if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
                 throw new AssertionError("Mock value input rows from the Step DataTable must have "

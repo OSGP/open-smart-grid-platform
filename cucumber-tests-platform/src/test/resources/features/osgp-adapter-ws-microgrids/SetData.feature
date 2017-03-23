@@ -41,7 +41,7 @@ Feature: MicroGrids Set Data Service
     Then the set data response should be returned
       | DeviceIdentification | RTU10001 |
       | Result               | OK       |
-    And a MarkerWadden RTU simulator should contain
+    And the Marker Wadden RTU simulator should contain
       | <LogicalDevice> | DSCH<NodeId>.SchdId.setVal    |                   1 |
       | <LogicalDevice> | DSCH<NodeId>.SchdTyp.setVal   |                   1 |
       | <LogicalDevice> | DSCH<NodeId>.SchCat.setVal    |                   1 |
