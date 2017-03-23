@@ -67,7 +67,7 @@
     <hibernate.version>4.2.16.Final</hibernate.version>
     <junit.version>4.12</junit.version>
     <joda.version>2.4</joda.version>
-    <flyway.version>2.3.1</flyway.version>
+    <flyway.version>4.1.2</flyway.version>
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <orika.version>1.4.6</orika.version>
@@ -262,7 +262,7 @@
 
       <!-- Flyway (DB Migration) -->
       <dependency>
-        <groupId>com.googlecode.flyway</groupId>
+        <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
         <version>${flyway.version}</version>
       </dependency>
