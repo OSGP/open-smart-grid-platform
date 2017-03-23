@@ -4,28 +4,6 @@ Feature: CoreDeviceInstallation Device Registration
   In order to ...
 
   #@OslpMockServer @Skip
-  #Scenario Outline: A Device Performs First Time Registration
-  #Given an ssld oslp device
-  #| DeviceIdentification | <DeviceIdentification> |
-  #| Protocol             | <Protocol>             |
-  #When the device sends a register device request to the platform
-  #| DeviceIdentification | <DeviceIdentification> |
-  #| Protocol             | <Protocol>             |
-  #Then the register device response contains
-  #| Status         | <Status>         |
-  #| CurrentTime    | <CurrentTime>    |
-  #| RandomDevice   | <RandomDevice>   |
-  #| RandomPlatform | <RandomPlatform> |
-  #| TimeOffset     | <TimeOffset>     |
-  #| Latitude       | <Latitude>       |
-  #| Longitude      | <Longitude>      |
-  #
-  #Examples:
-  #| Protocol    | DeviceUid  | DeviceIdentification | DeviceType | GpsLatitude | GpsLongitude | CurrentTime | TimeZone |
-  #| OSLP        | 1234567890 | TEST1024000000001    |            |           0 |            0 |             |          |
-  #| OSLP ELSTER | 1234567890 | TEST1024000000001    |            |           0 |            0 |             |          |
-  #
-  #@OslpMockServer @Skip
   #Scenario Outline: A not register device Performs First Time Registration
   #When the device sends a register device request to the platform
   #| DeviceIdentification | <DeviceIdentification> |
@@ -44,22 +22,96 @@ Feature: CoreDeviceInstallation Device Registration
   #| Protocol    | DeviceUid  | DeviceIdentification | DeviceType | GpsLatitude | GpsLongitude | NetworkAddress | CurrentTime | TimeZone | Result |
   #| OSLP        | 1234567890 | TEST1024000000001    |            |           0 |            0 | 0.0.0.0        |             |          | OK     |
   #| OSLP ELSTER | 1234567890 | TEST1024000000001    |            |           0 |            0 | 0.0.0.0        |             |          | OK     |
-  @OslpMockServer
-  Scenario Outline: A device which performs subsequent registration.
-    Given an ssld oslp device
+  
+  #@OslpMockServer
+  #Scenario Outline: A device which is installed and performs first time registration.
+    #Given an ssld oslp device
+      #| DeviceIdentification | TEST1024000000001 |
+      #| Protocol             | <Protocol>        |
+    #When the device sends a register device request to the platform
+      #| DeviceIdentification | TEST1024000000001 |
+      #| Protocol             | <Protocol>        |
+    #Then the register device response contains
+      #| Status | OK |
+#
+    #Examples: 
+      #| Protocol    |
+      #| OSLP        |
+      #| OSLP ELSTER |
+#
+  #@OslpMockServer
+  #Scenario Outline: A device which performs subsequent registration.
+    #Given an ssld oslp device
+      #| DeviceIdentification | TEST1024000000001 |
+      #| Protocol             | <Protocol>        |
+    #And the device sends a register device request to the platform
+      #| DeviceIdentification | TEST1024000000001 |
+    #When the device sends a register device request to the platform
+      #| DeviceIdentification | TEST1024000000001 |
+      #| DeviceUid            | eHW0eEFzN0R2Okd5  |
+      #| IpAddress            | 127.0.0.2         |
+      #| DeviceType           | SSLD              |
+    #Then the register device response contains
+      #| Status | OK |
+#
+    #Examples: 
+      #| Protocol    |
+      #| OSLP        |
+      #| OSLP ELSTER |
+#
+  #@OslpMockServer
+  #Scenario Outline: Register device that already exists on the platform, without GPS metadata
+    #Given an ssld oslp device
+      #| DeviceIdentification | TEST1024000000001 |
+      #| Protocol             | <Protocol>        |
+      #| gpsLatitude          |                   |
+      #| gpsLongitude         |                   |
+    #And the device sends a register device request to the platform
+      #| DeviceIdentification | TEST1024000000001 |
+    #When the device sends a register device request to the platform
+      #| DeviceIdentification | TEST1024000000001 |
+      #| DeviceUid            | eHW0eEFzN0R2Okd5  |
+      #| IpAddress            | 127.0.0.2         |
+      #| DeviceType           | SSLD              |
+    #Then the register device response contains
+      #| Status | OK |
+#
+    #Examples: 
+      #| Protocol    |
+      #| OSLP        |
+      #| OSLP ELSTER |
+      
+      #@OslpMockServer
+      #Scenario Outline: Register device that does not yet exist on the platform
+      #When the device sends a register device request to the platform
+      #| DeviceIdentification | <DeviceIdentification> |
+      #Then the register device response contains
+      #| Status | OK |
+      #
+      #Examples: 
+      #| DeviceIdentification    |
+      #|TEST1024000000002|
+      
+      @OslpMockServer
+      Scenario Outline: Register device with network address already in use by another device
+      Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
     And the device sends a register device request to the platform
       | DeviceIdentification | TEST1024000000001 |
-    When the device sends a register device request to the platform
+      And an ssld oslp device
+      | DeviceIdentification | TEST1024000000002 |
+      | Protocol             | <Protocol>        |
+      When the device sends a register device request to the platform
+      | DeviceIdentification | TEST1024000000002 |
+      And the device sends a register device request to the platform
       | DeviceIdentification | TEST1024000000001 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | IpAddress            | 127.0.0.2         |
       | DeviceType           | SSLD              |
-    Then the register device response contains
-      | Status | OK |
-
-    Examples: 
+      
+      
+            Examples: 
       | Protocol    |
-      | OSLP        |
-      | OSLP ELSTER |
+      |OSLP|
+      |OSLP ELSTAR|

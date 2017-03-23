@@ -846,8 +846,12 @@ public class OslpDeviceSteps {
                         .setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE))
                         .setRandomDevice(getInteger(settings, Keys.RANDOM_DEVICE, Defaults.RANDOM_DEVICE))).build())
                 .build();
-
-        this.send(request, settings);
+        try{
+        	this.send(request, settings);
+        }catch(Throwable ioe){
+        	System.out.println("IOException caught: " + ioe.getMessage());
+        	
+        }
     }
 
     @Given("^the device sends an event notification request to the platform$")
