@@ -66,7 +66,7 @@
     <junit.version>4.11</junit.version>
     <mockito.version>1.10.19</mockito.version>
     <joda.version>2.4</joda.version>
-    <flyway.version>2.3.1</flyway.version>
+    <flyway.version>4.1.2</flyway.version>
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.5</apache.httpcomponents.version>
@@ -406,7 +406,7 @@
 
       <!-- Flyway (DB Migration) -->
       <dependency>
-        <groupId>com.googlecode.flyway</groupId>
+        <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
         <version>${flyway.version}</version>
       </dependency>

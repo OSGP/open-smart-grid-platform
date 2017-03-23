@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.microgrids.application.config;
 
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -17,7 +19,6 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
-import com.googlecode.flyway.core.Flyway;
 
 @EnableJpaRepositories(transactionManagerRef = "wsTransactionManager", entityManagerFactoryRef = "wsEntityManagerFactory", basePackageClasses = { com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository.class })
 @Configuration
@@ -61,10 +62,11 @@ public class PersistenceConfigWs extends AbstractPersistenceConfigBase {
         final Flyway flyway = new Flyway();
 
         // Initialization for non-empty schema with no metadata table
-        flyway.setInitVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION));
-        flyway.setInitDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-        flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
+        flyway.setBaselineVersion(MigrationVersion
+                .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)));
+        flyway.setBaselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
+        flyway.setBaselineOnMigrate(
+                Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
 
         flyway.setDataSource(this.getDataSource());
 
