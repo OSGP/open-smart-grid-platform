@@ -64,7 +64,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerWindow        |                   |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set light schedule OSLP message is sent to device "TEST1024000000001"
+    And a set light schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay       | MONDAY       |
       | StartDay      |              |
       | EndDay        |              |
