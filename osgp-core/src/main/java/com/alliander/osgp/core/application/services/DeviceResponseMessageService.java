@@ -83,7 +83,7 @@ public class DeviceResponseMessageService {
      *         gone when retried.
      */
     private boolean shouldRetryBasedOnMessage(final ProtocolResponseMessage message) {
-        return message.getResult() == ResponseMessageResultType.NOT_OK
+        return !message.bypassRetry() && message.getResult() == ResponseMessageResultType.NOT_OK
                 && message.getRetryCount() < this.getMaxRetryCount
                 && this.shouldRetryBasedOnException(message.getOsgpException());
     }
@@ -151,7 +151,7 @@ public class DeviceResponseMessageService {
     }
 
     private boolean mustBeRetried(final ProtocolResponseMessage message) {
-        return message.getRetryHeader() != null && message.getRetryHeader().shouldRetry();
+        return !message.bypassRetry() && message.getRetryHeader() != null && message.getRetryHeader().shouldRetry();
     }
 
     private boolean messageIsSuccessful(final ProtocolResponseMessage message, final ScheduledTask scheduledTask) {
