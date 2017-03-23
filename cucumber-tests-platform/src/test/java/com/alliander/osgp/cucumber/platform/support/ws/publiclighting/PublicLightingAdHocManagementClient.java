@@ -37,63 +37,68 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 @Component
 public class PublicLightingAdHocManagementClient extends BaseClient {
 
-	@Autowired
-	private DefaultWebServiceTemplateFactory publicLightingAdHocManagementWstf;
+    @Autowired
+    private DefaultWebServiceTemplateFactory publicLightingAdHocManagementWstf;
 
-	public GetStatusResponse getGetStatusResponse(final GetStatusAsyncRequest request)
-			throws WebServiceSecurityException, GeneralSecurityException, IOException {
-		final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-		return (GetStatusResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    public GetStatusResponse getGetStatusResponse(final GetStatusAsyncRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (GetStatusResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 
-	public ResumeScheduleResponse getResumeScheduleResponse(final ResumeScheduleAsyncRequest request)
-			throws WebServiceSecurityException, GeneralSecurityException, IOException {
-		final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-		return (ResumeScheduleResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    public ResumeScheduleResponse getResumeScheduleResponse(final ResumeScheduleAsyncRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (ResumeScheduleResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 
-	public SetLightResponse getSetLightResponse(final SetLightAsyncRequest request)
-			throws WebServiceSecurityException, GeneralSecurityException, IOException {
-		final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-		return (SetLightResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    public SetLightResponse getSetLightResponse(final SetLightAsyncRequest request) {
+        WebServiceTemplate webServiceTemplate = null;
+        try {
+            webServiceTemplate = this.publicLightingAdHocManagementWstf
+                    .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        } catch (final WebServiceSecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return (SetLightResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 
-	public SetTransitionResponse getSetTransitionResponse(final SetTransitionAsyncRequest request)
-			throws WebServiceSecurityException, GeneralSecurityException, IOException {
-		final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-		return (SetTransitionResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    public SetTransitionResponse getSetTransitionResponse(final SetTransitionAsyncRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetTransitionResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 
-	public GetStatusAsyncResponse getStatus(final GetStatusRequest request)
-			throws WebServiceSecurityException, GeneralSecurityException, IOException {
-		final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-		return (GetStatusAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    public GetStatusAsyncResponse getStatus(final GetStatusRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (GetStatusAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 
-	public ResumeScheduleAsyncResponse resumeSchedule(final ResumeScheduleRequest request)
-			throws WebServiceSecurityException, GeneralSecurityException, IOException {
-		final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-		return (ResumeScheduleAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    public ResumeScheduleAsyncResponse resumeSchedule(final ResumeScheduleRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (ResumeScheduleAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 
-	public SetLightAsyncResponse setLight(final SetLightRequest request)
-			throws WebServiceSecurityException, GeneralSecurityException, IOException {
-		final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-		return (SetLightAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    public SetLightAsyncResponse setLight(final SetLightRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetLightAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 
-	public SetTransitionAsyncResponse setTransition(final SetTransitionRequest request)
-			throws WebServiceSecurityException, GeneralSecurityException, IOException {
-		final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-		return (SetTransitionAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    public SetTransitionAsyncResponse setTransition(final SetTransitionRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetTransitionAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 
 }
