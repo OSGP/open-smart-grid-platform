@@ -9,7 +9,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
       | Protocol             | <Protocol>        |
-    And the device returns a set tariff schedule response "OK" over OSLP
+    And the device returns a set tariff schedule response "OK" over "<Protocol>"
     When receiving a set tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | <WeekDay>         |
@@ -19,7 +19,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | TariffValues         | <TariffValues>    |
     Then the set tariff schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set tariff schedule OSLP message is sent to device "TEST1024000000001"
+    And a set tariff schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay      | <WeekDay>      |
       | StartDay     | <StartDay>     |
       | EndDay       | <EndDay>       |
@@ -49,7 +49,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
       | Protocol             | <Protocol>        |
-    And the device returns a set tariff schedule response "FAILURE" over OSLP
+    And the device returns a set tariff schedule response "FAILURE" over "<Protocol>"
     When receiving a set tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
@@ -59,7 +59,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | TariffValues         | 0,true            |
     Then the set tariff schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set tariff schedule OSLP message is sent to device "TEST1024000000001"
+    And a set tariff schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay      | MONDAY       |
       | StartDay     |              |
       | EndDay       |              |
@@ -80,7 +80,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
       | Protocol             | <Protocol>        |
-    And the device returns a set tariff schedule response "REJECTED" over OSLP
+    And the device returns a set tariff schedule response "REJECTED" over "<Protocol>"
     When receiving a set tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
@@ -90,7 +90,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | TariffValues         | 0,true            |
     Then the set tariff schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set tariff schedule OSLP message is sent to device "TEST1024000000001"
+    And a set tariff schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay      | MONDAY       |
       | StartDay     |              |
       | EndDay       |              |
@@ -129,7 +129,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
       | Protocol             | <Protocol>        |
-    And the device returns a set tariff schedule response "OK" over OSLP
+    And the device returns a set tariff schedule response "OK" over "<Protocol>"
     When receiving a set tariff schedule request for 50 schedules
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | <WeekDay>         |
@@ -139,7 +139,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | TariffValues         | <TariffValues>    |
     Then the set tariff schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set tariff schedule OSLP message is sent to device "TEST1024000000001"
+    And a set tariff schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay       | <WeekDay>       |
       | StartDay      | <StartDay>      |
       | EndDay        | <EndDay>        |

@@ -9,12 +9,12 @@ Feature: CoreDeviceInstallation Device Starting
       | DeviceIdentification       | TEST1024000000001 |
       | OrganizationIdentification | test-org          |
       | Protocol                   | <Protocol>        |
-    And the device returns a start device response "OK" over OSLP
+    And the device returns a start device response "OK" over "<Protocol>"
     When receiving a start device test request
       | DeviceIdentification | TEST1024000000001 |
     Then the start device async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a start device OSLP message is sent to device "TEST1024000000001"
+    And a start device "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a start device response message for device "TEST1024000000001"
       | Result | OK |
 
