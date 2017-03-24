@@ -1,17 +1,7 @@
 Feature: Core opreations
   As a grid operator
-  I want to be able to perform Core operations on a device
-  In order to ...
-
-  Background: 
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-    And a dlms device
-      | DeviceIdentification        | TESTG102400000001 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     |                 1 |
+  I want to log each retry in the audit trail
+  So I get better information the number of retries necessary
 
   Scenario: Try to connect to an unknown ip address
     Given a dlms device
