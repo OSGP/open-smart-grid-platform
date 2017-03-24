@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServer;
+import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerMarkerWadden;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -31,6 +32,9 @@ public class RtuSimulatorSteps extends GlueBase {
 
     @Autowired
     private Iec61850MockServer mockServer;
+
+    @Autowired
+    private Iec61850MockServerMarkerWadden mockServerMarkerWadden;
 
     @Given("^an rtu simulator returning$")
     public void anRtuSimulatorReturning(final List<List<String>> mockValues) throws Throwable {
@@ -78,6 +82,20 @@ public class RtuSimulatorSteps extends GlueBase {
             final String node = mockValue.get(INDEX_NODE_NAME);
             final String value = mockValue.get(INDEX_NODE_VALUE);
             this.mockServer.assertValue(logicalDeviceName, node, value);
+        }
+    }
+
+    @Then("^the Marker Wadden RTU simulator should contain$")
+    public void theMarkerWaddenRTUSimulatorShouldContain(final List<List<String>> mockValues) throws Throwable {
+        for (final List<String> mockValue : mockValues) {
+            if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
+                throw new AssertionError("Mock value input rows from the Step DataTable must have "
+                        + NUMBER_OF_INPUTS_FOR_MOCK_VALUE + " elements.");
+            }
+            final String logicalDeviceName = mockValue.get(INDEX_LOGICAL_DEVICE_NAME);
+            final String node = mockValue.get(INDEX_NODE_NAME);
+            final String value = mockValue.get(INDEX_NODE_VALUE);
+            this.mockServerMarkerWadden.assertValue(logicalDeviceName, node, value);
         }
     }
 
