@@ -276,7 +276,7 @@
     <wsdl:part element="smconf:ReplaceKeysResponse" name="ReplaceKeysResponse">
     </wsdl:part>
   </wsdl:message>
-  
+
   <wsdl:message name="SetClockConfigurationRequest">
     <wsdl:part element="smconf:SetClockConfigurationRequest" name="SetClockConfigurationRequest" />
   </wsdl:message>
@@ -505,7 +505,7 @@
       <wsdl:output message="tns:ReplaceKeysResponse" name="ReplaceKeysResponse">
       </wsdl:output>
     </wsdl:operation>
-    
+
     <wsdl:operation name="SetClockConfiguration">
       <wsdl:input message="tns:SetClockConfigurationRequest" name="SetClockConfigurationRequest">
       </wsdl:input>
@@ -519,9 +519,7 @@
       <wsdl:output message="tns:SetClockConfigurationResponse" name="SetClockConfigurationResponse">
       </wsdl:output>
     </wsdl:operation>
-    
-    
-    
+
   </wsdl:portType>
 
   <wsdl:binding name="SmartMeteringConfigurationPortSoap11"

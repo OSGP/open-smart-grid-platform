@@ -531,7 +531,7 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  
+
   <xsd:element name="SetClockConfigurationRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -859,15 +859,29 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
+
   <xsd:complexType name="SetClockConfigurationRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-        <xsd:element name="TimeZoneOffset" type="xsd:short" />
+        <xsd:element name="TimeZoneOffset">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:short">
+              <xsd:minInclusive value="-720" />
+              <xsd:maxInclusive value="720" />
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
         <xsd:element name="DaylightSavingsBegin" type="common:CosemDateTimeType" />
         <xsd:element name="DaylightSavingsEnd" type="common:CosemDateTimeType" />
-        <xsd:element name="DaylightSavingsDeviation" type="xsd:byte" />
+        <xsd:element name="DaylightSavingsDeviation">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:byte">
+              <xsd:minInclusive value="-120" />
+              <xsd:maxInclusive value="120" />
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
         <xsd:element name="DaylightSavingsEnabled" type="xsd:boolean" default="true" />
         </xsd:sequence>
       </xsd:extension>
