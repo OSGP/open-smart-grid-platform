@@ -98,7 +98,7 @@ public class ConfigurationService {
     private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
     @Autowired
-    private SetClockConfigurationCommandExecutor clockConfigurationCommandExecutor;
+    private SetClockConfigurationCommandExecutor setClockConfigurationCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -273,9 +273,9 @@ public class ConfigurationService {
             final SetClockConfigurationRequestDto clockConfiguration) throws ProtocolAdapterException {
 
         try {
-            this.clockConfigurationCommandExecutor.execute(conn, device, clockConfiguration);
+            this.setClockConfigurationCommandExecutor.execute(conn, device, clockConfiguration);
         } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Unexpected exception during replaceKeys.", e);
+            LOGGER.error("Unexpected exception while setting clock configuration.", e);
             throw e;
         }
     }

@@ -60,8 +60,10 @@ public class SetClockConfigurationCommandExecutor
 
     @Override
     public ActionResponseDto asBundleResponse(final Void executionResult) throws ProtocolAdapterException {
-        // Always successful, otherwise a ProtocolAdapterException was thrown
-        // before.
+        /*
+         * Always successful, otherwise a ProtocolAdapterException was thrown
+         * before.
+         */
         return new ActionResponseDto("Set clock configuration was successful");
     }
 
@@ -87,9 +89,11 @@ public class SetClockConfigurationCommandExecutor
             this.writeAttribute(conn, new SetParameter(ATTRIBUTE_DAYLIGHT_SAVINGS_END,
                     DataObject.newOctetStringData(daylightSavingsEnd.encode())), "Daylight savinds end");
 
-            // Read value, if it's the same don't try to set it, to avoid
-            // READ_WRITE access error because this attribute is read-only in
-            // DSMR.
+            /*
+             * Read value, if it's the same don't try to set it, to avoid
+             * READ_WRITE access error because this attribute is read-only in
+             * DSMR.
+             */
             final GetResult dstDeviationResult = conn.getConnection().get(ATTRIBUTE_DAYLIGHT_SAVINGS_DEVIATION);
             final byte currentDstDeviation = (byte) dstDeviationResult.getResultData().getValue();
             if (currentDstDeviation != object.getDaylightSavingsDeviation()) {
@@ -114,8 +118,9 @@ public class SetClockConfigurationCommandExecutor
         try {
             final AccessResultCode result = conn.getConnection().set(parameter);
             if (!result.equals(AccessResultCode.SUCCESS)) {
-                throw new ProtocolAdapterException(String
-                        .format("Attribute '%s' of the clock configuration was not set successfully.", attributeName));
+                throw new ProtocolAdapterException(String.format(
+                        "Attribute '%s' of the clock configuration was not set successfully. ResultCode: %s",
+                        attributeName, result.name()));
             }
         } catch (final IOException e) {
             throw new ConnectionException(e);
