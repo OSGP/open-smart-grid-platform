@@ -22,7 +22,6 @@ Feature: CoreDeviceInstallation Device Registration
   #| Protocol    | DeviceUid  | DeviceIdentification | DeviceType | GpsLatitude | GpsLongitude | NetworkAddress | CurrentTime | TimeZone | Result |
   #| OSLP        | 1234567890 | TEST1024000000001    |            |           0 |            0 | 0.0.0.0        |             |          | OK     |
   #| OSLP ELSTER | 1234567890 | TEST1024000000001    |            |           0 |            0 | 0.0.0.0        |             |          | OK     |
-  
   #@OslpMockServer
   #Scenario Outline: A device which is installed and performs first time registration.
     #Given an ssld oslp device
@@ -80,38 +79,44 @@ Feature: CoreDeviceInstallation Device Registration
       #| Protocol    |
       #| OSLP        |
       #| OSLP ELSTER |
-      
-      #@OslpMockServer
-      #Scenario Outline: Register device that does not yet exist on the platform
-      #When the device sends a register device request to the platform
-      #| DeviceIdentification | <DeviceIdentification> |
-      #Then the register device response contains
-      #| Status | OK |
-      #
-      #Examples: 
-      #| DeviceIdentification    |
-      #|TEST1024000000002|
-      
-      @OslpMockServer
-      Scenario Outline: Register device with network address already in use by another device
-      Given an ssld oslp device
+
+  #@OslpMockServer
+  #Scenario Outline: Register device that does not yet exist on the platform
+  #When the device sends a register device request to the platform		#this should not contain a response
+  #| DeviceIdentification | <DeviceIdentification> |									#it does not send a response, but creates a timelimit IOException...
+  #Then the device with id "<DeviceIdentification>" does not exists
+  #
+  #Examples:
+  #| DeviceIdentification |
+  #| TEST1024000000002    |
+  
+  
+  @OslpMockServer
+  Scenario Outline: Register device with network address already in use by another device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device sends a register device request to the platform
-      | DeviceIdentification | TEST1024000000001 |
-      And an ssld oslp device
+    And an ssld oslp device
       | DeviceIdentification | TEST1024000000002 |
-      | Protocol             | <Protocol>        |
-      When the device sends a register device request to the platform
-      | DeviceIdentification | TEST1024000000002 |
-      And the device sends a register device request to the platform
-      | DeviceIdentification | TEST1024000000001 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
+      | Protocol             | <Protocol>        |
+    When the device sends a register device request to the platform
+      | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
+     #| IpAddress            | 127.0.0.1         |	#standard address is 127.0.0.1
+    And the device sends a register device request to the platform			
+      | DeviceIdentification | TEST1024000000002 |	
+      | Protocol             | <Protocol>        |
+      | IpAddress            | 127.0.0.1         |
+    Then the device sends a register device request to the platform
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceUid            | fIX1fFGaO1S3Ple6  |
       | IpAddress            | 127.0.0.2         |
       | DeviceType           | SSLD              |
-      
-      
-            Examples: 
-      | Protocol    |
-      |OSLP|
-      |OSLP ELSTAR|
+    And the register device response contains
+      | Status | OK |
+
+    Examples: 
+      | Protocol |
+      | OSLP     |
+      #| OSLP ELSTAR |
