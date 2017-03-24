@@ -30,8 +30,8 @@ public class SetClockConfigurationRequestData implements Serializable, ActionReq
             final CosemDateTime daylightSavingsEnd, final byte daylightSavingsDeviation,
             final boolean daylightSavingsEnabled) {
         this.timeZoneOffset = timeZoneOffset;
-        this.daylightSavingsBegin = new CosemDateTime(daylightSavingsBegin);
-        this.daylightSavingsEnd = new CosemDateTime(daylightSavingsEnd);
+        this.daylightSavingsBegin = daylightSavingsBegin;
+        this.daylightSavingsEnd = daylightSavingsEnd;
         this.daylightSavingsDeviation = daylightSavingsDeviation;
         this.daylightSavingsEnabled = daylightSavingsEnabled;
     }
@@ -41,11 +41,11 @@ public class SetClockConfigurationRequestData implements Serializable, ActionReq
     }
 
     public CosemDateTime getDaylightSavingsBegin() {
-        return new CosemDateTime(this.daylightSavingsBegin);
+        return this.daylightSavingsBegin;
     }
 
     public CosemDateTime getDaylightSavingsEnd() {
-        return new CosemDateTime(this.daylightSavingsEnd);
+        return this.daylightSavingsEnd;
     }
 
     public byte getDaylightSavingsDeviation() {
