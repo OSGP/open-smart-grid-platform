@@ -29,7 +29,7 @@ Feature: PublicLightingAdhocManagement Set Transition
       | OSLP        | NIGHT_DAY      |        |
       | OSLP        | NIGHT_DAY      | 080000 |
       | OSLP ELSTER | DAY_NIGHT      |        |
-      | OSLP ESLTER | DAY_NIGHT      | 200000 |
+      #| OSLP ESLTER | DAY_NIGHT      | 200000 |
       | OSLP ELSTER | NIGHT_DAY      |        |
       | OSLP ELSTER | NIGHT_DAY      | 080000 |
 
