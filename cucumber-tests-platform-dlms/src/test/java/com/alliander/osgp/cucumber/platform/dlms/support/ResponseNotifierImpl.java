@@ -12,12 +12,18 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 @Deprecated
 @Component
@@ -29,6 +35,9 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     private static final int FIRST_WAIT_TIME = 1000;
 
     private Connection connection;
+
+    @Autowired
+    private DeviceLogItemRepository deviceLogItemRepository;
 
     @Value("${osgpadapterwssmartmeteringdbs.url}")
     private String jdbcUrlOsgpAdapterWsSmartmetering;
@@ -139,23 +148,17 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     }
 
     private PollResult pollLogDatabase(final Statement statement, final String deviceId) {
-        ResultSet rs = null;
+        final ResultSet rs = null;
         PollResult result = PollResult.NOT_OK;
-        try {
-            rs = statement.executeQuery(
-                    "SELECT count(*) FROM device_log_item WHERE device_identification = '" + deviceId + "'");
-            while (rs.next()) {
-                if (rs.getInt(1) > 1) {
-                    result = PollResult.OK;
-                }
-            }
-            return result;
-        } catch (final SQLException se) {
-            LOGGER.error(se.getMessage());
-            return PollResult.ERROR;
-        } finally {
-            this.closeResultSet(rs);
+
+        final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
+                .findByDeviceIdentification(deviceId, new PageRequest(0, 2)).getContent();
+
+        if (deviceLogItems != null && deviceLogItems.size() > 1) {
+            result = PollResult.OK;
         }
+        return result;
+
     }
 
     private void closeStatement(final Statement statement) {

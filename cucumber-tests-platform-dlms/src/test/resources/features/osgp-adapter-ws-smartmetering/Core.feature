@@ -1,4 +1,4 @@
-Feature: Core opreations
+Feature: Core operations
   As a grid operator
   I want to log each retry in the audit trail
   So I get better information the number of retries necessary
