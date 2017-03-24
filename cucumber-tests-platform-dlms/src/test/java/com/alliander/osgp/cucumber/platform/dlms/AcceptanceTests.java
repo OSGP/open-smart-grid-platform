@@ -14,11 +14,11 @@ import cucumber.api.SnippetType;
 import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/features", tags = { "~@Skip" }, glue = {
+@CucumberOptions(features = "src/test/resources/features", tags = { "@test" }, glue = {
         "classpath:com.alliander.osgp.cucumber.platform.glue",
         "classpath:com.alliander.osgp.cucumber.platform.dlms.glue" }, plugin = { "pretty",
-        "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html",
-        "json:target/output/cucumber.json" }, snippets = SnippetType.CAMELCASE, dryRun = false)
+                "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html",
+                "json:target/output/cucumber.json" }, snippets = SnippetType.CAMELCASE, dryRun = false)
 public class AcceptanceTests {
 
 }

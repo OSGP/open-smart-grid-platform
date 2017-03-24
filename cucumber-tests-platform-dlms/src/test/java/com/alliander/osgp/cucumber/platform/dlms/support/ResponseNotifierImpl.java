@@ -148,7 +148,6 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     }
 
     private PollResult pollLogDatabase(final Statement statement, final String deviceId) {
-        final ResultSet rs = null;
         PollResult result = PollResult.NOT_OK;
 
         final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
@@ -158,7 +157,6 @@ public class ResponseNotifierImpl implements ResponseNotifier {
             result = PollResult.OK;
         }
         return result;
-
     }
 
     private void closeStatement(final Statement statement) {
