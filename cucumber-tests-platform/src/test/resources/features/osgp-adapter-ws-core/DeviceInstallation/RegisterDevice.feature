@@ -96,23 +96,20 @@ Feature: CoreDeviceInstallation Device Registration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
+      | IpAddress            | 127.0.0.2         |
     And an ssld oslp device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | Protocol             | <Protocol>        |
+      | IpAddress            | 127.0.0.1         |
     When the device sends a register device request to the platform
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-     #| IpAddress            | 127.0.0.1         |	#standard address is 127.0.0.1
-    And the device sends a register device request to the platform			
-      | DeviceIdentification | TEST1024000000002 |	
-      | Protocol             | <Protocol>        |
-      | IpAddress            | 127.0.0.1         |
-    Then the device sends a register device request to the platform
-      | DeviceIdentification | TEST1024000000001 |
       | DeviceUid            | fIX1fFGaO1S3Ple6  |
-      | IpAddress            | 127.0.0.2         |
+      | IpAddress            | 127.0.0.1         |
       | DeviceType           | SSLD              |
+	Then #the network address for the other (0002) device should be empty and 0001 should be 0.0.1
+
     And the register device response contains
       | Status | OK |
 
