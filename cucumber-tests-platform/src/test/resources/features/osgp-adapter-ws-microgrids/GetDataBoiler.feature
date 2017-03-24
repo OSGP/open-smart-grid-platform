@@ -6,13 +6,13 @@ Feature: MicroGrids Get Boiler Data
 
  Scenario: Request Boiler
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU10003                              |
+      | DeviceIdentification | RTU62101                              |
       | IcdFilename          | MarkerWadden_0_1_1_reporting_hack.icd |
-      | Port                 |                                 63102 |
+      | Port                 |                                 62101 |
     And an rtu simulator started with
       | ServerName  | WAGO61850Server                       |
       | IcdFilename | MarkerWadden_0_1_1_reporting_hack.icd |
-      | Port        |                                 63102 |
+      | Port        |                                 62101 |
     And an rtu simulator returning
       | BOILER1 | LLN0.Mod.stVal         |                   1 |
       | BOILER1 | LLN0.Mod.q             | VALIDITY_GOOD       |
@@ -104,7 +104,7 @@ Feature: MicroGrids Get Boiler Data
       | BOILER1 | MFLW1.FlwRte.t         | 2017-02-01T12:02:00 |
       | BOILER1 | KTNK1.VlmCap.setMag.f  |                   6 |
     When a get data request is received
-      | DeviceIdentification       | RTU10003 |
+      | DeviceIdentification       | RTU62101 |
       | NumberOfSystems            |        1 |
       | SystemId_1                 |        1 |
       | SystemType_1               | BOILER   |
@@ -165,7 +165,7 @@ Feature: MicroGrids Get Boiler Data
       | MeasurementFilterId_1_37   |        1 |
       | MeasurementFilterNode_1_38 | VlmCap   |
     Then the get data response should be returned
-      | DeviceIdentification      | RTU10001                 |
+      | DeviceIdentification      | RTU62101                 |
       | Result                    | OK                       |
       | NumberOfSystems           |                        1 |
       | SystemId_1                |                        1 |
