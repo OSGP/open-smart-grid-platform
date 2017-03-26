@@ -20,6 +20,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
 
 @Repository
@@ -55,4 +56,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
     @Modifying
     @Query(value = "delete from device_output_setting", nativeQuery = true)
     void deleteDeviceOutputSettings();
+
+    List<Device> findByDeviceModelAndInMaintenanceFalse(DeviceModel deviceModel);
 }
