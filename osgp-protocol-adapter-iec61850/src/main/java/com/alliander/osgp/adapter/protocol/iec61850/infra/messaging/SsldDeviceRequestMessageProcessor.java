@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,12 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
             final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
         LOGGER.info("Handling getStatusDeviceResponse for device: {}", deviceResponse.getDeviceIdentification());
+        if (StringUtils.isEmpty(deviceResponse.getCorrelationUid())) {
+            LOGGER.warn(
+                    "CorrelationUID is null or empty, not sending GetStatusResponse message for GetStatusRequest message for device: {}",
+                    deviceResponse.getDeviceIdentification());
+            return;
+        }
 
         final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;
         final DeviceStatusDto status = response.getDeviceStatus();
