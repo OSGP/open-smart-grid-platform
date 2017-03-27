@@ -8,7 +8,7 @@ Feature: PublicLightingDeviceMonitoring Get Power Usage History
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a get power usage history response "OK" over OSLP
+    And the device returns a get power usage history response "OK" over "<Protocol>"
       | RecordTime          | <RecordTime>          |
       | Index               | <Index>               |
       | MeterType           | <MeterType>           |
@@ -31,7 +31,7 @@ Feature: PublicLightingDeviceMonitoring Get Power Usage History
       | UntilDate            | <UntilDate>       |
     Then the get power usage history async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a get power usage history OSLP message is sent to the device
+    And a get power usage history "<Protocol>" message is sent to the device
       | FromDate  | <FromDate>  |
       | UntilDate | <UntilDate> |
     And the platform buffers a get power usage history response message for device "TEST1024000000001"

@@ -10,7 +10,7 @@ Feature: PublicLightingAdhocManagement GetStatus
       | Status               | Active            |
       | RelayType            | <RelayType>       |
       | Protocol             | <Protocol>        |
-    And the device returns a get status response "OK" over OSLP
+    And the device returns a get status response "OK" over "<Protocol>"
       | PreferredLinkType  | <PreferredLinkType>      |
       | ActualLinkType     | <ActualLinkType>         |
       | LightType          | <LightType>              |
@@ -20,7 +20,7 @@ Feature: PublicLightingAdhocManagement GetStatus
       | DeviceIdentification | TEST1024000000001 |
     Then the get status async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a get status OSLP message is sent to device "TEST1024000000001"
+    And a get status "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a get status response message for device "TEST1024000000001"
       | Result            | <Result>                    |
       | PreferredLinkType | <ExpectedPreferredLinkType> |
