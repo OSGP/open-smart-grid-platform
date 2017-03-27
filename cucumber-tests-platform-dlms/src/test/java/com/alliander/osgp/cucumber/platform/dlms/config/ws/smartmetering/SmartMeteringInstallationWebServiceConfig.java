@@ -24,42 +24,42 @@ public class SmartMeteringInstallationWebServiceConfig extends BaseWebServiceCon
     private ApplicationConfiguration configuration;
 
     @Bean
-    public DefaultWebServiceTemplateFactory smartMeteringInstallationManagementWstf() {
-        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringInstallationManagementMarshaller())
+    public DefaultWebServiceTemplateFactory smartMeteringInstallationWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringInstallationMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringInstallationManagement))
-                .setKeyStoreType(this.webserviceKeystoreType)
-                .setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setTargetUri(
+                        this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringInstallation))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory())
-                .setApplicationName(this.applicationName)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
                 .build();
     }
 
     /**
-     * Method for creating the Marshaller for SmartMetering InstallationManagement.
+     * Method for creating the Marshaller for SmartMetering Installation
+     * webservice.
      *
      * @return Jaxb2Marshaller
      */
     @Bean
-    public Jaxb2Marshaller smartMeteringInstallationManagementMarshaller() {
+    public Jaxb2Marshaller smartMeteringInstallationMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.configuration.contextPathSmartMeteringInstallationManagement);
+        marshaller.setContextPath(this.configuration.contextPathSmartMeteringInstallation);
 
         return marshaller;
     }
 
     /**
      * Method for creating the Marshalling Payload Method Processor for
-     * SmartMetering InstallationManagement.
+     * SmartMetering Installation webservice.
      *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringInstallationManagementMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringInstallationManagementMarshaller(),
-                this.smartMeteringInstallationManagementMarshaller());
+    public MarshallingPayloadMethodProcessor smartMeteringInstallationMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringInstallationMarshaller(),
+                this.smartMeteringInstallationMarshaller());
     }
 
 }

@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,15 +145,17 @@ public class Helpers {
 
     /**
      * This is a generic method which will translate the given string to a
-     * datetime. Supported: 
+     * datetime. Supported:
+     * <p>
+     * <ul>
+     * <li>now + 3 months
+     * <li>tomorrow - 1 year
+     * <li>yesterday + 2 weeks
+     * <li>today at midday
+     * <li>yesterday at midnight
+     * <li>now at midday + 1 week
+     * </ul>
      * 
-     * now + 3 months 
-     * tomorrow - 1 year 
-     * yesterday + 2 weeks
-     * today at midday
-     * yesterday at midnight
-     * now at midday + 1 week
-     *
      * @param dateString
      * @return
      * @throws Exception
@@ -199,13 +203,14 @@ public class Helpers {
             retval = DateTime.now();
             break;
         default:
-            throw new Exception("Incorrect dateString [" + dateString + "], expected the string to begin with tomorrow, yesterday or now or today");
+            throw new Exception("Incorrect dateString [" + dateString
+                    + "], expected the string to begin with tomorrow, yesterday or now or today");
         }
-        
+
         if (whenMatcher.groupCount() > 1 && whenMatcher.group(2).equals("at")) {
-            
+
             switch (whenMatcher.group(3)) {
-            case "midday": 
+            case "midday":
                 retval = retval.withHourOfDay(12);
                 break;
             case "midnight":
@@ -424,6 +429,30 @@ public class Helpers {
         }
 
         return getString(settings, key);
+    }
+
+    public static byte[] getHexDecoded(final Map<String, String> settings, final String key,
+            final String defaultValue) {
+        try {
+            if (!settings.containsKey(key)) {
+                return Hex.decodeHex(defaultValue.toCharArray());
+            } else {
+                return Hex.decodeHex(settings.get(key).toCharArray());
+            }
+        } catch (final DecoderException e) {
+            throw new IllegalArgumentException("Could not hex decode value for key " + key, e);
+        }
+
+    }
+
+    public static Byte getByte(final Map<String, String> settings, final String key, final Byte defaultValue) {
+
+        if (!settings.containsKey(key)) {
+            return defaultValue;
+        }
+
+        final Byte value = Byte.parseByte(settings.get(key));
+        return value;
     }
 
     /**

@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.configuration;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -19,6 +22,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceK
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationResponse;
 import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.SmartMeteringBaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -27,40 +34,55 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     @Autowired
-    private DefaultWebServiceTemplateFactory smartMeteringConfigurationManagementWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringConfigurationWstf;
 
     public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(final GetAdministrativeStatusRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringConfigurationManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetAdministrativeStatusAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (GetAdministrativeStatusAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
     }
 
     public GetAdministrativeStatusResponse retrieveGetAdministrativeStatusResponse(
-            final GetAdministrativeStatusAsyncRequest asyncRequest) throws WebServiceSecurityException {
+            final GetAdministrativeStatusAsyncRequest asyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringConfigurationManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetAdministrativeStatusResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+        return (GetAdministrativeStatusResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
     }
 
-    public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringConfigurationManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (ReplaceKeysAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        return (ReplaceKeysAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
     }
 
     public ReplaceKeysResponse getReplaceKeysResponse(final ReplaceKeysAsyncRequest asyncRequest)
-            throws WebServiceSecurityException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringConfigurationManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (ReplaceKeysResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+        return (ReplaceKeysResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+    }
+
+    public SetClockConfigurationAsyncResponse setClockConfiguration(final SetClockConfigurationRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (SetClockConfigurationAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+    }
+
+    public SetClockConfigurationResponse getSetClockConfigurationResponse(
+            final SetClockConfigurationAsyncRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = request.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (SetClockConfigurationResponse) this.getTemplate().marshalSendAndReceive(request);
+    }
+
+    private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return this.smartMeteringConfigurationWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
     }
 }
