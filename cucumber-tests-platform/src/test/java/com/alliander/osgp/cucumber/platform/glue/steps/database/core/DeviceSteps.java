@@ -123,7 +123,7 @@ public class DeviceSteps extends BaseDeviceSteps {
      * @param deviceIdentification
      * @throws Throwable
      */
-    @Then("^the device with id \"([^\"]*)\" does not exists$")
+    @Then("^the device with id \"([^\"]*)\" should be removed$")
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -136,6 +136,23 @@ public class DeviceSteps extends BaseDeviceSteps {
             Assert.assertNotNull(entity);
             Assert.assertTrue(devAuths.size() == 0);
 
+            return entity;
+        });
+    }
+    
+    /**
+     * Checks whether the device does not exist in the database.
+     *
+     * @param deviceIdentification
+     * @throws Throwable
+     */
+    @Then("^the device with id \"([^\"]*)\" does not exist$")
+    public void theDeviceWithIdDoesNotExist(final String deviceIdentification) throws Throwable {
+        Wait.until(() -> {
+            final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (entity != null) {
+                throw new Exception("Device with identification [" + deviceIdentification + "]");
+            }
             return entity;
         });
     }

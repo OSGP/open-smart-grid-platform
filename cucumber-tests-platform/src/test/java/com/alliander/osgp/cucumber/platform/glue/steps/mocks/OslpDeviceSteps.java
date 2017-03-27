@@ -25,6 +25,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
@@ -34,6 +36,8 @@ import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.DeviceSimulatorException;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.MockOslpServer;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.oslp.Oslp;
@@ -65,7 +69,6 @@ import com.alliander.osgp.oslp.Oslp.Weekday;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.OslpUtils;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.Descriptors;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -77,6 +80,11 @@ import cucumber.api.java.en.When;
  */
 public class OslpDeviceSteps {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(OslpDeviceSteps.class);
+		
+	@Autowired
+    private DeviceRepository deviceRepository;
+	
     @Autowired
     private CoreDeviceConfiguration configuration;
 
@@ -857,7 +865,11 @@ public class OslpDeviceSteps {
                         .setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE))
                         .setRandomDevice(getInteger(settings, Keys.RANDOM_DEVICE, Defaults.RANDOM_DEVICE))).build())
                 .build();
-        this.send(request, settings);
+        try{
+        	this.send(request, settings);	
+        }catch(IOException ioe){
+        	LOGGER.info("IOException catched on this.send(OslpEnvelope:" + request + " Map:" + settings +" ");
+        }
         
         
     }
@@ -918,6 +930,17 @@ public class OslpDeviceSteps {
         Assert.assertNotNull(response.getLocationInfo().getTimeOffset());
         
         Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
+    }
+    
+    @Then("^the IpAddress for the device \"([^\"]*)\" should be \"([^\"]*)\"$")
+    public void theIpAddressForTheDeviceShouldBe(final String deviceIdentification, final String ipAddress){
+
+    	final Device device = deviceRepository.findByDeviceIdentification(deviceIdentification);
+    	if(ipAddress.equals("")){
+    		Assert.assertNull(device.getIpAddress());
+    	}else{
+        	Assert.assertEquals(ipAddress,device.getIpAddress());
+    	}
     }
 
 
