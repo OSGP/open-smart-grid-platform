@@ -80,15 +80,16 @@ Feature: CoreDeviceInstallation Device Registration
       #| OSLP        |
       #| OSLP ELSTER |
 
-  #@OslpMockServer
-  #Scenario Outline: Register device that does not yet exist on the platform
-  #When the device sends a register device request to the platform		#this should not contain a response
-  #| DeviceIdentification | <DeviceIdentification> |									#it does not send a response, but creates a timelimit IOException...
-  #Then the device with id "<DeviceIdentification>" does not exists
-  #
-  #Examples:
-  #| DeviceIdentification |
-  #| TEST1024000000002    |
+  @OslpMockServer
+  Scenario Outline: Register device that does not yet exist on the platform
+  When the device sends a register device request to the platform		#this should not contain a response
+  | DeviceIdentification | <DeviceIdentification> |									#it does not send a response, but creates a timelimit IOException...
+  | Protocol |	<Protocol> |
+  Then the device with id "<DeviceIdentification>" does not exists
+  
+  Examples:
+  | DeviceIdentification |	Protocol |
+  | TEST1024000000002    | OSLP |
   
   
   @OslpMockServer
