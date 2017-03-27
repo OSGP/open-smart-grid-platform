@@ -71,7 +71,7 @@ public class EventRetrievalScheduledTask implements Runnable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Runnable#run()
      */
     @Override
@@ -92,20 +92,11 @@ public class EventRetrievalScheduledTask implements Runnable {
         }
 
         final List<Device> devicesToContact = this.findDevicesToContact(devices);
-
-        // Send a request message to protocol adapter component for each device
-        // to contact.
-        for (final Device device : devicesToContact) {
-            final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(device);
-            if (protocolRequestMessage != null) {
-                try {
-                    LOGGER.info("Attempting to contact device: {}", device.getDeviceIdentification());
-                    this.deviceRequestMessageService.processMessage(protocolRequestMessage);
-                } catch (final FunctionalException e) {
-                    LOGGER.error("Exception during sending of protocol request message", e);
-                }
-            }
+        if (devicesToContact.isEmpty()) {
+            return;
         }
+
+        this.contactDevices(devicesToContact);
     }
 
     /**
@@ -209,6 +200,24 @@ public class EventRetrievalScheduledTask implements Runnable {
         LOGGER.info("event date time: {}, current date time minus {} hours: {}, is event before? : {}", event,
                 this.maximumAllowedAge, maxAge, result);
         return result;
+    }
+
+    /**
+     * Send a request message to protocol adapter component for each device to
+     * contact.
+     */
+    private void contactDevices(final List<Device> devicesToContact) {
+        for (final Device device : devicesToContact) {
+            final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(device);
+            if (protocolRequestMessage != null) {
+                try {
+                    LOGGER.info("Attempting to contact device: {}", device.getDeviceIdentification());
+                    this.deviceRequestMessageService.processMessage(protocolRequestMessage);
+                } catch (final FunctionalException e) {
+                    LOGGER.error("Exception during sending of protocol request message", e);
+                }
+            }
+        }
     }
 
     /**
