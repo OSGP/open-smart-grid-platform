@@ -57,5 +57,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
     @Query(value = "delete from device_output_setting", nativeQuery = true)
     void deleteDeviceOutputSettings();
 
-    List<Device> findByDeviceModelAndInMaintenanceFalse(DeviceModel deviceModel);
+    List<Device> findByDeviceModelAndDeviceTypeAndInMaintenance(DeviceModel deviceModel, String deviceType,
+            boolean inMantenance);
 }

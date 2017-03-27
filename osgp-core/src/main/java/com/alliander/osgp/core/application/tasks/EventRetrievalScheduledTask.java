@@ -7,39 +7,25 @@
  */
 package com.alliander.osgp.core.application.tasks;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.core.application.config.SchedulingConfig;
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
-import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
@@ -62,24 +48,6 @@ public class EventRetrievalScheduledTask implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventRetrievalScheduledTask.class);
 
-    /**
-     * JPA specifications to fetch a page of events for a device.
-     */
-    class JpaEventSpecifications {
-        public Specification<Event> isFromDevice(final Device device) throws ArgumentNullOrEmptyException {
-            if (device == null) {
-                throw new ArgumentNullOrEmptyException("Device is null");
-            }
-            return new Specification<Event>() {
-                @Override
-                public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
-                        final CriteriaBuilder cb) {
-                    return cb.equal(eventRoot.<Integer> get("device"), device.getId());
-                }
-            };
-        }
-    }
-
     @Autowired
     private DeviceRequestMessageService deviceRequestMessageService;
 
@@ -101,11 +69,9 @@ public class EventRetrievalScheduledTask implements Runnable {
     @Autowired
     private int maximumAllowedAge;
 
-    private JpaEventSpecifications eventSpecifications = new JpaEventSpecifications();
-
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.lang.Runnable#run()
      */
     @Override
@@ -125,21 +91,7 @@ public class EventRetrievalScheduledTask implements Runnable {
             return;
         }
 
-        final Map<Device, Event> map = this.findEventsForDevices(devices);
-        if (map.isEmpty()) {
-            return;
-        }
-
-        // Determine which devices to contact by evaluating the age of the
-        // latest event for a device.
-        final List<Device> devicesToContact = new ArrayList<>();
-        final DateTime maxAge = DateTime.now(DateTimeZone.UTC).minusHours(this.maximumAllowedAge);
-        for (final Entry<Device, Event> entry : map.entrySet()) {
-            if (this.isEventOlderThanMaxInterval(maxAge, entry.getValue())) {
-                LOGGER.info("Found device which has events older than: {}", maxAge);
-                devicesToContact.add(entry.getKey());
-            }
-        }
+        final List<Device> devicesToContact = this.findDevicesToContact(devices);
 
         // Send a request message to protocol adapter component for each device
         // to contact.
@@ -174,7 +126,7 @@ public class EventRetrievalScheduledTask implements Runnable {
      * Try to find all device models for a manufacturer.
      */
     private List<DeviceModel> findDeviceModels(final Manufacturer manufacturer) {
-        LOGGER.info("Trying to find device models for manufacturer...");
+        LOGGER.info("Trying to find device models for manufacturer: {}", manufacturer.getName());
         final List<DeviceModel> deviceModels = this.deviceModelRepository.findByManufacturerId(manufacturer);
         if (deviceModels == null) {
             LOGGER.warn("No device models found for manufacturer with name: {}, deviceModels == null",
@@ -185,6 +137,9 @@ public class EventRetrievalScheduledTask implements Runnable {
         } else {
             LOGGER.info("{} device models found for manufacturer with name: {}", deviceModels.size(),
                     manufacturer.getName());
+            for (final DeviceModel deviceModel : deviceModels) {
+                LOGGER.info(" deviceModel: {}", deviceModel.getModelCode());
+            }
         }
         return deviceModels;
     }
@@ -197,7 +152,8 @@ public class EventRetrievalScheduledTask implements Runnable {
         LOGGER.info("Trying to find devices for device models for manufacturer...");
         final List<Device> devices = new ArrayList<>();
         for (final DeviceModel deviceModel : deviceModels) {
-            final List<Device> devs = this.deviceRepository.findByDeviceModelAndInMaintenanceFalse(deviceModel);
+            final List<Device> devs = this.deviceRepository.findByDeviceModelAndDeviceTypeAndInMaintenance(deviceModel,
+                    Ssld.SSLD_TYPE, false);
             devices.addAll(devs);
         }
         if (devices.isEmpty()) {
@@ -209,84 +165,49 @@ public class EventRetrievalScheduledTask implements Runnable {
     }
 
     /**
-     * Find the latest event for each device in the list of devices.
+     * Filter a list of given devices to determine which devices should be
+     * contacted. The filtering uses the age of the latest event in comparison
+     * with 'maximumAllowedAge'.
      */
-    private Map<Device, Event> findEventsForDevices(final List<Device> devices) {
-        final Map<Device, Event> map = new HashMap<>();
-        for (final Device device : devices) {
-            try {
-                final List<Event> events = this.findEventsForDevice(device);
-                final Event event = this.findLatestEventForDevice(events);
-                map.put(device, event);
-            } catch (final ArgumentNullOrEmptyException e) {
-                LOGGER.error("Exception during findEventsForDevices", e);
+    private List<Device> findDevicesToContact(final List<Device> devices) {
+        List<Object> listOfObjectArrays = this.eventRepository.findLatestEventForEveryDevice(devices);
+        LOGGER.info("listOfObjectArrays.size(): {}", listOfObjectArrays.size());
+
+        final Date maxAge = DateTime.now(DateTimeZone.UTC).minusHours(this.maximumAllowedAge).toDate();
+        LOGGER.info("maxAge: {}", maxAge);
+
+        final Map<Long, Date> map = new HashMap<>();
+        for (final Object objectArray : listOfObjectArrays) {
+            final Object[] array = (Object[]) objectArray;
+            final Long eventDeviceId = (Long) array[0];
+            final Date timestamp = (Date) array[1];
+            LOGGER.info("eventDeviceId: {}, timestamp: {}", eventDeviceId, timestamp);
+            if (this.isEventOlderThanMaxInterval(maxAge, timestamp)) {
+                map.put(eventDeviceId, timestamp);
             }
         }
-        return map;
-    }
 
-    /**
-     * Try to find events for a device.
-     */
-    private List<Event> findEventsForDevice(final Device device) throws ArgumentNullOrEmptyException {
-        LOGGER.info("Trying to find events for device: {}", device.getDeviceIdentification());
-        final PageRequest request = new PageRequest(0, 1, Sort.Direction.DESC, "dateTime");
-        final Specifications<Event> specifications = where(this.eventSpecifications.isFromDevice(device));
-        final Page<Event> page = this.eventRepository.findAll(specifications, request);
-        if (page == null) {
-            LOGGER.error("No page of event found for device: {}", device.getDeviceIdentification());
-            return null;
-        }
-        final List<Event> events = page.getContent();
-        if (events == null) {
-            LOGGER.warn("No events found for device: {}, events == null", device.getDeviceIdentification());
-        } else if (events.isEmpty()) {
-            LOGGER.warn("No events found for device: {}, events.isEmpty()", device.getDeviceIdentification());
-        } else {
-            LOGGER.info("{} events found for device: {}", events.size(), device.getDeviceIdentification());
-        }
-        return events;
-    }
+        listOfObjectArrays = null;
 
-    /**
-     * Try to find the latest event in the list of events.
-     */
-    private Event findLatestEventForDevice(final List<Event> events) {
-        if (events == null || events.isEmpty()) {
-            return null;
+        final List<Device> devicesToContact = this.deviceRepository.findAll(map.keySet());
+        for (final Device device : devicesToContact) {
+            LOGGER.info("device: {}, id: {}", device.getDeviceIdentification(), device.getId());
         }
-        // Expected is a list containing 1 event.
-        if (events.size() == 1) {
-            return events.get(0);
-        }
-        // This programmatic search should not be necessary, as the PageRequest
-        // is used with descending sort direction.
-        Event latestEvent = events.get(0);
-        for (final Event event : events) {
-            if (latestEvent.getDateTime().before(event.getDateTime())) {
-                LOGGER.info("Latest event: {} is before current event: {}", latestEvent.getDateTime(),
-                        event.getDateTime());
-                latestEvent = event;
-            }
-        }
-        LOGGER.info("Returning latestEvent: {}", latestEvent.getDateTime());
-        return latestEvent;
+        return devicesToContact;
     }
 
     /**
      * Determine if an event is older than X hours as indicated by maxAge.
      */
-    private boolean isEventOlderThanMaxInterval(final DateTime maxAge, final Event event) {
+    private boolean isEventOlderThanMaxInterval(final Date maxAge, final Date event) {
         if (event == null) {
             // In case the event instance is null, try to contact the device.
             LOGGER.info("Event instance is null");
             return true;
         }
-
-        final Date date = maxAge.toDate();
-        final boolean result = event.getDateTime().before(date);
-        LOGGER.info("event date time: {}, current date time minus {} hours: {}, is event before? : {}",
-                event.getDateTime(), this.maximumAllowedAge, maxAge, result);
+        final boolean result = event.before(maxAge);
+        LOGGER.info("event date time: {}, current date time minus {} hours: {}, is event before? : {}", event,
+                this.maximumAllowedAge, maxAge, result);
         return result;
     }
 
@@ -295,7 +216,8 @@ public class EventRetrievalScheduledTask implements Runnable {
      */
     private ProtocolRequestMessage createProtocolRequestMessage(final Device device) {
         final String deviceIdentification = device.getDeviceIdentification();
-        final String organisation = "LianderNetManagement";
+        // Try to use the identification of the owner organization.
+        final String organisation = device.getOwner() == null ? "" : device.getOwner().getOrganisationIdentification();
         // Creating message with empty CorrelationUID, in order to prevent a
         // response from protocol adapter component.
         final String correlationUid = "";
@@ -308,7 +230,7 @@ public class EventRetrievalScheduledTask implements Runnable {
 
         String ipAddress = null;
         if (device.getNetworkAddress() == null) {
-            // In case the device does not have an known IP address, don't sent
+            // In case the device does not have a known IP address, don't send
             // a request message.
             LOGGER.warn("Unable to create protocol request message because the IP address is empty for device: {}",
                     deviceIdentification);
