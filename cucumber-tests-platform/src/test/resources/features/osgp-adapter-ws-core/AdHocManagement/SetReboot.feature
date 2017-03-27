@@ -1,4 +1,4 @@
-Feature: PublicLightingAdhocManagement Set Reboot
+Feature: CoreAdhocManagement Set Reboot
   As OSGP
   I want to asynchronously handle set reboot requests
   In order to reboot devices As a platform
