@@ -39,6 +39,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetPow
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -100,9 +101,10 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     @Override
     public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
             throws JMSException {
-        DeviceConnection deviceConnection = null;
+        DeviceConnection devCon = null;
         try {
-            deviceConnection = this.connectToDevice(deviceRequest);
+            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            devCon = deviceConnection;
 
             // Getting the SSLD for the device output-settings.
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
@@ -114,12 +116,15 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                     deviceRequest.getCorrelationUid(), deviceStatus);
 
             deviceResponseHandler.handleResponse(deviceResponse);
+
+            this.enableReporting(deviceConnection, deviceRequest);
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
+            this.iec61850DeviceConnectionService.disconnect(devCon, deviceRequest);
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
+            this.iec61850DeviceConnectionService.disconnect(devCon, deviceRequest);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
@@ -464,23 +469,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
             this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);
 
-            // Enabling device reporting. This is placed here because this is
-            // called twice a day.
-            new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(this.iec61850Client,
-                    deviceConnection);
-            // Don't disconnect now! The device should be able to send reports.
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        new Iec61850ClearReportCommand().clearReportOnDevice(deviceConnection);
-                    } catch (final ProtocolAdapterException e) {
-                        LOGGER.error("Unable to clear report for device: " + deviceRequest.getDeviceIdentification(), e);
-                    }
-                    Iec61850SsldDeviceService.this.iec61850DeviceConnectionService.disconnect(deviceConnection,
-                            deviceRequest);
-                }
-            }, this.disconnectDelay);
+            this.enableReporting(deviceConnection, deviceRequest);
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
             this.iec61850DeviceConnectionService.disconnect(devCon, deviceRequest);
@@ -630,5 +619,25 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                         ComponentType.PROTOCOL_IEC61850);
             }
         }
+    }
+
+    private void enableReporting(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest)
+            throws NodeWriteException {
+        // Enabling device reporting.
+        new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(this.iec61850Client,
+                deviceConnection);
+        // Don't disconnect now! The device should be able to send reports.
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    new Iec61850ClearReportCommand().clearReportOnDevice(deviceConnection);
+                } catch (final ProtocolAdapterException e) {
+                    LOGGER.error("Unable to clear report for device: " + deviceRequest.getDeviceIdentification(), e);
+                }
+                Iec61850SsldDeviceService.this.iec61850DeviceConnectionService.disconnect(deviceConnection,
+                        deviceRequest);
+            }
+        }, this.disconnectDelay);
     }
 }
