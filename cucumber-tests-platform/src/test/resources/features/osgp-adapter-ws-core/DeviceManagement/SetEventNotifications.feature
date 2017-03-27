@@ -8,13 +8,13 @@ Feature: CoreDeviceManagement Set Event Notifications
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set event notification "OK" over OSLP
+    And the device returns a set event notification "OK" over "<Protocol>"
     When receiving a set event notification message request on OSGP
       | DeviceIdentification | TEST1024000000001 |
       | Event                | <Event>           |
     Then the set event notification async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set event notification OSLP message is sent to device "TEST1024000000001"
+    And a set event notification "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a set event notification response message for device "TEST1024000000001"
       | Result | OK |
 

@@ -1,5 +1,6 @@
 # Integration Tests for OSGP Components and Protocol Adapters. 
 
+
 ### Build Status
 
 [![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_Integration-Tests_development/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_Integration-Tests_development)
