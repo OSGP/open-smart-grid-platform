@@ -1,4 +1,5 @@
-@Skip
+#@Skip
+@bjorn
 @Iec61850MockServerMarkerWadden
 Feature: MicroGrids Set Data Service
   As scrum team I want to have cucumber tests for Set Data Services
@@ -39,7 +40,7 @@ Feature: MicroGrids Set Data Service
       | ProfileEntryTime_1_1_4     | 2016-11-22T01:30:00 |
       | ProfileEntryValue_1_1_4    |                  21 |
     Then the set data response should be returned
-      | DeviceIdentification | RTU10001 |
+      | DeviceIdentification | RTU10003 |
       | Result               | OK       |
     And the Marker Wadden RTU simulator should contain
       | <LogicalDevice> | DSCH<NodeId>.SchdId.setVal    |                   1 |
@@ -55,7 +56,7 @@ Feature: MicroGrids Set Data Service
       | <LogicalDevice> | DSCH<NodeId>.SchdAbsTm.time.3 | 2016-11-22T01:30:00 |
 
     Examples:
-      | SystemType_1  | LogicalDevice | NodeId |
+      | SystemType_1  | LogicalDevice  | NodeId |
       | RTU           | RTU1           | 1      |
       | BATTERY       | BATTERY1       | 1      |
       | HEAT_PUMP     | HEAT_PUMP1     | 1      |
