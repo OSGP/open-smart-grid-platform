@@ -70,6 +70,7 @@
       <xsd:enumeration value="DISABLE_DEBUGGING" />
       <xsd:enumeration value="GET_MESSAGES" />
       <xsd:enumeration value="GET_PROFILE_GENERIC_DATA" />
+      <xsd:enumeration value="SET_CLOCK_CONFIGURATION" />
     </xsd:restriction>
   </xsd:simpleType>
 

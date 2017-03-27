@@ -180,6 +180,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="SetClockConfigurationRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetClockConfigurationRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
   <xsd:complexType name="Actions">
     <xsd:sequence>
@@ -206,6 +213,7 @@
         <xsd:element ref="tns:GetSpecificAttributeValueRequest" />
         <xsd:element ref="tns:SetKeysRequest" />
         <xsd:element ref="tns:GetAssociationLnObjectsRequest" />
+        <xsd:element ref="tns:SetClockConfigurationRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
