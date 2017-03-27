@@ -24,10 +24,10 @@ public class SmartMeteringAdHocWebServiceConfig extends BaseWebServiceConfig {
     private ApplicationConfiguration configuration;
 
     @Bean
-    public DefaultWebServiceTemplateFactory smartMeteringAdHocManagementWstf() {
-        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringAdHocManagementMarshaller())
+    public DefaultWebServiceTemplateFactory smartMeteringAdHocWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringAdHocMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringAdHocManagement))
+                .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringAdHoc))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
@@ -35,29 +35,29 @@ public class SmartMeteringAdHocWebServiceConfig extends BaseWebServiceConfig {
     }
 
     /**
-     * Method for creating the Marshaller for SmartMetering AdHocManagement.
+     * Method for creating the Marshaller for SmartMetering AdHoc webservice.
      *
      * @return Jaxb2Marshaller
      */
     @Bean
-    public Jaxb2Marshaller smartMeteringAdHocManagementMarshaller() {
+    public Jaxb2Marshaller smartMeteringAdHocMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.configuration.contextPathSmartMeteringAdHocManagement);
+        marshaller.setContextPath(this.configuration.contextPathSmartMeteringAdHoc);
 
         return marshaller;
     }
 
     /**
      * Method for creating the Marshalling Payload Method Processor for
-     * SmartMetering AdHocManagement.
+     * SmartMetering AdHoc webservice.
      *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringAdHocManagementMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringAdHocManagementMarshaller(),
-                this.smartMeteringAdHocManagementMarshaller());
+    public MarshallingPayloadMethodProcessor smartMeteringAdHocMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringAdHocMarshaller(),
+                this.smartMeteringAdHocMarshaller());
     }
 
 }

@@ -24,42 +24,40 @@ public class SmartMeteringBundleWebServiceConfig extends BaseWebServiceConfig {
     private ApplicationConfiguration configuration;
 
     @Bean
-    public DefaultWebServiceTemplateFactory smartMeteringBundleManagementWstf() {
-        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringBundleManagementMarshaller())
+    public DefaultWebServiceTemplateFactory smartMeteringBundleWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringBundleMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringBundleManagement))
-                .setKeyStoreType(this.webserviceKeystoreType)
-                .setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringBundle))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory())
-                .setApplicationName(this.applicationName)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
                 .build();
     }
 
     /**
-     * Method for creating the Marshaller for SmartMetering BundleManagement.
+     * Method for creating the Marshaller for SmartMetering Bundle webservice.
      *
      * @return Jaxb2Marshaller
      */
     @Bean
-    public Jaxb2Marshaller smartMeteringBundleManagementMarshaller() {
+    public Jaxb2Marshaller smartMeteringBundleMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.configuration.contextPathSmartMeteringBundleManagement);
+        marshaller.setContextPath(this.configuration.contextPathSmartMeteringBundle);
 
         return marshaller;
     }
 
     /**
      * Method for creating the Marshalling Payload Method Processor for
-     * SmartMetering BundleManagement.
+     * SmartMetering Bundle webservice.
      *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringBundleManagementMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringBundleManagementMarshaller(),
-                this.smartMeteringBundleManagementMarshaller());
+    public MarshallingPayloadMethodProcessor smartMeteringBundleMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringBundleMarshaller(),
+                this.smartMeteringBundleMarshaller());
     }
 
 }

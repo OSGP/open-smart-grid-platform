@@ -3,7 +3,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
   I want to ...
   In order to ...
 
-  @OslpMockServer
+  @OslpMockServer @Skip
   Scenario Outline: Valid sequence number ranges
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
@@ -34,7 +34,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
       | OSLP ELSTER |                         5 |
       | OSLP ELSTER |                         6 |
 
-  @OslpMockServer
+  @OslpMockServer @Skip
   Scenario Outline: Invalid sequence number ranges
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
