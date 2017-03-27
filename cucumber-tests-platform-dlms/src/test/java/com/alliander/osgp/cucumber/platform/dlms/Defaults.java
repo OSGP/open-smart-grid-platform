@@ -91,6 +91,8 @@ public class Defaults extends com.alliander.osgp.cucumber.platform.Defaults {
     public static final byte DAYLIGHT_SAVINGS_DEVIATION = 60;
     public static final boolean DAYLIGHT_SAVINGS_ENABLED = true;
     public static final short TIME_ZONE_OFFSET = -60;
+    public static final Boolean DAYLIGHT_SAVINGS_ACTIVE = false;
+    public static final Byte DEVIATION = -60;
 
     static {
         InetAddress localhost;

@@ -4,7 +4,7 @@ Feature: Clock configuration
   I want to be able to change the clock configuration of a meter
   So the meter works with localized time settings
 
-  Background:
+  Background: 
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -30,9 +30,7 @@ Feature: Clock configuration
       | DaylightSavingsEnd       | FFFF0AFE0703000000FF8880 |
       | DaylightSavingsDeviation |                       60 |
       | DaylightSavingsEnabled   | true                     |
-    And a synchronize time action is part of a bundled request
-      | Deviation |  -60 |
-      | DST       | true |
+    And a valid synchronize time action for timezone "Europe/Amsterdam" is part of a bundled request
     When the bundle request is received
     Then the bundle response contains a set clock configuration response
       | Result | OK |
@@ -48,9 +46,7 @@ Feature: Clock configuration
       | DaylightSavingsEnd       | FFFF0AFE0703000000FF8880 |
       | DaylightSavingsDeviation |                       60 |
       | DaylightSavingsEnabled   | true                     |
-    And a synchronize time action is part of a bundled request
-      | Deviation |  -60 |
-      | DST       | true |
+    And a valid synchronize time action for timezone "Europe/Amsterdam" is part of a bundled request
     When the bundle request is received
     Then the bundle response contains a set clock configuration response
       | Result | OK |
