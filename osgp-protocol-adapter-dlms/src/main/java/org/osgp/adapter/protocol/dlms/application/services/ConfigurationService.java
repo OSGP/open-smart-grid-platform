@@ -17,6 +17,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetClockConfigurationCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandExecutor;
@@ -43,6 +44,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
@@ -94,6 +96,9 @@ public class ConfigurationService {
 
     @Autowired
     private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
+
+    @Autowired
+    private SetClockConfigurationCommandExecutor setClockConfigurationCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -155,8 +160,8 @@ public class ConfigurationService {
         final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor.execute(conn, device,
                 administrativeStatusType);
         if (AccessResultCode.SUCCESS != accessResultCode) {
-            throw new ProtocolAdapterException("AccessResultCode for set administrative status was not SUCCESS: "
-                    + accessResultCode);
+            throw new ProtocolAdapterException(
+                    "AccessResultCode for set administrative status was not SUCCESS: " + accessResultCode);
         }
     }
 
@@ -168,8 +173,8 @@ public class ConfigurationService {
         final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
                 alarmNotifications);
         if (AccessResultCode.SUCCESS != accessResultCode) {
-            throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
-                    + accessResultCode);
+            throw new ProtocolAdapterException(
+                    "AccessResultCode for set alarm notifications was not SUCCESS: " + accessResultCode);
         }
     }
 
@@ -192,9 +197,9 @@ public class ConfigurationService {
             throw new ProtocolAdapterException("Error while looking up G-Meter", e);
         }
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
-                gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
-                        SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                        SecurityKeyType.G_METER_MASTER).getKey());
+                gMeterInfo.getDeviceIdentification(),
+                gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey(),
+                gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -222,8 +227,8 @@ public class ConfigurationService {
                 pushSetupAlarm);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
-            throw new ProtocolAdapterException("AccessResultCode for set push setup alarm was not SUCCESS: "
-                    + accessResultCode);
+            throw new ProtocolAdapterException(
+                    "AccessResultCode for set push setup alarm was not SUCCESS: " + accessResultCode);
         }
     }
 
@@ -236,8 +241,8 @@ public class ConfigurationService {
                 pushSetupSms);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
-            throw new ProtocolAdapterException("AccessResultCode for set push setup sms was not SUCCESS: "
-                    + accessResultCode);
+            throw new ProtocolAdapterException(
+                    "AccessResultCode for set push setup sms was not SUCCESS: " + accessResultCode);
         }
 
     }
@@ -260,6 +265,17 @@ public class ConfigurationService {
             this.replaceKeyCommandExecutor.executeBundleAction(conn, device, keySet);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
+            throw e;
+        }
+    }
+
+    public void setClockConfiguration(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final SetClockConfigurationRequestDto clockConfiguration) throws ProtocolAdapterException {
+
+        try {
+            this.setClockConfigurationCommandExecutor.execute(conn, device, clockConfiguration);
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Unexpected exception while setting clock configuration.", e);
             throw e;
         }
     }

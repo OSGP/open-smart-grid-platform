@@ -15,6 +15,8 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.interfaceclass.InterfaceClass;
+import org.openmuc.jdlms.interfaceclass.attribute.ClockAttribute;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -27,12 +29,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 
 @Component()
-public class SynchronizeTimeCommandExecutor extends
-AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
+public class SynchronizeTimeCommandExecutor
+        extends AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
 
-    private static final int CLASS_ID = 8;
-    private static final ObisCode OBIS_CODE = new ObisCode("0.0.1.0.0.255");
-    private static final int ATTRIBUTE_ID = 2;
+    private static final ObisCode LOGICAL_NAME = new ObisCode("0.0.1.0.0.255");
+
+    private static final AttributeAddress ATTRIBUTE_TIME = new AttributeAddress(InterfaceClass.CLOCK.id(), LOGICAL_NAME,
+            ClockAttribute.TIME.attributeId());
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -61,16 +64,14 @@ AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
     @Override
     public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SynchronizeTimeRequestDto synchronizeTimeRequestDto) throws ProtocolAdapterException {
-        final AttributeAddress clockTime = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-
         final DateTime dt = DateTime.now();
         final DataObject time = this.dlmsHelperService.asDataObject(dt, synchronizeTimeRequestDto.getDeviation(),
                 synchronizeTimeRequestDto.isDst());
 
-        final SetParameter setParameter = new SetParameter(clockTime, time);
+        final SetParameter setParameter = new SetParameter(ATTRIBUTE_TIME, time);
 
         conn.getDlmsMessageListener().setDescription("SynchronizeTime to " + dt + ", set attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(clockTime));
+                + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_TIME));
 
         try {
             return conn.getConnection().set(setParameter);
