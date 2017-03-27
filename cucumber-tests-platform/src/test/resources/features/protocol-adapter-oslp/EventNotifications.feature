@@ -8,7 +8,7 @@ Feature: OslpAdapter Event notifications
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    When the device sends an event notification request to the platform
+    When the device sends an event notification request to the platform over "<Protocol>"
       | Event       | <EventType>   |
       | Description | <Description> |
       | Index       | <Index>       |

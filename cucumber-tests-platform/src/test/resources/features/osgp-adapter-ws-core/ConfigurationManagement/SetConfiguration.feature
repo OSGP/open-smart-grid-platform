@@ -8,7 +8,7 @@ Feature: CoreConfigurationManagement SetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set configuration status "OK" over OSLP
+    And the device returns a set configuration status "OK" over "<Protocol>"
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001   |
       | LightType            | <LightType>         |
@@ -23,7 +23,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | IntervalType         | <IntervalType>      |
     Then the set configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set configuration OSLP message is sent to device "TEST1024000000001"
+    And a set configuration "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a set configuration response message for device "TEST1024000000001"
       | Result | OK |
 
@@ -95,7 +95,7 @@ Feature: CoreConfigurationManagement SetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set configuration status over OSLP
+    And the device returns a set configuration status over "<Protocol>"
       | Status | OK |
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001   |
@@ -138,7 +138,7 @@ Feature: CoreConfigurationManagement SetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set configuration status over OSLP
+    And the device returns a set configuration status over "<Protocol>"
       | Status | OK |
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001   |
@@ -181,7 +181,7 @@ Feature: CoreConfigurationManagement SetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set configuration status over OSLP
+    And the device returns a set configuration status over "<Protocol>"
       | Status            | FAILURE  |
       | LightType         | RELAY    |
       | DcLights          |          |
@@ -197,7 +197,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DeviceIdentification | TEST1024000000001 |
     Then the set configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set configuration OSLP message is sent to device "TEST1024000000001"
+    And a set configuration "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a set configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
 
@@ -211,7 +211,7 @@ Feature: CoreConfigurationManagement SetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set configuration status over OSLP
+    And the device returns a set configuration status over "<Protocol>"
       | Status            | REJECTED |
       | LightType         | RELAY    |
       | DcLights          |          |
@@ -227,7 +227,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DeviceIdentification | TEST1024000000001 |
     Then the set configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set configuration OSLP message is sent to device "TEST1024000000001"
+    And a set configuration "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a set configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |
 
