@@ -868,6 +868,7 @@ public class OslpDeviceSteps {
         try{
         	this.send(request, settings);	
         }catch(IOException ioe){
+        	ScenarioContext.Current().put("Error", ioe);
         	LOGGER.info("IOException catched on this.send(OslpEnvelope:" + request + " Map:" + settings +" ");
         }
         
