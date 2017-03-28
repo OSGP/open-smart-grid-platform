@@ -84,7 +84,7 @@ public abstract class BaseDeviceSteps extends GlueBase {
         InetAddress inetAddress;
         try {
             inetAddress = InetAddress.getByName(
-                    getString(settings, Keys.KEY_NETWORKADDRESS, this.configuration.getDeviceNetworkAddress()));
+                    getString(settings, Keys.IP_ADDRESS, this.configuration.getDeviceNetworkAddress()));
         } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }

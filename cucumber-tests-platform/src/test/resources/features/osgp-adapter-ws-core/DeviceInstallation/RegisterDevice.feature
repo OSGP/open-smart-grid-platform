@@ -82,17 +82,17 @@ Feature: CoreDeviceInstallation Device Registration
   #Note: This test may sometimes fail on the Then case:
   #org.junit.ComparisonFailure: expected:<127.0.0.[3]> but was:<127.0.0.[2]>
   @OslpMockServer
-  Scenario Outline: Register device with network address already in use by another device
+  Scenario Outline: Register device with IpAddress already in use by another device
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-      | NetworkAddress       | 127.0.0.2         |
+      | IpAddress            | 127.0.0.2         |
       | DeviceType           | SSLD              |
     And an ssld oslp device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | Protocol             | <Protocol>        |
-      | NetworkAddress       | 127.0.0.3         |
+      | IpAddress            | 127.0.0.3         |
       | DeviceType           | SSLD              |
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TEST1024000000001 |
