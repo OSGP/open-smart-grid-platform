@@ -60,6 +60,9 @@ public class SetDataSteps extends GlueBase {
         final SetDataAsyncRequest setDataAsyncRequest = SetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
         final SetDataResponse response = this.client.setData(setDataAsyncRequest);
 
+        final String deviceIdentification = responseParameters.get(Keys.KEY_DEVICE_IDENTIFICATION);
+        assertEquals("Check deviceIdentification", correlationUid.contains(deviceIdentification), Boolean.TRUE);
+
         final String expectedResult = responseParameters.get(Keys.KEY_RESULT);
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());

@@ -1,4 +1,3 @@
-@Skip
 Feature: Clock configuration
   As a grid operator
   I want to be able to change the clock configuration of a meter
