@@ -80,7 +80,6 @@ import cucumber.api.java.en.When;
  */
 public class OslpDeviceSteps {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(OslpDeviceSteps.class);
 		
 	@Autowired
     private DeviceRepository deviceRepository;
@@ -849,7 +848,7 @@ public class OslpDeviceSteps {
     @Given("^the device sends a register device request to the platform over \"([^\"]*)\"$")
     public void theDeviceSendsARegisterDeviceRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
-
+    	try{
         final OslpEnvelope request = this
                 .createEnvelopeBuilder(
                         getString(settings, Keys.KEY_DEVICE_UID,
@@ -865,18 +864,19 @@ public class OslpDeviceSteps {
                         .setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE))
                         .setRandomDevice(getInteger(settings, Keys.RANDOM_DEVICE, Defaults.RANDOM_DEVICE))).build())
                 .build();
-        try{
-        	this.send(request, settings);	
+        
+        this.send(request, settings);	
         }catch(IOException ioe){
         	ScenarioContext.Current().put("Error", ioe);
-        	LOGGER.info("IOException catched on this.send(OslpEnvelope:" + request + " Map:" + settings +" ");
+        }catch(IllegalArgumentException iae){
+        	ScenarioContext.Current().put("Error", iae);
         }
         
         
     }
 
     @Given("^the device sends an event notification request to the platform over \"([^\"]*)\"$")
-    public void theDeviceSendsAnEventNotificationRequestToThePlatform(final String protocol,
+    public void theDeviceSendlsAnEventNotificationRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
         this.oslpMockServer.doNextSequenceNumber();
@@ -921,16 +921,23 @@ public class OslpDeviceSteps {
      */
     @Then("^the register device response contains$")
     public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse) throws IOException, DeviceSimulatorException {
-        final Message responseMessage = this.oslpMockServer.waitForResponse();
+    	final Exception e = (Exception)ScenarioContext.Current().get("Error");
+    	if (e == null){
+        	final Message responseMessage = this.oslpMockServer.waitForResponse();
 
-        final RegisterDeviceResponse response = responseMessage.getRegisterDeviceResponse();
+            final RegisterDeviceResponse response = responseMessage.getRegisterDeviceResponse();
 
-        Assert.assertNotNull(response.getCurrentTime()); 
-        Assert.assertNotNull(response.getLocationInfo().getLongitude());
-        Assert.assertNotNull(response.getLocationInfo().getLatitude());
-        Assert.assertNotNull(response.getLocationInfo().getTimeOffset());
-        
-        Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
+            Assert.assertNotNull(response.getCurrentTime()); 
+            Assert.assertNotNull(response.getLocationInfo().getLongitude());
+            Assert.assertNotNull(response.getLocationInfo().getLatitude());
+            Assert.assertNotNull(response.getLocationInfo().getTimeOffset());
+            
+            Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
+    	}
+    	else{
+    		 Assert.assertEquals(getString(expectedResponse, Keys.KEY_MESSAGE), e.getMessage());
+    	}
+    	
     }
     
     @Then("^the IpAddress for the device \"([^\"]*)\" should be \"([^\"]*)\"$")

@@ -70,6 +70,8 @@ Feature: CoreDeviceInstallation Device Registration
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
+    And the register device response contains
+      | Message | Failed to receive response within timelimit 20000 ms |
     Then the device with id "TEST1024000000001" does not exist
 
     Examples: 
@@ -102,6 +104,50 @@ Feature: CoreDeviceInstallation Device Registration
       | Status | OK |
     Then the IpAddress for the device "TEST1024000000001" should be "127.0.0.3"
     And the IpAddress for the device "TEST1024000000002" should be ""
+
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
+
+  @OslpMockServer
+  Scenario Outline: Register device with empty DeviceIdentification
+    When the device sends a register device request to the platform over "<Protocol>"
+      | DeviceIdentification |  |
+    Then the register device response contains
+      | Message | Failed to receive response within timelimit 20000 ms |
+
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
+
+  @OslpMockServer
+  Scenario Outline: Register a device but register device request for another deviceUid
+    Given an ssld oslp device
+      | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
+      | DeviceUid            | eHW0eEFzN0R2Okd5  |
+    When the device sends a register device request to the platform over "<Protocol>"
+      | DeviceUid | fIX1fFGaO1S3Ple6 |
+    Then the register device response contains
+      | Message | Failed to receive response within timelimit 20000 ms |
+
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
+
+  @OslpMockServer
+  Scenario Outline: Register a device but register device request for an empty deviceUid
+    Given an ssld oslp device
+      | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
+      | DeviceUid            | eHW0eEFzN0R2Okd5  |
+    When the device sends a register device request to the platform over "<Protocol>"
+      | DeviceUid |  |
+    Then the register device response contains
+      | Message | ManufacturerId + DeviceId is not of expected Length: 12 |
 
     Examples: 
       | Protocol    |
