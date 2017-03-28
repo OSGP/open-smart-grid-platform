@@ -25,8 +25,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
@@ -876,7 +874,7 @@ public class OslpDeviceSteps {
     }
 
     @Given("^the device sends an event notification request to the platform over \"([^\"]*)\"$")
-    public void theDeviceSendlsAnEventNotificationRequestToThePlatform(final String protocol,
+    public void theDeviceSendsAnEventNotificationRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
         this.oslpMockServer.doNextSequenceNumber();
