@@ -402,11 +402,6 @@ public class WebServiceConfig extends AbstractConfig {
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
-    @Bean
-    public SoapHeaderInterceptor bypassRetryInterceptor() {
-        return new SoapHeaderInterceptor(BYPASS_RETRY_HEADER, BYPASS_RETRY_HEADER);
-    }
-
     /**
      * @return
      */
@@ -434,7 +429,7 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public SoapHeaderInterceptor bypassRertryInterceptor() {
+    public SoapHeaderInterceptor bypassRetryInterceptor() {
         return new SoapHeaderInterceptor(BYPASS_RETRY_HEADER, BYPASS_RETRY_HEADER);
     }
 

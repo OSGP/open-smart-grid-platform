@@ -46,7 +46,7 @@ public class BundleServiceTest {
     private static final String DEVICE_IDENTIFICATION = "deviceIdentification";
     private static final String ORGANISATION_IDENTIFICATION = "organisationIdentification";
     private static final PlatformFunctionGroup FUNCTION_GROEP = PlatformFunctionGroup.USER;
-    private static final boolean BY_PASS_RETRY = false;
+    private static final boolean BYPASS_RETRY = false;
     private static final int MESSAGE_PRIORITY = 1;
 
     @InjectMocks
@@ -86,7 +86,7 @@ public class BundleServiceTest {
     public void testAllOperationsAreAllowed() throws FunctionalException {
         // Run the test
         this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
-                this.actionRequestMockList, MESSAGE_PRIORITY, BY_PASS_RETRY);
+                this.actionRequestMockList, MESSAGE_PRIORITY, BYPASS_RETRY);
 
         // Verify the test
         final ArgumentCaptor<SmartMeteringRequestMessage> message = ArgumentCaptor
@@ -126,7 +126,7 @@ public class BundleServiceTest {
         // Run the test
         try {
             this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
-                    this.actionRequestMockList, MESSAGE_PRIORITY, BY_PASS_RETRY);
+                    this.actionRequestMockList, MESSAGE_PRIORITY, BYPASS_RETRY);
             fail();
         } catch (final FunctionalException e) {
             // Verify the test
@@ -153,7 +153,7 @@ public class BundleServiceTest {
         // Run the test
         try {
             this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
-                    this.actionRequestMockList, MESSAGE_PRIORITY, BY_PASS_RETRY);
+                    this.actionRequestMockList, MESSAGE_PRIORITY, BYPASS_RETRY);
         } catch (final FunctionalException e) {
             // Verify the test
             assertEquals(fe, e);

@@ -50,7 +50,7 @@ public class OsgpCoreRequestMessageSender {
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
-                objectMessage.setBooleanProperty(Constants.BY_PASS_RETRY, bypassRetry);
+                objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, bypassRetry);
                 if (scheduleTime != null) {
                     objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduleTime);
                 }

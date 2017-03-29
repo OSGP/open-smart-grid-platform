@@ -49,7 +49,7 @@ public class BundleService {
     }
 
     public String enqueueBundleRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<ActionRequest> actionList, final int messagePriority, final boolean byPassRetry)
+            final List<ActionRequest> actionList, final int messagePriority, final boolean bypassRetry)
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -64,7 +64,7 @@ public class BundleService {
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
                 SmartMeteringRequestMessageType.HANDLE_BUNDLED_ACTIONS.toString(), messagePriority);
-        deviceMessageMetadata.setByPassRetry(byPassRetry);
+        deviceMessageMetadata.setBypassRetry(bypassRetry);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()

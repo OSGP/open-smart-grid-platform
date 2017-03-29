@@ -37,8 +37,10 @@ public class SoapHeaderInterceptor implements EndpointInterceptor {
         // Try to get the value from the Soap Header.
         final String value = SoapHeaderEndpointInterceptorHelper.getHeaderValue(soapHeader, this.headerName);
 
-        // Finally, set the message priority into the message
-        // context, so it can be used in the end point later.
+        /*
+         * Finally, set the property value into the message context, so it can
+         * be used in final the end point later.
+         */
         messageContext.setProperty(this.contextPropertyName, value);
 
         // Return true so the interceptor chain will continue.

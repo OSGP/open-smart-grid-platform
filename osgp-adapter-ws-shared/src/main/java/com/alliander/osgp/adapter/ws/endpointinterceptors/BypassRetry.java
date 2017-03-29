@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation which indicates that a method parameter should be bound to the
- * MessagePriority in SoapHeader.
+ * BypassRetry in SoapHeader.
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
