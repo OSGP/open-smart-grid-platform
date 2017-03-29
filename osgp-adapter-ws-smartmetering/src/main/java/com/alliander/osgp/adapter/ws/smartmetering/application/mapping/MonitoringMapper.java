@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 
@@ -21,9 +22,9 @@ public class MonitoringMapper extends ConfigurableMapper {
     public void configure(final MapperFactory mapperFactory) {
 
         mapperFactory
-        .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
-                AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
-                .byDefault().register();
+                .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
+                        AmrProfileStatusCode.class)
+                .field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags").byDefault().register();
 
         // Converter is needed because of instanceOf check to set boolean
         // mbusDevice for a PeriodicMeterReadsQuery object
@@ -55,6 +56,12 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory
                 .classMap(ProfileGenericDataRequest.class,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class)
+                .fieldAToB("selectedValues.captureObject", "selectedValues")
+                .fieldBToA("selectedValues", "selectedValues.captureObject").byDefault().register();
+
+        mapperFactory
+                .classMap(GetProfileGenericDataRequest.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData.class)
                 .fieldAToB("selectedValues.captureObject", "selectedValues")
                 .fieldBToA("selectedValues", "selectedValues.captureObject").byDefault().register();
 
