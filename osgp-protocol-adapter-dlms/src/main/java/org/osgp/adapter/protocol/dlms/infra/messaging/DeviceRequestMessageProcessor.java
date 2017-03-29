@@ -129,8 +129,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
 
-        final boolean isScheduled = this.getBooleanPropertyValue(message, Constants.IS_SCHEDULED)
-                && !this.getBooleanPropertyValue(message, Constants.BYPASS_RETRY);
+        final boolean isScheduled = this.getBooleanPropertyValue(message, Constants.IS_SCHEDULED);
 
         try {
             messageMetadata.handleMessage(message);
@@ -190,7 +189,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         }
     }
 
-    private boolean getBooleanPropertyValue(final ObjectMessage message, final String propertyName) throws JMSException {
+    private boolean getBooleanPropertyValue(final ObjectMessage message, final String propertyName)
+            throws JMSException {
         return message.propertyExists(propertyName) ? message.getBooleanProperty(propertyName) : false;
     }
 
