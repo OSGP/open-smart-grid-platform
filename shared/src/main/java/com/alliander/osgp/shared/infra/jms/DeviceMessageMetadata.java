@@ -23,14 +23,14 @@ public class DeviceMessageMetadata {
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime,
-            final boolean byPassRetry) {
+            final boolean bypassRetry) {
         this.deviceIdentification = deviceIdentification;
         this.organisationIdentification = organisationIdentification;
         this.correlationUid = correlationUid;
         this.messageType = messageType;
         this.messagePriority = messagePriority;
         this.scheduleTime = scheduleTime;
-        this.bypassRetry = byPassRetry;
+        this.bypassRetry = bypassRetry;
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
@@ -58,7 +58,7 @@ public class DeviceMessageMetadata {
                 message.getJMSType(), message.getJMSPriority(),
                 message.propertyExists(Constants.SCHEDULE_TIME) ? message.getLongProperty(Constants.SCHEDULE_TIME)
                         : null,
-                message.propertyExists(Constants.BY_PASS_RETRY) ? message.getBooleanProperty(Constants.BY_PASS_RETRY)
+                message.propertyExists(Constants.BYPASS_RETRY) ? message.getBooleanProperty(Constants.BYPASS_RETRY)
                         : false);
     }
 
@@ -95,7 +95,7 @@ public class DeviceMessageMetadata {
         return this.scheduleTime;
     }
 
-    public void setByPassRetry(final boolean bypassRetry) {
+    public void setBypassRetry(final boolean bypassRetry) {
         this.bypassRetry = bypassRetry;
     }
 
@@ -108,7 +108,8 @@ public class DeviceMessageMetadata {
         return "DeviceMessageMetadata [deviceIdentification=" + this.deviceIdentification
                 + ", organisationIdentification=" + this.organisationIdentification + ", correlationUid="
                 + this.correlationUid + ", messageType=" + this.messageType + ", messagePriority="
-                + this.messagePriority + ", scheduleTime=" + this.scheduleTime + "]";
+                + this.messagePriority + ", scheduleTime=" + this.scheduleTime + ", bypassRetry=" + this.bypassRetry
+                + "]";
     }
 
 }

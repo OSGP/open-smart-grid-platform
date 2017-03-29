@@ -19,7 +19,7 @@ public class ResponseMessage implements Serializable {
      */
     private static final long serialVersionUID = -214808702310700742L;
 
-    private static final boolean BY_PASS_RETRY = false;
+    private static final boolean BYPASS_RETRY = false;
 
     private final String correlationUid;
     private final String organisationIdentification;
@@ -48,30 +48,28 @@ public class ResponseMessage implements Serializable {
             final String deviceIdentification, final ResponseMessageResultType result,
             final OsgpException osgpException, final Serializable dataObject, final int messagePriority) {
         this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject,
-                messagePriority, BY_PASS_RETRY);
+                messagePriority, BYPASS_RETRY);
     }
 
-    // + dataObject
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,
             final OsgpException osgpException, final Serializable dataObject) {
         this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject,
-                MessagePriorityEnum.DEFAULT.getPriority(), BY_PASS_RETRY);
+                MessagePriorityEnum.DEFAULT.getPriority(), BYPASS_RETRY);
     }
 
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,
             final OsgpException osgpException) {
         this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null,
-                MessagePriorityEnum.DEFAULT.getPriority(), BY_PASS_RETRY);
+                MessagePriorityEnum.DEFAULT.getPriority(), BYPASS_RETRY);
     }
 
-    // + message priority
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,
             final OsgpException osgpException, final int messagePriority) {
         this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null,
-                messagePriority, BY_PASS_RETRY);
+                messagePriority, BYPASS_RETRY);
     }
 
     public String getCorrelationUid() {

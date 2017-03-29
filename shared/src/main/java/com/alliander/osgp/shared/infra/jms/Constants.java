@@ -188,9 +188,9 @@ public class Constants {
     public static final String MAX_RETRIES = "MaxRetries";
 
     /**
-     * JMS constant for message field: ByPassRetry.
+     * JMS constant for message field: BypassRetry.
      */
-    public static final String BY_PASS_RETRY = "ByPassRetry";
+    public static final String BYPASS_RETRY = "BypassRetry";
 
     // === DEPRECATED ===
 

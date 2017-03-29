@@ -32,8 +32,8 @@ public class WebServiceMessageCallbackHeaderFieldsAdder implements WebServiceMes
         final SoapHeader header = soapMessage.getSoapHeader();
 
         this.keyValues.entrySet().forEach(k -> {
-            final SoapHeaderElement messagePriorityElement = header.addHeaderElement(new QName(NAMESPACE, k.getKey()));
-            messagePriorityElement.setText(k.getValue());
+            final SoapHeaderElement headerElement = header.addHeaderElement(new QName(NAMESPACE, k.getKey()));
+            headerElement.setText(k.getValue());
         });
     }
 
