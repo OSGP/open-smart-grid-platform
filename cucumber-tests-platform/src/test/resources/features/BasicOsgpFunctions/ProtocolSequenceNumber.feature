@@ -3,18 +3,18 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
   I want to ...
   In order to ...
 
-  @OslpMockServer
+  @OslpMockServer @Skip
   Scenario Outline: Valid sequence number ranges
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a start device response "OK" over OSLP
-    And the device adds "<AddNumberToSequenceNumber>" to the sequencenumber in the OSLP response
+    And the device returns a start device response "OK" over "<Protocol>"
+    And the device adds "<AddNumberToSequenceNumber>" to the sequencenumber in the "<Protocol>" response
     When receiving a start device test request
       | DeviceIdentification | TEST1024000000001 |
     Then the start device async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a start device OSLP message is sent to device "TEST1024000000001"
+    And a start device "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a start device response message for device "TEST1024000000001"
       | Result | OK |
 
@@ -34,18 +34,18 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
       | OSLP ELSTER |                         5 |
       | OSLP ELSTER |                         6 |
 
-  @OslpMockServer
+  @OslpMockServer @Skip
   Scenario Outline: Invalid sequence number ranges
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a start device response "OK" over OSLP
-    And the device adds "<AddNumberToSequenceNumber>" to the sequencenumber in the OSLP response
+    And the device returns a start device response "OK" over "<Protocol>"
+    And the device adds "<AddNumberToSequenceNumber>" to the sequencenumber in the "<Protocol>" response
     When receiving a start device test request
       | DeviceIdentification | TEST1024000000001 |
     Then the start device async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a start device OSLP message is sent to device "TEST1024000000001"
+    And a start device "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers no start device test response message for device "TEST1024000000001"
 
     Examples: 

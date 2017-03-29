@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering;
+package com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.monitoring;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -18,14 +18,15 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGene
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.SmartMeteringBaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
-public class SmartMeteringMonitoringManagementClient extends SmartMeteringBaseClient {
+public class SmartMeteringMonitoringClient extends SmartMeteringBaseClient {
 
     @Autowired
-    private DefaultWebServiceTemplateFactory smartMeteringMonitoringManagementWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringMonitoringWstf;
 
     public ProfileGenericDataAsyncResponse requestProfileGenericData(final ProfileGenericDataRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
@@ -42,7 +43,6 @@ public class SmartMeteringMonitoringManagementClient extends SmartMeteringBaseCl
     }
 
     private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        return this.smartMeteringMonitoringManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
+        return this.smartMeteringMonitoringWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
     }
 }

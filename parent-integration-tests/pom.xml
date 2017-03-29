@@ -42,7 +42,7 @@
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
     <osgp.dlms.version>${project.version}</osgp.dlms.version>
-    <osgp.iec61850.simulator.version>4.1.0-SNAPSHOT</osgp.iec61850.simulator.version>
+    <osgp.iec61850.simulator.version>4.9.0-SNAPSHOT</osgp.iec61850.simulator.version>
     <spring.version>4.3.5.RELEASE</spring.version>
     <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
     <spring.data.version>1.9.6.RELEASE</spring.data.version>
@@ -58,7 +58,6 @@
     <junit.version>4.11</junit.version>
     <joda.version>2.4</joda.version>
     <bonecp.version>0.8.0.RELEASE</bonecp.version>
-    <flyway.version>2.3.1</flyway.version>
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.5</apache.httpcomponents.version>
@@ -495,13 +494,6 @@
         <version>${bonecp.version}</version>
       </dependency>
 
-      <!-- Flyway (DB Migration) -->
-      <dependency>
-        <groupId>com.googlecode.flyway</groupId>
-        <artifactId>flyway-core</artifactId>
-        <version>${flyway.version}</version>
-      </dependency>
-
       <!-- Jackson (JSON) -->
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -751,11 +743,6 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${maven.compiler.plugin.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>${maven.project.info.reports.plugin.version}</version>
         </plugin>
@@ -910,13 +897,6 @@
                 <skipTests>${skipTests}</skipTests>
               </configuration>
             </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco.version}</version>
-          <executions>
             <!-- Reset the code coverage before the integration tests are 
               started. Ensures Tomcat startup code execution is ignored in report -->
             <execution>

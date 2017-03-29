@@ -277,7 +277,6 @@ public class DlmsDeviceSteps {
             dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().enable();
             dlmsDeviceBuilder.getMasterSecurityKeyBuilder().enable();
             dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
-
         }
 
         final DlmsDevice dlmsDevice = dlmsDeviceBuilder.build();

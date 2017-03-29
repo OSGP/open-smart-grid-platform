@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -435,6 +437,30 @@ public class Helpers {
         }
 
         return getString(settings, key);
+    }
+
+    public static byte[] getHexDecoded(final Map<String, String> settings, final String key,
+            final String defaultValue) {
+        try {
+            if (!settings.containsKey(key)) {
+                return Hex.decodeHex(defaultValue.toCharArray());
+            } else {
+                return Hex.decodeHex(settings.get(key).toCharArray());
+            }
+        } catch (final DecoderException e) {
+            throw new IllegalArgumentException("Could not hex decode value for key " + key, e);
+        }
+
+    }
+
+    public static Byte getByte(final Map<String, String> settings, final String key, final Byte defaultValue) {
+
+        if (!settings.containsKey(key)) {
+            return defaultValue;
+        }
+
+        final Byte value = Byte.parseByte(settings.get(key));
+        return value;
     }
 
     /**
