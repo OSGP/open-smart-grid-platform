@@ -7,10 +7,12 @@
  */
 package com.alliander.osgp.domain.core.repositories;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -20,4 +22,7 @@ import com.alliander.osgp.domain.core.entities.Event;
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
 
     List<Event> findByDevice(Device device);
+
+    @Query("SELECT e.device.id as device,max(e.dateTime) as dateTime FROM Event e WHERE e.device IN (?1) GROUP BY e.device.id")
+    List<Object> findLatestEventForEveryDevice(Collection<Device> devices);
 }

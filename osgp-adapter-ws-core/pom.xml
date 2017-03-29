@@ -159,12 +159,6 @@
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
-    <!-- Flyway (DB Migration) -->
-    <dependency>
-      <groupId>com.googlecode.flyway</groupId>
-      <artifactId>flyway-core</artifactId>
-    </dependency>
-
     <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>

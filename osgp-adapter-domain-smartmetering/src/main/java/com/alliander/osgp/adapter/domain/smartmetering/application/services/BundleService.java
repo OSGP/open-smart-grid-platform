@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
@@ -43,9 +42,6 @@ public class BundleService {
 
     @Autowired
     private DomainHelperService domainHelperService;
-
-    @Autowired
-    private ManagementMapper managementMapper;
 
     @Autowired
     private ActionMapperService actionMapperService;

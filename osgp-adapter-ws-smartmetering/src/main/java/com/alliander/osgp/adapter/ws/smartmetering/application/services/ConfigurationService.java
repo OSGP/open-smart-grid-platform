@@ -26,6 +26,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
@@ -427,10 +428,36 @@ public class ConfigurationService {
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.REPLACE_KEYS.toString(),
                 messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(keySet).build();
-        // @formatter:on
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueSetClockConfigurationRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            final SetClockConfigurationRequestData clockConfigurationRequestData, final int messagePriority,
+            final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_CLOCK_CONFIGURATION);
+
+        LOGGER.debug("enqueueSetClockConfigurationRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_CLOCK_CONFIGURATION.toString(), messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(clockConfigurationRequestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
