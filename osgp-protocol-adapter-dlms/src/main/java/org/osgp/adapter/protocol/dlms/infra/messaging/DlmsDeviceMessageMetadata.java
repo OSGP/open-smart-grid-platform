@@ -56,7 +56,7 @@ public class DlmsDeviceMessageMetadata {
         this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         this.retryCount = message.getIntProperty(Constants.RETRY_COUNT);
         this.messagePriority = message.getJMSPriority();
-        this.bypassRetry = message.getBooleanProperty(Constants.BY_PASS_RETRY);
+        this.bypassRetry = message.getBooleanProperty(Constants.BYPASS_RETRY);
     }
 
     public boolean bypassRetry() {

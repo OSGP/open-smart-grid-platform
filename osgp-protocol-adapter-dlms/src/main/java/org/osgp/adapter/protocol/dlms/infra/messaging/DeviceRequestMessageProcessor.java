@@ -116,7 +116,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             throws ProtocolAdapterException {
         if (!expected.isInstance(requestObject)) {
             throw new ProtocolAdapterException(
-                    String.format("The request object has an incorrect type. %s excepted but %s was found.",
+                    String.format("The request object has an incorrect type. %s expected but %s was found.",
                             expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
         }
     }
@@ -129,12 +129,12 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
 
-        messageMetadata.handleMessage(message);
-
-        final boolean isScheduled = this.getPropertyValue(message, Constants.IS_SCHEDULED)
-                && !this.getPropertyValue(message, Constants.BY_PASS_RETRY);
+        final boolean isScheduled = this.getBooleanPropertyValue(message, Constants.IS_SCHEDULED)
+                && !this.getBooleanPropertyValue(message, Constants.BYPASS_RETRY);
 
         try {
+            messageMetadata.handleMessage(message);
+
             /**
              * The happy flow for addMeter requires that the dlmsDevice does not
              * exist. Because the findDlmsDevice below throws a runtime
@@ -190,7 +190,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         }
     }
 
-    private boolean getPropertyValue(final ObjectMessage message, final String propertyName) throws JMSException {
+    private boolean getBooleanPropertyValue(final ObjectMessage message, final String propertyName) throws JMSException {
         return message.propertyExists(propertyName) ? message.getBooleanProperty(propertyName) : false;
     }
 
