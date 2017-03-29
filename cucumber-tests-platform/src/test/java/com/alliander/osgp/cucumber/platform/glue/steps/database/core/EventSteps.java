@@ -50,4 +50,19 @@ public class EventSteps extends GlueBase {
             Assert.assertEquals(event.getEventType(), getEnum(expectedEntity, Keys.KEY_EVENT, EventType.class));
         });
     }
+    
+    @Then("^the stored events are retrieved$")
+    public void theStoredEventsAreRetrieved(final String deviceIdentification) throws Throwable {
+
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final List<Event> events = this.eventRepository.findByDevice(device);
+        
+        
+        	
+            //final Device device = this.deviceRepository
+              //      .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+
+            
+        
+    }
 }
