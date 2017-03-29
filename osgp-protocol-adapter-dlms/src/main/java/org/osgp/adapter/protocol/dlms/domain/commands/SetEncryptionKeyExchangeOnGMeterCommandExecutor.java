@@ -40,8 +40,8 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
 @Component()
-public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
-        AbstractCommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
+        extends AbstractCommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -70,22 +70,24 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
     }
 
     @Override
-    public ProtocolMeterInfo fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+    public ProtocolMeterInfo fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
 
         this.checkActionRequestType(bundleInput);
         final GMeterInfoDto gMeterInfoDto = (GMeterInfoDto) bundleInput;
 
         try {
-            final DlmsDevice gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfoDto
-                    .getDeviceIdentification());
+            final DlmsDevice gMeterDevice = this.domainHelperService
+                    .findDlmsDevice(gMeterInfoDto.getDeviceIdentification());
 
             return new ProtocolMeterInfo(gMeterInfoDto.getChannel(), gMeterInfoDto.getDeviceIdentification(),
-                    gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice
-                    .getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
+                    gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey(),
+                    gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
 
         } catch (final FunctionalException e) {
             LOGGER.error("Error looking up G-Meter " + gMeterInfoDto.getDeviceIdentification(), e);
-            throw new ProtocolAdapterException("Error looking up G-Meter " + gMeterInfoDto.getDeviceIdentification(), e);
+            throw new ProtocolAdapterException("Error looking up G-Meter " + gMeterInfoDto.getDeviceIdentification(),
+                    e);
         }
     }
 
@@ -104,10 +106,10 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
             // Decrypt the cipher text using the private key.
-            final byte[] decryptedEncryptionKey = this.encryptionService.decrypt(Hex.decode(protocolMeterInfo
-                    .getEncryptionKey()));
-            final byte[] decryptedMasterKey = this.encryptionService.decrypt(Hex.decode(protocolMeterInfo
-                    .getMasterKey()));
+            final byte[] decryptedEncryptionKey = this.encryptionService
+                    .decrypt(Hex.decode(protocolMeterInfo.getEncryptionKey()));
+            final byte[] decryptedMasterKey = this.encryptionService
+                    .decrypt(Hex.decode(protocolMeterInfo.getMasterKey()));
 
             final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
@@ -135,16 +137,16 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
             throw new ConnectionException(e);
         } catch (final EncrypterException e) {
             LOGGER.error("Unexpected exception during decryption of security keys", e);
-            throw new ProtocolAdapterException("Unexpected exception during decryption of security keys, reason = "
-                    + e.getMessage());
+            throw new ProtocolAdapterException(
+                    "Unexpected exception during decryption of security keys, reason = " + e.getMessage());
         }
     }
 
     private void checkMethodResultCode(final MethodResult methodResultCode, final String methodParameterName)
             throws ProtocolAdapterException {
         if (methodResultCode == null || !MethodResultCode.SUCCESS.equals(methodResultCode.getResultCode())) {
-            throw new ProtocolAdapterException("Error while executing " + methodParameterName + ". Reason = "
-                    + methodResultCode.getResultCode());
+            throw new ProtocolAdapterException(
+                    "Error while executing " + methodParameterName + ". Reason = " + methodResultCode.getResultCode());
         }
     }
 
