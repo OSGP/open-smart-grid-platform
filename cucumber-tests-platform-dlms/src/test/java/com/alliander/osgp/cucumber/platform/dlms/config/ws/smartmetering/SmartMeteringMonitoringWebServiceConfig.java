@@ -24,10 +24,11 @@ public class SmartMeteringMonitoringWebServiceConfig extends BaseWebServiceConfi
     private ApplicationConfiguration configuration;
 
     @Bean
-    public DefaultWebServiceTemplateFactory smartMeteringMonitoringManagementWstf() {
-        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringMonitoringManagementMarshaller())
+    public DefaultWebServiceTemplateFactory smartMeteringMonitoringWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringMonitoringMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringMonitoringManagement))
+                .setTargetUri(
+                        this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringMonitoring))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
@@ -35,29 +36,30 @@ public class SmartMeteringMonitoringWebServiceConfig extends BaseWebServiceConfi
     }
 
     /**
-     * Method for creating the Marshaller for SmartMetering MonitoringManagement.
+     * Method for creating the Marshaller for SmartMetering Monitoring
+     * webservice.
      *
      * @return Jaxb2Marshaller
      */
     @Bean
-    public Jaxb2Marshaller smartMeteringMonitoringManagementMarshaller() {
+    public Jaxb2Marshaller smartMeteringMonitoringMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.configuration.contextPathSmartMeteringMonitoringManagement);
+        marshaller.setContextPath(this.configuration.contextPathSmartMeteringMonitoring);
 
         return marshaller;
     }
 
     /**
      * Method for creating the Marshalling Payload Method Processor for
-     * SmartMetering MonitoringManagement.
+     * SmartMetering Monitoring webservice.
      *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringMonitoringManagementMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringMonitoringManagementMarshaller(),
-                this.smartMeteringMonitoringManagementMarshaller());
+    public MarshallingPayloadMethodProcessor smartMeteringMonitoringMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringMonitoringMarshaller(),
+                this.smartMeteringMonitoringMarshaller());
     }
 
 }

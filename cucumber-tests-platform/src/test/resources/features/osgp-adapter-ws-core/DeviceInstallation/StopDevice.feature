@@ -8,12 +8,12 @@ Feature: CoreDeviceInstallation Device Stopping
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a stop device response "OK" over OSLP
+    And the device returns a stop device response "OK" over "<Protocol>"
     When receiving a stop device test request
       | DeviceIdentification | TEST1024000000001 |
     Then the stop device async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a stop device OSLP message is sent to device "TEST1024000000001"
+    And a stop device "<Protocol>" message is sent to device "TEST1024000000001"
     And the platform buffers a stop device response message for device "TEST1024000000001"
       | Result | OK |
 

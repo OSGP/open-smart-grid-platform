@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,9 +146,16 @@ public class Helpers {
     /**
      * This is a generic method which will translate the given string to a
      * datetime. Supported:
-     *
-     * now + 3 months tomorrow - 1 year yesterday + 2 weeks today at midday
-     * yesterday at midnight now at midday + 1 week now + 1 minutes
+     * <p>
+     * <ul>
+     * <li>now + 3 months
+     * <li>now + 1 minutes
+     * <li>tomorrow - 1 year
+     * <li>yesterday + 2 weeks
+     * <li>today at midday
+     * <li>yesterday at midnight
+     * <li>now at midday + 1 week
+     * </ul>
      *
      * @param dateString
      * @return
@@ -175,9 +184,9 @@ public class Helpers {
         final String offset = m.group(3);
         final String what = m.group(4);
 
-        Integer numberToAddOrSubstract = 0;
+        Integer numberToAdd = 0;
         if (!offset.isEmpty()) {
-            numberToAddOrSubstract = Integer.parseInt(offset);
+            numberToAdd = Integer.parseInt(offset);
         }
 
         final String whenPattern = "([a-z]*)[ ]*([a-z]*)[ ]*([a-z]*)?";
@@ -218,42 +227,42 @@ public class Helpers {
         if (op.equals("+")) {
             switch (what) {
             case "days":
-                retval = retval.plusDays(numberToAddOrSubstract);
+                retval = retval.plusDays(numberToAdd);
                 break;
             case "minutes":
-                retval = retval.plusMinutes(numberToAddOrSubstract);
+                retval = retval.plusMinutes(numberToAdd);
                 break;
             case "hours":
-                retval = retval.plusHours(numberToAddOrSubstract);
+                retval = retval.plusHours(numberToAdd);
                 break;
             case "weeks":
-                retval = retval.plusWeeks(numberToAddOrSubstract);
+                retval = retval.plusWeeks(numberToAdd);
                 break;
             case "months":
-                retval = retval.plusMonths(numberToAddOrSubstract);
+                retval = retval.plusMonths(numberToAdd);
                 break;
             case "years":
-                retval = retval.plusYears(numberToAddOrSubstract);
+                retval = retval.plusYears(numberToAdd);
             }
         } else {
             switch (what) {
             case "days":
-                retval = retval.minusDays(numberToAddOrSubstract);
+                retval = retval.minusDays(numberToAdd);
                 break;
             case "minutes":
-                retval = retval.minusMinutes(numberToAddOrSubstract);
+                retval = retval.minusMinutes(numberToAdd);
                 break;
             case "hours":
-                retval = retval.minusHours(numberToAddOrSubstract);
+                retval = retval.minusHours(numberToAdd);
                 break;
             case "weeks":
-                retval = retval.minusWeeks(numberToAddOrSubstract);
+                retval = retval.minusWeeks(numberToAdd);
                 break;
             case "months":
-                retval = retval.minusMonths(numberToAddOrSubstract);
+                retval = retval.minusMonths(numberToAdd);
                 break;
             case "years":
-                retval = retval.minusYears(numberToAddOrSubstract);
+                retval = retval.minusYears(numberToAdd);
             }
 
         }
@@ -435,6 +444,30 @@ public class Helpers {
         }
 
         return getString(settings, key);
+    }
+
+    public static byte[] getHexDecoded(final Map<String, String> settings, final String key,
+            final String defaultValue) {
+        try {
+            if (!settings.containsKey(key)) {
+                return Hex.decodeHex(defaultValue.toCharArray());
+            } else {
+                return Hex.decodeHex(settings.get(key).toCharArray());
+            }
+        } catch (final DecoderException e) {
+            throw new IllegalArgumentException("Could not hex decode value for key " + key, e);
+        }
+
+    }
+
+    public static Byte getByte(final Map<String, String> settings, final String key, final Byte defaultValue) {
+
+        if (!settings.containsKey(key)) {
+            return defaultValue;
+        }
+
+        final Byte value = Byte.parseByte(settings.get(key));
+        return value;
     }
 
     /**

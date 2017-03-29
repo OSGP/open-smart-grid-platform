@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering;
+package com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.adhoc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,8 +14,8 @@ import com.alliander.osgp.cucumber.platform.support.ws.BaseClient;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
-public class SmartMeteringAdHocManagementClient extends BaseClient {
+public class SmartMeteringAdHocClient extends BaseClient {
 
     @Autowired
-    private DefaultWebServiceTemplateFactory smartMeteringAdHocManagementWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringAdHocWstf;
 }

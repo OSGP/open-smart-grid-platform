@@ -31,10 +31,10 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
 
     @Autowired
-    private DefaultWebServiceTemplateFactory smartMeteringInstallationManagementWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringInstallationWstf;
 
     public AddDeviceAsyncResponse addDevice(final AddDeviceRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationManagementWstf
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (AddDeviceAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
@@ -45,14 +45,14 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationManagementWstf
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (AddDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
     public CoupleMbusDeviceAsyncResponse coupleMbusDevice(final CoupleMbusDeviceRequest request)
             throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationManagementWstf
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (CoupleMbusDeviceAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
@@ -63,14 +63,14 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationManagementWstf
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (CoupleMbusDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
     public DeCoupleMbusDeviceAsyncResponse deCoupleMbusDevice(final DeCoupleMbusDeviceRequest request)
             throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationManagementWstf
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (DeCoupleMbusDeviceAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
@@ -81,7 +81,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationManagementWstf
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (DeCoupleMbusDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
