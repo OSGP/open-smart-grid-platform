@@ -17,8 +17,8 @@ Feature: OslpAdapter Event notifications
       | Protocol    | <Protocol>    |
     And the event notification response contains
       | Status | OK |
-    Then retrieve recieved event notifications
-    Then the retrieve recieved event notifications response should contain the event notification's
+    Then the stored events are retrieved
+    And the retrieve recieved event notifications response should contain the event notifications
       | Timestamp            |  |
       | DeviceIdentification |  |
       | EventType            |  |
