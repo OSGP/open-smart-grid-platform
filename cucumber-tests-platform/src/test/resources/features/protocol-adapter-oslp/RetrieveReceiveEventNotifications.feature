@@ -6,42 +6,37 @@ Feature: OslpAdapter Event notifications
   @OslpMockServer
   Scenario Outline: Successfully retrieve event notification
     Given an organization
-      | OrganizationIdentification | <OrganizationIdentification> |
+      | OrganizationIdentification | GemeenteArnhem |
     And an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device sends an event notification request to the platform over "<Protocol>"
+    When the device sends an event notification request to the platform over "<Protocol>"
       | Event       | <EventType>   |
       | Description | <Description> |
-      | Index       | <Index>       |
+      | Index       |             1 |
       | Protocol    | <Protocol>    |
     And the event notification response contains
       | Status | OK |
-    Then the stored events are retrieved
-    And the retrieve recieved event notifications response should contain the event notifications
-      | Timestamp            |  |
-      | DeviceIdentification |  |
-      | EventType            |  |
-      | Description          |  |
-      | Index                |  |
-      
-      #Storing of events, something similar should be able to retrieve events
-      And the event is stored
+    Then the stored events from "TEST1024000000001" are retrieved and contain
+      | EventType   | <EventType>   |
+      | Description | <Description> |
+      | Index       |             1 |
 
     Examples: 
-      | OrganizationIdentification | Protocol | EventType               | Description  | index |
-      | GemeenteArnhem             | OSLP     | LIGHT_EVENTS_LIGHT_ON   | Light is on  |     1 |
-      | GemeenteArhnem             | OSLP     | TARIFF_EVENTS_TARIFF_ON | Tariff is on |     1 |
-      
-      
-      
-      @OslpMockServer
-  Scenario Outline: Retrieve multiple event notifications
-  Given an organization
-      | OrganizationIdentification | <OrganizationIdentification> |
-    And an ssld oslp device
-      | DeviceIdentification | TEST1024000000001 |
-      | Protocol             | <Protocol>        |
-  Examples:
- 	|OrganizationIdentification|Protocol|
-	|GemeenteArnhem|OSLP|
+      | Protocol    | EventType               | Description  |
+      | OSLP        | LIGHT_EVENTS_LIGHT_ON   | Light is on  |
+      | OSLP        | TARIFF_EVENTS_TARIFF_ON | Tariff is on |
+      | OSLP ELSTER | LIGHT_EVENTS_LIGHT_ON   | Light is on  |
+      | OSLP ELSTER | TARIFF_EVENTS_TARIFF_ON | Tariff is on |
+#
+  #@OslpMockServer
+  #Scenario Outline: Retrieve multiple event notifications
+    #Given an organization
+      #| OrganizationIdentification | <OrganizationIdentification> |
+    #And an ssld oslp device
+      #| DeviceIdentification | TEST1024000000001 |
+      #| Protocol             | <Protocol>        |
+#
+    #Examples: 
+      #| OrganizationIdentification | Protocol |
+      #| GemeenteArnhem             | OSLP     |

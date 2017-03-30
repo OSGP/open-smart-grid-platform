@@ -24,6 +24,7 @@ import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
+import com.google.protobuf.ByteString;
 
 import cucumber.api.java.en.Then;
 
@@ -50,21 +51,31 @@ public class EventSteps extends GlueBase {
             Assert.assertEquals(event.getEventType(), getEnum(expectedEntity, Keys.KEY_EVENT, EventType.class));
         });
     }
-    
-    @Then("^the stored events are retrieved$")
-    public void theStoredEventsAreRetrieved(final String deviceIdentification) throws Throwable {
 
+    @Then("^the stored events from \"([^\"]*)\" are retrieved and contain$")
+    public void theStoredEventsAreRetrieved(final String deviceIdentification,
+            final Map<String, String> expectedResponse) throws Throwable {
+        System.out.println("THESTOREDEVENTSARERETRIEVED");
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         final List<Event> events = this.eventRepository.findByDevice(device);
-        
-        
-        
-        
-        	
-            //final Device device = this.deviceRepository
-              //      .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
 
-            
-        
+        for (final Event e : events) {
+            Assert.assertEquals(getString(expectedResponse, Keys.EVENT_TYPE), e.getEventType().toString());
+            Assert.assertEquals(getString(expectedResponse, Keys.KEY_DESCRIPTION), e.getDescription().toString());
+            Assert.assertEquals(ByteString.copyFrom(getString(expectedResponse, Keys.KEY_INDEX).getBytes()).byteAt(0),
+                    (int) e.getIndex());
+            // , getString(expectedEntity, Keys.KEY_DESCRIPTION));
+        }
+
+        // | Timestamp | |
+        // | DeviceIdentification | |
+        // | EventType | |
+        // | Description | |
+        // | Index | |
+
+        // final Device device = this.deviceRepository
+        // .findByDeviceIdentification(getString(expectedEntity,
+        // Keys.KEY_DEVICE_IDENTIFICATION));
+
     }
 }

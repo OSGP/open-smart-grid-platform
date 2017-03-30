@@ -279,4 +279,6 @@ public class Keys {
     public static final String SMS_TYPE = "SmsType";
     public static final String KEY_LIGHTMEASUREMENT_LASTMESSAGE = "LastMessage";
     public static final String SMS_INDEX = "SmsIndex";
+    public static final String TIMESTAMP = "TimeStamp";
+    public static final String EVENT_TYPE = "EventType";
 }
