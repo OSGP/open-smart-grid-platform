@@ -39,7 +39,7 @@ public class SoapHeaderInterceptor implements EndpointInterceptor {
 
         /*
          * Finally, set the property value into the message context, so it can
-         * be used in final the end point later.
+         * be used in the end point later.
          */
         messageContext.setProperty(this.contextPropertyName, value);
 
