@@ -78,10 +78,9 @@ import cucumber.api.java.en.When;
  */
 public class OslpDeviceSteps {
 
-		
-	@Autowired
+    @Autowired
     private DeviceRepository deviceRepository;
-	
+
     @Autowired
     private CoreDeviceConfiguration configuration;
 
@@ -846,31 +845,30 @@ public class OslpDeviceSteps {
     @Given("^the device sends a register device request to the platform over \"([^\"]*)\"$")
     public void theDeviceSendsARegisterDeviceRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
-    	try{
-        final OslpEnvelope request = this
-                .createEnvelopeBuilder(
-                        getString(settings, Keys.KEY_DEVICE_UID,
-                                com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocoloslp.OslpDeviceSteps.DEFAULT_DEVICE_UID),
-                        this.oslpMockServer.getSequenceNumber())
-                .withPayloadMessage(Message.newBuilder().setRegisterDeviceRequest(Oslp.RegisterDeviceRequest
-                        .newBuilder()
-                        .setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                                Defaults.DEFAULT_DEVICE_IDENTIFICATION))
-                        .setIpAddress(ByteString.copyFrom(InetAddress
-                                .getByName(getString(settings, Keys.IP_ADDRESS, Defaults.LOCALHOST)).getAddress()))
-                        .setDeviceType(getEnum(settings, Keys.KEY_DEVICE_TYPE, DeviceType.class, DeviceType.PSLD))
-                        .setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE))
-                        .setRandomDevice(getInteger(settings, Keys.RANDOM_DEVICE, Defaults.RANDOM_DEVICE))).build())
-                .build();
-        
-        this.send(request, settings);	
-        }catch(IOException ioe){
-        	ScenarioContext.Current().put("Error", ioe);
-        }catch(IllegalArgumentException iae){
-        	ScenarioContext.Current().put("Error", iae);
+        try {
+            final OslpEnvelope request = this
+                    .createEnvelopeBuilder(
+                            getString(settings, Keys.KEY_DEVICE_UID,
+                                    com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocoloslp.OslpDeviceSteps.DEFAULT_DEVICE_UID),
+                            this.oslpMockServer.getSequenceNumber())
+                    .withPayloadMessage(Message.newBuilder().setRegisterDeviceRequest(Oslp.RegisterDeviceRequest
+                            .newBuilder()
+                            .setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
+                                    Defaults.DEFAULT_DEVICE_IDENTIFICATION))
+                            .setIpAddress(ByteString.copyFrom(InetAddress
+                                    .getByName(getString(settings, Keys.IP_ADDRESS, Defaults.LOCALHOST)).getAddress()))
+                            .setDeviceType(getEnum(settings, Keys.KEY_DEVICE_TYPE, DeviceType.class, DeviceType.PSLD))
+                            .setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE))
+                            .setRandomDevice(getInteger(settings, Keys.RANDOM_DEVICE, Defaults.RANDOM_DEVICE))).build())
+                    .build();
+
+            this.send(request, settings);
+        } catch (final IOException ioe) {
+            ScenarioContext.Current().put("Error", ioe);
+        } catch (final IllegalArgumentException iae) {
+            ScenarioContext.Current().put("Error", iae);
         }
-        
-        
+
     }
 
     @Given("^the device sends an event notification request to the platform over \"([^\"]*)\"$")
@@ -900,8 +898,8 @@ public class OslpDeviceSteps {
      * Verify that we have received a response over OSLP/OSLP ELSTER
      *
      * @param expectedResponse
-     * @throws DeviceSimulatorException 
-     * @throws IOException 
+     * @throws DeviceSimulatorException
+     * @throws IOException
      */
     @Then("^the event notification response contains$")
     public void theEventNotificationResponseContains(final Map<String, String> expectedResponse) {
@@ -911,44 +909,43 @@ public class OslpDeviceSteps {
 
         Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
     }
-    
+
     /**
      * Verify that we have received a response over OSLP/OSLP ELSTER
-     * 
+     *
      * @param expectedResponse
      */
     @Then("^the register device response contains$")
-    public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse) throws IOException, DeviceSimulatorException {
-    	final Exception e = (Exception)ScenarioContext.Current().get("Error");
-    	if (e == null){
-        	final Message responseMessage = this.oslpMockServer.waitForResponse();
+    public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse)
+            throws IOException, DeviceSimulatorException {
+        final Exception e = (Exception) ScenarioContext.Current().get("Error");
+        if (e == null) {
+            final Message responseMessage = this.oslpMockServer.waitForResponse();
 
             final RegisterDeviceResponse response = responseMessage.getRegisterDeviceResponse();
 
-            Assert.assertNotNull(response.getCurrentTime()); 
+            Assert.assertNotNull(response.getCurrentTime());
             Assert.assertNotNull(response.getLocationInfo().getLongitude());
             Assert.assertNotNull(response.getLocationInfo().getLatitude());
             Assert.assertNotNull(response.getLocationInfo().getTimeOffset());
-            
+
             Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
-    	}
-    	else{
-    		 Assert.assertEquals(getString(expectedResponse, Keys.KEY_MESSAGE), e.getMessage());
-    	}
-    	
+        } else {
+            Assert.assertEquals(getString(expectedResponse, Keys.KEY_MESSAGE), e.getMessage());
+        }
+
     }
-    
+
     @Then("^the IpAddress for the device \"([^\"]*)\" should be \"([^\"]*)\"$")
-    public void theIpAddressForTheDeviceShouldBe(final String deviceIdentification, final String ipAddress){
+    public void theIpAddressForTheDeviceShouldBe(final String deviceIdentification, final String ipAddress) {
 
-    	final Device device = deviceRepository.findByDeviceIdentification(deviceIdentification);
-    	if(ipAddress.equals("")){
-    		Assert.assertNull(device.getIpAddress());
-    	}else{
-        	Assert.assertEquals(ipAddress,device.getIpAddress());
-    	}
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        if (ipAddress.equals("")) {
+            Assert.assertNull(device.getIpAddress());
+        } else {
+            Assert.assertEquals(ipAddress, device.getIpAddress());
+        }
     }
-
 
     public OslpEnvelope.Builder createEnvelopeBuilder(final String deviceUid, final Integer sequenceNumber) {
         final byte[] sequenceNumberBytes = new byte[2];
