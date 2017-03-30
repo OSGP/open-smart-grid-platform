@@ -628,7 +628,7 @@ public class FirmwareManagementService {
 
         final Device device = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
 
-        return this.writableDeviceFirmwareRepository.findByDevice(device);
+        return this.writableDeviceFirmwareRepository.findByDeviceOrderByInstallationDateAsc(device);
     }
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
