@@ -148,6 +148,7 @@ public class PersistenceConfig extends AbstractConfig {
         flyway.setBaselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
         flyway.setBaselineOnMigrate(
                 Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
+        flyway.setOutOfOrder(true);
 
         flyway.setDataSource(this.getDataSource());
         return flyway;
