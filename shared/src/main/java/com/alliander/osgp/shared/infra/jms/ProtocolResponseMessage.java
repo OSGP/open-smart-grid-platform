@@ -18,7 +18,6 @@ public class ProtocolResponseMessage extends ResponseMessage {
      * Serial Version UID.
      */
     private static final long serialVersionUID = -7720502773704936266L;
-    private static final boolean DEFAULT_BYPASS_RETRY = false;
 
     private final String domain;
     private final String domainVersion;
