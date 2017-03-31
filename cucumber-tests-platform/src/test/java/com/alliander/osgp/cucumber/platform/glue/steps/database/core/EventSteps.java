@@ -55,27 +55,21 @@ public class EventSteps extends GlueBase {
     @Then("^the stored events from \"([^\"]*)\" are retrieved and contain$")
     public void theStoredEventsAreRetrieved(final String deviceIdentification,
             final Map<String, String> expectedResponse) throws Throwable {
-        System.out.println("THESTOREDEVENTSARERETRIEVED");
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        final List<Event> events = this.eventRepository.findByDevice(device);
+
+        final List<Event> events = this.retrieveStoredEvents(deviceIdentification);
 
         for (final Event e : events) {
             Assert.assertEquals(getString(expectedResponse, Keys.EVENT_TYPE), e.getEventType().toString());
             Assert.assertEquals(getString(expectedResponse, Keys.KEY_DESCRIPTION), e.getDescription().toString());
             Assert.assertEquals(ByteString.copyFrom(getString(expectedResponse, Keys.KEY_INDEX).getBytes()).byteAt(0),
                     (int) e.getIndex());
-            // , getString(expectedEntity, Keys.KEY_DESCRIPTION));
+
         }
 
-        // | Timestamp | |
-        // | DeviceIdentification | |
-        // | EventType | |
-        // | Description | |
-        // | Index | |
+    }
 
-        // final Device device = this.deviceRepository
-        // .findByDeviceIdentification(getString(expectedEntity,
-        // Keys.KEY_DEVICE_IDENTIFICATION));
-
+    public List<Event> retrieveStoredEvents(final String deviceIdentification) {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        return this.eventRepository.findByDevice(device);
     }
 }

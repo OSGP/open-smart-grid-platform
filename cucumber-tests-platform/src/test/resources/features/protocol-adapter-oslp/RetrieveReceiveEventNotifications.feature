@@ -28,15 +28,27 @@ Feature: OslpAdapter Event notifications
       | OSLP        | TARIFF_EVENTS_TARIFF_ON | Tariff is on |
       | OSLP ELSTER | LIGHT_EVENTS_LIGHT_ON   | Light is on  |
       | OSLP ELSTER | TARIFF_EVENTS_TARIFF_ON | Tariff is on |
-#
-  #@OslpMockServer
-  #Scenario Outline: Retrieve multiple event notifications
-    #Given an organization
-      #| OrganizationIdentification | <OrganizationIdentification> |
-    #And an ssld oslp device
-      #| DeviceIdentification | TEST1024000000001 |
-      #| Protocol             | <Protocol>        |
-#
-    #Examples: 
-      #| OrganizationIdentification | Protocol |
-      #| GemeenteArnhem             | OSLP     |
+
+  @OslpMockServer
+  Scenario Outline: Retrieve multiple event notifications
+    Given an organization
+      | OrganizationIdentification | GemeenteArnhem |
+    And an ssld oslp device
+      | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
+    When the device sends an event notification request to the platform over "<Protocol>"
+      | RequestedPage | <RequestedPage> |
+      | PageSize      | <PageSize>      |
+
+    Examples: 
+      | Protocol    | TotalNumber | PageSize | RequestedPage | TotalPages | Number |
+      | OSLP        |           0 |       10 |             1 |          0 |      0 |
+      | OSLP        |           1 |       10 |             1 |          1 |      1 |
+      | OSLP        |          15 |       10 |             1 |          2 |     10 |
+      | OSLP        |          15 |       10 |             2 |          2 |      5 |
+      | OSLP        |         500 |      400 |             1 |          2 |    300 |
+      | OSLP ELSTER |           0 |       10 |             1 |          0 |      0 |
+      | OSLP ELSTER |           1 |       10 |             1 |          1 |      1 |
+      | OSLP ELSTER |          15 |       10 |             1 |          2 |     10 |
+      | OSLP ELSTER |          15 |       10 |             2 |          2 |      5 |
+      | OSLP ELSTER |         500 |      400 |             1 |          2 |    300 |
