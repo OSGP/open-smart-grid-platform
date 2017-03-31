@@ -87,8 +87,4 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String RESULT = "Result";
     public static final String DAYLIGHT_SAVINGS_ACTIVE = "DST";
     public static final String DEVIATION = "Deviation";
-
-    public static final String SCHEDULED_FOR = "Scheduledfor";
-    public static final String DEVICEOPERATION_TAG = "Deviceoperation";
-    public static final String KEY_SCHEDULED_DATE = "ScheduledDateKey";
 }
