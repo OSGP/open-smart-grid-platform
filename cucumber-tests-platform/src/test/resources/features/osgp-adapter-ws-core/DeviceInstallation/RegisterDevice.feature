@@ -100,7 +100,7 @@ Feature: CoreDeviceInstallation Device Registration
       | DeviceUid            | fIX1fFGaO1S3Ple6  |
       | IpAddress            | 127.0.0.3         |
       | DeviceType           | SSLD              |
-    And the register device response contains
+    When the register device response contains
       | Status | OK |
     Then the IpAddress for the device "TEST1024000000001" should be "127.0.0.3"
     And the IpAddress for the device "TEST1024000000002" should be ""
