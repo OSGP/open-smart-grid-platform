@@ -1,8 +1,8 @@
 DO $$
 BEGIN
 
-IF NOT EXISTS (SELECT constraint_name FROM information_schema.constraint_column_usage 
-	WHERE table_name = 'protocol_info' AND constraint_name = 'unique_protocol_version')
+IF NOT EXISTS (SELECT 1 FROM pg_constraint 
+	WHERE conname = 'unique_protocol_version')
 
 THEN
 
@@ -12,6 +12,3 @@ END IF;
 
 END;
 $$
-
-
-
