@@ -10,10 +10,10 @@
     </jxb:schemaBindings>
   </jxb:bindings>
 
-  <jxb:bindings schemaLocation="adhocmanagement.xsd">
+  <jxb:bindings schemaLocation="distributionautomation.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.adhocmanagement"></jxb:package>
+        name="com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
