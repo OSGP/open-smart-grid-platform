@@ -7,7 +7,7 @@ Feature: OslpAdapter Event notifications
   #Scenario Outline: Successfully retrieve event notification
     #Given an organization
       #| OrganizationIdentification | GemeenteArnhem |
-    #And an ssld oslp device
+    #Given an ssld oslp device
       #| DeviceIdentification | TEST1024000000001 |
       #| Protocol             | <Protocol>        |
     #When the device sends an event notification request to the platform over "<Protocol>"
@@ -28,7 +28,7 @@ Feature: OslpAdapter Event notifications
       #| OSLP        | TARIFF_EVENTS_TARIFF_ON | Tariff is on |
       #| OSLP ELSTER | LIGHT_EVENTS_LIGHT_ON   | Light is on  |
       #| OSLP ELSTER | TARIFF_EVENTS_TARIFF_ON | Tariff is on |
-
+  
   @OslpMockServer
   Scenario Outline: Retrieve multiple event notifications
     Given an organization
@@ -36,14 +36,16 @@ Feature: OslpAdapter Event notifications
     And an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    When the device sends an event notification request to the platform over "<Protocol>"
-    | DeviceIdentification | TEST1024000000001 |
-      | RequestedPage | <RequestedPage> |
-      | PageSize      | <PageSize>      |
+    When retrieve event notifications request with requestPage and pageSize
+      | DeviceIdentification | TEST1024000000001 |
+     
+      | RequestedPage        | <RequestedPage>   |
+      | PageSize             | <PageSize>        |
+      
 
     Examples: 
-      | Protocol    | TotalNumber | PageSize | RequestedPage | TotalPages | Number |
-      | OSLP        |           0 |       10 |             1 |          0 |      0 |
+      | Protocol | TotalNumber | PageSize | RequestedPage | TotalPages | Number |
+      | OSLP     |           0 |       10 |             1 |          0 |      0 |
       #| OSLP        |           1 |       10 |             1 |          1 |      1 |
       #| OSLP        |          15 |       10 |             1 |          2 |     10 |
       #| OSLP        |          15 |       10 |             2 |          2 |      5 |

@@ -896,6 +896,12 @@ public class OslpDeviceSteps {
         Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
     }
 
+    @When("^retrieve event notifications request with requestPage and pageSize$")
+    public void retrieveEventNotificationsRequestWithRequestPageAndPageSize(final String requestedPage,
+            final String pageSize) {
+
+    }
+
     public OslpEnvelope.Builder createEnvelopeBuilder(final String deviceUid, final Integer sequenceNumber) {
         final byte[] sequenceNumberBytes = new byte[2];
         sequenceNumberBytes[0] = (byte) (sequenceNumber >>> 8);
