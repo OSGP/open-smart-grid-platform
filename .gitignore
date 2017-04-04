@@ -18,8 +18,11 @@ local.properties
 .settings/
 .loadpath
 
+####################
+# IntelliJ
+####################
 *.iml
-**/*.iml
+osgp-dto/osgp-dto.iml
 .idea/
 
 # External tool builders
