@@ -29,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
@@ -49,7 +51,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     @Override
     public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws TechnicalException {
+            throws TechnicalException, FunctionalException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice(device);
@@ -67,17 +69,15 @@ public class Hls5Connector extends SecureDlmsConnector {
                 // Queue key recovery process.
                 this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
-            final String msg = "Error creating conection for " + device.getDeviceIdentification() + " "
+            final String msg = "Error creating connection for " + device.getDeviceIdentification() + " "
                     + device.getIpAddress() + ":" + device.getPort() + ", " + device.isUseHdlc() + ", "
                     + device.isUseSn() + ": " + e.getMessage();
             throw new ConnectionException(msg, e);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    "decryption on security keys went wrong for device: " + device.getDeviceIdentification());
+            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
     }
-
 
     @Override
     protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)

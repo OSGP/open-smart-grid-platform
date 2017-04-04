@@ -15,6 +15,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public class DlmsConnectionHolder implements AutoCloseable {
@@ -106,8 +107,9 @@ public class DlmsConnectionHolder implements AutoCloseable {
      * @Throws IllegalStateException When there is already a connection set.
      * @throws TechnicalException
      *             When an exceptions occurs while creating the exception.
+     * @throws FunctionalException
      */
-    public void connect() throws TechnicalException {
+    public void connect() throws TechnicalException, FunctionalException {
         if (this.dlmsConnection != null) {
             throw new IllegalStateException("Cannot create a new connection because a connection already exists.");
         }

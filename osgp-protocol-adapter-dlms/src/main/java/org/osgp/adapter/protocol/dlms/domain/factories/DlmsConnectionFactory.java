@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Component
@@ -52,11 +53,12 @@ public class DlmsConnectionFactory {
      *            debug logging will be done.
      * @return a holder providing access to an open DLMS connection as well as
      *         an optional message listener active in the connection.
+     * @throws FunctionalException
      * @throws IOException
      * @throws OperationNotSupportedException
      */
     public DlmsConnectionHolder getConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws TechnicalException {
+            throws TechnicalException, FunctionalException {
 
         DlmsConnector connector;
         if (device.isHls5Active()) {

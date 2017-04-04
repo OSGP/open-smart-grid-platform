@@ -18,6 +18,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public class Lls0Connector extends DlmsConnector {
@@ -40,7 +41,7 @@ public class Lls0Connector extends DlmsConnector {
 
     @Override
     public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws TechnicalException {
+            throws TechnicalException, FunctionalException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice(device);

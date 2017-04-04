@@ -13,13 +13,15 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public abstract class DlmsConnector {
     static final int DLMS_PUBLIC_CLIENT_ID = 16;
 
-    public abstract DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) throws TechnicalException;
-    
+    public abstract DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+            throws TechnicalException, FunctionalException;
+
     protected void checkDevice(final DlmsDevice device) {
         if (device == null) {
             throw new IllegalStateException("Can not connect because no device is set.");
