@@ -72,7 +72,8 @@ public class Hls5Connector extends SecureDlmsConnector {
             final String msg = "Error creating connection for " + device.getDeviceIdentification() + " "
                     + device.getIpAddress() + ":" + device.getPort() + ", " + device.isUseHdlc() + ", "
                     + device.isUseSn() + ": " + e.getMessage();
-            throw new ConnectionException(msg, e);
+            throw new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS,
+                    (new ConnectionException(msg, e)));
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
             throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
