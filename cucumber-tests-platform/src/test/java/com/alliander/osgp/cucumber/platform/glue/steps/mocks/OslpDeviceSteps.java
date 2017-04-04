@@ -919,7 +919,7 @@ public class OslpDeviceSteps {
     public void theRegisterDeviceResponseContains(final Map<String, String> expectedResponse)
             throws IOException, DeviceSimulatorException {
         final Exception e = (Exception) ScenarioContext.Current().get("Error");
-        if (e == null) {
+        if (e == null || getString(expectedResponse, Keys.MESSAGE) == null) {
             final Message responseMessage = this.oslpMockServer.waitForResponse();
 
             final RegisterDeviceResponse response = responseMessage.getRegisterDeviceResponse();
@@ -931,7 +931,7 @@ public class OslpDeviceSteps {
 
             Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
         } else {
-            Assert.assertEquals(getString(expectedResponse, Keys.KEY_MESSAGE), e.getMessage());
+            Assert.assertEquals(getString(expectedResponse, Keys.MESSAGE), e.getMessage());
         }
 
     }
