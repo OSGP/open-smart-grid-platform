@@ -42,12 +42,12 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 
 @Component()
-public class GetProfileGenericDataCommandExecutor extends
-        AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponseDto> {
+public class GetProfileGenericDataCommandExecutor
+        extends AbstractCommandExecutor<ProfileGenericDataRequestDataDto, ProfileGenericDataResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetProfileGenericDataCommandExecutor.class);
 
@@ -66,18 +66,18 @@ public class GetProfileGenericDataCommandExecutor extends
     private DlmsHelperService dlmsHelperService;
 
     public GetProfileGenericDataCommandExecutor() {
-        super(ProfileGenericDataRequestDto.class);
+        super(ProfileGenericDataRequestDataDto.class);
     }
 
     @Override
     public ProfileGenericDataResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ProfileGenericDataRequestDto profileGenericDataRequestDto) throws ProtocolAdapterException {
+            final ProfileGenericDataRequestDataDto profileGenericDataRequestDataDto) throws ProtocolAdapterException {
 
-        final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDto.getObisCode();
+        final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDataDto.getObisCode();
         final ObisCode obisCode = this.makeObisCode(obisCodeValues);
-        final DateTime beginDateTime = new DateTime(profileGenericDataRequestDto.getBeginDate());
-        final DateTime endDateTime = new DateTime(profileGenericDataRequestDto.getEndDate());
-        final List<CaptureObjectDefinitionDto> selectedValues = profileGenericDataRequestDto.getSelectedValues();
+        final DateTime beginDateTime = new DateTime(profileGenericDataRequestDataDto.getBeginDate());
+        final DateTime endDateTime = new DateTime(profileGenericDataRequestDataDto.getEndDate());
+        final List<CaptureObjectDefinitionDto> selectedValues = profileGenericDataRequestDataDto.getSelectedValues();
 
         LOGGER.debug("Retrieving profile generic data for {}, from: {}, to: {}, selected values: {}", obisCodeValues,
                 beginDateTime, endDateTime, selectedValues.isEmpty() ? "all capture objects" : selectedValues);
