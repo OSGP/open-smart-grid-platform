@@ -1,0 +1,28 @@
+package com.smartsocietyservices.osgp.dto.da.iec61850;
+
+import java.util.Date;
+
+public class DataSampleDto {
+    private String sampleType;
+    private Date timestamp;
+    private Double value;
+
+    public DataSampleDto( final String sampleType, final Date timestamp, final Double value ) {
+
+        this.sampleType = sampleType;
+        this.timestamp = timestamp;
+        this.value = value;
+    }
+
+    public String getSampleType() {
+        return sampleType;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public Double getValue() {
+        return value;
+    }
+}
