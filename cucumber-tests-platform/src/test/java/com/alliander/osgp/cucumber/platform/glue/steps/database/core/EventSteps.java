@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
 import java.util.List;
@@ -35,19 +35,36 @@ public class EventSteps extends GlueBase {
     @Autowired
     private EventRepository eventRepository;
 
-    @Then("^the event is stored$")
+    @Then("^the (?:event is|events are) stored$")
     public void theEventIsStored(final Map<String, String> expectedEntity) throws Throwable {
 
         Wait.until(() -> {
             final Device device = this.deviceRepository
                     .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
 
-            final List<Event> events = this.eventRepository.findByDevice(device);
+            final List<Event> eventsList = this.eventRepository.findByDevice(device);
 
-            final Event event = events.get(0);
+            final String[] eventsArray = (expectedEntity.containsKey(Keys.KEY_EVENTS))
+                    ? getString(expectedEntity, Keys.KEY_EVENTS).split(Keys.SEPARATOR_COMMA)
+                    : (expectedEntity.containsKey(Keys.KEY_EVENT))
+                            ? getString(expectedEntity, Keys.KEY_EVENT).split(Keys.SEPARATOR_COMMA) : new String[0];
 
-            Assert.assertEquals(event.getDescription(), getString(expectedEntity, Keys.KEY_DESCRIPTION));
-            Assert.assertEquals(event.getEventType(), getEnum(expectedEntity, Keys.KEY_EVENT, EventType.class));
+            final String[] indexesArray = (expectedEntity.containsKey(Keys.KEY_INDEXES))
+                    ? getString(expectedEntity, Keys.KEY_INDEXES).split(Keys.SEPARATOR_COMMA)
+                    : (expectedEntity.containsKey(Keys.KEY_INDEX)
+                            && !expectedEntity.get(Keys.KEY_INDEX).equals("EMPTY"))
+                                    ? getString(expectedEntity, Keys.KEY_INDEX).split(Keys.SEPARATOR_COMMA)
+                                    : new String[] { "0" };
+
+            if (expectedEntity.containsKey(Keys.NUMBER_OF_EVENTS)) {
+                Assert.assertEquals((int) getInteger(expectedEntity, Keys.NUMBER_OF_EVENTS), eventsList.size());
+            }
+
+            for (int i = 0; i < eventsList.size(); i++) {
+                final Event event = eventsList.get(i);
+                Assert.assertEquals(EventType.valueOf(eventsArray[i].trim()), event.getEventType());
+                Assert.assertEquals(Integer.parseInt(indexesArray[i]), Character.getNumericValue(event.getIndex()));
+            }
         });
     }
 }
