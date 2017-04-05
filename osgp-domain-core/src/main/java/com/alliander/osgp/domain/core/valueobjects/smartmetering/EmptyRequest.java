@@ -8,12 +8,21 @@
 
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public class RetrieveAllAttributeValuesRequest extends EmptyRequest {
+import java.io.Serializable;
+
+public class EmptyRequest implements Serializable {
 
     private static final long serialVersionUID = 3107247305216273215L;
 
-    public RetrieveAllAttributeValuesRequest(final String deviceIdentification) {
-        super(deviceIdentification);
+    private final String deviceIdentification;
+
+    public EmptyRequest(final String deviceIdentification) {
+        super();
+        this.deviceIdentification = deviceIdentification;
+    }
+
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
     }
 
 }
