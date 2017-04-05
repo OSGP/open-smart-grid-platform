@@ -19,25 +19,27 @@ import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public abstract class SecureDlmsConnector extends Lls0Connector {
 
-    public SecureDlmsConnector(int responseTimeout, int logicalDeviceAddress, int clientAccessPoint) {
+    public SecureDlmsConnector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint) {
         super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
     }
 
     /**
      * Set the correct security attributes on the tcpConnectionBuilder.
-     * 
+     *
      * @param device
      *            The device to connect with.
      * @param tcpConnectionBuilder
      *            The connection builder instance.
      * @throws TechnicalException
+     * @throws FunctionalException
      */
     protected abstract void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-            throws TechnicalException;
+            throws TechnicalException, FunctionalException;
 
     /**
      * Create a connection with the device.
@@ -54,9 +56,10 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
      * @throws TechnicalException
      *             When there are problems reading the security and
      *             authorization keys.
+     * @throws FunctionalException
      */
     protected DlmsConnection createConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws IOException, TechnicalException {
+            throws IOException, TechnicalException, FunctionalException {
 
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
@@ -81,7 +84,7 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
 
     /**
      * Get the valid securityKey of a given type for the device.
-     * 
+     *
      * @param device
      *            The device.
      * @param securityKeyType
