@@ -57,7 +57,7 @@ public class DeviceManagementEndpoint extends GenericDistributionAutomationEndPo
         LOGGER.info( "Get Health Status Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
                 request.getAsyncRequest().getCorrelationUid() );
 
-        HealthStatusResponseType response = null;
+        HealthStatusResponseType response = new HealthStatusResponseType();
         try {
             final com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusResponse healthStatusResponse = this.service
                     .dequeueGetHealthResponse( request.getAsyncRequest().getCorrelationUid() );
