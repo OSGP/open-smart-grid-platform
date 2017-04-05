@@ -54,6 +54,7 @@ import com.alliander.osgp.oslp.Oslp.MeterType;
 import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
+import com.alliander.osgp.oslp.Oslp.SetEventNotificationsRequest;
 import com.alliander.osgp.oslp.Oslp.SetRebootRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
@@ -859,6 +860,23 @@ public class OslpDeviceSteps {
         this.send(request, settings);
     }
 
+    @Given("^the device sends a get setevent notification request to the platform over \"([^\"]*)\"$")
+    public void theDeviceSendsAGetSetEventNotificationRequestToThePlatform(final String protocol,
+            final Map<String, String> settings) throws IOException, DeviceSimulatorException {
+
+        this.oslpMockServer.doNextSequenceNumber();
+
+        final String deviceUid = getString(settings, Keys.KEY_DEVICE_UID,
+                com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocoloslp.OslpDeviceSteps.DEFAULT_DEVICE_UID);
+        final Integer sequenceNumber = this.oslpMockServer.getSequenceNumber();
+        final SetEventNotificationsRequest payloadMessage = Message.newBuilder().getSetEventNotificationsRequest();
+
+        final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, sequenceNumber)
+                .withPayloadMessage(payloadMessage);
+
+        this.send(request, settings);
+    }
+
     @Given("^the device sends an event notification request to the platform over \"([^\"]*)\"$")
     public void theDeviceSendsAnEventNotificationRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
@@ -876,7 +894,7 @@ public class OslpDeviceSteps {
                                 .setEvent(getEnum(settings, Keys.KEY_EVENT, Event.class))
                                 .setDescription(getString(settings, Keys.KEY_DESCRIPTION))
                                 .setIndex(ByteString.copyFrom(getString(settings, Keys.KEY_INDEX).getBytes())).build()))
-                        .build())
+                        .getSetEventNotificationsRequest().build())
                 .build();
 
         this.send(request, settings);
@@ -894,12 +912,6 @@ public class OslpDeviceSteps {
         final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
 
         Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
-    }
-
-    @When("^retrieve event notifications request with requestPage and pageSize$")
-    public void retrieveEventNotificationsRequestWithRequestPageAndPageSize(final String requestedPage,
-            final String pageSize) {
-
     }
 
     public OslpEnvelope.Builder createEnvelopeBuilder(final String deviceUid, final Integer sequenceNumber) {
