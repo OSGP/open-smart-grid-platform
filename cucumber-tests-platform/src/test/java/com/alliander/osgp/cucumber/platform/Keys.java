@@ -114,6 +114,7 @@ public class Keys {
     public static final String KEY_ENABLED = "Enabled";
     public static final String KEY_END_DATE = "EndDate";
     public static final String KEY_EVENT = "Event";
+    public static final String KEY_EVENTS = "Events";
     public static final String KEY_EVENTNOTIFICATIONS = "EventNotifications";
     public static final String KEY_EVENTNOTIFICATIONTYPES = "EventNotificationTypes";
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
@@ -129,6 +130,7 @@ public class Keys {
     public static final String KEY_HAS_TECHNICAL_INSTALLATION = "HasTechnicalInstallation";
     public static final String KEY_INDEBUGMODE = "InDebugMode";
     public static final String KEY_INDEX = "Index";
+    public static final String KEY_INDEXES = "Indexes";
     public static final String KEY_INTERNALID = "InternalId";
     public static final String KEY_IP_ADDR_IS_STATIC = "IpAddressIsStatic";
     public static final String KEY_IS_ACTIVATED = "IsActivated";
@@ -279,6 +281,9 @@ public class Keys {
     public static final String SMS_TYPE = "SmsType";
     public static final String KEY_LIGHTMEASUREMENT_LASTMESSAGE = "LastMessage";
     public static final String SMS_INDEX = "SmsIndex";
+
     public static final String TIMESTAMP = "TimeStamp";
     public static final String EVENT_TYPE = "EventType";
+
+    public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
 }

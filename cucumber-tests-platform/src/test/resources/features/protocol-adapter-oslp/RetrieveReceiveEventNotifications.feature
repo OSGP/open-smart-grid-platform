@@ -60,7 +60,7 @@ Feature: OslpAdapter Event notifications
     And an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device sends an event notification request to the platform over "<Protocol>"
+    And the device sends a get set event notification request to the platform over "<Protocol>"
       | Timestamp | <Timestamp> |
 
     Examples: 
