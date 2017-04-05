@@ -18,6 +18,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.endpointinterceptors.BypassRetry;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -60,7 +61,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public BundleAsyncResponse bundleRequest(@OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ResponseUrl final String responseUrl,
-            @RequestPayload final BundleRequest request) throws OsgpException {
+            @BypassRetry final String bypassRetry, @RequestPayload final BundleRequest request) throws OsgpException {
 
         LOGGER.info("Bundle request for organisation: {} and device: {}. and responseUrl: {}",
                 organisationIdentification, request.getDeviceIdentification(), responseUrl);
@@ -79,7 +80,8 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             final List<ActionRequest> actionRequestList = this.actionMapperService.mapAllActions(actionList);
 
             final String correlationUid = this.bundleService.enqueueBundleRequest(organisationIdentification,
-                    deviceIdentification, actionRequestList, MessagePriorityEnum.getMessagePriority(messagePriority));
+                    deviceIdentification, actionRequestList, MessagePriorityEnum.getMessagePriority(messagePriority),
+                    Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
