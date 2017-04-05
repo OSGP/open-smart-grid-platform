@@ -62,6 +62,8 @@ abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 throw new TechnicalException(ComponentType.WS_SMART_METERING,
                         (String) meterResponseData.getMessageData(), null);
+            } else if (meterResponseData.getMessageData() instanceof OsgpException) {
+                throw (OsgpException) meterResponseData.getMessageData();
             } else {
                 throw new TechnicalException(ComponentType.WS_SMART_METERING,
                         String.format("An exception occurred %s.", exceptionContext), null);
