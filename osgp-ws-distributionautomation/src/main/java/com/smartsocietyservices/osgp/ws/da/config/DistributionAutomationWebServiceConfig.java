@@ -20,7 +20,6 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 public class DistributionAutomationWebServiceConfig {
 
     private static final String COMMON_XSD_PATH = "schemas/common.xsd";
-    private static final String ADHOC_MANAGEMENT_XSD_PATH = "schemas/adhocmanagement.xsd";
     private static final String DISTRIBUTION_AUTOMATION_XSD_PATH = "schemas/distributionautomation.xsd";
 
     private static final String ADHOC_MANAGEMENT_WSDL_PATH = "AdHocManagement.wsdl";
@@ -30,7 +29,7 @@ public class DistributionAutomationWebServiceConfig {
     @Bean
     public PayloadValidatingInterceptor payloadValidatingInterceptor() {
         final PayloadValidatingInterceptor payloadValidatingInterceptor = new PayloadValidatingInterceptor();
-        final Resource[] resources = new Resource[] { new ClassPathResource( COMMON_XSD_PATH ), new ClassPathResource( ADHOC_MANAGEMENT_XSD_PATH ) };
+        final Resource[] resources = new Resource[] { new ClassPathResource( COMMON_XSD_PATH ) };
         payloadValidatingInterceptor.setSchemas( resources );
         return payloadValidatingInterceptor;
     }
@@ -53,11 +52,6 @@ public class DistributionAutomationWebServiceConfig {
     @Bean(name = "DeviceManagement")
     public WsdlDefinition deviceManagementWsdl() {
         return new SimpleWsdl11Definition( new ClassPathResource( DEVICE_MANAGEMENT_WSDL_PATH ) );
-    }
-
-    @Bean(name = "adhocmanagement")
-    public SimpleXsdSchema adHocManagementXsd() {
-        return new SimpleXsdSchema( new ClassPathResource( ADHOC_MANAGEMENT_XSD_PATH ) );
     }
 
     @Bean(name = "distributionautomation")
