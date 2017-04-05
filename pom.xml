@@ -89,6 +89,7 @@
     <module>osgp-domain-core</module>
     <module>osgp-domain-logging</module>
     <module>osgp-domain-microgrids</module>
+    <module>osgp-domain-distributionautomation</module>
 
     <module>osgp-adapter-domain-shared</module>
 
