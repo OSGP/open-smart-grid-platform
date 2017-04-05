@@ -57,7 +57,7 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
         LOGGER.info( "Get PQ Values Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
                 request.getAsyncRequest().getCorrelationUid() );
 
-        GenericPQValuesResponseType response = null;
+        GenericPQValuesResponseType response = new GenericPQValuesResponseType();
         try {
             final com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesResponse dataResponse = this.service
                     .dequeueGetPQValuesResponse( request.getAsyncRequest().getCorrelationUid() );
@@ -106,7 +106,7 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
         LOGGER.info( "Get PQ Values Periodic Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
                 request.getAsyncRequest().getCorrelationUid() );
 
-        GenericPQValuesResponseType response = null;
+        GenericPQValuesResponseType response = new GenericPQValuesResponseType();
         try {
             final com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesResponse dataResponse = this.service
                     .dequeueGetPQValuesPeriodicResponse( request.getAsyncRequest().getCorrelationUid() );

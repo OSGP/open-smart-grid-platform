@@ -58,7 +58,7 @@ public class AdHocManagementEndpoint extends GenericDistributionAutomationEndPoi
         LOGGER.info( "Get Device Model Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
                 request.getAsyncRequest().getCorrelationUid() );
 
-        DeviceModelResponseType response = null;
+        DeviceModelResponseType response = new DeviceModelResponseType();
         try {
             final com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelResponse dataResponse = this.service
                     .dequeueGetDeviceModelResponse( request.getAsyncRequest().getCorrelationUid() );
@@ -66,6 +66,7 @@ public class AdHocManagementEndpoint extends GenericDistributionAutomationEndPoi
                 response = this.mapper.map( dataResponse, DeviceModelResponseType.class );
                 response.setResult( OsgpResultType.OK );
             } else {
+
                 response.setResult( OsgpResultType.NOT_FOUND );
             }
         } catch ( final ResponseNotFoundException e ) {
