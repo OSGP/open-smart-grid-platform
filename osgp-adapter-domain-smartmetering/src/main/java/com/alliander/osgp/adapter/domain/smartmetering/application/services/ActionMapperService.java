@@ -66,7 +66,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjects
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
@@ -137,7 +137,7 @@ public class ActionMapperService {
         CLASS_MAP.put(SpecificAttributeValueRequestData.class, SpecificAttributeValueRequestDto.class);
         CLASS_MAP.put(GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDto.class);
         CLASS_MAP.put(CoupleMbusDeviceRequestData.class, GetAssociationLnObjectsRequestDto.class);
-        CLASS_MAP.put(ProfileGenericDataRequestData.class, ProfileGenericDataRequestDto.class);
+        CLASS_MAP.put(ProfileGenericDataRequestData.class, ProfileGenericDataRequestDataDto.class);
     }
 
     /**

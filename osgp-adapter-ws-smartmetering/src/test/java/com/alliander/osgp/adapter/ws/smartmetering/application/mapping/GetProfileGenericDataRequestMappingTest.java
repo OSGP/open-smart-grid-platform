@@ -34,7 +34,7 @@ public class GetProfileGenericDataRequestMappingTest {
     private static final DateTime END_DATE = new DateTime(2017, 2, 1, 0, 0, 0, DateTimeZone.UTC);
 
     @Test
-    public void convertGetProfileGenericDataRequest() {
+    public void shouldConvertGetProfileGenericDataRequest() {
         final GetProfileGenericDataRequest source = this.makeRequest();
         final ProfileGenericDataRequestData result = this.mapper.map(source, ProfileGenericDataRequestData.class);
         assertNotNull("mapping ProfileGenericDataRequest should not return null", result);

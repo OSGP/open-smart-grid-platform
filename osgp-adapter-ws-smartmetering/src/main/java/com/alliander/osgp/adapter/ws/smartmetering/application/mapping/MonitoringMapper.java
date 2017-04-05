@@ -70,6 +70,7 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueConverter());
 
         mapperFactory.getConverterFactory().registerConverter(new ProfileGenericDataResponseConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ProfileGenericDataConverter());
     }
 
 }
