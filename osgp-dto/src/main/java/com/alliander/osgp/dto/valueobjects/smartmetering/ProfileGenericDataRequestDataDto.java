@@ -18,10 +18,10 @@ import java.util.Objects;
  */
 public class ProfileGenericDataRequestDataDto implements ActionRequestDto {
 
-    private final ObisCodeValuesDto obisCode;
-    private final Date beginDate;
-    private final Date endDate;
-    private final List<CaptureObjectDefinitionDto> selectedValues = new ArrayList<>();
+    protected final ObisCodeValuesDto obisCode;
+    protected final Date beginDate;
+    protected final Date endDate;
+    protected final List<CaptureObjectDefinitionDto> selectedValues = new ArrayList<>();
 
     private static final long serialVersionUID = -2483665562035897062L;
 
