@@ -18,7 +18,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponseData;
-import com.alliander.osgp.cucumber.platform.core.Helpers;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.dlms.Keys;
 import com.alliander.osgp.cucumber.platform.dlms.builders.BundleRequestBuilder;
@@ -70,7 +69,8 @@ public class BundleSteps {
     private void assertEqualCaptureObjects(final List<CaptureObject> actualCaptureObjects,
             final Map<String, String> expectedValues) throws AssertionError {
 
-        final int expectedNumberOfCaptureObjects = Helpers.getInteger(expectedValues, "NumberOfCaptureObjects", 0);
+        final int expectedNumberOfCaptureObjects = SettingsHelper.getIntegerValue(expectedValues,
+                "NumberOfCaptureObjects");
 
         assertEquals("Number of capture objects", expectedNumberOfCaptureObjects, actualCaptureObjects.size());
 
@@ -107,7 +107,7 @@ public class BundleSteps {
     private void assertEqualProfileEntries(final List<ProfileEntry> actualProfileEntries,
             final Map<String, String> expectedValues) {
         final int expectedNumberOfProfileEntries = SettingsHelper.getIntegerValue(expectedValues,
-                "NumberOfProfileEntries", 0);
+                "NumberOfProfileEntries");
 
         assertEquals("Number of profile entries", expectedNumberOfProfileEntries, actualProfileEntries.size());
     }

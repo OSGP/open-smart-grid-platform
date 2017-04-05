@@ -95,5 +95,5 @@ Feature: SmartMetering Bundle
       | CaptureObject_AttributeIndex_4 |                 2 |
       | CaptureObject_DataIndex_4      |                 0 |
       | CaptureObject_Unit_4           | KWH               |
-      | NumberOfProfileEntries         |               960 |      
-      
+      | NumberOfProfileEntries         |               960 |
+
