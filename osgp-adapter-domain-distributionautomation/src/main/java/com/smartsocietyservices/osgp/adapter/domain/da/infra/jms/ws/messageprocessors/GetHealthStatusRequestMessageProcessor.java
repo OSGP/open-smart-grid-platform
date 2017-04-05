@@ -1,7 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -9,9 +11,10 @@ package com.smartsocietyservices.osgp.adapter.domain.da.infra.jms.ws.messageproc
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
-import com.smartsocietyservices.osgp.adapter.domain.da.application.services.AdHocManagementService;
+import com.smartsocietyservices.osgp.adapter.domain.da.application.services.DeviceManagementService;
 import com.smartsocietyservices.osgp.adapter.domain.da.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.SetDataRequest;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusRequest;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,50 +25,44 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 /**
- * Class for processing da set data request messages
+ * Class for processing da get data request messages
  */
-@Component("domainDistributionAutomationSetDataRequestMessageProcessor")
-public class SetDataRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor
-{
+@Component("domainDistributionAutomationGetHealthStatusRequestMessageProcessor")
+public class GetHealthStatusRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( SetDataRequestMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( GetHealthStatusRequestMessageProcessor.class );
 
     @Autowired
-    @Qualifier("domainDistributionAutomationAdHocManagementService")
-    private AdHocManagementService adHocManagementService;
+    @Qualifier("domainDistributionAutomationDeviceManagementService")
+    private DeviceManagementService deviceManagementService;
 
-    public SetDataRequestMessageProcessor()
-    {
-        super( DeviceFunction.SET_DATA );
+    public GetHealthStatusRequestMessageProcessor() {
+        super( DeviceFunction.GET_HEALTH_STATUS );
     }
 
     @Override
-    public void processMessage( final ObjectMessage message )
-    {
-        LOGGER.info( "Processing da set data request message" );
+    public void processMessage( final ObjectMessage message ) {
+        LOGGER.info( "Processing DA Get Health Status request message" );
 
         String correlationUid = null;
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        SetDataRequest setDataRequest = null;
+        GetHealthStatusRequest getHealthStatusRequest = null;
 
-        try
-        {
+        try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
             deviceIdentification = message.getStringProperty( Constants.DEVICE_IDENTIFICATION );
 
-            if ( message.getObject() instanceof SetDataRequest )
-            {
-                setDataRequest = (SetDataRequest) message.getObject();
+            if ( message.getObject() instanceof GetPQValuesRequest ) {
+                getHealthStatusRequest = (GetHealthStatusRequest) message.getObject();
             }
 
-        } catch ( final JMSException e )
-        {
+        } catch ( final JMSException e ) {
             LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
             LOGGER.debug( "correlationUid: {}", correlationUid );
             LOGGER.debug( "messageType: {}", messageType );
@@ -74,15 +71,13 @@ public class SetDataRequestMessageProcessor extends AbstractWebServiceRequestMes
             return;
         }
 
-        try
-        {
+        try {
             LOGGER.info( "Calling application service function: {}", messageType );
 
-            this.adHocManagementService.handleSetDataRequest( organisationIdentification, deviceIdentification,
-                    correlationUid, messageType, setDataRequest );
+            this.deviceManagementService
+                    .getHealthStatus( organisationIdentification, deviceIdentification, correlationUid, messageType, getHealthStatusRequest );
 
-        } catch ( final Exception e )
-        {
+        } catch ( final Exception e ) {
             this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, messageType );
         }
     }

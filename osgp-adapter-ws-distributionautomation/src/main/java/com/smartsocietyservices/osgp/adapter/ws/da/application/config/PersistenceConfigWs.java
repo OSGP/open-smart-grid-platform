@@ -21,7 +21,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @EnableJpaRepositories(transactionManagerRef = "wsTransactionManager", entityManagerFactoryRef = "wsEntityManagerFactory", basePackageClasses = { com.smartsocietyservices.osgp.adapter.ws.da.domain.repositories.RtuResponseDataRepository.class })
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-da.properties"),
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
     @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true), })
 public class PersistenceConfigWs extends AbstractPersistenceConfigBase {

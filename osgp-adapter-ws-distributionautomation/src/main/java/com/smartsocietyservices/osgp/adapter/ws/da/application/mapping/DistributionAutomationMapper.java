@@ -8,14 +8,10 @@
 package com.smartsocietyservices.osgp.adapter.ws.da.application.mapping;
 
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDataRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDataResponse;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDataSystemIdentifier;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.Measurement;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.Profile;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.SetDataRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.SetDataSystemIdentifier;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.SystemFilter;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusRequest;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesPeriodicRequest;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesRequest;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
@@ -34,33 +30,16 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter( new PassThroughConverter( DateTime.class ) );
         mapperFactory.getConverterFactory().registerConverter( new XMLGregorianCalendarToDateTimeConverter() );
 
-        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.da.application.config.PersistenceConfigWs.class, SystemFilter.class )
-                .field( TYPE, SYSTEM_TYPE ).field( "measurementFilter", "measurementFilters" ).field( "profileFilter", "profileFilters" ).byDefault()
-                .register();
+        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetPQValuesRequest.class,
+                GetPQValuesRequest.class ).byDefault().register();
 
-        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.adhocmanagement.GetDataRequest.class,
-                GetDataRequest.class ).field( SYSTEM, "systemFilters" ).byDefault().register();
+        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetPQValuesPeriodicRequest.class,
+                GetPQValuesPeriodicRequest.class ).byDefault().register();
 
-        mapperFactory.classMap( GetDataSystemIdentifier.class,
-                com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.adhocmanagement.GetDataSystemIdentifier.class )
-                .field( SYSTEM_TYPE, TYPE ).field( "measurements", "measurement" ).field( "profiles", "profile" ).byDefault().register();
+        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetDeviceModelRequest.class,
+                GetDeviceModelRequest.class ).byDefault().register();
 
-        mapperFactory.classMap( Profile.class, com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.adhocmanagement.Profile.class )
-                .field( "profileEntries", "profileEntry" ).byDefault().register();
-        mapperFactory.classMap( Measurement.class,
-                com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.adhocmanagement.Measurement.class ).byDefault().register();
-
-        mapperFactory.classMap( GetDataResponse.class,
-                com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.adhocmanagement.GetDataResponse.class )
-                .field( "getDataSystemIdentifiers", SYSTEM ).byDefault().register();
-
-        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.adhocmanagement.SetDataRequest.class,
-                SetDataRequest.class ).field( SYSTEM, "setDataSystemIdentifiers" ).byDefault().register();
-
-        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.adhocmanagement.SetDataSystemIdentifier.class,
-                SetDataSystemIdentifier.class ).field( TYPE, SYSTEM_TYPE ).field( "setPoint", "setPoints" ).field( "profile", "profiles" ).byDefault()
-                .register();
-        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.adhocmanagement.Profile.class, Profile.class )
-                .field( "profileEntry", "profileEntries" ).byDefault().register();
+        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetHealthStatusRequest.class,
+                GetHealthStatusRequest.class ).byDefault().register();
     }
 }

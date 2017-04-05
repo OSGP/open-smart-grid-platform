@@ -21,7 +21,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
         basePackageClasses = { com.alliander.osgp.domain.core.repositories.DeviceRepository.class,
                 com.smartsocietyservices.osgp.domain.da.repositories.RtuDeviceRepository.class })
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-da.properties"), @PropertySource(value = "file:${osgp/Global/config}",
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"), @PropertySource(value = "file:${osgp/Global/config}",
         ignoreResourceNotFound = true), @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}",
         ignoreResourceNotFound = true), })
 public class PersistenceConfigCore extends AbstractPersistenceConfigBase {

@@ -15,10 +15,10 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelResponse;
-import com.smartsocietyservices.osgp.dto.da.GetDeviceModelRequestDto;
-import com.smartsocietyservices.osgp.dto.da.GetDeviceModelResponseDto;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusRequest;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusResponse;
+import com.smartsocietyservices.osgp.dto.da.GetHealthStatusRequestDto;
+import com.smartsocietyservices.osgp.dto.da.GetHealthStatusResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainDistributionAutomationAdHocManagementService")
 @Transactional(value = "transactionManager")
-public class AdHocManagementService extends BaseService {
+public class DeviceManagementService extends BaseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( AdHocManagementService.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( DeviceManagementService.class );
 
     @Autowired
     private com.smartsocietyservices.osgp.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper mapper;
@@ -37,33 +37,33 @@ public class AdHocManagementService extends BaseService {
     /**
      * Constructor
      */
-    public AdHocManagementService() {
+    public DeviceManagementService() {
         // Parameterless constructor required for transactions...
     }
 
-    public void getDeviceModel( final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType, final GetDeviceModelRequest getPQValuesPeriodicRequest ) throws FunctionalException {
+    public void getHealthStatus( final String organisationIdentification, final String deviceIdentification, final String correlationUid,
+            final String messageType, final GetHealthStatusRequest getHealthStatusRequest ) throws FunctionalException {
 
-        LOGGER.info( "Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid );
+        LOGGER.info( "Get Health Status for device [{}] with correlation id [{}]", deviceIdentification, correlationUid );
 
         this.findOrganisation( organisationIdentification );
         final Device device = this.findActiveDevice( deviceIdentification );
 
-        final GetDeviceModelRequestDto dto = this.mapper.map( getPQValuesPeriodicRequest, GetDeviceModelRequestDto.class );
+        final GetHealthStatusRequestDto dto = this.mapper.map( getHealthStatusRequest, GetHealthStatusRequestDto.class );
 
         this.osgpCoreRequestMessageSender
                 .send( new RequestMessage( correlationUid, organisationIdentification, deviceIdentification, dto ), messageType,
                         device.getIpAddress() );
     }
 
-    public void handleGetDeviceModelResponse( final GetDeviceModelResponseDto getDeviceModelResponseDto, final String deviceIdentification,
+    public void handleHealthStatusResponse( final GetHealthStatusResponseDto getHealthStatusResponseDto, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException ) {
 
         LOGGER.info( "handleResponse for MessageType: {}", messageType );
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        GetDeviceModelResponse getDeviceModelResponse = null;
+        GetHealthStatusResponse getHealthStatusResponse = null;
         OsgpException exception = null;
 
         try {
@@ -74,12 +74,12 @@ public class AdHocManagementService extends BaseService {
 
             this.handleResponseMessageReceived( LOGGER, deviceIdentification );
 
-            getDeviceModelResponse = this.mapper.map( getDeviceModelResponseDto, GetDeviceModelResponse.class );
+            getHealthStatusResponse = this.mapper.map( getHealthStatusResponseDto, GetHealthStatusResponse.class );
 
         } catch ( final Exception e ) {
             LOGGER.error( "Unexpected Exception", e );
             result = ResponseMessageResultType.NOT_OK;
-            exception = this.ensureOsgpException( e, "Exception occurred while getting Device Model Response Data" );
+            exception = this.ensureOsgpException( e, "Exception occurred while getting Health Status Response Data" );
         }
 
         // Support for Push messages, generate correlationUid
@@ -90,6 +90,6 @@ public class AdHocManagementService extends BaseService {
 
         this.webServiceResponseMessageSender
                 .send( new ResponseMessage( actualCorrelationUid, organisationIdentification, deviceIdentification, result, exception,
-                        getDeviceModelResponse ), messageType );
+                        getHealthStatusResponse ), messageType );
     }
 }

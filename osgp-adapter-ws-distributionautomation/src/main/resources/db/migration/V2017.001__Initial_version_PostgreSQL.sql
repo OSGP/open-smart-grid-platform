@@ -27,3 +27,12 @@ ALTER SEQUENCE rtu_response_data_seq OWNED BY rtu_response_data.id;
 ALTER TABLE ONLY rtu_response_data ALTER COLUMN id SET DEFAULT nextval('rtu_response_data_seq'::regclass);
 
 ALTER TABLE ONLY rtu_response_data ADD CONSTRAINT rtu_response_data_pkey PRIMARY KEY (id);
+DELETE FROM rtu_response_data
+      WHERE correlation_uid IN (
+            SELECT   correlation_uid
+            FROM     rtu_response_data
+            GROUP BY correlation_uid
+            HAVING   count(correlation_uid) > 1);
+
+ALTER TABLE rtu_response_data
+            ADD CONSTRAINT "rtu_response_data_correlation_uid_key" UNIQUE( "correlation_uid" );

@@ -9,19 +9,17 @@ package com.smartsocietyservices.osgp.domain.da.valueobjects;
 
 import java.io.Serializable;
 
-public class ProfileFilter extends NodeIdentifier implements Serializable {
+public class GetPQValuesRequest implements Serializable {
 
-    private static final long serialVersionUID = -5169545289993816729L;
+    private static final long serialVersionUID = 4776483459295815846L;
 
-    private final boolean all;
+    private final String deviceIdentifier;
 
-    public ProfileFilter(final int id, final String node, final boolean all) {
-        super(id, node);
-        this.all = all;
+    public GetPQValuesRequest( final String deviceIdentifier ) {
+        this.deviceIdentifier = deviceIdentifier;
     }
 
-    public boolean isAll() {
-        return this.all;
+    public String getDeviceIdentifier() {
+        return deviceIdentifier;
     }
-
 }
