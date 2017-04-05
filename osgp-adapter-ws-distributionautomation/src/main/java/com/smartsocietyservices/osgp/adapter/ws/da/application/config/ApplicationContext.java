@@ -24,8 +24,11 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "com.alliander.osgp.domain.da", "com.smartsocietyservices.osgp.adapter.ws.da", "com.alliander.osgp.domain.logging",
-        "com.alliander.osgp.domain.core.services" })
+@ComponentScan(basePackages = { "com.alliander.osgp.domain.da",
+    "com.smartsocietyservices.osgp.domain.da",
+    "com.smartsocietyservices.osgp.adapter.ws.da",
+    "com.alliander.osgp.domain.logging",
+    "com.alliander.osgp.domain.core.services" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ DistributionAutomationWebServiceConfig.class })
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-da.properties"), @PropertySource(value = "file:${osgp/Global/config}",

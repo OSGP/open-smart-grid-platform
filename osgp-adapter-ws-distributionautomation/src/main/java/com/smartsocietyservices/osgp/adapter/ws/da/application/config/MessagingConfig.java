@@ -24,7 +24,7 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-da.properties"),
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"),
         @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
         @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {

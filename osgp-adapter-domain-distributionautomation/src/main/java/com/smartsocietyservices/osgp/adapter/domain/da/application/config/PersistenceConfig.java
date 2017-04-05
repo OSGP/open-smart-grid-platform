@@ -30,7 +30,7 @@ import java.util.Properties;
 
 @EnableJpaRepositories(basePackageClasses = { RtuDeviceRepository.class, DeviceRepository.class }, entityManagerFactoryRef = "entityManagerFactory")
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-domain-da.properties"),
+@PropertySources({ @PropertySource("classpath:osgp-adapter-domain-distributionautomation.properties"),
         @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
         @PropertySource(value = "file:${osgp/AdapterDomainDistributionAutomation/config}", ignoreResourceNotFound = true), })
 public class PersistenceConfig extends AbstractConfig {

@@ -1,7 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -12,9 +14,9 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.smartsocietyservices.osgp.adapter.domain.da.application.services.AdHocManagementService;
+import com.smartsocietyservices.osgp.adapter.domain.da.application.services.MonitoringService;
 import com.smartsocietyservices.osgp.adapter.domain.da.infra.jms.core.AbstractOsgpCoreResponseMessageProcessor;
-import com.smartsocietyservices.osgp.dto.da.GetDataResponseDto;
+import com.smartsocietyservices.osgp.dto.da.GetPQValuesResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,26 +30,23 @@ import javax.jms.ObjectMessage;
  * Class for processing da get data response messages
  */
 @Component("domainDistributionAutomationGetDataResponseMessageProcessor")
-public class GetDataResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor
-{
+public class GetMonitoringResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( GetDataResponseMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( GetMonitoringResponseMessageProcessor.class );
 
     @Autowired
-    @Qualifier("domainDistributionAutomationAdHocManagementService")
-    private AdHocManagementService adHocManagementService;
+    @Qualifier("domainDistributionAutomationMonitoringService")
+    private MonitoringService monitoringService;
 
-    protected GetDataResponseMessageProcessor()
-    {
-        super( DeviceFunction.GET_DATA );
+    protected GetMonitoringResponseMessageProcessor() {
+        super( DeviceFunction.GET_POWER_QUALITY_VALUES );
     }
 
     @Override
-    public void processMessage( final ObjectMessage message ) throws JMSException
-    {
-        LOGGER.debug( "Processing da get data response message" );
+    public void processMessage( final ObjectMessage message ) throws JMSException {
+        LOGGER.debug( "Processing DA Power Quality response message" );
 
         String correlationUid = null;
         String messageType = null;
@@ -59,8 +58,7 @@ public class GetDataResponseMessageProcessor extends AbstractOsgpCoreResponseMes
         OsgpException osgpException = null;
         Object dataObject = null;
 
-        try
-        {
+        try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
@@ -70,8 +68,7 @@ public class GetDataResponseMessageProcessor extends AbstractOsgpCoreResponseMes
             responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
             dataObject = responseMessage.getDataObject();
-        } catch ( final JMSException e )
-        {
+        } catch ( final JMSException e ) {
             LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
             LOGGER.debug( "correlationUid: {}", correlationUid );
             LOGGER.debug( "messageType: {}", messageType );
@@ -82,18 +79,16 @@ public class GetDataResponseMessageProcessor extends AbstractOsgpCoreResponseMes
             LOGGER.debug( "osgpException: {}", osgpException );
             return;
         }
-
-        try
-        {
+        try {
             LOGGER.info( "Calling application service function to handle response: {}", messageType );
 
-            final GetDataResponseDto dataResponse = (GetDataResponseDto) dataObject;
+            final GetPQValuesResponseDto dataResponse = (GetPQValuesResponseDto) dataObject;
 
-            this.adHocManagementService.handleGetDataResponse( dataResponse, deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException );
+            this.monitoringService
+                    .handleGetPQValuesResponse( dataResponse, deviceIdentification, organisationIdentification, correlationUid, messageType,
+                            responseMessageResultType, osgpException );
 
-        } catch ( final Exception e )
-        {
+        } catch ( final Exception e ) {
             this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, messageType );
         }
     }

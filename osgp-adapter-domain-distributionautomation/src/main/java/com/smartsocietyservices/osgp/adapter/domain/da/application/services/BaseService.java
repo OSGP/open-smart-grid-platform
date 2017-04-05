@@ -1,7 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -23,8 +25,13 @@ import com.smartsocietyservices.osgp.adapter.domain.da.infra.jms.core.OsgpCoreRe
 import com.smartsocietyservices.osgp.adapter.domain.da.infra.jms.ws.WebServiceResponseMessageSender;
 import com.smartsocietyservices.osgp.domain.da.entities.RtuDevice;
 import com.smartsocietyservices.osgp.domain.da.repositories.RtuDeviceRepository;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import javax.persistence.OptimisticLockException;
+import java.util.UUID;
 
 public class BaseService {
 
@@ -48,41 +55,69 @@ public class BaseService {
     @Qualifier(value = "domainDistributionAutomationOutgoingWebServiceResponseMessageSender")
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-    protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
+    @Autowired
+    private Integer lastCommunicationUpdateInterval;
+
+    protected Device findActiveDevice( final String deviceIdentification ) throws FunctionalException {
         Device device;
         try {
-            device = this.deviceDomainService.searchActiveDevice(deviceIdentification);
-        } catch (final UnregisteredDeviceException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_MICROGRIDS,
-                    e);
-        } catch (final InactiveDeviceException e) {
-            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e);
+            device = this.deviceDomainService.searchActiveDevice( deviceIdentification );
+        } catch ( final UnregisteredDeviceException e ) {
+            throw new FunctionalException( FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e );
+        } catch ( final InactiveDeviceException e ) {
+            throw new FunctionalException( FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e );
+        } catch ( final UnknownEntityException e ) {
+            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e );
         }
         return device;
     }
 
-    protected Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
+    protected Organisation findOrganisation( final String organisationIdentification ) throws FunctionalException {
         Organisation organisation;
         try {
-            organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_MICROGRIDS,
-                    e);
+            organisation = this.organisationDomainService.searchOrganisation( organisationIdentification );
+        } catch ( final UnknownEntityException e ) {
+            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_MICROGRIDS, e );
         }
         return organisation;
     }
 
-    protected RtuDevice findRtuDeviceForDevice(final Device device) {
-        return this.rtuDeviceRepository.findById(device.getId());
+    protected RtuDevice findRtuDeviceForDevice( final Device device ) {
+        return this.rtuDeviceRepository.findById( device.getId() );
     }
 
-    protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {
-        if (t instanceof OsgpException) {
+    protected OsgpException ensureOsgpException( final Throwable t, final String defaultMessage ) {
+        if ( t instanceof OsgpException ) {
             return (OsgpException) t;
         }
 
-        return new TechnicalException(ComponentType.DOMAIN_MICROGRIDS, defaultMessage, t);
+        return new TechnicalException( ComponentType.DOMAIN_MICROGRIDS, defaultMessage, t );
     }
+
+    protected void handleResponseMessageReceived( final Logger logger, final String deviceIdentification ) {
+        try {
+            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification( deviceIdentification );
+            if ( this.shouldUpdateCommunicationTime( device, this.lastCommunicationUpdateInterval ) ) {
+                device.messageReceived();
+                this.rtuDeviceRepository.save( device );
+            } else {
+                logger.info( "Last communication time within {} seconds. Skipping last communication date update.",
+                        this.lastCommunicationUpdateInterval );
+            }
+        } catch ( final OptimisticLockException ex ) {
+            logger.warn( "Last communication time not updated due to optimistic lock exception", ex );
+        }
+    }
+
+    protected boolean shouldUpdateCommunicationTime( final RtuDevice device, final int lastCommunicationUpdateInterval ) {
+        final DateTime timeToCheck = DateTime.now().minusSeconds( lastCommunicationUpdateInterval );
+        final DateTime timeOfLastCommunication = new DateTime( device.getLastCommunicationTime() );
+        return timeOfLastCommunication.isBefore( timeToCheck );
+    }
+
+    protected static String getCorrelationId( final String organisationIdentification, final String deviceIdentification ) {
+
+        return organisationIdentification + "|||" + deviceIdentification + "|||" + UUID.randomUUID().toString();
+    }
+
 }

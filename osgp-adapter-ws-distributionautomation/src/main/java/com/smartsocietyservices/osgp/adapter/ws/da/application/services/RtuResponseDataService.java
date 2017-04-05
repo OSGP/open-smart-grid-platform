@@ -72,7 +72,7 @@ public class RtuResponseDataService {
 
         if (responseData == null) {
             LOGGER.warn("No response data for correlation UID {}", correlationUid);
-            throw new UnknownCorrelationUidException(ComponentType.WS_MICROGRIDS);
+            throw new UnknownCorrelationUidException(ComponentType.WS_DISTRIBUTION_AUTOMATION);
         }
 
         if (!this.isValidResponseType(responseData, expectedClassType)) {
@@ -91,7 +91,7 @@ public class RtuResponseDataService {
             LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", warningResultClassType,
                     responseData.getCorrelationUid());
 
-            throw new CorrelationUidMismatchException(ComponentType.WS_MICROGRIDS);
+            throw new CorrelationUidMismatchException(ComponentType.WS_DISTRIBUTION_AUTOMATION);
         }
 
         this.remove(responseData);
@@ -104,7 +104,7 @@ public class RtuResponseDataService {
 
         if (responseData == null) {
             LOGGER.warn("No response data for correlation UID {}", correlationUid);
-            throw new UnknownCorrelationUidException(ComponentType.WS_MICROGRIDS);
+            throw new UnknownCorrelationUidException(ComponentType.WS_DISTRIBUTION_AUTOMATION);
         }
 
         this.remove(responseData);

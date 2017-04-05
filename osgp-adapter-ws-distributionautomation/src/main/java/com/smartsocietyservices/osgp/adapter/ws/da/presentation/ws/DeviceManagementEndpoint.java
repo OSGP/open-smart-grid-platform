@@ -11,10 +11,10 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentifica
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.smartsocietyservices.osgp.adapter.ws.da.application.exceptionhandling.ResponseNotFoundException;
 import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.common.OsgpResultType;
-import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.DeviceModelResponseType;
 import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GenericAsyncResponseType;
 import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetPQValuesAsyncRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest;
+import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.HealthStatusResponseType;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -23,25 +23,24 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
-public class AdHocManagementEndpoint extends GenericDistributionAutomationEndPoint {
+public class DeviceManagementEndpoint extends GenericDistributionAutomationEndPoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( AdHocManagementEndpoint.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( DeviceManagementEndpoint.class );
 
-    @PayloadRoot(localPart = "GetDeviceModelRequest",
+    @PayloadRoot(localPart = "GetHealthStatusRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public GenericAsyncResponseType getDeviceModel( @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetDeviceModelRequest request ) throws OsgpException {
+    public GenericAsyncResponseType getHealthStatus( @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetHealthStatusRequest request ) throws OsgpException {
 
-        LOGGER.info( "Get Device Model Request received from organisation: {} for device: {}.", organisationIdentification,
+        LOGGER.info( "Get Health Status Request received from organisation: {} for device: {}.", organisationIdentification,
                 request.getDeviceIdentifier() );
 
         String correlationUid = null;
         try {
-            final com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest getDeviceModelRequest = this.mapper
-                    .map( request, com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest.class );
+            final GetHealthStatusRequest getHealthStatusRequest = this.mapper.map( request, GetHealthStatusRequest.class );
             correlationUid = this.service
-                    .enqueueGetDeviceModelRequest( organisationIdentification, request.getDeviceIdentifier(), getDeviceModelRequest );
+                    .enqueueGetHealthStatusRequest( organisationIdentification, request.getDeviceIdentifier(), getHealthStatusRequest );
 
         } catch ( final Exception e ) {
             this.handleException( LOGGER, e );
@@ -49,21 +48,21 @@ public class AdHocManagementEndpoint extends GenericDistributionAutomationEndPoi
         return getGenericResponse( correlationUid, request.getDeviceIdentifier() );
     }
 
-    @PayloadRoot(localPart = "GetDeviceModelAsyncRequest",
+    @PayloadRoot(localPart = "GetHealthStatusAsyncRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public DeviceModelResponseType getDeviceModel( @OrganisationIdentification final String organisationIdentification,
+    public HealthStatusResponseType getHealthStatus( @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetPQValuesAsyncRequest request ) throws OsgpException {
 
-        LOGGER.info( "Get Device Model Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
+        LOGGER.info( "Get Health Status Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
                 request.getAsyncRequest().getCorrelationUid() );
 
-        DeviceModelResponseType response = null;
+        HealthStatusResponseType response = null;
         try {
-            final com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelResponse dataResponse = this.service
-                    .dequeueGetDeviceModelResponse( request.getAsyncRequest().getCorrelationUid() );
-            if ( dataResponse != null ) {
-                response = this.mapper.map( dataResponse, DeviceModelResponseType.class );
+            final com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusResponse healthStatusResponse = this.service
+                    .dequeueGetHealthResponse( request.getAsyncRequest().getCorrelationUid() );
+            if ( healthStatusResponse != null ) {
+                response = this.mapper.map( healthStatusResponse, HealthStatusResponseType.class );
                 response.setResult( OsgpResultType.OK );
             } else {
                 response.setResult( OsgpResultType.NOT_FOUND );

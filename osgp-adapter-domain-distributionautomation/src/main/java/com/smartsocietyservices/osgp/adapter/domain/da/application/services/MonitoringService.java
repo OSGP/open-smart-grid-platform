@@ -15,21 +15,23 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelResponse;
-import com.smartsocietyservices.osgp.dto.da.GetDeviceModelRequestDto;
-import com.smartsocietyservices.osgp.dto.da.GetDeviceModelResponseDto;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesPeriodicRequest;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesRequest;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesResponse;
+import com.smartsocietyservices.osgp.dto.da.GetPQValuesPeriodicRequestDto;
+import com.smartsocietyservices.osgp.dto.da.GetPQValuesRequestDto;
+import com.smartsocietyservices.osgp.dto.da.GetPQValuesResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service(value = "domainDistributionAutomationAdHocManagementService")
+@Service(value = "domainDistributionAutomationMonitoringService")
 @Transactional(value = "transactionManager")
-public class AdHocManagementService extends BaseService {
+public class MonitoringService extends BaseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( AdHocManagementService.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( MonitoringService.class );
 
     @Autowired
     private com.smartsocietyservices.osgp.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper mapper;
@@ -37,33 +39,48 @@ public class AdHocManagementService extends BaseService {
     /**
      * Constructor
      */
-    public AdHocManagementService() {
+    public MonitoringService() {
         // Parameterless constructor required for transactions...
     }
 
-    public void getDeviceModel( final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType, final GetDeviceModelRequest getPQValuesPeriodicRequest ) throws FunctionalException {
+    public void getPQValues( final String organisationIdentification, final String deviceIdentification, final String correlationUid,
+            final String messageType, final GetPQValuesRequest getPQValuesRequest ) throws FunctionalException {
 
-        LOGGER.info( "Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid );
+        LOGGER.info( "Get PQ Values for device [{}] with correlation id [{}]", deviceIdentification, correlationUid );
 
         this.findOrganisation( organisationIdentification );
         final Device device = this.findActiveDevice( deviceIdentification );
 
-        final GetDeviceModelRequestDto dto = this.mapper.map( getPQValuesPeriodicRequest, GetDeviceModelRequestDto.class );
+        final GetPQValuesRequestDto dto = this.mapper.map( getPQValuesRequest, GetPQValuesRequestDto.class );
 
         this.osgpCoreRequestMessageSender
                 .send( new RequestMessage( correlationUid, organisationIdentification, deviceIdentification, dto ), messageType,
                         device.getIpAddress() );
     }
 
-    public void handleGetDeviceModelResponse( final GetDeviceModelResponseDto getDeviceModelResponseDto, final String deviceIdentification,
+    public void getPQValuesPeriodic( final String organisationIdentification, final String deviceIdentification, final String correlationUid,
+            final String messageType, final GetPQValuesPeriodicRequest getPQValuesPeriodicRequest ) throws FunctionalException {
+
+        LOGGER.info( "Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid );
+
+        this.findOrganisation( organisationIdentification );
+        final Device device = this.findActiveDevice( deviceIdentification );
+
+        final GetPQValuesPeriodicRequestDto dto = this.mapper.map( getPQValuesPeriodicRequest, GetPQValuesPeriodicRequestDto.class );
+
+        this.osgpCoreRequestMessageSender
+                .send( new RequestMessage( correlationUid, organisationIdentification, deviceIdentification, dto ), messageType,
+                        device.getIpAddress() );
+    }
+
+    public void handleGetPQValuesResponse( final GetPQValuesResponseDto getPQValuesResponseDto, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException ) {
 
         LOGGER.info( "handleResponse for MessageType: {}", messageType );
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        GetDeviceModelResponse getDeviceModelResponse = null;
+        GetPQValuesResponse getPQValuesResponse = null;
         OsgpException exception = null;
 
         try {
@@ -74,12 +91,12 @@ public class AdHocManagementService extends BaseService {
 
             this.handleResponseMessageReceived( LOGGER, deviceIdentification );
 
-            getDeviceModelResponse = this.mapper.map( getDeviceModelResponseDto, GetDeviceModelResponse.class );
+            getPQValuesResponse = this.mapper.map( getPQValuesResponseDto, GetPQValuesResponse.class );
 
         } catch ( final Exception e ) {
             LOGGER.error( "Unexpected Exception", e );
             result = ResponseMessageResultType.NOT_OK;
-            exception = this.ensureOsgpException( e, "Exception occurred while getting Device Model Response Data" );
+            exception = this.ensureOsgpException( e, "Exception occurred while getting PQ Values Response Data" );
         }
 
         // Support for Push messages, generate correlationUid
@@ -90,6 +107,6 @@ public class AdHocManagementService extends BaseService {
 
         this.webServiceResponseMessageSender
                 .send( new ResponseMessage( actualCorrelationUid, organisationIdentification, deviceIdentification, result, exception,
-                        getDeviceModelResponse ), messageType );
+                        getPQValuesResponse ), messageType );
     }
 }
