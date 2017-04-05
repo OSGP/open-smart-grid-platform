@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T, R> {
 
@@ -59,11 +60,11 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
 
     @Override
     public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException {
+            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
 
         if (this.bundleExecutorMapKey == null) {
-            throw new ProtocolAdapterException("Execution of " + this.getClass().getName()
-                    + " is not supported in a bundle context.");
+            throw new ProtocolAdapterException(
+                    "Execution of " + this.getClass().getName() + " is not supported in a bundle context.");
         }
 
         final T commandInput = this.fromBundleRequestInput(actionRequestDto);
@@ -104,7 +105,8 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
         } catch (final ClassCastException e) {
             throw new ProtocolAdapterException(
                     "Translation from CommandExecutor result to bundle ActionResponseDto for "
-                            + this.getClass().getName() + " is not implemented.", e);
+                            + this.getClass().getName() + " is not implemented.",
+                    e);
         }
     }
 

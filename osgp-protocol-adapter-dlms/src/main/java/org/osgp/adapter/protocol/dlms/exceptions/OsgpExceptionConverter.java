@@ -39,17 +39,18 @@ public class OsgpExceptionConverter {
      */
     public OsgpException ensureOsgpOrTechnicalException(final Exception e) {
         if (e instanceof OsgpException) {
-            final Throwable cause = e.getCause();
-            if (cause != null && !(cause instanceof OsgpException)) {
-                return new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage(), new OsgpException(
-                        ComponentType.PROTOCOL_DLMS, cause.getMessage()));
-            }
+            // final Throwable cause = e.getCause();
+            // if (cause != null && !(cause instanceof OsgpException)) {
+            // return new OsgpException(ComponentType.PROTOCOL_DLMS,
+            // e.getMessage(), new OsgpException(
+            // ComponentType.PROTOCOL_DLMS, cause.getMessage()));
+            // }
 
             return (OsgpException) e;
         }
 
         return new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                "Unexpected exception while handling protocol request/response message", new OsgpException(
-                        ComponentType.PROTOCOL_DLMS, e.getMessage()));
+                "Unexpected exception while handling protocol request/response message",
+                new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
     }
 }

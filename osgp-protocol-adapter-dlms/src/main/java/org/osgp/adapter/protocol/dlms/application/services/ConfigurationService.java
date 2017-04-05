@@ -185,7 +185,7 @@ public class ConfigurationService {
     }
 
     public String setEncryptionKeyExchangeOnGMeter(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException {
+            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
 
@@ -254,7 +254,7 @@ public class ConfigurationService {
     }
 
     public void replaceKeys(final DlmsConnectionHolder conn, final DlmsDevice device, final SetKeysRequestDto keySet)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
 
         try {
             /*
