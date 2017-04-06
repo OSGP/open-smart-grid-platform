@@ -12,6 +12,7 @@ import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
@@ -99,6 +100,9 @@ public class ConfigurationService {
 
     @Autowired
     private SetClockConfigurationCommandExecutor setClockConfigurationCommandExecutor;
+
+    @Autowired
+    private GetConfigurationObjectCommandExecutor getConfigurationObjectCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -285,6 +289,13 @@ public class ConfigurationService {
         LOGGER.info("Updating firmware of device {} to firmware with identifier {}", device, firmwareIdentifier);
 
         return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentifier);
+    }
+
+    public String requestGetConfigurationObject(final DlmsConnectionHolder conn, final DlmsDevice device)
+            throws ProtocolAdapterException {
+
+        return this.getConfigurationObjectCommandExecutor.execute(conn, device, null);
+
     }
 
 }
