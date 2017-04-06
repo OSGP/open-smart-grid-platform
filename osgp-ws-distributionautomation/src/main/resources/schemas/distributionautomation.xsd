@@ -65,37 +65,7 @@
         <xsd:attribute name="ipAddress" type="xsd:string"/>
     </xsd:complexType>
 
-    <xsd:complexType name="DeviceModelResponseType">
-        <xsd:sequence>
-            <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"
-                maxOccurs="1"/>
-            <xsd:element name="PhysicalServer" type="da:PhysicalServerType" minOccurs="1"
-                maxOccurs="1"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
-    <xsd:complexType name="HealthStatusResponseType">
-        <xsd:sequence>
-            <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"
-                maxOccurs="1"/>
-            <xsd:element name="HealthStatus" type="da:HealthStatusType" minOccurs="1" maxOccurs="1"
-            />
-        </xsd:sequence>
-    </xsd:complexType>
-
-    <xsd:complexType name="GenericPQValuesResponseType">
-        <xsd:sequence>
-            <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"
-                maxOccurs="1"/>
-            <xsd:element name="LogicalDevice" type="da:LogicalDeviceType" minOccurs="0"
-                maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
-    <!-- 
+    <!--
     ##################################################################################
     ## Synchronous Request Elements
     ##################################################################################
@@ -109,6 +79,14 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="GetDeviceModelAsyncResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:element name="GetHealthStatusRequest">
         <xsd:complexType>
             <xsd:sequence>
@@ -118,11 +96,27 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="GetHealthStatusAsyncResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:element name="GetPQValuesRequest">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"
                     maxOccurs="1"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="GetPQValuesAsyncResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
@@ -138,7 +132,15 @@
         </xsd:complexType>
     </xsd:element>
 
-    <!-- 
+    <xsd:element name="GetPQValuesPeriodicAsyncResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!--
     ##################################################################################
     ## Aynchronous Request Elements
     ##################################################################################
@@ -181,13 +183,51 @@
     ##################################################################################
     -->
 
-    <xsd:element name="GetDeviceModelResponse" type="da:DeviceModelResponseType"/>
-    <xsd:element name="GetHealthStatusResponse" type="da:HealthStatusResponseType"/>
-    <xsd:element name="GetPQValuesResponse" type="da:GenericPQValuesResponseType"/>
-    <xsd:element name="GetPQValuesPeriodicResponse" type="da:GenericPQValuesResponseType"/>
-    <xsd:element name="GetDeviceModelAsyncResponse" type="da:GenericAsyncResponseType"/>
-    <xsd:element name="GetHealthStatusAsyncResponse" type="da:GenericAsyncResponseType"/>
-    <xsd:element name="GetPQValuesAsyncResponse" type="da:GenericAsyncResponseType"/>
-    <xsd:element name="GetPQValuesPeriodicAsyncResponse" type="da:GenericAsyncResponseType"/>
-    
+    <xsd:element name="GetDeviceModelResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"
+                             maxOccurs="1"/>
+                <xsd:element name="PhysicalServer" type="da:PhysicalServerType" minOccurs="1"
+                             maxOccurs="1"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="GetHealthStatusResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"
+                             maxOccurs="1"/>
+                <xsd:element name="HealthStatus" type="da:HealthStatusType" minOccurs="1" maxOccurs="1"
+                />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="GetPQValuesResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"
+                             maxOccurs="1"/>
+                <xsd:element name="LogicalDevice" type="da:LogicalDeviceType" minOccurs="0"
+                             maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="GetPQValuesPeriodicResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1"/>
+                <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"
+                             maxOccurs="1"/>
+                <xsd:element name="LogicalDevice" type="da:LogicalDeviceType" minOccurs="0"
+                             maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
 </xsd:schema>

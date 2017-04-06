@@ -29,7 +29,7 @@ public class DistributionAutomationWebServiceConfig {
     @Bean
     public PayloadValidatingInterceptor payloadValidatingInterceptor() {
         final PayloadValidatingInterceptor payloadValidatingInterceptor = new PayloadValidatingInterceptor();
-        final Resource[] resources = new Resource[] { new ClassPathResource( COMMON_XSD_PATH ) };
+        final Resource[] resources = new Resource[] { new ClassPathResource( COMMON_XSD_PATH ), new ClassPathResource( DISTRIBUTION_AUTOMATION_XSD_PATH ) };
         payloadValidatingInterceptor.setSchemas( resources );
         return payloadValidatingInterceptor;
     }
