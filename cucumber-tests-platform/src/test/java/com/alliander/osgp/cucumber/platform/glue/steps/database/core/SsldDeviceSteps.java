@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class SsldDeviceSteps extends BaseDeviceSteps {
 
@@ -37,6 +39,9 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private DeviceSteps deviceSteps;
 
     /**
      * Creates a new device.
@@ -74,6 +79,18 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
         }
 
         return this.createAnSsldDevice(settings);
+    }
+
+    @Then("^theSsldDeviceContains$")
+    public void theSsldDeviceContains(final Map<String, String> expectedEntity) {
+        final Ssld ssld = this.ssldRepository
+                .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+
+        Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_HAS_SCHEDULE), ssld.getHasSchedule());
+        // Assert.assertEquals(getBoolean(expectedEntity,
+        // Keys.KEY_PUBLICKEYPRESENT), ssld.isPublicKeyPresent());
+
+        this.deviceSteps.theDeviceContains(expectedEntity);
     }
 
     private Ssld createAnSsldDevice(final Map<String, String> settings) throws Throwable {

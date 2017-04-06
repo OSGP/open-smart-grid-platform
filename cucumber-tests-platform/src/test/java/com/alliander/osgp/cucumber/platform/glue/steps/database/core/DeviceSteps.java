@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+
 import java.util.List;
 import java.util.Map;
 
@@ -139,7 +141,7 @@ public class DeviceSteps extends BaseDeviceSteps {
             return entity;
         });
     }
-    
+
     /**
      * Checks whether the device does not exist in the database.
      *
@@ -248,6 +250,14 @@ public class DeviceSteps extends BaseDeviceSteps {
         Assert.assertNotNull(gSmartmeter);
 
         Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
+    }
+
+    @Then("^the device contains$")
+    public void theDeviceContains(final Map<String, String> expectedEntity) {
+        final Device device = this.deviceRepository
+                .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+
+        Assert.assertEquals(getString(expectedEntity, Keys.IP_ADDRESS), device.getIpAddress());
     }
 
 }

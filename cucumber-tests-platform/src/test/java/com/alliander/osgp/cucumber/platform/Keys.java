@@ -281,7 +281,8 @@ public class Keys {
     public static final String SMS_TYPE = "SmsType";
     public static final String KEY_LIGHTMEASUREMENT_LASTMESSAGE = "LastMessage";
     public static final String SMS_INDEX = "SmsIndex";
-  
+
     public static final String MESSAGE = "Message";
     public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
+    public static final String RANDOM_PLATFORM = "RandomPlatform";
 }
