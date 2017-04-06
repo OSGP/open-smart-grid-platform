@@ -115,9 +115,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
             throws ProtocolAdapterException {
         if (!expected.isInstance(requestObject)) {
-            throw new ProtocolAdapterException(String.format(
-                    "The request object has an incorrect type. %s excepted but %s was found.",
-                    expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
+            throw new ProtocolAdapterException(
+                    String.format("The request object has an incorrect type. %s expected but %s was found.",
+                            expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
         }
     }
 
@@ -129,12 +129,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
 
-        final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+        final boolean isScheduled = this.getBooleanPropertyValue(message, Constants.IS_SCHEDULED);
 
         try {
-            // Handle message
             messageMetadata.handleMessage(message);
+
             /**
              * The happy flow for addMeter requires that the dlmsDevice does not
              * exist. Because the findDlmsDevice below throws a runtime
@@ -190,6 +189,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         }
     }
 
+    private boolean getBooleanPropertyValue(final ObjectMessage message, final String propertyName)
+            throws JMSException {
+        return message.propertyExists(propertyName) ? message.getBooleanProperty(propertyName) : false;
+    }
+
     /**
      * Implementation of this method should call a service that can handle the
      * requestObject and return a response object to be put on the response
@@ -239,10 +243,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
-                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
-                .osgpException(osgpException).dataObject(responseObject)
-                .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).retryHeader(retryHeader).scheduled(isScheduled)
-                .build();
+                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
+                .dataObject(responseObject).retryCount(dlmsDeviceMessageMetadata.getRetryCount())
+                .retryHeader(retryHeader).scheduled(isScheduled).build();
 
         responseMessageSender.send(responseMessage);
     }
