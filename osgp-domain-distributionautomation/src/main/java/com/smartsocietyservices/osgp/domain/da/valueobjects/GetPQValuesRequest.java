@@ -10,16 +10,8 @@ package com.smartsocietyservices.osgp.domain.da.valueobjects;
 import java.io.Serializable;
 
 public class GetPQValuesRequest implements Serializable {
+    private static final long serialVersionUID = 4776483459295815849L;
 
-    private static final long serialVersionUID = 4776483459295815846L;
-
-    private final String deviceIdentifier;
-
-    public GetPQValuesRequest( final String deviceIdentifier ) {
-        this.deviceIdentifier = deviceIdentifier;
-    }
-
-    public String getDeviceIdentifier() {
-        return deviceIdentifier;
+    public GetPQValuesRequest() {
     }
 }

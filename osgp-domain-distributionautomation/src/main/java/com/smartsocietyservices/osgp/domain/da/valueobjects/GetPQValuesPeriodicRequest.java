@@ -12,22 +12,15 @@ import org.joda.time.DateTime;
 import java.io.Serializable;
 
 public class GetPQValuesPeriodicRequest implements Serializable {
-
     private static final long serialVersionUID = 4776483459295815846L;
 
-    private final String deviceIdentifier;
     private final DateTime from;
     private final DateTime to;
 
-    public GetPQValuesPeriodicRequest( final String deviceIdentifier, final DateTime from, final DateTime to ) {
+    public GetPQValuesPeriodicRequest( final DateTime from, final DateTime to ) {
 
-        this.deviceIdentifier = deviceIdentifier;
         this.from = from;
         this.to = to;
-    }
-
-    public String getDeviceIdentifier() {
-        return deviceIdentifier;
     }
 
     public DateTime getFrom() {

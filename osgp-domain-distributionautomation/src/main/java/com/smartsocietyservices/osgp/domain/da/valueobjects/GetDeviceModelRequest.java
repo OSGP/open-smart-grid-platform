@@ -3,14 +3,8 @@ package com.smartsocietyservices.osgp.domain.da.valueobjects;
 import java.io.Serializable;
 
 public class GetDeviceModelRequest implements Serializable {
-    private final String deviceIdentifier;
+    private static final long serialVersionUID = 4776483459295843436L;
 
-    public GetDeviceModelRequest( final String deviceIdentifier ) {
-
-        this.deviceIdentifier = deviceIdentifier;
-    }
-
-    public String getDeviceIdentifier() {
-        return deviceIdentifier;
+    public GetDeviceModelRequest() {
     }
 }

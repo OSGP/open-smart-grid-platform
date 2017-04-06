@@ -31,7 +31,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
     "com.alliander.osgp.domain.core.services" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ DistributionAutomationWebServiceConfig.class })
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-da.properties"), @PropertySource(value = "file:${osgp/Global/config}",
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"), @PropertySource(value = "file:${osgp/Global/config}",
         ignoreResourceNotFound = true), @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}",
         ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {

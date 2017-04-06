@@ -10,11 +10,12 @@ package com.smartsocietyservices.osgp.adapter.ws.da.presentation.ws;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.smartsocietyservices.osgp.adapter.ws.da.application.exceptionhandling.ResponseNotFoundException;
+import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.common.AsyncResponse;
 import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.common.OsgpResultType;
-import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.DeviceModelResponseType;
-import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GenericAsyncResponseType;
-import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetPQValuesAsyncRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest;
+import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetDeviceModelRequest;
+import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetDeviceModelAsyncResponse;
+import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetDeviceModelAsyncRequest;
+import com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetDeviceModelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -25,45 +26,47 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 @Endpoint
 public class AdHocManagementEndpoint extends GenericDistributionAutomationEndPoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( AdHocManagementEndpoint.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementEndpoint.class);
 
     @PayloadRoot(localPart = "GetDeviceModelRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public GenericAsyncResponseType getDeviceModel( @OrganisationIdentification final String organisationIdentification,
+    public GetDeviceModelAsyncResponse getDeviceModel( @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetDeviceModelRequest request ) throws OsgpException {
 
         LOGGER.info( "Get Device Model Request received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentifier() );
-
-        String correlationUid = null;
+                request.getDeviceIdentification() );
+        GetDeviceModelAsyncResponse response = new GetDeviceModelAsyncResponse();
         try {
             final com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest getDeviceModelRequest = this.mapper
                     .map( request, com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest.class );
-            correlationUid = this.service
-                    .enqueueGetDeviceModelRequest( organisationIdentification, request.getDeviceIdentifier(), getDeviceModelRequest );
-
+            final String correlationUid = this.service
+                    .enqueueGetDeviceModelRequest( organisationIdentification, request.getDeviceIdentification(), getDeviceModelRequest );
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceId(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
         } catch ( final Exception e ) {
             this.handleException( LOGGER, e );
         }
-        return getGenericResponse( correlationUid, request.getDeviceIdentifier() );
+        return response;
     }
 
     @PayloadRoot(localPart = "GetDeviceModelAsyncRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public DeviceModelResponseType getDeviceModel( @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetPQValuesAsyncRequest request ) throws OsgpException {
+    public GetDeviceModelResponse getDeviceModelResponse( @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetDeviceModelAsyncRequest request ) throws OsgpException {
 
         LOGGER.info( "Get Device Model Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
                 request.getAsyncRequest().getCorrelationUid() );
 
-        DeviceModelResponseType response = new DeviceModelResponseType();
+        GetDeviceModelResponse response = new GetDeviceModelResponse();
         try {
             final com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelResponse dataResponse = this.service
                     .dequeueGetDeviceModelResponse( request.getAsyncRequest().getCorrelationUid() );
             if ( dataResponse != null ) {
-                response = this.mapper.map( dataResponse, DeviceModelResponseType.class );
+                response = this.mapper.map( dataResponse, GetDeviceModelResponse.class );
                 response.setResult( OsgpResultType.OK );
             } else {
 

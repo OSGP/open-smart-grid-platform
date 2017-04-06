@@ -52,9 +52,7 @@ public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( WebServiceConfig.class );
 
-    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_AD_HOC_MANAGEMENT = "jaxb2.marshaller.context.path.distributionautomation.adhocmanagement";
-    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_DEVICE_MANAGEMENT = "jaxb2.marshaller.context.path.distributionautomation.devicemanagement";
-    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_MONITORING = "jaxb2.marshaller.context.path.distributionautomation.monitoring";
+    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_GENERIC = "jaxb2.marshaller.context.path.distributionautomation.generic";
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_NOTIFICATION = "jaxb2.marshaller.context.path.distributionautomation.notification";
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
@@ -89,88 +87,31 @@ public class WebServiceConfig extends AbstractConfig {
     // === DISTRIBUTION AUTOMATION MARSHALLERS ===
 
     /**
-     * Method for creating the Marshaller for Distribution Automation Ad Hoc Management
+     * Method for creating the Marshaller for Distribution Automation Generic (Ad Hoc Management, Device Management and Monitoring)
      *
      * @return Jaxb2Marshaller
      */
     @Bean
-    public Jaxb2Marshaller distributionautomationAdHocManagementMarshaller() {
-        LOGGER.debug( "Creating Distribution Automation Ad Hoc Management JAXB 2 Marshaller Bean" );
+    public Jaxb2Marshaller distributionautomationGenericMarshaller() {
+        LOGGER.debug( "Creating Distribution Automation Generic JAXB 2 Marshaller Bean" );
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setContextPath(
-                this.environment.getRequiredProperty( PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_AD_HOC_MANAGEMENT ) );
+                this.environment.getRequiredProperty( PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_GENERIC ) );
         return marshaller;
     }
 
     /**
-     * Method for creating the Marshaller for Distribution Automation Device Management
-     *
-     * @return Jaxb2Marshaller
-     */
-    @Bean
-    public Jaxb2Marshaller distributionautomationDeviceManagementMarshaller() {
-        LOGGER.debug( "Creating Distribution Automation Device Management JAXB 2 Marshaller Bean" );
-
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath(
-                this.environment.getRequiredProperty( PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_DEVICE_MANAGEMENT ) );
-        return marshaller;
-    }
-
-    /**
-     * Method for creating the Marshaller for Distribution Automation Monitoring
-     *
-     * @return Jaxb2Marshaller
-     */
-    @Bean
-    public Jaxb2Marshaller distributionautomationMonitoringMarshaller() {
-        LOGGER.debug( "Creating Distribution Automation Monitoring JAXB 2 Marshaller Bean" );
-
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath( this.environment.getRequiredProperty( PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_MONITORING ) );
-
-        return marshaller;
-    }
-
-    /**
-     * Method for creating the Marshalling Payload Method Processor for public
-     * lighting schedule management.
+     * Method for creating the Marshalling Payload Method Processor for Distribition Automation Generic
      *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
-    public MarshallingPayloadMethodProcessor distributionautomationAdHocManagementMarshallingPayloadMethodProcessor() {
-        LOGGER.debug( "Creating Distribution Automation Ad Hoc Management Marshalling Payload Method Processor Bean" );
+    public MarshallingPayloadMethodProcessor distributionautomationGenericMarshallingPayloadMethodProcessor() {
+        LOGGER.debug( "Creating Distribution Automation Generic Marshalling Payload Method Processor Bean" );
 
-        return new MarshallingPayloadMethodProcessor( this.distributionautomationAdHocManagementMarshaller(),
-                this.distributionautomationAdHocManagementMarshaller() );
-    }
-
-    /**
-     * Method for creating the Marshalling Payload Method Processor DA Device Management
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
-    @Bean
-    public MarshallingPayloadMethodProcessor distributionautomationDeviceManagementMarshallingPayloadMethodProcessor() {
-        LOGGER.debug( "Creating Distribution Automation Device Management Marshalling Payload Method Processor Bean" );
-
-        return new MarshallingPayloadMethodProcessor( this.distributionautomationDeviceManagementMarshaller(),
-                this.distributionautomationDeviceManagementMarshaller() );
-    }
-
-    /**
-     * Method for creating the Marshalling Payload Method Processor DA Monitoring
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
-    @Bean
-    public MarshallingPayloadMethodProcessor distributionautomationMonitoringMarshallingPayloadMethodProcessor() {
-        LOGGER.debug( "Creating Distribution Automation Monitoring Marshalling Payload Method Processor Bean" );
-
-        return new MarshallingPayloadMethodProcessor( this.distributionautomationMonitoringMarshaller(),
-                this.distributionautomationMonitoringMarshaller() );
+        return new MarshallingPayloadMethodProcessor( this.distributionautomationGenericMarshaller(),
+                this.distributionautomationGenericMarshaller() );
     }
 
     /**
@@ -186,10 +127,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
-        // Add all three Distribution Automation Marshalling Payload Method Processors to Method Argument Resolvers
-        methodArgumentResolvers.add( this.distributionautomationAdHocManagementMarshallingPayloadMethodProcessor() );
-        methodArgumentResolvers.add( this.distributionautomationDeviceManagementMarshallingPayloadMethodProcessor() );
-        methodArgumentResolvers.add( this.distributionautomationMonitoringMarshallingPayloadMethodProcessor() );
+        // Add Distribution Automation Marshalling Payload Method Processors to Method Argument Resolvers
+        methodArgumentResolvers.add( this.distributionautomationGenericMarshallingPayloadMethodProcessor() );
 
         // Add Organisation Identification Annotation Method Argument Resolver
         methodArgumentResolvers.add( new AnnotationMethodArgumentResolver( ORGANISATION_IDENTIFICATION_CONTEXT, OrganisationIdentification.class ) );
@@ -197,10 +136,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
-        // Add all 3 Distribution Automation Marshalling Payload Method Processors to Method Return Value Handlers
-        methodReturnValueHandlers.add( this.distributionautomationAdHocManagementMarshallingPayloadMethodProcessor() );
-        methodReturnValueHandlers.add( this.distributionautomationDeviceManagementMarshallingPayloadMethodProcessor() );
-        methodReturnValueHandlers.add( this.distributionautomationMonitoringMarshallingPayloadMethodProcessor() );
+        // Add Distribution Automation Marshalling Payload Method Processors to Method Return Value Handlers
+        methodReturnValueHandlers.add( this.distributionautomationGenericMarshallingPayloadMethodProcessor() );
 
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers( methodReturnValueHandlers );
 

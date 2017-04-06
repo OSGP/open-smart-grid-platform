@@ -36,7 +36,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration requestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.da.requests");
+        return jmsConfigurationFactory.initializeConfiguration("jms.distributionautomation.requests");
     }
 
     @Bean(name = "wsDistributionAutomationOutgoingRequestsJmsTemplate")
@@ -53,7 +53,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.da.responses",
+        return jmsConfigurationFactory.initializeConfiguration("jms.distributionautomation.responses",
                 this.distributionautomationResponseMessageListener);
     }
 
@@ -83,7 +83,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration loggingJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.da.logging");
+        return jmsConfigurationFactory.initializeConfiguration("jms.distributionautomation.logging");
     }
 
     @Bean

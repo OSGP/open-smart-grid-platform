@@ -8,10 +8,6 @@
 package com.smartsocietyservices.osgp.adapter.ws.da.application.mapping;
 
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetDeviceModelRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesPeriodicRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesRequest;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
@@ -29,17 +25,5 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
     public void configure( final MapperFactory mapperFactory ) {
         mapperFactory.getConverterFactory().registerConverter( new PassThroughConverter( DateTime.class ) );
         mapperFactory.getConverterFactory().registerConverter( new XMLGregorianCalendarToDateTimeConverter() );
-
-        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetPQValuesRequest.class,
-                GetPQValuesRequest.class ).byDefault().register();
-
-        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetPQValuesPeriodicRequest.class,
-                GetPQValuesPeriodicRequest.class ).byDefault().register();
-
-        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetDeviceModelRequest.class,
-                GetDeviceModelRequest.class ).byDefault().register();
-
-        mapperFactory.classMap( com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetHealthStatusRequest.class,
-                GetHealthStatusRequest.class ).byDefault().register();
     }
 }
