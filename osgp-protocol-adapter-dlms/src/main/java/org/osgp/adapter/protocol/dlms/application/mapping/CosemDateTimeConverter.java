@@ -9,9 +9,6 @@ package org.osgp.adapter.protocol.dlms.application.mapping;
 
 import java.util.Set;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.openmuc.jdlms.datatypes.CosemDateFormat;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 
@@ -19,8 +16,11 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
 
-public class CosemDateTimeConverter extends
-        BidirectionalConverter<CosemDateTimeDto, org.openmuc.jdlms.datatypes.CosemDateTime> {
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class CosemDateTimeConverter
+        extends BidirectionalConverter<CosemDateTimeDto, org.openmuc.jdlms.datatypes.CosemDateTime> {
 
     @Override
     public org.openmuc.jdlms.datatypes.CosemDateTime convertTo(final CosemDateTimeDto source,
@@ -28,6 +28,7 @@ public class CosemDateTimeConverter extends
 
         final CosemTimeDto time = source.getTime();
         final CosemDateDto date = source.getDate();
+
         final Set<ClockStatus> clockStatus = ClockStatus.clockStatusFrom((byte) source.getClockStatus().getStatus());
 
         return new org.openmuc.jdlms.datatypes.CosemDateTime(date.getYear(), date.getMonth(), date.getDayOfMonth(),
