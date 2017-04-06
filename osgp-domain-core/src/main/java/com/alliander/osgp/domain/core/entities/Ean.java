@@ -59,18 +59,20 @@ public class Ean extends AbstractEntity {
 
     @Override
     public boolean equals(final Object o) {
+
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Ean)) {
-            return false;
-        }
-        final Ean other = (Ean) o;
-        final boolean isDeviceEqual = Objects.equals(this.device, other.device);
-        final boolean isCodeEqual = Objects.equals(this.code, other.code);
-        final boolean isDescriptionEqual = Objects.equals(this.description, other.description);
 
-        return isDeviceEqual && isCodeEqual && isDescriptionEqual;
+        boolean result = false;
+        if (o != null && o instanceof Ean) {
+            final Ean that = (Ean) o;
+
+            // "code" is a unique identifier for an EAN, so check
+            // equality for just that property:
+            result = Objects.equals(this.code, that.code);
+        }
+        return result;
     }
 
     @Override
