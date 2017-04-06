@@ -101,7 +101,7 @@ Feature: CoreDeviceInstallation Device Registration
     And the register device response contains
       | Status | OK |
     Then the IpAddress for the device "TESTDEVICE0000001" should be "127.0.0.3"
-    And the IpAddress for the device "TESTDEVICE0000001" should be ""
+    And the IpAddress for the device "TESTDEVICE0000002" should be ""
 
     Examples: 
       | Protocol    |
