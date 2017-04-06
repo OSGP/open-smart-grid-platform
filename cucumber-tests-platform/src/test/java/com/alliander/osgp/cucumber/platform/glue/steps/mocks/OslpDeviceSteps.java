@@ -54,7 +54,6 @@ import com.alliander.osgp.oslp.Oslp.MeterType;
 import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
-import com.alliander.osgp.oslp.Oslp.SetEventNotificationsRequest;
 import com.alliander.osgp.oslp.Oslp.SetRebootRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
@@ -860,19 +859,31 @@ public class OslpDeviceSteps {
         this.send(request, settings);
     }
 
-    @Given("^the device sends a get set event notification request to the platform over \"([^\"]*)\"$")
-    public void theDeviceSendsAGetSetEventNotificationRequestToThePlatform(final String protocol,
+    @Given("^the device sends a get event notification request to the platform over \"([^\"]*)\"$")
+    public void theDeviceSendsAGetEventNotificationRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
         this.oslpMockServer.doNextSequenceNumber();
 
-        final String deviceUid = getString(settings, Keys.KEY_DEVICE_UID,
-                com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocoloslp.OslpDeviceSteps.DEFAULT_DEVICE_UID);
-        final Integer sequenceNumber = this.oslpMockServer.getSequenceNumber();
-        final SetEventNotificationsRequest payloadMessage = Message.newBuilder().getSetEventNotificationsRequest();
+        final Oslp.EventNotification.Builder builder = Oslp.EventNotification.newBuilder()
+                .setTimestamp(getString(settings, Keys.TIMESTAMP))
+                .setEvent(getEnum(settings, Keys.KEY_EVENT, Event.class));
+        // .setDescription(getString(settings, Keys.KEY_DESCRIPTION))
 
-        final OslpEnvelope request = this.createEnvelopeBuilder(deviceUid, sequenceNumber)
-                .withPayloadMessage(payloadMessage);
+        builder.setIndex((settings.containsKey(Keys.KEY_INDEX) && !settings.get(Keys.KEY_INDEX).equals("EMPTY"))
+                ? ByteString.copyFrom(getString(settings, Keys.KEY_INDEX).getBytes())
+                : ByteString.copyFrom("0".getBytes()));
+
+        final OslpEnvelope request = this
+                .createEnvelopeBuilder(
+                        getString(settings, Keys.KEY_DEVICE_UID,
+                                com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocoloslp.OslpDeviceSteps.DEFAULT_DEVICE_UID),
+                        this.oslpMockServer.getSequenceNumber())
+                .withPayloadMessage(Message.newBuilder()
+                        .setEventNotificationRequest(
+                                Oslp.EventNotificationRequest.newBuilder().addNotifications(builder.build()))
+                        .build())
+                .build();
 
         this.send(request, settings);
     }
@@ -920,8 +931,6 @@ public class OslpDeviceSteps {
         for (int i = 0; i < events.length; i++) {
             if (!events[i].isEmpty() && !indexes[i].isEmpty()) {
                 builder.setEvent(Event.valueOf(events[i].trim()));
-                // TODO: Test this row with the tests in the feature to check if
-                // the values are converted the right way.
                 builder.setIndex((!indexes[i].equals("EMPTY")) ? ByteString.copyFrom(indexes[i].getBytes())
                         : ByteString.copyFrom("0".getBytes()));
                 requestBuilder.addNotifications(builder.build());

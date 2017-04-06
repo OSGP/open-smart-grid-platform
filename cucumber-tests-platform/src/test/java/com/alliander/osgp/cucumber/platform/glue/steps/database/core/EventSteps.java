@@ -85,6 +85,22 @@ public class EventSteps extends GlueBase {
 
     }
 
+    @Then("^the stored events from \"([^\"]*)\" are filtered and retrieved$")
+    public void theStoredEventsAreFilteredAndRetrieved(final String deviceIdentification,
+            final Map<String, String> expectedResponse) throws Throwable {
+
+        final List<Event> events = this.retrieveStoredEvents(deviceIdentification);
+
+        for (final Event e : events) {
+            e.System.out.println("1DADADADADADADADADADADADADA" + e.getDateTime());
+            System.out.println("2DADADADADADADADADADADADADA" + e.getCreationTime());
+            System.out.println("3DADADADADADADADADADADADADA" + e.getModificationTime());
+        }
+
+        Assert.assertEquals((int) getInteger(expectedResponse, Keys.KEY_RESULT), events.size());
+
+    }
+
     public List<Event> retrieveStoredEvents(final String deviceIdentification) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         return this.eventRepository.findByDevice(device);
