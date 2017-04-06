@@ -25,6 +25,9 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrLogging", transactionManagerRef = "txMgrLogging", basePackageClasses = { DeviceLogItemRepository.class })
 public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguration {
 
+    @Value("${db.name.osgp_logging}")
+    private String databaseName;
+
     @Value("${osgploggingdbs.url}")
     private String databaseUrl;
 
@@ -32,6 +35,11 @@ public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguratio
     private String entitymanagerPackagesToScan;
 
     public LoggingPersistenceConfig() {
+    }
+
+    @Override
+    protected String getDatabaseName() {
+        return this.databaseName;
     }
 
     @Override

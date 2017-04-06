@@ -27,6 +27,9 @@ import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
         DeviceRepository.class, RtuDeviceRepository.class })
 public class CorePersistenceConfig extends ApplicationPersistenceConfiguration {
 
+    @Value("${db.name.osgp_core}")
+    private String databaseName;
+
     @Value("${osgpcoredbs.url}")
     private String databaseUrl;
 
@@ -60,6 +63,11 @@ public class CorePersistenceConfig extends ApplicationPersistenceConfiguration {
             throws ClassNotFoundException {
 
         return this.makeEntityManager("OSGP_CUCUMBER_CORE", dataSource);
+    }
+
+    @Override
+    protected String getDatabaseName() {
+        return this.databaseName;
     }
 
     @Override

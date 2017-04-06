@@ -26,6 +26,9 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResp
     basePackageClasses = { MeterResponseDataRepository.class })
 public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersistenceConfiguration {
 
+    @Value("${db.name.osgp_adapter_ws_smartmetering}")
+    private String databaseName;
+
     @Value("${osgpadapterwssmartmeteringdbs.url}")
     private String databaseUrl;
 
@@ -33,6 +36,11 @@ public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersiste
     private String entitymanagerPackagesToScan;
 
     public AdapterWsSmartMeteringPersistenceConfig() {
+    }
+
+    @Override
+    protected String getDatabaseName() {
+        return this.databaseName;
     }
 
     @Override
