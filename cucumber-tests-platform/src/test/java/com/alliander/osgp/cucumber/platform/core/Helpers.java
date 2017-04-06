@@ -155,7 +155,7 @@ public class Helpers {
      * <li>yesterday at midnight
      * <li>now at midday + 1 week
      * </ul>
-     * 
+     *
      * @param dateString
      * @return
      * @throws Exception
@@ -227,27 +227,37 @@ public class Helpers {
             switch (what) {
             case "days":
                 retval = retval.plusDays(numberToAddOrSubstract);
+                break;
             case "hours":
                 retval = retval.plusHours(numberToAddOrSubstract);
+                break;
             case "weeks":
                 retval = retval.plusWeeks(numberToAddOrSubstract);
+                break;
             case "months":
                 retval = retval.plusMonths(numberToAddOrSubstract);
+                break;
             case "years":
                 retval = retval.plusYears(numberToAddOrSubstract);
+                break;
             }
         } else {
             switch (what) {
             case "days":
                 retval = retval.minusDays(numberToAddOrSubstract);
+                break;
             case "hours":
                 retval = retval.minusHours(numberToAddOrSubstract);
+                break;
             case "weeks":
                 retval = retval.minusWeeks(numberToAddOrSubstract);
+                break;
             case "months":
                 retval = retval.minusMonths(numberToAddOrSubstract);
+                break;
             case "years":
                 retval = retval.minusYears(numberToAddOrSubstract);
+                break;
             }
 
         }

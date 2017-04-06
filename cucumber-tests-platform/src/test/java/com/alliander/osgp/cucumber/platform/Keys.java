@@ -286,4 +286,7 @@ public class Keys {
     public static final String EVENT_TYPE = "EventType";
 
     public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
+
+    public static final String FROM_TIMESTAMP = "fromTimestamp";
+    public static final String TO_TIMESTAMP = "toTimestamp";
 }
