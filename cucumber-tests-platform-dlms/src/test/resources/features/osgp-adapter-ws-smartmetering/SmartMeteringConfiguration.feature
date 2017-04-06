@@ -139,3 +139,12 @@ Feature: SmartMetering Configuration
     When the request for a firmware upgrade is received
     And the upgrade of firmware did not succeed
     Then the message "Upgrade of firmware did not succeed" should be given
+
+  Scenario: Get configuration object on a device
+    Given a bundle request
+      | DeviceIdentification | TEST1024000000001 |
+    And a get configuration object is part of a bundled request
+    When the bundle request is received
+    Then the bundle response contains a get configuration object response
+      | GprsOperationMode    | ALWAYS_ON |
+      | DISCOVER_ON_POWER_ON | true      |
