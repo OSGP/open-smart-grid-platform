@@ -79,8 +79,6 @@ Feature: CoreDeviceInstallation Device Registration
       | OSLP        |
       | OSLP ELSTER |
 
-  #Note: This test may sometimes fail on the Then case:
-  #org.junit.ComparisonFailure: expected:<127.0.0.[3]> but was:<127.0.0.[2]>
   @OslpMockServer
   Scenario Outline: Register device with IpAddress already in use by another device
     Given an ssld oslp device
@@ -89,7 +87,7 @@ Feature: CoreDeviceInstallation Device Registration
       | IpAddress            | 127.0.0.2         |
       | DeviceType           | SSLD              |
     And an ssld oslp device
-      | DeviceIdentification | TESTDEVICE0000001 |
+      | DeviceIdentification | TESTDEVICE0000002 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | Protocol             | <Protocol>        |
       | IpAddress            | 127.0.0.3         |
