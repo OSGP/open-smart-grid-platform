@@ -33,6 +33,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
@@ -93,7 +94,6 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;

@@ -18,16 +18,6 @@ public class GetConfigurationObjectRequestData implements Serializable, ActionRe
 
     private static final long serialVersionUID = -381163520662276869L;
 
-    private final ConfigurationObject configurationObject;
-
-    public GetConfigurationObjectRequestData(final ConfigurationObject configurationObject) {
-        this.configurationObject = configurationObject;
-    }
-
-    public ConfigurationObject getConfigurationObject() {
-        return this.configurationObject;
-    }
-
     @Override
     public void validate() throws FunctionalException {
         // No validation needed

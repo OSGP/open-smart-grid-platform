@@ -691,4 +691,22 @@ public class ConfigurationService {
                 deviceMessageMetadata.getScheduleTime());
     }
 
+    public void handleGetConfigurationObjectResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception, final String resultData) {
+
+        LOGGER.info("handle SetConfigurationObject response for MessageType: {}",
+                deviceMessageMetadata.getMessageType());
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, resultData, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+    }
+
 }
