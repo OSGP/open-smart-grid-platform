@@ -22,7 +22,7 @@ import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.dlms.Keys;
 import com.alliander.osgp.cucumber.platform.dlms.builders.BundleRequestBuilder;
 import com.alliander.osgp.cucumber.platform.dlms.builders.GetProfileGenericDataRequestBuilder;
-import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.SmartMeteringBundleManagementClient;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 
 import cucumber.api.java.en.Then;
@@ -30,7 +30,7 @@ import cucumber.api.java.en.When;
 
 public class BundleSteps {
     @Autowired
-    private SmartMeteringBundleManagementClient client;
+    private SmartMeteringBundleClient client;
 
     @When("a get generic profile data request is received as part of a bundled request")
     public void whenAGetGenericProfileDataBundleRequestIsReceived(final Map<String, String> settings) throws Throwable {
@@ -57,7 +57,7 @@ public class BundleSteps {
         request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
         request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
 
-        final BundleResponse bundleResponse = this.client.getBundleResponse(request);
+        final BundleResponse bundleResponse = this.client.retrieveBundleResponse(request);
         final ProfileGenericDataResponseData profileGenericDataResponseData = (ProfileGenericDataResponseData) bundleResponse
                 .getAllResponses().getResponseList().get(0);
         final ProfileGenericData profileGenericData = profileGenericDataResponseData.getProfileGenericData();
