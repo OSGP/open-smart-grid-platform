@@ -51,6 +51,8 @@ public class GetProfileGenericDataCommandExecutor
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetProfileGenericDataCommandExecutor.class);
 
+    private static final String CAPTURE_OBJECT = "capture-object";
+
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
     private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
@@ -165,7 +167,7 @@ public class GetProfileGenericDataCommandExecutor
             throws ProtocolAdapterException {
 
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelperService
-                .readObjectDefinition(dataObject, "capture-object");
+                .readObjectDefinition(dataObject, CAPTURE_OBJECT);
 
         if (this.isClockDefinition(cosemObjectDefinitionDto)) {
             // The captured clock is always included.
@@ -276,7 +278,7 @@ public class GetProfileGenericDataCommandExecutor
             final ScalerUnitInfo scalerUnitInfo) throws ProtocolAdapterException {
 
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelperService
-                .readObjectDefinition(captureObjectDataObject, "capture-object");
+                .readObjectDefinition(captureObjectDataObject, CAPTURE_OBJECT);
 
         return new CaptureObjectDto(cosemObjectDefinitionDto.getClassId(),
                 cosemObjectDefinitionDto.getLogicalName().toString(), cosemObjectDefinitionDto.getAttributeIndex(),
@@ -361,7 +363,7 @@ public class GetProfileGenericDataCommandExecutor
             for (final DataObject captureObjectDataObject : dataObjectList1) {
 
                 final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelperService
-                        .readObjectDefinition(captureObjectDataObject, "capture-object");
+                        .readObjectDefinition(captureObjectDataObject, CAPTURE_OBJECT);
                 final int classId = cosemObjectDefinitionDto.getClassId();
                 final String logicalName = cosemObjectDefinitionDto.getLogicalName().toString();
                 if (this.hasScalerUnit(classId)) {
