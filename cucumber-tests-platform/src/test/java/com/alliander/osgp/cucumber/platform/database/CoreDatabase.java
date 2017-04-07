@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.EanRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
@@ -52,6 +53,9 @@ public class CoreDatabase {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private EanRepository eanRepository;
 
     @Autowired
     private EventRepository eventRepository;
@@ -136,7 +140,7 @@ public class CoreDatabase {
         this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
-        this.deviceRepository.deleteAllEans();
+        this.eanRepository.deleteAllEans();
         this.deviceRepository.deleteDeviceOutputSettings();
         this.deviceFirmwareRepository.deleteAllInBatch();
         this.eventRepository.deleteAllInBatch();
