@@ -44,6 +44,7 @@ public class ProtocolResponseMessageListener implements MessageListener {
             LOGGER.debug("Result                    : [{}]", protocolResponseMessage.getResult());
             LOGGER.debug("Description               : [{}]", protocolResponseMessage.getOsgpException());
             LOGGER.debug("MessagePriority           : [{}]", protocolResponseMessage.getMessagePriority());
+            LOGGER.debug("BypassRetry               : [{}]", protocolResponseMessage.bypassRetry());
 
             this.deviceResponseMessageService.processMessage(protocolResponseMessage);
 

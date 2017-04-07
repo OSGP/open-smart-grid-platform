@@ -70,7 +70,8 @@ public class BundleService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeter.getIpAddress(), bundleMessageDataContainerDto);
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
