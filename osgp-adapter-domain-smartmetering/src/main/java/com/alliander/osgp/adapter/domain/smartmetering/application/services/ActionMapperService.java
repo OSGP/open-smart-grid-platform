@@ -45,6 +45,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
@@ -69,6 +70,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsReque
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
@@ -137,6 +139,7 @@ public class ActionMapperService {
         CLASS_MAP.put(SpecificAttributeValueRequestData.class, SpecificAttributeValueRequestDto.class);
         CLASS_MAP.put(GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDto.class);
         CLASS_MAP.put(CoupleMbusDeviceRequestData.class, GetAssociationLnObjectsRequestDto.class);
+        CLASS_MAP.put(SetClockConfigurationRequestData.class, SetClockConfigurationRequestDto.class);
         CLASS_MAP.put(ProfileGenericDataRequestData.class, ProfileGenericDataRequestDataDto.class);
     }
 
@@ -172,6 +175,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(SetKeysRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SpecificAttributeValueRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequestData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequestData.class, this.monitoringMapper);
     }
 

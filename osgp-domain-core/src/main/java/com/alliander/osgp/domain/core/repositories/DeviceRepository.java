@@ -20,6 +20,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
 
 @Repository
@@ -49,10 +50,9 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
      * We need these native queries below because these entities dont have an Id
      */
     @Modifying
-    @Query(value = "delete from ean", nativeQuery = true)
-    void deleteAllEans();
-
-    @Modifying
     @Query(value = "delete from device_output_setting", nativeQuery = true)
     void deleteDeviceOutputSettings();
+
+    List<Device> findByDeviceModelAndDeviceTypeAndInMaintenance(DeviceModel deviceModel, String deviceType,
+            boolean inMantenance);
 }

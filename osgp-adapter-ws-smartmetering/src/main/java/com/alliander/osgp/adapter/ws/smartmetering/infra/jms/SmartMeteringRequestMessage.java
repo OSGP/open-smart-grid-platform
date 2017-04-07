@@ -19,6 +19,7 @@ public class SmartMeteringRequestMessage extends RequestMessage {
     private final String messageType;
     private final Integer messagePriority;
     private final Long scheduleTime;
+    private final boolean bypassRetry;
 
     private SmartMeteringRequestMessage(final DeviceMessageMetadata deviceMessageMetadata, final String ipAddress,
             final Serializable request) {
@@ -27,6 +28,7 @@ public class SmartMeteringRequestMessage extends RequestMessage {
         this.messageType = deviceMessageMetadata.getMessageType();
         this.messagePriority = deviceMessageMetadata.getMessagePriority();
         this.scheduleTime = deviceMessageMetadata.getScheduleTime();
+        this.bypassRetry = deviceMessageMetadata.bypassRetry();
     }
 
     public static class Builder {
@@ -68,6 +70,10 @@ public class SmartMeteringRequestMessage extends RequestMessage {
 
     public Long getScheduleTime() {
         return this.scheduleTime;
+    }
+
+    public boolean bypassRetry() {
+        return this.bypassRetry;
     }
 
 }

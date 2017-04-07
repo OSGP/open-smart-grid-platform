@@ -33,6 +33,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegist
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAlarmNotificationsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetClockConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetEncryptionKeyExchangeOnGMeterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetKeysRequest;
@@ -61,6 +62,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
@@ -186,6 +188,10 @@ public class ActionMapperService {
                 this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetSpecificAttributeValueRequest.class, this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequest.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequestData.class,
+                this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetProfileGenericDataRequest.class, this.monitoringMapper);
     }
 
@@ -247,6 +253,9 @@ public class ActionMapperService {
                 GetAssociationLnObjectsRequestData.class);
         CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueRequestData.class,
                 SpecificAttributeValueRequestData.class);
+        CLASS_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequestData.class,
+                SetClockConfigurationRequestData.class);
 
         CLASS_MAP.put(SetSpecialDaysRequest.class, SpecialDaysRequestData.class);
         CLASS_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterData.class);
@@ -271,7 +280,7 @@ public class ActionMapperService {
         CLASS_MAP.put(SetKeysRequest.class, SetKeysRequestData.class);
         CLASS_MAP.put(GetAssociationLnObjectsRequest.class, GetAssociationLnObjectsRequestData.class);
         CLASS_MAP.put(GetSpecificAttributeValueRequest.class, SpecificAttributeValueRequestData.class);
-
+        CLASS_MAP.put(SetClockConfigurationRequest.class, SetClockConfigurationRequestData.class);
         CLASS_MAP.put(GetProfileGenericDataRequest.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData.class);
     }
