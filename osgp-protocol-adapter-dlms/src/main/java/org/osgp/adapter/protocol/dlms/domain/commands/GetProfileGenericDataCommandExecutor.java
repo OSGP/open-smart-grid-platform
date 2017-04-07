@@ -42,12 +42,12 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 
 @Component()
 public class GetProfileGenericDataCommandExecutor
-        extends AbstractCommandExecutor<ProfileGenericDataRequestDataDto, ProfileGenericDataResponseDto> {
+        extends AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetProfileGenericDataCommandExecutor.class);
 
@@ -68,12 +68,12 @@ public class GetProfileGenericDataCommandExecutor
     private DlmsHelperService dlmsHelperService;
 
     public GetProfileGenericDataCommandExecutor() {
-        super(ProfileGenericDataRequestDataDto.class);
+        super(ProfileGenericDataRequestDto.class);
     }
 
     @Override
     public ProfileGenericDataResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ProfileGenericDataRequestDataDto profileGenericDataRequestDataDto) throws ProtocolAdapterException {
+            final ProfileGenericDataRequestDto profileGenericDataRequestDataDto) throws ProtocolAdapterException {
 
         final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDataDto.getObisCode();
         final ObisCode obisCode = this.makeObisCode(obisCodeValues);
