@@ -18,6 +18,10 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
+
+    private static final String SELECTED_VALUES = "selectedValues";
+    private static final String SELECTED_VALUES_CAPTURE_OBJECT = "selectedValues.captureObject";
+
     @Override
     public void configure(final MapperFactory mapperFactory) {
 
@@ -56,14 +60,14 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory
                 .classMap(ProfileGenericDataRequest.class,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class)
-                .fieldAToB("selectedValues.captureObject", "selectedValues")
-                .fieldBToA("selectedValues", "selectedValues.captureObject").byDefault().register();
+                .fieldAToB(SELECTED_VALUES_CAPTURE_OBJECT, SELECTED_VALUES)
+                .fieldBToA(SELECTED_VALUES, SELECTED_VALUES_CAPTURE_OBJECT).byDefault().register();
 
         mapperFactory
                 .classMap(GetProfileGenericDataRequest.class,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData.class)
-                .fieldAToB("selectedValues.captureObject", "selectedValues")
-                .fieldBToA("selectedValues", "selectedValues.captureObject").byDefault().register();
+                .fieldAToB(SELECTED_VALUES_CAPTURE_OBJECT, SELECTED_VALUES)
+                .fieldBToA(SELECTED_VALUES, SELECTED_VALUES_CAPTURE_OBJECT).byDefault().register();
 
         mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
 
