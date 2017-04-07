@@ -29,7 +29,7 @@ import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.config
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class ClockConfigurationSteps extends AbstractBundleSteps {
+public class ClockConfigurationSteps extends BaseBundleSteps {
 
     @Given("^a set clock configuration action is part of a bundled request$")
     public void aSetClockConfigurationActionIsPartOfABundledRequest(final Map<String, String> settings)

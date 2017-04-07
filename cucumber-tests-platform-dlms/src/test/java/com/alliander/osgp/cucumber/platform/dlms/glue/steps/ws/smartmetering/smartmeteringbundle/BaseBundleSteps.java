@@ -33,7 +33,7 @@ import ma.glasnost.orika.MapperFacade;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-public class AbstractBundleSteps {
+public class BaseBundleSteps {
 
     @Autowired
     protected SmartMeteringBundleClient client;

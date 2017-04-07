@@ -23,7 +23,7 @@ import com.alliander.osgp.cucumber.platform.dlms.Keys;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
 
-public class BundleSteps extends AbstractBundleSteps {
+public class BundleSteps extends BaseBundleSteps {
 
     @Given("^a bundle request$")
     public void aBundleRequest(final Map<String, String> settings) throws Throwable {
