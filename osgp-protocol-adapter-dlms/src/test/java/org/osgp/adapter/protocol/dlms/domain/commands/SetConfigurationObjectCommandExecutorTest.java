@@ -69,6 +69,16 @@ public class SetConfigurationObjectCommandExecutorTest {
         FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE);
     }
 
+    private static final List<ConfigurationFlagDto> FLAGS = new ArrayList<>();
+    static {
+        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+    }
     @Mock
     private DlmsConnectionHolder connectionHolderMock;
 
@@ -100,7 +110,11 @@ public class SetConfigurationObjectCommandExecutorTest {
     private BitString flagStringMock;
 
     @Mock
-    private DlmsHelperService dlmsHelperService;
+    private DlmsHelperService dlmsHelperService = new DlmsHelperService();
+
+    @Mock
+    private GetConfigurationObjectHelper getConfigurationObjectHelper;// = new
+                                                                      // GetConfigurationObjectHelper();
 
     @Spy
     private ConfigurationObjectHelperService configurationObjectHelperService = new ConfigurationObjectHelperService();
@@ -109,9 +123,11 @@ public class SetConfigurationObjectCommandExecutorTest {
     private SetConfigurationObjectCommandExecutor executor;
 
     /*
-     * This test was refactored because in the new jdlms-1.0.0.jar, the interface to DlmsConnection (was ClientConnection) was changed significantly.
-     * As a result, in this test the ArgumentCapture could not be used anymore, hence this test is not completely identical with the orginal version.
-     * A mockito expert may try to fix this.
+     * This test was refactored because in the new jdlms-1.0.0.jar, the
+     * interface to DlmsConnection (was ClientConnection) was changed
+     * significantly. As a result, in this test the ArgumentCapture could not be
+     * used anymore, hence this test is not completely identical with the
+     * orginal version. A mockito expert may try to fix this.
      */
     @Test
     public void testForbiddenFlagsAreNotSet()
@@ -123,15 +139,21 @@ public class SetConfigurationObjectCommandExecutorTest {
         final ConfigurationObjectDto configurationObject = new ConfigurationObjectDto(
                 GprsOperationModeTypeDto.ALWAYS_ON, configurationFlags);
 
+        final ConfigurationFlagsDto configurationFlagsonDevice = new ConfigurationFlagsDto(FLAGS);
+        final ConfigurationObjectDto configurationObjectOnDevice = new ConfigurationObjectDto(
+                GprsOperationModeTypeDto.ALWAYS_ON, configurationFlagsonDevice);
+
         // Mock the retrieval of the current ConfigurationObject
         this.mockRetrievalOfCurrentConfigurationObject();
 
-        final List<AccessResultCode> accessResultCodeList =  new ArrayList<>();
+        final List<AccessResultCode> accessResultCodeList = new ArrayList<>();
         accessResultCodeList.add(AccessResultCode.SUCCESS);
         when(this.connMock.set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(accessResultCodeList);
 
         when(this.connectionHolderMock.getConnection()).thenReturn(this.connMock);
         when(this.connectionHolderMock.getDlmsMessageListener()).thenReturn(this.listenerMock);
+        when(this.getConfigurationObjectHelper.getConfigurationObjectDto(this.connectionHolderMock))
+                .thenReturn(configurationObjectOnDevice);
 
         final DlmsDevice device = this.getDlmsDevice();
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -139,7 +161,7 @@ public class SetConfigurationObjectCommandExecutorTest {
         // Run test
         this.executor.execute(this.connectionHolderMock, device, configurationObject);
 
-        final DataObject obj1 = DataObject.newInteger16Data((short)10);
+        final DataObject obj1 = DataObject.newInteger16Data((short) 10);
         final DataObject obj2 = DataObject.newBoolData(true);
         final List<DataObject> dataobjects = new ArrayList<>();
         dataobjects.add(obj1);
@@ -165,7 +187,8 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     private void mockRetrievalOfCurrentConfigurationObject() throws IOException, TimeoutException, DecoderException {
-        when(this.connMock.get(eq(false), Matchers.anyListOf(AttributeAddress.class))).thenReturn(this.getResultListMock);
+        when(this.connMock.get(eq(false), Matchers.anyListOf(AttributeAddress.class)))
+                .thenReturn(this.getResultListMock);
         when(this.connMock.get(eq(false), Matchers.any(AttributeAddress.class))).thenReturn(this.getResultMock);
         when(this.connMock.get(eq(Matchers.anyListOf(AttributeAddress.class)))).thenReturn(this.getResultListMock);
         when(this.connMock.get(eq(Matchers.any(AttributeAddress.class)))).thenReturn(this.getResultMock);
@@ -193,6 +216,14 @@ public class SetConfigurationObjectCommandExecutorTest {
             listOfConfigurationFlags.add(new ConfigurationFlagDto(confFlagType, false));
         }
         return listOfConfigurationFlags;
+    }
 
+    private List<ConfigurationFlagDto> getEnabledFlags() {
+        final List<ConfigurationFlagDto> listOfConfigurationFlags = new ArrayList<>();
+
+        for (final ConfigurationFlagTypeDto confFlagType : FLAGS_TYPES_FORBIDDEN_TO_SET) {
+            listOfConfigurationFlags.add(new ConfigurationFlagDto(confFlagType, false));
+        }
+        return listOfConfigurationFlags;
     }
 }
