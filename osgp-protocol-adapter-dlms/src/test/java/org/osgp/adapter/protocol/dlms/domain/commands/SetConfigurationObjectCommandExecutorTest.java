@@ -69,15 +69,15 @@ public class SetConfigurationObjectCommandExecutorTest {
         FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE);
     }
 
-    private static final List<ConfigurationFlagDto> FLAGS = new ArrayList<>();
+    private static final List<ConfigurationFlagDto> FLAGS_ENABLED = new ArrayList<>();
     static {
-        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
-        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
-        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
-        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
-        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
-        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
-        FLAGS.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_3_ON_P_3_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_4_ON_P_3_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P_3_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_3_ON_PO_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_4_ON_PO_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE, true));
     }
     @Mock
     private DlmsConnectionHolder connectionHolderMock;
@@ -139,7 +139,7 @@ public class SetConfigurationObjectCommandExecutorTest {
         final ConfigurationObjectDto configurationObject = new ConfigurationObjectDto(
                 GprsOperationModeTypeDto.ALWAYS_ON, configurationFlags);
 
-        final ConfigurationFlagsDto configurationFlagsonDevice = new ConfigurationFlagsDto(FLAGS);
+        final ConfigurationFlagsDto configurationFlagsonDevice = new ConfigurationFlagsDto(FLAGS_ENABLED);
         final ConfigurationObjectDto configurationObjectOnDevice = new ConfigurationObjectDto(
                 GprsOperationModeTypeDto.ALWAYS_ON, configurationFlagsonDevice);
 
