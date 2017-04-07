@@ -21,7 +21,7 @@ public class ProfileGenericDataRequestDataDto implements ActionRequestDto {
     protected final ObisCodeValuesDto obisCode;
     protected final Date beginDate;
     protected final Date endDate;
-    protected final List<CaptureObjectDefinitionDto> selectedValues = new ArrayList<>();
+    protected final ArrayList<CaptureObjectDefinitionDto> selectedValues = new ArrayList<>();
 
     private static final long serialVersionUID = -2483665562035897062L;
 
@@ -42,8 +42,7 @@ public class ProfileGenericDataRequestDataDto implements ActionRequestDto {
 
     @Override
     public String toString() {
-        return String.format(
-                "%s[device=%s, obisCode=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
+        return String.format("%s[obisCode=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
                 ProfileGenericDataRequestDataDto.class.getSimpleName(), this.obisCode, this.beginDate, this.endDate,
                 this.selectedValues.isEmpty() ? "all capture objects" : this.selectedValues);
     }

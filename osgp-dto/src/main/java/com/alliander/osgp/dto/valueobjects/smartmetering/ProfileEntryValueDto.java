@@ -19,22 +19,6 @@ public class ProfileEntryValueDto implements Serializable {
         this.value = value;
     }
 
-    // public ProfileEntryValueDto(final String value) {
-    // this.value = value;
-    // }
-    //
-    // public ProfileEntryValueDto(final Date value) {
-    // this.value = value;
-    // }
-    //
-    // public ProfileEntryValueDto(final Long value) {
-    // this.value = value;
-    // }
-    //
-    // public ProfileEntryValueDto(final BigDecimal value) {
-    // this.value = value;
-    // }
-    //
     public Serializable getValue() {
         return this.value;
     }
