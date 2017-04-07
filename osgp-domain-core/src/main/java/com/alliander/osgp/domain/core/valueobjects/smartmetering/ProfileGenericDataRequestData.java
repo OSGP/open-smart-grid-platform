@@ -70,8 +70,7 @@ public class ProfileGenericDataRequestData implements Serializable, ActionReques
 
     @Override
     public String toString() {
-        return String.format(
-                "%s[device=%s, obisCode=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
+        return String.format("%s[obisCode=%s, begin=%tF %<tT.%<tL %<tZ, end=%tF %<tT.%<tL %<tZ, selected=%s]",
                 ProfileGenericDataRequestData.class.getSimpleName(), this.obisCode, this.beginDate, this.endDate,
                 this.selectedValues.isEmpty() ? "all capture objects" : this.selectedValues);
     }

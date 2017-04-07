@@ -18,22 +18,6 @@ public class ProfileEntryValue implements Serializable {
     public ProfileEntryValue(final Serializable value) {
         this.value = value;
     }
-    //
-    // public ProfileEntryValue(final String value) {
-    // this.value = value;
-    // }
-    //
-    // public ProfileEntryValue(final Date value) {
-    // this.value = value;
-    // }
-    //
-    // public ProfileEntryValue(final Long value) {
-    // this.value = value;
-    // }
-    //
-    // public ProfileEntryValue(final BigDecimal value) {
-    // this.value = value;
-    // }
 
     public Serializable getValue() {
         return this.value;
