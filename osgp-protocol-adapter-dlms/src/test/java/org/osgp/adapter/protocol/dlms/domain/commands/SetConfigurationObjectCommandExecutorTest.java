@@ -113,8 +113,7 @@ public class SetConfigurationObjectCommandExecutorTest {
     private DlmsHelperService dlmsHelperService = new DlmsHelperService();
 
     @Mock
-    private GetConfigurationObjectHelper getConfigurationObjectHelper;// = new
-                                                                      // GetConfigurationObjectHelper();
+    private GetConfigurationObjectHelper getConfigurationObjectHelper;
 
     @Spy
     private ConfigurationObjectHelperService configurationObjectHelperService = new ConfigurationObjectHelperService();
@@ -210,15 +209,6 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     private List<ConfigurationFlagDto> getAllForbiddenFlags() {
-        final List<ConfigurationFlagDto> listOfConfigurationFlags = new ArrayList<>();
-
-        for (final ConfigurationFlagTypeDto confFlagType : FLAGS_TYPES_FORBIDDEN_TO_SET) {
-            listOfConfigurationFlags.add(new ConfigurationFlagDto(confFlagType, false));
-        }
-        return listOfConfigurationFlags;
-    }
-
-    private List<ConfigurationFlagDto> getEnabledFlags() {
         final List<ConfigurationFlagDto> listOfConfigurationFlags = new ArrayList<>();
 
         for (final ConfigurationFlagTypeDto confFlagType : FLAGS_TYPES_FORBIDDEN_TO_SET) {
