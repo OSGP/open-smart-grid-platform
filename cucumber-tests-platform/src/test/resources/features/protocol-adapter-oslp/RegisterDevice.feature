@@ -103,6 +103,7 @@ Feature: ProtocolAdapterOSLP Device Registration
     And an ssld oslp device
       | DeviceIdentification | TESTDEVICE0000003 |
       | DeviceUid            | sdfhDFDFLS34FDLSd |
+      | IpAddress            | 127.0.0.5         |
       | Protocol             | <Protocol>        |
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TESTDEVICE0000003 |
