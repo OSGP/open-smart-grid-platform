@@ -786,6 +786,7 @@
           <version>${maven.surefire.plugin.version}</version>
           <configuration>
             <argLine>${surefireArgLine}</argLine>
+            <skipTests>${skipITs}</skipTests>
             <excludes>
               <!-- Cucumber integration tests, included with Failsafe. -->
               <exclude>**/cucumber/**/AcceptanceTests.java</exclude>
