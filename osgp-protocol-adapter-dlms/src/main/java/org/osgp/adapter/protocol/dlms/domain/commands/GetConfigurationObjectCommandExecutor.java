@@ -34,9 +34,8 @@ public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecut
     @Override
     public DataObject fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
         /*
-         * GetAllAttributeValuesRequestDto does not contain any values to pass
-         * on, and the RetrieveAllAttributeValuesCommandExecutor takes a
-         * DataObject as input that is ignored.
+         * The DataObject input is ignored. (@see
+         * GetConfigurationObjectCommandExecutor.execute)
          */
         return null;
     }

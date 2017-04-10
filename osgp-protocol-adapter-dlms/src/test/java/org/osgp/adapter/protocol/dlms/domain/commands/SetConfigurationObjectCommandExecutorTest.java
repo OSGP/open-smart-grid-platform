@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -142,9 +141,6 @@ public class SetConfigurationObjectCommandExecutorTest {
         final ConfigurationObjectDto configurationObjectOnDevice = new ConfigurationObjectDto(
                 GprsOperationModeTypeDto.ALWAYS_ON, configurationFlagsonDevice);
 
-        // Mock the retrieval of the current ConfigurationObject
-        this.mockRetrievalOfCurrentConfigurationObject();
-
         final List<AccessResultCode> accessResultCodeList = new ArrayList<>();
         accessResultCodeList.add(AccessResultCode.SUCCESS);
         when(this.connMock.set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(accessResultCodeList);
@@ -183,24 +179,6 @@ public class SetConfigurationObjectCommandExecutorTest {
 
         final DataObject capturedDataObject = (DataObject) Whitebox.getInternalState(capturedSetParameter, "data");
         assertEquals("[LONG_INTEGER Value: 10, BOOL Value: true]", capturedDataObject.getRawValue().toString());
-    }
-
-    private void mockRetrievalOfCurrentConfigurationObject() throws IOException, TimeoutException, DecoderException {
-        when(this.connMock.get(eq(false), Matchers.anyListOf(AttributeAddress.class)))
-                .thenReturn(this.getResultListMock);
-        when(this.connMock.get(eq(false), Matchers.any(AttributeAddress.class))).thenReturn(this.getResultMock);
-        when(this.connMock.get(eq(Matchers.anyListOf(AttributeAddress.class)))).thenReturn(this.getResultListMock);
-        when(this.connMock.get(eq(Matchers.any(AttributeAddress.class)))).thenReturn(this.getResultMock);
-
-        when(this.getResultMock.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
-        when(this.getResultMock.getResultData()).thenReturn(this.resultDataObjectMock);
-        when(this.resultDataObjectMock.getValue()).thenReturn(this.linkedListMock);
-        when(this.linkedListMock.get(0)).thenReturn(this.gprsOperationModeDataMock);
-        when(this.linkedListMock.get(1)).thenReturn(this.flagsDataMock);
-        when(this.gprsOperationModeDataMock.getValue()).thenReturn(1);
-        when(this.flagsDataMock.getValue()).thenReturn(this.flagStringMock);
-        final byte[] flagByteArray = Hex.decodeHex(CURRENT_CONFIGURATION_OBJECT_BITSTRING_ALL_ENABLED.toCharArray());
-        when(this.flagStringMock.getBitString()).thenReturn(flagByteArray);
     }
 
     private DlmsDevice getDlmsDevice() {

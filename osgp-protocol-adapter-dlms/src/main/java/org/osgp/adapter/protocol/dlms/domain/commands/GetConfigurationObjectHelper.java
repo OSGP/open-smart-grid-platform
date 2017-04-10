@@ -34,9 +34,9 @@ public class GetConfigurationObjectHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetConfigurationObjectHelper.class);
 
-    private static final int CLASS_ID = 1;
-    private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
-    private static final int ATTRIBUTE_ID = 2;
+    public static final int CLASS_ID = 1;
+    public static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
+    public static final int ATTRIBUTE_ID = 2;
 
     @Autowired
     private ConfigurationObjectHelperService configurationObjectHelperService;

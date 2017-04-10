@@ -7,6 +7,10 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import static org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectHelper.ATTRIBUTE_ID;
+import static org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectHelper.CLASS_ID;
+import static org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectHelper.OBIS_CODE;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +19,6 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -41,10 +44,6 @@ public class SetConfigurationObjectCommandExecutor
         extends AbstractCommandExecutor<ConfigurationObjectDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectCommandExecutor.class);
-
-    private static final int CLASS_ID = 1;
-    private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
-    private static final int ATTRIBUTE_ID = 2;
 
     private static final List<ConfigurationFlagTypeDto> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<>();
     static {
