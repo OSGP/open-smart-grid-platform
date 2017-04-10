@@ -34,7 +34,6 @@ import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.DeviceSimulatorException;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.MockOslpServer;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
@@ -978,17 +977,6 @@ public class OslpDeviceSteps {
             Assert.assertEquals(getString(expectedResponse, Keys.MESSAGE), e.getMessage());
         }
 
-    }
-
-    @Then("^the IpAddress for the device \"([^\"]*)\" should be \"([^\"]*)\"$")
-    public void theIpAddressForTheDeviceShouldBe(final String deviceIdentification, final String ipAddress) {
-
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        if (ipAddress.equals("")) {
-            Assert.assertNull(device.getIpAddress());
-        } else {
-            Assert.assertEquals(ipAddress, device.getIpAddress());
-        }
     }
 
     public OslpEnvelope.Builder createEnvelopeBuilder(final String deviceUid, final Integer sequenceNumber) {

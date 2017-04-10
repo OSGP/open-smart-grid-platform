@@ -7,7 +7,6 @@ Feature: ProtocolAdapterOSLP Device Registration
   Scenario Outline: A device which is installed and performs first time registration.
     Given an ssld oslp device
       | DeviceIdentification | TESTDEVICE0000001 |
-      | DeviceUid            | fIX1fFGaO1S3Ple6  |
       | Protocol             | <Protocol>        |
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TESTDEVICE0000001 |
@@ -36,10 +35,12 @@ Feature: ProtocolAdapterOSLP Device Registration
       | DeviceIdentification | TESTDEVICE0000001 |
       | DeviceUid            | fIX1fFGaO1S3Ple6  |
       | Protocol             | <Protocol>        |
+      | DeviceType           | SSLD              |
     And the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TESTDEVICE0000001 |
       | DeviceUid            | fIX1fFGaO1S3Ple6  |
       | Protocol             | <Protocol>        |
+      | DeviceType           | SSLD              |
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TESTDEVICE0000001 |
       | Protocol             | <Protocol>        |
@@ -112,10 +113,18 @@ Feature: ProtocolAdapterOSLP Device Registration
       | Protocol             | <Protocol>        |
       | IpAddress            | 127.0.0.3         |
       | DeviceType           | SSLD              |
-    And the register device response contains
+    Then the register device response contains
       | Status | OK |
-    Then the IpAddress for the device "TESTDEVICE0000003" should be "127.0.0.3"
-    And the IpAddress for the device "TESTDEVICE0000002" should be ""
+    And the ssld oslp device contains
+      | DeviceIdentification | TESTDEVICE0000003 |
+      | DeviceUid            | fIX1fFGaO1S3Ple6  |
+      | Protocol             | <Protocol>        |
+      | IpAddress            | 127.0.0.3         |
+      | DeviceType           | SSLD              |
+    And the ssld oslp device contains
+      | DeviceIdentification | TESTDEVICE0000002 |
+      | IpAddress            |                   |
+      | DeviceType           | SSLD              |
 
     Examples: 
       | Protocol    |
