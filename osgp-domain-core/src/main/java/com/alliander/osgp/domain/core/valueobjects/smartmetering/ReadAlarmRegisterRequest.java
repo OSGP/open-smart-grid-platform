@@ -7,12 +7,19 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public class ReadAlarmRegisterRequest extends EmptyRequest {
+import java.io.Serializable;
+
+public class ReadAlarmRegisterRequest implements Serializable {
 
     private static final long serialVersionUID = -5249256148066126239L;
-    
+
+    private final String deviceIdentification;
+
     public ReadAlarmRegisterRequest(final String deviceIdentification) {
-        super(deviceIdentification);
+        this.deviceIdentification = deviceIdentification;
     }
 
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
+    }
 }

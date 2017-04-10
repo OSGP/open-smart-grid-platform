@@ -922,9 +922,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                     .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
-            }
+            response.setDescription((String) meterResponseData.getMessageData());
         } catch (final Exception e) {
             this.handleException(e);
         }
