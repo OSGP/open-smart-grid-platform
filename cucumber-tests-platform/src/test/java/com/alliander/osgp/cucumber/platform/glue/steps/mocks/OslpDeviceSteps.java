@@ -25,6 +25,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
@@ -76,6 +78,8 @@ import cucumber.api.java.en.When;
  * mock behave correctly for the automatic test.
  */
 public class OslpDeviceSteps {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OslpDeviceSteps.class);
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -844,6 +848,14 @@ public class OslpDeviceSteps {
     @Given("^the device sends a register device request to the platform over \"([^\"]*)\"$")
     public void theDeviceSendsARegisterDeviceRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
+
+        LOGGER.info("IpAddress from feature: [{}]", getString(settings, Keys.IP_ADDRESS, Defaults.LOCALHOST));
+        final InetAddress address = InetAddress.getByName(getString(settings, Keys.IP_ADDRESS, Defaults.LOCALHOST));
+        final byte[] ba = address.getAddress();
+        LOGGER.info("getAddress() from inetAddress: [{}.{}.{}.{}]", ba[0], ba[1], ba[2], ba[3]);
+        LOGGER.info("getHostAddress() from inetAddress: [{}]", address.getHostAddress());
+        LOGGER.info("getHostName() from inetAddress: [{}]", address.getHostName());
+
         try {
             final OslpEnvelope request = this
                     .createEnvelopeBuilder(
