@@ -30,20 +30,12 @@ public class AdapterProtocolDlmsPersistenceConfig extends ApplicationPersistence
     @Value("${db.name.osgp_adapter_protocol_dlms}")
     private String databaseName;
 
-    @Value("${osgpadapterprotocoldlmsdbs.url}")
-    private String databaseUrl;
-
     @Value("${entitymanager.packages.to.scan.dlms}")
     private String entitymanagerPackagesToScan;
 
     @Override
     protected String getDatabaseName() {
         return this.databaseName;
-    }
-
-    @Override
-    protected String getDatabaseUrl() {
-        return this.databaseUrl;
     }
 
     @Override

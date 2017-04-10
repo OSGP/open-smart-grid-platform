@@ -28,9 +28,6 @@ public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguratio
     @Value("${db.name.osgp_logging}")
     private String databaseName;
 
-    @Value("${osgploggingdbs.url}")
-    private String databaseUrl;
-
     @Value("${entitymanager.packages.to.scan.logging}")
     private String entitymanagerPackagesToScan;
 
@@ -40,11 +37,6 @@ public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguratio
     @Override
     protected String getDatabaseName() {
         return this.databaseName;
-    }
-
-    @Override
-    protected String getDatabaseUrl() {
-        return this.databaseUrl;
     }
 
     @Override

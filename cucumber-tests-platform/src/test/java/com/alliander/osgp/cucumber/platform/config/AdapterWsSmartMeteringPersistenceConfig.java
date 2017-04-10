@@ -29,9 +29,6 @@ public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersiste
     @Value("${db.name.osgp_adapter_ws_smartmetering}")
     private String databaseName;
 
-    @Value("${osgpadapterwssmartmeteringdbs.url}")
-    private String databaseUrl;
-
     @Value("${entitymanager.packages.to.scan}")
     private String entitymanagerPackagesToScan;
 
@@ -41,11 +38,6 @@ public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersiste
     @Override
     protected String getDatabaseName() {
         return this.databaseName;
-    }
-
-    @Override
-    protected String getDatabaseUrl() {
-        return this.databaseUrl;
     }
 
     @Override

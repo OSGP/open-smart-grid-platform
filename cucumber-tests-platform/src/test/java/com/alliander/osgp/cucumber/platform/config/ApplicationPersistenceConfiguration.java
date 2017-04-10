@@ -78,8 +78,6 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
 
     protected abstract String getDatabaseName();
 
-    protected abstract String getDatabaseUrl();
-
     protected abstract String getEntitymanagerPackagesToScan();
 
     /**

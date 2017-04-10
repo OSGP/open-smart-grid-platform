@@ -31,20 +31,12 @@ public class AdapterWsMicrogridsPersistenceConfig extends ApplicationPersistence
     @Value("${db.name.osgp_adapter_ws_microgrids}")
     private String databaseName;
 
-    @Value("${osgpadapterwsmicrogridsdbs.url}")
-    private String databaseUrl;
-
     @Value("${entitymanager.packages.to.scan.ws.microgrids}")
     private String entitymanagerPackagesToScan;
 
     @Override
     protected String getDatabaseName() {
         return this.databaseName;
-    }
-
-    @Override
-    protected String getDatabaseUrl() {
-        return this.databaseUrl;
     }
 
     @Override
