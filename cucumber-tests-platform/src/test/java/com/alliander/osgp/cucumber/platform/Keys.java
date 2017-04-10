@@ -289,4 +289,6 @@ public class Keys {
 
     public static final String FROM_TIMESTAMP = "fromTimestamp";
     public static final String TO_TIMESTAMP = "toTimestamp";
+    public static final String REQUESTED_PAGE = "RequestedPage";
+    public static final String TOTALPAGES = "TotalPages";
 }

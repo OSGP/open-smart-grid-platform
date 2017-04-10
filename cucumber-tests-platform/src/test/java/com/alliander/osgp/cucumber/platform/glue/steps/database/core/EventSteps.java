@@ -41,16 +41,20 @@ public class EventSteps extends GlueBase {
     @Autowired
     private EventRepository eventRepository;
 
-    @Given("^an event$")
-    public void anEvent(final Map<String, String> data) throws Exception {
+    @Given("^(\\d+) events?$")
+    public void anEvent(final int amount, final Map<String, String> data) throws Exception {
         final Device device = this.deviceRepository
                 .findByDeviceIdentification(getString(data, Keys.KEY_DEVICE_IDENTIFICATION));
 
-        final Event event = new Event(device, getDateTime(getString(data, Keys.TIMESTAMP)).toDate(),
-                getEnum(data, Keys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
-                getString(data, Keys.KEY_DESCRIPTION, ""), getInteger(data, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+        for (int i = 0; i < amount; i++) {
+            final Event event = new Event(device, getDateTime(getString(data, Keys.TIMESTAMP)).toDate(),
+                    getEnum(data, Keys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
+                    getString(data, Keys.KEY_DESCRIPTION, ""),
+                    getInteger(data, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
 
-        this.eventRepository.save(event);
+            this.eventRepository.save(event);
+        }
+
     }
 
     @Then("^the (?:event is|events are) stored$")
@@ -123,9 +127,9 @@ public class EventSteps extends GlueBase {
     @Then("^the stored events are filtered and retrieved$")
     public void theStoredEventsAreFilteredAndRetrieved(final Map<String, String> expectedResponse) throws Throwable {
         final List<Event> events;
-        if(getString(expectedResponse, Keys.KEY_DEVICE_IDENTIFICATION).equals("")){
+        if (getString(expectedResponse, Keys.KEY_DEVICE_IDENTIFICATION).equals("")) {
             events = this.retrieveStoredEvents();
-        }else{
+        } else {
             events = this.retrieveStoredEvents(getString(expectedResponse, Keys.KEY_DEVICE_IDENTIFICATION));
         }
         Assert.assertEquals((int) getInteger(expectedResponse, Keys.KEY_RESULT), events.size());

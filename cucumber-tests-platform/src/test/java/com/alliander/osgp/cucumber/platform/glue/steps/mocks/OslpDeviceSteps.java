@@ -16,6 +16,7 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,14 +27,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.DeviceSimulatorException;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.MockOslpServer;
+import com.alliander.osgp.cucumber.platform.support.ws.core.CoreDeviceManagementClient;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.oslp.Oslp;
@@ -63,6 +68,7 @@ import com.alliander.osgp.oslp.Oslp.TriggerType;
 import com.alliander.osgp.oslp.Oslp.Weekday;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.OslpUtils;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.google.protobuf.ByteString;
 
 import cucumber.api.java.en.Given;
@@ -80,6 +86,9 @@ public class OslpDeviceSteps {
 
     @Autowired
     private MockOslpServer oslpMockServer;
+
+    @Autowired
+    private CoreDeviceManagementClient client;
 
     /**
      * Verify that a get actual power usage OSLP message is sent to the device.
@@ -946,6 +955,31 @@ public class OslpDeviceSteps {
                 .build();
 
         this.send(request, settings);
+    }
+
+    @When("^retrieve event notification request with requestedPage and pageSize$")
+    public void retrieveEventNotificationRequestWithRequestedPageAndPageSizeToThePlatform(
+            final Map<String, String> settings)
+            throws IOException, DeviceSimulatorException, WebServiceSecurityException, GeneralSecurityException {
+
+        final FindEventsRequest request = new FindEventsRequest();
+        request.setDeviceIdentification(
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setPageSize(getInteger(settings, Keys.KEY_PAGE_SIZE, Defaults.DEFAULT_PAGE_SIZE));
+        request.setPage(getInteger(settings, Keys.REQUESTED_PAGE, Defaults.REQUESTED_PAGE));
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.findEventsResponse(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
+    }
+
+    @Then("^the response should contain (\\d+) pages$")
+    public void theRetrieveEventNotificationRequestIsReceived(final int totalPages) {
+        final FindEventsResponse response = (FindEventsResponse) ScenarioContext.Current().get(Keys.RESPONSE);
+        Assert.assertEquals(totalPages, (response.getPage().getTotalPages()));
+
     }
 
     /**
