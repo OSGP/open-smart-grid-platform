@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service(value = "domainDistributionAutomationAdHocManagementService")
+@Service(value = "domainDistributionAutomationDeviceManagementService")
 @Transactional(value = "transactionManager")
 public class DeviceManagementService extends BaseService {
 
