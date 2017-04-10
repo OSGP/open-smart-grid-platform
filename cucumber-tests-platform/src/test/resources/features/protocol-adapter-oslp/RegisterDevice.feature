@@ -123,7 +123,9 @@ Feature: ProtocolAdapterOSLP Device Registration
       | DeviceType           | SSLD              |
     And the ssld oslp device contains
       | DeviceIdentification | TESTDEVICE0000002 |
-      | IpAddress            |                   |
+      | DeviceUid            | eHW0eEFzN0R2Okd5  |
+      | Protocol             | <Protocol>        |
+      | IpAddress            | null							 |
       | DeviceType           | SSLD              |
 
     Examples: 
