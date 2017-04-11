@@ -11,16 +11,16 @@ Feature: OslpAdapter Event notifications
       | DeviceIdentification | TESTDEVICE0000001 |
       | Protocol             | <Protocol>        |
     And 1 event
-    	| DeviceIdentification | TESTDEVICE0000001 |
-    	| TimeStamp            | now  |
-    	| EventType       | <EventType>   |
-      | Description | <Description> |
-      | Index       |             1 |
+      | DeviceIdentification | TESTDEVICE0000001 |
+      | TimeStamp            | now               |
+      | EventType            | <EventType>       |
+      | Description          | <Description>     |
+      | Index                |                 1 |
     When retrieve event notification request is send
       | DeviceIdentification | TESTDEVICE0000001 |
     Then the retrieve event notification request contains
       | DeviceIdentification | TESTDEVICE0000001 |
-      | EventType                | <EventType>       |
+      | EventType            | <EventType>       |
       | Description          | <Description>     |
       | Index                |                 1 |
     And the stored events from "TESTDEVICE0000001" are retrieved and contain
@@ -52,7 +52,7 @@ Feature: OslpAdapter Event notifications
       | DeviceIdentification | TESTDEVICE0000001 |
     Then the retrieve event notification request contains
       | DeviceIdentification | TESTDEVICE0000001     |
-      | EventType                | LIGHT_EVENTS_LIGHT_ON |
+      | EventType            | LIGHT_EVENTS_LIGHT_ON |
       | Description          | light is on           |
       | Index                |                     1 |
     And the stored events from "TESTDEVICE0000001" are filtered and retrieved
@@ -113,10 +113,10 @@ Feature: OslpAdapter Event notifications
     When retrieve event notification request is send
       | DeviceIdentification | TESTDEVICE0000002 |
     Then the retrieve event notification request contains
-      | DeviceIdentification | TESTDEVICE0000002     |
+      | DeviceIdentification | TESTDEVICE0000002      |
       | EventType            | LIGHT_EVENTS_LIGHT_OFF |
       | Description          | light is off           |
-      | Index                |                     1 |
+      | Index                |                      1 |
     And the stored events are filtered and retrieved
       | DeviceIdentification | <filterDevice> |
       | Result               | <Result>       |
