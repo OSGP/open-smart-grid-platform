@@ -42,6 +42,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
@@ -291,11 +292,11 @@ public class ConfigurationService {
         return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentifier);
     }
 
-    public String requestGetConfigurationObject(final DlmsConnectionHolder conn, final DlmsDevice device)
-            throws ProtocolAdapterException {
+    public GetConfigurationObjectResponseDto requestGetConfigurationObject(final DlmsConnectionHolder conn,
+            final DlmsDevice device) throws ProtocolAdapterException {
 
-        return this.getConfigurationObjectCommandExecutor.execute(conn, device, null);
-
+        return new GetConfigurationObjectResponseDto(
+                this.getConfigurationObjectCommandExecutor.execute(conn, device, null));
     }
 
 }

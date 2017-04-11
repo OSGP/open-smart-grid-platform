@@ -49,8 +49,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDt
 @RunWith(MockitoJUnitRunner.class)
 public class SetConfigurationObjectCommandExecutorTest {
 
-    private static final String CURRENT_CONFIGURATION_OBJECT_BITSTRING_ALL_ENABLED = "ffc0";
-
     private static final String DEVICE_IDENTIFICATION = "E9998000012345678";
 
     private static final int CLASS_ID = 1;

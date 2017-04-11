@@ -16,13 +16,12 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 
 @Component()
-public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
+public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecutor<DataObject, ConfigurationObjectDto> {
 
     @Autowired
     private GetConfigurationObjectHelper getConfigurationObjectHelper;
@@ -41,29 +40,16 @@ public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecut
     }
 
     @Override
-    public ActionResponseDto asBundleResponse(final String executionResult) throws ProtocolAdapterException {
-        return new GetAttributeValuesResponseDto(executionResult);
+    public ActionResponseDto asBundleResponse(final ConfigurationObjectDto executionResult)
+            throws ProtocolAdapterException {
+        return new GetConfigurationObjectResponseDto(executionResult);
     }
 
     @Override
-    public String execute(final DlmsConnectionHolder conn, final DlmsDevice device, final DataObject object)
-            throws ProtocolAdapterException {
+    public ConfigurationObjectDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final DataObject object) throws ProtocolAdapterException {
 
-        final ConfigurationObjectDto configurationObjectOnDevice = this.getConfigurationObjectHelper
-                .getConfigurationObjectDto(conn);
-
-        return this.createOutput(configurationObjectOnDevice);
+        return this.getConfigurationObjectHelper.getConfigurationObjectDto(conn);
     }
 
-    private String createOutput(final ConfigurationObjectDto configObject) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("GprsOperationMode = " + configObject.getGprsOperationMode() + "\n");
-        configObject.getConfigurationFlags().getConfigurationFlag()
-                .forEach(f -> sb.append(this.formatConfigurationFlag(f)));
-        return sb.toString();
-    }
-
-    private String formatConfigurationFlag(final ConfigurationFlagDto configFlag) {
-        return configFlag.getConfigurationFlagType() + " = " + configFlag.isEnabled() + "\n";
-    }
 }
