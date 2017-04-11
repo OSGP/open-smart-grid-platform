@@ -14,8 +14,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +31,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FaultResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAttributeValuesResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -47,6 +46,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataRespons
 import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
@@ -55,6 +55,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseD
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated
@@ -92,6 +94,7 @@ public class ActionMapperResponseService {
         classMap.put(FirmwareVersionResponseDto.class, FirmwareVersionResponse.class);
         classMap.put(UpdateFirmwareResponseDto.class, UpdateFirmwareResponse.class);
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
+        classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);
     }
 
     /**
@@ -112,6 +115,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(FirmwareVersionResponseDto.class, this.configurationMapper);
         classToMapperMap.put(UpdateFirmwareResponseDto.class, this.configurationMapper);
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
+        classToMapperMap.put(GetConfigurationObjectResponseDto.class, this.configurationMapper);
     }
 
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)
@@ -138,7 +142,8 @@ public class ActionMapperResponseService {
 
         if (actionValueResponseObject == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(
                             "No Action Value Response Object for Action Value Response DTO Object of class: "
                                     + action.getClass().getName()));
         }
@@ -150,7 +155,8 @@ public class ActionMapperResponseService {
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(
                             "No Action Value Response Object class for Action Value Response DTO Object class: "
                                     + action.getClass().getName()));
         }

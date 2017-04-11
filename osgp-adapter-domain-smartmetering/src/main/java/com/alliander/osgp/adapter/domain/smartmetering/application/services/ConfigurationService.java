@@ -31,6 +31,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
@@ -40,6 +41,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
@@ -692,10 +694,14 @@ public class ConfigurationService {
     }
 
     public void handleGetConfigurationObjectResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception, final String resultData) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final GetConfigurationObjectResponseDto resultData) {
 
         LOGGER.info("handle SetConfigurationObject response for MessageType: {}",
                 deviceMessageMetadata.getMessageType());
+
+        final GetConfigurationObjectResponse response = this.configurationMapper.map(resultData,
+                GetConfigurationObjectResponse.class);
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
@@ -705,7 +711,7 @@ public class ConfigurationService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, resultData, deviceMessageMetadata.getMessagePriority()),
+                result, exception, response, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
 

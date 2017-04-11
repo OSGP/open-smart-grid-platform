@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.FirmwareVersionConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.GetAttributeValuesResponseConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.GetConfigurationObjectResponseConverter;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
@@ -27,5 +28,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusResponseConverter());
         mapperFactory.getConverterFactory().registerConverter(new FirmwareVersionConverter());
         mapperFactory.getConverterFactory().registerConverter(new GetAttributeValuesResponseConverter());
+        mapperFactory.getConverterFactory().registerConverter(new GetConfigurationObjectResponseConverter());
     }
 }

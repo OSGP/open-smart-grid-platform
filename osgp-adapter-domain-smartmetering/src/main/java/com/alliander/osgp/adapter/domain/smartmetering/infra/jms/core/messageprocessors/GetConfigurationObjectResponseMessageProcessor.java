@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -33,7 +34,7 @@ public class GetConfigurationObjectResponseMessageProcessor extends OsgpCoreResp
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof String;
+        return responseMessage.getDataObject() instanceof GetConfigurationObjectResponseDto;
     }
 
     @Override
@@ -41,6 +42,7 @@ public class GetConfigurationObjectResponseMessageProcessor extends OsgpCoreResp
             final ResponseMessage responseMessage, final OsgpException osgpException) {
 
         this.configurationService.handleGetConfigurationObjectResponse(deviceMessageMetadata,
-                responseMessage.getResult(), osgpException, (String) responseMessage.getDataObject());
+                responseMessage.getResult(), osgpException,
+                (GetConfigurationObjectResponseDto) responseMessage.getDataObject());
     }
 }

@@ -26,6 +26,7 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationObject;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
@@ -922,7 +923,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                     .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            response.setDescription((String) meterResponseData.getMessageData());
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse getConfigurationObjectResponse = (com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse) meterResponseData
+                    .getMessageData();
+            final ConfigurationObject configurationObject = this.configurationMapper
+                    .map(getConfigurationObjectResponse.getConfigurationObject(), ConfigurationObject.class);
+
+            response.setConfigurationObject(configurationObject);
         } catch (final Exception e) {
             this.handleException(e);
         }
