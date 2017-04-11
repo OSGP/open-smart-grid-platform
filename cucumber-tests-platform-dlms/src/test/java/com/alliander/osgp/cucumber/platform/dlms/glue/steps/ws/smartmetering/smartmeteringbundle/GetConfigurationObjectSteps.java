@@ -7,16 +7,19 @@
  */
 package com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.smartmeteringbundle;
 
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
+
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationObject;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.dlms.Keys;
 
@@ -47,19 +50,20 @@ public class GetConfigurationObjectSteps extends BaseBundleSteps {
         final Response actionResponse = response.getAllResponses().getResponseList()
                 .get(this.getAndIncreaseCount(Keys.SCENARIO_CONTEXT_BUNDLE_RESPONSES));
 
+        System.out.println(actionResponse.getClass());
         Assert.assertTrue("response should be a GetConfigurationResponse object",
-                actionResponse instanceof GetConfigurationResponse);
-        final String responseString = ((GetConfigurationResponse) actionResponse).getConfigurationData();
+                actionResponse instanceof GetConfigurationObjectResponse);
+        final ConfigurationObject configurationObject = ((GetConfigurationObjectResponse) actionResponse)
+                .getConfigurationObject();
 
-        settings.keySet().forEach(key -> this.assertResponseString(responseString, key, settings));
+        Assert.assertEquals("", settings.get("GprsOperationMode"),
+                configurationObject.getGprsOperationMode().toString());
+        configurationObject.getConfigurationFlags().getConfigurationFlag().forEach(f -> this.testConfigurationFlags(f, settings));
     }
 
-    private void assertResponseString(final String responseString, final String key,
-            final Map<String, String> settings) {
-        final String testString = StringUtils.replace(responseString, " ", "");
-        final String expectValue = settings.get(key);
-        Assert.assertTrue("reponse should contain " + key, testString.indexOf(key) >= 0);
-        Assert.assertTrue(key + " should be " + expectValue, testString.indexOf("=" + expectValue) >= 0);
+    private void testConfigurationFlags(final ConfigurationFlag configFlag, final Map<String, String> settings) {
+        final String key = configFlag.getConfigurationFlagType().name();
+        final boolean value = getBoolean(settings, key);
+        Assert.assertEquals("", value, configFlag.isEnabled());
     }
-
 }
