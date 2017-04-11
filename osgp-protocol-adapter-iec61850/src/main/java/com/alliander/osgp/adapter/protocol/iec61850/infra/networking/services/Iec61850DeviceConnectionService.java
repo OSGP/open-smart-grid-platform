@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
@@ -77,6 +78,9 @@ public class Iec61850DeviceConnectionService {
     @Autowired
     private boolean isIcdFileUsed;
 
+    @Autowired
+    private Iec61850Mapper iec61850Mapper;
+
     public DeviceConnection connectWithoutConnectionCaching(final String ipAddress, final String deviceIdentification,
             final IED ied, final String serverName, final String logicalDevice) throws ConnectionFailureException {
         return this.connect(ipAddress, deviceIdentification, ied, serverName, logicalDevice, false);
@@ -117,7 +121,7 @@ public class Iec61850DeviceConnectionService {
         Iec61850ClientBaseEventListener eventListener = null;
         try {
             eventListener = Iec61850ClientEventListenerFactory.getInstance().getEventListener(ied,
-                    deviceIdentification, this.deviceManagementService);
+                    deviceIdentification, this.deviceManagementService, this.iec61850Mapper);
         } catch (final ProtocolAdapterException e) {
             this.logProtocolAdapterException(deviceIdentification, e);
         }
