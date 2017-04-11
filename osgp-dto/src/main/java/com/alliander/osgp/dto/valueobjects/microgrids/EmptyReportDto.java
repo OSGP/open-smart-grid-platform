@@ -16,7 +16,7 @@ public class EmptyReportDto extends ReportDto {
     private static final long serialVersionUID = -9091954947977865799L;
 
     private static int SEQUENCE_NUMBER = -1;
-    private static Date TIME_OF_ENTRY = new DateTime("2000-01-01T00:00:00.000-00:00").toDate();
+    private static Date TIME_OF_ENTRY = new DateTime(2000, 01, 01, 0, 0).toDate();
     private static String IDENTIFIER = "PV1_Measurements";
 
     public EmptyReportDto() {

@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
 
-public class ReportIdentifierDto implements Serializable{
+public class ReportIdentifierDto implements Serializable {
 
     private static final long serialVersionUID = -3960060997429091932L;
 
