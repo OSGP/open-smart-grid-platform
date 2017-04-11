@@ -11,6 +11,7 @@
   <xsd:element name="UserName" type="tns:Identification" />
   <xsd:element name="ApplicationName" type="tns:Identification" />
   <xsd:element name="MessagePriority" type="tns:MessagePriority" />
+  <xsd:element name="BypassRetry" type="tns:BypassRetry" />
   <xsd:element name="ScheduleTime" type="tns:ScheduleTime" />
   <xsd:element name="ResponseUrl" type="tns:ResponseUrl" />
 
@@ -19,6 +20,10 @@
       <xsd:minInclusive value="0" />
       <xsd:maxInclusive value="9" />
     </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="BypassRetry">
+    <xsd:restriction base="xsd:boolean" />
   </xsd:simpleType>
 
   <xsd:simpleType name="ScheduleTime">

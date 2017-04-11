@@ -19,28 +19,47 @@ public class DeviceMessageMetadata {
     private final String messageType;
     private final int messagePriority;
     private final Long scheduleTime;
+    private boolean bypassRetry;
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime) {
+            final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime,
+            final boolean bypassRetry) {
         this.deviceIdentification = deviceIdentification;
         this.organisationIdentification = organisationIdentification;
         this.correlationUid = correlationUid;
         this.messageType = messageType;
         this.messagePriority = messagePriority;
         this.scheduleTime = scheduleTime;
+        this.bypassRetry = bypassRetry;
+    }
+
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final int messagePriority,
+            final boolean byPassRetry) {
+        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority, null,
+                byPassRetry);
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority) {
         this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
-                (Long) null);
+                (Long) null, false);
+    }
+
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime) {
+        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
+                scheduleTime, false);
     }
 
     public DeviceMessageMetadata(final Message message) throws JMSException {
-        this(message.getStringProperty(Constants.DEVICE_IDENTIFICATION), message
-                .getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(), message
-                .getJMSType(), message.getJMSPriority(), message.propertyExists(Constants.SCHEDULE_TIME) ? message
-                .getLongProperty(Constants.SCHEDULE_TIME) : null);
+        this(message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
+                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
+                message.getJMSType(), message.getJMSPriority(),
+                message.propertyExists(Constants.SCHEDULE_TIME) ? message.getLongProperty(Constants.SCHEDULE_TIME)
+                        : null,
+                message.propertyExists(Constants.BYPASS_RETRY) ? message.getBooleanProperty(Constants.BYPASS_RETRY)
+                        : false);
     }
 
     public DeviceMessageMetadata(final ProtocolResponseMessage message) {
@@ -76,12 +95,21 @@ public class DeviceMessageMetadata {
         return this.scheduleTime;
     }
 
+    public void setBypassRetry(final boolean bypassRetry) {
+        this.bypassRetry = bypassRetry;
+    }
+
+    public boolean bypassRetry() {
+        return this.bypassRetry;
+    }
+
     @Override
     public String toString() {
         return "DeviceMessageMetadata [deviceIdentification=" + this.deviceIdentification
                 + ", organisationIdentification=" + this.organisationIdentification + ", correlationUid="
                 + this.correlationUid + ", messageType=" + this.messageType + ", messagePriority="
-                + this.messagePriority + ", scheduleTime=" + this.scheduleTime + "]";
+                + this.messagePriority + ", scheduleTime=" + this.scheduleTime + ", bypassRetry=" + this.bypassRetry
+                + "]";
     }
 
 }
