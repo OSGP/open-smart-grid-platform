@@ -7,19 +7,15 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getDateTime;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.wait.Wait;
@@ -28,9 +24,7 @@ import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
-import com.google.protobuf.ByteString;
 
-import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 public class EventSteps extends GlueBase {
@@ -40,22 +34,6 @@ public class EventSteps extends GlueBase {
 
     @Autowired
     private EventRepository eventRepository;
-
-    @Given("^(\\d+) events?$")
-    public void anEvent(final int amount, final Map<String, String> data) throws Exception {
-        final Device device = this.deviceRepository
-                .findByDeviceIdentification(getString(data, Keys.KEY_DEVICE_IDENTIFICATION));
-
-        for (int i = 0; i < amount; i++) {
-            final Event event = new Event(device, getDateTime(getString(data, Keys.TIMESTAMP)).toDate(),
-                    getEnum(data, Keys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
-                    getString(data, Keys.KEY_DESCRIPTION, ""),
-                    getInteger(data, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
-
-            this.eventRepository.save(event);
-        }
-
-    }
 
     @Then("^the (?:event is|events are) stored$")
     public void theEventIsStored(final Map<String, String> expectedEntity) throws Throwable {
@@ -90,58 +68,4 @@ public class EventSteps extends GlueBase {
         });
     }
 
-    @Then("^the stored events from \"([^\"]*)\" are retrieved and contain$")
-    public void theStoredEventsAreRetrieved(final String deviceIdentification,
-            final Map<String, String> expectedResponse) throws Throwable {
-
-        final List<Event> events = this.retrieveStoredEvents(deviceIdentification);
-
-        for (final Event e : events) {
-            Assert.assertEquals(getString(expectedResponse, Keys.EVENT_TYPE), e.getEventType().toString());
-            Assert.assertEquals(getString(expectedResponse, Keys.KEY_DESCRIPTION), e.getDescription().toString());
-            Assert.assertEquals(ByteString.copyFrom(getString(expectedResponse, Keys.KEY_INDEX).getBytes()).byteAt(0),
-                    (int) e.getIndex());
-
-        }
-
-    }
-
-    @Then("^the stored events from \"([^\"]*)\" are filtered and retrieved$")
-    public void theStoredEventsFromADeviceAreFilteredAndRetrieved(final String deviceIdentification,
-            final Map<String, String> expectedResponse) throws Throwable {
-
-        final List<Event> events = new ArrayList<>();
-        final List<Event> eventIterator = this.retrieveStoredEvents(deviceIdentification);
-
-        for (final Event e : eventIterator) {
-            if (getDateTime(getString(expectedResponse, Keys.FROM_TIMESTAMP)).isBefore(e.getDateTime().getTime())
-                    && getDateTime(getString(expectedResponse, Keys.TO_TIMESTAMP)).isAfter(e.getDateTime().getTime())) {
-                events.add(e);
-            }
-        }
-
-        Assert.assertEquals((int) getInteger(expectedResponse, Keys.KEY_RESULT), events.size());
-
-    }
-
-    @Then("^the stored events are filtered and retrieved$")
-    public void theStoredEventsAreFilteredAndRetrieved(final Map<String, String> expectedResponse) throws Throwable {
-        final List<Event> events;
-        if (getString(expectedResponse, Keys.KEY_DEVICE_IDENTIFICATION).equals("")) {
-            events = this.retrieveStoredEvents();
-        } else {
-            events = this.retrieveStoredEvents(getString(expectedResponse, Keys.KEY_DEVICE_IDENTIFICATION));
-        }
-        Assert.assertEquals((int) getInteger(expectedResponse, Keys.KEY_RESULT), events.size());
-
-    }
-
-    public List<Event> retrieveStoredEvents(final String deviceIdentification) {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        return this.eventRepository.findByDevice(device);
-    }
-
-    public List<Event> retrieveStoredEvents() {
-        return this.eventRepository.findAll();
-    }
 }

@@ -4,20 +4,26 @@ Feature: OslpAdapter Event notifications
   So that ...
 
   @OslpMockServer
-  Scenario Outline: Successfully retrieve recieved event notification
+  Scenario Outline: Successfully retrieve event notification
     Given an organization
       | OrganizationIdentification | GemeenteArnhem |
-    Given an ssld oslp device
+    And an ssld oslp device
       | DeviceIdentification | TESTDEVICE0000001 |
       | Protocol             | <Protocol>        |
-    When the device sends an event notification request to the platform over "<Protocol>"
-      | Event       | <EventType>   |
+    And 1 event
+    	| DeviceIdentification | TESTDEVICE0000001 |
+    	| TimeStamp            | now  |
+    	| EventType       | <EventType>   |
       | Description | <Description> |
       | Index       |             1 |
-      | Protocol    | <Protocol>    |
-    And the event notification response contains
-      | Status | OK |
-    Then the stored events from "TEST1024000000001" are retrieved and contain
+    When retrieve event notification request is send
+      | DeviceIdentification | TESTDEVICE0000001 |
+    Then the retrieve event notification request contains
+      | DeviceIdentification | TESTDEVICE0000001 |
+      | EventType                | <EventType>       |
+      | Description          | <Description>     |
+      | Index                |                 1 |
+    And the stored events from "TESTDEVICE0000001" are retrieved and contain
       | EventType   | <EventType>   |
       | Description | <Description> |
       | Index       |             1 |
@@ -36,12 +42,20 @@ Feature: OslpAdapter Event notifications
     And an ssld oslp device
       | DeviceIdentification | TESTDEVICE0000001 |
       | Protocol             | <Protocol>        |
-    When 1 event
+    And 1 event
       | DeviceIdentification | TESTDEVICE0000001              |
       | TimeStamp            | now at midnight + <Hour> hours |
       | EventType            | LIGHT_EVENTS_LIGHT_ON          |
+      | Description          | light is on                    |
       | Index                |                              1 |
-    Then the stored events from "TESTDEVICE0000001" are filtered and retrieved
+    When retrieve event notification request is send
+      | DeviceIdentification | TESTDEVICE0000001 |
+    Then the retrieve event notification request contains
+      | DeviceIdentification | TESTDEVICE0000001     |
+      | EventType                | LIGHT_EVENTS_LIGHT_ON |
+      | Description          | light is on           |
+      | Index                |                     1 |
+    And the stored events from "TESTDEVICE0000001" are filtered and retrieved
       | fromTimestamp | now at midnight + <from> hours |
       | toTimestamp   | now at midnight + <to> hours   |
       | Result        | <Result>                       |
@@ -52,7 +66,7 @@ Feature: OslpAdapter Event notifications
       | OSLP        |   11 |    0 | 24 |      1 |
       | OSLP        |   13 |   12 | 14 |      1 |
       | OSLP        |   14 |   13 | 24 |      1 |
-      | OSLP        |   15 |    0 | 15 |      1 |
+      | OSLP        |   15 |    0 | 16 |      1 |
       | OSLP        |   16 |   14 | 15 |      0 |
       | OSLP        |   17 |    0 | 16 |      0 |
       | OSLP        |   18 |   19 | 24 |      0 |
@@ -60,7 +74,7 @@ Feature: OslpAdapter Event notifications
       | OSLP ELSTER |   11 |    0 | 24 |      1 |
       | OSLP ELSTER |   13 |   12 | 14 |      1 |
       | OSLP ELSTER |   14 |   13 | 24 |      1 |
-      | OSLP ELSTER |   15 |    0 | 15 |      1 |
+      | OSLP ELSTER |   15 |    0 | 16 |      1 |
       | OSLP ELSTER |   16 |   14 | 15 |      0 |
       | OSLP ELSTER |   17 |    0 | 16 |      0 |
       | OSLP ELSTER |   18 |   19 | 24 |      0 |
@@ -77,15 +91,33 @@ Feature: OslpAdapter Event notifications
       | DeviceIdentification | TESTDEVICE0000002 |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | Protocol             | <Protocol>        |
-    When 1 event
+    And 1 event
       | DeviceIdentification | TESTDEVICE0000001     |
       | TimeStamp            | now                   |
       | EventType            | LIGHT_EVENTS_LIGHT_ON |
+      | Description          | light is on           |
+      | Index                |                     1 |
     And 1 event
       | DeviceIdentification | TESTDEVICE0000002      |
       | TimeStamp            | now                    |
       | EventType            | LIGHT_EVENTS_LIGHT_OFF |
-    Then the stored events are filtered and retrieved
+      | Description          | light is off           |
+      | Index                |                      1 |
+    When retrieve event notification request is send
+      | DeviceIdentification | TESTDEVICE0000001 |
+    Then the retrieve event notification request contains
+      | DeviceIdentification | TESTDEVICE0000001     |
+      | EventType            | LIGHT_EVENTS_LIGHT_ON |
+      | Description          | light is on           |
+      | Index                |                     1 |
+    When retrieve event notification request is send
+      | DeviceIdentification | TESTDEVICE0000002 |
+    Then the retrieve event notification request contains
+      | DeviceIdentification | TESTDEVICE0000002     |
+      | EventType            | LIGHT_EVENTS_LIGHT_OFF |
+      | Description          | light is off           |
+      | Index                |                     1 |
+    And the stored events are filtered and retrieved
       | DeviceIdentification | <filterDevice> |
       | Result               | <Result>       |
 
@@ -111,11 +143,14 @@ Feature: OslpAdapter Event notifications
       | DeviceIdentification | TESTDEVICE0000001     |
       | TimeStamp            | now                   |
       | EventType            | LIGHT_EVENTS_LIGHT_ON |
-    When retrieve event notification request with requestedPage and pageSize
+    When retrieve event notification request is send
       | DeviceIdentification | TESTDEVICE0000001 |
       | RequestedPage        | <RequestedPage>   |
       | PageSize             | <PageSize>        |
-    Then the response should contain <TotalPages> pages
+    Then the retrieve event notification request response should contain <TotalPages> pages
+    And the stored events are filtered and retrieved
+      | DeviceIdentification | TESTDEVICE0000001 |
+      | Result               | <TotalNumber>     |
 
     #NOTE: PageSize cannot be larger than 30 because this is the Default value which is
     #used through the entire application. Overruling this value for testing purposes only is not needed
