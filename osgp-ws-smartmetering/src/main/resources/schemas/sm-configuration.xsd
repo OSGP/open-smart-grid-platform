@@ -146,6 +146,7 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  
   <xsd:complexType name="UpdateFirmwareResponseData">
     <xsd:complexContent>
       <xsd:extension base="tns:GetFirmwareVersionResponseData">
@@ -153,7 +154,15 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-
+  <xsd:complexType name="GetConfigurationObjectResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
 
   <xsd:complexType name="FirmwareVersion">
     <xsd:sequence>
@@ -269,7 +278,7 @@
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
           minOccurs="1" />
-        <xsd:element name="Description" type="xsd:string"
+        <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject"
           minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
@@ -690,6 +699,17 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  
+ <xsd:complexType name="GetConfigurationObjectResult">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject"
+            minOccurs="1" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>  
 
   <xsd:complexType name="SetPushSetupSmsRequestData">
     <xsd:complexContent>

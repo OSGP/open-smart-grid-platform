@@ -344,6 +344,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetConfigurationObjectResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetConfigurationObjectResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
 
   <xsd:complexType name="AllResponses">
     <xsd:sequence>
@@ -361,6 +369,7 @@
         <xsd:element ref="tns:GetFirmwareVersionResponse" />
         <xsd:element ref="tns:UpdateFirmwareResponse" />
         <xsd:element ref="tns:AssociationLnObjectsResponse" />
+        <xsd:element ref="tns:GetConfigurationObjectResponse" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
