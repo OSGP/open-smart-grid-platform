@@ -46,14 +46,12 @@ public class Iec61850SetLightCommand {
 
                     final BdaBoolean enbOper = masterControl.getBoolean(SubDataAttribute.ENABLE_OPERATION);
                     if (enbOper.getValue()) {
-                        LOGGER.info("masterControl.enbOper is true, switching of relay is enabled");
+                        LOGGER.info("masterControl.enbOper is true, switching of relay {} is enabled", index);
                     } else {
-                        LOGGER.info("masterControl.enbOper is false, switching of relay is disabled");
+                        LOGGER.info("masterControl.enbOper is false, switching of relay {} is disabled", index);
                         // Set the value to true.
-                        enbOper.setValue(true);
-                        masterControl.write();
-
-                        LOGGER.info("set masterControl.enbOper to true to enable switching");
+                        masterControl.writeBoolean(SubDataAttribute.ENABLE_OPERATION, true);
+                        LOGGER.info("set masterControl.enbOper to true to enable switching of relay {}", index);
                     }
 
                     // Switch the relay using Pos.Oper.ctlVal [CO].
