@@ -7,23 +7,22 @@
  */
 package com.alliander.osgp.dto.valueobjects.microgrids;
 
-import java.util.Date;
-
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 public class EmptyReportDto extends ReportDto {
 
     private static final long serialVersionUID = -9091954947977865799L;
 
-    private static int SEQUENCE_NUMBER = -1;
-    private static Date TIME_OF_ENTRY = new DateTime(2000, 01, 01, 0, 0).toDate();
-    private static String IDENTIFIER = "PV1_Measurements";
+    private static final int SEQUENCE_NUMBER = -1;
+    private static final DateTime TIME_OF_ENTRY = new DateTime(2000, 1, 1, 0, 0, DateTimeZone.UTC);
+    private static final String ID = "no report";
 
     public EmptyReportDto() {
-        this(SEQUENCE_NUMBER, TIME_OF_ENTRY, IDENTIFIER);
+        this(SEQUENCE_NUMBER, TIME_OF_ENTRY, ID);
     }
 
-    private EmptyReportDto(final int sequenceNumber, final Date timeOfEntry, final String identifier) {
+    private EmptyReportDto(final int sequenceNumber, final DateTime timeOfEntry, final String identifier) {
         super(sequenceNumber, timeOfEntry, identifier);
     }
 }
