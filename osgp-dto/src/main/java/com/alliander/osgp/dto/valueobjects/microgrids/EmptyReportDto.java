@@ -22,7 +22,7 @@ public class EmptyReportDto extends ReportDto {
         this(SEQUENCE_NUMBER, TIME_OF_ENTRY, ID);
     }
 
-    private EmptyReportDto(final int sequenceNumber, final DateTime timeOfEntry, final String identifier) {
-        super(sequenceNumber, timeOfEntry, identifier);
+    private EmptyReportDto(final int sequenceNumber, final DateTime timeOfEntry, final String id) {
+        super(sequenceNumber, timeOfEntry, id);
     }
 }
