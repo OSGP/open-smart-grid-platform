@@ -32,8 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.smartsocietyservices.osgp.dto.da.GetHealthStatusRequestDto;
-import com.smartsocietyservices.osgp.dto.da.GetHealthStatusResponseDto;
+import org.osgpfoundation.osgp.dto.da.GetHealthStatusRequestDto;
+import org.osgpfoundation.osgp.dto.da.GetHealthStatusResponseDto;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
