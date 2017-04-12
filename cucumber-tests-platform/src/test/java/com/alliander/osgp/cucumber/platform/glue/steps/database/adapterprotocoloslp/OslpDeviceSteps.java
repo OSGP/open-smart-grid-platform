@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.SsldDeviceSteps;
 
 import cucumber.api.java.en.Given;
@@ -60,13 +61,16 @@ public class OslpDeviceSteps extends GlueBase {
 
     @Then("^the ssld oslp device contains$")
     public void theSsldOslpDeviceContains(final Map<String, String> expectedEntity) {
-        final OslpDevice entity = this.oslpDeviceRespository
-                .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+        
+        Wait.until(() -> {
+            final OslpDevice entity = this.oslpDeviceRespository
+                    .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
 
-        Assert.assertEquals(getString(expectedEntity, Keys.KEY_DEVICE_TYPE), entity.getDeviceType());
-        Assert.assertEquals(getString(expectedEntity, Keys.KEY_DEVICE_UID), entity.getDeviceUid());
-        //Assert.assertEquals(getInteger(expectedEntity, Keys.RANDOM_DEVICE), entity.getRandomDevice());
-        //Assert.assertEquals(getInteger(expectedEntity, Keys.RANDOM_PLATFORM), entity.getRandomPlatform());
+            Assert.assertEquals(getString(expectedEntity, Keys.KEY_DEVICE_TYPE), entity.getDeviceType());
+            Assert.assertEquals(getString(expectedEntity, Keys.KEY_DEVICE_UID), entity.getDeviceUid());
+            //Assert.assertEquals(getInteger(expectedEntity, Keys.RANDOM_DEVICE), entity.getRandomDevice());
+            //Assert.assertEquals(getInteger(expectedEntity, Keys.RANDOM_PLATFORM), entity.getRandomPlatform());
+        });
 
         this.ssldDeviceSteps.theSsldDeviceContains(expectedEntity);
     }

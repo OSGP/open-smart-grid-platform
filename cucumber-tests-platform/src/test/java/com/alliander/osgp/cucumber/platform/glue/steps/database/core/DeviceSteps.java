@@ -218,46 +218,53 @@ public class DeviceSteps extends BaseDeviceSteps {
 
     @Then("^the G-meter \"([^\"]*)\" is DeCoupled from device \"([^\"]*)\"$")
     public void theGMeterIsDecoupledFromDevice(final String gmeter, final String emeter) {
-        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
-        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+        Wait.until(() -> {
+            final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+            final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
 
-        Assert.assertNotNull(eDevice);
-        Assert.assertNotNull(gSmartmeter);
+            Assert.assertNotNull(eDevice);
+            Assert.assertNotNull(gSmartmeter);
 
-        Assert.assertNull(gSmartmeter.getGatewayDevice());
+            Assert.assertNull(gSmartmeter.getGatewayDevice());
+        });
     }
 
     @Then("^the mbus device \"([^\"]*)\" is coupled to device \"([^\"]*)\" on MBUS channel (\\d+)$")
     public void theMbusDeviceIsCoupledToDeviceOnMBUSChannel(final String gmeter, final String emeter,
             final Short channel) {
+        Wait.until(() -> {
+            final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+            final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
 
-        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
-        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+            Assert.assertNotNull(eDevice);
+            Assert.assertNotNull(gSmartmeter);
 
-        Assert.assertNotNull(eDevice);
-        Assert.assertNotNull(gSmartmeter);
-
-        Assert.assertEquals(gSmartmeter.getGatewayDevice(), eDevice);
-        Assert.assertEquals(gSmartmeter.getChannel(), channel);
+            Assert.assertEquals(gSmartmeter.getGatewayDevice(), eDevice);
+            Assert.assertEquals(gSmartmeter.getChannel(), channel);
+        });
     }
 
     @Then("^the mbus device \"([^\"]*)\" is not coupled to the device \"([^\"]*)\"$")
     public void theMbusDeviceIsNotCoupledToTheDevice(final String gmeter, final String emeter) {
-        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
-        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+        Wait.until(() -> {
+            final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+            final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
 
-        Assert.assertNotNull(eDevice);
-        Assert.assertNotNull(gSmartmeter);
+            Assert.assertNotNull(eDevice);
+            Assert.assertNotNull(gSmartmeter);
 
-        Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
+            Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
+        });
     }
 
     @Then("^the device contains$")
     public void theDeviceContains(final Map<String, String> expectedEntity) {
-        final Device device = this.deviceRepository
-                .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+        Wait.until(() -> {
+            final Device device = this.deviceRepository
+                    .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
 
-        Assert.assertEquals(getString(expectedEntity, Keys.IP_ADDRESS), device.getIpAddress());
+            Assert.assertEquals(getString(expectedEntity, Keys.IP_ADDRESS), device.getIpAddress());
+        });
     }
 
 }

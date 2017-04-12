@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Ssld;
@@ -83,12 +84,14 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     @Then("^theSsldDeviceContains$")
     public void theSsldDeviceContains(final Map<String, String> expectedEntity) {
-        final Ssld ssld = this.ssldRepository
-                .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+        Wait.until(() -> {
+            final Ssld ssld = this.ssldRepository
+                    .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
 
-        Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_HAS_SCHEDULE), ssld.getHasSchedule());
-        // Assert.assertEquals(getBoolean(expectedEntity,
-        // Keys.KEY_PUBLICKEYPRESENT), ssld.isPublicKeyPresent());
+            Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_HAS_SCHEDULE), ssld.getHasSchedule());
+            // Assert.assertEquals(getBoolean(expectedEntity,
+            // Keys.KEY_PUBLICKEYPRESENT), ssld.isPublicKeyPresent());
+        });
 
         this.deviceSteps.theDeviceContains(expectedEntity);
     }
