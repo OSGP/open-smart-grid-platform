@@ -285,4 +285,8 @@ public class Keys {
     public static final String MESSAGE = "Message";
     public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
     public static final String RANDOM_PLATFORM = "RandomPlatform";
+
+    public static final String KEY_RELAY = "Relais";
+    public static final String KEY_RELAYFUNCTION = "Function";
+
 }
