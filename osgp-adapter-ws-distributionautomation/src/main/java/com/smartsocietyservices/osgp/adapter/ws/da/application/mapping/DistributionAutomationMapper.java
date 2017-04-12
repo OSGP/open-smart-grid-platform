@@ -8,6 +8,7 @@
 package com.smartsocietyservices.osgp.adapter.ws.da.application.mapping;
 
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusResponse;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
@@ -25,5 +26,12 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
     public void configure( final MapperFactory mapperFactory ) {
         mapperFactory.getConverterFactory().registerConverter( new PassThroughConverter( DateTime.class ) );
         mapperFactory.getConverterFactory().registerConverter( new XMLGregorianCalendarToDateTimeConverter() );
+
+        mapperFactory
+                .classMap(GetHealthStatusResponse.class,
+                        com.smartsocietyservices.osgp.adapter.ws.schema.distributionautomation.generic.GetHealthStatusResponse.class)
+                .byDefault().register();
+
+
     }
 }

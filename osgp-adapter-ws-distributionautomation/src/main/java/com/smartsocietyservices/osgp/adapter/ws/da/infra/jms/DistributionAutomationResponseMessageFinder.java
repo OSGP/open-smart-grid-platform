@@ -25,7 +25,7 @@ public class DistributionAutomationResponseMessageFinder extends BaseResponseMes
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationResponseMessageFinder.class);
 
     /**
-     * Autowired JMS template for OSGP domain public lighting responses queue.
+     * Autowired JMS template for OSGP domain distribution automation responses queue.
      */
     @Autowired
     @Qualifier("wsDistributionAutomationIncomingResponsesJmsTemplate")

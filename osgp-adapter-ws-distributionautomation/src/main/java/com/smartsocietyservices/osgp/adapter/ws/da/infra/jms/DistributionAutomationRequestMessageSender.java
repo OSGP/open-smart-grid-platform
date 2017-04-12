@@ -23,7 +23,7 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 /**
- * Class for sending public lighting request messages to a queue
+ * Class for sending distribution automation request messages to a queue
  */
 public class DistributionAutomationRequestMessageSender {
     /**
@@ -32,7 +32,7 @@ public class DistributionAutomationRequestMessageSender {
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationRequestMessageSender.class);
 
     /**
-     * Autowired field for public lighting requests jms template
+     * Autowired field for distribution automation requests jms template
      */
     @Autowired
     @Qualifier("wsDistributionAutomationOutgoingRequestsJmsTemplate")
@@ -46,7 +46,7 @@ public class DistributionAutomationRequestMessageSender {
      * @throws ArgumentNullOrEmptyException
      */
     public void send(final DistributionAutomationRequestMessage requestMessage) throws ArgumentNullOrEmptyException {
-        LOGGER.debug("Sending public lighting request message to the queue");
+        LOGGER.debug("Sending distribution automation request message to the queue");
 
         if (requestMessage.getMessageType() == null) {
             LOGGER.error("MessageType is null");

@@ -42,14 +42,14 @@ public class AdHocManagementService extends BaseService {
     }
 
     public void getDeviceModel( final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType, final GetDeviceModelRequest getPQValuesPeriodicRequest ) throws FunctionalException {
+            final String messageType, final GetDeviceModelRequest request ) throws FunctionalException {
 
         LOGGER.info( "Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid );
 
         this.findOrganisation( organisationIdentification );
         final Device device = this.findActiveDevice( deviceIdentification );
 
-        final GetDeviceModelRequestDto dto = this.mapper.map( getPQValuesPeriodicRequest, GetDeviceModelRequestDto.class );
+        final GetDeviceModelRequestDto dto = this.mapper.map( request, GetDeviceModelRequestDto.class );
 
         this.osgpCoreRequestMessageSender
                 .send( new RequestMessage( correlationUid, organisationIdentification, deviceIdentification, dto ), messageType,

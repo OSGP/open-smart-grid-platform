@@ -38,10 +38,16 @@ public class DomainResponseMessageProcessorMap extends BaseMessageProcessorMap {
         final DeviceFunction messageType = DeviceFunction.valueOf(message.getJMSType());
 
         if (messageType.name() == null) {
+            LOGGER.error("No device function found for message type: {}", message.getJMSType());
+            throw new JMSException("Unknown device function");
+        }
+
+        final MessageProcessor messageProcessor = this.messageProcessors.get(messageType.ordinal());
+        if (messageType.name() == null) {
             LOGGER.error("No message processor found for message type: {}", message.getJMSType());
             throw new JMSException("Unknown message processor");
         }
 
-        return this.messageProcessors.get(messageType.ordinal());
+        return messageProcessor;
     }
 }

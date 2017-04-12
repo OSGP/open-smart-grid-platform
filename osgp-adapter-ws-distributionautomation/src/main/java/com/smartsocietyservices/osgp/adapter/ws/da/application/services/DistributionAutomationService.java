@@ -85,7 +85,7 @@ public class DistributionAutomationService {
                 deviceIdentification );
 
         return processRequest( organisationIdentification, deviceIdentification, getPQValuesPeriodicRequest, DeviceFunction.GET_POWER_QUALITY_VALUES,
-                DistributionAutomationRequestMessageType.GET_POWER_QUALITY_VALUES );
+                DistributionAutomationRequestMessageType.GET_POWER_QUALITY_VALUES_PERIODIC );
     }
 
     public GetPQValuesResponse dequeueGetPQValuesPeriodicResponse( final String correlationUid ) throws OsgpException {
@@ -122,7 +122,7 @@ public class DistributionAutomationService {
         return (GetHealthStatusResponse) processResponse( correlationUid );
     }
 
-    private String processRequest( final String organisationIdentification, final String deviceIdentification, final Serializable getPQValuesRequest,
+    private String processRequest( final String organisationIdentification, final String deviceIdentification, final Serializable request,
             final DeviceFunction deviceFunction, final DistributionAutomationRequestMessageType messageType ) throws OsgpException {
         final Organisation organisation = this.domainHelperService.findOrganisation( organisationIdentification );
 
@@ -132,7 +132,7 @@ public class DistributionAutomationService {
         this.domainHelperService.isAllowed( organisation, device, deviceFunction );
 
         final DistributionAutomationRequestMessage message = new DistributionAutomationRequestMessage( messageType, correlationUid,
-                organisationIdentification, deviceIdentification, getPQValuesRequest, null );
+                organisationIdentification, deviceIdentification, request, null );
 
         try {
             this.requestMessageSender.send( message );

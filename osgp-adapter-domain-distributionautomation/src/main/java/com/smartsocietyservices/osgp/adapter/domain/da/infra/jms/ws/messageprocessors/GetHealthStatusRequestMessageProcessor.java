@@ -14,7 +14,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 import com.smartsocietyservices.osgp.adapter.domain.da.application.services.DeviceManagementService;
 import com.smartsocietyservices.osgp.adapter.domain.da.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
 import com.smartsocietyservices.osgp.domain.da.valueobjects.GetHealthStatusRequest;
-import com.smartsocietyservices.osgp.domain.da.valueobjects.GetPQValuesRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,7 @@ public class GetHealthStatusRequestMessageProcessor extends AbstractWebServiceRe
             organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
             deviceIdentification = message.getStringProperty( Constants.DEVICE_IDENTIFICATION );
 
-            if ( message.getObject() instanceof GetPQValuesRequest ) {
+            if ( message.getObject() instanceof GetHealthStatusRequest ) {
                 getHealthStatusRequest = (GetHealthStatusRequest) message.getObject();
             }
 
