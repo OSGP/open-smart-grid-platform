@@ -57,9 +57,9 @@ public class ScenarioContext {
     }
 
     @SuppressWarnings("unchecked")
-    public void addToList(final String key, final long value) {
+    public <T> void addToList(final String key, final T value) {
         if (this.data.containsKey(key)) {
-            ((List<Long>) this.data.get(key)).add(value);
+            ((List<T>) this.data.get(key)).add(value);
         }
         else{
             this.data.put(key, new ArrayList<>(Arrays.asList(value)));
