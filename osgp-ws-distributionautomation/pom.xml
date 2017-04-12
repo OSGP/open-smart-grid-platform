@@ -11,7 +11,7 @@
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
-  <groupId>com.smartsocietyservices.osgp</groupId>
+  <groupId>org.osgpfoundation.osgp</groupId>
   <artifactId>osgp-ws-distributionautomation</artifactId>
 
   <build>

@@ -5,21 +5,36 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.smartsocietyservices.osgp.dto.da;
+package org.osgpfoundation.osgp.dto.da;
+
+import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
-public class GetPQValuesRequestDto implements Serializable {
+public class GetPQValuesPeriodicRequestDto implements Serializable {
 
     private static final long serialVersionUID = 4776483459295815846L;
 
     private final String deviceIdentifier;
+    private final DateTime from;
+    private final DateTime to;
 
-    public GetPQValuesRequestDto( final String deviceIdentifier ) {
+    public GetPQValuesPeriodicRequestDto( final String deviceIdentifier, final DateTime from, final DateTime to ) {
+
         this.deviceIdentifier = deviceIdentifier;
+        this.from = from;
+        this.to = to;
     }
 
     public String getDeviceIdentifier() {
         return deviceIdentifier;
+    }
+
+    public DateTime getFrom() {
+        return from;
+    }
+
+    public DateTime getTo() {
+        return to;
     }
 }

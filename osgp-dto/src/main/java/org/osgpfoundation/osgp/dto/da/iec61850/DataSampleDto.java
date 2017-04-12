@@ -1,4 +1,4 @@
-package com.smartsocietyservices.osgp.dto.da.iec61850;
+package org.osgpfoundation.osgp.dto.da.iec61850;
 
 import java.util.Date;
 

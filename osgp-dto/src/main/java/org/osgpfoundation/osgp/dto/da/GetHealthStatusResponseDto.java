@@ -1,4 +1,4 @@
-package com.smartsocietyservices.osgp.dto.da;
+package org.osgpfoundation.osgp.dto.da;
 
 import java.io.Serializable;
 

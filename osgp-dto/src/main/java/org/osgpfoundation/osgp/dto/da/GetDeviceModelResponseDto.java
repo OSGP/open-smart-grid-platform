@@ -1,6 +1,6 @@
-package com.smartsocietyservices.osgp.dto.da;
+package org.osgpfoundation.osgp.dto.da;
 
-import com.smartsocietyservices.osgp.dto.da.iec61850.PhysicalDeviceDto;
+import org.osgpfoundation.osgp.dto.da.iec61850.PhysicalDeviceDto;
 
 import java.io.Serializable;
 
