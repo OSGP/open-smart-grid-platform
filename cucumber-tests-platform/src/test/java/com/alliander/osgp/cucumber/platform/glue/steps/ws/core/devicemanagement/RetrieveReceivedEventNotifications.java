@@ -93,6 +93,9 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
     public void theRetrieveEventNotificationRequestContains(final Map<String, String> expectedResponse) {
         final FindEventsResponse response = (FindEventsResponse) ScenarioContext.Current().get(Keys.RESPONSE);
         final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event> events = response.getEvents();
+
+        Assert.assertFalse(events.isEmpty());
+
         for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event e : events) {
             Assert.assertNotNull(e.getTimestamp());
             Assert.assertEquals(getString(expectedResponse, Keys.KEY_DEVICE_IDENTIFICATION),
@@ -101,7 +104,6 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
             Assert.assertEquals(getString(expectedResponse, Keys.KEY_DESCRIPTION), e.getDescription());
             Assert.assertEquals(getInteger(expectedResponse, Keys.KEY_INDEX), e.getIndex());
         }
-
     }
 
     @Then("^the retrieve event notification request response should contain (\\d+) pages$")
