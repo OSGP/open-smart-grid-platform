@@ -56,12 +56,13 @@ public class DomainHelperService {
         return dlmsDevice;
     }
 
-    public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws ProtocolAdapterException {
+    public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata)
+            throws ProtocolAdapterException, FunctionalException {
         return this.findDlmsDevice(messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
     }
 
     public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
             throw new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification);
@@ -75,10 +76,11 @@ public class DomainHelperService {
         return dlmsDevice;
     }
 
-    private String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
+    private String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice)
+            throws ProtocolAdapterException, FunctionalException {
 
-        final SessionProvider sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice
-                .getCommunicationProvider());
+        final SessionProvider sessionProvider = this.sessionProviderService
+                .getSessionProvider(dlmsDevice.getCommunicationProvider());
         String deviceIpAddress = null;
         try {
             deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
@@ -93,7 +95,8 @@ public class DomainHelperService {
             deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
 
         } catch (final SessionProviderException e) {
-            throw new ProtocolAdapterException("", e);
+            // throw new ProtocolAdapterException("", e);
+            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
             throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
@@ -105,7 +108,7 @@ public class DomainHelperService {
     }
 
     private String pollForSession(final SessionProvider sessionProvider, final DlmsDevice dlmsDevice)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
 
         String deviceIpAddress = null;
         try {

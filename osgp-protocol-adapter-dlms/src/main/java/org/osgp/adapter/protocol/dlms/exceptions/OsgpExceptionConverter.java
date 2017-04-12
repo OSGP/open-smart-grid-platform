@@ -39,13 +39,6 @@ public class OsgpExceptionConverter {
      */
     public OsgpException ensureOsgpOrTechnicalException(final Exception e) {
         if (e instanceof OsgpException) {
-            // final Throwable cause = e.getCause();
-            // if (cause != null && !(cause instanceof OsgpException)) {
-            // return new OsgpException(ComponentType.PROTOCOL_DLMS,
-            // e.getMessage(), new OsgpException(
-            // ComponentType.PROTOCOL_DLMS, cause.getMessage()));
-            // }
-
             return (OsgpException) e;
         }
 

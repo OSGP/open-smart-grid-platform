@@ -38,6 +38,8 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
 
+    private static final int AES_GMC_128 = 128;
+
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
     @Autowired
@@ -72,8 +74,7 @@ public class Hls5Connector extends SecureDlmsConnector {
             final String msg = "Error creating connection for " + device.getDeviceIdentification() + " "
                     + device.getIpAddress() + ":" + device.getPort() + ", " + device.isUseHdlc() + ", "
                     + device.isUseSn() + ": " + e.getMessage();
-            throw new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS,
-                    (new ConnectionException(msg, e)));
+            throw new ConnectionException(msg, e);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
             throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
@@ -100,12 +101,35 @@ public class Hls5Connector extends SecureDlmsConnector {
         final byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
         final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
 
+        // Validate keys before jdlms does, so a FunctionalException can be
+        // throwed if necessary
+        this.checkKeyLength(decryptedAuthentication, decryptedEncryption);
+
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(decryptedAuthentication)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
                 .setGlobalUnicastEncryptionKey(decryptedEncryption)
                 .setEncryptionMechanism(EncryptionMechanism.AES_GMC_128).build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
+    }
+
+    protected void checkKeyLength(final byte[] encryptionKey, final byte[] authenticationKey)
+            throws FunctionalException {
+
+        if (encryptionKey == null) {
+            LOGGER.error("The key is not allowed to be null");
+            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+        }
+
+        if (authenticationKey != null && authenticationKey.length != encryptionKey.length) {
+            LOGGER.error("Authentication key length does not match encryption key length");
+            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+        }
+
+        if (encryptionKey.length * 8 != AES_GMC_128) {
+            LOGGER.error("The key has an invalid length");
+            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+        }
     }
 
 }
