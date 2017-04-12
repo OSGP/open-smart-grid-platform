@@ -155,7 +155,7 @@ public class Helpers {
      * <li>yesterday at midnight
      * <li>now at midday + 1 week
      * </ul>
-     * 
+     *
      * @param dateString
      * @return
      * @throws Exception
@@ -412,7 +412,13 @@ public class Helpers {
     }
 
     public static String getString(final Map<String, String> settings, final String key) {
-        return settings.get(key);
+        String value = null;
+        if (settings.containsKey(key)) {
+            if (!settings.get(key).equalsIgnoreCase("null")) {
+                value = settings.get(key);
+            }
+        }
+        return value;
     }
 
     /**
