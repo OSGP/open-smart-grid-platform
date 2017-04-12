@@ -76,7 +76,45 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
             final GetDataResponseDto getDataResponse = this.handleGetData(
                     new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
-                            serverModel), deviceRequest.getDeviceIdentification(), serverName), deviceRequest);
+                            serverModel), deviceRequest.getDeviceIdentification(), serverName), deviceRequest, true);
+
+            final GetDataDeviceResponse deviceResponse = new GetDataDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, getDataResponse);
+
+            deviceResponseHandler.handleResponse(deviceResponse);
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleConnectionFailure(se, deviceResponse);
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during Get Data", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse);
+        }
+    }
+
+    @Override
+    public void getDataOnly(final GetDataDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
+            throws JMSException {
+        try {
+            final String serverName = this.getServerName(deviceRequest);
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest, serverName);
+
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            final GetDataResponseDto getDataResponse = this.handleGetData(
+                    new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
+                            serverModel), deviceRequest.getDeviceIdentification(), serverName), deviceRequest, false);
 
             final GetDataDeviceResponse deviceResponse = new GetDataDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -156,7 +194,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
     // PRIVATE HELPER METHODS =
     // ========================
 
-    private GetDataResponseDto handleGetData(final DeviceConnection connection, final GetDataDeviceRequest deviceRequest)
+    private GetDataResponseDto handleGetData(final DeviceConnection connection, final GetDataDeviceRequest deviceRequest, final boolean enableReporting)
             throws ProtocolAdapterException {
 
         final GetDataRequestDto requestedData = deviceRequest.getDataRequest();
@@ -166,9 +204,11 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
             @Override
             public GetDataResponseDto apply() throws Exception {
-                final Iec61850RtuDeviceReportingService reportingService = new Iec61850RtuDeviceReportingService(
-                        serverName);
-                reportingService.enableReportingOnDevice(connection, deviceRequest.getDeviceIdentification());
+                if (enableReporting) {
+                    final Iec61850RtuDeviceReportingService reportingService = new Iec61850RtuDeviceReportingService(
+                            serverName);
+                    reportingService.enableReportingOnDevice(connection, deviceRequest.getDeviceIdentification());
+                }
 
                 final List<GetDataSystemIdentifierDto> identifiers = new ArrayList<>();
                 for (final SystemFilterDto systemFilter : requestedData.getSystemFilters()) {

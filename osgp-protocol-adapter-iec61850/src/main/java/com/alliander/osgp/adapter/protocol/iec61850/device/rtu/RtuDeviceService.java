@@ -35,4 +35,12 @@ public interface RtuDeviceService {
      *          callback.
      */
     void setData(SetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler) throws JMSException;
+
+    /**
+     * Reads the {@link GetDataRequestDto} from the device without enabling Reporting Services
+     *
+     * @returns a {@link GetDataDeviceResponse} via the deviceResponseHandler's
+     *          callback.
+     */
+    void getDataOnly(GetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler) throws JMSException;
 }
