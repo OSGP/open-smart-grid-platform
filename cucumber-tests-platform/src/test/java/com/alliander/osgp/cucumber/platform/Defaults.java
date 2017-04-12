@@ -207,6 +207,6 @@ public class Defaults {
     public static final Integer SMS_INDEX = 1;
 
     public static final boolean DEFAULT_BYPASS_RETRY = false;
-    public static final String TIMESTAMP = "0";
+    public static final String TIMESTAMP = "now";
     public static final Integer REQUESTED_PAGE = 0;
 }

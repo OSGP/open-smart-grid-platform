@@ -859,35 +859,6 @@ public class OslpDeviceSteps {
         this.send(request, settings);
     }
 
-    @Given("^the device sends a get event notification request to the platform over \"([^\"]*)\"$")
-    public void theDeviceSendsAGetEventNotificationRequestToThePlatform(final String protocol,
-            final Map<String, String> settings) throws IOException, DeviceSimulatorException {
-
-        this.oslpMockServer.doNextSequenceNumber();
-
-        final Oslp.EventNotification.Builder builder = Oslp.EventNotification.newBuilder()
-                .setTimestamp(getString(settings, Keys.TIMESTAMP))
-                .setEvent(getEnum(settings, Keys.KEY_EVENT, Event.class));
-        // .setDescription(getString(settings, Keys.KEY_DESCRIPTION))
-
-        builder.setIndex((settings.containsKey(Keys.KEY_INDEX) && !settings.get(Keys.KEY_INDEX).equals("EMPTY"))
-                ? ByteString.copyFrom(getString(settings, Keys.KEY_INDEX).getBytes())
-                : ByteString.copyFrom("0".getBytes()));
-
-        final OslpEnvelope request = this
-                .createEnvelopeBuilder(
-                        getString(settings, Keys.KEY_DEVICE_UID,
-                                com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocoloslp.OslpDeviceSteps.DEFAULT_DEVICE_UID),
-                        this.oslpMockServer.getSequenceNumber())
-                .withPayloadMessage(Message.newBuilder()
-                        .setEventNotificationRequest(
-                                Oslp.EventNotificationRequest.newBuilder().addNotifications(builder.build()))
-                        .build())
-                .build();
-
-        this.send(request, settings);
-    }
-
     @Given("^the device sends an event notification request to the platform over \"([^\"]*)\"$")
     public void theDeviceSendsAnEventNotificationRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {

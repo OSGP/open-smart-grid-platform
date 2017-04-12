@@ -287,8 +287,8 @@ public class Keys {
 
     public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
 
-    public static final String FROM_TIMESTAMP = "fromTimestamp";
-    public static final String TO_TIMESTAMP = "toTimestamp";
+    public static final String FROM_TIMESTAMP = "FromTimeStamp";
+    public static final String TO_TIMESTAMP = "ToTimeStamp";
     public static final String REQUESTED_PAGE = "RequestedPage";
     public static final String TOTALPAGES = "TotalPages";
 }

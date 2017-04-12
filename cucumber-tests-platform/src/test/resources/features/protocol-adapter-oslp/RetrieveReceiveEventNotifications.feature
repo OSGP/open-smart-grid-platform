@@ -1,4 +1,4 @@
-Feature: OslpAdapter Event notifications
+Feature: OslpAdapter Retrieve Received Event Notifications
   As a ...
   I want to ...
   So that ...
@@ -12,7 +12,6 @@ Feature: OslpAdapter Event notifications
       | Protocol             | <Protocol>        |
     And 1 event
       | DeviceIdentification | TESTDEVICE0000001 |
-      | TimeStamp            | now               |
       | EventType            | <EventType>       |
       | Description          | <Description>     |
       | Index                |                 1 |
@@ -29,11 +28,43 @@ Feature: OslpAdapter Event notifications
       | Index       |             1 |
 
     Examples: 
-      | Protocol    | EventType               | Description  |
-      | OSLP        | LIGHT_EVENTS_LIGHT_ON   | Light is on  |
-      | OSLP        | TARIFF_EVENTS_TARIFF_ON | Tariff is on |
-      | OSLP ELSTER | LIGHT_EVENTS_LIGHT_ON   | Light is on  |
-      | OSLP ELSTER | TARIFF_EVENTS_TARIFF_ON | Tariff is on |
+      | Protocol    | EventType                           | Description      |
+      | OSLP        | DIAG_EVENTS_GENERAL                 | General problem  |
+      | OSLP        | HARDWARE_FAILURE_RELAY              | Some description |
+      | OSLP        | LIGHT_FAILURE_DALI_COMMUNICATION    | Some description |
+      | OSLP        | LIGHT_FAILURE_BALLAST               | Some description |
+      | OSLP        | LIGHT_EVENTS_LIGHT_ON               | Some description |
+      | OSLP        | LIGHT_EVENTS_LIGHT_OFF              | Some description |
+      | OSLP        | MONITOR_EVENTS_LONG_BUFFER_FULL     | Some description |
+      | OSLP        | FIRMWARE_EVENTS_ACTIVATING          | Some description |
+      | OSLP        | FIRMWARE_EVENTS_DOWNLOAD_NOTFOUND   | Some description |
+      | OSLP        | FIRMWARE_EVENTS_DOWNLOAD_FAILED     | Some description |
+      | OSLP        | LIGHT_FAILURE_TARIFF_SWITCH_ATTEMPT | Some description |
+      | OSLP        | TARIFF_EVENTS_TARIFF_ON             | Some description |
+      | OSLP        | TARIFF_EVENTS_TARIFF_OFF            | Some description |
+      | OSLP        | MONITOR_FAILURE_P1_COMMUNICATION    | Some description |
+      | OSLP        | COMM_EVENTS_ALTERNATIVE_CHANNEL     | Some description |
+      | OSLP        | COMM_EVENTS_RECOVERED_CHANNEL       | Some description |
+      | OSLP        | DIAG_EVENTS_GENERAL                 | General problem  |
+      | OSLP        | LIGHT_FAILURE_DALI_COMMUNICATION    | Light is broken  |
+      | OSLP ELSTER | DIAG_EVENTS_GENERAL                 | General problem  |
+      | OSLP ELSTER | HARDWARE_FAILURE_RELAY              | Some description |
+      | OSLP ELSTER | LIGHT_FAILURE_DALI_COMMUNICATION    | Some description |
+      | OSLP ELSTER | LIGHT_FAILURE_BALLAST               | Some description |
+      | OSLP ELSTER | LIGHT_EVENTS_LIGHT_ON               | Some description |
+      | OSLP ELSTER | LIGHT_EVENTS_LIGHT_OFF              | Some description |
+      | OSLP ELSTER | MONITOR_EVENTS_LONG_BUFFER_FULL     | Some description |
+      | OSLP ELSTER | FIRMWARE_EVENTS_ACTIVATING          | Some description |
+      | OSLP ELSTER | FIRMWARE_EVENTS_DOWNLOAD_NOTFOUND   | Some description |
+      | OSLP ELSTER | FIRMWARE_EVENTS_DOWNLOAD_FAILED     | Some description |
+      | OSLP ELSTER | LIGHT_FAILURE_TARIFF_SWITCH_ATTEMPT | Some description |
+      | OSLP ELSTER | TARIFF_EVENTS_TARIFF_ON             | Some description |
+      | OSLP ELSTER | TARIFF_EVENTS_TARIFF_OFF            | Some description |
+      | OSLP ELSTER | MONITOR_FAILURE_P1_COMMUNICATION    | Some description |
+      | OSLP ELSTER | COMM_EVENTS_ALTERNATIVE_CHANNEL     | Some description |
+      | OSLP ELSTER | COMM_EVENTS_RECOVERED_CHANNEL       | Some description |
+      | OSLP ELSTER | DIAG_EVENTS_GENERAL                 | General problem  |
+      | OSLP ELSTER | LIGHT_FAILURE_DALI_COMMUNICATION    | Light is broken  |
 
   @OslpMockServer
   Scenario Outline: Retrieve timestamp filtered retrieved event notifications
@@ -47,21 +78,19 @@ Feature: OslpAdapter Event notifications
       | TimeStamp            | now at midnight + <Hour> hours |
       | EventType            | LIGHT_EVENTS_LIGHT_ON          |
       | Description          | light is on                    |
-      | Index                |                              1 |
     When retrieve event notification request is send
       | DeviceIdentification | TESTDEVICE0000001 |
     Then the retrieve event notification request contains
       | DeviceIdentification | TESTDEVICE0000001     |
       | EventType            | LIGHT_EVENTS_LIGHT_ON |
       | Description          | light is on           |
-      | Index                |                     1 |
     And the stored events from "TESTDEVICE0000001" are filtered and retrieved
-      | fromTimestamp | now at midnight + <from> hours |
-      | toTimestamp   | now at midnight + <to> hours   |
+      | FromTimeStamp | now at midnight + <From> hours |
+      | ToTimeStamp   | now at midnight + <To> hours   |
       | Result        | <Result>                       |
 
     Examples: 
-      | Protocol    | Hour | from | to | Result |
+      | Protocol    | Hour | From | To | Result |
       | OSLP        |   10 |    9 | 11 |      1 |
       | OSLP        |   11 |    0 | 24 |      1 |
       | OSLP        |   13 |   12 | 14 |      1 |
@@ -93,30 +122,24 @@ Feature: OslpAdapter Event notifications
       | Protocol             | <Protocol>        |
     And 1 event
       | DeviceIdentification | TESTDEVICE0000001     |
-      | TimeStamp            | now                   |
       | EventType            | LIGHT_EVENTS_LIGHT_ON |
       | Description          | light is on           |
-      | Index                |                     1 |
     And 1 event
       | DeviceIdentification | TESTDEVICE0000002      |
-      | TimeStamp            | now                    |
       | EventType            | LIGHT_EVENTS_LIGHT_OFF |
       | Description          | light is off           |
-      | Index                |                      1 |
     When retrieve event notification request is send
       | DeviceIdentification | TESTDEVICE0000001 |
+    And retrieve event notification request is send
+      | DeviceIdentification | TESTDEVICE0000002 |
     Then the retrieve event notification request contains
       | DeviceIdentification | TESTDEVICE0000001     |
       | EventType            | LIGHT_EVENTS_LIGHT_ON |
       | Description          | light is on           |
-      | Index                |                     1 |
-    When retrieve event notification request is send
-      | DeviceIdentification | TESTDEVICE0000002 |
-    Then the retrieve event notification request contains
+    And the retrieve event notification request contains
       | DeviceIdentification | TESTDEVICE0000002      |
       | EventType            | LIGHT_EVENTS_LIGHT_OFF |
       | Description          | light is off           |
-      | Index                |                      1 |
     And the stored events are filtered and retrieved
       | DeviceIdentification | <filterDevice> |
       | Result               | <Result>       |
@@ -141,13 +164,14 @@ Feature: OslpAdapter Event notifications
       | Protocol             | <Protocol>        |
     And <TotalNumber> events
       | DeviceIdentification | TESTDEVICE0000001     |
-      | TimeStamp            | now                   |
       | EventType            | LIGHT_EVENTS_LIGHT_ON |
+      | Description          | light is on           |
     When retrieve event notification request is send
       | DeviceIdentification | TESTDEVICE0000001 |
       | RequestedPage        | <RequestedPage>   |
       | PageSize             | <PageSize>        |
     Then the retrieve event notification request response should contain <TotalPages> pages
+      | DeviceIdentification | TESTDEVICE0000001 |
     And the stored events are filtered and retrieved
       | DeviceIdentification | TESTDEVICE0000001 |
       | Result               | <TotalNumber>     |

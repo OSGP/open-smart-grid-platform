@@ -67,5 +67,4 @@ public class EventSteps extends GlueBase {
             }
         });
     }
-
 }

@@ -259,7 +259,6 @@ public class Helpers {
                 retval = retval.minusYears(numberToAddOrSubstract);
                 break;
             }
-
         }
 
         return retval;
