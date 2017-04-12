@@ -7,16 +7,16 @@
  */
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 public class Report extends ReportIdentifier {
 
     private static final long serialVersionUID = 8619381327184505453L;
 
-    protected int sequenceNumber;
-    protected Date timeOfEntry;
+    private final int sequenceNumber;
+    private final DateTime timeOfEntry;
 
-    public Report(final int sequenceNumber, final Date timeOfEntry, final String id) {
+    public Report(final int sequenceNumber, final DateTime timeOfEntry, final String id) {
         super(id);
         this.sequenceNumber = sequenceNumber;
         this.timeOfEntry = timeOfEntry;
@@ -26,7 +26,7 @@ public class Report extends ReportIdentifier {
         return this.sequenceNumber;
     }
 
-    public Date getTimeOfEntry() {
+    public DateTime getTimeOfEntry() {
         return this.timeOfEntry;
     }
 

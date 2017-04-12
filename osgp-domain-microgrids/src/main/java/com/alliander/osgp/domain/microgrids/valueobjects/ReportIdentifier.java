@@ -13,7 +13,7 @@ public class ReportIdentifier implements Serializable {
 
     private static final long serialVersionUID = -3960060997429091933L;
 
-    protected String id;
+    private final String id;
 
     public ReportIdentifier(final String id) {
         this.id = id;
