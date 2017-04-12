@@ -27,7 +27,6 @@ import org.openmuc.openiec61850.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
@@ -40,8 +39,6 @@ import com.alliander.osgp.dto.valueobjects.microgrids.ReportDto;
 public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientRTUEventListener.class);
-
-    private Iec61850Mapper iec61850Mapper;
 
     /**
      * The EntryTime from IEC61850 has timestamp values relative to 01-01-1984.
@@ -71,12 +68,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     }
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
-            final DeviceManagementService deviceManagementService, final Iec61850Mapper iec61850Mapper) throws ProtocolAdapterException {
-        this(deviceIdentification, deviceManagementService);
-        this.iec61850Mapper = iec61850Mapper;
-    }
-
-    private Iec61850ClientRTUEventListener(final String deviceIdentification,
             final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
         super(deviceIdentification, deviceManagementService, Iec61850ClientRTUEventListener.class);
     }
@@ -142,14 +133,14 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         return (this.firstNewSqNum != null) && (report.getSqNum() != null) && (report.getSqNum() < this.firstNewSqNum);
     }
 
-    private void processDataSet(final Report report, final String reportDescription,
+    private void processDataSet(final Report processReport, final String reportDescription,
             final Iec61850ReportHandler reportHandler) throws ProtocolAdapterException {
-        if (report.getDataSet() == null) {
+        if (processReport.getDataSet() == null) {
             this.logger.warn("No DataSet available for {}", reportDescription);
             return;
         }
 
-        final List<FcModelNode> members = report.getDataSet().getMembers();
+        final List<FcModelNode> members = processReport.getDataSet().getMembers();
         if ((members == null) || members.isEmpty()) {
             this.logger.warn("No members in DataSet available for {}", reportDescription);
             return;
@@ -178,10 +169,13 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         }
 
         final GetDataSystemIdentifierDto systemResult = reportHandler.createResult(measurements);
-        final ReportDto reportDto = this.iec61850Mapper.map(report, ReportDto.class);
-
         final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
         systems.add(systemResult);
+
+        final ReportDto reportDto = new ReportDto(processReport.getSqNum(),
+                new DateTime(processReport.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET),
+                processReport.getRptId());
+
         this.deviceManagementService.sendMeasurements(this.deviceIdentification, new GetDataResponseDto(systems, reportDto));
     }
 

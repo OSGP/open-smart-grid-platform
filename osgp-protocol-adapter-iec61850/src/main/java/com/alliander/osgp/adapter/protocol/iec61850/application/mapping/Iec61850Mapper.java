@@ -20,7 +20,6 @@ public class Iec61850Mapper extends ConfigurableMapper {
     @Override
     protected void configure(final MapperFactory factory) {
         factory.getConverterFactory().registerConverter(new DeviceOutputSettingToRelayMapConverter());
-        factory.getConverterFactory().registerConverter(new ReportConverter());
         factory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
     }
 }
