@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.application.mapping;
 
-import java.util.Date;
-
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.Report;
 
@@ -29,7 +27,7 @@ public class ReportConverter extends CustomConverter<Report, ReportDto> {
 
     @Override
     public ReportDto convert(final Report source, final Type<? extends ReportDto> destinationType) {
-        final Date date = new DateTime(source.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET).toDate();
-        return new ReportDto(source.getSqNum(), date, source.getRptId());
+        final DateTime timeOfEntry = new DateTime(source.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+        return new ReportDto(source.getSqNum(), timeOfEntry, source.getRptId());
     }
 }
