@@ -12,7 +12,7 @@
         <relativePath>../parent-platform/pom.xml</relativePath>
     </parent>
 
-    <groupId>com.smartsocietyservices.osgp</groupId>
+    <groupId>org.osgpfoundation.osgp</groupId>
     <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
 
     <packaging>war</packaging>
@@ -40,7 +40,7 @@
             <artifactId>osgp-domain-logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.smartsocietyservices.osgp</groupId>
+            <groupId>org.osgpfoundation.osgp</groupId>
             <artifactId>osgp-domain-distributionautomation</artifactId>
         </dependency>
         <dependency>
@@ -52,7 +52,7 @@
             <artifactId>osgp-adapter-ws-shared-db</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.smartsocietyservices.osgp</groupId>
+            <groupId>org.osgpfoundation.osgp</groupId>
             <artifactId>osgp-ws-distributionautomation</artifactId>
         </dependency>
         <!-- Spring Framework -->

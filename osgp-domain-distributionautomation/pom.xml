@@ -14,7 +14,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.smartsocietyservices.osgp</groupId>
+    <groupId>org.osgpfoundation.osgp</groupId>
     <artifactId>osgp-domain-distributionautomation</artifactId>
     <name>osgp-domain-distributionautomation</name>
     <packaging>jar</packaging>

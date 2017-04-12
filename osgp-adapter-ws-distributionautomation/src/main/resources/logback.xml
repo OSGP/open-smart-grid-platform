@@ -33,7 +33,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.smartsocietyservices" level="debug" additivity="false">
+    <logger name="org.osgpfoundation" level="debug" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
