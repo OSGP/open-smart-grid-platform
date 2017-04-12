@@ -16,9 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Base class for the application persistence configuration.
@@ -34,6 +36,9 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
     @Value("${db.driver}")
     protected String databaseDriver;
 
+    @Value("${db.protocol}")
+    protected String databaseProtocol;
+
     @Value("${db.username}")
     protected String databaseUsername;
 
@@ -44,7 +49,16 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
     protected String databaseHostname;
 
     @Value("${db.port}")
-    protected String databasePort;
+    protected int databasePort;
+
+    @Value("${db.min_pool_size}")
+    protected int databaseMinPoolSize;
+    @Value("${db.max_pool_size}")
+    protected int databaseMaxPoolSize;
+    @Value("${db.auto_commit}")
+    protected boolean databaseAutoCommit;
+    @Value("${db.idle_timeout}")
+    protected int databaseIdleTimeout;
 
     protected static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     @Value("${hibernate.dialect}")
@@ -62,10 +76,10 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
     @Value("${hibernate.show_sql}")
     protected String hibernateShowSql;
 
-    protected abstract String getDatabaseUrl();
+    protected abstract String getDatabaseName();
 
     protected abstract String getEntitymanagerPackagesToScan();
-    
+
     /**
      * Default constructor
      */
@@ -80,22 +94,19 @@ public abstract class ApplicationPersistenceConfiguration extends BaseApplicatio
      */
     protected DataSource makeDataSource() {
 
-        final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
-        singleConnectionDataSource.setAutoCommit(false);
-        final Properties properties = new Properties();
-        properties.setProperty("socketTimeout", "0");
-        properties.setProperty("tcpKeepAlive", "true");
+        final DefaultConnectionPoolFactory factory = new DefaultConnectionPoolFactory.Builder()
+                .withUsername(this.databaseUsername).withPassword(this.databasePassword)
+                .withDriverClassName(this.databaseDriver).withProtocol(this.databaseProtocol)
+                .withDatabaseHost(this.databaseHostname).withDatabasePort(this.databasePort)
+                .withDatabaseName(this.getDatabaseName()).withMinPoolSize(this.databaseMinPoolSize)
+                .withMaxPoolSize(this.databaseMaxPoolSize).withAutoCommit(this.databaseAutoCommit)
+                .withIdleTimeout(this.databaseIdleTimeout).build();
 
-        singleConnectionDataSource.setDriverClassName(this.databaseDriver);
-        singleConnectionDataSource.setUrl(this.getDatabaseUrl());
-        singleConnectionDataSource.setUsername(this.databaseUsername);
-        singleConnectionDataSource.setPassword(this.databasePassword);
-        singleConnectionDataSource.setSuppressClose(true);
+        final HikariDataSource hikariDataSource = factory.getDefaultConnectionPool();
 
-        LOGGER.info("Connecting to database {} as {}", singleConnectionDataSource.getUrl(),
-                singleConnectionDataSource.getUsername());
+        LOGGER.info("Connecting to database {} as {}", hikariDataSource.getJdbcUrl(), hikariDataSource.getUsername());
 
-        return singleConnectionDataSource;
+        return hikariDataSource;
     }
 
     /**

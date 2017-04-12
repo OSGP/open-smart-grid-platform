@@ -28,15 +28,15 @@ public class AdapterProtocolIec61850PersistenceConfig extends ApplicationPersist
     public AdapterProtocolIec61850PersistenceConfig() {
     }
 
-    @Value("${osgpadapterprotocoliec61850dbs.url}")
-    private String databaseUrl;
+    @Value("${db.name.osgp_adapter_protocol_iec61850}")
+    private String databaseName;
 
     @Value("${entitymanager.packages.to.scan.iec61850}")
     private String entitymanagerPackagesToScan;
 
     @Override
-    protected String getDatabaseUrl() {
-        return this.databaseUrl;
+    protected String getDatabaseName() {
+        return this.databaseName;
     }
 
     @Override

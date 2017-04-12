@@ -29,15 +29,15 @@ public class AdapterProtocolOslpPersistenceConfig extends ApplicationPersistence
     public AdapterProtocolOslpPersistenceConfig() {
     }
 
-    @Value("${osgpadapterprotocoloslpdbs.url}")
-    private String databaseUrl;
+    @Value("${db.name.osgp_adapter_protocol_oslp}")
+    private String databaseName;
 
     @Value("${entitymanager.packages.to.scan.oslp}")
     private String entitymanagerPackagesToScan;
 
     @Override
-    protected String getDatabaseUrl() {
-        return this.databaseUrl;
+    protected String getDatabaseName() {
+        return this.databaseName;
     }
 
     @Override
