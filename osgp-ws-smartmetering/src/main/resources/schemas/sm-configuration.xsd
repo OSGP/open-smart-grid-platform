@@ -700,17 +700,6 @@
     </xsd:complexContent>
   </xsd:complexType>
   
- <xsd:complexType name="GetConfigurationObjectResult">
-    <xsd:complexContent>
-      <xsd:extension base="common:Response">
-        <xsd:sequence>
-          <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject"
-            minOccurs="1" />
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>  
-
   <xsd:complexType name="SetPushSetupSmsRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
