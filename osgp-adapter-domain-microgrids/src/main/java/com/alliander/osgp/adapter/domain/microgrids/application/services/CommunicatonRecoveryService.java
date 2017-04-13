@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
-import com.alliander.osgp.dto.valueobjects.microgrids.EmptyReportDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
@@ -64,7 +63,7 @@ public class CommunicatonRecoveryService extends BaseService {
 
         final GetDataResponseDto dataResponse = new GetDataResponseDto(Arrays.asList(new GetDataSystemIdentifierDto(
                 SYSTEM_ID, SYSTEM_TYPE, Arrays.asList(new MeasurementDto(MEASUREMENT_ID, MEASUREMENT_NODE, 0,
-                        new DateTime(DateTimeZone.UTC), MEASUREMENT_VALUE_ALARM_ON)))), new EmptyReportDto());
+                        new DateTime(DateTimeZone.UTC), MEASUREMENT_VALUE_ALARM_ON)))), null);
 
         final String correlationUid = this.createCorrelationUid(rtu);
         final String organisationIdentification = rtu.getOwner().getOrganisationIdentification();
