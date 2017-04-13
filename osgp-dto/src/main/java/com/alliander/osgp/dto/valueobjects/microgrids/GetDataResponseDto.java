@@ -22,7 +22,7 @@ public class GetDataResponseDto implements Serializable {
 
     public GetDataResponseDto(final List<GetDataSystemIdentifierDto> getDataSystemIdentifiers, final ReportDto report) {
         this.getDataSystemIdentifiers = new ArrayList<>(getDataSystemIdentifiers);
-        this.report = report == null ? new EmptyReportDto() : report;
+        this.report = report;
     }
 
     public List<GetDataSystemIdentifierDto> getGetDataSystemIdentifiers() {
