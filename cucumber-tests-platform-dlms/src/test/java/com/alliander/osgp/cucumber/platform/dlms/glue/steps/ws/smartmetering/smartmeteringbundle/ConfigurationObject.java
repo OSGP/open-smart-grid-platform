@@ -30,8 +30,8 @@ public class ConfigurationObject extends SmartMeteringStepsBase {
     private static final String TEST_CASE_NAME_REQUEST = "Bundle - Request 1";
     private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetBundleResponse - Request 1";
 
-    @When("^a retrieve configuration request received as part of a bundled request$")
-    public void aRetrieveConfigurationRequestIsReceivedAsPartOfABundledRequest(final Map<String, String> settings)
+    @When("^a get specific attribute value request received as part of a bundled request$")
+    public void aGetSpecificAttributeValueRequestIsReceivedAsPartOfABundledRequest(final Map<String, String> settings)
             throws Throwable {
         this.setDeviceAndOrganisationProperties(settings);
         PROPERTIES_MAP.put("ObisCodeA", getString(settings, "ObisCodeA", "0"));
@@ -41,7 +41,8 @@ public class ConfigurationObject extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put("ObisCodeE", getString(settings, "ObisCodeE", "0"));
         PROPERTIES_MAP.put("ObisCodeF", getString(settings, "ObisCodeF", "0"));
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_501, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_501,
+                TEST_SUITE_XML);
     }
 
     @When("^the get associationLnObjects request is received as part of a bundled request$")
@@ -49,24 +50,23 @@ public class ConfigurationObject extends SmartMeteringStepsBase {
             throws Throwable {
         this.setDeviceAndOrganisationProperties(settings);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_526, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_526,
+                TEST_SUITE_XML);
     }
 
     private void setDeviceAndOrganisationProperties(final Map<String, String> settings) {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP
-                .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
+                Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 
-    @Then("^the retrieve configuration response contains$")
-    public void isPartOfTheResponse(final Map<String, String> settings) throws Throwable {
+    @Then("^the response should contain$")
+    public void theResponseShouldContain(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID,
+                ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML_501,
                 TEST_SUITE_XML);

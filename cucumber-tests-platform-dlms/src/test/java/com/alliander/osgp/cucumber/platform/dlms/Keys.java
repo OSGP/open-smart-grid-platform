@@ -87,4 +87,17 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String RESULT = "Result";
     public static final String DAYLIGHT_SAVINGS_ACTIVE = "DST";
     public static final String DEVIATION = "Deviation";
+
+    public static final String CLASS_ID = "ClassId";
+
+    public static final String OBIS_CODE_A = "ObisCodeA";
+    public static final String OBIS_CODE_B = "ObisCodeB";
+    public static final String OBIS_CODE_C = "ObisCodeC";
+    public static final String OBIS_CODE_D = "ObisCodeD";
+    public static final String OBIS_CODE_E = "ObisCodeE";
+    public static final String OBIS_CODE_F = "ObisCodeF";
+
+    public static final String ATTRIBUTE = "Attribute";
+
+    public static final String RESPONSE_PART = "ResponsePart";
 }

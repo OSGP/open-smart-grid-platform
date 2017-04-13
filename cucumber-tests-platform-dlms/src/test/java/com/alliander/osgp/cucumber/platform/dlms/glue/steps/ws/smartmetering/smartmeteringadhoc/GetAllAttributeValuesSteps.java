@@ -21,7 +21,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ConfigurationObjects extends SmartMeteringStepsBase {
+public class GetAllAttributeValuesSteps extends SmartMeteringStepsBase {
     private static final String PATH_RESULT = "/Envelope/Body/RetrieveAllAttributeValuesResponse/Result/text()";
     private static final String PATH_RESULT_OUTPUT = "/Envelope/Body/RetrieveAllAttributeValuesResponse/Output/text()";
 
@@ -32,15 +32,15 @@ public class ConfigurationObjects extends SmartMeteringStepsBase {
     private static final String TEST_CASE_NAME_REQUEST = "RetrieveAllAttributeValues - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE_REQUEST = "GetRetrieveAllAttributeValuesResponse - Request 1";
 
-    @When("^receiving a retrieve configuration request$")
-    public void receivingARetrieveConfigurationRequest(final Map<String, String> settings) throws Throwable {
+    @When("^receiving a get all attribute values request$")
+    public void receivingAGetAllAttributeValuesRequest(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
-    @Then("^all the configuration items should be returned$")
+    @Then("^all the attribute values should be returned$")
     public void allTheConfigurationItemsShouldBeReturned(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));

@@ -21,7 +21,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SpecificConfigurationObject extends SmartMeteringStepsBase {
+public class GetSpecificAttributeValueSteps extends SmartMeteringStepsBase {
     private static final String PATH_RESULT_CONFIGURATION_DATA = "/Envelope/Body/SpecificAttributeValueResponse/ConfigurationData/text()";
 
     private static final String XPATH_MATCHER_RESULT_CONFIGURATION_DATA = "DataObject: Choice=\\w[A-Z]+, ResultData \\w+, value=";
@@ -31,21 +31,20 @@ public class SpecificConfigurationObject extends SmartMeteringStepsBase {
     private static final String TEST_CASE_NAME_REQUEST = "GetSpecificAttributeValue - Request 1";
     private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetSpecificAttributeValueResponse - Request 1";
 
-    @When("^receiving a retrieve specific configuration request$")
-    public void receivingARetrieveSpecificConfigurationRequestIsReceived(final Map<String, String> settings)
-            throws Throwable {
+    @When("^receiving a get specific attribute value request$")
+    public void receivingAGetSpecificAttributeValueRequest(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
-    @Then("^the specific configuration item should be returned$")
-    public void theSpecificConfigurationItemShouldBeReturned(final Map<String, String> settings) throws Throwable {
+    @Then("^the specific attribute value should be returned$")
+    public void theSpecificAttributeValueShouldBeReturned(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID,
+                ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);
