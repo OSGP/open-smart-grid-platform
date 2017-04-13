@@ -178,7 +178,8 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                             Iec61850RtuDeviceService.this.iec61850Client, connection);
                     identifiers.add(getDataSystemIdentifier);
                 }
-                return new GetDataResponseDto(identifiers);
+
+                return new GetDataResponseDto(identifiers, null);
             }
         };
 
