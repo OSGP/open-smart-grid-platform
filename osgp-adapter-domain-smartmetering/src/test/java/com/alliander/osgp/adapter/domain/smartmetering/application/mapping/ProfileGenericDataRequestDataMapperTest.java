@@ -19,12 +19,14 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataReque
 
 public class ProfileGenericDataRequestDataMapperTest {
 
-    private MonitoringMapper mapper = new MonitoringMapper();
+    private static final String MAPPED_FIELD_VALUE_MESSAGE = "Mapped field should have the same value.";
 
-    private static final ObisCodeValues OBIS_CODE_VALUES = new ObisCodeValues((byte) 1, (byte) 2, (byte) 3, (byte) 4,
-            (byte) 5, (byte) 6);
     private static final DateTime BEGIN_DATE = new DateTime(2017, 1, 1, 0, 0, 0, DateTimeZone.UTC);
     private static final DateTime END_DATE = new DateTime(2017, 2, 1, 0, 0, 0, DateTimeZone.UTC);
+    private static final ObisCodeValues OBIS_CODE_VALUES = new ObisCodeValues((byte) 1, (byte) 2, (byte) 3, (byte) 4,
+            (byte) 5, (byte) 6);
+
+    private MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
     public void shouldConvertValueObjectToDto() {
@@ -32,14 +34,14 @@ public class ProfileGenericDataRequestDataMapperTest {
                 BEGIN_DATE.toDate(), END_DATE.toDate());
         final ProfileGenericDataRequestDataDto result = this.mapper.map(source, ProfileGenericDataRequestDataDto.class);
 
-        assertEquals("mapped values should be identical", result.getBeginDate(), BEGIN_DATE.toDate());
-        assertEquals("mapped values should be identical", result.getEndDate(), END_DATE.toDate());
-        assertEquals("mapped values should be identical", result.getObisCode().getA(), OBIS_CODE_VALUES.getA());
-        assertEquals("mapped values should be identical", result.getObisCode().getB(), OBIS_CODE_VALUES.getB());
-        assertEquals("mapped values should be identical", result.getObisCode().getC(), OBIS_CODE_VALUES.getC());
-        assertEquals("mapped values should be identical", result.getObisCode().getD(), OBIS_CODE_VALUES.getD());
-        assertEquals("mapped values should be identical", result.getObisCode().getE(), OBIS_CODE_VALUES.getE());
-        assertEquals("mapped values should be identical", result.getObisCode().getF(), OBIS_CODE_VALUES.getF());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getBeginDate(), BEGIN_DATE.toDate());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getEndDate(), END_DATE.toDate());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getA(), OBIS_CODE_VALUES.getA());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getB(), OBIS_CODE_VALUES.getB());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getC(), OBIS_CODE_VALUES.getC());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getD(), OBIS_CODE_VALUES.getD());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getE(), OBIS_CODE_VALUES.getE());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, result.getObisCode().getF(), OBIS_CODE_VALUES.getF());
     }
 
 }

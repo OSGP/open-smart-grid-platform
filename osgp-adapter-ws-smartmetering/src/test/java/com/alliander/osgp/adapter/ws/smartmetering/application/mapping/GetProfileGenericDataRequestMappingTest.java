@@ -28,24 +28,29 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericD
 
 public class GetProfileGenericDataRequestMappingTest {
 
-    private final MonitoringMapper mapper = new MonitoringMapper();
+    private static final String MAPPED_OBJECT_NULL_MESSAGE = "Mapped object should not be null.";
+    private static final String MAPPED_FIELD_VALUE_MESSAGE = "Mapped field should have the same value.";
 
     private static final DateTime BEGIN_DATE = new DateTime(2017, 1, 1, 0, 0, 0, DateTimeZone.UTC);
     private static final DateTime END_DATE = new DateTime(2017, 2, 1, 0, 0, 0, DateTimeZone.UTC);
+
+    private final MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
     public void shouldConvertGetProfileGenericDataRequest() {
         final GetProfileGenericDataRequest source = this.makeRequest();
         final ProfileGenericDataRequestData result = this.mapper.map(source, ProfileGenericDataRequestData.class);
-        assertNotNull("mapping ProfileGenericDataRequest should not return null", result);
-        assertEquals(source.getObisCode().getA(), result.getObisCode().getA());
-        assertEquals(source.getObisCode().getB(), result.getObisCode().getB());
-        assertEquals(source.getObisCode().getC(), result.getObisCode().getC());
-        assertEquals(source.getObisCode().getD(), result.getObisCode().getD());
-        assertEquals(source.getObisCode().getE(), result.getObisCode().getE());
-        assertEquals(source.getObisCode().getF(), result.getObisCode().getF());
-        assertEquals(source.getBeginDate(), this.toGregorianCalendar(new DateTime(result.getBeginDate())));
-        assertEquals(source.getEndDate(), this.toGregorianCalendar(new DateTime(result.getEndDate())));
+        assertNotNull(MAPPED_OBJECT_NULL_MESSAGE, result);
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getObisCode().getA(), result.getObisCode().getA());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getObisCode().getB(), result.getObisCode().getB());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getObisCode().getC(), result.getObisCode().getC());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getObisCode().getD(), result.getObisCode().getD());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getObisCode().getE(), result.getObisCode().getE());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getObisCode().getF(), result.getObisCode().getF());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getBeginDate(),
+                this.toGregorianCalendar(new DateTime(result.getBeginDate())));
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getEndDate(),
+                this.toGregorianCalendar(new DateTime(result.getEndDate())));
     }
 
     private GetProfileGenericDataRequest makeRequest() {

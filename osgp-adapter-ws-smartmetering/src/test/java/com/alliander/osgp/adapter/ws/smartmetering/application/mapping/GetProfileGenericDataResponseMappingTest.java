@@ -31,6 +31,9 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericD
 
 public class GetProfileGenericDataResponseMappingTest {
 
+    private static final String MAPPED_FIELD_VALUE_MESSAGE = "Mapped fields should have the same value.";
+    private static final String MAPPED_LIST_SIZE_MESSAGE = "Mapped lists should have the same size.";
+
     private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     @Test
@@ -91,19 +94,19 @@ public class GetProfileGenericDataResponseMappingTest {
             final com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues actualObisCode,
             final ObisCodeValues sourceObisCode) throws AssertionError {
 
-        assertEquals(sourceObisCode.getA(), actualObisCode.getA());
-        assertEquals(sourceObisCode.getB(), actualObisCode.getB());
-        assertEquals(sourceObisCode.getC(), actualObisCode.getC());
-        assertEquals(sourceObisCode.getD(), actualObisCode.getD());
-        assertEquals(sourceObisCode.getE(), actualObisCode.getE());
-        assertEquals(sourceObisCode.getF(), actualObisCode.getF());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceObisCode.getA(), actualObisCode.getA());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceObisCode.getB(), actualObisCode.getB());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceObisCode.getC(), actualObisCode.getC());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceObisCode.getD(), actualObisCode.getD());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceObisCode.getE(), actualObisCode.getE());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceObisCode.getF(), actualObisCode.getF());
     }
 
     private void assertCaptureObjects(
             final List<com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject> actualCaptureObjects,
             final List<CaptureObject> sourceCaptureObjects) throws AssertionError {
 
-        assertEquals(actualCaptureObjects.size(), sourceCaptureObjects.size());
+        assertEquals(MAPPED_LIST_SIZE_MESSAGE, actualCaptureObjects.size(), sourceCaptureObjects.size());
         for (int i = 0; i < actualCaptureObjects.size(); i++) {
             this.assertCaptureObject(actualCaptureObjects.get(i), sourceCaptureObjects.get(i));
         }
@@ -112,17 +115,20 @@ public class GetProfileGenericDataResponseMappingTest {
     private void assertCaptureObject(
             final com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject actualCaptureObject,
             final CaptureObject sourceCaptureObject) throws AssertionError {
-        assertEquals(sourceCaptureObject.getClassId(), actualCaptureObject.getClassId());
-        assertEquals(sourceCaptureObject.getLogicalName(), actualCaptureObject.getLogicalName());
-        assertEquals(sourceCaptureObject.getAttributeIndex(), actualCaptureObject.getAttributeIndex().intValue());
-        assertEquals(sourceCaptureObject.getDataIndex(), actualCaptureObject.getDataIndex());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceCaptureObject.getClassId(), actualCaptureObject.getClassId());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceCaptureObject.getLogicalName(),
+                actualCaptureObject.getLogicalName());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceCaptureObject.getAttributeIndex(),
+                actualCaptureObject.getAttributeIndex().intValue());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceCaptureObject.getDataIndex(),
+                actualCaptureObject.getDataIndex());
     }
 
     private void assertProfileEntries(
             final List<com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry> actualProfileEntries,
             final List<ProfileEntry> sourceProfileEntries) throws AssertionError {
 
-        assertEquals(actualProfileEntries.size(), sourceProfileEntries.size());
+        assertEquals(MAPPED_LIST_SIZE_MESSAGE, actualProfileEntries.size(), sourceProfileEntries.size());
         for (int i = 0; i < actualProfileEntries.size(); i++) {
             this.assertProfileEntry(actualProfileEntries.get(i), sourceProfileEntries.get(i));
         }
@@ -132,7 +138,7 @@ public class GetProfileGenericDataResponseMappingTest {
             final com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry actualProfileEntry,
             final ProfileEntry sourceProfileEntry) throws AssertionError {
 
-        assertEquals(actualProfileEntry.getProfileEntryValue().size(),
+        assertEquals(MAPPED_LIST_SIZE_MESSAGE, actualProfileEntry.getProfileEntryValue().size(),
                 sourceProfileEntry.getProfileEntryValues().size());
         for (int i = 0; i < actualProfileEntry.getProfileEntryValue().size(); i++) {
             this.assertProfileEntryValue(actualProfileEntry.getProfileEntryValue().get(i),
@@ -147,9 +153,9 @@ public class GetProfileGenericDataResponseMappingTest {
         final Object actual = actualProfileEntryValue.getStringValueOrDateValueOrFloatValue().get(0);
         if (actual instanceof XMLGregorianCalendar) {
             final Date actualDate = ((XMLGregorianCalendar) actual).toGregorianCalendar().getTime();
-            assertEquals(sourceProfileEntryValue.getValue(), actualDate);
+            assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceProfileEntryValue.getValue(), actualDate);
         } else {
-            assertEquals(sourceProfileEntryValue.getValue(), actual);
+            assertEquals(MAPPED_FIELD_VALUE_MESSAGE, sourceProfileEntryValue.getValue(), actual);
         }
     }
 }
