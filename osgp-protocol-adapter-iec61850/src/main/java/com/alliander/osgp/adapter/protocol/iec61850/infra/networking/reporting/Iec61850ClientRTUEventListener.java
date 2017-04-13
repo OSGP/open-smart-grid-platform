@@ -116,7 +116,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
         this.logReportDetails(report);
         try {
-            this.processDataSet(report, reportDescription, reportHandler);
+            this.processReport(report, reportDescription, reportHandler);
         } catch (final ProtocolAdapterException e) {
             this.logger.warn("Unable to process report, discarding report", e);
         }
@@ -133,14 +133,14 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         return (this.firstNewSqNum != null) && (report.getSqNum() != null) && (report.getSqNum() < this.firstNewSqNum);
     }
 
-    private void processDataSet(final Report processReport, final String reportDescription,
+    private void processReport(final Report report, final String reportDescription,
             final Iec61850ReportHandler reportHandler) throws ProtocolAdapterException {
-        if (processReport.getDataSet() == null) {
+        if (report.getDataSet() == null) {
             this.logger.warn("No DataSet available for {}", reportDescription);
             return;
         }
 
-        final List<FcModelNode> members = processReport.getDataSet().getMembers();
+        final List<FcModelNode> members = report.getDataSet().getMembers();
         if ((members == null) || members.isEmpty()) {
             this.logger.warn("No members in DataSet available for {}", reportDescription);
             return;
@@ -172,9 +172,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
         systems.add(systemResult);
 
-        final ReportDto reportDto = new ReportDto(processReport.getSqNum(),
-                new DateTime(processReport.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET),
-                processReport.getRptId());
+        final ReportDto reportDto = new ReportDto(report.getSqNum(),
+                new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET),
+                report.getRptId());
 
         this.deviceManagementService.sendMeasurements(this.deviceIdentification, new GetDataResponseDto(systems, reportDto));
     }
