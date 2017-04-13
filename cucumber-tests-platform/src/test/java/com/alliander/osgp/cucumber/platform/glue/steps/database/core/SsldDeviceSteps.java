@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +25,10 @@ import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.RelayStatusRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
@@ -39,6 +42,9 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private RelayStatusRepository relayStatusRepository;
 
     @Autowired
     private DeviceSteps deviceSteps;
@@ -71,6 +77,27 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
     @Transactional("txMgrCore")
     public Ssld anSsldDevice(final Map<String, String> settings) throws Throwable {
         return this.createAnSsldDevice(settings);
+    }
+
+    @Given("^a relay status$")
+    @Transactional("txMgrCore")
+    public void aRelayStatus(final Map<String, String> settings) {
+
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        final List<DeviceOutputSetting> dosList = new ArrayList<>();
+
+        dosList.add(new DeviceOutputSetting(1, 1, RelayType.TARIFF, "test-relay"));
+
+        dosList.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, "test-relay"));
+
+        ssld.updateOutputSettings(dosList);
+
+        this.relayStatusRepository.save(new RelayStatus(ssld, 1, false, DateTime.now().toDate()));
+
+        this.relayStatusRepository.save(new RelayStatus(ssld, 2, true, DateTime.now().toDate()));
+
     }
 
     @Then("^theSsldDeviceContains$")
