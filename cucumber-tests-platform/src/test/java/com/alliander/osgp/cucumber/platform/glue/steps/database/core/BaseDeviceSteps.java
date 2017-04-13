@@ -93,8 +93,8 @@ public abstract class BaseDeviceSteps extends GlueBase {
 
         device.setVersion(getLong(settings, Keys.KEY_VERSION));
         device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.DEFAULT_ACTIVE));
-        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
-                .toLowerCase() != "null") {
+        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) != "null") {
             device.addOrganisation(getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                     Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
