@@ -1,8 +1,11 @@
 package org.osgpfoundation.osgp.dto.da.iec61850;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PhysicalDeviceDto {
+public class PhysicalDeviceDto implements Serializable {
+    private static final long serialVersionUID = 9057348041709504310L;
+
     private final String id;
     private List<LogicalDeviceDto> logicalDevices;
 
