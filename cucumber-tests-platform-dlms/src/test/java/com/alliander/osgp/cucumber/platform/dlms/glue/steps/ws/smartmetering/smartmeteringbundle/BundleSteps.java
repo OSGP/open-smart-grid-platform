@@ -32,8 +32,8 @@ public class BundleSteps {
     @Autowired
     private SmartMeteringBundleClient client;
 
-    @When("a get generic profile data request is received as part of a bundled request")
-    public void whenAGetGenericProfileDataBundleRequestIsReceived(final Map<String, String> settings) throws Throwable {
+    @When("^a get profile generic data request is received as part of a bundled request$")
+    public void whenAGetProfileGenericDataBundleRequestIsReceived(final Map<String, String> settings) throws Throwable {
 
         final GetProfileGenericDataRequest action = new GetProfileGenericDataRequestBuilder().fromParameterMap(settings)
                 .build();
@@ -49,7 +49,7 @@ public class BundleSteps {
         ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, response.getDeviceIdentification());
     }
 
-    @Then("the profile generic data should be part of the bundle response")
+    @Then("^the profile generic data should be part of the bundle response$")
     public void thenTheProfileGenericDataShouldBePartOfTheBundleResponse(final Map<String, String> settings)
             throws Throwable {
 

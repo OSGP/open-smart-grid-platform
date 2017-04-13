@@ -61,8 +61,8 @@ Feature: SmartMetering Bundle
       | DeviceIdentification | TEST1024000000001        |
       | ResponsePart         | AssociationLnListElement |
 
-  Scenario: Retrieve generic profile data as part of a bundled request
-    When a get generic profile data request is received as part of a bundled request
+  Scenario: Retrieve profile generic data as part of a bundled request
+    When a get profile generic data request is received as part of a bundled request
       | DeviceIdentification | TEST1024000000001   |
       | ObisCodeA            |                   1 |
       | ObisCodeB            |                   0 |
@@ -71,7 +71,7 @@ Feature: SmartMetering Bundle
       | ObisCodeE            |                   0 |
       | ObisCodeF            |                 255 |
       | BeginDate            | 2015-01-01 00:00:00 |
-      | EndDate              | 2017-01-10 00:00:00 |      
+      | EndDate              | 2017-01-10 00:00:00 |
     Then the profile generic data should be part of the bundle response
       | DeviceIdentification           | TEST1024000000001 |
       | NumberOfCaptureObjects         |                 4 |
@@ -96,4 +96,3 @@ Feature: SmartMetering Bundle
       | CaptureObject_DataIndex_4      |                 0 |
       | CaptureObject_Unit_4           | KWH               |
       | NumberOfProfileEntries         |               960 |
-
