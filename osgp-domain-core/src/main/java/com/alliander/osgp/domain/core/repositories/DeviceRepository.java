@@ -50,10 +50,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
      * We need these native queries below because these entities dont have an Id
      */
     @Modifying
-    @Query(value = "delete from ean", nativeQuery = true)
-    void deleteAllEans();
-
-    @Modifying
     @Query(value = "delete from device_output_setting", nativeQuery = true)
     void deleteDeviceOutputSettings();
 
