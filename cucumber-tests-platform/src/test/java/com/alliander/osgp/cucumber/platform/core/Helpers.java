@@ -421,7 +421,13 @@ public class Helpers {
     }
 
     public static String getString(final Map<String, String> settings, final String key) {
-        return settings.get(key);
+        String value = null;
+        if (settings.containsKey(key)) {
+            if (!settings.get(key).equalsIgnoreCase("null")) {
+                value = settings.get(key);
+            }
+        }
+        return value;
     }
 
     /**
