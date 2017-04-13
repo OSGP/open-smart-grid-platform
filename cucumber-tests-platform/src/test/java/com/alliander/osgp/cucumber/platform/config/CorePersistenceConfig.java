@@ -27,8 +27,8 @@ import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
         DeviceRepository.class, RtuDeviceRepository.class })
 public class CorePersistenceConfig extends ApplicationPersistenceConfiguration {
 
-    @Value("${osgpcoredbs.url}")
-    private String databaseUrl;
+    @Value("${db.name.osgp_core}")
+    private String databaseName;
 
     @Value("${entitymanager.packages.to.scan.core}")
     private String entitymanagerPackagesToScan;
@@ -63,8 +63,8 @@ public class CorePersistenceConfig extends ApplicationPersistenceConfiguration {
     }
 
     @Override
-    protected String getDatabaseUrl() {
-        return this.databaseUrl;
+    protected String getDatabaseName() {
+        return this.databaseName;
     }
 
     @Override

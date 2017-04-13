@@ -63,7 +63,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                             "Failed to receive response within timelimit " + this.connectionTimeout + " ms");
                 }
 
-                LOGGER.info("Response received within {} ms", this.connectionTimeout);
+                LOGGER.debug("Response received within {} ms", this.connectionTimeout);
             } catch (final InterruptedException e) {
                 throw new DeviceSimulatorException("InterruptedException", e);
             }
@@ -150,32 +150,32 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     @Override
     public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("Channel {} closed", e.getChannel().getId());
+        LOGGER.debug("Channel {} closed", e.getChannel().getId());
         super.channelClosed(ctx, e);
     }
 
     @Override
     public void channelDisconnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("Channel {} disconnected", e.getChannel().getId());
+        LOGGER.debug("Channel {} disconnected", e.getChannel().getId());
         super.channelDisconnected(ctx, e);
     }
 
     @Override
     public void channelOpen(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("Channel {} opened", e.getChannel().getId());
+        LOGGER.debug("Channel {} opened", e.getChannel().getId());
         super.channelOpen(ctx, e);
     }
 
     @Override
     public void channelUnbound(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        LOGGER.info("Channel {} unbound", e.getChannel().getId());
+        LOGGER.debug("Channel {} unbound", e.getChannel().getId());
         super.channelUnbound(ctx, e);
     }
 
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) {
         if (this.isConnectionReset(e.getCause())) {
-            LOGGER.info("Connection was (as expected) reset by the device.");
+            LOGGER.debug("Connection was (as expected) reset by the device.");
         } else {
             LOGGER.warn("Unexpected exception from downstream.", e.getCause());
         }
@@ -227,7 +227,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         if (message.isValid()) {
             if (this.isOslpResponse(message)) {
-                LOGGER.info("Received OSLP Response (before callback): {}", message.getPayloadMessage());
+                LOGGER.debug("Received OSLP Response (before callback): {}", message.getPayloadMessage());
 
                 // Lookup correct callback and call handle method
                 final Integer channelId = e.getChannel().getId();
@@ -240,7 +240,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                 callback.handle(message);
                 // } else {
             } else if (!this.mockResponses.isEmpty()) {
-                LOGGER.info("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
+                LOGGER.debug("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
 
                 // Sequence number logic
                 byte[] sequenceNumber = message.getSequenceNumber();
@@ -277,10 +277,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
                 final OslpEnvelope response = responseBuilder.build();
 
-                LOGGER.info("sending OSLP response with sequence number: {}",
+                LOGGER.debug("sending OSLP response with sequence number: {}",
                         this.convertByteArrayToInteger(response.getSequenceNumber()));
                 e.getChannel().write(response);
-                LOGGER.info("Send OSLP Response: {}", response.getPayloadMessage().toString().split(" ")[0]);
+                LOGGER.debug("Send OSLP Response: {}", response.getPayloadMessage().toString().split(" ")[0]);
             }
         } else {
             LOGGER.warn("Received message wasn't properly secured.");
@@ -289,7 +289,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
             final String deviceIdentification) throws IOException, DeviceSimulatorException {
-        LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
+        LOGGER.debug("Sending OSLP request: {}", request.getPayloadMessage());
 
         final Callback callback = new Callback(this.connectionTimeout);
 
@@ -301,9 +301,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             channelFuture = this.clientBootstrap.connect(address);
             channelFuture.awaitUninterruptibly(this.connectionTimeout, TimeUnit.MILLISECONDS);
             if (channelFuture.getChannel() != null && channelFuture.getChannel().isConnected()) {
-                LOGGER.info("Connection established to: {}", address);
+                LOGGER.debug("Connection established to: {}", address);
             } else {
-                LOGGER.info("The connnection to the device {} is not successfull", deviceIdentification);
+                LOGGER.debug("The connnection to the device {} is not successfull", deviceIdentification);
                 LOGGER.warn("Unable to connect to: {}", address);
                 throw new IOException("Unable to connect");
             }
@@ -317,7 +317,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         // wait for response and close connection
         try {
             final OslpEnvelope response = callback.get(deviceIdentification);
-            LOGGER.info("Received OSLP response (after callback): {}", response.getPayloadMessage());
+            LOGGER.debug("Received OSLP response (after callback): {}", response.getPayloadMessage());
 
             /*
              * Devices expect the channel to be closed if (and only if) the
@@ -345,7 +345,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             LOGGER.info("Sleeping for {} milliseconds", sleepTime);
             Thread.sleep(sleepTime);
         } catch (final InterruptedException e) {
-            LOGGER.info("InterruptedException", e);
+            LOGGER.error("InterruptedException", e);
         }
     }
 
@@ -447,8 +447,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     private Oslp.Message processRequest(final DeviceRequestMessageType type, final Oslp.Message request) {
         Oslp.Message response = null;
 
-        LOGGER.info("Processing [{}] ...", type.name());
-        LOGGER.info("Received [{}] ...", request);
+        LOGGER.debug("Processing [{}] ...", type.name());
+        LOGGER.debug("Received [{}] ...", request);
 
         this.receivedRequests.put(type, request);
         response = this.mockResponses.get(type);

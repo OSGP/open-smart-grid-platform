@@ -8,8 +8,10 @@
     </encoder>
   </appender>
 
-  <logger name="org.springframework" level="WARN" />
-  <logger name="org.apache.http.wire" level="DEBUG" />
+  <logger name="org.springframework" level="ERROR" />
+  <logger name="org.apache.http.wire" level="ERROR" />
+  <logger name="cucumber.runtime.java.spring" level="ERROR" />
+  <logger name="com.eviware.soapui" level="ERROR" />
 
   <root level="INFO">
     <appender-ref ref="STDOUT" />

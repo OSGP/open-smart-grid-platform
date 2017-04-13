@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+
 import java.util.List;
 import java.util.Map;
 
@@ -123,7 +125,7 @@ public class DeviceSteps extends BaseDeviceSteps {
      * @param deviceIdentification
      * @throws Throwable
      */
-    @Then("^the device with id \"([^\"]*)\" does not exists$")
+    @Then("^the device with id \"([^\"]*)\" should be removed$")
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -136,6 +138,23 @@ public class DeviceSteps extends BaseDeviceSteps {
             Assert.assertNotNull(entity);
             Assert.assertTrue(devAuths.size() == 0);
 
+            return entity;
+        });
+    }
+
+    /**
+     * Checks whether the device does not exist in the database.
+     *
+     * @param deviceIdentification
+     * @throws Throwable
+     */
+    @Then("^the device with id \"([^\"]*)\" does not exist$")
+    public void theDeviceWithIdDoesNotExist(final String deviceIdentification) throws Throwable {
+        Wait.until(() -> {
+            final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (entity != null) {
+                throw new Exception("Device with identification [" + deviceIdentification + "]");
+            }
             return entity;
         });
     }
@@ -199,38 +218,53 @@ public class DeviceSteps extends BaseDeviceSteps {
 
     @Then("^the G-meter \"([^\"]*)\" is DeCoupled from device \"([^\"]*)\"$")
     public void theGMeterIsDecoupledFromDevice(final String gmeter, final String emeter) {
-        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
-        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+        Wait.until(() -> {
+            final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+            final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
 
-        Assert.assertNotNull(eDevice);
-        Assert.assertNotNull(gSmartmeter);
+            Assert.assertNotNull(eDevice);
+            Assert.assertNotNull(gSmartmeter);
 
-        Assert.assertNull(gSmartmeter.getGatewayDevice());
+            Assert.assertNull(gSmartmeter.getGatewayDevice());
+        });
     }
 
     @Then("^the mbus device \"([^\"]*)\" is coupled to device \"([^\"]*)\" on MBUS channel (\\d+)$")
     public void theMbusDeviceIsCoupledToDeviceOnMBUSChannel(final String gmeter, final String emeter,
             final Short channel) {
+        Wait.until(() -> {
+            final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+            final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
 
-        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
-        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+            Assert.assertNotNull(eDevice);
+            Assert.assertNotNull(gSmartmeter);
 
-        Assert.assertNotNull(eDevice);
-        Assert.assertNotNull(gSmartmeter);
-
-        Assert.assertEquals(gSmartmeter.getGatewayDevice(), eDevice);
-        Assert.assertEquals(gSmartmeter.getChannel(), channel);
+            Assert.assertEquals(gSmartmeter.getGatewayDevice(), eDevice);
+            Assert.assertEquals(gSmartmeter.getChannel(), channel);
+        });
     }
 
     @Then("^the mbus device \"([^\"]*)\" is not coupled to the device \"([^\"]*)\"$")
     public void theMbusDeviceIsNotCoupledToTheDevice(final String gmeter, final String emeter) {
-        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
-        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+        Wait.until(() -> {
+            final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+            final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
 
-        Assert.assertNotNull(eDevice);
-        Assert.assertNotNull(gSmartmeter);
+            Assert.assertNotNull(eDevice);
+            Assert.assertNotNull(gSmartmeter);
 
-        Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
+            Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
+        });
+    }
+
+    @Then("^the device contains$")
+    public void theDeviceContains(final Map<String, String> expectedEntity) {
+        Wait.until(() -> {
+            final Device device = this.deviceRepository
+                    .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+
+            Assert.assertEquals(getString(expectedEntity, Keys.IP_ADDRESS), device.getIpAddress());
+        });
     }
 
 }

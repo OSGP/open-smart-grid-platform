@@ -83,8 +83,8 @@ public abstract class BaseDeviceSteps extends GlueBase {
 
         InetAddress inetAddress;
         try {
-            inetAddress = InetAddress.getByName(
-                    getString(settings, Keys.KEY_NETWORKADDRESS, this.configuration.getDeviceNetworkAddress()));
+            inetAddress = InetAddress
+                    .getByName(getString(settings, Keys.IP_ADDRESS, this.configuration.getDeviceNetworkAddress()));
         } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
@@ -93,8 +93,8 @@ public abstract class BaseDeviceSteps extends GlueBase {
 
         device.setVersion(getLong(settings, Keys.KEY_VERSION));
         device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.DEFAULT_ACTIVE));
-        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
-                .toLowerCase() != "null") {
+        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) != "null") {
             device.addOrganisation(getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                     Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
@@ -104,14 +104,16 @@ public abstract class BaseDeviceSteps extends GlueBase {
                 getString(settings, Keys.KEY_STREET, Defaults.DEFAULT_CONTAINER_STREET),
                 getString(settings, Keys.KEY_NUMBER, Defaults.DEFAULT_CONTAINER_NUMBER),
                 getString(settings, Keys.KEY_MUNICIPALITY, Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
-                getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE),
-                getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE));
+                (settings.containsKey(Keys.KEY_LATITUDE) && !settings.get(Keys.KEY_LATITUDE).isEmpty())
+                        ? getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE) : null,
+                (settings.containsKey(Keys.KEY_LONGITUDE) && !settings.get(Keys.KEY_LONGITUDE).isEmpty())
+                        ? getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE) : null);
 
         device.setActivated(getBoolean(settings, Keys.KEY_IS_ACTIVATED, Defaults.DEFAULT_IS_ACTIVATED));
         device = this.deviceRepository.save(device);
 
-        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
-                .toLowerCase() != "null") {
+        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) != "null") {
             final Organisation organization = this.organizationRepository.findByOrganisationIdentification(getString(
                     settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
             final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICE_FUNCTION_GROUP,
