@@ -11,7 +11,7 @@ Feature: AdminDeviceManagement Device Removal
     When receiving a remove device request
       | DeviceIdentification | <DeviceIdentification> |
     Then the remove device response is successful
-    And the device with id "<DeviceIdentification>" does not exists
+    And the device with id "<DeviceIdentification>" should be removed
 
     Examples: 
       | DeviceIdentification |

@@ -14,18 +14,15 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       | DeviceIdentification | TESTDEVICE0000001 |
       | EventType            | <EventType>       |
       | Description          | <Description>     |
-      | Index                |                 1 |
     When retrieve event notification request is send
       | DeviceIdentification | TESTDEVICE0000001 |
     Then the retrieve event notification request contains
       | DeviceIdentification | TESTDEVICE0000001 |
       | EventType            | <EventType>       |
       | Description          | <Description>     |
-      | Index                |                 1 |
     And the stored events from "TESTDEVICE0000001" are retrieved and contain
       | EventType   | <EventType>   |
       | Description | <Description> |
-      | Index       |             1 |
 
     Examples: 
       | Protocol    | EventType                           | Description      |
@@ -42,7 +39,6 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       | OSLP        | LIGHT_FAILURE_TARIFF_SWITCH_ATTEMPT | Some description |
       | OSLP        | TARIFF_EVENTS_TARIFF_ON             | Some description |
       | OSLP        | TARIFF_EVENTS_TARIFF_OFF            | Some description |
-      | OSLP        | MONITOR_FAILURE_P1_COMMUNICATION    | Some description |
       | OSLP        | COMM_EVENTS_ALTERNATIVE_CHANNEL     | Some description |
       | OSLP        | COMM_EVENTS_RECOVERED_CHANNEL       | Some description |
       | OSLP        | DIAG_EVENTS_GENERAL                 | General problem  |
@@ -60,7 +56,6 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       | OSLP ELSTER | LIGHT_FAILURE_TARIFF_SWITCH_ATTEMPT | Some description |
       | OSLP ELSTER | TARIFF_EVENTS_TARIFF_ON             | Some description |
       | OSLP ELSTER | TARIFF_EVENTS_TARIFF_OFF            | Some description |
-      | OSLP ELSTER | MONITOR_FAILURE_P1_COMMUNICATION    | Some description |
       | OSLP ELSTER | COMM_EVENTS_ALTERNATIVE_CHANNEL     | Some description |
       | OSLP ELSTER | COMM_EVENTS_RECOVERED_CHANNEL       | Some description |
       | OSLP ELSTER | DIAG_EVENTS_GENERAL                 | General problem  |

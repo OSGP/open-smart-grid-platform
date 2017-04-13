@@ -90,13 +90,16 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
                     .put(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION)
                             .concat("_").concat(Keys.RESPONSE), ex);
         }
+
     }
 
     @Then("^the retrieve event notification request contains$")
     public void theRetrieveEventNotificationRequestContains(final Map<String, String> expectedResponse) {
+
         final FindEventsResponse response = (FindEventsResponse) ScenarioContext.Current()
                 .get(getString(expectedResponse, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION)
                         .concat("_").concat(Keys.RESPONSE));
+
         final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event> events = response.getEvents();
 
         Assert.assertFalse(events.isEmpty());
@@ -106,7 +109,10 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
             Assert.assertEquals(
                     getString(expectedResponse, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION),
                     e.getDeviceIdentification());
-            Assert.assertEquals(getString(expectedResponse, Keys.EVENT_TYPE), e.getEventType().toString());
+            Assert.assertEquals(
+                    getEnum(expectedResponse, Keys.EVENT_TYPE,
+                            com.alliander.osgp.adapter.ws.schema.core.devicemanagement.EventType.class),
+                    e.getEventType());
             Assert.assertEquals(getString(expectedResponse, Keys.KEY_DESCRIPTION), e.getDescription());
             Assert.assertEquals(getInteger(expectedResponse, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX), e.getIndex());
         }
@@ -146,7 +152,8 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
         for (final Event e : events) {
             Assert.assertEquals(getEnum(expectedResponse, Keys.EVENT_TYPE, EventType.class), e.getEventType());
             Assert.assertEquals(getString(expectedResponse, Keys.KEY_DESCRIPTION), e.getDescription().toString());
-            Assert.assertEquals((int) getInteger(expectedResponse, Keys.KEY_INDEX), (int) e.getIndex());
+            Assert.assertEquals((int) getInteger(expectedResponse, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX),
+                    (int) e.getIndex());
         }
     }
 

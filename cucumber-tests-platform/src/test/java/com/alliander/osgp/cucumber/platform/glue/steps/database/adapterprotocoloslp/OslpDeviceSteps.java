@@ -7,10 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocoloslp;
 
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
 import java.util.Map;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
@@ -18,9 +20,11 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.SsldDeviceSteps;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 /**
  * OSLP device specific steps.
@@ -53,5 +57,21 @@ public class OslpDeviceSteps extends GlueBase {
         device.setRandomPlatform(0);
         device.updatePublicKey(DEVICE_PUBLIC_KEY);
         this.oslpDeviceRespository.save(device);
+    }
+
+    @Then("^the ssld oslp device contains$")
+    public void theSsldOslpDeviceContains(final Map<String, String> expectedEntity) {
+        
+        Wait.until(() -> {
+            final OslpDevice entity = this.oslpDeviceRespository
+                    .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+
+            Assert.assertEquals(getString(expectedEntity, Keys.KEY_DEVICE_TYPE), entity.getDeviceType());
+            Assert.assertEquals(getString(expectedEntity, Keys.KEY_DEVICE_UID), entity.getDeviceUid());
+            //Assert.assertEquals(getInteger(expectedEntity, Keys.RANDOM_DEVICE), entity.getRandomDevice());
+            //Assert.assertEquals(getInteger(expectedEntity, Keys.RANDOM_PLATFORM), entity.getRandomPlatform());
+        });
+
+        this.ssldDeviceSteps.theSsldDeviceContains(expectedEntity);
     }
 }
