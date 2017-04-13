@@ -63,7 +63,7 @@ public class CommunicatonRecoveryService extends BaseService {
 
         final GetDataResponseDto dataResponse = new GetDataResponseDto(Arrays.asList(new GetDataSystemIdentifierDto(
                 SYSTEM_ID, SYSTEM_TYPE, Arrays.asList(new MeasurementDto(MEASUREMENT_ID, MEASUREMENT_NODE, 0,
-                        new DateTime(DateTimeZone.UTC), MEASUREMENT_VALUE_ALARM_ON)))));
+                        new DateTime(DateTimeZone.UTC), MEASUREMENT_VALUE_ALARM_ON)))), null);
 
         final String correlationUid = this.createCorrelationUid(rtu);
         final String organisationIdentification = rtu.getOwner().getOrganisationIdentification();
