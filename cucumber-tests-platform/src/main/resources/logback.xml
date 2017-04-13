@@ -11,6 +11,7 @@
   <logger name="org.springframework" level="ERROR" />
   <logger name="org.apache.http.wire" level="ERROR" />
   <logger name="cucumber.runtime.java.spring" level="ERROR" />
+  <logger name="com.zaxxer.hikari" level="ERROR" />
 
   <root level="INFO">
     <appender-ref ref="STDOUT" />
