@@ -18,11 +18,19 @@ public class GetDataResponseDto implements Serializable {
 
     private List<GetDataSystemIdentifierDto> getDataSystemIdentifiers;
 
-    public GetDataResponseDto(final List<GetDataSystemIdentifierDto> getDataSystemIdentifiers) {
+    private final ReportDto report;
+
+    public GetDataResponseDto(final List<GetDataSystemIdentifierDto> getDataSystemIdentifiers, final ReportDto report) {
         this.getDataSystemIdentifiers = new ArrayList<>(getDataSystemIdentifiers);
+        this.report = report;
     }
 
     public List<GetDataSystemIdentifierDto> getGetDataSystemIdentifiers() {
         return Collections.unmodifiableList(this.getDataSystemIdentifiers);
     }
+
+    public ReportDto getReport() {
+        return this.report;
+    }
+
 }
