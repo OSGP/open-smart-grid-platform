@@ -39,12 +39,13 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetPow
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ClearReportCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850EnableReportingCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetConfigurationCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetFirmwareVersionCommand;
@@ -139,8 +140,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                     ssld, RelayType.LIGHT);
 
             final List<PowerUsageDataDto> powerUsageHistoryData = new Iec61850PowerUsageHistoryCommand()
-            .getPowerUsageHistoryDataFromDevice(this.iec61850Client, deviceConnection,
-                    deviceRequest.getPowerUsageHistoryContainer(), deviceOutputSettingsLightRelays);
+                    .getPowerUsageHistoryDataFromDevice(this.iec61850Client, deviceConnection,
+                            deviceRequest.getPowerUsageHistoryContainer(), deviceOutputSettingsLightRelays);
 
             final GetPowerUsageHistoryDeviceResponse deviceResponse = new GetPowerUsageHistoryDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -236,7 +237,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
     private List<LightValueDto> createListOfInternalIndicesToSwitch(
             final List<DeviceOutputSetting> deviceOutputSettings, final List<LightValueDto> lightValues)
-                    throws FunctionalException {
+            throws FunctionalException {
         final List<LightValueDto> relaysWithInternalIdToSwitch = new ArrayList<>();
         LOGGER.info("creating list of internal indices using device output settings and external indices from light values");
         for (final LightValueDto lightValue : lightValues) {
@@ -440,7 +441,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             deviceConnection = this.connectToDevice(deviceRequest);
 
             final List<FirmwareVersionDto> firmwareVersions = new Iec61850GetFirmwareVersionCommand()
-            .getFirmwareVersionFromDevice(this.iec61850Client, deviceConnection);
+                    .getFirmwareVersionFromDevice(this.iec61850Client, deviceConnection);
 
             final GetFirmwareVersionDeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
