@@ -26,6 +26,7 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceReq
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.networking.DeviceService;
+import com.alliander.osgp.dto.valueobjects.FirmwareUpdateMessageDataContainer;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -95,7 +96,9 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
         }
 
         try {
-            final String firmwareIdentification = (String) message.getObject();
+            final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = (FirmwareUpdateMessageDataContainer) message
+                    .getObject();
+            final String firmwareIdentification = firmwareUpdateMessageDataContainer.getFirmwareUrl();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
