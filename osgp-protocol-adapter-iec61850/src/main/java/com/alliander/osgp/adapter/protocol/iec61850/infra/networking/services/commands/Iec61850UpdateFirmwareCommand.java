@@ -56,7 +56,7 @@ public class Iec61850UpdateFirmwareCommand {
                 } else {
                     throw new ProtocolAdapterException(
                             String.format(
-                                    "Unsupported firmwareModulueData: communication: %s, functional: %s, module-active: %s, m-bus: %s, security: %s, fullUrl: %s",
+                                    "Unsupported firmwareModuleData (only functional and security are allowed): communication: %s, functional: %s, module-active: %s, m-bus: %s, security: %s, fullUrl: %s",
                                     firmwareModuleData.getModuleVersionComm(),
                                     firmwareModuleData.getModuleVersionFunc(), firmwareModuleData.getModuleVersionMa(),
                                     firmwareModuleData.getModuleVersionMbus(),
@@ -78,6 +78,13 @@ public class Iec61850UpdateFirmwareCommand {
         iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
                 functionalFirmwareNode.getFcmodelNode());
 
+        final String currentFunctionalFirmwareDownloadUrl = functionalFirmwareNode.getString(SubDataAttribute.URL);
+        final Date currentFunctionalFirmwareUpdateDateTime = functionalFirmwareNode
+                .getDate(SubDataAttribute.START_TIME);
+        LOGGER.info("Current functional firmware download url: {}, start time: {} for device: {}",
+                currentFunctionalFirmwareDownloadUrl, currentFunctionalFirmwareUpdateDateTime,
+                deviceConnection.getDeviceIdentification());
+
         LOGGER.info("Updating the functional firmware download url to: {} for device: {}", fullUrl,
                 deviceConnection.getDeviceIdentification());
         functionalFirmwareNode.writeString(SubDataAttribute.URL, fullUrl);
@@ -95,6 +102,12 @@ public class Iec61850UpdateFirmwareCommand {
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SECURITY_FIRMWARE, Fc.CF);
         iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
                 securityFirmwareNode.getFcmodelNode());
+
+        final String currentSecurityFirmwareDownloadUrl = securityFirmwareNode.getString(SubDataAttribute.URL);
+        final Date currentSecurityFirmwareUpdateDateTime = securityFirmwareNode.getDate(SubDataAttribute.START_TIME);
+        LOGGER.info("Current security firmware download url: {}, start time: {} for device: {}",
+                currentSecurityFirmwareDownloadUrl, currentSecurityFirmwareUpdateDateTime,
+                deviceConnection.getDeviceIdentification());
 
         LOGGER.info("Updating the security firmware download url to : {} for device: {}", fullUrl,
                 deviceConnection.getDeviceIdentification());
