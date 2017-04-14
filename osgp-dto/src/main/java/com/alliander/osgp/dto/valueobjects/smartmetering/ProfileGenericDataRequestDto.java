@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -16,25 +15,16 @@ import java.util.Objects;
 /**
  * request for ProfileGenericData
  */
-public class ProfileGenericDataRequestDto implements ActionRequestDto {
+public class ProfileGenericDataRequestDto extends ProfileGenericDataRequestDataDto implements ActionRequestDto {
 
     private final String deviceIdentification;
-    private final ObisCodeValuesDto obisCode;
-    private final Date beginDate;
-    private final Date endDate;
-    private final List<CaptureObjectDefinitionDto> selectedValues = new ArrayList<>();
 
     private static final long serialVersionUID = -2483665562035897062L;
 
     public ProfileGenericDataRequestDto(final String deviceIdentification, final ObisCodeValuesDto obisCode,
             final Date beginDate, final Date endDate, final List<CaptureObjectDefinitionDto> selectedValues) {
+        super(obisCode, beginDate, endDate, selectedValues);
         this.deviceIdentification = deviceIdentification;
-        this.obisCode = obisCode;
-        this.beginDate = new Date(beginDate.getTime());
-        this.endDate = new Date(endDate.getTime());
-        if (selectedValues != null) {
-            this.selectedValues.addAll(selectedValues);
-        }
     }
 
     public ProfileGenericDataRequestDto(final String deviceIdentification, final ObisCodeValuesDto obisCode,
@@ -74,21 +64,5 @@ public class ProfileGenericDataRequestDto implements ActionRequestDto {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
-    }
-
-    public ObisCodeValuesDto getObisCode() {
-        return this.obisCode;
-    }
-
-    public Date getBeginDate() {
-        return new Date(this.beginDate.getTime());
-    }
-
-    public Date getEndDate() {
-        return new Date(this.endDate.getTime());
-    }
-
-    public List<CaptureObjectDefinitionDto> getSelectedValues() {
-        return new ArrayList<>(this.selectedValues);
     }
 }

@@ -1,14 +1,10 @@
-<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
-  License, Version 2.0 (the "License"); you may not use this file except in 
-  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
-  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
-  attributeFormDefault="unqualified" elementFormDefault="qualified"
-  targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10">
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+  use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
+  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" attributeFormDefault="unqualified"
+  elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10">
 
-  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
-    schemaLocation="common.xsd" />
+  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10" schemaLocation="common.xsd" />
 
   <!-- smart meter periodic -->
   <xsd:element name="PeriodicMeterReadsRequest">
@@ -39,8 +35,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="PeriodType" type="tns:PeriodType" />
-        <xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
-          minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -50,8 +45,7 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="PeriodType" type="tns:PeriodType" />
-          <xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
-            minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -86,8 +80,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="PeriodType" type="tns:PeriodType" />
-        <xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas"
-          minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -97,8 +90,8 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="PeriodType" type="tns:PeriodType" />
-          <xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas"
-            minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas" minOccurs="0"
+            maxOccurs="unbounded" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -113,8 +106,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <!-- This is a special type so that ActualMeterReads is supported in bundle 
-    requests -->
+  <!-- This is a special type so that ActualMeterReads is supported in bundle requests -->
   <xsd:complexType name="ActualMeterReadsData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
@@ -146,14 +138,10 @@
         <xsd:element name="LogTime" type="xsd:dateTime" />
         <xsd:element name="ActiveEnergyImport" type="tns:MeterValue" />
         <xsd:element name="ActiveEnergyExport" type="tns:MeterValue" />
-        <xsd:element name="ActiveEnergyImportTariffOne"
-          type="tns:MeterValue" />
-        <xsd:element name="ActiveEnergyImportTariffTwo"
-          type="tns:MeterValue" />
-        <xsd:element name="ActiveEnergyExportTariffOne"
-          type="tns:MeterValue" />
-        <xsd:element name="ActiveEnergyExportTariffTwo"
-          type="tns:MeterValue" />
+        <xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
+        <xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" />
+        <xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
+        <xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -165,14 +153,10 @@
           <xsd:element name="LogTime" type="xsd:dateTime" />
           <xsd:element name="ActiveEnergyImport" type="tns:MeterValue" />
           <xsd:element name="ActiveEnergyExport" type="tns:MeterValue" />
-          <xsd:element name="ActiveEnergyImportTariffOne"
-            type="tns:MeterValue" />
-          <xsd:element name="ActiveEnergyImportTariffTwo"
-            type="tns:MeterValue" />
-          <xsd:element name="ActiveEnergyExportTariffOne"
-            type="tns:MeterValue" />
-          <xsd:element name="ActiveEnergyExportTariffTwo"
-            type="tns:MeterValue" />
+          <xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
+          <xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" />
+          <xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
+          <xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -187,8 +171,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <!-- This is a special type so that ActualMeterReads is supported in bundle 
-    requests -->
+  <!-- This is a special type so that ActualMeterReads is supported in bundle requests -->
   <xsd:complexType name="ActualMeterReadsGasData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
@@ -245,8 +228,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <!-- This is a special type so that ReadAlarmRigister is supported in bundle 
-    requests -->
+  <!-- This is a special type so that ReadAlarmRigister is supported in bundle requests -->
   <xsd:complexType name="ReadAlarmRegisterData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
@@ -267,10 +249,8 @@
   <xsd:element name="ReadAlarmRegisterAsyncRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"
-          minOccurs="1" />
-        <xsd:element name="CorrelationUid" type="common:CorrelationUid"
-          minOccurs="1" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
+        <xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -317,8 +297,7 @@
     </xsd:sequence>
   </xsd:complexType>
 
-  <!-- This is a special type so that PeriodicReadsRequestQuery is supported 
-    in bundle requests -->
+  <!-- This is a special type so that PeriodicReadsRequestQuery is supported in bundle requests -->
   <xsd:complexType name="PeriodicReadsRequestQuery">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
@@ -329,8 +308,7 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <!-- This is a special type so that PeriodicReadsRequestGasQuery is supported 
-    in bundle requests -->
+  <!-- This is a special type so that PeriodicReadsRequestGasQuery is supported in bundle requests -->
   <xsd:complexType name="PeriodicReadsRequestGasQuery">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
@@ -346,7 +324,8 @@
     <xsd:annotation>
       <xsd:documentation>
         a request for periodic reads from a meter consists out of the
-        identification of the device and input data
+        identification of the device and
+        input data
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
@@ -362,7 +341,8 @@
   <xsd:complexType name="PeriodicReadsRequestData">
     <xsd:annotation>
       <xsd:documentation>input data to request periodic reads from a
-        meter, not meant to use directly</xsd:documentation>
+        meter, not meant to use directly
+      </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="PeriodType" type="tns:PeriodType" />
@@ -410,20 +390,13 @@
   <xsd:complexType name="PeriodicMeterReads">
     <xsd:sequence>
       <xsd:element name="LogTime" type="xsd:dateTime" />
-      <xsd:element name="ActiveEnergyImport" type="tns:MeterValue"
-        minOccurs="0" />
-      <xsd:element name="ActiveEnergyExport" type="tns:MeterValue"
-        minOccurs="0" />
-      <xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue"
-        minOccurs="0" />
-      <xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue"
-        minOccurs="0" />
-      <xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue"
-        minOccurs="0" />
-      <xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue"
-        minOccurs="0" />
-      <xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode"
-        minOccurs="0" />
+      <xsd:element name="ActiveEnergyImport" type="tns:MeterValue" minOccurs="0" />
+      <xsd:element name="ActiveEnergyExport" type="tns:MeterValue" minOccurs="0" />
+      <xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" minOccurs="0" />
+      <xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" minOccurs="0" />
+      <xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" minOccurs="0" />
+      <xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" minOccurs="0" />
+      <xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -432,8 +405,7 @@
       <xsd:element name="LogTime" type="xsd:dateTime" />
       <xsd:element name="Consumption" type="tns:MeterValue" />
       <xsd:element name="CaptureTime" type="xsd:dateTime" />
-      <xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode"
-        minOccurs="0" />
+      <xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -447,13 +419,12 @@
   <xsd:complexType name="MeterValue">
     <xsd:simpleContent>
       <xsd:extension base="tns:Value">
-        <xsd:attribute name="unit" type="common:OsgpUnitType"
-          use="required" />
+        <xsd:attribute name="unit" type="common:OsgpUnitType" use="required" />
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
 
- <!-- ProfileGenericData -->
+  <!-- ProfileGenericData -->
 
   <xsd:element name="ProfileGenericDataRequest">
     <xsd:complexType>
@@ -474,8 +445,7 @@
           <xsd:element name="ObisCode" type="common:ObisCodeValues" />
           <xsd:element name="BeginDate" type="xsd:dateTime" />
           <xsd:element name="EndDate" type="xsd:dateTime" />
-          <xsd:element name="SelectedValues"
-            type="common:CaptureObjectDefinitions" minOccurs="0" />
+          <xsd:element name="SelectedValues" type="common:CaptureObjectDefinitions" minOccurs="0" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -499,14 +469,29 @@
 
   <xsd:element name="ProfileGenericDataResponse">
     <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="LogicalName" type="common:ObisCodeValues" />
-        <xsd:element name="CaptureObjects" type="common:CaptureObjects"
-          minOccurs="1" maxOccurs="1" />
-        <xsd:element name="ProfileEntries" type="common:ProfileEntries"
-          minOccurs="1" maxOccurs="1" />
-      </xsd:sequence>
+        <xsd:complexContent>
+            <xsd:extension base="tns:ProfileGenericData"></xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:complexType name="ProfileGenericDataResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="ProfileGenericData" type="tns:ProfileGenericData" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ProfileGenericData">
+    <xsd:sequence>
+      <xsd:element name="LogicalName" type="common:ObisCodeValues" />
+      <xsd:element name="CaptureObjects" type="common:CaptureObjects" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="ProfileEntries" type="common:ProfileEntries" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
 
 </xsd:schema>
