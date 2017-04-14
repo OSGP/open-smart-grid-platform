@@ -56,7 +56,7 @@ public class GetConfigurationObjectSteps extends BaseBundleSteps {
         final ConfigurationObject configurationObject = ((GetConfigurationObjectResponse) actionResponse)
                 .getConfigurationObject();
 
-        Assert.assertEquals("", settings.get("GprsOperationMode"),
+        Assert.assertEquals("The gprs operation mode is not equal", settings.get("GprsOperationMode"),
                 configurationObject.getGprsOperationMode().toString());
         configurationObject.getConfigurationFlags().getConfigurationFlag().forEach(f -> this.testConfigurationFlags(f, settings));
     }
@@ -64,6 +64,6 @@ public class GetConfigurationObjectSteps extends BaseBundleSteps {
     private void testConfigurationFlags(final ConfigurationFlag configFlag, final Map<String, String> settings) {
         final String key = configFlag.getConfigurationFlagType().name();
         final boolean value = getBoolean(settings, key);
-        Assert.assertEquals("", value, configFlag.isEnabled());
+        Assert.assertEquals("The flag boolean value is not equal", value, configFlag.isEnabled());
     }
 }
