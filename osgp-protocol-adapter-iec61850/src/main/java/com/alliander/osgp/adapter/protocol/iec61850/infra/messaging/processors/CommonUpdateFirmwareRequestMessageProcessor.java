@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceReques
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
+import com.alliander.osgp.dto.valueobjects.FirmwareUpdateMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -53,7 +54,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends SsldDeviceReque
         String ipAddress = null;
         Boolean isScheduled = null;
         int retryCount = 0;
-        String firmwareIdentification = null;
+        FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -65,7 +66,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends SsldDeviceReque
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            firmwareIdentification = (String) message.getObject();
+            firmwareUpdateMessageDataContainer = (FirmwareUpdateMessageDataContainer) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -89,7 +90,8 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends SsldDeviceReque
 
         final UpdateFirmwareDeviceRequest deviceRequest = new UpdateFirmwareDeviceRequest(organisationIdentification,
                 deviceIdentification, correlationUid, this.firmwareLocation.getDomain(),
-                this.firmwareLocation.getFullPath(firmwareIdentification), domain, domainVersion, messageType,
+                this.firmwareLocation.getFullPath(firmwareUpdateMessageDataContainer.getFirmwareUrl()),
+                firmwareUpdateMessageDataContainer.getFirmwareModuleData(), domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
 
         this.deviceService.updateFirmware(deviceRequest, iec61850DeviceResponseHandler);

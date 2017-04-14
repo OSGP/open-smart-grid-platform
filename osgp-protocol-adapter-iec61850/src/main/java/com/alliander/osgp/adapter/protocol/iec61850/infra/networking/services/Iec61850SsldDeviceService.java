@@ -39,13 +39,12 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetPow
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ClearReportCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850EnableReportingCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetConfigurationCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetFirmwareVersionCommand;
@@ -487,7 +486,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             deviceConnection = this.connectToDevice(deviceRequest);
 
             new Iec61850UpdateFirmwareCommand().pushFirmwareToDevice(this.iec61850Client, deviceConnection,
-                    deviceRequest.getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()));
+                    deviceRequest.getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()),
+                    deviceRequest.getFirmwareModuleData());
 
             this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);
         } catch (final ConnectionFailureException se) {

@@ -8,27 +8,32 @@
 package com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.dto.valueobjects.FirmwareModuleData;
 
 public class UpdateFirmwareDeviceRequest extends DeviceRequest {
 
     private String firmwareDomain;
     private String firmwareUrl;
+    private FirmwareModuleData firmwareModuleData;
 
     public UpdateFirmwareDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String firmwareDomain, final String firmwareUrl) {
+            final String correlationUid, final String firmwareDomain, final String firmwareUrl,
+            final FirmwareModuleData firmwareModuleData) {
         super(organisationIdentification, deviceIdentification, correlationUid);
         this.firmwareDomain = firmwareDomain;
         this.firmwareUrl = firmwareUrl;
+        this.firmwareModuleData = firmwareModuleData;
     }
 
     public UpdateFirmwareDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String firmwareDomain, final String firmwareUrl, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
+            final String correlationUid, final String firmwareDomain, final String firmwareUrl,
+            final FirmwareModuleData firmwareModuleData, final String domain, final String domainVersion,
+            final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
         this.firmwareDomain = firmwareDomain;
         this.firmwareUrl = firmwareUrl;
+        this.firmwareModuleData = firmwareModuleData;
     }
 
     public String getFirmwareDomain() {
@@ -37,5 +42,9 @@ public class UpdateFirmwareDeviceRequest extends DeviceRequest {
 
     public String getFirmwareUrl() {
         return this.firmwareUrl;
+    }
+
+    public FirmwareModuleData getFirmwareModuleData() {
+        return this.firmwareModuleData;
     }
 }
