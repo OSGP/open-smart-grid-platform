@@ -8,8 +8,6 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
 
 public class ProfileEntryValue implements Serializable {
 
@@ -17,19 +15,7 @@ public class ProfileEntryValue implements Serializable {
 
     private final Serializable value;
 
-    public ProfileEntryValue(final String value) {
-        this.value = value;
-    }
-
-    public ProfileEntryValue(final Date value) {
-        this.value = value;
-    }
-
-    public ProfileEntryValue(final Long value) {
-        this.value = value;
-    }
-
-    public ProfileEntryValue(final BigDecimal value) {
+    public ProfileEntryValue(final Serializable value) {
         this.value = value;
     }
 

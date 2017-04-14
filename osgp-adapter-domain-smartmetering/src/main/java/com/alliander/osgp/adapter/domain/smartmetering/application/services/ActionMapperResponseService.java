@@ -36,6 +36,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
@@ -51,6 +52,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -95,6 +97,7 @@ public class ActionMapperResponseService {
         classMap.put(UpdateFirmwareResponseDto.class, UpdateFirmwareResponse.class);
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
         classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);
+        classMap.put(ProfileGenericDataResponseDto.class, ProfileGenericDataResponse.class);
     }
 
     /**
@@ -116,6 +119,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(UpdateFirmwareResponseDto.class, this.configurationMapper);
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetConfigurationObjectResponseDto.class, this.configurationMapper);
+        classToMapperMap.put(ProfileGenericDataResponseDto.class, this.monitoringMapper);
     }
 
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)
