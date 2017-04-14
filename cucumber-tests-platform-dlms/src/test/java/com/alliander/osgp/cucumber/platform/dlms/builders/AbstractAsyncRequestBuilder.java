@@ -12,7 +12,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 
-public abstract class AbstractAsyncRequestBuilder {
+public abstract class AbstractAsyncRequestBuilder<T> {
 
     protected String deviceIdentification;
     protected String correlationUid;
@@ -20,27 +20,27 @@ public abstract class AbstractAsyncRequestBuilder {
     protected Class<?> contextClass;
     protected Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-    public AbstractAsyncRequestBuilder(Class<?> contextClass) {
+    public AbstractAsyncRequestBuilder(final Class<?> contextClass) {
         super();
         this.contextClass = contextClass;
     }
 
-    public AbstractAsyncRequestBuilder withDeviceidentification(final String deviceIdentification) {
+    public AbstractAsyncRequestBuilder<T> withDeviceidentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
         return this;
     }
 
-    public AbstractAsyncRequestBuilder withCorrelationUid(final String correlationUid) {
+    public AbstractAsyncRequestBuilder<T> withCorrelationUid(final String correlationUid) {
         this.correlationUid = correlationUid;
         return this;
     }
 
-    public AbstractAsyncRequestBuilder fromContext() {
+    public AbstractAsyncRequestBuilder<T> fromContext() {
         this.correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
         this.deviceIdentification = (String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION);
         return this;
     }
 
-    public abstract Object build();
+    public abstract T build();
 
 }
