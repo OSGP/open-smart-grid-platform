@@ -38,7 +38,6 @@ public class ProtocolSequenceNumberSteps {
 
     @When("^the device adds \"([^\"]*)\" to the sequencenumber in the \"([^\"]*)\" response$")
     public void receivingAConfirmRequest(final Integer number, final String protocol) throws Throwable {
-
         ScenarioContext.Current().put(Keys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER, number);
     }
 
