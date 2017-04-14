@@ -21,6 +21,8 @@
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:element>
+        <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleType"
+          minOccurs="0" maxOccurs="5" />
         <xsd:element name="scheduled_time" type="xsd:dateTime"
           minOccurs="0" maxOccurs="1" />
       </xsd:sequence>
