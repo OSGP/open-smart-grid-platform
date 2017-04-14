@@ -168,27 +168,28 @@ public class FirmwareManagementEndpoint {
 
     private FirmwareUpdateMessageDataContainer mapFirmwareModuleTypes(final String firmwareIndentification,
             final List<FirmwareModuleType> firmwareModuleTypes) {
-        String moduleVersionComm = "";
-        String moduleVersionFunc = "";
-        String moduleVersionMa = "";
-        String moduleVersionMbus = "";
-        String moduleVersionSec = "";
+        String moduleVersionComm = null;
+        String moduleVersionFunc = null;
+        String moduleVersionMa = null;
+        String moduleVersionMbus = null;
+        String moduleVersionSec = null;
 
         for (final FirmwareModuleType firmwareModuleType : firmwareModuleTypes) {
+            final String firmwareModuleTypeString = firmwareModuleType.toString();
             if (FirmwareModuleType.COMMUNICATION.equals(firmwareModuleType)) {
-                moduleVersionComm = firmwareModuleType.toString();
+                moduleVersionComm = firmwareModuleTypeString;
             }
             if (FirmwareModuleType.FUNCTIONAL.equals(firmwareModuleType)) {
-                moduleVersionFunc = firmwareModuleType.toString();
+                moduleVersionFunc = firmwareModuleTypeString;
             }
             if (FirmwareModuleType.MODULE_ACTIVE.equals(firmwareModuleType)) {
-                moduleVersionMa = firmwareModuleType.toString();
+                moduleVersionMa = firmwareModuleTypeString;
             }
             if (FirmwareModuleType.M_BUS.equals(firmwareModuleType)) {
-                moduleVersionMbus = firmwareModuleType.toString();
+                moduleVersionMbus = firmwareModuleTypeString;
             }
             if (FirmwareModuleType.SECURITY.equals(firmwareModuleType)) {
-                moduleVersionSec = firmwareModuleType.toString();
+                moduleVersionSec = firmwareModuleTypeString;
             }
         }
 
