@@ -27,6 +27,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfiguratio
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
@@ -187,11 +188,11 @@ public class ActionMapperService {
                 this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetSpecificAttributeValueRequest.class, this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequest.class, this.monitoringMapper);
-
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequestData.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequest.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(GetProfileGenericDataRequest.class, this.monitoringMapper);
     }
 
     /**
@@ -280,6 +281,8 @@ public class ActionMapperService {
         CLASS_MAP.put(GetAssociationLnObjectsRequest.class, GetAssociationLnObjectsRequestData.class);
         CLASS_MAP.put(GetSpecificAttributeValueRequest.class, SpecificAttributeValueRequestData.class);
         CLASS_MAP.put(SetClockConfigurationRequest.class, SetClockConfigurationRequestData.class);
+        CLASS_MAP.put(GetProfileGenericDataRequest.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {

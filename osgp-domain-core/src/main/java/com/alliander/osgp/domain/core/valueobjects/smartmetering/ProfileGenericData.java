@@ -10,31 +10,31 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-public class ProfileGenericDataResponse extends ActionResponse implements Serializable {
+public class ProfileGenericData extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -156966569210717657L;
 
-    private final ProfileGenericData profileGenericData;
+    private final ObisCodeValues logicalName;
+    private final List<CaptureObject> captureObjects;
+    private final List<ProfileEntry> profileEntries;
 
-    public ProfileGenericDataResponse(final ObisCodeValues logicalName, final List<CaptureObject> captureObjects,
+    public ProfileGenericData(final ObisCodeValues logicalName, final List<CaptureObject> captureObjects,
             final List<ProfileEntry> profileEntries) {
         super();
-        this.profileGenericData = new ProfileGenericData(logicalName, captureObjects, profileEntries);
-    }
-
-    public ProfileGenericData getProfileGenericData() {
-        return this.profileGenericData;
+        this.logicalName = logicalName;
+        this.captureObjects = captureObjects;
+        this.profileEntries = profileEntries;
     }
 
     public ObisCodeValues getLogicalName() {
-        return this.profileGenericData.getLogicalName();
+        return this.logicalName;
     }
 
     public List<CaptureObject> getCaptureObjects() {
-        return this.profileGenericData.getCaptureObjects();
+        return this.captureObjects;
     }
 
     public List<ProfileEntry> getProfileEntries() {
-        return this.profileGenericData.getProfileEntries();
+        return this.profileEntries;
     }
 }
