@@ -141,8 +141,8 @@ public class DeviceManagementService {
             if (ex.getCause() instanceof PersistenceException) {
                 LOGGER.error("Add organisation failure JpaSystemException", ex);
                 throw new FunctionalException(FunctionalExceptionType.EXISTING_ORGANISATION, ComponentType.WS_ADMIN,
-                        new ExistingEntityException(Organisation.class,
-                                newOrganisation.getOrganisationIdentification(), ex));
+                        new ExistingEntityException(Organisation.class, newOrganisation.getOrganisationIdentification(),
+                                ex));
             }
         }
     }
@@ -163,9 +163,10 @@ public class DeviceManagementService {
                     .findByOrganisation(organisationToRemove);
             if (!deviceAuthorizations.isEmpty()) {
                 throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE_AUTHORIZATIONS,
-                        ComponentType.WS_ADMIN, new ValidationException(String.format(
-                                "Device Authorizations are still present for the current organisation %s",
-                                organisationToRemove.getOrganisationIdentification())));
+                        ComponentType.WS_ADMIN,
+                        new ValidationException(
+                                String.format("Device Authorizations are still present for the current organisation %s",
+                                        organisationToRemove.getOrganisationIdentification())));
             }
 
             organisationToRemove.setIsEnabled(false);
@@ -203,25 +204,21 @@ public class DeviceManagementService {
     }
 
     public void changeOrganisation(@Identification final String organisationIdentification,
-            @Identification final String organisationToBeChangedIdentification,
-            @Identification final String newOrganisationIdentification, final String newOrganisationName,
+            @Identification final String organisationToBeChangedIdentification, final String newOrganisationName,
             @NotNull final PlatformFunctionGroup newOrganisationPlatformFunctionGroup,
             @NotNull final List<PlatformDomain> newDomains) throws FunctionalException {
 
         LOGGER.info(
-                "changeOrganisation called with organisation {} and organisation to change {}. new values for organisationIdentification {}, organisationName {}, organisationPlatformFunctionGroup {}",
-                organisationIdentification, organisationToBeChangedIdentification, newOrganisationIdentification,
-                newOrganisationName, newOrganisationPlatformFunctionGroup);
+                "changeOrganisation called with organisation {} and organisation to change {}. new values for organisationName {}, organisationPlatformFunctionGroup {}",
+                organisationIdentification, organisationToBeChangedIdentification, newOrganisationName,
+                newOrganisationPlatformFunctionGroup);
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.CHANGE_ORGANISATION);
 
         try {
-            this.checkIfNewOrganisationIdentificationAlreadyExists(organisationToBeChangedIdentification,
-                    newOrganisationIdentification);
-
             final Organisation organisationToChange = this.findOrganisation(organisationToBeChangedIdentification);
-            organisationToChange.changeOrganisationData(newOrganisationIdentification, newOrganisationName,
+            organisationToChange.changeOrganisationData(organisationIdentification, newOrganisationName,
                     newOrganisationPlatformFunctionGroup);
             organisationToChange.setDomains(newDomains);
 
@@ -246,13 +243,11 @@ public class DeviceManagementService {
             }
 
             if (org != null) {
-                throw new FunctionalException(
-                        FunctionalExceptionType.EXISTING_ORGANISATION_WITH_SAME_IDENTIFICATION,
+                throw new FunctionalException(FunctionalExceptionType.EXISTING_ORGANISATION_WITH_SAME_IDENTIFICATION,
                         ComponentType.WS_ADMIN,
-                        new ValidationException(
-                                String.format(
-                                        "The new organisation identification cannot be applied: an organisation is already registered with organisation identification %s",
-                                        newOrganisationIdentification)));
+                        new ValidationException(String.format(
+                                "The new organisation identification cannot be applied: an organisation is already registered with organisation identification %s",
+                                newOrganisationIdentification)));
             }
         }
     }
@@ -278,8 +273,8 @@ public class DeviceManagementService {
         // Check if group is already set on device
         for (final DeviceAuthorization authorization : device.getAuthorizations()) {
             if (authorization.getOrganisation() == organisation && authorization.getFunctionGroup() == group) {
-                LOGGER.info("Organisation {} already has authorization for group {} on device {}", new Object[] {
-                        organisationIdentification, deviceIdentification, group });
+                LOGGER.info("Organisation {} already has authorization for group {} on device {}",
+                        new Object[] { organisationIdentification, deviceIdentification, group });
                 // Ignore the request, the authorization is already available
                 return;
             }
@@ -359,10 +354,10 @@ public class DeviceManagementService {
 
     public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-                    throws FunctionalException {
+            throws FunctionalException {
 
-        LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
-                organisationIdentification, deviceIdentification, pageNumber });
+        LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}",
+                new Object[] { organisationIdentification, deviceIdentification, pageNumber });
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
@@ -380,17 +375,12 @@ public class DeviceManagementService {
     // === REMOVE DEVICE ===
 
     /**
-     * @throws FunctionalException
-     * @throws NotAuthorizedException
-     * @throws FunctionalException
-     *             Remove a device
+     * @throws FunctionalException @throws NotAuthorizedException @throws
+     * FunctionalException Remove a device
      *
-     * @param organisationIdentification
-     * @param deviceIdentification
-     * @throws UnknownEntityException
-     * @throws ArgumentNullOrEmptyException
-     * @throws UnregisteredDeviceException
-     * @throws
+     * @param organisationIdentification @param deviceIdentification @throws
+     * UnknownEntityException @throws ArgumentNullOrEmptyException @throws
+     * UnregisteredDeviceException @throws
      */
     public void removeDevice(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification) throws FunctionalException {
@@ -432,7 +422,7 @@ public class DeviceManagementService {
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
-                    throws FunctionalException {
+            throws FunctionalException {
         Organisation organisation = this.findOrganisation(organisationIdentification);
         final Device device = this.findDevice(deviceIdentification);
         this.isAllowed(organisation, PlatformFunction.SET_OWNER);
@@ -556,7 +546,7 @@ public class DeviceManagementService {
 
     public void updateDeviceProtocol(final String organisationIdentification,
             @Identification final String deviceIdentification, final String protocol, final String protocolVersion)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
                 deviceIdentification, organisationIdentification, protocol, protocolVersion);
