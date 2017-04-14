@@ -11,6 +11,7 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getLong;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -57,18 +58,49 @@ public class DeviceModelSteps extends GlueBase {
      */
     @Then("^the entity device model exists$")
     public void theEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
+        final Manufacturer manufacturer = new Manufacturer();
+        final String manufacturerId = getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID);
+        final String modelCode = getString(expectedEntity, Keys.KEY_DEVICE_MODEL_MODELCODE,
+                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
+        final String modelDescription = getString(expectedEntity, Keys.KEY_DEVICE_MODEL_DESCRIPTION,
+                Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
+        final boolean modelMetered = getBoolean(expectedEntity, Keys.KEY_DEVICE_MODEL_METERED,
+                Defaults.DEFAULT_DEVICE_MODEL_METERED);
 
-        final DeviceModel entity = this.repo
-                .findByModelCode(getString(expectedEntity, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        manufacturer.setManufacturerId(manufacturerId);
+        final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
 
-        Assert.assertEquals(getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID),
-                entity.getManufacturerId().getManufacturerId());
-        Assert.assertEquals(
-                getString(expectedEntity, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION),
-                entity.getDescription());
-        Assert.assertEquals(
-                getBoolean(expectedEntity, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED),
-                entity.isMetered());
+        for (final DeviceModel deviceModel : entityList) {
+            if (deviceModel.getModelCode().equals(modelCode)) {
+                Assert.assertEquals(modelDescription, deviceModel.getDescription());
+                Assert.assertEquals(modelMetered, deviceModel.isMetered());
+                return;
+            }
+        }
+        Assert.assertFalse(true);
+    }
+
+    /**
+     * Generic method to check if the device model is NOT created as expected in
+     * the database.
+     *
+     * @param entity
+     *            The settings.
+     * @throws Throwable
+     */
+    @Then("^the entity device model does not exists$")
+    public void theEntityDeviceModelDoesNotExists(final Map<String, String> entity) throws Throwable {
+        final Manufacturer manufacturer = new Manufacturer();
+        final String manufacturerId = getString(entity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID);
+        final String modelCode = getString(entity, Keys.KEY_DEVICE_MODEL_MODELCODE,
+                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
+
+        manufacturer.setManufacturerId(manufacturerId);
+        final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
+
+        for (final DeviceModel deviceModel : entityList) {
+            Assert.assertNotEquals(deviceModel.getModelCode(), modelCode);
+        }
     }
 
     /**
