@@ -34,6 +34,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Ie
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.ReportDto;
 
 public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListener {
 
@@ -115,7 +116,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
         this.logReportDetails(report);
         try {
-            this.processDataSet(report.getDataSet(), reportDescription, reportHandler);
+            this.processReport(report, reportDescription, reportHandler);
         } catch (final ProtocolAdapterException e) {
             this.logger.warn("Unable to process report, discarding report", e);
         }
@@ -124,22 +125,22 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     private String getReportDescription(final Report report, final DateTime timeOfEntry) {
         return String.format("device: %s, reportId: %s, timeOfEntry: %s, sqNum: %s%s%s", this.deviceIdentification,
                 report.getRptId(), timeOfEntry == null ? "-" : timeOfEntry, report.getSqNum(),
-                report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
-                report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
+                        report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
+                                report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
     }
 
     private boolean skipRecordBecauseOfOldSqNum(final Report report) {
         return (this.firstNewSqNum != null) && (report.getSqNum() != null) && (report.getSqNum() < this.firstNewSqNum);
     }
 
-    private void processDataSet(final DataSet dataSet, final String reportDescription,
+    private void processReport(final Report report, final String reportDescription,
             final Iec61850ReportHandler reportHandler) throws ProtocolAdapterException {
-        if (dataSet == null) {
+        if (report.getDataSet() == null) {
             this.logger.warn("No DataSet available for {}", reportDescription);
             return;
         }
 
-        final List<FcModelNode> members = dataSet.getMembers();
+        final List<FcModelNode> members = report.getDataSet().getMembers();
         if ((members == null) || members.isEmpty()) {
             this.logger.warn("No members in DataSet available for {}", reportDescription);
             return;
@@ -170,7 +171,12 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         final GetDataSystemIdentifierDto systemResult = reportHandler.createResult(measurements);
         final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
         systems.add(systemResult);
-        this.deviceManagementService.sendMeasurements(this.deviceIdentification, new GetDataResponseDto(systems));
+
+        final ReportDto reportDto = new ReportDto(report.getSqNum(),
+                new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET),
+                report.getRptId());
+
+        this.deviceManagementService.sendMeasurements(this.deviceIdentification, new GetDataResponseDto(systems, reportDto));
     }
 
     private void logReportDetails(final Report report) {
@@ -182,30 +188,30 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         sb.append("\t           BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
         sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
-                .append(System.lineSeparator());
+        .append(System.lineSeparator());
         sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());
         sb.append("\t             SqNum:\t").append(report.getSqNum()).append(System.lineSeparator());
         sb.append("\t          SubSqNum:\t").append(report.getSubSqNum()).append(System.lineSeparator());
         sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
         if (report.getTimeOfEntry() != null) {
             sb.append("\t                   \t(")
-                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
-                    .append(')').append(System.lineSeparator());
+            .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
+            .append(')').append(System.lineSeparator());
         }
         final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
         if ((reasonCodes != null) && !reasonCodes.isEmpty()) {
             sb.append("\t       ReasonCodes:").append(System.lineSeparator());
             for (final BdaReasonForInclusion reasonCode : reasonCodes) {
                 sb.append("\t                   \t")
-                        .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                                : reasonCode)
-                        .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
-                        .append(System.lineSeparator());
+                .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
+                        : reasonCode)
+                .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
+                .append(System.lineSeparator());
             }
         }
         sb.append("\t           optFlds:").append(report.getOptFlds()).append("\t(")
-                .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-                .append(System.lineSeparator());
+        .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
+        .append(System.lineSeparator());
         final DataSet dataSet = report.getDataSet();
         if (dataSet == null) {
             sb.append("\t           DataSet:\tnull").append(System.lineSeparator());
