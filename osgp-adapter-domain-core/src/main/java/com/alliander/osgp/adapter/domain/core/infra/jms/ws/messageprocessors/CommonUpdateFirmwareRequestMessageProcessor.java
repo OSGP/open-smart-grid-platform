@@ -19,13 +19,12 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.core.application.services.FirmwareManagementService;
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common update firmware request messages
- * 
- * @author CGI
- * 
+ *
  */
 @Component("domainCoreCommonUpdateFirmwareRequestMessageProcessor")
 public class CommonUpdateFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -73,12 +72,13 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends WebServiceReque
         }
 
         try {
-            final String firmwareIdentification = (String) message.getObject();
+            final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer = (FirmwareUpdateMessageDataContainer) message
+                    .getObject();
 
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.firmwareManagementService.updateFirmware(organisationIdentification, deviceIdentification,
-                    correlationUid, firmwareIdentification, scheduleTime, messageType);
+                    correlationUid, firmwareUpdateMessageDataContainer, scheduleTime, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
