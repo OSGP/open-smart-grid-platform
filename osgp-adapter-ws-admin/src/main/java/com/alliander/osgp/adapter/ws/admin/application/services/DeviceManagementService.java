@@ -218,8 +218,7 @@ public class DeviceManagementService {
 
         try {
             final Organisation organisationToChange = this.findOrganisation(organisationToBeChangedIdentification);
-            organisationToChange.changeOrganisationData(organisationIdentification, newOrganisationName,
-                    newOrganisationPlatformFunctionGroup);
+            organisationToChange.changeOrganisationData(newOrganisationName, newOrganisationPlatformFunctionGroup);
             organisationToChange.setDomains(newDomains);
 
             this.organisationRepository.save(organisationToChange);
@@ -375,12 +374,15 @@ public class DeviceManagementService {
     // === REMOVE DEVICE ===
 
     /**
-     * @throws FunctionalException @throws NotAuthorizedException @throws
-     * FunctionalException Remove a device
+     * @throws FunctionalException
+     *             @throws NotAuthorizedException @throws FunctionalException
+     *             Remove a device
      *
-     * @param organisationIdentification @param deviceIdentification @throws
-     * UnknownEntityException @throws ArgumentNullOrEmptyException @throws
-     * UnregisteredDeviceException @throws
+     * @param organisationIdentification
+     *            @param deviceIdentification @throws
+     *            UnknownEntityException @throws
+     *            ArgumentNullOrEmptyException @throws
+     *            UnregisteredDeviceException @throws
      */
     public void removeDevice(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification) throws FunctionalException {
