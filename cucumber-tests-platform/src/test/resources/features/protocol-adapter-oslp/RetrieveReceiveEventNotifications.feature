@@ -62,7 +62,7 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       | OSLP ELSTER | LIGHT_FAILURE_DALI_COMMUNICATION    | Light is broken  |
 
   @OslpMockServer
-  Scenario Outline: Retrieve timestamp filtered retrieved event notifications
+  Scenario Outline: Filter retrieved event notifications on timestamp 
     Given an organization
       | OrganizationIdentification | Heerlen |
     And an ssld oslp device
@@ -104,7 +104,7 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       | OSLP ELSTER |   18 |   19 | 24 |      0 |
 
   @OslpMockServer
-  Scenario Outline: Retrieve device filtered recieved event notifications
+  Scenario Outline: Filter retrieved event notifications on device
     Given an organization
       | OrganizationIdentification | Heerlen |
     And an ssld oslp device
