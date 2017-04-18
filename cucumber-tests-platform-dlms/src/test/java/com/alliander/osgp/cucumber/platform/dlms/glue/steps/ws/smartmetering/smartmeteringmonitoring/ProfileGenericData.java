@@ -59,14 +59,14 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
 
     @Then("^the profile generic data result should be returned$")
     public void theProfileGenericDataResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        final ProfileGenericDataAsyncRequest request = (ProfileGenericDataAsyncRequest) new ProfileGenericDataAsyncRequestBuilder()
-                .fromContext().build();
+        final ProfileGenericDataAsyncRequest request = new ProfileGenericDataAsyncRequestBuilder().fromContext()
+                .build();
 
         final ProfileGenericDataResponse response = this.client.getProfileGenericDataResponse(request);
         assertNotNull("ProfileGenericDataResponse should not be null", response);
 
         final int expectedNumberOfCaptureObjects = Helpers.getInteger(settings, "NumberOfCaptureObjects", 0);
-        final List<CaptureObject> actualCaptureObjects = response.getCaptureObjects().getCaptureObject();
+        final List<CaptureObject> actualCaptureObjects = response.getCaptureObjectList().getCaptureObjects();
         assertEquals("Number of capture objects", expectedNumberOfCaptureObjects, actualCaptureObjects.size());
 
         for (int i = 0; i < expectedNumberOfCaptureObjects; i++) {
@@ -75,7 +75,7 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
         }
 
         final int expectedNumberOfProfileEntries = Helpers.getInteger(settings, "NumberOfProfileEntries", 0);
-        final List<ProfileEntry> actualProfileEntries = response.getProfileEntries().getProfileEntry();
+        final List<ProfileEntry> actualProfileEntries = response.getProfileEntryList().getProfileEntries();
         assertEquals("Number of profile entries", expectedNumberOfProfileEntries, actualProfileEntries.size());
 
         if (expectedNumberOfProfileEntries > 0) {

@@ -925,8 +925,6 @@ public class OslpDeviceSteps {
         for (int i = 0; i < events.length; i++) {
             if (!events[i].isEmpty() && !indexes[i].isEmpty()) {
                 builder.setEvent(Event.valueOf(events[i].trim()));
-                // TODO: Test this row with the tests in the feature to check if
-                // the values are converted the right way.
                 builder.setIndex((!indexes[i].equals("EMPTY")) ? ByteString.copyFrom(indexes[i].getBytes())
                         : ByteString.copyFrom("0".getBytes()));
                 requestBuilder.addNotifications(builder.build());
@@ -953,16 +951,20 @@ public class OslpDeviceSteps {
      */
     @Then("^the event notification response contains$")
     public void theEventNotificationResponseContains(final Map<String, String> expectedResponse) {
-        final String status = (String) ScenarioContext.Current().get("ERROR");
-        if (status == null) {
-            final Message responseMessage = this.oslpMockServer.waitForResponse();
+        final Message responseMessage = this.oslpMockServer.waitForResponse();
 
-            final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
+        final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
 
-            Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
-        } else {
-            Assert.assertEquals(getString(expectedResponse, Keys.KEY_MESSAGE), status);
-        }
+        Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
+    }
+
+    @Given("^the device sends an event notification request with sequencenumber \"([^\"]*)\" to the platform over \"([^\"]*)\"$")
+    public void theDeviceSendsAStartDeviceResponseOver(final Integer sequenceNumber, final String protocol,
+            final Map<String, String> settings) throws IOException, DeviceSimulatorException {
+
+        ScenarioContext.Current().put(Keys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER, sequenceNumber);
+
+        this.theDeviceSendsAnEventNotificationRequestToThePlatform(protocol, settings);
     }
 
     /**

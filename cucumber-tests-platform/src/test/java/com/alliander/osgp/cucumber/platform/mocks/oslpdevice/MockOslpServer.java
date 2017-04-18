@@ -166,6 +166,7 @@ public class MockOslpServer {
 
     public void resetServer() {
         this.receivedRequests.clear();
+        this.receivedResponses.clear();
         this.mockResponses.clear();
     }
 

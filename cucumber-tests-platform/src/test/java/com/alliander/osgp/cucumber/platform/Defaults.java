@@ -208,10 +208,15 @@ public class Defaults {
 
     public static final boolean DEFAULT_BYPASS_RETRY = false;
 
+
     public static final int DEFAULT_KEY_RELAY = -1;
     public static final String DEFAULT_KEY_RELAYFUNCTION = "Relais 2";
 
     public static final String DEFAULT_TYPE_DAY = "Alle dagen";
     public static final String DEFAULT_TIME = "12:00";
+
+
+    public static final String TIMESTAMP = "now";
+    public static final Integer REQUESTED_PAGE = 0;
 
 }
