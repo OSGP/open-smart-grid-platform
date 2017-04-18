@@ -258,6 +258,7 @@ public class Keys {
     public static final String SEQUENCE_WINDOW = "SequenceWindow";
     public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
     public static final String NUMBER_TO_ADD_TO_SEQUENCE_NUMBER = "NumberToAddToSequenceNumber";
+    public static final String IN_MAINTENANCE = "InMaintenance";
 
     public static final String HOSTNAME = "Hostname";
     public static final String PORT = "Port";
