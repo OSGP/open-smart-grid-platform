@@ -184,9 +184,9 @@ public class Helpers {
         final String offset = m.group(3);
         final String what = m.group(4);
 
-        Integer numberToAdd = 0;
+        Integer numberToAddOrSubstract = 0;
         if (!offset.isEmpty()) {
-            numberToAdd = Integer.parseInt(offset);
+            numberToAddOrSubstract = Integer.parseInt(offset);
         }
 
         final String whenPattern = "([a-z]*)[ ]*([a-z]*)[ ]*([a-z]*)?";
@@ -227,44 +227,45 @@ public class Helpers {
         if (op.equals("+")) {
             switch (what) {
             case "days":
-                retval = retval.plusDays(numberToAdd);
+                retval = retval.plusDays(numberToAddOrSubstract);
                 break;
             case "minutes":
-                retval = retval.plusMinutes(numberToAdd);
+                retval = retval.plusMinutes(numberToAddOrSubstract);
                 break;
             case "hours":
-                retval = retval.plusHours(numberToAdd);
+                retval = retval.plusHours(numberToAddOrSubstract);
                 break;
             case "weeks":
-                retval = retval.plusWeeks(numberToAdd);
+                retval = retval.plusWeeks(numberToAddOrSubstract);
                 break;
             case "months":
-                retval = retval.plusMonths(numberToAdd);
+                retval = retval.plusMonths(numberToAddOrSubstract);
                 break;
             case "years":
-                retval = retval.plusYears(numberToAdd);
+                retval = retval.plusYears(numberToAddOrSubstract);
+                break;
             }
         } else {
             switch (what) {
             case "days":
-                retval = retval.minusDays(numberToAdd);
-                break;
-            case "minutes":
-                retval = retval.minusMinutes(numberToAdd);
+                retval = retval.minusDays(numberToAddOrSubstract);
                 break;
             case "hours":
-                retval = retval.minusHours(numberToAdd);
+                retval = retval.minusHours(numberToAddOrSubstract);
+                break;
+            case "minutes":
+                retval = retval.minusMinutes(numberToAddOrSubstract);
                 break;
             case "weeks":
-                retval = retval.minusWeeks(numberToAdd);
+                retval = retval.minusWeeks(numberToAddOrSubstract);
                 break;
             case "months":
-                retval = retval.minusMonths(numberToAdd);
+                retval = retval.minusMonths(numberToAddOrSubstract);
                 break;
             case "years":
-                retval = retval.minusYears(numberToAdd);
+                retval = retval.minusYears(numberToAddOrSubstract);
+                break;
             }
-
         }
 
         return retval;
@@ -427,7 +428,13 @@ public class Helpers {
     }
 
     public static String getString(final Map<String, String> settings, final String key) {
-        return settings.get(key);
+        String value = null;
+        if (settings.containsKey(key)) {
+            if (!settings.get(key).equalsIgnoreCase("null")) {
+                value = settings.get(key);
+            }
+        }
+        return value;
     }
 
     /**

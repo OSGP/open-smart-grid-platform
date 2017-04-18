@@ -141,10 +141,10 @@ public class MockOslpServer {
                 this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockResponses,
                 this.receivedRequests, this.receivedResponses);
 
-        LOGGER.info("OSLP Mock server starting on port {}", this.oslpPortServer);
+        LOGGER.debug("OSLP Mock server starting on port {}", this.oslpPortServer);
         this.serverOslp = this.serverBootstrap();
         this.serverOslp.bind(new InetSocketAddress(this.oslpPortServer));
-        LOGGER.info("OSLP Elster Mock server starting on port {}", this.oslpElsterPortServer);
+        LOGGER.debug("OSLP Elster Mock server starting on port {}", this.oslpElsterPortServer);
         this.serverOslpElster = this.serverBootstrap();
         this.serverOslpElster.bind(new InetSocketAddress(this.oslpElsterPortServer));
         LOGGER.info("OSLP Mock servers started.");
@@ -166,6 +166,7 @@ public class MockOslpServer {
 
     public void resetServer() {
         this.receivedRequests.clear();
+        this.receivedResponses.clear();
         this.mockResponses.clear();
     }
 
@@ -212,7 +213,6 @@ public class MockOslpServer {
             public ChannelPipeline getPipeline()
                     throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
                 final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
-                LOGGER.info("Created new server pipeline");
                 return pipeline;
             }
         });
@@ -232,7 +232,6 @@ public class MockOslpServer {
             public ChannelPipeline getPipeline()
                     throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
                 final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
-                LOGGER.info("Created new client pipeline");
                 return pipeline;
             }
         };

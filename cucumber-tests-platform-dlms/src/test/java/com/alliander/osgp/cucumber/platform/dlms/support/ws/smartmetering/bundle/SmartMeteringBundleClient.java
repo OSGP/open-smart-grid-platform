@@ -28,7 +28,7 @@ public class SmartMeteringBundleClient extends SmartMeteringBaseClient {
     @Autowired
     private DefaultWebServiceTemplateFactory smartMeteringBundleWstf;
 
-    public BundleAsyncResponse bundleRequest(final BundleRequest request)
+    public BundleAsyncResponse sendBundleRequest(final BundleRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         return (BundleAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
     }
