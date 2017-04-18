@@ -208,4 +208,14 @@ public class Defaults {
 
     public static final boolean DEFAULT_BYPASS_RETRY = false;
     public static final Boolean LAST_KNOWN_STATE = false;
+
+    public static final String DEVICE_OUTPUT_SETTINGS = DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID + ", "
+            + DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID + ", " + DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE + ", "
+            + DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS;
+    public static final String RELAY_STATUSES = DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID + ", "
+            + DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID + ", " + DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE + ", "
+            + DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS;
+    public static final Integer DEFAULT_RELAY_OVERVIEW_INDEX = 1;
+
+    public static final DateTime DATE_NOW = DateTime.now();
 }

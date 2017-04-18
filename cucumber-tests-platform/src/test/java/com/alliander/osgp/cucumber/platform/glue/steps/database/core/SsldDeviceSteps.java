@@ -8,6 +8,7 @@
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getDateTime2;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
@@ -81,23 +82,32 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     @Given("^a relay status$")
     @Transactional("txMgrCore")
-    public void aRelayStatus(final Map<String, String> settings) {
+    public void aRelayStatus(final Map<String, String> settings) throws Exception {
 
         final Ssld ssld = this.ssldRepository.findByDeviceIdentification(
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
+        final String[] deviceOutputSettings = getString(settings, Keys.DEVICE_OUTPUT_SETTINGS,
+                Defaults.DEVICE_OUTPUT_SETTINGS).replaceAll(" ", "").split(Keys.SEPARATOR_SEMICOLON),
+                relayStatuses = getString(settings, Keys.RELAY_STATUSES, Defaults.RELAY_STATUSES).replaceAll(" ", "")
+                        .split(Keys.SEPARATOR_SEMICOLON);
+
         final List<DeviceOutputSetting> dosList = new ArrayList<>();
 
-        dosList.add(new DeviceOutputSetting(1, 1, RelayType.TARIFF, "test-relay"));
-
-        dosList.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, "test-relay"));
+        for (final String dos : deviceOutputSettings) {
+            final String[] deviceOutputSetting = dos.split(Keys.SEPARATOR_COMMA);
+            dosList.add(new DeviceOutputSetting(Integer.parseInt(deviceOutputSetting[0]),
+                    Integer.parseInt(deviceOutputSetting[1]), RelayType.valueOf(deviceOutputSetting[2]),
+                    deviceOutputSetting[3]));
+        }
 
         ssld.updateOutputSettings(dosList);
 
-        this.relayStatusRepository.save(new RelayStatus(ssld, 1, false, DateTime.now().toDate()));
-
-        this.relayStatusRepository.save(new RelayStatus(ssld, 2, true, DateTime.now().toDate()));
-
+        for (final String rs : relayStatuses) {
+            final String[] relayStatus = rs.split(Keys.SEPARATOR_COMMA);
+            this.relayStatusRepository.save(new RelayStatus(ssld, Integer.parseInt(relayStatus[0]),
+                    Boolean.parseBoolean(relayStatus[1]), getDateTime2(relayStatus[2], DateTime.now()).toDate()));
+        }
     }
 
     @Then("^theSsldDeviceContains$")
