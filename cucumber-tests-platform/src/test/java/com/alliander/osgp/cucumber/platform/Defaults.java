@@ -208,7 +208,10 @@ public class Defaults {
 
     public static final boolean DEFAULT_BYPASS_RETRY = false;
 
-    public static final int DEFAULT_KEY_RELAY = 0;
+    public static final int DEFAULT_KEY_RELAY = -1;
     public static final String DEFAULT_KEY_RELAYFUNCTION = "Relais 2";
+
+    public static final String DEFAULT_TYPE_DAY = "Alle dagen";
+    public static final String DEFAULT_TIME = "12:00";
 
 }
