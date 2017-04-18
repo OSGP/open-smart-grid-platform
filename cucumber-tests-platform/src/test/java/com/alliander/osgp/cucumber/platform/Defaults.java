@@ -218,4 +218,7 @@ public class Defaults {
     public static final Integer DEFAULT_RELAY_OVERVIEW_INDEX = 1;
 
     public static final DateTime DATE_NOW = DateTime.now();
+
+    public static final String TIMESTAMP = "now";
+    public static final Integer REQUESTED_PAGE = 0;
 }
