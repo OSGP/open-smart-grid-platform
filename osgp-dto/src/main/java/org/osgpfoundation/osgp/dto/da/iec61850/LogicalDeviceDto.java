@@ -7,18 +7,18 @@ public class LogicalDeviceDto implements Serializable {
     private static final long serialVersionUID = 3263349435741609185L;
 
     private final String name;
-    private List<LogicalNodeDto> nodes;
+    private List<LogicalNodeDto> logicalNodes;
 
-    public LogicalDeviceDto( final String name, final List<LogicalNodeDto> nodes ) {
+    public LogicalDeviceDto( final String name, final List<LogicalNodeDto> logicalNodes ) {
         this.name = name;
-        this.nodes = nodes;
+        this.logicalNodes = logicalNodes;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<LogicalNodeDto> getNodes() {
-        return nodes;
+    public List<LogicalNodeDto> getLogicalNodes() {
+        return logicalNodes;
     }
 }

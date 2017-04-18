@@ -54,13 +54,13 @@
     ################################################################################
     -->
     <wsdl:message name="GetPQValuesPeriodicRequest">
-        <wsdl:part element="da:GetPQValuesRequest" name="GetPQValuesRequest"/>
+        <wsdl:part element="da:GetPQValuesPeriodicRequest" name="GetPQValuesPeriodicRequest"/>
     </wsdl:message>
     <wsdl:message name="GetPQValuesPeriodicAsyncRequest">
         <wsdl:part element="da:GetPQValuesPeriodicAsyncRequest" name="GetPQValuesPeriodicAsyncRequest"/>
     </wsdl:message>
     <wsdl:message name="GetPQValuesPeriodicResponse">
-        <wsdl:part element="da:GetPQValuesResponse" name="GetPQValuesResponse"/>
+        <wsdl:part element="da:GetPQValuesPeriodicResponse" name="GetPQValuesPeriodicResponse"/>
     </wsdl:message>
     <wsdl:message name="GetPQValuesPeriodicAsyncResponse">
         <wsdl:part element="da:GetPQValuesPeriodicAsyncResponse" name="GetPQValuesPeriodicAsyncResponse"/>
@@ -136,15 +136,15 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="GetPQValuesAsync">
+        <wsdl:operation name="GetPQValuesPeriodicAsync">
             <soap:operation soapAction=""/>
-            <wsdl:input name="GetPQValuesAsyncRequest">
+            <wsdl:input name="GetPQValuesPeriodicAsyncRequest">
                 <soap:header message="tns:GenericHeader" part="OrganisationIdentification" use="literal"/>
                 <soap:header message="tns:GenericHeader" part="UserName" use="literal"/>
                 <soap:header message="tns:GenericHeader" part="ApplicationName" use="literal"/>
                 <soap:body use="literal"/>
             </wsdl:input>
-            <wsdl:output name="GetPQValuesResponse">
+            <wsdl:output name="GetPQValuesPeriodicResponse">
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>

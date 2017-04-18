@@ -1,6 +1,7 @@
 package org.osgpfoundation.osgp.dto.da.iec61850;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class DataSampleDto implements Serializable {
@@ -8,9 +9,9 @@ public class DataSampleDto implements Serializable {
 
     private String sampleType;
     private Date timestamp;
-    private Double value;
+    private BigDecimal value;
 
-    public DataSampleDto( final String sampleType, final Date timestamp, final Double value ) {
+    public DataSampleDto( final String sampleType, final Date timestamp, final BigDecimal value ) {
 
         this.sampleType = sampleType;
         this.timestamp = timestamp;
@@ -25,7 +26,7 @@ public class DataSampleDto implements Serializable {
         return timestamp;
     }
 
-    public Double getValue() {
+    public BigDecimal getValue() {
         return value;
     }
 }

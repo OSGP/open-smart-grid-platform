@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class PhysicalDeviceDto implements Serializable {
-    private static final long serialVersionUID = 9057348041709504310L;
+    private static final long serialVersionUID = 9057348041709504311L;
 
     private final String id;
     private List<LogicalDeviceDto> logicalDevices;
