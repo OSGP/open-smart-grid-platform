@@ -1,6 +1,7 @@
 package org.osgpfoundation.osgp.dto.da.iec61850;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 public class LogicalNodeDto implements Serializable {
@@ -19,6 +20,6 @@ public class LogicalNodeDto implements Serializable {
     }
 
     public List<DataSampleDto> getData() {
-        return data;
+        return Collections.unmodifiableList(data);
     }
 }
