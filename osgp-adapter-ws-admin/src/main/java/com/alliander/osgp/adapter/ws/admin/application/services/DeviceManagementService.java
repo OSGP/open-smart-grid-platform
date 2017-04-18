@@ -231,26 +231,6 @@ public class DeviceManagementService {
         }
     }
 
-    private void checkIfNewOrganisationIdentificationAlreadyExists(final String organisationToBeChangedIdentification,
-            final String newOrganisationIdentification) throws FunctionalException {
-        if (!organisationToBeChangedIdentification.equals(newOrganisationIdentification)) {
-            Organisation org = null;
-            try {
-                org = this.findOrganisation(newOrganisationIdentification);
-            } catch (final Exception e) {
-                LOGGER.debug("newOrganisationIdentification not yet registered, proceed with changeOrganisation", e);
-            }
-
-            if (org != null) {
-                throw new FunctionalException(FunctionalExceptionType.EXISTING_ORGANISATION_WITH_SAME_IDENTIFICATION,
-                        ComponentType.WS_ADMIN,
-                        new ValidationException(String.format(
-                                "The new organisation identification cannot be applied: an organisation is already registered with organisation identification %s",
-                                newOrganisationIdentification)));
-            }
-        }
-    }
-
     public void addDeviceAuthorization(@Identification final String ownerOrganisationIdentification,
             @Identification final String organisationIdentification, @Identification final String deviceIdentification,
             @NotNull final DeviceFunctionGroup group) throws FunctionalException {
@@ -375,12 +355,12 @@ public class DeviceManagementService {
 
     /**
      * @throws FunctionalException
-     *             @throws NotAuthorizedException @throws FunctionalException
-     *             Remove a device
+     * @throws NotAuthorizedException
+     *             @throws FunctionalException Remove a device
      *
      * @param organisationIdentification
-     *            @param deviceIdentification @throws
-     *            UnknownEntityException @throws
+     * @param deviceIdentification
+     *            @throws UnknownEntityException @throws
      *            ArgumentNullOrEmptyException @throws
      *            UnregisteredDeviceException @throws
      */
