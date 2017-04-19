@@ -7,7 +7,7 @@ Feature: MicroGrids Get Boiler Data
   Scenario: Request Boiler
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-MARKER-WADDEN |
-      | Port                 |             60103 |
+      | Port                 |             62103 |
     And the Marker Wadden RTU returning
       | BOILER1 | LLN0.Mod.stVal         |                   1 |
       | BOILER1 | LLN0.Mod.q             | VALIDITY_GOOD       |

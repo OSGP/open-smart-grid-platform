@@ -7,7 +7,7 @@ Feature: MicroGrids Get Heat Pump Data
   Scenario: Request HEAT_PUMP
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-MARKER-WADDEN |
-      | Port                 |             60103 |
+      | Port                 |             62103 |
     And the Marker Wadden RTU returning
       | HEAT_PUMP1 | LLN0.Mod.stVal         |                   1 |
       | HEAT_PUMP1 | LLN0.Mod.q             | VALIDITY_GOOD       |

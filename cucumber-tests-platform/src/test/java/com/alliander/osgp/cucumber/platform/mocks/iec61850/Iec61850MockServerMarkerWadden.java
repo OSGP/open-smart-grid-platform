@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class Iec61850MockServerMarkerWadden extends Iec61850MockServerBase {
 
     public Iec61850MockServerMarkerWadden() {
-        super("MarkerWadden_0_1_1.icd", 60103, "WAGO61850Server",
+        super("MarkerWadden_0_1_1.icd", 62103, "WAGO61850Server",
                 LoggerFactory.getLogger(Iec61850MockServerMarkerWadden.class));
     }
 

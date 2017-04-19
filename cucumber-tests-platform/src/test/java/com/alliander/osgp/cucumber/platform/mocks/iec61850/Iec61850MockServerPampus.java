@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
 public class Iec61850MockServerPampus extends Iec61850MockServerBase {
 
     public Iec61850MockServerPampus() {
-        super("Pampus_v0.4.5.icd", 60102, "WAGO61850Server", LoggerFactory.getLogger(Iec61850MockServerPampus.class));
+        super("Pampus_v0.4.5.icd", 62102, "WAGO61850Server", LoggerFactory.getLogger(Iec61850MockServerPampus.class));
     }
 }

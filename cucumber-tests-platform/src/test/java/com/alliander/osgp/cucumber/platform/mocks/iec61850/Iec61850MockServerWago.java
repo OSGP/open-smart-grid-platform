@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class Iec61850MockServerWago extends Iec61850MockServerBase {
 
     public Iec61850MockServerWago() {
-        super("WAGO123.icd", 60104, "WAGO123", LoggerFactory.getLogger(Iec61850MockServerWago.class));
+        super("WAGO123.icd", 62104, "WAGO123", LoggerFactory.getLogger(Iec61850MockServerWago.class));
     }
 
 }

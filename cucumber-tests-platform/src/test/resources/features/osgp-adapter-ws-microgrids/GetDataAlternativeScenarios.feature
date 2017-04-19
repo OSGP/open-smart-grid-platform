@@ -25,7 +25,7 @@ Feature: Get Data Alternative Scenarios
       | DeviceIdentification | RTU-WAGO    |
       | ServerName           | WAGO123     |
       | IcdFilename          | WAGO123.icd |
-      | Port                 |       60104 |
+      | Port                 |       62104 |
     And the WAGO RTU returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |

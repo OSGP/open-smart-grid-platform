@@ -6,7 +6,7 @@ Feature: MicroGrids Set Data Service
   Scenario Outline: SetData Service
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-MARKER-WADDEN |
-      | Port                 |             60103 |
+      | Port                 |             62103 |
     When a set data request is received
       | DeviceIdentification       | RTU-MARKER-WADDEN   |
       | NumberOfSystems            |                   1 |
