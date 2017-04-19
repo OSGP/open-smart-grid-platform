@@ -120,7 +120,7 @@ public class BundleWithoutSoapUi {
     public void theBundleRequestIsReceived() throws Throwable {
         final BundleRequest request = (BundleRequest) ScenarioContext.Current().get(SCENARIO_CONTEXT_BUNDLE_REQUEST);
 
-        final BundleAsyncResponse asyncResponse = this.client.bundleRequest(request);
+        final BundleAsyncResponse asyncResponse = this.client.sendBundleRequest(request);
 
         assertNotNull(asyncResponse);
         Helpers.saveAsyncResponse(asyncResponse);

@@ -41,86 +41,96 @@ import cucumber.api.java.en.When;
  * Class with all the remove organization requests steps
  */
 public class SetEventNotificationsSteps extends GlueBase {
-    
-	private static final Logger LOGGER = LoggerFactory.getLogger(SetEventNotificationsSteps.class);
-    
-	@Autowired
-	private CoreDeviceConfiguration configuration;
 
-	@Autowired
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetEventNotificationsSteps.class);
+
+    @Autowired
+    private CoreDeviceConfiguration configuration;
+
+    @Autowired
     private CoreDeviceManagementClient client;
-    
+
     /**
      * Send an event notification request to the Platform
-     * @param requestParameters An list with request parameters for the request.
+     * 
+     * @param requestParameters
+     *            An list with request parameters for the request.
      * @throws Throwable
      */
     @When("^receiving a set event notification message request(?: on OSGP)?$")
-    public void receivingASetEventNotificationMessageRequest(final Map<String, String> requestParameters) throws Throwable
-    {
-    	SetEventNotificationsRequest request = new SetEventNotificationsRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	for (String event : getString(requestParameters, Keys.KEY_EVENT).split(",")){
-        	request.getEventNotifications().add(Enum.valueOf(EventNotificationType.class, event.trim()));
-    	}
-    	
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.setEventNotifications(request));
-    	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
-    	}
+    public void receivingASetEventNotificationMessageRequest(final Map<String, String> requestParameters)
+            throws Throwable {
+        final SetEventNotificationsRequest request = new SetEventNotificationsRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        for (final String event : getString(requestParameters, Keys.KEY_EVENT).split(",")) {
+            request.getEventNotifications().add(Enum.valueOf(EventNotificationType.class, event.trim()));
+        }
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setEventNotifications(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
     }
-    
+
     /**
      * The check for the response from the Platform.
-     * @param expectedResponseData The table with the expected fields in the response.
-     * @note The response will contain the correlation uid, so store that in the current scenario context for later use.
+     * 
+     * @param expectedResponseData
+     *            The table with the expected fields in the response.
+     * @note The response will contain the correlation uid, so store that in the
+     *       current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the set event notification async response contains$")
     public void theSetEventNotificationAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-    	SetEventNotificationsAsyncResponse response = (SetEventNotificationsAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
-    	
-    	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
+        final SetEventNotificationsAsyncResponse response = (SetEventNotificationsAsyncResponse) ScenarioContext
+                .Current().get(Keys.RESPONSE);
 
-        // Save the returned CorrelationUid in the Scenario related context for further use.
+        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
+                response.getAsyncResponse().getDeviceId());
+
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
-    
+
     @Then("^the platform buffers a set event notification response message for device \"([^\"]*)\"")
-    public void thePlatformBuffersASetEventNotificationResponseMessageForDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
-    {
-    	SetEventNotificationsAsyncRequest request = new SetEventNotificationsAsyncRequest();
-    	AsyncRequest asyncRequest = new AsyncRequest();
-    	asyncRequest.setDeviceId(deviceIdentification);
-    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-    	request.setAsyncRequest(asyncRequest);
-    	
-    	boolean success = false;
-    	int count = 0;
-    	while (!success) {
-    		if (count > configuration.getTimeout()) {
-    			Assert.fail("Timeout");
-    		}
-    		
-    		count++;
+    public void thePlatformBuffersASetEventNotificationResponseMessageForDevice(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws Throwable {
+        final SetEventNotificationsAsyncRequest request = new SetEventNotificationsAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Timeout");
+            }
+
+            count++;
             Thread.sleep(1000);
 
-    		try {
-    			SetEventNotificationsResponse response = client.getSetEventNotificationsResponse(request);
-    			    			
-    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
-    			
-    			success = true; 
-    		}
-    		catch(Exception ex) {
-    			LOGGER.debug(ex.getMessage());
-    		}
-    	}
+            try {
+                final SetEventNotificationsResponse response = this.client.getSetEventNotificationsResponse(request);
+
+                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
+                        response.getResult());
+
+                success = true;
+            } catch (final Exception ex) {
+                LOGGER.debug(ex.getMessage());
+            }
+        }
     }
 }

@@ -60,7 +60,9 @@ public class Wait {
             if (count / 1000 > configuration.getTimeout()) {
                 Assert.fail("Timeout after [" + (count / 1000) + "] seconds");
             }
-            logger.info("... polling in Wait.until (" + (count / 1000) + " seconds)...");
+            if (count > 0) {
+                logger.info("... polling in Wait.until (" + (count / 1000) + " seconds)...");
+            }
 
             try {
                 // Call the code to run
@@ -96,7 +98,9 @@ public class Wait {
             if (count / 1000 > configuration.getTimeout()) {
                 Assert.fail("Timeout after [" + (count / 1000) + "] seconds.");
             }
-            logger.info("... polling in Wait.until (" + (count / 1000) + " seconds) ...");
+            if (count > 0) {
+                logger.info("... polling in Wait.until (" + (count / 1000) + " seconds) ...");
+            }
 
             try {
                 // Call the code to run
