@@ -139,9 +139,8 @@ public class Organisation extends AbstractEntity {
         return this.functionGroup;
     }
 
-    public void changeOrganisationData(final String organisationIdentification, final String organisationName,
+    public void changeOrganisationData(final String organisationName,
             final PlatformFunctionGroup platformFunctionGroup) {
-        this.organisationIdentification = organisationIdentification;
         this.name = organisationName;
         this.functionGroup = platformFunctionGroup;
     }
