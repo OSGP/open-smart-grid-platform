@@ -192,32 +192,33 @@ public class Helpers {
         final Matcher whenMatcher = Pattern.compile(whenPattern).matcher(when);
         whenMatcher.find();
         switch (whenMatcher.group(1)) {
-        case "tomorrow":
-            retval = DateTime.now().plusDays(1);
-            break;
-        case "yesterday":
-            retval = DateTime.now().minusDays(1);
-            break;
-        case "now":
-        case "today":
-            retval = DateTime.now();
-            break;
-        default:
-            throw new Exception("Incorrect dateString [" + dateString
-                    + "], expected the string to begin with tomorrow, yesterday or now or today");
+            case "tomorrow":
+                retval = DateTime.now().plusDays(1);
+                break;
+            case "yesterday":
+                retval = DateTime.now().minusDays(1);
+                break;
+            case "now":
+            case "today":
+                retval = DateTime.now();
+                break;
+            default:
+                throw new Exception("Incorrect dateString [" + dateString
+                        + "], expected the string to begin with tomorrow, yesterday or now or today");
         }
 
         if (whenMatcher.groupCount() > 1 && whenMatcher.group(2).equals("at")) {
 
             switch (whenMatcher.group(3)) {
-            case "midday":
-                retval = retval.withHourOfDay(12);
-                break;
-            case "midnight":
-                retval = retval.withHourOfDay(0);
-                break;
-            default:
-                throw new Exception("Incorrect dateString [" + dateString + "], expected \"midday\" or \"midnight\"");
+                case "midday":
+                    retval = retval.withHourOfDay(12);
+                    break;
+                case "midnight":
+                    retval = retval.withHourOfDay(0);
+                    break;
+                default:
+                    throw new Exception(
+                            "Incorrect dateString [" + dateString + "], expected \"midday\" or \"midnight\"");
             }
             retval = retval.withMinuteOfHour(0);
             retval = retval.withSecondOfMinute(0);
@@ -225,29 +226,29 @@ public class Helpers {
 
         if (op.equals("+")) {
             switch (what) {
-            case "days":
-                retval = retval.plusDays(numberToAddOrSubstract);
-            case "hours":
-                retval = retval.plusHours(numberToAddOrSubstract);
-            case "weeks":
-                retval = retval.plusWeeks(numberToAddOrSubstract);
-            case "months":
-                retval = retval.plusMonths(numberToAddOrSubstract);
-            case "years":
-                retval = retval.plusYears(numberToAddOrSubstract);
+                case "days":
+                    retval = retval.plusDays(numberToAddOrSubstract);
+                case "hours":
+                    retval = retval.plusHours(numberToAddOrSubstract);
+                case "weeks":
+                    retval = retval.plusWeeks(numberToAddOrSubstract);
+                case "months":
+                    retval = retval.plusMonths(numberToAddOrSubstract);
+                case "years":
+                    retval = retval.plusYears(numberToAddOrSubstract);
             }
         } else {
             switch (what) {
-            case "days":
-                retval = retval.minusDays(numberToAddOrSubstract);
-            case "hours":
-                retval = retval.minusHours(numberToAddOrSubstract);
-            case "weeks":
-                retval = retval.minusWeeks(numberToAddOrSubstract);
-            case "months":
-                retval = retval.minusMonths(numberToAddOrSubstract);
-            case "years":
-                retval = retval.minusYears(numberToAddOrSubstract);
+                case "days":
+                    retval = retval.minusDays(numberToAddOrSubstract);
+                case "hours":
+                    retval = retval.minusHours(numberToAddOrSubstract);
+                case "weeks":
+                    retval = retval.minusWeeks(numberToAddOrSubstract);
+                case "months":
+                    retval = retval.minusMonths(numberToAddOrSubstract);
+                case "years":
+                    retval = retval.minusYears(numberToAddOrSubstract);
             }
 
         }
@@ -326,7 +327,9 @@ public class Helpers {
      * @return
      */
     public static Integer getInteger(final Map<String, String> settings, final String key) {
-
+        if (settings.get(key) == null) {
+            return null;
+        }
         return Integer.parseInt(settings.get(key));
     }
 

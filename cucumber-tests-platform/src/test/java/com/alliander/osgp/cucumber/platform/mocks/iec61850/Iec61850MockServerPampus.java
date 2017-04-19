@@ -11,11 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Iec61850MockServerMarkerWadden extends Iec61850MockServerBase {
+public class Iec61850MockServerPampus extends Iec61850MockServerBase {
 
-    public Iec61850MockServerMarkerWadden() {
-        super("MarkerWadden_0_1_1.icd", 60103, "WAGO61850Server",
-                LoggerFactory.getLogger(Iec61850MockServerMarkerWadden.class));
+    public Iec61850MockServerPampus() {
+        super("Pampus_v0.4.5.icd", 60102, "WAGO61850Server", LoggerFactory.getLogger(Iec61850MockServerPampus.class));
     }
-
 }

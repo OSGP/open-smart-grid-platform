@@ -10,22 +10,22 @@ package com.alliander.osgp.cucumber.platform.glue.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServer;
+import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerPampus;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 
-public class Iec61850MockServerHooks extends GlueBase {
+public class Iec61850MockServerPampusHooks extends GlueBase {
 
     @Autowired
-    private Iec61850MockServer mockServer;
+    private Iec61850MockServerPampus mockServer;
 
-    @Before("@Iec61850MockServer")
+    @Before("@Iec61850MockServerPampus")
     public void startIec61850MockServer() throws Throwable {
         this.mockServer.start();
     }
 
-    @After("@Iec61850MockServer")
+    @After("@Iec61850MockServerPampus")
     public void stopIec61850MockServer() {
         this.mockServer.stop();
     }

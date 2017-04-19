@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
@@ -10,22 +10,22 @@ package com.alliander.osgp.cucumber.platform.glue.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerMarkerWadden;
+import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerWago;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 
-public class Iec61850MockServerMarkerWaddenHooks extends GlueBase {
+public class Iec61850MockServerWagoHooks extends GlueBase {
 
     @Autowired
-    private Iec61850MockServerMarkerWadden mockServer;
+    private Iec61850MockServerWago mockServer;
 
-    @Before("@Iec61850MockServerMarkerWadden")
+    @Before("@Iec61850MockServerWago")
     public void startIec61850MockServer() throws Throwable {
         this.mockServer.start();
     }
 
-    @After("@Iec61850MockServerMarkerWadden")
+    @After("@Iec61850MockServerWago")
     public void stopIec61850MockServer() {
         this.mockServer.stop();
     }
