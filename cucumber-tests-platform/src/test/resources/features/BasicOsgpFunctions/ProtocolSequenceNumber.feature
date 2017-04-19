@@ -19,8 +19,6 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
     And the platform buffers a start device response message for device "TEST1024000000001"
       | Result | OK |
 
-    # Note: Values -6 to 0
-    # TODO: Fix the commented examples
     Examples: 
       | Protocol    | AddNumberToSequenceNumber |
       | OSLP        |                         1 |
@@ -29,12 +27,12 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
       | OSLP        |                         4 |
       | OSLP        |                         5 |
       | OSLP        |                         6 |
-      #| OSLP ELSTER |                         1 |
-      #| OSLP ELSTER |                         2 |
-      #| OSLP ELSTER |                         3 |
-      #| OSLP ELSTER |                         4 |
-      #| OSLP ELSTER |                         5 |
-      #| OSLP ELSTER |                         6 |
+      | OSLP ELSTER |                         1 |
+      | OSLP ELSTER |                         2 |
+      | OSLP ELSTER |                         3 |
+      | OSLP ELSTER |                         4 |
+      | OSLP ELSTER |                         5 |
+      | OSLP ELSTER |                         6 |
 
   @OslpMockServer @Skip
   Scenario Outline: Invalid sequence number ranges
@@ -51,17 +49,16 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
     And the platform buffers a start device response message for device "TEST1024000000001"
       | Result | OK |
 
-		## TODO: Fix the commented examples
-    Examples: 
+		Examples: 
       | Protocol    | AddNumberToSequenceNumber |
       | OSLP        |                        -8 |
       | OSLP        |                        -7 |
       | OSLP        |                         7 |
       | OSLP        |                         8 |
-      #| OSLP ELSTER |                        -8 |
-      #| OSLP ELSTER |                        -7 |
-      #| OSLP ELSTER |                         7 |
-      #| OSLP ELSTER |                         8 |
+      | OSLP ELSTER |                        -8 |
+      | OSLP ELSTER |                        -7 |
+      | OSLP ELSTER |                         7 |
+      | OSLP ELSTER |                         8 |
 
   @OslpMockServer
   Scenario Outline: Send sequence number to platform from device
