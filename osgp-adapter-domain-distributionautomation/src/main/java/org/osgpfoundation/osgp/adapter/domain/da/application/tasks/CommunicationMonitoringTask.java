@@ -28,7 +28,7 @@ public class CommunicationMonitoringTask implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringTask.class);
 
-    private static final String TASK_IDENTIFICATION = "DistributionAutomationCommunicationMonitoring";
+    private static final String TASK_IDENTIFICATION = "DACommunicationMonitoring";
 
     @Autowired
     private CommunicationRecoveryService communicationRecoveryService;

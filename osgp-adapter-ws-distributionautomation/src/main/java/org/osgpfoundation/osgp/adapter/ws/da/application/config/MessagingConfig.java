@@ -79,7 +79,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return new DistributionAutomationResponseMessageListener();
     }
 
-    // === JMS SETTINGS: MICROGRIDS LOGGING ===
+    // === JMS SETTINGS: DISTRIBUTION AUTOMATION LOGGING ===
 
     @Bean
     public JmsConfiguration loggingJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {

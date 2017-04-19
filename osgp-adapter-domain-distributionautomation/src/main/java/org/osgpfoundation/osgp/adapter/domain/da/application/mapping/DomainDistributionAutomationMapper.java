@@ -22,5 +22,6 @@ public class DomainDistributionAutomationMapper extends ConfigurableMapper {
     protected void configure( final MapperFactory factory ) {
         factory.getConverterFactory().registerConverter( new PassThroughConverter( DateTime.class ) );
         factory.getConverterFactory().registerConverter(new GetHealthStatusRequestConverter());
+        factory.getConverterFactory().registerConverter(new GetPQValuesRequestConverter());
     }
 }

@@ -7,14 +7,13 @@
  */
 package org.osgpfoundation.osgp.adapter.ws.da.infra.jms.messageprocessors;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-
 @Component
-public class SetDataResponseMessageProcessor extends AbstractDomainResponseMessageProcessor {
+public class GetPQValuesPeriodicResponseMessageProcessor extends AbstractDomainResponseMessageProcessor {
 
-    protected SetDataResponseMessageProcessor() {
-        super(DeviceFunction.SET_DATA);
+    protected GetPQValuesPeriodicResponseMessageProcessor() {
+        super(DeviceFunction.GET_POWER_QUALITY_VALUES_PERIODIC);
     }
 }

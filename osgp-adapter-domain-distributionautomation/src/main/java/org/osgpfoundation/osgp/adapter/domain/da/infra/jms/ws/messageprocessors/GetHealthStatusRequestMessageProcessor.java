@@ -24,7 +24,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 /**
- * Class for processing da get data request messages
+ * Class for processing da get health status request messages
  */
 @Component("domainDistributionAutomationGetHealthStatusRequestMessageProcessor")
 public class GetHealthStatusRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {

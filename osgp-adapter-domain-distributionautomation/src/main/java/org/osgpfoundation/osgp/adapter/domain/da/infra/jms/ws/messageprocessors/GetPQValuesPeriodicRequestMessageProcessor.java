@@ -11,10 +11,9 @@ package org.osgpfoundation.osgp.adapter.domain.da.infra.jms.ws.messageprocessors
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
-import org.osgpfoundation.osgp.adapter.domain.da.application.services.AdHocManagementService;
+import org.osgpfoundation.osgp.adapter.domain.da.application.services.MonitoringService;
 import org.osgpfoundation.osgp.adapter.domain.da.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
-import org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelRequest;
-import org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesRequest;
+import org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesPeriodicRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,44 +24,50 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 /**
- * Class for processing da get device model request messages
+ * Class for processing da get pq values periodic request messages
  */
-@Component("domainDistributionAutomationGetDeviceModelRequestMessageProcessor")
-public class GetDeviceModelRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
+@Component("domainDistributionAutomationGetPQValuesPeriodicRequestMessageProcessor")
+public class GetPQValuesPeriodicRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor
+{
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( GetDeviceModelRequestMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( GetPQValuesPeriodicRequestMessageProcessor.class );
 
     @Autowired
-    @Qualifier("domainDistributionAutomationAdHocManagementService")
-    private AdHocManagementService adHocManagementService;
+    @Qualifier("domainDistributionAutomationMonitoringService")
+    private MonitoringService monitoringService;
 
-    public GetDeviceModelRequestMessageProcessor() {
-        super( DeviceFunction.GET_DEVICE_MODEL );
+    public GetPQValuesPeriodicRequestMessageProcessor()
+    {
+        super( DeviceFunction.GET_POWER_QUALITY_VALUES_PERIODIC );
     }
 
     @Override
-    public void processMessage( final ObjectMessage message ) {
-        LOGGER.info( "Processing DA Get Device Model request message" );
+    public void processMessage( final ObjectMessage message )
+    {
+        LOGGER.info( "Processing DA Get PQ Values Periodic request message" );
 
         String correlationUid = null;
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        GetDeviceModelRequest getDeviceModelRequest = null;
+        GetPQValuesPeriodicRequest getPQValuesPeriodicRequest = null;
 
-        try {
+        try
+        {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
             deviceIdentification = message.getStringProperty( Constants.DEVICE_IDENTIFICATION );
 
-            if ( message.getObject() instanceof GetPQValuesRequest ) {
-                getDeviceModelRequest = (GetDeviceModelRequest) message.getObject();
+            if ( message.getObject() instanceof GetPQValuesPeriodicRequest )
+            {
+                getPQValuesPeriodicRequest = (GetPQValuesPeriodicRequest) message.getObject();
             }
 
-        } catch ( final JMSException e ) {
+        } catch ( final JMSException e )
+        {
             LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
             LOGGER.debug( "correlationUid: {}", correlationUid );
             LOGGER.debug( "messageType: {}", messageType );
@@ -70,13 +75,16 @@ public class GetDeviceModelRequestMessageProcessor extends AbstractWebServiceReq
             LOGGER.debug( "deviceIdentification: {}", deviceIdentification );
             return;
         }
-        try {
+
+        try
+        {
             LOGGER.info( "Calling application service function: {}", messageType );
 
-            this.adHocManagementService
-                    .getDeviceModel( organisationIdentification, deviceIdentification, correlationUid, messageType, getDeviceModelRequest );
+            this.monitoringService.getPQValuesPeriodic( organisationIdentification, deviceIdentification, correlationUid,
+                    messageType, getPQValuesPeriodicRequest );
 
-        } catch ( final Exception e ) {
+        } catch ( final Exception e )
+        {
             this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, messageType );
         }
     }

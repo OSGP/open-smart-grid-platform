@@ -14,9 +14,9 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import org.osgpfoundation.osgp.adapter.domain.da.application.services.MonitoringService;
+import org.osgpfoundation.osgp.adapter.domain.da.application.services.AdHocManagementService;
 import org.osgpfoundation.osgp.adapter.domain.da.infra.jms.core.AbstractOsgpCoreResponseMessageProcessor;
-import org.osgpfoundation.osgp.dto.da.GetPQValuesResponseDto;
+import org.osgpfoundation.osgp.dto.da.GetDeviceModelResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,26 +27,29 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 /**
- * Class for processing da get data response messages
+ * Class for processing da get device model response messages
  */
-@Component("domainDistributionAutomationGetDataResponseMessageProcessor")
-public class GetMonitoringResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
+@Component("domainDistributionAutomationGetDeviceModelResponseMessageProcessor")
+public class GetDeviceModelResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor
+{
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( GetMonitoringResponseMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( GetDeviceModelResponseMessageProcessor.class );
 
     @Autowired
-    @Qualifier("domainDistributionAutomationMonitoringService")
-    private MonitoringService monitoringService;
+    @Qualifier("domainDistributionAutomationAdHocManagementService")
+    private AdHocManagementService adHocManagementService;
 
-    protected GetMonitoringResponseMessageProcessor() {
-        super( DeviceFunction.GET_POWER_QUALITY_VALUES );
+    protected GetDeviceModelResponseMessageProcessor()
+    {
+        super( DeviceFunction.GET_DEVICE_MODEL );
     }
 
     @Override
-    public void processMessage( final ObjectMessage message ) throws JMSException {
-        LOGGER.debug( "Processing DA Power Quality response message" );
+    public void processMessage( final ObjectMessage message ) throws JMSException
+    {
+        LOGGER.debug( "Processing DA Get Device Model response message" );
 
         String correlationUid = null;
         String messageType = null;
@@ -58,7 +61,8 @@ public class GetMonitoringResponseMessageProcessor extends AbstractOsgpCoreRespo
         OsgpException osgpException = null;
         Object dataObject = null;
 
-        try {
+        try
+        {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
@@ -68,7 +72,8 @@ public class GetMonitoringResponseMessageProcessor extends AbstractOsgpCoreRespo
             responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
             dataObject = responseMessage.getDataObject();
-        } catch ( final JMSException e ) {
+        } catch ( final JMSException e )
+        {
             LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
             LOGGER.debug( "correlationUid: {}", correlationUid );
             LOGGER.debug( "messageType: {}", messageType );
@@ -79,16 +84,18 @@ public class GetMonitoringResponseMessageProcessor extends AbstractOsgpCoreRespo
             LOGGER.debug( "osgpException: {}", osgpException );
             return;
         }
-        try {
+
+        try
+        {
             LOGGER.info( "Calling application service function to handle response: {}", messageType );
 
-            final GetPQValuesResponseDto dataResponse = (GetPQValuesResponseDto) dataObject;
+            final GetDeviceModelResponseDto dataResponse = (GetDeviceModelResponseDto) dataObject;
 
-            this.monitoringService
-                    .handleGetPQValuesResponse( dataResponse, deviceIdentification, organisationIdentification, correlationUid, messageType,
-                            responseMessageResultType, osgpException );
+            this.adHocManagementService.handleGetDeviceModelResponse( dataResponse, deviceIdentification,
+                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException );
 
-        } catch ( final Exception e ) {
+        } catch ( final Exception e )
+        {
             this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, messageType );
         }
     }

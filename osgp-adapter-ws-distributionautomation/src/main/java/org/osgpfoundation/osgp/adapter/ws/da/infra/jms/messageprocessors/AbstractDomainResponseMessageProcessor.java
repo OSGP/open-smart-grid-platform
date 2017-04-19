@@ -76,7 +76,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
 
     @Override
     public void processMessage( final ObjectMessage message ) throws JMSException {
-        LOGGER.debug( "Processing smart metering response message" );
+        LOGGER.debug( "Processing distribution automation response message" );
 
         String correlationUid = null;
         String messageType = null;

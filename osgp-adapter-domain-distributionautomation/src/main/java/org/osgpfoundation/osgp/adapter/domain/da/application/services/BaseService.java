@@ -64,11 +64,11 @@ public class BaseService {
         try {
             device = this.deviceDomainService.searchActiveDevice( deviceIdentification );
         } catch ( final UnregisteredDeviceException e ) {
-            throw new FunctionalException( FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e );
+            throw new FunctionalException( FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e );
         } catch ( final InactiveDeviceException e ) {
-            throw new FunctionalException( FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e );
+            throw new FunctionalException( FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e );
         } catch ( final UnknownEntityException e ) {
-            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e );
+            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e );
         }
         return device;
     }
@@ -78,7 +78,7 @@ public class BaseService {
         try {
             organisation = this.organisationDomainService.searchOrganisation( organisationIdentification );
         } catch ( final UnknownEntityException e ) {
-            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_MICROGRIDS, e );
+            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e );
         }
         return organisation;
     }
@@ -92,7 +92,7 @@ public class BaseService {
             return (OsgpException) t;
         }
 
-        return new TechnicalException( ComponentType.DOMAIN_MICROGRIDS, defaultMessage, t );
+        return new TechnicalException( ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, defaultMessage, t );
     }
 
     protected void handleResponseMessageReceived( final Logger logger, final String deviceIdentification ) {

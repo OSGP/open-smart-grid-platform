@@ -134,7 +134,7 @@ public class PersistenceConfig extends AbstractConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
-        entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_ADAPTER_MICROGRIDS");
+        entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_ADAPTER_DISTRIBUTION_AUTOMATION");
         entityManagerFactoryBean.setDataSource(this.getDataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment.getRequiredProperty(
                 PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN).split(","));

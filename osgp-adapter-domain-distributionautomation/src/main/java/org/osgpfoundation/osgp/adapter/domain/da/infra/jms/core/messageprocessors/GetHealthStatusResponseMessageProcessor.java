@@ -27,20 +27,20 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 /**
- * Class for processing da get data response messages
+ * Class for processing da get health status response messages
  */
-@Component("domainDistributionAutomationGetDeviceManagementResponseMessageProcessor")
-public class GetDeviceManagementResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
+@Component("domainDistributionAutomationGetHealthStatusResponseMessageProcessor")
+public class GetHealthStatusResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( GetDeviceManagementResponseMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( GetHealthStatusResponseMessageProcessor.class );
 
     @Autowired
     @Qualifier("domainDistributionAutomationDeviceManagementService")
     private DeviceManagementService deviceManagementService;
 
-    protected GetDeviceManagementResponseMessageProcessor() {
+    protected GetHealthStatusResponseMessageProcessor() {
         super( DeviceFunction.GET_HEALTH_STATUS );
     }
 

@@ -1,8 +1,11 @@
 package org.osgpfoundation.osgp.domain.da.valueobjects.iec61850;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class LogicalNode {
+public class LogicalNode implements Serializable {
+    private static final long serialVersionUID = 4776483459295843436L;
+
     private final String name;
     private List<DataSample> data;
 

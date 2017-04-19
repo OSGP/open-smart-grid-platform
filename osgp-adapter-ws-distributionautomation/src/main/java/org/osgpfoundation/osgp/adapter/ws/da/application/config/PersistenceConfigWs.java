@@ -41,7 +41,7 @@ public class PersistenceConfigWs extends AbstractPersistenceConfigBase {
     private static final String PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE = "flyway.init.on.migrate";
 
     public PersistenceConfigWs() {
-        super("OSGP_WS_ADAPTER_MICROGRIDS", PROPERTY_NAME_DATABASE_USERNAME, PROPERTY_NAME_DATABASE_PW,
+        super("OSGP_WS_ADAPTER_DISTRIBUTION_AUTOMATION", PROPERTY_NAME_DATABASE_USERNAME, PROPERTY_NAME_DATABASE_PW,
                 PROPERTY_NAME_DATABASE_HOST, PROPERTY_NAME_DATABASE_PORT, PROPERTY_NAME_DATABASE_NAME,
                 PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN, PersistenceConfigWs.class);
     }
