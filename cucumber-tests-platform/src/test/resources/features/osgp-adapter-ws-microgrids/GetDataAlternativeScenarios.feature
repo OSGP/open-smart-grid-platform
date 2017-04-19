@@ -52,7 +52,7 @@ Feature: Get Data Alternative Scenarios
   Scenario: Request PV1 Health wrong servername
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS |
-      | ServerName           | Wrong      |
+      | ServerName           | WAGO       |
     And an rtu simulator returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |
@@ -68,19 +68,36 @@ Feature: Get Data Alternative Scenarios
       | Component            | PROTOCOL_IEC61850            |
       | Message              | fcmodelNode must not be null |
 
-  @Iec61850MockServerPampus
-  Scenario: Request PV1 Health wrong icd file
+  # Scenario is skipped, as it is not working yet, device simulator is closing connection...
+  # The actual behavior of a real device is yet to be tested...
+  @Skip
+  @Iec61850MockServerPampus 
+  Scenario: Request data from Boiler logical device present in ICD file, but not in RTU
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU-PAMPUS |
-      | IcdFilename          | Wrong.icd  |
-    And an rtu simulator returning
-      | PV1 | LLN0.Health.stVal |        3 |
-      | PV1 | LLN0.Health.q     | OLD_DATA |
+      | DeviceIdentification | RTU-PAMPUS             |
+      | IcdFilename          | MarkerWadden_0_1_1.icd |
     When a get data request is received
       | DeviceIdentification      | RTU-PAMPUS |
       | NumberOfSystems           |          1 |
       | SystemId_1                |          1 |
-      | SystemType_1              | PV         |
+      | SystemType_1              | BOILER     |
+      | NumberOfMeasurements_1    |          1 |
+      | MeasurementFilterNode_1_1 | Health     |
+    Then a SOAP fault should be returned
+      | DeviceIdentification | RTU-PAMPUS        |
+      | Component            | PROTOCOL_IEC61850 |
+      | Message              | ???               |
+
+  @Iec61850MockServerPampus
+  Scenario: Request data from CHP logical device present in RTU, but not in ICD file
+    Given an rtu iec61850 device
+      | DeviceIdentification | RTU-PAMPUS             |
+      | IcdFilename          | MarkerWadden_0_1_1.icd |
+    When a get data request is received
+      | DeviceIdentification      | RTU-PAMPUS |
+      | NumberOfSystems           |          1 |
+      | SystemId_1                |          1 |
+      | SystemType_1              | CHP        |
       | NumberOfMeasurements_1    |          1 |
       | MeasurementFilterNode_1_1 | Health     |
     Then a SOAP fault should be returned
