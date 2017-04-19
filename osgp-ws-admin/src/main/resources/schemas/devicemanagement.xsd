@@ -56,8 +56,6 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="OrganisationIdentification" type="common:Identification" />
-        <xsd:element name="NewOrganisationIdentification"
-          type="common:Identification" />
         <xsd:element name="NewOrganisationName" type="xsd:string" />
         <xsd:element name="NewOrganisationPlatformFunctionGroup"
           type="tns:PlatformFunctionGroup" />
