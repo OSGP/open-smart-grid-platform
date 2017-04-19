@@ -88,7 +88,7 @@ public class DeviceModelSteps extends GlueBase {
      *            The settings.
      * @throws Throwable
      */
-    @Then("^the entity device model does not exists$")
+    @Then("^the entity device model does not exist$")
     public void theEntityDeviceModelDoesNotExists(final Map<String, String> entity) throws Throwable {
         final Manufacturer manufacturer = new Manufacturer();
         final String manufacturerId = getString(entity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID);
