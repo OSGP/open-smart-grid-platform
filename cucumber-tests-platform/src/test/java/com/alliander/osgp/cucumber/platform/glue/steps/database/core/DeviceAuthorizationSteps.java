@@ -13,6 +13,7 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.GlueBase;
@@ -46,6 +47,7 @@ public class DeviceAuthorizationSteps extends GlueBase {
      * @throws Throwable
      */
     @Given("^a device authorization$")
+    @Transactional("txMgrCore")
     public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(
