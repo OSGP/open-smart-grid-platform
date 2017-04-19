@@ -62,8 +62,7 @@ public class OrganizationSteps extends GlueBase {
                     getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
                             Defaults.PLATFORM_FUNCTION_GROUP));
         } else {
-            entity.changeOrganisationData(organizationIdentification,
-                    getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
+            entity.changeOrganisationData(getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
                     getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
                             Defaults.PLATFORM_FUNCTION_GROUP));
         }
