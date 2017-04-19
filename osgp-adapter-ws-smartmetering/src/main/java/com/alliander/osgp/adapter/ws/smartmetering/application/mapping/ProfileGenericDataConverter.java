@@ -16,20 +16,20 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntries;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntryValue;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericData;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-public class ProfileGenericDataResponseConverter extends
-        CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse, ProfileGenericDataResponse> {
+public class ProfileGenericDataConverter extends
+        CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericData, ProfileGenericData> {
 
     @Override
-    public ProfileGenericDataResponse convert(
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source,
-            final Type<? extends ProfileGenericDataResponse> destinationType) {
+    public ProfileGenericData convert(
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericData source,
+            final Type<? extends ProfileGenericData> destinationType) {
 
-        final ProfileGenericDataResponse result = new ProfileGenericDataResponse();
+        final ProfileGenericData result = new ProfileGenericData();
         result.setLogicalName(this.mapperFacade.map(source.getLogicalName(), ObisCodeValues.class));
 
         final CaptureObjects captureObjects = new CaptureObjects();
@@ -45,7 +45,7 @@ public class ProfileGenericDataResponseConverter extends
     }
 
     private List<ProfileEntry> mapProfileEntries(
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source) {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericData source) {
         final List<ProfileEntry> result = new ArrayList<>();
         for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntry profileEntryValuesVo : source
                 .getProfileEntries()) {
@@ -61,4 +61,5 @@ public class ProfileGenericDataResponseConverter extends
         }
         return result;
     }
+
 }

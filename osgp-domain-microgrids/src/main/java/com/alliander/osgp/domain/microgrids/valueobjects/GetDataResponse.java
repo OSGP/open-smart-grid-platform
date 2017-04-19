@@ -17,12 +17,18 @@ public class GetDataResponse implements Serializable {
 
     private final List<GetDataSystemIdentifier> getDataSystemIdentifiers;
 
-    public GetDataResponse(final List<GetDataSystemIdentifier> getDataSystemIdentifiers) {
+    private final Report report;
+
+    public GetDataResponse(final List<GetDataSystemIdentifier> getDataSystemIdentifiers, final Report report) {
         this.getDataSystemIdentifiers = new ArrayList<>(getDataSystemIdentifiers);
+        this.report = report;
     }
 
     public List<GetDataSystemIdentifier> getGetDataSystemIdentifiers() {
         return new ArrayList<>(this.getDataSystemIdentifiers);
     }
 
+    public Report getReport() {
+        return this.report;
+    }
 }

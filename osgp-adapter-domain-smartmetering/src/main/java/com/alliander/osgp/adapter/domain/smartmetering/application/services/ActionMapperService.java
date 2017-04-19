@@ -42,6 +42,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfiguratio
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
@@ -66,6 +67,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjects
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
@@ -138,6 +140,7 @@ public class ActionMapperService {
         CLASS_MAP.put(GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDto.class);
         CLASS_MAP.put(CoupleMbusDeviceRequestData.class, GetAssociationLnObjectsRequestDto.class);
         CLASS_MAP.put(SetClockConfigurationRequestData.class, SetClockConfigurationRequestDto.class);
+        CLASS_MAP.put(ProfileGenericDataRequestData.class, ProfileGenericDataRequestDataDto.class);
     }
 
     /**
@@ -173,12 +176,13 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(SpecificAttributeValueRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequestData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequestData.class, this.monitoringMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageDataContainer,
             final SmartMeter smartMeter) throws FunctionalException {
 
-        final List<ActionDto> actionValueObjectDtoList = new ArrayList<ActionDto>();
+        final List<ActionDto> actionValueObjectDtoList = new ArrayList<>();
 
         for (final ActionRequest action : bundleMessageDataContainer.getBundleList()) {
 
