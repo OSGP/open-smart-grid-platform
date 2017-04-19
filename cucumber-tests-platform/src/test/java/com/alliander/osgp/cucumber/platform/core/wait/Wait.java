@@ -60,7 +60,9 @@ public class Wait {
             if (count / 1000 > configuration.getTimeout()) {
                 Assert.fail("Timeout after [" + (count / 1000) + "] seconds");
             }
-            logger.info("... polling in Wait.until (" + (count / 1000) + " seconds)...");
+            if (count > 0) {
+                logger.info("... polling in Wait.until (" + (count / 1000) + " seconds)...");
+            }
 
             try {
                 // Call the code to run
@@ -96,7 +98,9 @@ public class Wait {
             if (count / 1000 > configuration.getTimeout()) {
                 Assert.fail("Timeout after [" + (count / 1000) + "] seconds.");
             }
-            logger.info("... polling in Wait.until (" + (count / 1000) + " seconds) ...");
+            if (count > 0) {
+                logger.info("... polling in Wait.until (" + (count / 1000) + " seconds) ...");
+            }
 
             try {
                 // Call the code to run
@@ -124,6 +128,7 @@ public class Wait {
 
     private static void handleAssertionError(final Logger logger, final AssertionError error) {
         logger.error("Assertion error: " + error.getMessage());
+        logger.debug("               : stacktrace [" + error.getStackTrace() + "]");
     }
 
     /**
@@ -133,6 +138,7 @@ public class Wait {
      * @param ex
      */
     private static void handleException(final Logger logger, final Exception ex) {
-        logger.error("Caught an exception: [{}], stacktrace [{}]", ex.getMessage(), ex.getStackTrace());
+        logger.error("Caught an exception: [{}]", ex.getMessage());
+        logger.debug("                   : stacktrace [" + ex.getStackTrace() + "]");
     }
 }
