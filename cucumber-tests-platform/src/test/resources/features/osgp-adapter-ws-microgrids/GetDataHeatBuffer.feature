@@ -7,6 +7,7 @@ Feature: MicroGrids Get Heat Buffer Data
   Scenario: Request Heat Buffer
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS |
+      | Port                 |      62102 |
     And an rtu simulator returning
       | HEAT_BUFFER1 | TTMP1.TmpSv.instMag.f |                  20 |
       | HEAT_BUFFER1 | TTMP1.TmpSv.t         | 2017-02-01T12:01:00 |

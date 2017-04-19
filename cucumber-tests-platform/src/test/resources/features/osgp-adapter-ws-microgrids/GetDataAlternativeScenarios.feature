@@ -7,6 +7,7 @@ Feature: Get Data Alternative Scenarios
   Scenario: Request PV1 Health for a non-existing logical device
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS |
+      | Port                 |      62102 |
     When a get data request is received
       | DeviceIdentification      | RTU-PAMPUS |
       | NumberOfSystems           |          1 |
@@ -53,6 +54,7 @@ Feature: Get Data Alternative Scenarios
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS |
       | ServerName           | WAGO       |
+      | Port                 |      62102 |
     And an rtu simulator returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |
@@ -70,12 +72,12 @@ Feature: Get Data Alternative Scenarios
 
   # Scenario is skipped, as it is not working yet, device simulator is closing connection...
   # The actual behavior of a real device is yet to be tested...
-  @Skip
-  @Iec61850MockServerPampus 
+  @Skip @Iec61850MockServerPampus
   Scenario: Request data from Boiler logical device present in ICD file, but not in RTU
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS             |
       | IcdFilename          | MarkerWadden_0_1_1.icd |
+      | Port                 |                  62102 |
     When a get data request is received
       | DeviceIdentification      | RTU-PAMPUS |
       | NumberOfSystems           |          1 |
@@ -93,6 +95,7 @@ Feature: Get Data Alternative Scenarios
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS             |
       | IcdFilename          | MarkerWadden_0_1_1.icd |
+      | Port                 |                  62102 |
     When a get data request is received
       | DeviceIdentification      | RTU-PAMPUS |
       | NumberOfSystems           |          1 |

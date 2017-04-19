@@ -7,6 +7,7 @@ Feature: Microgrids Get CHP Data
   Scenario: Request CHP
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS |
+      | Port                 |      62102 |
     And an rtu simulator returning
       | CHP1 | TTMP1.TmpSv.instMag.f |                  10 |
       | CHP1 | TTMP1.TmpSv.q         | VALIDITY_GOOD       |

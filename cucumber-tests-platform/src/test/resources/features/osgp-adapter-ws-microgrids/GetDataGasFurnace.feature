@@ -7,6 +7,7 @@ Feature: MicroGrids Get Gas Furnace Data
   Scenario: GetData for Gas Furnace
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS |
+      | Port                 |      62102 |
     And an rtu simulator returning
       | GAS_FURNACE1 | LLN0.Mod.stVal        |                   1 |
       | GAS_FURNACE1 | LLN0.Mod.q            | VALIDITY_GOOD       |

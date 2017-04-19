@@ -7,6 +7,7 @@ Feature: MicroGrids Get PhotoVoltaic System Data
   Scenario: Request PV1 Health
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
+      | Port                 |    62102 |
     And an rtu simulator returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |
