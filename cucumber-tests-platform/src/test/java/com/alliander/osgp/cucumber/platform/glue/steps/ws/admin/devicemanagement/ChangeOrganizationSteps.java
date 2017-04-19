@@ -55,9 +55,6 @@ public class ChangeOrganizationSteps extends GlueBase {
         request.setNewOrganisationName(
                 getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME));
 
-        request.setNewOrganisationIdentification(getString(requestSettings, Keys.KEY_NEW_ORGANIZATION_IDENTIFICATION,
-                Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION));
-
         request.setNewOrganisationPlatformFunctionGroup(
                 getEnum(requestSettings, Keys.KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP, PlatformFunctionGroup.class,
                         Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
