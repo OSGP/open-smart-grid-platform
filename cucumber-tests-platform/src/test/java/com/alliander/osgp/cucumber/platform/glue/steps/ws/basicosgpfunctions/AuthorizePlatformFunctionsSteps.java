@@ -222,7 +222,6 @@ public class AuthorizePlatformFunctionsSteps {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final ChangeOrganisationRequest request = new ChangeOrganisationRequest();
         request.setOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-        request.setNewOrganisationIdentification(Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION);
         request.setNewOrganisationName(Defaults.DEFAULT_NEW_ORGANIZATION_NAME);
         request.setNewOrganisationPlatformFunctionGroup(Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
         ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.changeOrganization(request));

@@ -205,6 +205,11 @@ public class Defaults {
     public static final String SMSTYPE = "?";
     public static final String LIGHTMEASUREMENT_LASTMESSAGE = "";
     public static final Integer SMS_INDEX = 1;
-    
+
     public static final boolean DEFAULT_BYPASS_RETRY = false;
+    public static final String TIMESTAMP = "now";
+    public static final Integer REQUESTED_PAGE = 0;
+    public static final Integer RELAY_OVERVIEW_INDEX = 1;
+    public static final Boolean LAST_KNOWN_STATE = false;
+    public static final DateTime DATE_NOW = DateTime.now();
 }

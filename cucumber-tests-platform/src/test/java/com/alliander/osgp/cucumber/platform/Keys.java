@@ -282,7 +282,19 @@ public class Keys {
     public static final String KEY_LIGHTMEASUREMENT_LASTMESSAGE = "LastMessage";
     public static final String SMS_INDEX = "SmsIndex";
 
+    public static final String TIMESTAMP = "TimeStamp";
+    public static final String EVENT_TYPE = "EventType";
+
+    public static final String FROM_TIMESTAMP = "FromTimeStamp";
+    public static final String TO_TIMESTAMP = "ToTimeStamp";
+    public static final String REQUESTED_PAGE = "RequestedPage";
+    public static final String TOTALPAGES = "TotalPages";
+
     public static final String MESSAGE = "Message";
     public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
     public static final String RANDOM_PLATFORM = "RandomPlatform";
+    public static final String LAST_KNOWN_STATE = "LastKnownState";
+    public static final String DATE_NOW = "DateNow";
+    public static final String LIGHT_RELAY_TYPE = "LightRelayType";
+    public static final String TARIFF_RELAY_TYPE = "TariffRelayType";
 }
