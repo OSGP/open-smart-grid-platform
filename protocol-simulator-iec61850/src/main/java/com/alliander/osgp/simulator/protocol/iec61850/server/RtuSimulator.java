@@ -261,7 +261,7 @@ public class RtuSimulator implements ServerEventListener {
                     + logicalDeviceName + "\", but it is not a BasicDataAttribute: " + actual.getClass().getName());
         }
         final BasicDataAttribute expected = this.getCopyWithNewValue((BasicDataAttribute) actual, value);
-        if (!BasicDataAttributesHelper.equals(expected, (BasicDataAttribute) actual)) {
+        if (!BasicDataAttributesHelper.attributesEqual(expected, (BasicDataAttribute) actual)) {
             throw new AssertionError("RTU Simulator attribute for node \"" + node + "\" on logical device \""
                     + logicalDeviceName + "\" - expected: [" + expected + "], actual: [" + actual + "]");
         }

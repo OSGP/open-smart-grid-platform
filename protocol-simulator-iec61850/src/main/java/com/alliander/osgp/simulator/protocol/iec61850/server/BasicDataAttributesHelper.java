@@ -464,7 +464,7 @@ public class BasicDataAttributesHelper {
         return Integer.compare(a1.length, a2.length);
     }
 
-    public static boolean equals(final BasicDataAttribute bda1, final BasicDataAttribute bda2) {
+    public static boolean attributesEqual(final BasicDataAttribute bda1, final BasicDataAttribute bda2) {
         if (bda1 == bda2) {
             return true;
         }
