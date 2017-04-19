@@ -208,7 +208,11 @@ public class Defaults {
     public static final Integer SMS_INDEX = 1;
 
     public static final Boolean DEFAULT_BYPASS_RETRY = false;
+    public static final String TIMESTAMP = "now";
+    public static final Integer REQUESTED_PAGE = 0;
+    public static final Integer RELAY_OVERVIEW_INDEX = 1;
     public static final Boolean LAST_KNOWN_STATE = false;
+    public static final DateTime DATE_NOW = DateTime.now();
 
     public static final String DEVICE_OUTPUT_SETTINGS = DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID + ", "
             + DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID + ", " + DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE + ", "
@@ -217,12 +221,4 @@ public class Defaults {
             + DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID + ", " + DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE + ", "
             + DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS;
     public static final Integer DEFAULT_RELAY_OVERVIEW_INDEX = 1;
-
-    public static final DateTime DATE_NOW = DateTime.now();
-
-    public static final String TIMESTAMP = "now";
-    public static final Integer REQUESTED_PAGE = 0;
-    public static final Integer RELAY_OVERVIEW_INDEX = 1;
-    public static final Boolean LAST_KNOWN_STATE = false;
-    public static final DateTime DATE_NOW = DateTime.now();
 }
