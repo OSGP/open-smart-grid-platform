@@ -34,8 +34,8 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
 
     @Autowired
     public NotificationServiceWs(final DefaultWebServiceTemplateFactory webServiceTemplateFactory,
-            final String notificationUrl, final String notificationUsername) {
-        super(notificationUrl, notificationUsername);
+            final String notificationUrl, final String notificationUsername, final String notificationOrganisation) {
+        super(notificationUrl, notificationUsername, notificationOrganisation);
         this.webServiceTemplateFactory = webServiceTemplateFactory;
     }
 
