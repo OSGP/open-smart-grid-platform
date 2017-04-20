@@ -295,15 +295,9 @@ public class Keys {
     public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
     public static final String RANDOM_PLATFORM = "RandomPlatform";
     public static final String LAST_KNOWN_STATE = "LastKnownState";
-<<<<<<< HEAD
 
     public static final String RELAY_STATUSES = "RelayStatuses";
     public static final String DATE_NOW = "DateNow";
     public static final String TARIFF_RELAY_TYPE = "TariffRelayType";
     public static final String LIGHT_RELAY_TYPE = "LightRelayType";
-=======
-    public static final String DATE_NOW = "DateNow";
-    public static final String LIGHT_RELAY_TYPE = "LightRelayType";
-    public static final String TARIFF_RELAY_TYPE = "TariffRelayType";
->>>>>>> ace8a8df66fab3e35127835ecdf7e57f2ee7d95d
 }
