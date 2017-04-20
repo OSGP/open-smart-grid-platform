@@ -49,7 +49,9 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
         mapperFactory
                 .classMap(LogicalDevice.class,
                         org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.generic.LogicalDeviceType.class)
-                .field("logicalNodes", "logicalNode").byDefault().register();
+                .field("name", "id")
+                .field("logicalNodes", "logicalNode")
+                .byDefault().register();
         mapperFactory
                 .classMap(LogicalNode.class,
                         org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.generic.LogicalNodeType.class)
