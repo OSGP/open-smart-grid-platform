@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.ws.client.WebServiceIOException;
 
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
@@ -64,7 +65,7 @@ public class NotificationServiceWs implements NotificationService {
         try {
             this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
                     this.notificationUrl, this.notificationUsername);
-        } catch (final WebServiceSecurityException e) {
+        } catch (final WebServiceSecurityException | WebServiceIOException e) {
             LOGGER.error(e.getMessage(), e);
         }
     }
