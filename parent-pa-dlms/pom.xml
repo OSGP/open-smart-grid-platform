@@ -115,6 +115,13 @@
         <groupId>org.openmuc</groupId>
         <artifactId>jdlms</artifactId>
         <version>${openmuc.jdlms.version}</version>
+	<exclusions>
+          <exclusion>
+            <!-- Exclude to ensure compatibility with (older) 1.51 users-->
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- OSGP -->
