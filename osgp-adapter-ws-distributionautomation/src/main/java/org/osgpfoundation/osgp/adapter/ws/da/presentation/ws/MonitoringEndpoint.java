@@ -80,6 +80,7 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
         } catch ( final Exception e ) {
             this.handleException( LOGGER, e );
         }
+        response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
         return response;
     }
 
@@ -133,6 +134,7 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
         } catch ( final Exception e ) {
             this.handleException( LOGGER, e );
         }
+        response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
         return response;
     }
 }

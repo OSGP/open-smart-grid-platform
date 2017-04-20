@@ -78,6 +78,7 @@ public class AdHocManagementEndpoint extends GenericDistributionAutomationEndPoi
         } catch ( final Exception e ) {
             this.handleException( LOGGER, e );
         }
+        response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
         return response;
     }
 }

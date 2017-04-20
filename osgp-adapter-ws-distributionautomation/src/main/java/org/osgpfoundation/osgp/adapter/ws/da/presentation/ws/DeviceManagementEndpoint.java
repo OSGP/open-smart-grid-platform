@@ -80,6 +80,7 @@ public class DeviceManagementEndpoint extends GenericDistributionAutomationEndPo
         } catch ( final Exception e ) {
             this.handleException( LOGGER, e );
         }
+        response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
         return response;
     }
 }
