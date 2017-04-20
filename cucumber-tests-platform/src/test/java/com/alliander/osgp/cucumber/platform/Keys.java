@@ -297,4 +297,8 @@ public class Keys {
     public static final String KEY_RELAY = "Relais";
     public static final String KEY_RELAYFUNCTION = "Function";
 
+    public static final String LAST_KNOWN_STATE = "LastKnownState";
+    public static final String DATE_NOW = "DateNow";
+    public static final String LIGHT_RELAY_TYPE = "LightRelayType";
+    public static final String TARIFF_RELAY_TYPE = "TariffRelayType";
 }
