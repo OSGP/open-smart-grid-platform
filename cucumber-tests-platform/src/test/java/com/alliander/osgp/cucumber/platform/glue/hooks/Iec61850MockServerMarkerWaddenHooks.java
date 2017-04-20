@@ -22,11 +22,11 @@ public class Iec61850MockServerMarkerWaddenHooks extends GlueBase {
 
     @Before("@Iec61850MockServerMarkerWadden")
     public void startIec61850MockServer() throws Throwable {
-        this.mockServer.start();
+        // this.mockServer.start();
     }
 
     @After("@Iec61850MockServerMarkerWadden")
     public void stopIec61850MockServer() {
-        this.mockServer.stop();
+        // this.mockServer.stop();
     }
 }

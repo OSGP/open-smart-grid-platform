@@ -8,9 +8,8 @@
 package com.alliander.osgp.cucumber.platform.mocks.iec61850;
 
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class Iec61850MockServerMarkerWadden extends Iec61850MockServerBase {
 
     public Iec61850MockServerMarkerWadden() {
