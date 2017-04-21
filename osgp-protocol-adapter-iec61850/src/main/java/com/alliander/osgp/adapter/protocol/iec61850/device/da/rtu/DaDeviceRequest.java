@@ -14,26 +14,26 @@ import java.io.Serializable;
 
 public class DaDeviceRequest extends DeviceRequest {
 
-    private Serializable dataRequest;
+    private Serializable request;
 
     public DaDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-                           final String correlationUid, final Serializable dataRequest) {
+                           final String correlationUid, final Serializable request) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
-        this.dataRequest = dataRequest;
+        this.request = request;
     }
 
     public DaDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-                           final String correlationUid, final GetDataRequestDto dataRequest, final String domain,
+                           final String correlationUid, final Serializable request, final String domain,
                            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
                            final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
 
-        this.dataRequest = dataRequest;
+        this.request = request;
     }
 
-    public Serializable getDataRequest() {
-        return this.dataRequest;
+    public Serializable getRequest() {
+        return this.request;
     }
 }

@@ -8,18 +8,16 @@
 package com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
-import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 
 import javax.jms.JMSException;
 
 public interface DaRtuDeviceService {
     /**
-     * Reads the {@link GetDataRequestDto} from the device.
+     * Executes the function in messageProcessor to fill the ResponseDTO
      *
      * @returns a {@link <T>} Response DTO via the message processor callback function
      */
-    <T> void getData(GetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, DaRtuDeviceRequestMessageProcessor messageProcessor) throws JMSException;
+    <T> void getData(DaDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, DaRtuDeviceRequestMessageProcessor messageProcessor) throws JMSException;
 
 }

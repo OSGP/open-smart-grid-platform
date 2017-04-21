@@ -7,26 +7,12 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.processors;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
-import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.Constants;
-import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
-import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 import org.openmuc.openiec61850.BdaFloat32;
 import org.openmuc.openiec61850.BdaQuality;
 import org.openmuc.openiec61850.BdaTimestamp;
@@ -44,8 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -58,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.osgpfoundation.osgp.dto.da.GetPQValuesRequestDto;
 import org.osgpfoundation.osgp.dto.da.GetPQValuesResponseDto;
 
 /**
@@ -75,86 +58,16 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         super(DeviceRequestMessageType.GET_POWER_QUALITY_VALUES);
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing distribution automation get device model request message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String ipAddress = null;
-        int retryCount = 0;
-        boolean isScheduled = false;
-        GetPQValuesRequestDto getPQValuesRequest = null;
-
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
-            getPQValuesRequest = (GetPQValuesRequestDto) message.getObject();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
-            return;
-        }
-
-        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
-                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
-
-        this.printDomainInfo(messageType, domain, domainVersion);
-
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
-                .createIec61850DeviceResponseHandler(requestMessageData, message);
-
-        // transform GetDeviceModelRequestDto to GetDataRequestDto
-
-        final List<MeasurementFilterDto> measurementFilters = new ArrayList<MeasurementFilterDto>();
-        MeasurementFilterDto measurementFilterDto = new MeasurementFilterDto(1, "Health", true);
-        measurementFilters.add(measurementFilterDto);
-        final List<SystemFilterDto> systemFilters = new ArrayList<SystemFilterDto>();
-        SystemFilterDto systemFilterDto = new SystemFilterDto(1, "RTU", measurementFilters, true);
-        systemFilters.add(systemFilterDto);
-        final GetDataRequestDto getDataRequest = new GetDataRequestDto(systemFilters);
-
-        final GetDataDeviceRequest deviceRequest = new GetDataDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, getDataRequest, domain, domainVersion, messageType, ipAddress,
-                retryCount, isScheduled);
-
-        this.deviceService.getData(deviceRequest, iec61850DeviceResponseHandler, this);
+    public Function<GetPQValuesResponseDto> getDataFunction(final Iec61850Client client, final DeviceConnection connection, final DaDeviceRequest deviceRequest) {
+        return () -> {
+            ServerModel serverModel = connection.getConnection().getServerModel();
+            return new GetPQValuesResponseDto(processPQValuesLogicalDevice(serverModel));
+        };
     }
 
-    public Function<GetPQValuesResponseDto> getDataFunction(DeviceConnection connection, GetDataDeviceRequest deviceRequest) {
-        final Function<GetPQValuesResponseDto> function = new Function<GetPQValuesResponseDto>() {
-
-            @Override
-            public GetPQValuesResponseDto apply() throws Exception {
-                ServerModel serverModel = connection.getConnection().getServerModel();
-                final GetPQValuesResponseDto pqValuesResponseDto = new GetPQValuesResponseDto(processPQValuesLogicalDevice(serverModel));
-                return pqValuesResponseDto;
-            }
-        };
-
-        return function;
-    };
-
     private synchronized List<LogicalDeviceDto> processPQValuesLogicalDevice(ServerModel model) {
-        List<LogicalDeviceDto> logicalDevices = new ArrayList<LogicalDeviceDto>();
+        List<LogicalDeviceDto> logicalDevices = new ArrayList<>();
         for (ModelNode node : model.getChildren()) {
             if (node instanceof LogicalDevice) {
                 List<LogicalNodeDto> logicalNodes = processPQValuesLogicalNodes((LogicalDevice) node);
@@ -167,7 +80,7 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
     }
 
     private List<LogicalNodeDto> processPQValuesLogicalNodes(LogicalDevice node) {
-        List<LogicalNodeDto> logicalNodes = new ArrayList<LogicalNodeDto>();
+        List<LogicalNodeDto> logicalNodes = new ArrayList<>();
         for (ModelNode subNode : node.getChildren()) {
             if (subNode instanceof LogicalNode) {
                 List<DataSampleDto> data = processPQValueNodeChildren((LogicalNode) subNode);
@@ -180,7 +93,7 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
     }
 
     private List<DataSampleDto> processPQValueNodeChildren(LogicalNode node) {
-        List<DataSampleDto> data = new ArrayList<DataSampleDto>();
+        List<DataSampleDto> data = new ArrayList<>();
         Collection<ModelNode> children = node.getChildren();
         Map<String, Set<Fc>> childMap = new HashMap<>();
         for (ModelNode child : children) {
@@ -200,7 +113,7 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
 
     private List<DataSampleDto> processPQValuesFunctionalConstraintObject(LogicalNode parentNode, String childName,
                                                            Set<Fc> childFcs) {
-        List<DataSampleDto> data = new ArrayList<DataSampleDto>();
+        List<DataSampleDto> data = new ArrayList<>();
         for (Fc constraint : childFcs) {
             List<DataSampleDto> childData = processPQValuesFunctionalChildConstraintObject(parentNode, childName, constraint);
             if (childData.size()>0) {
@@ -211,7 +124,7 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
     }
 
     private List<DataSampleDto> processPQValuesFunctionalChildConstraintObject(LogicalNode parentNode, String childName, Fc constraint) {
-        List<DataSampleDto> data = new ArrayList<DataSampleDto>();
+        List<DataSampleDto> data = new ArrayList<>();
         ModelNode node = parentNode.getChild(childName, constraint);
         if (Fc.MX == constraint && node.getChildren()!=null) {
             if (nodeHasBdaQualityChild(node)) {
@@ -294,46 +207,5 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         }
         DataSampleDto sample = new DataSampleDto(type, ts, value);
         return sample;
-    }
-
-
-
-
-
-    @Override
-    public void handleDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType, final int retryCount) {
-        LOGGER.info("Override for handleDeviceResponse() by DistributionAutomationGetDeviceModelRequestMessageProcessor");
-        this.handleGetDataDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType,
-                retryCount);
-    }
-
-    private void handleGetDataDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType, final int retryCount) {
-
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = null;
-        GetPQValuesResponseDto pqValuesResponseDto  = null;
-
-        try {
-            final DaDeviceResponse response = (DaDeviceResponse) deviceResponse;
-            pqValuesResponseDto = (GetPQValuesResponseDto) response.getDataResponse();
-        } catch (final Exception e) {
-            LOGGER.error("Device Response Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.PROTOCOL_IEC61850,
-                    "Unexpected exception while retrieving response message", e);
-        }
-
-        final DeviceMessageMetadata deviceMessageMetaData = new DeviceMessageMetadata(
-                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, 0);
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().domain(domain)
-                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetaData).result(result)
-                .osgpException(osgpException).dataObject(pqValuesResponseDto).retryCount(retryCount).build();
-
-        responseMessageSender.send(responseMessage);
     }
 }

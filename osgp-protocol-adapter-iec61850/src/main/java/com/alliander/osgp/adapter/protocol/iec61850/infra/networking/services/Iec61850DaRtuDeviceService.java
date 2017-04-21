@@ -10,9 +10,9 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
+import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaRtuDeviceService;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
@@ -51,7 +51,7 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
     private Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Override
-    public <T> void getData(final GetDataDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler, DaRtuDeviceRequestMessageProcessor messageProcessor)
+    public <T> void getData(final DaDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler, DaRtuDeviceRequestMessageProcessor messageProcessor)
             throws JMSException {
         try {
             final String serverName = this.getServerName(deviceRequest);
@@ -105,9 +105,9 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
     // PRIVATE HELPER METHODS =
     // ========================
 
-    private <T> T handleGetData(final DeviceConnection connection, final GetDataDeviceRequest deviceRequest, final DaRtuDeviceRequestMessageProcessor messageProcessor)
+    private <T> T handleGetData(final DeviceConnection connection, final DaDeviceRequest deviceRequest, final DaRtuDeviceRequestMessageProcessor messageProcessor)
             throws ProtocolAdapterException {
-        Function<T> function = messageProcessor.getDataFunction(connection, deviceRequest);
+        Function<T> function = messageProcessor.getDataFunction(this.iec61850Client, connection, deviceRequest);
         return this.iec61850Client.sendCommandWithRetry(function, deviceRequest.getDeviceIdentification());
     }
 

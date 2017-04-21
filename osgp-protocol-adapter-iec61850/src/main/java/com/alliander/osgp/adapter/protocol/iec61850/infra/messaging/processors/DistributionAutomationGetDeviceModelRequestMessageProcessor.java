@@ -7,44 +7,40 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.processors;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
-import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.Constants;
-import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
-import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
-import org.osgpfoundation.osgp.dto.da.GetDeviceModelRequestDto;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
+import org.openmuc.openiec61850.Fc;
+import org.openmuc.openiec61850.FcModelNode;
+import org.openmuc.openiec61850.LogicalDevice;
+import org.openmuc.openiec61850.LogicalNode;
+import org.openmuc.openiec61850.ModelNode;
+import org.openmuc.openiec61850.ServerModel;
 import org.osgpfoundation.osgp.dto.da.GetDeviceModelResponseDto;
+import org.osgpfoundation.osgp.dto.da.iec61850.DataSampleDto;
+import org.osgpfoundation.osgp.dto.da.iec61850.LogicalDeviceDto;
+import org.osgpfoundation.osgp.dto.da.iec61850.LogicalNodeDto;
 import org.osgpfoundation.osgp.dto.da.iec61850.PhysicalDeviceDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class for processing distribution automation get device model request messages
  */
 @Component("iec61850DistributionAutomationGetDeviceModelRequestMessageProcessor")
-public class DistributionAutomationGetDeviceModelRequestMessageProcessor extends RtuDeviceRequestMessageProcessor {
+public class DistributionAutomationGetDeviceModelRequestMessageProcessor extends DaRtuDeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
@@ -54,119 +50,49 @@ public class DistributionAutomationGetDeviceModelRequestMessageProcessor extends
         super(DeviceRequestMessageType.GET_DEVICE_MODEL);
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing distribution automation get device model request message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String ipAddress = null;
-        int retryCount = 0;
-        boolean isScheduled = false;
-        GetDeviceModelRequestDto getDeviceModelRequest = null;
-
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
-            getDeviceModelRequest = (GetDeviceModelRequestDto) message.getObject();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
-            return;
-        }
-
-        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
-                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
-
-        this.printDomainInfo(messageType, domain, domainVersion);
-
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
-                .createIec61850DeviceResponseHandler(requestMessageData, message);
-
-        // transform GetDeviceModelRequestDto to GetDataRequestDto
-
-        final List<MeasurementFilterDto> measurementFilters = new ArrayList<MeasurementFilterDto>();
-        MeasurementFilterDto measurementFilterDto = new MeasurementFilterDto(1, "Health", true);
-        measurementFilters.add(measurementFilterDto);
-        final List<SystemFilterDto> systemFilters = new ArrayList<SystemFilterDto>();
-        SystemFilterDto systemFilterDto = new SystemFilterDto(1, "RTU", measurementFilters, true);
-        systemFilters.add(systemFilterDto);
-        final GetDataRequestDto getDataRequest = new GetDataRequestDto(systemFilters);
-
-        final GetDataDeviceRequest deviceRequest = new GetDataDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, getDataRequest, domain, domainVersion, messageType, ipAddress,
-                retryCount, isScheduled);
-
-        this.deviceService.getDataOnly(deviceRequest, iec61850DeviceResponseHandler);
+    public Function<GetDeviceModelResponseDto> getDataFunction(final Iec61850Client client, final DeviceConnection connection, final DaDeviceRequest deviceRequest) {
+        return () -> {
+            ServerModel serverModel = connection.getConnection().getServerModel();
+            return new GetDeviceModelResponseDto(new PhysicalDeviceDto("dummy", processLogicalDevices(serverModel)));
+        };
     }
 
-    @Override
-    public void handleDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType, final int retryCount) {
-        LOGGER.info("Override for handleDeviceResponse() by DistributionAutomationGetDeviceModelRequestMessageProcessor");
-        this.handleGetDataDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType,
-                retryCount);
-    }
-
-    private void handleGetDataDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType, final int retryCount) {
-
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = null;
-        GetDataResponseDto dataResponse = null;
-
-        try {
-            final GetDataDeviceResponse response = (GetDataDeviceResponse) deviceResponse;
-            dataResponse = response.getDataResponse();
-        } catch (final Exception e) {
-            LOGGER.error("Device Response Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.PROTOCOL_IEC61850,
-                    "Unexpected exception while retrieving response message", e);
-        }
-
-        // Transfer GetDataResponseDto to GetDeviceModelResponseDto;
-        double health = 0.0d;
-        List<GetDataSystemIdentifierDto> getDataSystemIdentifiers = dataResponse.getGetDataSystemIdentifiers();
-        for (GetDataSystemIdentifierDto getDataSystemIdentifier : getDataSystemIdentifiers) {
-            List<MeasurementDto> measurements = getDataSystemIdentifier.getMeasurements();
-            for (MeasurementDto measurement : measurements) {
-                health = measurement.getValue();
+    private synchronized List<LogicalDeviceDto> processLogicalDevices(ServerModel model) {
+        List<LogicalDeviceDto> logicalDevices = new ArrayList<>();
+        for (ModelNode node : model.getChildren()) {
+            if (node instanceof LogicalDevice) {
+                List<LogicalNodeDto> logicalNodes = processLogicalNodes((LogicalDevice) node);
+                logicalDevices.add(new LogicalDeviceDto(node.getName(), logicalNodes));
             }
         }
-        String healthStatusType = "NOT_OK";
-        if (health >0.95d && health < 1.1d) {
-            healthStatusType = "OK";
+        return logicalDevices;
+    }
+
+    private List<LogicalNodeDto> processLogicalNodes(LogicalDevice node) {
+        List<LogicalNodeDto> logicalNodes = new ArrayList<>();
+        for (ModelNode subNode : node.getChildren()) {
+            if (subNode instanceof LogicalNode) {
+                List<DataSampleDto> dataNodes = processDataNodes((LogicalNode) subNode);
+                logicalNodes.add(new LogicalNodeDto(subNode.getName(), new ArrayList<>()));
+            }
         }
-        final GetDeviceModelResponseDto getDeviceModelResponse = new GetDeviceModelResponseDto(new PhysicalDeviceDto("dummy", null));
+        return logicalNodes;
+    }
 
-        final DeviceMessageMetadata deviceMessageMetaData = new DeviceMessageMetadata(
-                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, 0);
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().domain(domain)
-                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetaData).result(result)
-                .osgpException(osgpException).dataObject(getDeviceModelResponse).retryCount(retryCount).build();
-
-        responseMessageSender.send(responseMessage);
+    private List<DataSampleDto> processDataNodes(LogicalNode node) {
+        List<DataSampleDto> data = new ArrayList<>();
+        Collection<ModelNode> children = node.getChildren();
+        Map<String, Set<Fc>> childMap = new HashMap<>();
+        for (ModelNode child : children) {
+            if (!childMap.containsKey(child.getName())) {
+                childMap.put(child.getName(), new HashSet<Fc>());
+            }
+            childMap.get(child.getName()).add(((FcModelNode) child).getFc());
+        }
+        for (Map.Entry<String, Set<Fc>> childEntry : childMap.entrySet()) {
+            data.add(new DataSampleDto(childEntry.getKey(), null, null));
+        }
+        return data;
     }
 }

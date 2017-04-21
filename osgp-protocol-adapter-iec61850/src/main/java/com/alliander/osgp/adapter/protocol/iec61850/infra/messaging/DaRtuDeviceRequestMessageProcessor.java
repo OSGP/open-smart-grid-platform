@@ -7,13 +7,30 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaRtuDeviceService;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -24,7 +41,7 @@ import javax.annotation.PostConstruct;
  */
 public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProcessor {
 
-    protected static final String UNEXPECTED_EXCEPTION = "Unexpected exception while retrieving response message";
+    private static final Logger LOGGER = LoggerFactory.getLogger(DaRtuDeviceRequestMessageProcessor.class);
 
     @Autowired
     protected DaRtuDeviceService deviceService;
@@ -45,7 +62,7 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
      * and the deviceRequest. Must be implemented in each concrete MessageProcessor
      *
      */
-    public <T> Function<T> getDataFunction(DeviceConnection connection, GetDataDeviceRequest deviceRequest) {
+    public <T> Function<T> getDataFunction(Iec61850Client iec61850Client, DeviceConnection connection, DaDeviceRequest deviceRequest) {
         return null;
     };
 
@@ -59,5 +76,90 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
     public void init() {
         this.iec61850RequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
                 this.deviceRequestMessageType.name(), this);
+    }
+
+    @Override
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing distribution automation get pq values request message");
+
+        String correlationUid = null;
+        String domain = null;
+        String domainVersion = null;
+        String messageType = null;
+        String organisationIdentification = null;
+        String deviceIdentification = null;
+        String ipAddress = null;
+        int retryCount = 0;
+        boolean isScheduled = false;
+        Serializable request = null;
+
+        try {
+            correlationUid = message.getJMSCorrelationID();
+            domain = message.getStringProperty(Constants.DOMAIN);
+            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
+            messageType = message.getJMSType();
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
+            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            request = message.getObject();
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("domain: {}", domain);
+            LOGGER.debug("domainVersion: {}", domainVersion);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("ipAddress: {}", ipAddress);
+            return;
+        }
+
+        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
+                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+
+        this.printDomainInfo(messageType, domain, domainVersion);
+
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
+
+        final DaDeviceRequest deviceRequest = new DaDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, request, domain, domainVersion, messageType, ipAddress,
+                retryCount, isScheduled);
+
+        this.deviceService.getData(deviceRequest, iec61850DeviceResponseHandler, this);
+    }
+
+    /**
+     * Override to include the data in the response
+     */
+    @Override
+    public void handleDeviceResponse(final DeviceResponse deviceResponse,
+                                     final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+                                     final String messageType, final int retryCount, final int messagePriority, final Long scheduleTime) {
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        OsgpException ex = null;
+        Serializable dataObject = null;
+
+        try {
+            final DaDeviceResponse response = (DaDeviceResponse) deviceResponse;
+            this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
+            dataObject = response.getDataResponse();
+        } catch (final OsgpException e) {
+            LOGGER.error("Device Response Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            ex = e;
+        }
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getCorrelationUid(), messageType, messagePriority, scheduleTime);
+        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
+                .osgpException(ex).dataObject(dataObject).retryCount(retryCount).build();
+        responseMessageSender.send(protocolResponseMessage);
     }
 }

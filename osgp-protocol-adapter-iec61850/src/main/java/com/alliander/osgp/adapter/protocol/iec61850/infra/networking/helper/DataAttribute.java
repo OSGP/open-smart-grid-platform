@@ -245,7 +245,11 @@ public enum DataAttribute {
     /**
      * Absolute time schedule entries
      */
-    MATERIAL_FLOW("FlwRte");
+    MATERIAL_FLOW("FlwRte"),
+    /**
+     * Physical Health
+     */
+    PHYSICAL_HEALTH("PhyHealth");
 
     private String description;
 
