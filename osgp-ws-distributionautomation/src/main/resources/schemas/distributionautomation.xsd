@@ -28,8 +28,9 @@
 
     <xsd:simpleType name="HealthStatusType">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="OK"/>
-            <xsd:enumeration value="NOT_OK"/>
+            <xsd:enumeration value="Ok"/>
+            <xsd:enumeration value="Warning"/>
+            <xsd:enumeration value="Alarm"/>
         </xsd:restriction>
     </xsd:simpleType>
 
