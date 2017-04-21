@@ -12,7 +12,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerWago;
+import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServer;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -25,7 +25,7 @@ public class RtuWagoSteps extends GlueBase {
     private static final int NUMBER_OF_INPUTS_FOR_MOCK_VALUE = 3;
 
     @Autowired
-    private Iec61850MockServerWago mockServerWago;
+    private Iec61850MockServer iec61850MockServerWago;
 
     @Given("^the WAGO RTU returning$")
     public void theWagoRtuReturning(final List<List<String>> mockValues) throws Throwable {
@@ -38,7 +38,7 @@ public class RtuWagoSteps extends GlueBase {
             final String node = mockValue.get(INDEX_NODE_NAME);
             final String value = mockValue.get(INDEX_NODE_VALUE);
 
-            this.mockServerWago.mockValue(logicalDeviceName, node, value);
+            this.iec61850MockServerWago.mockValue(logicalDeviceName, node, value);
         }
     }
 
@@ -52,7 +52,7 @@ public class RtuWagoSteps extends GlueBase {
             final String logicalDeviceName = mockValue.get(INDEX_LOGICAL_DEVICE_NAME);
             final String node = mockValue.get(INDEX_NODE_NAME);
             final String value = mockValue.get(INDEX_NODE_VALUE);
-            this.mockServerWago.assertValue(logicalDeviceName, node, value);
+            this.iec61850MockServerWago.assertValue(logicalDeviceName, node, value);
         }
     }
 }

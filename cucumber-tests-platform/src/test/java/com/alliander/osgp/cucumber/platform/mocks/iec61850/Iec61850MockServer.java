@@ -12,12 +12,15 @@ import java.io.InputStream;
 
 import org.openmuc.openiec61850.SclParseException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.simulator.protocol.iec61850.server.RtuSimulator;
 
-public abstract class Iec61850MockServerBase {
+public class Iec61850MockServer {
 
-    private final Logger logger;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850MockServer.class);
+
+    private final String mockedDevice;
 
     private final String icdFilename;
 
@@ -29,18 +32,19 @@ public abstract class Iec61850MockServerBase {
 
     private boolean simulatorIsListening = false;
 
-    public Iec61850MockServerBase(final String icdFilename, final int port, final String serverName,
-            final Logger logger) {
+    public Iec61850MockServer(final String mockedDevice, final String icdFilename, final int port,
+            final String serverName) {
+        this.mockedDevice = mockedDevice;
         this.icdFilename = icdFilename;
         this.port = port;
         this.serverName = serverName;
-        this.logger = logger;
     }
 
     public void start() {
 
         if (this.isInitialised()) {
             if (this.simulatorIsListening) {
+                LOGGER.error("Rtusimulator for device {} was already started.", this.mockedDevice);
                 throw new IllegalStateException("RtuSimulator was already started.");
             }
         } else {
@@ -50,8 +54,10 @@ public abstract class Iec61850MockServerBase {
         try {
             this.rtuSimulator.start();
             this.simulatorIsListening = true;
-            this.logger.info("Started IEC61850 Mock server on port {}", this.port);
+            LOGGER.info("Started IEC61850 Mock server for device {} on port {}", this.mockedDevice, this.port);
         } catch (final IOException e) {
+            LOGGER.error("Expected IEC61850 Mock configuration allowing simulator for device {} startup.",
+                    this.mockedDevice);
             throw new AssertionError("Expected IEC61850 Mock configuration allowing simulator startup.", e);
         }
     }
@@ -59,17 +65,18 @@ public abstract class Iec61850MockServerBase {
     public void stop() {
 
         if (this.rtuSimulator == null || !this.simulatorIsListening) {
-            this.logger.warn("Not stopping IEC61850 Mock server, because it was not running.");
+            LOGGER.warn("Not stopping IEC61850 Mock server, because it was not running.");
             return;
         }
 
         this.rtuSimulator.stop();
         this.simulatorIsListening = false;
-        this.logger.info("Stopped IEC61850 Mock server");
+        LOGGER.info("Stopped IEC61850 Mock server for device {}", this.mockedDevice);
     }
 
     public void mockValue(final String logicalDeviceName, final String node, final String value) {
         if (!this.isInitialised()) {
+            LOGGER.error("RtuSimulator for device {} has not yet been initialised.", this.mockedDevice);
             throw new AssertionError("RtuSimulator has not yet been initialised.");
         }
         this.rtuSimulator.mockValue(logicalDeviceName, node, value);
@@ -77,6 +84,7 @@ public abstract class Iec61850MockServerBase {
 
     public void assertValue(final String logicalDeviceName, final String node, final String value) {
         if (!this.isInitialised()) {
+            LOGGER.error("RtuSimulator for device {} has not yet been initialised.", this.mockedDevice);
             throw new AssertionError("RtuSimulator has not yet been initialised.");
         }
         this.rtuSimulator.assertValue(logicalDeviceName, node, value);
@@ -98,6 +106,8 @@ public abstract class Iec61850MockServerBase {
         try {
             return new RtuSimulator(this.port, this.getIcdFile(), this.serverName);
         } catch (final SclParseException e) {
+            LOGGER.error("Expected IEC61850 Mock configuration allowing simulator for device {} startup.",
+                    this.mockedDevice);
             throw new AssertionError("Expected IEC61850 Mock configuration allowing simulator startup.", e);
         }
     }

@@ -12,7 +12,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerPampus;
+import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServer;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -25,7 +25,7 @@ public class RtuSimulatorSteps extends GlueBase {
     private static final int NUMBER_OF_INPUTS_FOR_MOCK_VALUE = 3;
 
     @Autowired
-    private Iec61850MockServerPampus mockServer;
+    private Iec61850MockServer iec61850MockServerPampus;
 
     @Given("^an rtu simulator returning$")
     public void anRtuSimulatorReturning(final List<List<String>> mockValues) throws Throwable {
@@ -38,7 +38,7 @@ public class RtuSimulatorSteps extends GlueBase {
             final String node = mockValue.get(INDEX_NODE_NAME);
             final String value = mockValue.get(INDEX_NODE_VALUE);
 
-            this.mockServer.mockValue(logicalDeviceName, node, value);
+            this.iec61850MockServerPampus.mockValue(logicalDeviceName, node, value);
         }
     }
 
@@ -52,7 +52,7 @@ public class RtuSimulatorSteps extends GlueBase {
             final String logicalDeviceName = mockValue.get(INDEX_LOGICAL_DEVICE_NAME);
             final String node = mockValue.get(INDEX_NODE_NAME);
             final String value = mockValue.get(INDEX_NODE_VALUE);
-            this.mockServer.assertValue(logicalDeviceName, node, value);
+            this.iec61850MockServerPampus.assertValue(logicalDeviceName, node, value);
         }
     }
 

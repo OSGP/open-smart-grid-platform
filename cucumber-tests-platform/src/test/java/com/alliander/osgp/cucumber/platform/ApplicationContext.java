@@ -12,28 +12,25 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
 import com.alliander.osgp.cucumber.platform.config.ws.microgrids.MicrogridsNotificationWebServiceConfig;
-import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerBase;
-import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerMarkerWadden;
-import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerPampus;
-import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServerWago;
+import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServer;
 
-//@Configuration
 @ComponentScan(basePackages = {
         "com.alliander.osgp.cucumber" }, excludeFilters = @ComponentScan.Filter(value = MicrogridsNotificationWebServiceConfig.class, type = FilterType.ASSIGNABLE_TYPE))
 public class ApplicationContext {
 
     @Bean(destroyMethod = "stop", initMethod = "start")
-    Iec61850MockServerBase iec61850MockServerPampus() {
-        return new Iec61850MockServerPampus();
+    Iec61850MockServer iec61850MockServerPampus() {
+        return new Iec61850MockServer("PAMPUS", "Pampus_v0.4.5.icd", 62102, "WAGO61850Server");
     }
 
     @Bean(destroyMethod = "stop", initMethod = "start")
-    Iec61850MockServerBase iec61850MockServerMarkerWadden() {
-        return new Iec61850MockServerMarkerWadden();
+    Iec61850MockServer iec61850MockServerMarkerWadden() {
+        return new Iec61850MockServer("MARKER WADDEN", "MarkerWadden_0_1_1.icd", 62103, "WAGO61850Server");
+
     }
 
     @Bean(destroyMethod = "stop", initMethod = "start")
-    Iec61850MockServerBase iec61850MockServerWago() {
-        return new Iec61850MockServerWago();
+    Iec61850MockServer iec61850MockServerWago() {
+        return new Iec61850MockServer("WAGO", "WAGO123.icd", 62104, "WAGO123");
     }
 }
