@@ -18,6 +18,7 @@ import org.joda.time.DateTime;
 import org.osgpfoundation.osgp.domain.da.valueobjects.iec61850.DataSample;
 import org.osgpfoundation.osgp.domain.da.valueobjects.iec61850.LogicalDevice;
 import org.osgpfoundation.osgp.domain.da.valueobjects.iec61850.LogicalNode;
+import org.osgpfoundation.osgp.domain.da.valueobjects.iec61850.PhysicalDevice;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -40,6 +41,12 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
         mapperFactory
                 .classMap(GetDeviceModelResponse.class,
                         org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.generic.GetDeviceModelResponse.class)
+                .field("physicalDevice", "physicalServer")
+                .byDefault().register();
+        mapperFactory
+                .classMap(PhysicalDevice.class,
+                        org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.generic.PhysicalServerType.class)
+                .field("logicalDevices", "logicalDevice")
                 .byDefault().register();
 
         mapperFactory
