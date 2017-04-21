@@ -3,6 +3,7 @@ package org.osgpfoundation.osgp.dto.da;
 import org.osgpfoundation.osgp.dto.da.iec61850.LogicalDeviceDto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,6 +15,6 @@ public class GetPQValuesResponseDto implements Serializable {
     }
 
     public List<LogicalDeviceDto> getLogicalDevices() {
-        return Collections.unmodifiableList(logicalDevices);
+        return Collections.unmodifiableList(logicalDevices!=null?logicalDevices:new ArrayList<>());
     }
 }

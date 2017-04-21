@@ -1,6 +1,7 @@
 package org.osgpfoundation.osgp.dto.da.iec61850;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,6 +21,6 @@ public class PhysicalDeviceDto implements Serializable {
     }
 
     public List<LogicalDeviceDto> getLogicalDevices() {
-        return Collections.unmodifiableList(logicalDevices);
+        return Collections.unmodifiableList(logicalDevices!=null?logicalDevices:new ArrayList<>());
     }
 }
