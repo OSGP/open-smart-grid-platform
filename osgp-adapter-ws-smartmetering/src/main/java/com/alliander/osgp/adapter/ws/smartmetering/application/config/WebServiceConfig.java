@@ -95,6 +95,9 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${web.service.notification.username:#{null}}")
     private String webserviceNotificationUsername;
 
+    @Value("${web.service.notification.organisation:OSGP}")
+    private String webserviceNotificationOrganisation;
+
     @Value("${application.name}")
     private String applicationName;
 
@@ -168,10 +171,15 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
+    public String notificationOrganisation() {
+        return this.webserviceNotificationOrganisation;
+    }
+
+    @Bean
     public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
         if (this.webserviceNotificationEnabled) {
             return new NotificationServiceWs(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
-                    this.notificationUrl(), this.notificationUsername());
+                    this.notificationUrl(), this.notificationUsername(), this.notificationOrganisation());
         } else {
             return new NotificationServiceBlackHole();
         }
