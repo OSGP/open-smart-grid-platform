@@ -149,6 +149,7 @@ public class Helpers {
      * <p>
      * <ul>
      * <li>now + 3 months
+     * <li>now + 1 minutes
      * <li>tomorrow - 1 year
      * <li>yesterday + 2 weeks
      * <li>today at midday
@@ -228,6 +229,9 @@ public class Helpers {
             case "days":
                 retval = retval.plusDays(numberToAddOrSubstract);
                 break;
+            case "minutes":
+                retval = retval.plusMinutes(numberToAddOrSubstract);
+                break;
             case "hours":
                 retval = retval.plusHours(numberToAddOrSubstract);
                 break;
@@ -248,6 +252,9 @@ public class Helpers {
                 break;
             case "hours":
                 retval = retval.minusHours(numberToAddOrSubstract);
+                break;
+            case "minutes":
+                retval = retval.minusMinutes(numberToAddOrSubstract);
                 break;
             case "weeks":
                 retval = retval.minusWeeks(numberToAddOrSubstract);
