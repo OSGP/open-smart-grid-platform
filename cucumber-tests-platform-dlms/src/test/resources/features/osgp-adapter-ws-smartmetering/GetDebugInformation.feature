@@ -1,3 +1,4 @@
+@SmartMetering @Platform
 Feature: SmartMetering Get debug information
   As a grid operator
   I want to have a webmethod to get the debug information of a single meter

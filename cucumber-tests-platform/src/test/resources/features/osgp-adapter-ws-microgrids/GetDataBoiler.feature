@@ -1,3 +1,4 @@
+@MicroGrids @Platform
 @Iec61850MockServer
 Feature: MicroGrids Get Boiler Data
   As an OSGP client

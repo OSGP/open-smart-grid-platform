@@ -1,3 +1,4 @@
+@PublicLighting @Platform @CoreDeviceInstallation
 Feature: CoreDeviceInstallation Get Status
   As a ...
   I want to be able to perform DeviceInstallation operations on a device
