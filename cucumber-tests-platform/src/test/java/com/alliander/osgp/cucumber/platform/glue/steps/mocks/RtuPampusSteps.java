@@ -17,7 +17,7 @@ import com.alliander.osgp.cucumber.platform.mocks.iec61850.Iec61850MockServer;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class RtuSimulatorSteps extends GlueBase {
+public class RtuPampusSteps extends GlueBase {
 
     private static final int INDEX_LOGICAL_DEVICE_NAME = 0;
     private static final int INDEX_NODE_NAME = 1;

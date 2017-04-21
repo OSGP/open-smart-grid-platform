@@ -44,7 +44,7 @@ public class Iec61850MockServer {
 
         if (this.isInitialised()) {
             if (this.simulatorIsListening) {
-                LOGGER.error("Rtusimulator for device {} was already started.", this.mockedDevice);
+                LOGGER.error("RtuSimulator for device {} was already started.", this.mockedDevice);
                 throw new IllegalStateException("RtuSimulator was already started.");
             }
         } else {

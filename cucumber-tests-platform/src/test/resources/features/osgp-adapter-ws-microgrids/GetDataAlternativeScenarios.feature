@@ -49,7 +49,7 @@ Feature: Get Data Alternative Scenarios
       | MeasurementQualifier_1_1 |     1024 |
       | MeasurementValue_1_1     |      3.0 |
 
-  @TestThis @Iec61850MockServerPampus
+  @Iec61850MockServerPampus
   Scenario: Request PV1 Health wrong servername
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS-WAGO |
@@ -90,7 +90,7 @@ Feature: Get Data Alternative Scenarios
       | Component            | PROTOCOL_IEC61850 |
       | Message              | ???               |
 
-  @TestThis @Iec61850MockServerPampus
+  @Iec61850MockServerPampus
   Scenario: Request data from CHP logical device present in RTU, but not in ICD file
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS-CHP         |
