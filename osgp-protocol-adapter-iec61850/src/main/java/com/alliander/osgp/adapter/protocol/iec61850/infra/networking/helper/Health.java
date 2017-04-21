@@ -17,9 +17,9 @@ public class Health {
     private static final Map<Byte, String> health;
     static {
         Map<Byte, String> map = new HashMap<>();
-        map.put((byte) 1, "Ok");
-        map.put((byte) 2, "Warning");
-        map.put((byte) 3, "Alarm");
+        map.put((byte) 1, "OK");
+        map.put((byte) 2, "WARNING");
+        map.put((byte) 3, "ALARM");
         health = map;
     }
 
