@@ -8,6 +8,7 @@
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getDateTime2;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +26,10 @@ import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.RelayStatusRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
@@ -39,6 +43,9 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private RelayStatusRepository relayStatusRepository;
 
     @Autowired
     private DeviceSteps deviceSteps;
@@ -71,6 +78,36 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
     @Transactional("txMgrCore")
     public Ssld anSsldDevice(final Map<String, String> settings) throws Throwable {
         return this.createAnSsldDevice(settings);
+    }
+
+    @Given("^a relay status$")
+    @Transactional("txMgrCore")
+    public void aRelayStatus(final Map<String, String> settings) throws Exception {
+
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        final String[] deviceOutputSettings = getString(settings, Keys.DEVICE_OUTPUT_SETTINGS,
+                Defaults.DEVICE_OUTPUT_SETTINGS).replaceAll(" ", "").split(Keys.SEPARATOR_SEMICOLON),
+                relayStatuses = getString(settings, Keys.RELAY_STATUSES, Defaults.RELAY_STATUSES).replaceAll(" ", "")
+                        .split(Keys.SEPARATOR_SEMICOLON);
+
+        final List<DeviceOutputSetting> dosList = new ArrayList<>();
+
+        for (final String dos : deviceOutputSettings) {
+            final String[] deviceOutputSetting = dos.split(Keys.SEPARATOR_COMMA);
+            dosList.add(new DeviceOutputSetting(Integer.parseInt(deviceOutputSetting[0]),
+                    Integer.parseInt(deviceOutputSetting[1]), RelayType.valueOf(deviceOutputSetting[2]),
+                    deviceOutputSetting[3]));
+        }
+
+        ssld.updateOutputSettings(dosList);
+
+        for (final String rs : relayStatuses) {
+            final String[] relayStatus = rs.split(Keys.SEPARATOR_COMMA);
+            this.relayStatusRepository.save(new RelayStatus(ssld, Integer.parseInt(relayStatus[0]),
+                    Boolean.parseBoolean(relayStatus[1]), getDateTime2(relayStatus[2], DateTime.now()).toDate()));
+        }
     }
 
     @Then("^theSsldDeviceContains$")
