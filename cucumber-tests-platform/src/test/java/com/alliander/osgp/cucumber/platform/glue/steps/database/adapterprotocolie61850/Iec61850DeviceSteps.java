@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocolie61850;
 
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
 import java.util.Collections;
@@ -77,24 +78,16 @@ public class Iec61850DeviceSteps extends GlueBase {
     private void createIec61850Device(final Map<String, String> settings) {
 
         /*
-         * Make sure an ICD filename and port corresponding to the mock server
-         * settings will be used from the application to connect to the device.
+         * Make sure an ICD filename, port and servername corresponding to the
+         * mock server settings will be used from the application to connect to
+         * the device. ICD filename, port and servername may be null
          */
-        final Iec61850Device iec61850Device = new Iec61850Device(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        final Iec61850Device iec61850Device = new Iec61850Device(
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        final String givenIcdFilename = getString(settings, Keys.KEY_IEC61850_ICD_FILENAME);
-        final String givenServerName = getString(settings, Keys.KEY_IEC61850_SERVERNAME);
-        final String givenPort = getString(settings, Keys.KEY_IEC61850_PORT);
-
-        final String icdFilename = (givenIcdFilename == null) ? this.iec61850MockServerConfig.iec61850MockIcdFilename()
-                : givenIcdFilename;
-        final int port = (givenPort == null) ? this.iec61850MockServerConfig.iec61850MockPort() : Integer
-                .parseInt(givenPort);
-
-        iec61850Device.setIcdFilename(icdFilename);
-        iec61850Device.setPort(port);
-        iec61850Device.setServerName(givenServerName); // this may be null
+        iec61850Device.setIcdFilename(getString(settings, Keys.KEY_IEC61850_ICD_FILENAME));
+        iec61850Device.setPort(getInteger(settings, Keys.KEY_IEC61850_PORT));
+        iec61850Device.setServerName(getString(settings, Keys.KEY_IEC61850_SERVERNAME));
 
         this.iec61850DeviceRespository.save(iec61850Device);
     }

@@ -50,7 +50,7 @@ public class Wait {
      * @return object of a specific type T
      * @throws InterruptedException
      */
-    public static <T> T until(final Callable<T> task) {
+    public static <T> T untilAndReturn(final Callable<T> task) {
         final Logger logger = LoggerFactory.getLogger(Wait.class);
 
         T response = null;
@@ -61,7 +61,7 @@ public class Wait {
                 Assert.fail("Timeout after [" + (count / 1000) + "] seconds");
             }
             if (count > 0) {
-                logger.info("... polling in Wait.until (" + (count / 1000) + " seconds)...");
+                logger.info("... polling in Wait.untilAndReturn (" + (count / 1000) + " seconds)...");
             }
 
             try {

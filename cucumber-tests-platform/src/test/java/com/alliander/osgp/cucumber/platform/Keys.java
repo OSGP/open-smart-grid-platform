@@ -258,6 +258,7 @@ public class Keys {
     public static final String SEQUENCE_WINDOW = "SequenceWindow";
     public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
     public static final String NUMBER_TO_ADD_TO_SEQUENCE_NUMBER = "NumberToAddToSequenceNumber";
+    public static final String IN_MAINTENANCE = "InMaintenance";
 
     public static final String HOSTNAME = "Hostname";
     public static final String PORT = "Port";
@@ -298,7 +299,9 @@ public class Keys {
     public static final String KEY_RELAYFUNCTION = "Function";
 
     public static final String LAST_KNOWN_STATE = "LastKnownState";
+
+    public static final String RELAY_STATUSES = "RelayStatuses";
     public static final String DATE_NOW = "DateNow";
-    public static final String LIGHT_RELAY_TYPE = "LightRelayType";
     public static final String TARIFF_RELAY_TYPE = "TariffRelayType";
+    public static final String LIGHT_RELAY_TYPE = "LightRelayType";
 }

@@ -7,7 +7,10 @@
  */
 package com.alliander.osgp.cucumber.platform.core;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,7 +26,7 @@ public class ScenarioContext {
 	/**
 	 * The data object to store the scenario specific context in.
 	 */
-	private Map<String, Object> Data = new HashMap<String, Object>();
+    private final Map<String, Object> data = new HashMap<String, Object>();
 	
 	/**
 	 * Get the current context and instantiate it.
@@ -38,18 +41,29 @@ public class ScenarioContext {
 	}
 	
 	public Object get(final Object key) {
-	    return this.Data.get(key);
+        return this.data.get(key);
 	}
 
     public void put(final String key, final Object value) {
-        this.Data.put(key, value);
+        this.data.put(key, value);
     }
 
-    public Object get(String key, String defaultValue) {
-        if (!this.Data.containsKey(key)) {
+    public Object get(final String key, final String defaultValue) {
+        if (!this.data.containsKey(key)) {
             return defaultValue;
         } else {
             return this.get(key);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public <T> void addToList(final String key, final T value) {
+        if (this.data.containsKey(key)) {
+            ((List<T>) this.data.get(key)).add(value);
+        }
+        else{
+            this.data.put(key, new ArrayList<>(Arrays.asList(value)));
+        }
+    }
+
 }
