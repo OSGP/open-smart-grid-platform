@@ -28,6 +28,7 @@ import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.RelayStatusRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
@@ -94,6 +95,9 @@ public class CoreDatabase {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private RelayStatusRepository relayStatusRepository;
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -147,6 +151,7 @@ public class CoreDatabase {
             this.deviceFirmwareRepository.deleteAllInBatch();
             this.eventRepository.deleteAllInBatch();
             this.smartMeterRepository.deleteAllInBatch();
+            this.relayStatusRepository.deleteAllInBatch();
             this.ssldRepository.deleteAllInBatch();
             this.rtuDeviceRepository.deleteAllInBatch();
             this.deviceRepository.deleteAllInBatch();

@@ -62,8 +62,7 @@ public class OrganizationSteps extends GlueBase {
                     getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
                             Defaults.PLATFORM_FUNCTION_GROUP));
         } else {
-            entity.changeOrganisationData(organizationIdentification,
-                    getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
+            entity.changeOrganisationData(getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
                     getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
                             Defaults.PLATFORM_FUNCTION_GROUP));
         }
@@ -130,8 +129,10 @@ public class OrganizationSteps extends GlueBase {
      */
     @Given("^the organization exists$")
     public void theOrganizationExists(final Map<String, String> expectedOrganization) throws Throwable {
-        final Organisation entity = this.repo
-                .findByOrganisationIdentification(expectedOrganization.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+        final Organisation entity = Wait.untilAndReturn(() -> {
+            return this.repo
+                    .findByOrganisationIdentification(expectedOrganization.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+        });
 
         Assert.assertNotNull(entity);
 

@@ -91,6 +91,7 @@ public abstract class BaseDeviceSteps extends GlueBase {
         device.updateRegistrationData(inetAddress,
                 getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
 
+        device.updateInMaintenance(getBoolean(settings, Keys.IN_MAINTENANCE, Defaults.IN_MAINTENANCE));
         device.setVersion(getLong(settings, Keys.KEY_VERSION));
         device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.DEFAULT_ACTIVE));
         if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
