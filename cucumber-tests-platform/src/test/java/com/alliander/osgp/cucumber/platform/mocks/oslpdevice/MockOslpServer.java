@@ -562,7 +562,7 @@ public class MockOslpServer {
     }
 
     public Message waitForResponse() {
-        return Wait.until(() -> {
+        return Wait.untilAndReturn(() -> {
             if (this.receivedResponses.isEmpty()) {
                 throw new Exception("no response yet");
             }
