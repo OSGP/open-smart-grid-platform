@@ -1,3 +1,4 @@
+@PublicLighting @Platform @FirmwareManagement
 Feature: FirmwareManagement get firmware
   As OSGP 
   I want to manage the firmware of a device

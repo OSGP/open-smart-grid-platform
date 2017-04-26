@@ -1,3 +1,5 @@
+@MicroGrids @Platform
+@Iec61850MockServer
 Feature: MicroGrids Get Heat Pump Data
   As an OSGP client
   I want to get Heat Pump data from an RTU
