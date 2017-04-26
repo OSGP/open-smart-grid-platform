@@ -59,7 +59,6 @@ public class DeviceModelSteps extends GlueBase {
     @Then("^the entity device model exists$")
     public void theEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
         final Manufacturer manufacturer = new Manufacturer();
-        final String manufacturerId = getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID);
         final String modelCode = getString(expectedEntity, Keys.KEY_DEVICE_MODEL_MODELCODE,
                 Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
         final String modelDescription = getString(expectedEntity, Keys.KEY_DEVICE_MODEL_DESCRIPTION,
@@ -67,7 +66,8 @@ public class DeviceModelSteps extends GlueBase {
         final boolean modelMetered = getBoolean(expectedEntity, Keys.KEY_DEVICE_MODEL_METERED,
                 Defaults.DEFAULT_DEVICE_MODEL_METERED);
 
-        manufacturer.setManufacturerId(manufacturerId);
+        manufacturer
+                .setManufacturerId(getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID));
         final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
@@ -91,11 +91,10 @@ public class DeviceModelSteps extends GlueBase {
     @Then("^the entity device model does not exist$")
     public void theEntityDeviceModelDoesNotExists(final Map<String, String> entity) throws Throwable {
         final Manufacturer manufacturer = new Manufacturer();
-        final String manufacturerId = getString(entity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID);
         final String modelCode = getString(entity, Keys.KEY_DEVICE_MODEL_MODELCODE,
                 Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
 
-        manufacturer.setManufacturerId(manufacturerId);
+        manufacturer.setManufacturerId(getString(entity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID));
         final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
@@ -112,7 +111,7 @@ public class DeviceModelSteps extends GlueBase {
     public DeviceModel insertDeviceModel(final Map<String, String> settings) {
         // Get the given manufacturer (or the default).
         final Manufacturer manufacturer = this.manufacturerRepo
-                .findByName(getString(settings, "ManufacturerName", Defaults.DEFAULT_MANUFACTURER_NAME));
+                .findByName(getString(settings, Keys.MANUFACTURER_NAME, Defaults.DEFAULT_MANUFACTURER_NAME));
 
         final String description = getString(settings, Keys.KEY_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
 
