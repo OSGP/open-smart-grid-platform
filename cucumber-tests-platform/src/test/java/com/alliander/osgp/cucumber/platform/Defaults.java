@@ -207,7 +207,13 @@ public class Defaults {
     public static final String LIGHTMEASUREMENT_LASTMESSAGE = "";
     public static final Integer SMS_INDEX = 1;
 
-    public static final Boolean DEFAULT_BYPASS_RETRY = false;
+    public static final boolean DEFAULT_BYPASS_RETRY = false;
+
+    public static final int DEFAULT_KEY_RELAY = -1;
+    public static final String DEFAULT_KEY_RELAYFUNCTION = "Relais 2";
+
+    public static final String DEFAULT_TYPE_DAY = "Alle dagen";
+    public static final String DEFAULT_TIME = "12:00";
 
     public static final String DEVICE_OUTPUT_SETTINGS = DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID + ", "
             + DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID + ", " + DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE + ", "
@@ -219,6 +225,7 @@ public class Defaults {
 
     public static final String TIMESTAMP = "now";
     public static final Integer REQUESTED_PAGE = 0;
+
     public static final Integer RELAY_OVERVIEW_INDEX = 1;
     public static final Boolean LAST_KNOWN_STATE = false;
     public static final DateTime DATE_NOW = DateTime.now();
