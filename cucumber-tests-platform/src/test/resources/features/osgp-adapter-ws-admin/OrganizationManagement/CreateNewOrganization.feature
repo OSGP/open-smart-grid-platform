@@ -1,4 +1,5 @@
-Feature: OrganizationManagement Organization Creating
+@PublicLighting @Platform @AdminOrganizationManagement
+Feature: AdminOrganizationManagement Organization Creating
   As a ...
   I want to manage the Organizations in the platform
   In order ...

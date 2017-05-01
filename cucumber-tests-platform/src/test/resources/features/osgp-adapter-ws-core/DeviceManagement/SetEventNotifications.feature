@@ -1,3 +1,4 @@
+@PublicLighting @Platform @CoreDeviceManagement
 Feature: CoreDeviceManagement Set Event Notifications
   As a ...
   I want to be able to perform DeviceManagement operations on a device

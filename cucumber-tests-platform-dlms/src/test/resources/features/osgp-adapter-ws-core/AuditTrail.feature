@@ -1,3 +1,4 @@
+@SmartMetering @Platform
 Feature: Core operations
   As a grid operator
   I want to log each retry in the audit trail

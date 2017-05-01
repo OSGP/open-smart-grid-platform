@@ -1,4 +1,5 @@
-Feature: Clock configuration
+@SmartMetering @Platform
+Feature: SmartMetering Clock configuration
   As a grid operator
   I want to be able to change the clock configuration of a meter
   So the meter works with localized time settings

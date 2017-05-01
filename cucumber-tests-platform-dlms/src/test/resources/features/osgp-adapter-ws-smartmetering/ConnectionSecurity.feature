@@ -1,3 +1,4 @@
+@SmartMetering @Platform
 Feature: SmartMetering Connection security
   As a grid operator
   I want to communicate with devices at different levels of security
