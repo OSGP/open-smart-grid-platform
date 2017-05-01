@@ -42,14 +42,16 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 
 @Component()
-public class GetProfileGenericDataCommandExecutor extends
-        AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponseDto> {
+public class GetProfileGenericDataCommandExecutor
+        extends AbstractCommandExecutor<ProfileGenericDataRequestDataDto, ProfileGenericDataResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetProfileGenericDataCommandExecutor.class);
+
+    private static final String CAPTURE_OBJECT = "capture-object";
 
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
@@ -66,18 +68,18 @@ public class GetProfileGenericDataCommandExecutor extends
     private DlmsHelperService dlmsHelperService;
 
     public GetProfileGenericDataCommandExecutor() {
-        super(ProfileGenericDataRequestDto.class);
+        super(ProfileGenericDataRequestDataDto.class);
     }
 
     @Override
     public ProfileGenericDataResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ProfileGenericDataRequestDto profileGenericDataRequestDto) throws ProtocolAdapterException {
+            final ProfileGenericDataRequestDataDto profileGenericDataRequestDataDto) throws ProtocolAdapterException {
 
-        final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDto.getObisCode();
+        final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDataDto.getObisCode();
         final ObisCode obisCode = this.makeObisCode(obisCodeValues);
-        final DateTime beginDateTime = new DateTime(profileGenericDataRequestDto.getBeginDate());
-        final DateTime endDateTime = new DateTime(profileGenericDataRequestDto.getEndDate());
-        final List<CaptureObjectDefinitionDto> selectedValues = profileGenericDataRequestDto.getSelectedValues();
+        final DateTime beginDateTime = new DateTime(profileGenericDataRequestDataDto.getBeginDate());
+        final DateTime endDateTime = new DateTime(profileGenericDataRequestDataDto.getEndDate());
+        final List<CaptureObjectDefinitionDto> selectedValues = profileGenericDataRequestDataDto.getSelectedValues();
 
         LOGGER.debug("Retrieving profile generic data for {}, from: {}, to: {}, selected values: {}", obisCodeValues,
                 beginDateTime, endDateTime, selectedValues.isEmpty() ? "all capture objects" : selectedValues);
@@ -165,7 +167,7 @@ public class GetProfileGenericDataCommandExecutor extends
             throws ProtocolAdapterException {
 
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelperService
-                .readObjectDefinition(dataObject, "capture-object");
+                .readObjectDefinition(dataObject, CAPTURE_OBJECT);
 
         if (this.isClockDefinition(cosemObjectDefinitionDto)) {
             // The captured clock is always included.
@@ -276,7 +278,7 @@ public class GetProfileGenericDataCommandExecutor extends
             final ScalerUnitInfo scalerUnitInfo) throws ProtocolAdapterException {
 
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelperService
-                .readObjectDefinition(captureObjectDataObject, "capture-object");
+                .readObjectDefinition(captureObjectDataObject, CAPTURE_OBJECT);
 
         return new CaptureObjectDto(cosemObjectDefinitionDto.getClassId(),
                 cosemObjectDefinitionDto.getLogicalName().toString(), cosemObjectDefinitionDto.getAttributeIndex(),
@@ -361,7 +363,7 @@ public class GetProfileGenericDataCommandExecutor extends
             for (final DataObject captureObjectDataObject : dataObjectList1) {
 
                 final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelperService
-                        .readObjectDefinition(captureObjectDataObject, "capture-object");
+                        .readObjectDefinition(captureObjectDataObject, CAPTURE_OBJECT);
                 final int classId = cosemObjectDefinitionDto.getClassId();
                 final String logicalName = cosemObjectDefinitionDto.getLogicalName().toString();
                 if (this.hasScalerUnit(classId)) {

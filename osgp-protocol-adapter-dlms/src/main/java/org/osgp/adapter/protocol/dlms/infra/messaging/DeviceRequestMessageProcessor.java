@@ -21,6 +21,8 @@ import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
+//import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
+//     org.osgp.adapter.protocol.jasper.sessionproviders.exceptions
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,9 +117,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
             throws ProtocolAdapterException {
         if (!expected.isInstance(requestObject)) {
-            throw new ProtocolAdapterException(String.format(
-                    "The request object has an incorrect type. %s excepted but %s was found.",
-                    expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
+            throw new ProtocolAdapterException(
+                    String.format("The request object has an incorrect type. %s expected but %s was found.",
+                            expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
         }
     }
 
@@ -129,9 +131,60 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
 
-        final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+        final boolean isScheduled = this.getBooleanPropertyValue(message, Constants.IS_SCHEDULED);
 
+        //<<<<<<< HEAD
+        //=======
+        try {
+            messageMetadata.handleMessage(message);
+
+            /**
+             * The happy flow for addMeter requires that the dlmsDevice does not
+             * exist. Because the findDlmsDevice below throws a runtime
+             * exception, we skip this call in the addMeter flow. The
+             * AddMeterRequestMessageProcessor will throw the appropriate
+             * 'dlmsDevice already exists' error if the dlmsDevice does exists!
+             */
+            if (!DeviceRequestMessageType.ADD_METER.name().equals(messageMetadata.getMessageType())) {
+                device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            }
+
+            LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
+
+            Serializable response = null;
+            if (this.usesDeviceConnection()) {
+                final LoggingDlmsMessageListener dlmsMessageListener;
+                if (device.isInDebugMode()) {
+                    dlmsMessageListener = new LoggingDlmsMessageListener(device.getDeviceIdentification(),
+                            this.dlmsLogItemRequestMessageSender);
+                    dlmsMessageListener.setMessageMetadata(messageMetadata);
+                    dlmsMessageListener.setDescription("Create connection");
+                } else {
+                    dlmsMessageListener = null;
+                }
+                conn = this.dlmsConnectionFactory.getConnection(device, dlmsMessageListener);
+                response = this.handleMessage(conn, device, message.getObject());
+            } else {
+                response = this.handleMessage(device, message.getObject());
+            }
+
+            // Send response
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
+                    response, isScheduled);
+        } catch (final JMSException exception) {
+            this.logJmsException(LOGGER, exception, messageMetadata);
+        } catch (final Exception exception) {
+            // Return original request + exception
+            LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
+                    this.responseMessageSender, message.getObject(), isScheduled);
+        } finally {
+            if (conn != null) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                conn.getDlmsMessageListener().setDescription("Close connection");
+                //>>>>>>> development
                 try {
                     // Handle message
                     messageMetadata.handleMessage(message);
@@ -198,6 +251,13 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private boolean getBooleanPropertyValue(final ObjectMessage message, final String propertyName)
+            throws JMSException {
+        return message.propertyExists(propertyName) ? message.getBooleanProperty(propertyName) : false;
     }
 
     /**
@@ -249,10 +309,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
-                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
-                .osgpException(osgpException).dataObject(responseObject)
-                .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).retryHeader(retryHeader).scheduled(isScheduled)
-                .build();
+                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
+                .dataObject(responseObject).retryCount(dlmsDeviceMessageMetadata.getRetryCount())
+                .retryHeader(retryHeader).scheduled(isScheduled).build();
 
         responseMessageSender.send(responseMessage);
     }
