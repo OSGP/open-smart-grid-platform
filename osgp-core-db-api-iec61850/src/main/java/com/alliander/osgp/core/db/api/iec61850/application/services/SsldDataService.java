@@ -65,7 +65,7 @@ public class SsldDataService {
                 .getDeviceOutputSettingForExternalIndex(ssld, externalIndex);
 
         if (deviceOutputSetting == null) {
-            throw new IllegalArgumentException("Unknown internal id");
+            throw new IllegalArgumentException("Relay is not configured as a light relay on this device");
 
         } else {
             return deviceOutputSetting.getInternalId();
