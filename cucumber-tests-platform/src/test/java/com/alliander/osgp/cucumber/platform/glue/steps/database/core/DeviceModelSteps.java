@@ -58,7 +58,6 @@ public class DeviceModelSteps extends GlueBase {
      */
     @Then("^the entity device model exists$")
     public void theEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
-        final Manufacturer manufacturer = new Manufacturer();
         final String modelCode = getString(expectedEntity, Keys.KEY_DEVICE_MODEL_MODELCODE,
                 Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
         final String modelDescription = getString(expectedEntity, Keys.KEY_DEVICE_MODEL_DESCRIPTION,
@@ -66,6 +65,7 @@ public class DeviceModelSteps extends GlueBase {
         final boolean modelMetered = getBoolean(expectedEntity, Keys.KEY_DEVICE_MODEL_METERED,
                 Defaults.DEFAULT_DEVICE_MODEL_METERED);
 
+        final Manufacturer manufacturer = new Manufacturer();
         manufacturer
                 .setManufacturerId(getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID));
         final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
@@ -90,10 +90,10 @@ public class DeviceModelSteps extends GlueBase {
      */
     @Then("^the entity device model does not exist$")
     public void theEntityDeviceModelDoesNotExists(final Map<String, String> entity) throws Throwable {
-        final Manufacturer manufacturer = new Manufacturer();
         final String modelCode = getString(entity, Keys.KEY_DEVICE_MODEL_MODELCODE,
                 Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
 
+        final Manufacturer manufacturer = new Manufacturer();
         manufacturer.setManufacturerId(getString(entity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID));
         final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
 
