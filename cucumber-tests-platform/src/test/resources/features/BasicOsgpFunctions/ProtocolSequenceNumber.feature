@@ -1,4 +1,4 @@
-@Skip
+@PublicLighting @Platform @BasicOsgpFunctions
 Feature: BasicOsgpFunctions Protocol Sequence Number
   As a ...
   I want to ...
@@ -9,14 +9,19 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a start device response "OK" over "<Protocol>"
+    And the device returns a get status response "OK" over "<Protocol>"
+      | PreferredLinkType  | LINK_NOT_SET |
+      | ActualLinkType     | LINK_NOT_SET |
+      | LightType          | LT_NOT_SET   |
+      | EventNotifications |              |
+      | LightValues        | 1,true,100;  |
     And the device adds "<AddNumberToSequenceNumber>" to the sequencenumber in the "<Protocol>" response
-    When receiving a start device request
+    When receiving a get status request
       | DeviceIdentification | TEST1024000000001 |
-    Then the start device async response contains
+    Then the get status async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a start device "<Protocol>" message is sent to device "TEST1024000000001"
-    And the platform buffers a start device response message for device "TEST1024000000001"
+    And a get status "<Protocol>" message is sent to device "TEST1024000000001"
+    And the platform buffers a get status response message for device "TEST1024000000001"
       | Result | OK |
 
     Examples: 
@@ -33,21 +38,26 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
       | OSLP ELSTER |                         4 |
       | OSLP ELSTER |                         5 |
       | OSLP ELSTER |                         6 |
-
-  @OslpMockServer @Skip
+      
+  @OslpMockServer
   Scenario Outline: Invalid sequence number ranges
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a start device response "OK" over "<Protocol>"
+    And the device returns a get status response "OK" over "<Protocol>"
+      | PreferredLinkType  | LINK_NOT_SET |
+      | ActualLinkType     | LINK_NOT_SET |
+      | LightType          | LT_NOT_SET   |
+      | EventNotifications |              |
+      | LightValues        | 1,true,100;  |
     And the device adds "<AddNumberToSequenceNumber>" to the sequencenumber in the "<Protocol>" response
-    When receiving a start device request
+    When receiving a get status request
       | DeviceIdentification | TEST1024000000001 |
-    Then the start device async response contains
+    Then the get status async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a start device "<Protocol>" message is sent to device "TEST1024000000001"
-    And the platform buffers a start device response message for device "TEST1024000000001"
-      | Result | OK |
+    And a get status "<Protocol>" message is sent to device "TEST1024000000001"
+    And the platform buffers a get status response message for device "TEST1024000000001" which contains soap fault
+      | Message | No response from device |
 
 		Examples: 
       | Protocol    | AddNumberToSequenceNumber |

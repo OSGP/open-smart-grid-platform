@@ -13,6 +13,8 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationUidInScenarioContext;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -36,7 +38,9 @@ import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.publiclighting.PublicLightingAdHocManagementClient;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -114,20 +118,13 @@ public class GetStatusSteps {
 
     @Then("^the get status response contains soap fault$")
     public void theGetStatusResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
-        final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
-
-        Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
+        GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
 
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\"$")
     public void thePlatformBuffersAGetStatusResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
-        final GetStatusAsyncRequest request = new GetStatusAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
+        final GetStatusAsyncRequest request = this.getGetStatusAsyncRequest(deviceIdentification);
 
         boolean success = false;
         int count = 0;
@@ -199,5 +196,28 @@ public class GetStatusSteps {
                 LOGGER.info(ex.getMessage());
             }
         }
+    }
+
+    @Then("^the platform buffers a get status response message for device \"([^\"]*)\" which contains soap fault$")
+    public void thePlatformBuffersAGetStatusResponseMessageForDeviceWhichContainsSoapFault(
+            final String deviceIdentification, final Map<String, String> expectedResult)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        try {
+            this.client.getGetStatusResponse(this.getGetStatusAsyncRequest(deviceIdentification));
+        } catch (final SoapFaultClientException sfce) {
+            ScenarioContext.Current().put(Keys.RESPONSE, sfce);
+        }
+
+        GenericResponseSteps.verifySoapFault(expectedResult);
+    }
+
+    private GetStatusAsyncRequest getGetStatusAsyncRequest(final String deviceIdentification) {
+        final GetStatusAsyncRequest request = new GetStatusAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        return request;
     }
 }
