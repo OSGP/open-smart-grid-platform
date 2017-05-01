@@ -47,7 +47,7 @@ public class AdHocManagementService extends BaseService {
     private Integer lastCommunicationUpdateInterval;
 
     @Autowired
-    private CorrelationIdProviderUUIService correlationIdProviderUUIDervice;
+    private CorrelationIdProviderUUIService correlationIdProviderUUIService;
 
     /**
      * Constructor
@@ -103,7 +103,7 @@ public class AdHocManagementService extends BaseService {
         // Support for Push messages, generate correlationUid
         String actualCorrelationUid = correlationUid;
         if ("no-correlationUid".equals(actualCorrelationUid)) {
-            actualCorrelationUid = this.correlationIdProviderUUIDervice.getCorrelationId("DeviceGenerated",
+            actualCorrelationUid = this.correlationIdProviderUUIService.getCorrelationId("DeviceGenerated",
                     deviceIdentification);
         }
 
