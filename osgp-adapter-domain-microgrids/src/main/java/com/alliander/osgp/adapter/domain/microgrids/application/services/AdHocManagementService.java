@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.microgrids.application.services;
 
-import java.util.UUID;
-
 import javax.persistence.OptimisticLockException;
 
 import org.joda.time.DateTime;
@@ -20,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.services.CorrelationIdProviderUUIService;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
 import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.GetDataRequest;
@@ -46,6 +45,9 @@ public class AdHocManagementService extends BaseService {
 
     @Autowired
     private Integer lastCommunicationUpdateInterval;
+
+    @Autowired
+    private CorrelationIdProviderUUIService correlationIdProviderUUIDervice;
 
     /**
      * Constructor
@@ -101,7 +103,8 @@ public class AdHocManagementService extends BaseService {
         // Support for Push messages, generate correlationUid
         String actualCorrelationUid = correlationUid;
         if ("no-correlationUid".equals(actualCorrelationUid)) {
-            actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
+            actualCorrelationUid = this.correlationIdProviderUUIDervice.getCorrelationId("DeviceGenerated",
+                    deviceIdentification);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(actualCorrelationUid, organisationIdentification,
@@ -154,11 +157,6 @@ public class AdHocManagementService extends BaseService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, emptyResponse), messageType);
-    }
-
-    private static String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {
-
-        return organisationIdentification + "|||" + deviceIdentification + "|||" + UUID.randomUUID().toString();
     }
 
     private void handleResponseMessageReceived(final String deviceIdentification) {
