@@ -1,3 +1,4 @@
+@SmartMetering @Platform
 Feature: SmartMetering Bundle
   As a grid operator
   I want to be able to perform SmartMeteringBundle operations on a device

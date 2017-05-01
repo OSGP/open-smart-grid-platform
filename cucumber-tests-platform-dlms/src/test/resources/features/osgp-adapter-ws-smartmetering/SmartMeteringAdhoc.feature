@@ -1,3 +1,4 @@
+@SmartMetering @Platform
 Feature: SmartMetering AdHoc
   As a grid operator
   I want to be able to perform SmartMeteringAdhoc operations on a device

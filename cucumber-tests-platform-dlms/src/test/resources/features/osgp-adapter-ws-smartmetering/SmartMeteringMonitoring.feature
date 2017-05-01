@@ -1,3 +1,4 @@
+@SmartMetering @Platform
 Feature: SmartMetering Monitoring
   As a grid operator
   I want to be able to perform SmartMeteringMonitoring operations on a device

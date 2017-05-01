@@ -1,3 +1,4 @@
+@PublicLighting @Platform @PublicLightingAdhocManagement
 Feature: PublicLightingAdhocManagement Set Transition
   As OSGP 
   I want clients to be able to send night-day and day-night transition notifications to a device

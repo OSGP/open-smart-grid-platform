@@ -1,3 +1,4 @@
+@PublicLighting @Platform @BasicOsgpFunctions
 @Skip
 Feature: BasicOsgpFunctions Protocol Sequence Number
   As a ...

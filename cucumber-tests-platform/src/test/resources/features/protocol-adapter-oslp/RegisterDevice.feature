@@ -1,3 +1,4 @@
+@PublicLighting @Platform @OslpAdapter
 Feature: ProtocolAdapterOSLP Device Registration
   As a ...
   I want to be able to perform DeviceInstallation operations on a device

@@ -1,4 +1,5 @@
-Feature: OrganizationManagement Organization Activation
+@PublicLighting @Platform @AdminOrganizationManagement
+Feature: AdminOrganizationManagement Organization Activation
   As a ...
   I want to manage the Organizations in the platform
   In order ...

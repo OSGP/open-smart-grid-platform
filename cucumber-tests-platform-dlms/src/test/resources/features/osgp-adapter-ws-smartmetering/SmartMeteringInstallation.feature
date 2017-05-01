@@ -1,3 +1,4 @@
+@SmartMetering @Platform
 Feature: SmartMetering Installation
   As a grid operator
   I want to be able to perform SmartMeteringInstallation operations on a device
