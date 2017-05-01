@@ -14,8 +14,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +35,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
@@ -51,10 +50,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated
@@ -92,6 +94,7 @@ public class ActionMapperResponseService {
         classMap.put(FirmwareVersionResponseDto.class, FirmwareVersionResponse.class);
         classMap.put(UpdateFirmwareResponseDto.class, UpdateFirmwareResponse.class);
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
+        classMap.put(ProfileGenericDataResponseDto.class, ProfileGenericDataResponse.class);
     }
 
     /**
@@ -112,6 +115,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(FirmwareVersionResponseDto.class, this.configurationMapper);
         classToMapperMap.put(UpdateFirmwareResponseDto.class, this.configurationMapper);
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
+        classToMapperMap.put(ProfileGenericDataResponseDto.class, this.monitoringMapper);
     }
 
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)
@@ -138,7 +142,8 @@ public class ActionMapperResponseService {
 
         if (actionValueResponseObject == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(
                             "No Action Value Response Object for Action Value Response DTO Object of class: "
                                     + action.getClass().getName()));
         }
@@ -150,7 +155,8 @@ public class ActionMapperResponseService {
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(
                             "No Action Value Response Object class for Action Value Response DTO Object class: "
                                     + action.getClass().getName()));
         }

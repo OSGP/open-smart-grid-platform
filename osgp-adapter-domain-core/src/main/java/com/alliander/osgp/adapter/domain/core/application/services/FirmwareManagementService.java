@@ -10,7 +10,6 @@ package com.alliander.osgp.adapter.domain.core.application.services;
 import java.io.Serializable;
 import java.util.List;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -43,17 +43,20 @@ public class FirmwareManagementService extends AbstractService {
     // === UPDATE FIRMWARE ===
 
     public void updateFirmware(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, @NotBlank final String firmwareIdentification, final Long scheduleTime,
-            final String messageType) throws FunctionalException {
+            final String correlationUid, final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer,
+            final Long scheduleTime, final String messageType) throws FunctionalException {
 
         LOGGER.debug("Update firmware called with organisation [{}], device [{}], firmwareIdentification [{}].",
-                organisationIdentification, deviceIdentification, firmwareIdentification);
+                organisationIdentification, deviceIdentification, firmwareUpdateMessageDataContainer.getFirmwareUrl());
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, firmwareIdentification), messageType, device.getIpAddress(), scheduleTime);
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
+                        this.domainCoreMapper.map(firmwareUpdateMessageDataContainer,
+                                com.alliander.osgp.dto.valueobjects.FirmwareUpdateMessageDataContainer.class)),
+                messageType, device.getIpAddress(), scheduleTime);
     }
 
     // === GET FIRMWARE VERSION ===
