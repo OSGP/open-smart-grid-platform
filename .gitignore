@@ -22,7 +22,6 @@ local.properties
 # IntelliJ
 ####################
 *.iml
-osgp-dto/osgp-dto.iml
 .idea/
 
 # External tool builders
