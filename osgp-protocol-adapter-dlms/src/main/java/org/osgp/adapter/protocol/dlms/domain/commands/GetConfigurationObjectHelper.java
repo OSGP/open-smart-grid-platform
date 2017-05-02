@@ -16,6 +16,8 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.interfaceclass.InterfaceClass;
+import org.openmuc.jdlms.interfaceclass.attribute.DataAttribute;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -34,9 +36,9 @@ public class GetConfigurationObjectHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetConfigurationObjectHelper.class);
 
-    public static final int CLASS_ID = 1;
+    public static final int CLASS_ID = InterfaceClass.DATA.id();
     public static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
-    public static final int ATTRIBUTE_ID = 2;
+    public static final int ATTRIBUTE_ID = DataAttribute.VALUE.attributeId();
 
     @Autowired
     private ConfigurationObjectHelperService configurationObjectHelperService;
@@ -59,9 +61,8 @@ public class GetConfigurationObjectHelper {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener()
-                .setDescription("SetConfigurationObject retrieve current value, retrieve attribute: "
-                        + JdlmsObjectToStringUtil.describeAttributes(configurationObjectValue));
+        conn.getDlmsMessageListener().setDescription("retrieve current ConfigurationObject, attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(configurationObjectValue));
 
         LOGGER.info(
                 "Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, attribute id: {}",
@@ -87,9 +88,6 @@ public class GetConfigurationObjectHelper {
                     "Expected data in result while retrieving current configuration object, but got nothing");
         }
 
-        // get gprsOperationMode and configurationFlags from List<DataObject>
-        // linkedList, use them to build a ConfigurationObjectDto and return
-        // that.
         final GprsOperationModeTypeDto gprsOperationMode = this.getGprsOperationModeType(linkedList);
         final ConfigurationFlagsDto configurationFlags = this.getConfigurationFlags(linkedList, resultData);
         return new ConfigurationObjectDto(gprsOperationMode, configurationFlags);

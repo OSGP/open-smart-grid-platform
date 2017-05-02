@@ -7,7 +7,6 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -21,7 +20,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectR
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 
 @Component()
-public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecutor<DataObject, ConfigurationObjectDto> {
+public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecutor<Void, ConfigurationObjectDto> {
 
     @Autowired
     private GetConfigurationObjectHelper getConfigurationObjectHelper;
@@ -31,11 +30,8 @@ public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecut
     }
 
     @Override
-    public DataObject fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
-        /*
-         * The DataObject input is ignored. (@see
-         * GetConfigurationObjectCommandExecutor.execute)
-         */
+    public Void fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+        this.checkActionRequestType(bundleInput);
         return null;
     }
 
@@ -46,8 +42,8 @@ public class GetConfigurationObjectCommandExecutor extends AbstractCommandExecut
     }
 
     @Override
-    public ConfigurationObjectDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final DataObject object) throws ProtocolAdapterException {
+    public ConfigurationObjectDto execute(final DlmsConnectionHolder conn, final DlmsDevice device, final Void object)
+            throws ProtocolAdapterException {
 
         return this.getConfigurationObjectHelper.getConfigurationObjectDto(conn);
     }

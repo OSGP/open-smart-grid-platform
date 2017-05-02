@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
- * Class for processing Set Configuration Request messages
+ * Class for processing Get Configuration Object Request messages
  */
 @Component
 public class GetConfigurationObjectRequestMessageProcessor extends DeviceRequestMessageProcessor {
