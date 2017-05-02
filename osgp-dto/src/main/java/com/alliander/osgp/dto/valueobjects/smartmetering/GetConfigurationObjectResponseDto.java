@@ -11,15 +11,14 @@ public class GetConfigurationObjectResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = 4779593744529504288L;
 
-    private final ConfigurationObjectDto configurationObjectDto;
+    private final ConfigurationObjectDto configurationObject;
 
-    public GetConfigurationObjectResponseDto(final ConfigurationObjectDto configurationObjectDto) {
-        super();
-        this.configurationObjectDto = configurationObjectDto;
+    public GetConfigurationObjectResponseDto(final ConfigurationObjectDto configurationObject) {
+        this.configurationObject = configurationObject;
     }
 
-    public ConfigurationObjectDto getConfigurationObjectDto() {
-        return this.configurationObjectDto;
+    public ConfigurationObjectDto getConfigurationObject() {
+        return this.configurationObject;
     }
 
 }
