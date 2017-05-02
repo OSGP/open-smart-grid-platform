@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
@@ -23,13 +22,13 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
-    public MicrogridsResponseMessageListener microgridsResponseMessageListener;
+    private MicrogridsResponseMessageListener microgridResponseMessageListener;
 
     // === JMS SETTINGS: Microgrids REQUESTS ===
 
@@ -52,8 +51,8 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.microgrids.responses",
-                this.microgridsResponseMessageListener);
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.microgrids.responses",
+                this.microgridResponseMessageListener);
     }
 
     @Bean(name = "wsMicrogridsResponsesMessageListenerContainer")
