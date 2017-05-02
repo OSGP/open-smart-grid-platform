@@ -111,11 +111,11 @@ public class DeviceManagementEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final CreateOrganisationRequest request) throws OsgpException {
 
-        LOGGER.info("Create organisation: {}, with name: {}.", request.getOrganisation()
-                .getOrganisationIdentification(), request.getOrganisation().getName());
+        LOGGER.info("Create organisation: {}, with name: {}.",
+                request.getOrganisation().getOrganisationIdentification(), request.getOrganisation().getName());
 
-        final Organisation organisation = this.deviceManagementMapper
-                .map(request.getOrganisation(), Organisation.class);
+        final Organisation organisation = this.deviceManagementMapper.map(request.getOrganisation(),
+                Organisation.class);
         // mapping fails for the 'enabled' field of the DeviceManagement Schema
         // Organisation / Organisation
         organisation.setIsEnabled(request.getOrganisation().isEnabled());
@@ -195,11 +195,11 @@ public class DeviceManagementEndpoint {
         LOGGER.info("Change organisation: {}.", request.getOrganisationIdentification());
 
         try {
-            this.deviceManagementService.changeOrganisation(organisationIdentification, request
-                    .getOrganisationIdentification(), request.getNewOrganisationIdentification(), request
-                    .getNewOrganisationName(), PlatformFunctionGroup.valueOf(request
-                            .getNewOrganisationPlatformFunctionGroup().value()), this.deviceManagementMapper.mapAsList(
-                                    request.getNewOrganisationPlatformDomains(), PlatformDomain.class));
+            this.deviceManagementService.changeOrganisation(organisationIdentification,
+                    request.getOrganisationIdentification(), request.getNewOrganisationName(),
+                    PlatformFunctionGroup.valueOf(request.getNewOrganisationPlatformFunctionGroup().value()),
+                    this.deviceManagementMapper.mapAsList(request.getNewOrganisationPlatformDomains(),
+                            PlatformDomain.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
@@ -254,15 +254,13 @@ public class DeviceManagementEndpoint {
         try {
             for (final DeviceAuthorisation authorization : request.getDeviceAuthorisations()) {
                 if (authorization.isRevoked() != null && authorization.isRevoked()) {
-                    this.deviceManagementService
-                    .removeDeviceAuthorization(organisationIdentification, authorization
-                            .getOrganisationIdentification(), authorization.getDeviceIdentification(),
+                    this.deviceManagementService.removeDeviceAuthorization(organisationIdentification,
+                            authorization.getOrganisationIdentification(), authorization.getDeviceIdentification(),
                             this.deviceManagementMapper.map(authorization.getFunctionGroup(),
                                     DeviceFunctionGroup.class));
                 } else {
-                    this.deviceManagementService
-                    .addDeviceAuthorization(organisationIdentification, authorization
-                            .getOrganisationIdentification(), authorization.getDeviceIdentification(),
+                    this.deviceManagementService.addDeviceAuthorization(organisationIdentification,
+                            authorization.getOrganisationIdentification(), authorization.getDeviceIdentification(),
                             this.deviceManagementMapper.map(authorization.getFunctionGroup(),
                                     DeviceFunctionGroup.class));
                 }
@@ -292,8 +290,8 @@ public class DeviceManagementEndpoint {
         try {
             final List<com.alliander.osgp.domain.core.entities.DeviceAuthorization> authorizations = this.deviceManagementService
                     .findDeviceAuthorisations(organisationIdentification, request.getDeviceIdentification());
-            response.getDeviceAuthorisations().addAll(
-                    this.deviceManagementMapper.mapAsList(authorizations, DeviceAuthorisation.class));
+            response.getDeviceAuthorisations()
+                    .addAll(this.deviceManagementMapper.mapAsList(authorizations, DeviceAuthorisation.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
@@ -319,9 +317,8 @@ public class DeviceManagementEndpoint {
             final List<com.alliander.osgp.domain.core.entities.Device> devicesWithoutOwner = this.deviceManagementService
                     .findDevicesWhichHaveNoOwner(organisationIdentification);
 
-            response.getDevices().addAll(
-                    this.deviceManagementMapper.mapAsList(devicesWithoutOwner,
-                            com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Device.class));
+            response.getDevices().addAll(this.deviceManagementMapper.mapAsList(devicesWithoutOwner,
+                    com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Device.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception find device with no owner: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
@@ -433,9 +430,8 @@ public class DeviceManagementEndpoint {
         try {
             final List<com.alliander.osgp.domain.core.entities.ProtocolInfo> protocolInfos = this.deviceManagementService
                     .getProtocolInfos(organisationIdentification);
-            getProtocolInfosResponse.getProtocolInfos().addAll(
-                    this.deviceManagementMapper.mapAsList(protocolInfos,
-                            com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ProtocolInfo.class));
+            getProtocolInfosResponse.getProtocolInfos().addAll(this.deviceManagementMapper.mapAsList(protocolInfos,
+                    com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ProtocolInfo.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,

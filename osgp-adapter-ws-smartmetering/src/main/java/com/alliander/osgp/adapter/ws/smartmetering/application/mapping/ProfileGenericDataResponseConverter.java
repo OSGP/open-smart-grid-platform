@@ -10,9 +10,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObjects;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
@@ -21,8 +18,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntryValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
 
-public class ProfileGenericDataResponseConverter
-        extends
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class ProfileGenericDataResponseConverter extends
         CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse, ProfileGenericDataResponse> {
 
     @Override
@@ -30,32 +29,32 @@ public class ProfileGenericDataResponseConverter
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source,
             final Type<? extends ProfileGenericDataResponse> destinationType) {
 
-        ProfileGenericDataResponse result = new ProfileGenericDataResponse();
+        final ProfileGenericDataResponse result = new ProfileGenericDataResponse();
         result.setLogicalName(this.mapperFacade.map(source.getLogicalName(), ObisCodeValues.class));
 
         final CaptureObjects captureObjects = new CaptureObjects();
-        captureObjects.getCaptureObject().addAll(
-                this.mapperFacade.mapAsList(source.getCaptureObjects(), CaptureObject.class));
-        result.setCaptureObjects(captureObjects);
+        captureObjects.getCaptureObjects()
+                .addAll(this.mapperFacade.mapAsList(source.getCaptureObjects(), CaptureObject.class));
+        result.setCaptureObjectList(captureObjects);
 
         final ProfileEntries profileEntries = new ProfileEntries();
-        profileEntries.getProfileEntry().addAll(this.mapProfileEntries(source));
-        result.setProfileEntries(profileEntries);
+        profileEntries.getProfileEntries().addAll(this.mapProfileEntries(source));
+        result.setProfileEntryList(profileEntries);
 
         return result;
     }
 
     private List<ProfileEntry> mapProfileEntries(
-            com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source) {
-        List<ProfileEntry> result = new ArrayList<>();
-        for (com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntry profileEntryValuesVo : source
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source) {
+        final List<ProfileEntry> result = new ArrayList<>();
+        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntry profileEntryValuesVo : source
                 .getProfileEntries()) {
-            ProfileEntry profileEntry = new ProfileEntry();
+            final ProfileEntry profileEntry = new ProfileEntry();
 
-            for (com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue profileEntryValueVo : profileEntryValuesVo
+            for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue profileEntryValueVo : profileEntryValuesVo
                     .getProfileEntryValues()) {
-                profileEntry.getProfileEntryValue().add(
-                        this.mapperFacade.map(profileEntryValueVo, ProfileEntryValue.class));
+                profileEntry.getProfileEntryValue()
+                        .add(this.mapperFacade.map(profileEntryValueVo, ProfileEntryValue.class));
             }
 
             result.add(profileEntry);

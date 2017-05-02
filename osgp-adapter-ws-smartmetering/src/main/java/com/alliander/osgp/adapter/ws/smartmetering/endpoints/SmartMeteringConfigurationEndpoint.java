@@ -55,6 +55,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarm
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
@@ -824,4 +828,55 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "SetClockConfigurationRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetClockConfigurationAsyncResponse setClockConfiguration(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetClockConfigurationRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+
+        SetClockConfigurationAsyncResponse asyncResponse = null;
+        try {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData clockConfiguration = this.configurationMapper
+                    .map(request.getSetClockConfigurationData(),
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData.class);
+
+            final String correlationUid = this.configurationService.enqueueSetClockConfigurationRequest(
+                    organisationIdentification, request.getDeviceIdentification(), clockConfiguration,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.configurationMapper.map(scheduleTime, Long.class));
+
+            asyncResponse = new SetClockConfigurationAsyncResponse();
+
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "SetClockConfigurationAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetClockConfigurationResponse getSetClockConfigurationResponse(
+            @RequestPayload final SetClockConfigurationAsyncRequest request) throws OsgpException {
+
+        SetClockConfigurationResponse response = null;
+        try {
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
+
+            response = new SetClockConfigurationResponse();
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
 }

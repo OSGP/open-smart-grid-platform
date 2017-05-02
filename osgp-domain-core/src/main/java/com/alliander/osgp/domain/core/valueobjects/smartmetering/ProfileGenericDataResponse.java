@@ -14,27 +14,27 @@ public class ProfileGenericDataResponse extends ActionResponse implements Serial
 
     private static final long serialVersionUID = -156966569210717657L;
 
-    private final ObisCodeValues logicalName;
-    private final List<CaptureObject> captureObjects;
-    private final List<ProfileEntry> profileEntries;
+    private final ProfileGenericData profileGenericData;
 
     public ProfileGenericDataResponse(final ObisCodeValues logicalName, final List<CaptureObject> captureObjects,
             final List<ProfileEntry> profileEntries) {
         super();
-        this.logicalName = logicalName;
-        this.captureObjects = captureObjects;
-        this.profileEntries = profileEntries;
+        this.profileGenericData = new ProfileGenericData(logicalName, captureObjects, profileEntries);
+    }
+
+    public ProfileGenericData getProfileGenericData() {
+        return this.profileGenericData;
     }
 
     public ObisCodeValues getLogicalName() {
-        return this.logicalName;
+        return this.profileGenericData.getLogicalName();
     }
 
     public List<CaptureObject> getCaptureObjects() {
-        return this.captureObjects;
+        return this.profileGenericData.getCaptureObjects();
     }
 
     public List<ProfileEntry> getProfileEntries() {
-        return this.profileEntries;
+        return this.profileGenericData.getProfileEntries();
     }
 }

@@ -39,22 +39,22 @@ public class ProfileGenericDataResponseMappingTest {
 
     @Test
     public void testProfileGenericDataResponse() {
-        com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source = this
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source = this
                 .makeresponseVo();
-        ProfileGenericDataResponse target = this.monitoringMapper.map(source, ProfileGenericDataResponse.class);
+        final ProfileGenericDataResponse target = this.monitoringMapper.map(source, ProfileGenericDataResponse.class);
 
         assertNotNull("mapping ProfileGenericDataResponse should not return null", target);
-        assertEquals(target.getCaptureObjects().getCaptureObject().size(), 1);
-        assertEquals(target.getProfileEntries().getProfileEntry().size(), 2);
-        assertNotNull(target.getProfileEntries().getProfileEntry().get(0).getProfileEntryValue());
-        assertEquals(target.getProfileEntries().getProfileEntry().get(0).getProfileEntryValue().size(), 4);
+        assertEquals(target.getCaptureObjectList().getCaptureObjects().size(), 1);
+        assertEquals(target.getProfileEntryList().getProfileEntries().size(), 2);
+        assertNotNull(target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue());
+        assertEquals(target.getProfileEntryList().getProfileEntries().get(0).getProfileEntryValue().size(), 4);
 
         int i = 0;
-        for (ProfileEntryValue profileEntryValue : target.getProfileEntries().getProfileEntry().get(0)
+        for (final ProfileEntryValue profileEntryValue : target.getProfileEntryList().getProfileEntries().get(0)
                 .getProfileEntryValue()) {
             assertNotNull(profileEntryValue.getStringValueOrDateValueOrFloatValue());
             assertEquals(1, profileEntryValue.getStringValueOrDateValueOrFloatValue().size());
-            Class<?> clazz = profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0).getClass();
+            final Class<?> clazz = profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0).getClass();
             System.out.println(clazz.getSimpleName());
             assertEquals(EXPECTED_CLASS[i++], clazz.getSimpleName());
             assertTrue(profileEntryValue.getStringValueOrDateValueOrFloatValue() != null
@@ -64,9 +64,9 @@ public class ProfileGenericDataResponseMappingTest {
 
     @Test
     public void testCaptureObject() {
-        com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObject captureObjectVo = this
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObject captureObjectVo = this
                 .makeCaptureObjectVo();
-        CaptureObject captureObject = this.monitoringMapper.map(captureObjectVo, CaptureObject.class);
+        final CaptureObject captureObject = this.monitoringMapper.map(captureObjectVo, CaptureObject.class);
         assertNotNull("mapping ProfileGenericDataResponse should not return null", captureObject);
     }
 
@@ -86,7 +86,8 @@ public class ProfileGenericDataResponseMappingTest {
         profileEntryValueVo = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(
                 new BigDecimal(100.0d));
         profileEntryValue = this.monitoringMapper.map(profileEntryValueVo, ProfileEntryValue.class);
-        assertTrue(((BigDecimal) profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0)).doubleValue() == 100.d);
+        assertTrue(
+                ((BigDecimal) profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0)).doubleValue() == 100.d);
 
         profileEntryValueVo = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(12345L);
         profileEntryValue = this.monitoringMapper.map(profileEntryValueVo, ProfileEntryValue.class);
@@ -94,7 +95,7 @@ public class ProfileGenericDataResponseMappingTest {
     }
 
     private com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse makeresponseVo() {
-        com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse result = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse(
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse result = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse(
                 this.makeObisCode(), this.makeCaptureObjectsVo(), this.makeProfileEntriesVo());
         return result;
     }
@@ -104,14 +105,14 @@ public class ProfileGenericDataResponseMappingTest {
     }
 
     private List<ProfileEntry> makeProfileEntriesVo() {
-        List<ProfileEntry> profileEntries = new ArrayList<ProfileEntry>();
+        final List<ProfileEntry> profileEntries = new ArrayList<>();
         profileEntries.add(this.makeProfileEntryVo());
         profileEntries.add(this.makeProfileEntryVo());
         return profileEntries;
     }
 
     private List<com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObject> makeCaptureObjectsVo() {
-        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObject> captureObjectVos = new ArrayList<com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObject>();
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObject> captureObjectVos = new ArrayList<>();
         captureObjectVos.add(this.makeCaptureObjectVo());
         return captureObjectVos;
     }
@@ -122,11 +123,11 @@ public class ProfileGenericDataResponseMappingTest {
     }
 
     private ProfileEntry makeProfileEntryVo() {
-        List<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue> entriesVo = new ArrayList<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue>();
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue> entriesVo = new ArrayList<>();
         entriesVo.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue("test"));
         entriesVo.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(new Date()));
-        entriesVo.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(new BigDecimal(
-                100.5d)));
+        entriesVo.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(
+                new BigDecimal(100.5d)));
         entriesVo.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(12345L));
         return new ProfileEntry(entriesVo);
     }

@@ -29,6 +29,7 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.BypassRetry;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -94,6 +95,9 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${web.service.notification.username:#{null}}")
     private String webserviceNotificationUsername;
 
+    @Value("${web.service.notification.organisation:OSGP}")
+    private String webserviceNotificationOrganisation;
+
     @Value("${application.name}")
     private String applicationName;
 
@@ -109,6 +113,7 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
     private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
     private static final String MESSAGE_RESPONSE_URL_HEADER = "ResponseUrl";
+    private static final String BYPASS_RETRY_HEADER = "BypassRetry";
 
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
@@ -166,10 +171,15 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
+    public String notificationOrganisation() {
+        return this.webserviceNotificationOrganisation;
+    }
+
+    @Bean
     public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
         if (this.webserviceNotificationEnabled) {
             return new NotificationServiceWs(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
-                    this.notificationUrl(), this.notificationUsername());
+                    this.notificationUrl(), this.notificationUsername(), this.notificationOrganisation());
         } else {
             return new NotificationServiceBlackHole();
         }
@@ -361,6 +371,7 @@ public class WebServiceConfig extends AbstractConfig {
                 .add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER, ScheduleTime.class));
         methodArgumentResolvers
                 .add(new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
+        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(BYPASS_RETRY_HEADER, BypassRetry.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
@@ -423,6 +434,11 @@ public class WebServiceConfig extends AbstractConfig {
     @Bean
     public SoapHeaderInterceptor responseUrlInterceptor() {
         return new SoapHeaderInterceptor(MESSAGE_RESPONSE_URL_HEADER, MESSAGE_RESPONSE_URL_HEADER);
+    }
+
+    @Bean
+    public SoapHeaderInterceptor bypassRetryInterceptor() {
+        return new SoapHeaderInterceptor(BYPASS_RETRY_HEADER, BYPASS_RETRY_HEADER);
     }
 
     /**

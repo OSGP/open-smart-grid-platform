@@ -22,10 +22,13 @@ public abstract class AbstractNotificationServiceWs {
 
     protected final String notificationUsername;
     protected final String notificationUrl;
+    protected final String notificationOrganisation;
 
-    protected AbstractNotificationServiceWs(final String notificationUrl, final String notificationUsername) {
+    protected AbstractNotificationServiceWs(final String notificationUrl, final String notificationUsername,
+            final String notificationOrganisation) {
         this.notificationUrl = notificationUrl;
         this.notificationUsername = notificationUsername;
+        this.notificationOrganisation = notificationOrganisation;
     }
 
     protected void doSendNotification(final WebserviceTemplateFactory wsTemplateFactory,
@@ -33,13 +36,19 @@ public abstract class AbstractNotificationServiceWs {
             final Object notification) {
 
         try {
-            final WebServiceTemplate wsTemplate = wsTemplateFactory.getTemplate(organisationIdentification, userName,
+            /*
+             * Get a template for the organisation representing the OSGP
+             * platform, on behalf of which the notification is sent to the
+             * organisation identified by the organisationIdentification.
+             */
+            final WebServiceTemplate wsTemplate = wsTemplateFactory.getTemplate(this.notificationOrganisation, userName,
                     notificationURL);
             wsTemplate.marshalSendAndReceive(notification);
         } catch (WebServiceTransportException | WebServiceSecurityException e) {
             final String msg = String.format(
-                    "error sending notification message org=%s, user=%s, notifyUrl=%s, errmsg=%s",
-                    organisationIdentification, userName, notificationURL, e.getMessage());
+                    "error sending notification message org=%s, user=%s, to org=%s, notifyUrl=%s, errmsg=%s",
+                    this.notificationOrganisation, userName, organisationIdentification, notificationURL,
+                    e.getMessage());
             LOGGER.error(msg, e);
         }
 
