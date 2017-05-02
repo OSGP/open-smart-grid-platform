@@ -89,7 +89,7 @@ public class Iec61850DeviceConnectionService {
 
     public synchronized DeviceConnection connect(final String ipAddress, final String deviceIdentification,
             final IED ied, final String serverName, final String logicalDevice, final boolean cacheConnection)
-            throws ConnectionFailureException {
+                    throws ConnectionFailureException {
         // When connection-caching is used, check if a connection is available
         // an usable for the given deviceIdentification.
         try {
@@ -100,6 +100,10 @@ public class Iec61850DeviceConnectionService {
             }
         } catch (final ProtocolAdapterException e) {
             this.logProtocolAdapterException(deviceIdentification, e);
+        }
+
+        if (StringUtils.isEmpty(ipAddress)) {
+            throw new ConnectionFailureException("Ip address is null");
         }
 
         final InetAddress inetAddress = this.convertIpAddress(ipAddress);
@@ -195,7 +199,7 @@ public class Iec61850DeviceConnectionService {
                             description, logicalDevice, LogicalNode.LOGICAL_NODE_ZERO.getDescription(),
                             DataAttribute.NAME_PLATE.getDescription(), deviceIdentification);
 
-                    FcModelNode modelNode = this.getModelNode(logicalDevice, iec61850Connection, description);
+                    final FcModelNode modelNode = this.getModelNode(logicalDevice, iec61850Connection, description);
                     this.iec61850Client.readNodeDataValues(iec61850Connection.getClientAssociation(), modelNode);
                 } else {
                     // Read all data values, which is much slower, but requires
@@ -223,9 +227,9 @@ public class Iec61850DeviceConnectionService {
             final String msg = String.format("ServerModel is null for logicalDevice {%s}", logicalDevice);
             throw new ProtocolAdapterException(msg);
         }
-        String objRef = description + logicalDevice + "/" + LogicalNode.LOGICAL_NODE_ZERO.getDescription() + "."
+        final String objRef = description + logicalDevice + "/" + LogicalNode.LOGICAL_NODE_ZERO.getDescription() + "."
                 + DataAttribute.NAME_PLATE.getDescription();
-        FcModelNode modelNode = (FcModelNode) serverModel.findModelNode(objRef, Fc.DC);
+        final FcModelNode modelNode = (FcModelNode) serverModel.findModelNode(objRef, Fc.DC);
         if (modelNode == null) {
             final String msg = String.format("ModelNode is null for {%s}", objRef);
             throw new ProtocolAdapterException(msg);
@@ -338,7 +342,7 @@ public class Iec61850DeviceConnectionService {
         final DateTime startTime = deviceConnection.getConnection().getConnectionStartTime();
         LOGGER.info("Device: {}, messageType: {}, Start time: {}, end time: {}, total time in milliseconds: {}",
                 deviceConnection.getDeviceIdentification(), deviceRequest.getMessageType(), startTime, endTime, endTime
-                        .minus(startTime.getMillis()).getMillis());
+                .minus(startTime.getMillis()).getMillis());
     }
 
     public Iec61850ClientAssociation getIec61850ClientAssociation(final String deviceIdentification) {

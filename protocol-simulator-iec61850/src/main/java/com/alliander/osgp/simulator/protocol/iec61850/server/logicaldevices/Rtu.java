@@ -27,7 +27,7 @@ public class Rtu extends LogicalDevice {
 
     private static final String DSCH1_SCHDID_SETVAL = "DSCH1.SchdId.setVal";
     private static final String DSCH1_SCHDTYP_SETVAL = "DSCH1.SchdTyp.setVal";
-    private static final String DSCH1_SCHCAT_SETVAL = "DSCH1.SchCat.setVal";
+    private static final String DSCH1_SCHDCAT_SETVAL = "DSCH1.SchCat.setVal";
     private static final String DSCH1_SCHDABSTM_VAL_0 = "DSCH1.SchdAbsTm.val.0";
     private static final String DSCH1_SCHDABSTM_TIME_0 = "DSCH1.SchdAbsTm.time.0";
     private static final String DSCH1_SCHDABSTM_VAL_1 = "DSCH1.SchdAbsTm.val.1";
@@ -37,15 +37,67 @@ public class Rtu extends LogicalDevice {
     private static final String DSCH1_SCHDABSTM_VAL_3 = "DSCH1.SchdAbsTm.val.3";
     private static final String DSCH1_SCHDABSTM_TIME_3 = "DSCH1.SchdAbsTm.time.3";
 
+    private static final String DSCH2_SCHDID_SETVAL = "DSCH2.SchdId.setVal";
+    private static final String DSCH2_SCHDTYP_SETVAL = "DSCH2.SchdTyp.setVal";
+    private static final String DSCH2_SCHDCAT_SETVAL = "DSCH2.SchCat.setVal";
+    private static final String DSCH2_SCHDABSTM_VAL_0 = "DSCH2.SchdAbsTm.val.0";
+    private static final String DSCH2_SCHDABSTM_TIME_0 = "DSCH2.SchdAbsTm.time.0";
+    private static final String DSCH2_SCHDABSTM_VAL_1 = "DSCH2.SchdAbsTm.val.1";
+    private static final String DSCH2_SCHDABSTM_TIME_1 = "DSCH2.SchdAbsTm.time.1";
+    private static final String DSCH2_SCHDABSTM_VAL_2 = "DSCH2.SchdAbsTm.val.2";
+    private static final String DSCH2_SCHDABSTM_TIME_2 = "DSCH2.SchdAbsTm.time.2";
+    private static final String DSCH2_SCHDABSTM_VAL_3 = "DSCH2.SchdAbsTm.val.3";
+    private static final String DSCH2_SCHDABSTM_TIME_3 = "DSCH2.SchdAbsTm.time.3";
+
+    private static final String DSCH3_SCHDID_SETVAL = "DSCH3.SchdId.setVal";
+    private static final String DSCH3_SCHDTYP_SETVAL = "DSCH3.SchdTyp.setVal";
+    private static final String DSCH3_SCHDCAT_SETVAL = "DSCH3.SchCat.setVal";
+    private static final String DSCH3_SCHDABSTM_VAL_0 = "DSCH3.SchdAbsTm.val.0";
+    private static final String DSCH3_SCHDABSTM_TIME_0 = "DSCH3.SchdAbsTm.time.0";
+    private static final String DSCH3_SCHDABSTM_VAL_1 = "DSCH3.SchdAbsTm.val.1";
+    private static final String DSCH3_SCHDABSTM_TIME_1 = "DSCH3.SchdAbsTm.time.1";
+    private static final String DSCH3_SCHDABSTM_VAL_2 = "DSCH3.SchdAbsTm.val.2";
+    private static final String DSCH3_SCHDABSTM_TIME_2 = "DSCH3.SchdAbsTm.time.2";
+    private static final String DSCH3_SCHDABSTM_VAL_3 = "DSCH3.SchdAbsTm.val.3";
+    private static final String DSCH3_SCHDABSTM_TIME_3 = "DSCH3.SchdAbsTm.time.3";
+
+    private static final String DSCH4_SCHDID_SETVAL = "DSCH4.SchdId.setVal";
+    private static final String DSCH4_SCHDTYP_SETVAL = "DSCH4.SchdTyp.setVal";
+    private static final String DSCH4_SCHDCAT_SETVAL = "DSCH4.SchCat.setVal";
+    private static final String DSCH4_SCHDABSTM_VAL_0 = "DSCH4.SchdAbsTm.val.0";
+    private static final String DSCH4_SCHDABSTM_TIME_0 = "DSCH4.SchdAbsTm.time.0";
+    private static final String DSCH4_SCHDABSTM_VAL_1 = "DSCH4.SchdAbsTm.val.1";
+    private static final String DSCH4_SCHDABSTM_TIME_1 = "DSCH4.SchdAbsTm.time.1";
+    private static final String DSCH4_SCHDABSTM_VAL_2 = "DSCH4.SchdAbsTm.val.2";
+    private static final String DSCH4_SCHDABSTM_TIME_2 = "DSCH4.SchdAbsTm.time.2";
+    private static final String DSCH4_SCHDABSTM_VAL_3 = "DSCH4.SchdAbsTm.val.3";
+    private static final String DSCH4_SCHDABSTM_TIME_3 = "DSCH4.SchdAbsTm.time.3";
+
     private static final Set<String> FLOAT32_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(DSCH1_SCHDABSTM_VAL_0, DSCH1_SCHDABSTM_VAL_1,
-                    DSCH1_SCHDABSTM_VAL_2, DSCH1_SCHDABSTM_VAL_3)));
+                    DSCH1_SCHDABSTM_VAL_2, DSCH1_SCHDABSTM_VAL_3,
+                    DSCH2_SCHDABSTM_VAL_0, DSCH2_SCHDABSTM_VAL_1,
+                    DSCH2_SCHDABSTM_VAL_2, DSCH2_SCHDABSTM_VAL_3,
+                    DSCH3_SCHDABSTM_VAL_0, DSCH3_SCHDABSTM_VAL_1,
+                    DSCH3_SCHDABSTM_VAL_2, DSCH3_SCHDABSTM_VAL_3)));
+
     private static final Set<String> INT32_NODES = Collections
             .unmodifiableSet(
-                    new TreeSet<>(Arrays.asList(DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHCAT_SETVAL)));
+                    new TreeSet<>(Arrays.asList(DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHDCAT_SETVAL,
+                            DSCH2_SCHDID_SETVAL, DSCH2_SCHDTYP_SETVAL, DSCH2_SCHDCAT_SETVAL,
+                            DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL, DSCH3_SCHDCAT_SETVAL,
+                            DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHDCAT_SETVAL)));
+
     private static final Set<String> TIMESTAMP_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(DSCH1_SCHDABSTM_TIME_0, DSCH1_SCHDABSTM_TIME_1,
-                    DSCH1_SCHDABSTM_TIME_2, DSCH1_SCHDABSTM_TIME_3)));
+                    DSCH1_SCHDABSTM_TIME_2, DSCH1_SCHDABSTM_TIME_3,
+                    DSCH2_SCHDABSTM_TIME_0, DSCH2_SCHDABSTM_TIME_1,
+                    DSCH2_SCHDABSTM_TIME_2, DSCH2_SCHDABSTM_TIME_3,
+                    DSCH3_SCHDABSTM_TIME_0, DSCH3_SCHDABSTM_TIME_1,
+                    DSCH3_SCHDABSTM_TIME_2, DSCH3_SCHDABSTM_TIME_3,
+                    DSCH4_SCHDABSTM_TIME_0, DSCH4_SCHDABSTM_TIME_1,
+                    DSCH4_SCHDABSTM_TIME_2, DSCH4_SCHDABSTM_TIME_3
+                    )));
 
     private static final Map<String, Fc> FC_BY_NODE;
     static {
@@ -53,7 +105,7 @@ public class Rtu extends LogicalDevice {
 
         fcByNode.put(DSCH1_SCHDID_SETVAL, Fc.SP);
         fcByNode.put(DSCH1_SCHDTYP_SETVAL, Fc.SP);
-        fcByNode.put(DSCH1_SCHCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH1_SCHDCAT_SETVAL, Fc.SP);
         fcByNode.put(DSCH1_SCHDABSTM_VAL_0, Fc.SP);
         fcByNode.put(DSCH1_SCHDABSTM_TIME_0, Fc.SP);
         fcByNode.put(DSCH1_SCHDABSTM_VAL_1, Fc.SP);
@@ -62,6 +114,42 @@ public class Rtu extends LogicalDevice {
         fcByNode.put(DSCH1_SCHDABSTM_TIME_2, Fc.SP);
         fcByNode.put(DSCH1_SCHDABSTM_VAL_3, Fc.SP);
         fcByNode.put(DSCH1_SCHDABSTM_TIME_3, Fc.SP);
+
+        fcByNode.put(DSCH2_SCHDID_SETVAL, Fc.SP);
+        fcByNode.put(DSCH2_SCHDTYP_SETVAL, Fc.SP);
+        fcByNode.put(DSCH2_SCHDCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH2_SCHDABSTM_VAL_0, Fc.SP);
+        fcByNode.put(DSCH2_SCHDABSTM_TIME_0, Fc.SP);
+        fcByNode.put(DSCH2_SCHDABSTM_VAL_1, Fc.SP);
+        fcByNode.put(DSCH2_SCHDABSTM_TIME_1, Fc.SP);
+        fcByNode.put(DSCH2_SCHDABSTM_VAL_2, Fc.SP);
+        fcByNode.put(DSCH2_SCHDABSTM_TIME_2, Fc.SP);
+        fcByNode.put(DSCH2_SCHDABSTM_VAL_3, Fc.SP);
+        fcByNode.put(DSCH2_SCHDABSTM_TIME_3, Fc.SP);
+
+        fcByNode.put(DSCH3_SCHDID_SETVAL, Fc.SP);
+        fcByNode.put(DSCH3_SCHDTYP_SETVAL, Fc.SP);
+        fcByNode.put(DSCH3_SCHDCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH3_SCHDABSTM_VAL_0, Fc.SP);
+        fcByNode.put(DSCH3_SCHDABSTM_TIME_0, Fc.SP);
+        fcByNode.put(DSCH3_SCHDABSTM_VAL_1, Fc.SP);
+        fcByNode.put(DSCH3_SCHDABSTM_TIME_1, Fc.SP);
+        fcByNode.put(DSCH3_SCHDABSTM_VAL_2, Fc.SP);
+        fcByNode.put(DSCH3_SCHDABSTM_TIME_2, Fc.SP);
+        fcByNode.put(DSCH3_SCHDABSTM_VAL_3, Fc.SP);
+        fcByNode.put(DSCH3_SCHDABSTM_TIME_3, Fc.SP);
+
+        fcByNode.put(DSCH4_SCHDID_SETVAL, Fc.SP);
+        fcByNode.put(DSCH4_SCHDTYP_SETVAL, Fc.SP);
+        fcByNode.put(DSCH4_SCHDCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH4_SCHDABSTM_VAL_0, Fc.SP);
+        fcByNode.put(DSCH4_SCHDABSTM_TIME_0, Fc.SP);
+        fcByNode.put(DSCH4_SCHDABSTM_VAL_1, Fc.SP);
+        fcByNode.put(DSCH4_SCHDABSTM_TIME_1, Fc.SP);
+        fcByNode.put(DSCH4_SCHDABSTM_VAL_2, Fc.SP);
+        fcByNode.put(DSCH4_SCHDABSTM_TIME_2, Fc.SP);
+        fcByNode.put(DSCH4_SCHDABSTM_VAL_3, Fc.SP);
+        fcByNode.put(DSCH4_SCHDABSTM_TIME_3, Fc.SP);
 
         FC_BY_NODE = Collections.unmodifiableMap(fcByNode);
     }
@@ -125,6 +213,54 @@ public class Rtu extends LogicalDevice {
         values.add(this.setRandomInt("GGIO1.IntIn2.stVal", Fc.ST, 1, 100));
         values.add(this.setQuality("GGIO1.IntIn2.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("GGIO1.IntIn2.t", Fc.ST, timestamp));
+
+        values.add(this.setRandomInt(DSCH1_SCHDID_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH1_SCHDTYP_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH1_SCHDCAT_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH1_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH1_SCHDABSTM_TIME_3, Fc.SP, timestamp));
+
+        values.add(this.setRandomInt(DSCH2_SCHDID_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH2_SCHDTYP_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH2_SCHDCAT_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH2_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH2_SCHDABSTM_TIME_3, Fc.SP, timestamp));
+
+        values.add(this.setRandomInt(DSCH3_SCHDID_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH3_SCHDTYP_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH3_SCHDCAT_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH3_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH3_SCHDABSTM_TIME_3, Fc.SP, timestamp));
+
+        values.add(this.setRandomInt(DSCH4_SCHDID_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH4_SCHDTYP_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH4_SCHDCAT_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_0, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_0, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_1, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_1, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_2, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_2, Fc.SP, timestamp));
+        values.add(this.setRandomFloat(DSCH4_SCHDABSTM_VAL_3, Fc.SP, 0, 1000));
+        values.add(this.setTime(DSCH4_SCHDABSTM_TIME_3, Fc.SP, timestamp));
 
         return values;
     }

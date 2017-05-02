@@ -19,9 +19,9 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Data
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleAbsTimeCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileDto;
 
-public final class Iec61850RtuWriteProfileCommandFactory implements RtuWriteCommandFactory<ProfileDto> {
+public final class Iec61850WriteProfileCommandFactory implements RtuWriteCommandFactory<ProfileDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RtuWriteProfileCommandFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850WriteProfileCommandFactory.class);
 
     private static final int ID_START = 1;
     private static final int ID_END = 4;
@@ -29,17 +29,17 @@ public final class Iec61850RtuWriteProfileCommandFactory implements RtuWriteComm
     private static final Map<String, RtuWriteCommand<ProfileDto>> RTU_COMMAND_MAP = new HashMap<>();
 
     static {
-        initializeRtuCommandMap();
+        initializeCommandMap();
     }
 
-    private static Iec61850RtuWriteProfileCommandFactory instance;
+    private static Iec61850WriteProfileCommandFactory instance;
 
-    private Iec61850RtuWriteProfileCommandFactory() {
+    private Iec61850WriteProfileCommandFactory() {
     }
 
-    public static synchronized Iec61850RtuWriteProfileCommandFactory getInstance() {
+    public static synchronized Iec61850WriteProfileCommandFactory getInstance() {
         if (instance == null) {
-            instance = new Iec61850RtuWriteProfileCommandFactory();
+            instance = new Iec61850WriteProfileCommandFactory();
         }
         return instance;
     }
@@ -55,7 +55,7 @@ public final class Iec61850RtuWriteProfileCommandFactory implements RtuWriteComm
         return command;
     }
 
-    private static void initializeRtuCommandMap() {
+    private static void initializeCommandMap() {
         for (int i = ID_START; i <= ID_END; i++) {
 
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_ABS_TIME, i),
