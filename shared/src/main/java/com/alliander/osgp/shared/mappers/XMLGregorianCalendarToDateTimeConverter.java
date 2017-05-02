@@ -11,19 +11,21 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class XMLGregorianCalendarToDateTimeConverter extends BidirectionalConverter<XMLGregorianCalendar, DateTime> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(XMLGregorianCalendarToDateTimeConverter.class);
 
     @Override
-    public XMLGregorianCalendar convertFrom(final DateTime source, final Type<XMLGregorianCalendar> destinationType) {
+    public XMLGregorianCalendar convertFrom(final DateTime source, final Type<XMLGregorianCalendar> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -39,11 +41,13 @@ public class XMLGregorianCalendarToDateTimeConverter extends BidirectionalConver
     }
 
     @Override
-    public DateTime convertTo(final XMLGregorianCalendar source, final Type<DateTime> destinationType) {
+    public DateTime convertTo(final XMLGregorianCalendar source, final Type<DateTime> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
 
         return new DateTime(source.toGregorianCalendar().getTime());
     }
+
 }
