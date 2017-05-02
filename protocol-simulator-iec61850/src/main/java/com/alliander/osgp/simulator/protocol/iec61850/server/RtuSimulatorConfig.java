@@ -30,11 +30,15 @@ public class RtuSimulatorConfig {
     @Bean
     public RtuSimulator rtuSimulator(@Value("${rtu.icd:Pampus_v0.4.5.icd}") final String icdFilename,
             @Value("${rtu.port:60102}") final Integer port,
-            @Value("${rtu.serverName:WAGO61850Server}") final String serverName) throws IOException {
+            @Value("${rtu.serverName:WAGO61850Server}") final String serverName,
+            @Value("${rtu.stopGeneratingValues:false}") final Boolean stopGeneratingValues) throws IOException {
         final InputStream icdFile = resourceLoader.getResource("classpath:"+icdFilename).getInputStream();
 
         try {
             final RtuSimulator rtuSimulator = new RtuSimulator(port, icdFile, serverName);
+            if (stopGeneratingValues) {
+                rtuSimulator.ensurePeriodicDataGenerationIsStopped();
+            }
             rtuSimulator.start();
             return rtuSimulator;
         } catch (final SclParseException e) {

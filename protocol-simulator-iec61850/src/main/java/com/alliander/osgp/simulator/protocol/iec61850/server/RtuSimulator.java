@@ -287,7 +287,7 @@ public class RtuSimulator implements ServerEventListener {
         this.server.setValues(Arrays.asList(basicDataAttribute));
     }
 
-    private void ensurePeriodicDataGenerationIsStopped() {
+    public void ensurePeriodicDataGenerationIsStopped() {
         synchronized (this.stopGeneratingValues) {
             this.stopGeneratingValues.set(true);
         }
@@ -309,7 +309,7 @@ public class RtuSimulator implements ServerEventListener {
                 + "\" is not registered with simulated RTU device \"" + this.getDeviceName() + "\".");
     }
 
-    // @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 60000)
     public void generateData() {
         synchronized (this.stopGeneratingValues) {
             if (!this.stopGeneratingValues.get()) {
