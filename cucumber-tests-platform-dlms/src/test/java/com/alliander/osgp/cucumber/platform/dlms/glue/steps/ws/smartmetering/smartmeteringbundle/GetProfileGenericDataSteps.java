@@ -35,7 +35,7 @@ import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class BundleSteps {
+public class GetProfileGenericDataSteps {
     @Autowired
     private SmartMeteringBundleClient client;
 
