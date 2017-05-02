@@ -15,6 +15,8 @@ import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProviderService;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,8 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DomainHelperService.class);
 
     private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
@@ -65,7 +69,10 @@ public class DomainHelperService {
             throws ProtocolAdapterException, FunctionalException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
-            throw new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification);
+            final String errorMessage = String.format("Unable to communicate with unknown device: %s", deviceIdentification);
+            LOGGER.error(errorMessage);
+
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS);
         }
 
         if (dlmsDevice.isIpAddressIsStatic()) {
@@ -100,8 +107,8 @@ public class DomainHelperService {
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
             throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
-                    + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
-                    + "and iccId: " + dlmsDevice.getIccId());
+            + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
+            + "and iccId: " + dlmsDevice.getIccId());
 
         }
         return deviceIpAddress;

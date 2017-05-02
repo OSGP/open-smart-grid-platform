@@ -43,7 +43,7 @@ public abstract class DlmsConnector {
         }
     }
 
-    protected void setOptionalValues(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder) {
+    protected void setOptionalValues(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder) throws FunctionalException {
         if (device.getPort() != null) {
             tcpConnectionBuilder.setTcpPort(device.getPort().intValue());
         }
@@ -52,8 +52,17 @@ public abstract class DlmsConnector {
         }
 
         final Integer challengeLength = device.getChallengeLength();
-        if (challengeLength != null) {
-            tcpConnectionBuilder.setChallengeLength(challengeLength);
+
+        try {
+            if (challengeLength != null) {
+                tcpConnectionBuilder.setChallengeLength(challengeLength);
+            }
+        } catch (final IllegalArgumentException e) {
+            final String errorMessage = String.format("Challenge length has to be between 8 and 64 for device %s.",
+                    device.getDeviceIdentification());
+            LOGGER.error(errorMessage);
+
+            throw new FunctionalException(FunctionalExceptionType.CHALLENGE_LENGHT_OUT_OF_RANGE, ComponentType.PROTOCOL_DLMS);
         }
 
     }
