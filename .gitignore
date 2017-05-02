@@ -18,16 +18,11 @@ local.properties
 .settings/
 .loadpath
 
-#################
-## IntelliJ
-#################
-.idea
-protocol-adapter-iec61850.iml
-osgp-core-db-api-iec61850/osgp-core-db-api-iec61850.iml
-osgp-iec61850/osgp-iec61850.iml
-osgp-protocol-adapter-iec61850/osgp-protocol-adapter-iec61850.iml
-parent-pa-iec61850/parent-pa-iec61850.iml
-protocol-simulator-iec61850/osgp-protocol-simulator-iec61850.iml
+####################
+# IntelliJ
+####################
+*.iml
+.idea/
 
 # External tool builders
 .externalToolBuilders/
