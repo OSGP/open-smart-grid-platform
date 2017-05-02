@@ -35,12 +35,11 @@ local.properties
 KahaDB/
 fitnesse/FitNesseRoot/files/
 
-#################
-## INTELLIJ
-#################
+####################
+# IntelliJ
+####################
 *.iml
-.idea
-**/*.iml
+.idea/
 
 *~
 *.log
