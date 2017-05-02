@@ -12,8 +12,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CorrelationIdProviderUUIService {
+public class CorrelationIdProviderUUIDService implements CorrelationIdProviderService {
 
+    @Override
     public String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {
         return organisationIdentification + "|||" + deviceIdentification + "|||" + UUID.randomUUID().toString();
     }

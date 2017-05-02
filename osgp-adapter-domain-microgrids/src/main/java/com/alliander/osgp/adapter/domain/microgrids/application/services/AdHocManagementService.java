@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.services.CorrelationIdProviderUUIService;
+import com.alliander.osgp.domain.core.services.CorrelationIdProviderUUIDService;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
 import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.GetDataRequest;
@@ -47,7 +47,7 @@ public class AdHocManagementService extends BaseService {
     private Integer lastCommunicationUpdateInterval;
 
     @Autowired
-    private CorrelationIdProviderUUIService correlationIdProviderUUIService;
+    private CorrelationIdProviderUUIDService correlationIdProviderUUIDService;
 
     /**
      * Constructor
@@ -103,7 +103,7 @@ public class AdHocManagementService extends BaseService {
         // Support for Push messages, generate correlationUid
         String actualCorrelationUid = correlationUid;
         if ("no-correlationUid".equals(actualCorrelationUid)) {
-            actualCorrelationUid = this.correlationIdProviderUUIService.getCorrelationId("DeviceGenerated",
+            actualCorrelationUid = this.correlationIdProviderUUIDService.getCorrelationId("DeviceGenerated",
                     deviceIdentification);
         }
 
