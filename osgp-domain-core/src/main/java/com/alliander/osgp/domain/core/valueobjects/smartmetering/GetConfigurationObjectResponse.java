@@ -16,7 +16,6 @@ public class GetConfigurationObjectResponse extends ActionResponse implements Se
     private final ConfigurationObject configurationObject;
 
     public GetConfigurationObjectResponse(final ConfigurationObject configurationObject) {
-        super();
         this.configurationObject = configurationObject;
     }
 

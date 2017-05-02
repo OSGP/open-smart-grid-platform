@@ -31,6 +31,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
@@ -672,8 +673,7 @@ public class ConfigurationService {
     }
 
     public void getConfigurationObject(final DeviceMessageMetadata deviceMessageMetadata,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest getConfigurationObjectRequest)
-            throws FunctionalException {
+            final GetConfigurationObjectRequest getConfigurationObjectRequest) throws FunctionalException {
 
         LOGGER.info("getConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -697,7 +697,7 @@ public class ConfigurationService {
             final ResponseMessageResultType deviceResult, final OsgpException exception,
             final GetConfigurationObjectResponseDto resultData) {
 
-        LOGGER.info("handle SetConfigurationObject response for MessageType: {}",
+        LOGGER.info("handle GetConfigurationObject response for MessageType: {}",
                 deviceMessageMetadata.getMessageType());
 
         final GetConfigurationObjectResponse response = this.configurationMapper.map(resultData,

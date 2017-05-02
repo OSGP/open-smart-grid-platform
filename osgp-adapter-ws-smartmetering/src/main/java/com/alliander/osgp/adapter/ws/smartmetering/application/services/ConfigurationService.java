@@ -484,10 +484,8 @@ public class ConfigurationService {
                 organisationIdentification, correlationUid,
                 SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECT.toString(), messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
