@@ -4,6 +4,7 @@
 package com.alliander.osgp.shared.infra.ws;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
@@ -14,14 +15,14 @@ import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
 
-public class MessagePriorityWebServiceMessageCallback implements WebServiceMessageCallback {
+public class WebServiceMessageCallbackHeaderFieldsAdder implements WebServiceMessageCallback {
 
     private static final String NAMESPACE = "http://www.alliander.com/schemas/osp/common";
 
-    private final int messagePriority;
+    private final Map<String, String> keyValues;
 
-    public MessagePriorityWebServiceMessageCallback(final int messagePriority) {
-        this.messagePriority = messagePriority;
+    public WebServiceMessageCallbackHeaderFieldsAdder(final Map<String, String> keyValues) {
+        this.keyValues = keyValues;
     }
 
     @Override
@@ -29,8 +30,11 @@ public class MessagePriorityWebServiceMessageCallback implements WebServiceMessa
 
         final SoapMessage soapMessage = (SoapMessage) message;
         final SoapHeader header = soapMessage.getSoapHeader();
-        final SoapHeaderElement messagePriorityElement = header
-                .addHeaderElement(new QName(NAMESPACE, "MessagePriority"));
-        messagePriorityElement.setText(String.valueOf(this.messagePriority));
+
+        this.keyValues.entrySet().forEach(k -> {
+            final SoapHeaderElement headerElement = header.addHeaderElement(new QName(NAMESPACE, k.getKey()));
+            headerElement.setText(k.getValue());
+        });
     }
+
 }
