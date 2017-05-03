@@ -28,7 +28,7 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
-    private MicrogridsResponseMessageListener microgridResponseMessageListener;
+    private MicrogridsResponseMessageListener microgridsResponseMessageListener;
 
     // === JMS SETTINGS: Microgrids REQUESTS ===
 
@@ -52,7 +52,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeReceiveConfiguration("jms.microgrids.responses",
-                this.microgridResponseMessageListener);
+                this.microgridsResponseMessageListener);
     }
 
     @Bean(name = "wsMicrogridsResponsesMessageListenerContainer")
