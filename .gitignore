@@ -41,3 +41,6 @@ local.properties
 
 # Eclipse Checkstyle plugin
 .checkstyle
+
+# KDE folder parameters file
+**/.directory

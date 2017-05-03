@@ -25,6 +25,7 @@ import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.ProfileFilterDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
@@ -54,7 +55,21 @@ public class Iec61850BoilerSystemService implements SystemService {
             }
         }
 
-        return new GetDataSystemIdentifierDto(systemFilter.getId(), systemFilter.getSystemType(), measurements);
+        final List<ProfileDto> profiles = new ArrayList<>();
+
+        for (final ProfileFilterDto filter : systemFilter.getProfileFilters()) {
+
+            final RtuReadCommand<ProfileDto> command = Iec61850RtuReadProfileCommandFactory.getInstance()
+                    .getCommand(filter);
+            if (command == null) {
+                LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
+            } else {
+                profiles.add(command.execute(client, connection, DEVICE, logicalDeviceIndex));
+            }
+        }
+
+        return new GetDataSystemIdentifierDto(systemFilter.getId(), systemFilter.getSystemType(), measurements,
+                profiles);
     }
 
     @Override
