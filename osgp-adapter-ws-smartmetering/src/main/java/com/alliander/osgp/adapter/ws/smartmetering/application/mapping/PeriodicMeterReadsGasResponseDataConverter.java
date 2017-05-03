@@ -14,9 +14,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,14 +25,17 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 
-public class PeriodicMeterReadsGasResponseDataConverter
-        extends
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class PeriodicMeterReadsGasResponseDataConverter extends
         CustomConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponseData> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsGasResponseDataConverter.class);
 
     @Override
     public PeriodicMeterReadsGasResponseData convert(final PeriodicMeterReadsContainerGas source,
-            final Type<? extends PeriodicMeterReadsGasResponseData> destinationType) {
+            final Type<? extends PeriodicMeterReadsGasResponseData> destinationType, final MappingContext context) {
         final PeriodicMeterReadsGasResponseData periodicMeterReadsResponse = new PeriodicMeterReadsGasResponseData();
         periodicMeterReadsResponse.setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
         final List<PeriodicMeterReadsGas> periodicMeterReads = periodicMeterReadsResponse.getPeriodicMeterReadsGas();

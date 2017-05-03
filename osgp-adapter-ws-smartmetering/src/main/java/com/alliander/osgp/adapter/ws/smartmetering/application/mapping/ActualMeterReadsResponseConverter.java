@@ -13,9 +13,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +22,17 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFacto
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
 public class ActualMeterReadsResponseConverter extends CustomConverter<MeterReads, ActualMeterReadsResponseData> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsResponseConverter.class);
 
     @Override
     public ActualMeterReadsResponseData convert(final MeterReads source,
-            final Type<? extends ActualMeterReadsResponseData> destinationType) {
+            final Type<? extends ActualMeterReadsResponseData> destinationType, final MappingContext context) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponseData destination = new ObjectFactory()
                 .createActualMeterReadsResponseData();

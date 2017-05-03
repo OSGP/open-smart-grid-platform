@@ -10,20 +10,21 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 import java.util.List;
 import java.util.Set;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePushNotificationAlarmResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 
-public class PushNotificationsAlarmConverter extends
-        CustomConverter<PushNotificationAlarm, RetrievePushNotificationAlarmResponse> {
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class PushNotificationsAlarmConverter
+        extends CustomConverter<PushNotificationAlarm, RetrievePushNotificationAlarmResponse> {
 
     @Override
     public RetrievePushNotificationAlarmResponse convert(final PushNotificationAlarm source,
-            final Type<? extends RetrievePushNotificationAlarmResponse> destinationType) {
+            final Type<? extends RetrievePushNotificationAlarmResponse> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }

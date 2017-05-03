@@ -7,17 +7,20 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
+
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 
 public class SetKeysRequestConverter extends
         BidirectionalConverter<SetKeysRequestData, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData> {
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData convertTo(final SetKeysRequestData source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData> destinationType) {
+    public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData convertTo(
+            final SetKeysRequestData source,
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -30,8 +33,9 @@ public class SetKeysRequestConverter extends
     }
 
     @Override
-    public SetKeysRequestData convertFrom(final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData source,
-            final Type<SetKeysRequestData> destinationType) {
+    public SetKeysRequestData convertFrom(
+            final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData source,
+            final Type<SetKeysRequestData> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }

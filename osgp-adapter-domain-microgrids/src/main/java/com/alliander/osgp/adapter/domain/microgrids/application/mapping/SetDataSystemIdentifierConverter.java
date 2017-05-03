@@ -16,6 +16,7 @@ import com.alliander.osgp.dto.valueobjects.microgrids.ProfileDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
@@ -24,7 +25,7 @@ public class SetDataSystemIdentifierConverter
 
     @Override
     public SetDataSystemIdentifierDto convertTo(final SetDataSystemIdentifier source,
-            final Type<SetDataSystemIdentifierDto> destinationType) {
+            final Type<SetDataSystemIdentifierDto> destinationType, final MappingContext context) {
         final List<SetPointDto> setPoints = this.mapperFacade.mapAsList(source.getSetPoints(), SetPointDto.class);
         final List<ProfileDto> profiles = this.mapperFacade.mapAsList(source.getProfiles(), ProfileDto.class);
 
@@ -33,7 +34,7 @@ public class SetDataSystemIdentifierConverter
 
     @Override
     public SetDataSystemIdentifier convertFrom(final SetDataSystemIdentifierDto source,
-            final Type<SetDataSystemIdentifier> destinationType) {
+            final Type<SetDataSystemIdentifier> destinationType, final MappingContext context) {
         final List<SetPoint> setPoints = this.mapperFacade.mapAsList(source.getSetPoints(), SetPoint.class);
         final List<Profile> profiles = this.mapperFacade.mapAsList(source.getProfiles(), Profile.class);
 

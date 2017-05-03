@@ -9,11 +9,12 @@ package com.alliander.osgp.adapter.ws.core.application.mapping;
 
 import java.util.Objects;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 class SmartMeterConverter extends BidirectionalConverter<SmartMeter, Device> {
 
@@ -21,13 +22,14 @@ class SmartMeterConverter extends BidirectionalConverter<SmartMeter, Device> {
 
     @Override
     public SmartMeter convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
-            final Type<SmartMeter> destinationType) {
+            final Type<SmartMeter> destinationType, final MappingContext context) {
         return this.helper.initEntity(source);
     }
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertTo(final SmartMeter source,
-            final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType,
+            final MappingContext context) {
         return this.helper.initJaxb(source);
     }
 

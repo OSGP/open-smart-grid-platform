@@ -7,26 +7,26 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
-public class PeriodicMeterReadsRequestConverter
-extends
-CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest, PeriodicMeterReadsQuery> {
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class PeriodicMeterReadsRequestConverter extends
+        CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest, PeriodicMeterReadsQuery> {
 
     @Override
     public PeriodicMeterReadsQuery convert(final PeriodicReadsRequest source,
-            final Type<? extends PeriodicMeterReadsQuery> destinationType) {
+            final Type<? extends PeriodicMeterReadsQuery> destinationType, final MappingContext context) {
         return new PeriodicMeterReadsQuery(
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source
-                        .getPeriodicReadsRequestData().getPeriodType().name()), source.getPeriodicReadsRequestData()
-                        .getBeginDate().toGregorianCalendar().getTime(), source.getPeriodicReadsRequestData()
-                        .getEndDate().toGregorianCalendar().getTime(), source instanceof PeriodicMeterReadsGasRequest,
-                "");
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType
+                        .valueOf(source.getPeriodicReadsRequestData().getPeriodType().name()),
+                source.getPeriodicReadsRequestData().getBeginDate().toGregorianCalendar().getTime(),
+                source.getPeriodicReadsRequestData().getEndDate().toGregorianCalendar().getTime(),
+                source instanceof PeriodicMeterReadsGasRequest, "");
     }
 
 }

@@ -7,18 +7,21 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventLogCategory;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategoryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 
-public class FindEventsRequestDataConverter extends BidirectionalConverter<FindEventsRequestDto, FindEventsRequestData> {
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class FindEventsRequestDataConverter
+        extends BidirectionalConverter<FindEventsRequestDto, FindEventsRequestData> {
 
     @Override
-    public FindEventsRequestData convertTo(final FindEventsRequestDto source, final Type<FindEventsRequestData> destinationType) {
+    public FindEventsRequestData convertTo(final FindEventsRequestDto source,
+            final Type<FindEventsRequestData> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -29,13 +32,14 @@ public class FindEventsRequestDataConverter extends BidirectionalConverter<FindE
     }
 
     @Override
-    public FindEventsRequestDto convertFrom(final FindEventsRequestData source, final Type<FindEventsRequestDto> destinationType) {
+    public FindEventsRequestDto convertFrom(final FindEventsRequestData source,
+            final Type<FindEventsRequestDto> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
 
-        final EventLogCategoryDto eventLogCategory = EventLogCategoryDto.valueOf(source.getEventLogCategory()
-                .toString());
+        final EventLogCategoryDto eventLogCategory = EventLogCategoryDto
+                .valueOf(source.getEventLogCategory().toString());
 
         return new FindEventsRequestDto(eventLogCategory, source.getFrom(), source.getUntil());
     }

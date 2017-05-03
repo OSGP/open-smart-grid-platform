@@ -10,17 +10,18 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
 
 public class ProfileEntryValueConverter extends CustomConverter<ProfileEntryValueDto, ProfileEntryValue> {
 
     @Override
     public ProfileEntryValue convert(final ProfileEntryValueDto source,
-            final Type<? extends ProfileEntryValue> destinationType) {
+            final Type<? extends ProfileEntryValue> destinationType, final MappingContext context) {
         final Object value = source.getValue();
         if (value != null) {
             if (value instanceof Long) {
