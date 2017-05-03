@@ -59,7 +59,7 @@ public class DeviceSteps extends BaseDeviceSteps {
      */
     @And("^the device exists")
     public void theDeviceExists(final Map<String, String> settings) throws Throwable {
-        final Device device = Wait.until(() -> {
+        final Device device = Wait.untilAndReturn(() -> {
             final Device entity = this.deviceRepository
                     .findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
             if (entity == null) {
@@ -129,16 +129,12 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            if (entity == null) {
-                throw new Exception("Device with identification [" + deviceIdentification + "]");
-            }
+            Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
 
             final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(entity);
 
             Assert.assertNotNull(entity);
             Assert.assertTrue(devAuths.size() == 0);
-
-            return entity;
         });
     }
 
@@ -152,10 +148,7 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceWithIdDoesNotExist(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            if (entity != null) {
-                throw new Exception("Device with identification [" + deviceIdentification + "]");
-            }
-            return entity;
+            Assert.assertNull("Device with identification [" + deviceIdentification + "]", entity);
         });
     }
 
@@ -164,13 +157,9 @@ public class DeviceSteps extends BaseDeviceSteps {
 
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            if (entity == null) {
-                throw new Exception("Device with identification [" + deviceIdentification + "]");
-            }
+            Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
 
             Assert.assertTrue(entity.isActive());
-
-            return entity;
         });
     }
 
@@ -183,13 +172,9 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceWithDeviceIdentificationShouldBeInActive(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            if (entity == null) {
-                throw new Exception("Device with identification [" + deviceIdentification + "]");
-            }
+            Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
 
             Assert.assertFalse(entity.isActive());
-
-            return entity;
         });
     }
 
@@ -203,16 +188,12 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            if (entity == null) {
-                throw new Exception("Device with identification [" + deviceIdentification + "]");
-            }
+            Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
 
             final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(entity);
 
             Assert.assertNotNull(entity);
             Assert.assertTrue(devAuths.size() > 0);
-
-            return entity;
         });
     }
 

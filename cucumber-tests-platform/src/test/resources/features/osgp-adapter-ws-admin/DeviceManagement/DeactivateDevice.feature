@@ -1,3 +1,4 @@
+@PublicLighting @Platform @AdminDeviceManagement
 Feature: AdminDeviceManagement Device Deactivation
   As a ...
   I want to be able to perform DeviceManagement operations on a device

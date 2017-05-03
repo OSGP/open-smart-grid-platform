@@ -1,13 +1,15 @@
+@MicroGrids @Platform
 @Iec61850MockServerMarkerWadden
 Feature: MicroGrids Set Data Service
   As scrum team I want to have cucumber tests for Set Data Services
   so that I am able to guarantee the quality of Microgrid Platform.
 
-   Scenario Outline: SetData Service
+  Scenario Outline: SetData Service
     Given an rtu iec61850 device
-      | DeviceIdentification       | RTU10003            |
-    When a set data request is received    
-      | DeviceIdentification       | RTU10003            |
+      | DeviceIdentification | RTU-MARKER-WADDEN |
+      | Port                 |             62103 |
+    When a set data request is received
+      | DeviceIdentification       | RTU-MARKER-WADDEN   |
       | NumberOfSystems            |                   1 |
       | SystemId_1                 |                   1 |
       | SystemType_1               | <SystemType_1>      |
@@ -38,9 +40,9 @@ Feature: MicroGrids Set Data Service
       | ProfileEntryTime_1_1_4     | 2016-11-22T01:30:00 |
       | ProfileEntryValue_1_1_4    |                  21 |
     Then the set data response should be returned
-      | DeviceIdentification | RTU10003 |
-      | Result               | OK       |
-    And the Marker Wadden RTU simulator should contain
+      | DeviceIdentification | RTU-MARKER-WADDEN |
+      | Result               | OK                |
+    And the Marker Wadden RTU should contain
       | <LogicalDevice> | DSCH<NodeId>.SchdId.setVal    |                   1 |
       | <LogicalDevice> | DSCH<NodeId>.SchdTyp.setVal   |                   1 |
       | <LogicalDevice> | DSCH<NodeId>.SchCat.setVal    |                   1 |
@@ -53,23 +55,21 @@ Feature: MicroGrids Set Data Service
       | <LogicalDevice> | DSCH<NodeId>.SchdAbsTm.val.3  |                  21 |
       | <LogicalDevice> | DSCH<NodeId>.SchdAbsTm.time.3 | 2016-11-22T01:30:00 |
 
-    Examples:
-      | SystemType_1  | LogicalDevice  | NodeId |
-      | RTU           | RTU1           | 1      |
-      | BATTERY       | BATTERY1       | 1      |
-      | HEAT_PUMP     | HEAT_PUMP1     | 1      |
-      | BOILER        | BOILER1        | 1      |
-      | RTU           | RTU1           | 2      |
-      | BATTERY       | BATTERY1       | 2      |
-      | HEAT_PUMP     | HEAT_PUMP1     | 2      |
-      | BOILER        | BOILER1        | 2      |
-      | RTU           | RTU1           | 3      |
-      | BATTERY       | BATTERY1       | 3      |
-      | HEAT_PUMP     | HEAT_PUMP1     | 3      |
-      | BOILER        | BOILER1        | 3      |
-      | RTU           | RTU1           | 4      |
-      | BATTERY       | BATTERY1       | 4      |
-      | HEAT_PUMP     | HEAT_PUMP1     | 4      |
-      | BOILER        | BOILER1        | 4      |
-      
-      
+    Examples: 
+      | SystemType_1 | LogicalDevice | NodeId |
+      | RTU          | RTU1          |      1 |
+      | BATTERY      | BATTERY1      |      1 |
+      | HEAT_PUMP    | HEAT_PUMP1    |      1 |
+      | BOILER       | BOILER1       |      1 |
+      | RTU          | RTU1          |      2 |
+      | BATTERY      | BATTERY1      |      2 |
+      | HEAT_PUMP    | HEAT_PUMP1    |      2 |
+      | BOILER       | BOILER1       |      2 |
+      | RTU          | RTU1          |      3 |
+      | BATTERY      | BATTERY1      |      3 |
+      | HEAT_PUMP    | HEAT_PUMP1    |      3 |
+      | BOILER       | BOILER1       |      3 |
+      | RTU          | RTU1          |      4 |
+      | BATTERY      | BATTERY1      |      4 |
+      | HEAT_PUMP    | HEAT_PUMP1    |      4 |
+      | BOILER       | BOILER1       |      4 |

@@ -149,6 +149,7 @@ public class Helpers {
      * <p>
      * <ul>
      * <li>now + 3 months
+     * <li>now + 1 minutes
      * <li>tomorrow - 1 year
      * <li>yesterday + 2 weeks
      * <li>today at midday
@@ -192,32 +193,33 @@ public class Helpers {
         final Matcher whenMatcher = Pattern.compile(whenPattern).matcher(when);
         whenMatcher.find();
         switch (whenMatcher.group(1)) {
-        case "tomorrow":
-            retval = DateTime.now().plusDays(1);
-            break;
-        case "yesterday":
-            retval = DateTime.now().minusDays(1);
-            break;
-        case "now":
-        case "today":
-            retval = DateTime.now();
-            break;
-        default:
-            throw new Exception("Incorrect dateString [" + dateString
-                    + "], expected the string to begin with tomorrow, yesterday or now or today");
+            case "tomorrow":
+                retval = DateTime.now().plusDays(1);
+                break;
+            case "yesterday":
+                retval = DateTime.now().minusDays(1);
+                break;
+            case "now":
+            case "today":
+                retval = DateTime.now();
+                break;
+            default:
+                throw new Exception("Incorrect dateString [" + dateString
+                        + "], expected the string to begin with tomorrow, yesterday or now or today");
         }
 
         if (whenMatcher.groupCount() > 1 && whenMatcher.group(2).equals("at")) {
 
             switch (whenMatcher.group(3)) {
-            case "midday":
-                retval = retval.withHourOfDay(12);
-                break;
-            case "midnight":
-                retval = retval.withHourOfDay(0);
-                break;
-            default:
-                throw new Exception("Incorrect dateString [" + dateString + "], expected \"midday\" or \"midnight\"");
+                case "midday":
+                    retval = retval.withHourOfDay(12);
+                    break;
+                case "midnight":
+                    retval = retval.withHourOfDay(0);
+                    break;
+                default:
+                    throw new Exception(
+                            "Incorrect dateString [" + dateString + "], expected \"midday\" or \"midnight\"");
             }
             retval = retval.withMinuteOfHour(0);
             retval = retval.withSecondOfMinute(0);
@@ -227,6 +229,9 @@ public class Helpers {
             switch (what) {
             case "days":
                 retval = retval.plusDays(numberToAddOrSubstract);
+                break;
+            case "minutes":
+                retval = retval.plusMinutes(numberToAddOrSubstract);
                 break;
             case "hours":
                 retval = retval.plusHours(numberToAddOrSubstract);
@@ -248,6 +253,9 @@ public class Helpers {
                 break;
             case "hours":
                 retval = retval.minusHours(numberToAddOrSubstract);
+                break;
+            case "minutes":
+                retval = retval.minusMinutes(numberToAddOrSubstract);
                 break;
             case "weeks":
                 retval = retval.minusWeeks(numberToAddOrSubstract);
@@ -335,7 +343,9 @@ public class Helpers {
      * @return
      */
     public static Integer getInteger(final Map<String, String> settings, final String key) {
-
+        if (settings.get(key) == null) {
+            return null;
+        }
         return Integer.parseInt(settings.get(key));
     }
 

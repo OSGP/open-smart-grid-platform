@@ -1,12 +1,14 @@
+@MicroGrids @Platform
 Feature: MicroGrids Get Heat Buffer Data
   As an OSGP client
   I want to get Heat Buffer data from an RTU
   So this data can be used by other processes
 
-  @Iec61850MockServer
+  @Iec61850MockServerPampus
   Scenario: Request Heat Buffer
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU10001 |
+      | DeviceIdentification | RTU-PAMPUS |
+      | Port                 |      62102 |
     And an rtu simulator returning
       | HEAT_BUFFER1 | TTMP1.TmpSv.instMag.f |                  20 |
       | HEAT_BUFFER1 | TTMP1.TmpSv.t         | 2017-02-01T12:01:00 |
@@ -16,7 +18,7 @@ Feature: MicroGrids Get Heat Buffer Data
       | HEAT_BUFFER1 | TTMP1.TmpSv.t         | 2017-02-01T12:03:00 |
       | HEAT_BUFFER1 | KTNK1.VlmCap.setMag.f |                1313 |
     When a get data request is received
-      | DeviceIdentification      | RTU10001    |
+      | DeviceIdentification      | RTU-PAMPUS  |
       | NumberOfSystems           |           1 |
       | SystemId_1                |           1 |
       | SystemType_1              | HEAT_BUFFER |
@@ -30,7 +32,7 @@ Feature: MicroGrids Get Heat Buffer Data
       | MeasurementFilterNode_1_4 | VlmCap      |
       | MeasurementFilterId_1_4   |           1 |
     Then the get data response should be returned
-      | DeviceIdentification     | RTU10001                 |
+      | DeviceIdentification     | RTU-PAMPUS               |
       | Result                   | OK                       |
       | NumberOfSystems          |                        1 |
       | SystemId_1               |                        1 |

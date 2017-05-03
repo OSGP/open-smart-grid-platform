@@ -1,3 +1,4 @@
+@PublicLighting @Platform @CoreAdhocManagement
 Feature: CoreAdhocManagement Set Reboot
   As OSGP
   I want to asynchronously handle set reboot requests

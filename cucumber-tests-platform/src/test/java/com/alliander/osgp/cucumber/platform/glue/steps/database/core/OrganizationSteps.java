@@ -129,7 +129,7 @@ public class OrganizationSteps extends GlueBase {
      */
     @Given("^the organization exists$")
     public void theOrganizationExists(final Map<String, String> expectedOrganization) throws Throwable {
-        final Organisation entity = Wait.until(() -> {
+        final Organisation entity = Wait.untilAndReturn(() -> {
             return this.repo
                     .findByOrganisationIdentification(expectedOrganization.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
         });

@@ -119,7 +119,7 @@ public class Defaults {
     public static final com.alliander.osgp.oslp.Oslp.HistoryTermType DEFAULT_OSLP_HISTORY_TERM_TYPE = com.alliander.osgp.oslp.Oslp.HistoryTermType.Short;
     public static final String DEFAULT_OWNER = "test-org";
     public static final Short DEFAULT_PAGE = 0;
-    public static final int DEFAULT_PAGE_SIZE = 25;
+    public static final Integer DEFAULT_PAGE_SIZE = 25;
 
     public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
     public static final LinkType DEFAULT_PREFERRED_LINKTYPE = LinkType.LINK_NOT_SET;
@@ -153,8 +153,8 @@ public class Defaults {
     public static final Boolean DLMS_DEFAULT_HSL5_ACTIVE = true;
 
     public static final Boolean DLMS_DEFAULT_IP_ADDRESS_IS_STATIC = true;
-    public static final long DLMS_DEFAULT_LOGICAL_ID = 1L;
-    public static final long DLMS_DEFAULT_PORT = 1024L;
+    public static final Long DLMS_DEFAULT_LOGICAL_ID = 1L;
+    public static final Long DLMS_DEFAULT_PORT = 1024L;
     public static final String DLMS_DEFAULT_DEVICE_DELIVERY_DATE = "2016-05-11T00:00:00.000Z";
     public static final String EMAIL = "someone@somewhere.nl";
     public static final Boolean EVENTS_NODELIST_EXPECTED = false;
@@ -164,7 +164,7 @@ public class Defaults {
     public static final Integer LONG_INTERVAL = 0;
     public static final String MANUFACTURER_CODE = "Test";
     public static final String MANUFACTURER_NAME = "Test";
-    public static final boolean MANUFACTURER_USE_PREFIX = false;
+    public static final Boolean MANUFACTURER_USE_PREFIX = false;
     public static final String PHONENUMBER = "+31 43 1234567";
     public static final com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup PLATFORM_FUNCTION_GROUP = com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.ADMIN;
     public static final Integer SHORT_INTERVAL = 15;
@@ -176,6 +176,7 @@ public class Defaults {
     public static final String DC_LIGHTS = "";
     public static final int FIRMWARE_ID = 0;
     public static final String FIRMWARE_DESCRIPTION = "Test Firmware";
+    public static final Boolean IN_MAINTENANCE = false;
 
     public static final String DEFAULT_SCHEDULE_NAME = "Schedule1";
     public static final String DEFAULT_SCHEDULE_DESCRIPTION = "This is the description for Schedule 1";
@@ -191,7 +192,7 @@ public class Defaults {
     public static final String FIRMWARE_MODULE_VERSION_SEC = "5";
     public static final String FIRMWARE_INSTALLED_BY = "Test User";
     public static final String FIRMWARE_INSTALLATION_DATE = "now";
-    public static final boolean DEVICE_FIRMWARE_ACTIVE = true;
+    public static final Boolean DEVICE_FIRMWARE_ACTIVE = true;
 
     public static final DeviceFunctionGroup DEVICE_FUNCTION_GROUP = DeviceFunctionGroup.OWNER;
     public static final Boolean DEVICE_IN_MAINTENANCE = false;
@@ -201,12 +202,32 @@ public class Defaults {
     public static final Integer RANDOM_DEVICE = 0;
     public static final Integer OSLP_ELSTER_SERVER_PORT = 12122;
 
-    public static final long DEFAULT_SCHEDULE_VERSION = 1L;
+    public static final Long DEFAULT_SCHEDULE_VERSION = 1L;
     public static final String SMSTYPE = "?";
     public static final String LIGHTMEASUREMENT_LASTMESSAGE = "";
     public static final Integer SMS_INDEX = 1;
 
     public static final boolean DEFAULT_BYPASS_RETRY = false;
+
+    public static final int DEFAULT_KEY_RELAY = -1;
+    public static final String DEFAULT_KEY_RELAYFUNCTION = "Relais 2";
+
+    public static final String DEFAULT_TYPE_DAY = "Alle dagen";
+    public static final String DEFAULT_TIME = "12:00";
+
+    public static final String DEVICE_OUTPUT_SETTINGS = DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID + ", "
+            + DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID + ", " + DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE + ", "
+            + DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS;
+    public static final String RELAY_STATUSES = DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID + ", "
+            + DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID + ", " + DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE + ", "
+            + DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS;
+    public static final Integer DEFAULT_RELAY_OVERVIEW_INDEX = 1;
+
     public static final String TIMESTAMP = "now";
     public static final Integer REQUESTED_PAGE = 0;
+
+    public static final Integer RELAY_OVERVIEW_INDEX = 1;
+    public static final Boolean LAST_KNOWN_STATE = false;
+    public static final DateTime DATE_NOW = DateTime.now();
+    public static final String TODAY = "today";
 }
