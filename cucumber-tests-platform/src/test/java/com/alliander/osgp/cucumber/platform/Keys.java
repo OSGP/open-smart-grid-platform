@@ -244,6 +244,7 @@ public class Keys {
     public static final String SCHEDULE_WEEKDAY = "WeekDay";
     public static final String SEPARATOR_COMMA = ",";
     public static final String SEPARATOR_SEMICOLON = ";";
+    public static final String SEPARATOR_COLON = ":";
     public static final String SHORT_INTERVAL = "ShortInterval";
     public static final String START_TIME = "StartTime";
     public static final String SUPPLIER = "Supplier";
