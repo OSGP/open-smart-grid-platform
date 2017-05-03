@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 public class DaDeviceResponse extends EmptyDeviceResponse {
 
-    Serializable dataResponse;
+    private Serializable dataResponse;
 
     public DaDeviceResponse(final String organisation, final String device, final String correlationUid,
                             final DeviceMessageStatus status, final Serializable dataResponse) {

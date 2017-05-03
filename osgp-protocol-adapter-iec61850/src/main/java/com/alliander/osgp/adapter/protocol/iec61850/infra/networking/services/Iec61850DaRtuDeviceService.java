@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -51,7 +51,7 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
     private Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Override
-    public <T> void getData(final DaDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler, DaRtuDeviceRequestMessageProcessor messageProcessor)
+    public void getData(final DaDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler, final DaRtuDeviceRequestMessageProcessor messageProcessor)
             throws JMSException {
         try {
             final String serverName = this.getServerName(deviceRequest);
@@ -60,7 +60,7 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            final T dataResponse = this.handleGetData(
+            final Serializable dataResponse = this.handleGetData(
                     new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
                             serverModel), deviceRequest.getDeviceIdentification(), serverName), deviceRequest, messageProcessor);
 

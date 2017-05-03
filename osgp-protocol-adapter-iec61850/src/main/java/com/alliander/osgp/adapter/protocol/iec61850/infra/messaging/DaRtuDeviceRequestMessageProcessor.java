@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -11,7 +11,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaRtuDeviceService;
-import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
@@ -62,9 +61,7 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
      * and the deviceRequest. Must be implemented in each concrete MessageProcessor
      *
      */
-    public <T> Function<T> getDataFunction(Iec61850Client iec61850Client, DeviceConnection connection, DaDeviceRequest deviceRequest) {
-        return null;
-    };
+    public abstract <T> Function<T> getDataFunction(Iec61850Client iec61850Client, DeviceConnection connection, DaDeviceRequest deviceRequest);
 
     /**
      * Initialization function executed after dependency injection has finished.
@@ -80,7 +77,7 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing distribution automation get pq values request message");
+        LOGGER.debug("Processing distribution automation request message");
 
         String correlationUid = null;
         String domain = null;

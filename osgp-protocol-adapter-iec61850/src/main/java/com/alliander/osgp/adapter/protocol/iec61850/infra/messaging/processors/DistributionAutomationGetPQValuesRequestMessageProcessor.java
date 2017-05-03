@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -26,8 +26,6 @@ import org.openmuc.openiec61850.ServerModel;
 import org.osgpfoundation.osgp.dto.da.iec61850.DataSampleDto;
 import org.osgpfoundation.osgp.dto.da.iec61850.LogicalDeviceDto;
 import org.osgpfoundation.osgp.dto.da.iec61850.LogicalNodeDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -49,16 +47,11 @@ import org.osgpfoundation.osgp.dto.da.GetPQValuesResponseDto;
  */
 @Component("iec61850DistributionAutomationGetPQValuesRequestMessageProcessor")
 public class DistributionAutomationGetPQValuesRequestMessageProcessor extends DaRtuDeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationGetPQValuesRequestMessageProcessor.class);
-
     public DistributionAutomationGetPQValuesRequestMessageProcessor() {
         super(DeviceRequestMessageType.GET_POWER_QUALITY_VALUES);
     }
 
-
+    @Override
     public Function<GetPQValuesResponseDto> getDataFunction(final Iec61850Client client, final DeviceConnection connection, final DaDeviceRequest deviceRequest) {
         return () -> {
             ServerModel serverModel = connection.getConnection().getServerModel();
@@ -71,7 +64,7 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         for (ModelNode node : model.getChildren()) {
             if (node instanceof LogicalDevice) {
                 List<LogicalNodeDto> logicalNodes = processPQValuesLogicalNodes((LogicalDevice) node);
-                if (logicalNodes.size()>0) {
+                if (!logicalNodes.isEmpty()) {
                     logicalDevices.add(new LogicalDeviceDto(node.getName(), logicalNodes));
                 }
             }
@@ -84,7 +77,7 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         for (ModelNode subNode : node.getChildren()) {
             if (subNode instanceof LogicalNode) {
                 List<DataSampleDto> data = processPQValueNodeChildren((LogicalNode) subNode);
-                if (data.size()>0) {
+                if (!data.isEmpty()) {
                     logicalNodes.add(new LogicalNodeDto(subNode.getName(), data));
                 }
             }
@@ -104,7 +97,7 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         }
         for (Map.Entry<String, Set<Fc>> childEntry : childMap.entrySet()) {
             List<DataSampleDto> childData = processPQValuesFunctionalConstraintObject( node, childEntry.getKey(), childEntry.getValue());
-            if (childData.size()>0) {
+            if (!childData.isEmpty()) {
                 data.addAll(childData);
             }
         }
@@ -116,7 +109,7 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         List<DataSampleDto> data = new ArrayList<>();
         for (Fc constraint : childFcs) {
             List<DataSampleDto> childData = processPQValuesFunctionalChildConstraintObject(parentNode, childName, constraint);
-            if (childData.size()>0) {
+            if (!childData.isEmpty()) {
                 data.addAll(childData);
             }
         }
@@ -152,26 +145,45 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         String type = null;
         BigDecimal value = null;
         if (node.getChildren() != null) {
-            for (ModelNode subNode : node.getChildren()) {
-                if (subNode instanceof BdaQuality) {
-//                 For now we do not use Quality
-                } else if (subNode instanceof BdaTimestamp) {
-                    ts = ((BdaTimestamp) subNode).getDate();
-                } else if (subNode instanceof ConstructedDataAttribute) {
-                    if (subNode.getChildren()!=null) {
-                        for (ModelNode subSubNode : subNode.getChildren()) {
-                            if (subSubNode instanceof BdaFloat32) {
-                                type = node.getName() + "." + subNode.getName() + "." + subSubNode.getName();
-                                value = new BigDecimal(((BdaFloat32) subSubNode).getFloat(),
-                                        new MathContext(3, RoundingMode.HALF_EVEN));
-                            }
-                        }
-                    }
-                }
+            ts = findBdaTimestampNodeValue(node);
+            ModelNode floatNode = findBdaFloat32NodeInConstructedDataAttribute(node);
+            if (floatNode != null) {
+                type = node.getName() + "." + floatNode.getParent().getName() + "." + floatNode.getName();
+                value = new BigDecimal(((BdaFloat32) floatNode).getFloat(),
+                        new MathContext(3, RoundingMode.HALF_EVEN));
             }
         }
-        DataSampleDto sample = new DataSampleDto(type, ts, value);
-        return sample;
+        return new DataSampleDto(type, ts, value);
+    }
+
+    private Date findBdaTimestampNodeValue(ModelNode node) {
+        Date timestamp = null;
+        for (ModelNode subNode : node.getChildren()) {
+            if (subNode instanceof BdaTimestamp) {
+                timestamp = ((BdaTimestamp) subNode).getDate();
+            }
+        }
+        return timestamp;
+    }
+
+    private ModelNode findBdaFloat32NodeInConstructedDataAttribute(ModelNode node) {
+        ModelNode floatNode = null;
+        for (ModelNode subNode : node.getChildren()) {
+            if (subNode instanceof ConstructedDataAttribute && subNode.getChildren()!=null) {
+                floatNode = findBdaFloat32Node(subNode);
+            }
+        }
+        return floatNode;
+    }
+
+    private ModelNode findBdaFloat32Node(ModelNode node) {
+        ModelNode floatNode = null;
+        for (ModelNode subNode : node.getChildren()) {
+            if (subNode instanceof BdaFloat32) {
+                floatNode = subNode;
+            }
+        }
+        return floatNode;
     }
 
     private DataSampleDto processPQValue(ModelNode parentNode, ModelNode node) {
@@ -179,33 +191,27 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         String type = null;
         BigDecimal value = null;
         if (node.getChildren() != null) {
-            for (ModelNode subNode : node.getChildren()) {
-                if (subNode instanceof BdaQuality) {
-//                 For now we do not use Quality
-                } else if (subNode instanceof BdaTimestamp) {
-                    ts = ((BdaTimestamp) subNode).getDate();
-                } else if (subNode instanceof ConstructedDataAttribute) {
-                    if (subNode.getChildren()!=null) {
-                        for (ModelNode subSubNode : subNode.getChildren()) {
-                            if (subSubNode instanceof ConstructedDataAttribute) {
-                                if (subSubNode.getChildren()!=null) {
-                                    for (ModelNode subSubSubNode : subSubNode.getChildren()) {
-                                        if (subSubSubNode instanceof BdaFloat32) {
-                                            type = parentNode.getName() + "." + node.getName() + "." + subNode.getName() + "." + subSubNode.getName() + "." + subSubSubNode.getName();
-
-                                            value = new BigDecimal(((BdaFloat32) subSubSubNode).getFloat(),
-                                                    new MathContext(3, RoundingMode.HALF_EVEN));
-                                        }
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
+            ts = findBdaTimestampNodeValue(node);
+            ModelNode floatNode = findDeeperBdaFloat32NodeInConstructedDataAttributeChildren(node);
+            if (floatNode != null) {
+                type = parentNode.getName() + "." + node.getName() + "." + floatNode.getParent().getParent().getName() + "." + floatNode.getParent().getName() + "." + floatNode.getName();
+                value = getNodeBigDecimal(floatNode);
             }
         }
-        DataSampleDto sample = new DataSampleDto(type, ts, value);
-        return sample;
+        return new DataSampleDto(type, ts, value);
+    }
+
+    private ModelNode findDeeperBdaFloat32NodeInConstructedDataAttributeChildren(ModelNode node) {
+        ModelNode floatNode = null;
+        for (ModelNode subNode : node.getChildren()) {
+            if (subNode instanceof ConstructedDataAttribute && subNode.getChildren()!=null) {
+                floatNode = findBdaFloat32NodeInConstructedDataAttribute(subNode);
+            }
+        }
+        return floatNode;
+    }
+
+    private BigDecimal getNodeBigDecimal(ModelNode node) {
+        return new BigDecimal(((BdaFloat32) node).getFloat(), new MathContext(3, RoundingMode.HALF_EVEN));
     }
 }
