@@ -67,7 +67,7 @@ public class DistributionAutomationMapper extends ConfigurableMapper {
                 .classMap(DataSample.class,
                         org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.generic.DataSampleType.class)
                 .field("sampleType", "type")
-                .field("timestamp", "ts")
+                .field("timestamp", "timestamp")
                 .field("value", "value")
                 .register();
     }
