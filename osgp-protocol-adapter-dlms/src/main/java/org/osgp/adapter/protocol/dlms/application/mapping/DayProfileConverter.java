@@ -11,14 +11,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.openmuc.jdlms.datatypes.DataObject;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileActionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileDto;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
 
 public class DayProfileConverter extends CustomConverter<DayProfileDto, DataObject> {
 
@@ -26,8 +27,8 @@ public class DayProfileConverter extends CustomConverter<DayProfileDto, DataObje
         final List<DataObject> dayObjectElements = new ArrayList<>();
 
         final DataObject dayId = DataObject.newUInteger8Data(dayProfile.getDayId().shortValue());
-        final DataObject dayActionObjectList = DataObject.newArrayData(this.getDayActionObjectList(dayProfile
-                .getDayProfileActionList()));
+        final DataObject dayActionObjectList = DataObject
+                .newArrayData(this.getDayActionObjectList(dayProfile.getDayProfileActionList()));
         dayObjectElements.addAll(Arrays.asList(dayId, dayActionObjectList));
 
         return dayObjectElements;
@@ -70,7 +71,8 @@ public class DayProfileConverter extends CustomConverter<DayProfileDto, DataObje
     }
 
     @Override
-    public DataObject convert(final DayProfileDto source, final Type<? extends DataObject> destinationType) {
+    public DataObject convert(final DayProfileDto source, final Type<? extends DataObject> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
