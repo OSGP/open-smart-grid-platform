@@ -36,7 +36,7 @@
 
     <xsd:complexType name="DataSampleType">
         <xsd:attribute name="type" type="xsd:string"/>
-        <xsd:attribute name="ts" type="xsd:dateTime"/>
+        <xsd:attribute name="timestamp" type="xsd:dateTime"/>
         <xsd:attribute name="value" type="xsd:decimal"/>
     </xsd:complexType>
 
@@ -143,7 +143,7 @@
 
     <!--
     ##################################################################################
-    ## Aynchronous Request Elements
+    ## Asynchronous Request Elements
     ##################################################################################
     -->
     <xsd:element name="GetDeviceModelAsyncRequest">
