@@ -11,4 +11,8 @@ public class GetConfigurationObjectRequestDataDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 2733945253731054997L;
 
+    public GetConfigurationObjectRequestDataDto() {
+        // empty constructor
+    }
+
 }
