@@ -7,9 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.DaliConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.LightTypeDto;
@@ -19,22 +16,30 @@ import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
 import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
 import com.alliander.osgp.oslp.Oslp;
 
-public class OslpGetConfigurationResponseToConfigurationConverter extends
-        CustomConverter<Oslp.GetConfigurationResponse, ConfigurationDto> {
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class OslpGetConfigurationResponseToConfigurationConverter
+        extends CustomConverter<Oslp.GetConfigurationResponse, ConfigurationDto> {
     @Override
     public ConfigurationDto convert(final Oslp.GetConfigurationResponse source,
-            final Type<? extends ConfigurationDto> destinationType) {
-        return new ConfigurationDto(source.hasLightType() ? this.mapperFacade.map(source.getLightType(), LightTypeDto.class)
-                : null, source.hasDaliConfiguration() ? this.mapperFacade.map(source.getDaliConfiguration(),
-                DaliConfigurationDto.class) : null, source.hasRelayConfiguration() ? this.mapperFacade.map(
-                source.getRelayConfiguration(), RelayConfigurationDto.class) : null,
-                source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade.map(
-                        source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
+            final Type<? extends ConfigurationDto> destinationType, final MappingContext context) {
+        return new ConfigurationDto(
+                source.hasLightType() ? this.mapperFacade.map(source.getLightType(), LightTypeDto.class) : null,
+                source.hasDaliConfiguration()
+                        ? this.mapperFacade.map(source.getDaliConfiguration(), DaliConfigurationDto.class) : null,
+                source.hasRelayConfiguration()
+                        ? this.mapperFacade.map(source.getRelayConfiguration(), RelayConfigurationDto.class) : null,
+                source.hasShortTermHistoryIntervalMinutes()
+                        ? this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
                 source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkTypeDto.class)
-                        : null, source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class)
-                        : null, source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
-                        source.getLongTermHistoryInterval(), Integer.class) : null,
-                source.hasLongTermHistoryIntervalType() ? this.mapperFacade.map(
-                        source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class) : null);
+                        : null,
+                source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class) : null,
+                source.hasLongTermHistoryInterval()
+                        ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class) : null,
+                source.hasLongTermHistoryIntervalType()
+                        ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
+                        : null);
     }
 }

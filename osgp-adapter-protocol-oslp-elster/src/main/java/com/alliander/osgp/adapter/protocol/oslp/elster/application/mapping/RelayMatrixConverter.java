@@ -10,25 +10,26 @@ package com.alliander.osgp.adapter.protocol.oslp.elster.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.RelayMatrixDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class RelayMatrixConverter extends BidirectionalConverter<RelayMatrixDto, Oslp.RelayMatrix> {
 
     @Override
     public com.alliander.osgp.oslp.Oslp.RelayMatrix convertTo(final RelayMatrixDto source,
-            final Type<com.alliander.osgp.oslp.Oslp.RelayMatrix> destinationType) {
+            final Type<com.alliander.osgp.oslp.Oslp.RelayMatrix> destinationType, final MappingContext context) {
 
         final ByteString masterRelayIndex = this.mapperFacade.map(source.getMasterRelayIndex(), ByteString.class);
         final boolean isMasterRelayOn = source.isMasterRelayOn();
-        final ByteString indicesOfControlledRelaysOn = this.convertListOfIntegersToByteString(source
-                .getIndicesOfControlledRelaysOn());
-        final ByteString indicesOfControlledRelaysOff = this.convertListOfIntegersToByteString(source
-                .getIndicesOfControlledRelaysOff());
+        final ByteString indicesOfControlledRelaysOn = this
+                .convertListOfIntegersToByteString(source.getIndicesOfControlledRelaysOn());
+        final ByteString indicesOfControlledRelaysOff = this
+                .convertListOfIntegersToByteString(source.getIndicesOfControlledRelaysOff());
 
         return Oslp.RelayMatrix.newBuilder().setMasterRelayIndex(masterRelayIndex).setMasterRelayOn(isMasterRelayOn)
                 .setIndicesOfControlledRelaysOn(indicesOfControlledRelaysOn)
@@ -37,14 +38,14 @@ public class RelayMatrixConverter extends BidirectionalConverter<RelayMatrixDto,
 
     @Override
     public RelayMatrixDto convertFrom(final com.alliander.osgp.oslp.Oslp.RelayMatrix source,
-            final Type<RelayMatrixDto> destinationType) {
+            final Type<RelayMatrixDto> destinationType, final MappingContext context) {
 
         final Integer masterRelayIndex = this.mapperFacade.map(source.getMasterRelayIndex(), Integer.class);
         final boolean isMasterRelayOn = source.getMasterRelayOn();
-        final List<Integer> indicesOfControlledRelaysOn = this.convertByteStringToListOfIntegers(source
-                .getIndicesOfControlledRelaysOn());
-        final List<Integer> indicesOfControlledRelaysOff = this.convertByteStringToListOfIntegers(source
-                .getIndicesOfControlledRelaysOff());
+        final List<Integer> indicesOfControlledRelaysOn = this
+                .convertByteStringToListOfIntegers(source.getIndicesOfControlledRelaysOn());
+        final List<Integer> indicesOfControlledRelaysOff = this
+                .convertByteStringToListOfIntegers(source.getIndicesOfControlledRelaysOff());
 
         final RelayMatrixDto relayMatrix = new RelayMatrixDto(masterRelayIndex, isMasterRelayOn);
         relayMatrix.setIndicesOfControlledRelaysOn(indicesOfControlledRelaysOn);

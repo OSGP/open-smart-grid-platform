@@ -9,9 +9,6 @@ package com.alliander.osgp.adapter.protocol.oslp.elster.application.mapping;
 
 import java.util.ArrayList;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.MutableDateTime;
@@ -31,36 +28,42 @@ import com.alliander.osgp.dto.valueobjects.RelayMatrixDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
-public class OslpGetConfigurationResponseToConfigurationConverter extends
-        CustomConverter<Oslp.GetConfigurationResponse, ConfigurationDto> {
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class OslpGetConfigurationResponseToConfigurationConverter
+        extends CustomConverter<Oslp.GetConfigurationResponse, ConfigurationDto> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(OslpGetConfigurationResponseToConfigurationConverter.class);
 
     @Override
     public ConfigurationDto convert(final Oslp.GetConfigurationResponse source,
-            final Type<? extends ConfigurationDto> destinationType) {
+            final Type<? extends ConfigurationDto> destinationType, final MappingContext context) {
 
         // @formatter:off
         // Convert the required values for the constructor of Configuration.
-        final LightTypeDto lightType = source.hasLightType() ? this.mapperFacade.map(source.getLightType(),
-                LightTypeDto.class) : null;
-        final DaliConfigurationDto daliConfiguration = source.hasDaliConfiguration() ? this.mapperFacade.map(
-                source.getDaliConfiguration(), DaliConfigurationDto.class) : null;
-        final Integer shortTermHistoryIntervalMinutes = source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade
-                .map(source.getShortTermHistoryIntervalMinutes(), Integer.class) : null;
-        final RelayConfigurationDto relayConfiguration = source.hasRelayConfiguration() ? this.mapperFacade.map(
-                source.getRelayConfiguration(), RelayConfigurationDto.class) : new RelayConfigurationDto(new ArrayList<RelayMapDto>());
+        final LightTypeDto lightType = source.hasLightType()
+                ? this.mapperFacade.map(source.getLightType(), LightTypeDto.class) : null;
+        final DaliConfigurationDto daliConfiguration = source.hasDaliConfiguration()
+                ? this.mapperFacade.map(source.getDaliConfiguration(), DaliConfigurationDto.class) : null;
+        final Integer shortTermHistoryIntervalMinutes = source.hasShortTermHistoryIntervalMinutes()
+                ? this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class) : null;
+        final RelayConfigurationDto relayConfiguration = source.hasRelayConfiguration()
+                ? this.mapperFacade.map(source.getRelayConfiguration(), RelayConfigurationDto.class)
+                : new RelayConfigurationDto(new ArrayList<RelayMapDto>());
         final LinkTypeDto preferredLinkType = source.hasPreferredLinkType()
-                && !source.getPreferredLinkType().equals(Oslp.LinkType.LINK_NOT_SET) ? this.mapperFacade.map(
-                source.getPreferredLinkType(), LinkTypeDto.class) : null;
-        final MeterTypeDto meterType = source.hasMeterType() && !source.getMeterType().equals(Oslp.MeterType.MT_NOT_SET) ? this.mapperFacade
-                .map(source.getMeterType(), MeterTypeDto.class) : null;
-        final Integer longTermHistoryInterval = source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
-                source.getLongTermHistoryInterval(), Integer.class) : null;
+                && !source.getPreferredLinkType().equals(Oslp.LinkType.LINK_NOT_SET)
+                        ? this.mapperFacade.map(source.getPreferredLinkType(), LinkTypeDto.class) : null;
+        final MeterTypeDto meterType = source.hasMeterType() && !source.getMeterType().equals(Oslp.MeterType.MT_NOT_SET)
+                ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class) : null;
+        final Integer longTermHistoryInterval = source.hasLongTermHistoryInterval()
+                ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class) : null;
         final LongTermIntervalTypeDto longTermIntervalType = source.hasLongTermHistoryIntervalType()
-                && !source.getLongTermHistoryIntervalType().equals(Oslp.LongTermIntervalType.LT_INT_NOT_SET) ? this.mapperFacade
-                .map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class) : null;
+                && !source.getLongTermHistoryIntervalType().equals(Oslp.LongTermIntervalType.LT_INT_NOT_SET)
+                        ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
+                        : null;
 
         // Create an Configuration instance.
         final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration, relayConfiguration,
@@ -70,25 +73,25 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
         // Set the optional values using the set() functions.
         configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
         if (source.getDeviceFixIpValue() != null && !source.getDeviceFixIpValue().isEmpty()) {
-            String ipAddress = this.convertIpAddress(source.getDeviceFixIpValue());
-            String netMask = this.convertIpAddress(source.getNetMask());
-            String gateWay = this.convertIpAddress(source.getGateWay());
+            final String ipAddress = this.convertIpAddress(source.getDeviceFixIpValue());
+            final String netMask = this.convertIpAddress(source.getNetMask());
+            final String gateWay = this.convertIpAddress(source.getGateWay());
             configuration.setDeviceFixedIp(new DeviceFixedIpDto(ipAddress, netMask, gateWay));
         }
         configuration.setDhcpEnabled(source.getIsDhcpEnabled());
-//        if (source.hasIsTlsEnabled()) {
-//            configuration.setTlsEnabled(source.getIsTlsEnabled());
-//        }
-//        if (source.hasOslpBindPortNumber()) {
-//            configuration.setTlsPortNumber(source.getOslpBindPortNumber());
-//        }
-//        if (source.hasCommonNameString()) {
-//            configuration.setCommonNameString(source.getCommonNameString());
-//        }
+        // if (source.hasIsTlsEnabled()) {
+        // configuration.setTlsEnabled(source.getIsTlsEnabled());
+        // }
+        // if (source.hasOslpBindPortNumber()) {
+        // configuration.setTlsPortNumber(source.getOslpBindPortNumber());
+        // }
+        // if (source.hasCommonNameString()) {
+        // configuration.setCommonNameString(source.getCommonNameString());
+        // }
         configuration.setCommunicationTimeout(source.getCommunicationTimeout());
         configuration.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
-        configuration.setCommunicationPauseTimeBetweenConnectionTrials(source
-                .getCommunicationPauseTimeBetweenConnectionTrials());
+        configuration.setCommunicationPauseTimeBetweenConnectionTrials(
+                source.getCommunicationPauseTimeBetweenConnectionTrials());
         if (source.getOspgIpAddress() != null && !source.getOspgIpAddress().isEmpty()) {
             configuration.setOsgpIpAddress(this.convertIpAddress(source.getOspgIpAddress()));
         }
@@ -99,7 +102,8 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
         configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
         configuration.setSwitchingDelays(source.getSwitchingDelayList());
         if (source.getRelayLinkingList() != null) {
-            configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinkingList(), RelayMatrixDto.class));
+            configuration
+                    .setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinkingList(), RelayMatrixDto.class));
         }
         configuration.setRelayRefreshing(source.getRelayRefreshing());
 
@@ -113,7 +117,7 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
     }
 
     private String convertIpAddress(final ByteString byteString) {
-        if (byteString == null || byteString.isEmpty()){
+        if (byteString == null || byteString.isEmpty()) {
             return "";
         }
         LOGGER.debug("byteString.toByteArray().length(): {}", byteString.toByteArray().length);
@@ -135,14 +139,12 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
     /*
      * SummerTimeDetails/WinterTimeDetails string: MMWHHmi
      *
-     * where: (note, north hemisphere summer begins at the end of march)
-     * MM: month
-     * W: day of the week (0- Monday, 6- Sunday)
-     * HH: hour of the changing time
-     * mi: minutes of the changing time
+     * where: (note, north hemisphere summer begins at the end of march) MM:
+     * month W: day of the week (0- Monday, 6- Sunday) HH: hour of the changing
+     * time mi: minutes of the changing time
      *
-     * Default value for summer time: 0360100
-     * Default value for summer time: 1060200
+     * Default value for summer time: 0360100 Default value for summer time:
+     * 1060200
      */
     // @formatter:on
     private DateTime convertSummerTimeWinterTimeDetails(final String timeDetails) {

@@ -1,16 +1,17 @@
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto;
 import com.alliander.osgp.oslp.Oslp;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class HistoryTermTypeConverter extends BidirectionalConverter<HistoryTermTypeDto, Oslp.HistoryTermType> {
 
     @Override
     public com.alliander.osgp.oslp.Oslp.HistoryTermType convertTo(final HistoryTermTypeDto source,
-            final Type<com.alliander.osgp.oslp.Oslp.HistoryTermType> destinationType) {
+            final Type<com.alliander.osgp.oslp.Oslp.HistoryTermType> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -24,7 +25,7 @@ public class HistoryTermTypeConverter extends BidirectionalConverter<HistoryTerm
 
     @Override
     public HistoryTermTypeDto convertFrom(final com.alliander.osgp.oslp.Oslp.HistoryTermType source,
-            final Type<HistoryTermTypeDto> destinationType) {
+            final Type<HistoryTermTypeDto> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }

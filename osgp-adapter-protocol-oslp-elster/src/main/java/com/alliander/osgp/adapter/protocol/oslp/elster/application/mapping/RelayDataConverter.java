@@ -7,17 +7,19 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.RelayDataDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
 public class RelayDataConverter extends BidirectionalConverter<RelayDataDto, Oslp.RelayData> {
 
     @Override
-    public RelayDataDto convertFrom(final Oslp.RelayData source, final Type<RelayDataDto> destinationType) {
+    public RelayDataDto convertFrom(final Oslp.RelayData source, final Type<RelayDataDto> destinationType,
+            final MappingContext context) {
 
         int index = 0;
         if (source.hasIndex()) {
@@ -33,7 +35,8 @@ public class RelayDataConverter extends BidirectionalConverter<RelayDataDto, Osl
     }
 
     @Override
-    public Oslp.RelayData convertTo(final RelayDataDto source, final Type<Oslp.RelayData> destinationType) {
+    public Oslp.RelayData convertTo(final RelayDataDto source, final Type<Oslp.RelayData> destinationType,
+            final MappingContext context) {
 
         final ByteString index = this.mapperFacade.map(Integer.valueOf(source.getIndex()), ByteString.class);
         final int totalLightingMinutes = source.getTotalLightingMinutes();

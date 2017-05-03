@@ -7,17 +7,18 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.LightTypeDto;
 import com.alliander.osgp.oslp.Oslp;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class LightTypeConverter extends BidirectionalConverter<LightTypeDto, Oslp.LightType> {
 
     @Override
     public com.alliander.osgp.oslp.Oslp.LightType convertTo(final LightTypeDto source,
-            final Type<com.alliander.osgp.oslp.Oslp.LightType> destinationType) {
+            final Type<com.alliander.osgp.oslp.Oslp.LightType> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -27,7 +28,7 @@ public class LightTypeConverter extends BidirectionalConverter<LightTypeDto, Osl
 
     @Override
     public LightTypeDto convertFrom(final com.alliander.osgp.oslp.Oslp.LightType source,
-            final Type<LightTypeDto> destinationType) {
+            final Type<LightTypeDto> destinationType, final MappingContext context) {
         if (source == null || source == Oslp.LightType.LT_NOT_SET) {
             return null;
         }
