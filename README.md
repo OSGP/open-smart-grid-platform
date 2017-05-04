@@ -32,7 +32,6 @@ Domain Layer
 - osgp-domain-core, Generic domain classes
 - osgp-domain-logging, Logging domain classes
 - osgp-domain-distributionautomation, Distribution Automation domain classes
-- osgp-domain-logging, Logging domain classes
 - osgp-domain-microgrids, Microgrids domain classes
 - osgp-domain-tariff-switching, Tariff Switching domain classes
 - osgp-logging, Logging incoming requests and outgoing responses of the
