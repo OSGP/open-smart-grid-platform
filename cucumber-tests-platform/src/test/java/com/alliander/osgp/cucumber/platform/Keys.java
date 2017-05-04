@@ -258,6 +258,7 @@ public class Keys {
     public static final String SEQUENCE_WINDOW = "SequenceWindow";
     public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
     public static final String NUMBER_TO_ADD_TO_SEQUENCE_NUMBER = "NumberToAddToSequenceNumber";
+    public static final String IN_MAINTENANCE = "InMaintenance";
 
     public static final String HOSTNAME = "Hostname";
     public static final String PORT = "Port";
@@ -282,5 +283,25 @@ public class Keys {
     public static final String KEY_LIGHTMEASUREMENT_LASTMESSAGE = "LastMessage";
     public static final String SMS_INDEX = "SmsIndex";
 
+    public static final String TIMESTAMP = "TimeStamp";
+    public static final String EVENT_TYPE = "EventType";
+
+    public static final String FROM_TIMESTAMP = "FromTimeStamp";
+    public static final String TO_TIMESTAMP = "ToTimeStamp";
+    public static final String REQUESTED_PAGE = "RequestedPage";
+    public static final String TOTALPAGES = "TotalPages";
+
+    public static final String MESSAGE = "Message";
     public static final String NUMBER_OF_EVENTS = "NumberOfEvents";
+    public static final String RANDOM_PLATFORM = "RandomPlatform";
+
+    public static final String KEY_RELAY = "Relais";
+    public static final String KEY_RELAYFUNCTION = "Function";
+
+    public static final String LAST_KNOWN_STATE = "LastKnownState";
+
+    public static final String RELAY_STATUSES = "RelayStatuses";
+    public static final String DATE_NOW = "DateNow";
+    public static final String TARIFF_RELAY_TYPE = "TariffRelayType";
+    public static final String LIGHT_RELAY_TYPE = "LightRelayType";
 }

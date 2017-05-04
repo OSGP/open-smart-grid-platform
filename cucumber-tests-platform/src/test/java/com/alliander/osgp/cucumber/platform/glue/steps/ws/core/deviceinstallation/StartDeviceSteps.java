@@ -54,8 +54,8 @@ public class StartDeviceSteps extends GlueBase {
      * @throws WebServiceSecurityException
      * @throws Throwable
      */
-    @When("receiving a start device test request")
-    public void receivingAStartDeviceTestRequest(final Map<String, String> requestParameters)
+    @When("receiving a start device request")
+    public void receivingAStartDeviceRequest(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final StartDeviceTestRequest request = new StartDeviceTestRequest();
         request.setDeviceIdentification(
@@ -82,7 +82,7 @@ public class StartDeviceSteps extends GlueBase {
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        Wait.until(() -> {
+        Wait.untilAndReturn(() -> {
             final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
 
             Assert.assertEquals(getEnum(expectedResult, Keys.KEY_RESULT, OsgpResultType.class), response.getResult());

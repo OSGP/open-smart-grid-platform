@@ -1,3 +1,4 @@
+@PublicLighting @Platform @TariffSwitchingScheduleManagement
 Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
   In order to ... 
   As a platform 

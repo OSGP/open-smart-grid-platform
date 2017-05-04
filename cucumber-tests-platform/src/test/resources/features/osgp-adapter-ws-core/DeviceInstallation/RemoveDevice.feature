@@ -1,3 +1,4 @@
+@PublicLighting @Platform @CoreDeviceInstallation
 Feature: CoreDeviceInstallation Remove device
   As a grid operator
   I want to be able to perform DeviceInstallation operations on a device
@@ -11,7 +12,7 @@ Feature: CoreDeviceInstallation Remove device
     When receiving a remove device request
       | DeviceIdentification | <DeviceIdentification> |
     Then the remove device response is successful
-    And the device with id "<DeviceIdentification>" does not exists
+    And the device with id "<DeviceIdentification>" should be removed
 
     Examples: 
       | DeviceIdentification |

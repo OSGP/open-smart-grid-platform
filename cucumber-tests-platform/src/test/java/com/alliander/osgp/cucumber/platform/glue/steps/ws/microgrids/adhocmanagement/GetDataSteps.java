@@ -32,7 +32,6 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.glue.steps.mocks.RtuSimulatorSteps;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
 import com.alliander.osgp.cucumber.platform.support.ws.microgrids.adhocmanagement.GetDataRequestBuilder;
@@ -53,9 +52,6 @@ public class GetDataSteps extends GlueBase {
 
     @Autowired
     private AdHocManagementClient client;
-
-    @Autowired
-    private RtuSimulatorSteps rtuSimulatorSteps;
 
     @When("^a get data request is received$")
     public void aGetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
@@ -110,8 +106,8 @@ public class GetDataSteps extends GlueBase {
         }
 
         if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
-            this.assertMeasurements(responseParameters, systemIdentifier.getMeasurement(), numberOfSystems,
-                    systemIndex, systemDescription, indexPostfix);
+            this.assertMeasurements(responseParameters, systemIdentifier.getMeasurement(), numberOfSystems, systemIndex,
+                    systemDescription, indexPostfix);
         }
 
         if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_PROFILES.concat(indexPostfix))) {
@@ -121,10 +117,11 @@ public class GetDataSteps extends GlueBase {
     }
 
     private void assertMeasurements(final Map<String, String> responseParameters, final List<Measurement> measurements,
-            final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
+            final int numberOfSystems, final int systemIndex, final String systemDescription,
+            final String indexPostfix) {
 
-        final int expectedNumberOfMeasurements = Integer.parseInt(responseParameters
-                .get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
+        final int expectedNumberOfMeasurements = Integer
+                .parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
         assertEquals(systemDescription + " number of Measurements", expectedNumberOfMeasurements, measurements.size());
         for (int i = 0; i < expectedNumberOfMeasurements; i++) {
             this.assertMeasurementResponse(responseParameters, numberOfSystems, systemIndex, systemDescription,
@@ -150,32 +147,35 @@ public class GetDataSteps extends GlueBase {
         final String expectedNode = responseParameters.get(Keys.KEY_MEASUREMENT_NODE.concat(indexPostfix));
         assertEquals(measurementDescription + " node", expectedNode, measurement.getNode());
 
-        final int expectedQualifier = Integer.parseInt(responseParameters.get(Keys.KEY_MEASUREMENT_QUALIFIER
-                .concat(indexPostfix)));
+        final int expectedQualifier = Integer
+                .parseInt(responseParameters.get(Keys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix)));
         assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
 
         assertNotNull(measurementDescription + " Time", measurement.getTime());
         assertTimeFormat(measurement.getTime());
 
-        final double expectedValue = Double.parseDouble(responseParameters.get(Keys.KEY_MEASUREMENT_VALUE
-                .concat(indexPostfix)));
+        final double expectedValue = Double
+                .parseDouble(responseParameters.get(Keys.KEY_MEASUREMENT_VALUE.concat(indexPostfix)));
         assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
                 DELTA_FOR_MEASUREMENT_VALUE);
     }
 
     private void assertProfiles(final Map<String, String> responseParameters, final List<Profile> profiles,
-            final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
+            final int numberOfSystems, final int systemIndex, final String systemDescription,
+            final String indexPostfix) {
 
-        final int expectedNumberOfProfiles = Integer.parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_PROFILES
-                .concat(indexPostfix)));
+        final int expectedNumberOfProfiles = Integer
+                .parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_PROFILES.concat(indexPostfix)));
         assertEquals(systemDescription + " number of Profiles", expectedNumberOfProfiles, profiles.size());
         for (int i = 0; i < expectedNumberOfProfiles; i++) {
-            this.assertProfileResponse(responseParameters, numberOfSystems, systemIndex, systemDescription, profiles, i);
+            this.assertProfileResponse(responseParameters, numberOfSystems, systemIndex, systemDescription, profiles,
+                    i);
         }
     }
 
     private void assertProfileResponse(final Map<String, String> responseParameters, final int numberOfSystems,
-            final int systemIndex, final String systemDescription, final List<Profile> profiles, final int profileIndex) {
+            final int systemIndex, final String systemDescription, final List<Profile> profiles,
+            final int profileIndex) {
         throw new PendingException();
     }
 

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 
 /**
  * DLMS related database steps.
@@ -44,9 +45,11 @@ public class DlmsDatabase {
     @Transactional(transactionManager = "txMgrCore")
     public void prepareDatabaseForScenario() {
 
-        this.dlmsDSecurityKeyRepo.deleteAllInBatch();
-        this.dlmsDeviceRepo.deleteAllInBatch();
-        this.meterResponseDataRepo.deleteAllInBatch();
+        Wait.until(() -> {
+            this.dlmsDSecurityKeyRepo.deleteAllInBatch();
+            this.dlmsDeviceRepo.deleteAllInBatch();
+            this.meterResponseDataRepo.deleteAllInBatch();
+        });
 
         this.insertDefaultData();
     }

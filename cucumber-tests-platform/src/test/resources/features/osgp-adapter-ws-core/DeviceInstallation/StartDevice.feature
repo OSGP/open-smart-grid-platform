@@ -1,3 +1,4 @@
+@PublicLighting @Platform @CoreDeviceInstallation
 Feature: CoreDeviceInstallation Device Starting
   As a ...
   I want to be able to perform DeviceInstallation operations on a device
@@ -10,7 +11,7 @@ Feature: CoreDeviceInstallation Device Starting
       | OrganizationIdentification | test-org          |
       | Protocol                   | <Protocol>        |
     And the device returns a start device response "OK" over "<Protocol>"
-    When receiving a start device test request
+    When receiving a start device request
       | DeviceIdentification | TEST1024000000001 |
     Then the start device async response contains
       | DeviceIdentification | TEST1024000000001 |
@@ -28,7 +29,7 @@ Feature: CoreDeviceInstallation Device Starting
       | DeviceIdentification       | TEST1024000000001            |
       | OrganizationIdentification | <OrganizationIdentification> |
       | Status                     | unknown                      |
-    When receiving a start device test request
+    When receiving a start device request
       | DeviceIdentification | TEST1024000000001 |
     Then the start device response contains soap fault
       | Message | UNAUTHORIZED |

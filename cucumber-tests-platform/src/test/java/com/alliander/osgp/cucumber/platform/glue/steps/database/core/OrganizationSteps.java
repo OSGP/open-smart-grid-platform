@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
@@ -61,8 +62,7 @@ public class OrganizationSteps extends GlueBase {
                     getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
                             Defaults.PLATFORM_FUNCTION_GROUP));
         } else {
-            entity.changeOrganisationData(organizationIdentification,
-                    getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
+            entity.changeOrganisationData(getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
                     getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
                             Defaults.PLATFORM_FUNCTION_GROUP));
         }
@@ -93,29 +93,31 @@ public class OrganizationSteps extends GlueBase {
     @Then("^the entity organization exists$")
     public void thenTheEntityOrganizationExists(final Map<String, String> expectedEntity) throws Throwable {
 
-        final Organisation entity = this.repo
-                .findByOrganisationIdentification(expectedEntity.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+        Wait.until(() -> {
+            final Organisation entity = this.repo
+                    .findByOrganisationIdentification(expectedEntity.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
 
-        Assert.assertEquals(getString(expectedEntity, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME),
-                entity.getName());
-        final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX);
-        Assert.assertEquals((prefix.isEmpty()) ? Defaults.DEFAULT_ORGANIZATION_PREFIX : prefix, entity.getPrefix());
+            Assert.assertEquals(getString(expectedEntity, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME),
+                    entity.getName());
+            final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX);
+            Assert.assertEquals((prefix.isEmpty()) ? Defaults.DEFAULT_ORGANIZATION_PREFIX : prefix, entity.getPrefix());
 
-        Assert.assertEquals(getEnum(expectedEntity, Keys.KEY_PLATFORM_FUNCTION_GROUP,
-                com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.class,
-                Defaults.PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
-        Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED),
-                entity.isEnabled());
+            Assert.assertEquals(getEnum(expectedEntity, Keys.KEY_PLATFORM_FUNCTION_GROUP,
+                    com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.class,
+                    Defaults.PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
+            Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED),
+                    entity.isEnabled());
 
-        String domains = getString(expectedEntity, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
-        if (domains.isEmpty()) {
-            domains = Defaults.DEFAULT_DOMAINS;
-        }
-        final List<String> expectedDomains = Arrays.asList(domains.split(";"));
-        Assert.assertEquals(expectedDomains.size(), entity.getDomains().size());
-        for (final PlatformDomain domain : entity.getDomains()) {
-            Assert.assertTrue(expectedDomains.contains(domain.toString()));
-        }
+            String domains = getString(expectedEntity, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
+            if (domains.isEmpty()) {
+                domains = Defaults.DEFAULT_DOMAINS;
+            }
+            final List<String> expectedDomains = Arrays.asList(domains.split(";"));
+            Assert.assertEquals(expectedDomains.size(), entity.getDomains().size());
+            for (final PlatformDomain domain : entity.getDomains()) {
+                Assert.assertTrue(expectedDomains.contains(domain.toString()));
+            }
+        });
     }
 
     /**
@@ -127,8 +129,10 @@ public class OrganizationSteps extends GlueBase {
      */
     @Given("^the organization exists$")
     public void theOrganizationExists(final Map<String, String> expectedOrganization) throws Throwable {
-        final Organisation entity = this.repo
-                .findByOrganisationIdentification(expectedOrganization.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+        final Organisation entity = Wait.untilAndReturn(() -> {
+            return this.repo
+                    .findByOrganisationIdentification(expectedOrganization.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+        });
 
         Assert.assertNotNull(entity);
 

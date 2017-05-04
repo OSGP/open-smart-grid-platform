@@ -1,19 +1,16 @@
+@MicroGrids @Platform
 @Iec61850MockServer
 Feature: MicroGrids Get Heat Pump Data
   As an OSGP client
   I want to get Heat Pump data from an RTU
   So this data can be used by other processes
 
+  @Iec61850MockServerMarkerWadden
   Scenario: Request HEAT_PUMP
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU62100                              |
-      | IcdFilename          | MarkerWadden_0_1_1_reporting_hack.icd |
-      | Port                 |                                 62100 |
-    And an rtu simulator started with
-      | ServerName  | WAGO61850Server                       |
-      | IcdFilename | MarkerWadden_0_1_1_reporting_hack.icd |
-      | Port        |                                 62100 |
-    And an rtu simulator returning
+      | DeviceIdentification | RTU-MARKER-WADDEN |
+      | Port                 |             62103 |
+    And the Marker Wadden RTU returning
       | HEAT_PUMP1 | LLN0.Mod.stVal         |                   1 |
       | HEAT_PUMP1 | LLN0.Mod.q             | VALIDITY_GOOD       |
       | HEAT_PUMP1 | LLN0.Beh.stVal         |                   2 |
@@ -109,68 +106,68 @@ Feature: MicroGrids Get Heat Pump Data
       | HEAT_PUMP1 | MFLW1.FlwRte.q         | VALIDITY_GOOD       |
       | HEAT_PUMP1 | MFLW1.FlwRte.t         | 2017-02-01T12:02:00 |
     When a get data request is received
-      | DeviceIdentification       | RTU62100  |
-      | NumberOfSystems            |         1 |
-      | SystemId_1                 |         1 |
-      | SystemType_1               | HEAT_PUMP |
-      | NumberOfMeasurements_1     |        38 |
-      | MeasurementFilterNode_1_1  | Mod       |
-      | MeasurementFilterNode_1_2  | Beh       |
-      | MeasurementFilterNode_1_3  | Health    |
-      | MeasurementFilterNode_1_4  | Alm1      |
-      | MeasurementFilterNode_1_5  | Alm2      |
-      | MeasurementFilterNode_1_6  | Alm3      |
-      | MeasurementFilterNode_1_7  | Alm4      |
-      | MeasurementFilterNode_1_8  | IntIn1    |
-      | MeasurementFilterNode_1_9  | Wrn1      |
-      | MeasurementFilterNode_1_10 | Wrn2      |
-      | MeasurementFilterNode_1_11 | Wrn3      |
-      | MeasurementFilterNode_1_12 | Wrn4      |
-      | MeasurementFilterNode_1_13 | IntIn2    |
-      | MeasurementFilterNode_1_14 | SchdId    |
-      | MeasurementFilterId_1_14   |         1 |
-      | MeasurementFilterNode_1_15 | SchdId    |
-      | MeasurementFilterId_1_15   |         2 |
-      | MeasurementFilterNode_1_16 | SchdId    |
-      | MeasurementFilterId_1_16   |         3 |
-      | MeasurementFilterNode_1_17 | SchdId    |
-      | MeasurementFilterId_1_17   |         4 |
-      | MeasurementFilterNode_1_18 | SchdTyp   |
-      | MeasurementFilterId_1_18   |         1 |
-      | MeasurementFilterNode_1_19 | SchdTyp   |
-      | MeasurementFilterId_1_19   |         2 |
-      | MeasurementFilterNode_1_20 | SchdTyp   |
-      | MeasurementFilterId_1_20   |         3 |
-      | MeasurementFilterNode_1_21 | SchdTyp   |
-      | MeasurementFilterId_1_21   |         4 |
-      | MeasurementFilterNode_1_22 | SchCat    |
-      | MeasurementFilterId_1_22   |         1 |
-      | MeasurementFilterNode_1_23 | SchCat    |
-      | MeasurementFilterId_1_23   |         2 |
-      | MeasurementFilterNode_1_24 | SchCat    |
-      | MeasurementFilterId_1_24   |         3 |
-      | MeasurementFilterNode_1_25 | SchCat    |
-      | MeasurementFilterId_1_25   |         4 |
-      | MeasurementFilterNode_1_26 | TotW      |
-      | MeasurementFilterNode_1_27 | MinWPhs   |
-      | MeasurementFilterNode_1_28 | MaxWPhs   |
-      | MeasurementFilterNode_1_29 | TotPF     |
-      | MeasurementFilterNode_1_30 | OutWSet   |
-      | MeasurementFilterNode_1_31 | TotWh     |
-      | MeasurementFilterNode_1_32 | GnOpSt    |
-      | MeasurementFilterNode_1_33 | OpTmsRs   |
-      | MeasurementFilterNode_1_34 | TmpSv     |
-      | MeasurementFilterId_1_34   |         1 |
-      | MeasurementFilterNode_1_35 | TmpSv     |
-      | MeasurementFilterId_1_35   |         2 |
-      | MeasurementFilterNode_1_36 | TmpSv     |
-      | MeasurementFilterId_1_36   |         3 |
-      | MeasurementFilterNode_1_37 | TmpSv     |
-      | MeasurementFilterId_1_37   |         4 |
-      | MeasurementFilterNode_1_38 | FlwRte    |
-      | MeasurementFilterId_1_38   |         1 |
+      | DeviceIdentification       | RTU-MARKER-WADDEN |
+      | NumberOfSystems            |                 1 |
+      | SystemId_1                 |                 1 |
+      | SystemType_1               | HEAT_PUMP         |
+      | NumberOfMeasurements_1     |                38 |
+      | MeasurementFilterNode_1_1  | Mod               |
+      | MeasurementFilterNode_1_2  | Beh               |
+      | MeasurementFilterNode_1_3  | Health            |
+      | MeasurementFilterNode_1_4  | Alm1              |
+      | MeasurementFilterNode_1_5  | Alm2              |
+      | MeasurementFilterNode_1_6  | Alm3              |
+      | MeasurementFilterNode_1_7  | Alm4              |
+      | MeasurementFilterNode_1_8  | IntIn1            |
+      | MeasurementFilterNode_1_9  | Wrn1              |
+      | MeasurementFilterNode_1_10 | Wrn2              |
+      | MeasurementFilterNode_1_11 | Wrn3              |
+      | MeasurementFilterNode_1_12 | Wrn4              |
+      | MeasurementFilterNode_1_13 | IntIn2            |
+      | MeasurementFilterNode_1_14 | SchdId            |
+      | MeasurementFilterId_1_14   |                 1 |
+      | MeasurementFilterNode_1_15 | SchdId            |
+      | MeasurementFilterId_1_15   |                 2 |
+      | MeasurementFilterNode_1_16 | SchdId            |
+      | MeasurementFilterId_1_16   |                 3 |
+      | MeasurementFilterNode_1_17 | SchdId            |
+      | MeasurementFilterId_1_17   |                 4 |
+      | MeasurementFilterNode_1_18 | SchdTyp           |
+      | MeasurementFilterId_1_18   |                 1 |
+      | MeasurementFilterNode_1_19 | SchdTyp           |
+      | MeasurementFilterId_1_19   |                 2 |
+      | MeasurementFilterNode_1_20 | SchdTyp           |
+      | MeasurementFilterId_1_20   |                 3 |
+      | MeasurementFilterNode_1_21 | SchdTyp           |
+      | MeasurementFilterId_1_21   |                 4 |
+      | MeasurementFilterNode_1_22 | SchCat            |
+      | MeasurementFilterId_1_22   |                 1 |
+      | MeasurementFilterNode_1_23 | SchCat            |
+      | MeasurementFilterId_1_23   |                 2 |
+      | MeasurementFilterNode_1_24 | SchCat            |
+      | MeasurementFilterId_1_24   |                 3 |
+      | MeasurementFilterNode_1_25 | SchCat            |
+      | MeasurementFilterId_1_25   |                 4 |
+      | MeasurementFilterNode_1_26 | TotW              |
+      | MeasurementFilterNode_1_27 | MinWPhs           |
+      | MeasurementFilterNode_1_28 | MaxWPhs           |
+      | MeasurementFilterNode_1_29 | TotPF             |
+      | MeasurementFilterNode_1_30 | OutWSet           |
+      | MeasurementFilterNode_1_31 | TotWh             |
+      | MeasurementFilterNode_1_32 | GnOpSt            |
+      | MeasurementFilterNode_1_33 | OpTmsRs           |
+      | MeasurementFilterNode_1_34 | TmpSv             |
+      | MeasurementFilterId_1_34   |                 1 |
+      | MeasurementFilterNode_1_35 | TmpSv             |
+      | MeasurementFilterId_1_35   |                 2 |
+      | MeasurementFilterNode_1_36 | TmpSv             |
+      | MeasurementFilterId_1_36   |                 3 |
+      | MeasurementFilterNode_1_37 | TmpSv             |
+      | MeasurementFilterId_1_37   |                 4 |
+      | MeasurementFilterNode_1_38 | FlwRte            |
+      | MeasurementFilterId_1_38   |                 1 |
     Then the get data response should be returned
-      | DeviceIdentification      | RTU62100                 |
+      | DeviceIdentification      | RTU-MARKER-WADDEN        |
       | Result                    | OK                       |
       | NumberOfSystems           |                        1 |
       | SystemId_1                |                        1 |

@@ -57,6 +57,13 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String KEY_DEVICE_AUTHENTICATIONKEY = "Authentication_key";
     public static final String KEY_DEVICE_ENCRYPTIONKEY = "Encryption_key";
 
+    public static final String OBIS_CODE_A = "ObisCodeA";
+    public static final String OBIS_CODE_B = "ObisCodeB";
+    public static final String OBIS_CODE_C = "ObisCodeC";
+    public static final String OBIS_CODE_D = "ObisCodeD";
+    public static final String OBIS_CODE_E = "ObisCodeE";
+    public static final String OBIS_CODE_F = "ObisCodeF";
+
     // Default keys for security_key
     public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
     public static final String SECURITY_KEY_A = "SecurityKeyAuthentication";

@@ -1,3 +1,4 @@
+@PublicLighting @Platform @CoreDeviceInstallation
 Feature: CoreDeviceInstallation Find Recent Devices
   As a ...
   I want to be able to perform DeviceInstallation operations on a device

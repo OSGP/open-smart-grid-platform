@@ -1,3 +1,4 @@
+@PublicLighting @Platform @OslpAdapter
 Feature: OslpAdapter Event notifications
   As a device
   I want to send event notifications to the mock server

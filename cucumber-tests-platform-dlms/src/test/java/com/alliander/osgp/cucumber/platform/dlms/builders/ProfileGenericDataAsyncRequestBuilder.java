@@ -9,7 +9,7 @@ package com.alliander.osgp.cucumber.platform.dlms.builders;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncRequest;
 
-public class ProfileGenericDataAsyncRequestBuilder extends AbstractAsyncRequestBuilder {
+public class ProfileGenericDataAsyncRequestBuilder extends AbstractAsyncRequestBuilder<ProfileGenericDataAsyncRequest> {
 
     public ProfileGenericDataAsyncRequestBuilder() {
         super(ProfileGenericDataAsyncRequest.class);
@@ -17,7 +17,7 @@ public class ProfileGenericDataAsyncRequestBuilder extends AbstractAsyncRequestB
 
     @Override
     public ProfileGenericDataAsyncRequest build() {
-        ProfileGenericDataAsyncRequest result = new ProfileGenericDataAsyncRequest();
+        final ProfileGenericDataAsyncRequest result = new ProfileGenericDataAsyncRequest();
         result.setDeviceIdentification(this.deviceIdentification);
         result.setCorrelationUid(this.correlationUid);
         return result;

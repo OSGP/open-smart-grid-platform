@@ -15,6 +15,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
 import com.alliander.osgp.cucumber.platform.Defaults;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -27,6 +28,7 @@ import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.RelayStatusRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
@@ -93,6 +95,9 @@ public class CoreDatabase {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private RelayStatusRepository relayStatusRepository;
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -126,32 +131,35 @@ public class CoreDatabase {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-        // First remove stuff from osgp_adapter_protocol_oslp
-        this.oslpDeviceRepository.deleteAllInBatch();
+        Wait.until(() -> {
+            // First remove stuff from osgp_adapter_protocol_oslp
+            this.oslpDeviceRepository.deleteAllInBatch();
 
-        // Then remove stuff from osgp_adapter_protocol_iec61850
-        this.iec61850DeviceRepository.deleteAllInBatch();
+            // Then remove stuff from osgp_adapter_protocol_iec61850
+            this.iec61850DeviceRepository.deleteAllInBatch();
 
-        // Then remove stuff from the osgp_adapter_ws_microgrids
-        this.rtuResponseDataRepository.deleteAllInBatch();
+            // Then remove stuff from the osgp_adapter_ws_microgrids
+            this.rtuResponseDataRepository.deleteAllInBatch();
 
-        // Then remove stuff from osgp_core
-        this.taskRepository.deleteAll();
-        this.deviceAuthorizationRepository.deleteAllInBatch();
-        this.deviceLogItemRepository.deleteAllInBatch();
-        this.scheduledTaskRepository.deleteAllInBatch();
-        this.eanRepository.deleteAllEans();
-        this.deviceRepository.deleteDeviceOutputSettings();
-        this.deviceFirmwareRepository.deleteAllInBatch();
-        this.eventRepository.deleteAllInBatch();
-        this.smartMeterRepository.deleteAllInBatch();
-        this.ssldRepository.deleteAllInBatch();
-        this.rtuDeviceRepository.deleteAllInBatch();
-        this.deviceRepository.deleteAllInBatch();
-        this.firmwareRepository.deleteAllInBatch();
-        this.deviceModelRepository.deleteAllInBatch();
-        this.manufacturerRepository.deleteAllInBatch();
-        this.organisationRepository.deleteAllInBatch();
+            // Then remove stuff from osgp_core
+            this.taskRepository.deleteAll();
+            this.deviceAuthorizationRepository.deleteAllInBatch();
+            this.deviceLogItemRepository.deleteAllInBatch();
+            this.scheduledTaskRepository.deleteAllInBatch();
+            this.eanRepository.deleteAllEans();
+            this.deviceRepository.deleteDeviceOutputSettings();
+            this.deviceFirmwareRepository.deleteAllInBatch();
+            this.eventRepository.deleteAllInBatch();
+            this.smartMeterRepository.deleteAllInBatch();
+            this.relayStatusRepository.deleteAllInBatch();
+            this.ssldRepository.deleteAllInBatch();
+            this.rtuDeviceRepository.deleteAllInBatch();
+            this.deviceRepository.deleteAllInBatch();
+            this.firmwareRepository.deleteAllInBatch();
+            this.deviceModelRepository.deleteAllInBatch();
+            this.manufacturerRepository.deleteAllInBatch();
+            this.organisationRepository.deleteAllInBatch();
+        });
 
         this.insertDefaultData();
     }

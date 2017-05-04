@@ -127,7 +127,7 @@ public class GetConfigurationSteps {
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        final GetConfigurationResponse response = Wait.until(() -> {
+        final GetConfigurationResponse response = Wait.untilAndReturn(() -> {
             final GetConfigurationResponse retval = this.client.getGetConfiguration(request);
             Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class),
                     retval.getResult());
@@ -250,7 +250,7 @@ public class GetConfigurationSteps {
             asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
             request.setAsyncRequest(asyncRequest);
 
-            Wait.until(() -> {
+            Wait.untilAndReturn(() -> {
                 return this.client.getGetConfiguration(request);
             });
         } catch (final SoapFaultClientException ex) {

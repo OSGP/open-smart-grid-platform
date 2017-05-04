@@ -1,11 +1,16 @@
+@MicroGrids @Platform
 Feature: MicroGrids Re-establish Connection
   As MSP 
   I want to know when a connection between OSGP and RTU is lost or re-established.
 
-  @Iec61850MockServer @Skip 
+  # This scenario is skipped because of it's long duration
+  # and issues with the recieve a notification step
+  # Perhaps a NightlyBuildOnly tag could be used here
+  @Skip @Iec61850MockServerPampus
   Scenario: Connection lost and reestablished
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
+      | Port                 |    62102 |
     When the OSGP connection is lost with the RTU device
     Then I should receive a notification
     And the get data response should be returned
