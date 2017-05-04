@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getDate;
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getDateTime2;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
@@ -46,13 +46,7 @@ public class EventSteps extends GlueBase {
                 .findByDeviceIdentification(getString(data, Keys.KEY_DEVICE_IDENTIFICATION));
 
         // TODO: Update regex in method 'getDateTime' in the Helper class.
-        // Event event = new Event(device, getDateTime2(getString(data,
-        // Keys.DATE), DateTime.now()).toDate(),
-        // getEnum(data, Keys.EVENT_TYPE, EventType.class,
-        // EventType.DIAG_EVENTS_GENERAL),
-        // getString(data, Keys.KEY_DESCRIPTION, ""), getInteger(data,
-        // Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
-        Event event = new Event(device, getDate(data, Keys.DATE, DateTime.now()).toDate(),
+        Event event = new Event(device, getDateTime2(getString(data, Keys.DATE), DateTime.now()).toDate(),
                 getEnum(data, Keys.EVENT_TYPE, EventType.class, EventType.DIAG_EVENTS_GENERAL),
                 getString(data, Keys.KEY_DESCRIPTION, ""), getInteger(data, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
 
@@ -60,9 +54,7 @@ public class EventSteps extends GlueBase {
 
         if (data.containsKey(Keys.TIME_UNTIL_ON)) {
             // TODO: Update regex in method 'getDateTime' in the Helper class.
-            // final DateTime dateTime = getDateTime2(getString(data,
-            // Keys.DATE), DateTime.now());
-            final DateTime dateTime = getDate(data, Keys.DATE, DateTime.now());
+            final DateTime dateTime = getDateTime2(getString(data, Keys.DATE), DateTime.now());
             final DateTime dateTimePlus = dateTime.plusHours(getInteger(data, Keys.TIME_UNTIL_ON));
             if (dateTime.isAfter(dateTimePlus.getMillis())) {
                 dateTimePlus.plusDays(1);
