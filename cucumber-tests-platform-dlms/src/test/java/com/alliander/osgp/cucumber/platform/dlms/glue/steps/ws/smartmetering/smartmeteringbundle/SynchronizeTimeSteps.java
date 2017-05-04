@@ -15,31 +15,17 @@ import java.time.zone.ZoneRules;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetClockConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.dlms.Keys;
-import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.configuration.SetClockConfigurationRequestDataFactory;
 import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.configuration.SynchronizeTimeRequestDataFactory;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class ClockConfigurationSteps extends BaseBundleSteps {
-
-    @Given("^a set clock configuration action is part of a bundled request$")
-    public void aSetClockConfigurationActionIsPartOfABundledRequest(final Map<String, String> settings)
-            throws Throwable {
-
-        final BundleRequest request = (BundleRequest) ScenarioContext.Current().get(Keys.BUNDLE_REQUEST);
-
-        final SetClockConfigurationRequest action = this.defaultMapper.map(
-                SetClockConfigurationRequestDataFactory.fromParameterMap(settings), SetClockConfigurationRequest.class);
-
-        this.addActionToBundleRequest(request, action);
-    }
+public class SynchronizeTimeSteps extends BaseBundleSteps {
 
     @Given("^a synchronize time action is part of a bundled request$")
     public void aSynchronizeTimeActionIsPartOfABundledRequest(final Map<String, String> settings) throws Throwable {
@@ -70,13 +56,6 @@ public class ClockConfigurationSteps extends BaseBundleSteps {
         action.setDst(dst);
 
         this.addActionToBundleRequest(request, action);
-    }
-
-    @Then("^the bundle response contains a set clock configuration response$")
-    public void theBundleResponseContainsASetClockConfigurationResponse(final Map<String, String> settings)
-            throws Throwable {
-        final Response actionResponse = this.getNextBundleResponse();
-        assertEquals(OsgpResultType.fromValue(settings.get(Keys.RESULT)), actionResponse.getResult());
     }
 
     @Then("^the bundle response contains a synchronize time response$")
