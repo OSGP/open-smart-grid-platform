@@ -20,7 +20,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class NotificationServiceWs implements NotificationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( NotificationServiceWs.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWs.class);
 
     private final SendNotificationServiceClient sendNotificationServiceClient;
 
@@ -28,7 +28,7 @@ public class NotificationServiceWs implements NotificationService {
 
     private final String notificationUsername;
 
-    public NotificationServiceWs( final SendNotificationServiceClient client, final String notificationUrl, final String notificationUsername ) {
+    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl, final String notificationUsername) {
         this.sendNotificationServiceClient = client;
         this.notificationUrl = notificationUrl;
         this.notificationUsername = notificationUsername;
@@ -44,25 +44,25 @@ public class NotificationServiceWs implements NotificationService {
      * .ws.schema.smartmetering.notification.NotificationType)
      */
     @Override
-    public void sendNotification( final String organisationIdentification, final String deviceIdentification, final String result,
-            final String correlationUid, final String message, final NotificationType notificationType ) {
+    public void sendNotification(final String organisationIdentification, final String deviceIdentification, final String result,
+                                 final String correlationUid, final String message, final NotificationType notificationType) {
 
-        LOGGER.info( "sendNotification called with organisation: {}, correlationUid: {}, type: {}", organisationIdentification, correlationUid,
-                notificationType );
+        LOGGER.info("sendNotification called with organisation: {}, correlationUid: {}, type: {}", organisationIdentification, correlationUid,
+                notificationType);
 
         final Notification notification = new Notification();
         // message is null, unless an error occurred
-        notification.setMessage( message );
-        notification.setResult( result );
-        notification.setDeviceIdentification( deviceIdentification );
-        notification.setCorrelationUid( correlationUid );
-        notification.setNotificationType( notificationType );
+        notification.setMessage(message);
+        notification.setResult(result);
+        notification.setDeviceIdentification(deviceIdentification);
+        notification.setCorrelationUid(correlationUid);
+        notification.setNotificationType(notificationType);
 
         try {
             this.sendNotificationServiceClient
-                    .sendNotification( organisationIdentification, notification, this.notificationUrl, this.notificationUsername );
-        } catch ( final WebServiceSecurityException e ) {
-            LOGGER.error( e.getMessage(), e );
+                    .sendNotification(organisationIdentification, notification, this.notificationUrl, this.notificationUsername);
+        } catch (final WebServiceSecurityException e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }

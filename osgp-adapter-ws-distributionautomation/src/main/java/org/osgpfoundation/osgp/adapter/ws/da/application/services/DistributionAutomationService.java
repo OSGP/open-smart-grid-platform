@@ -44,7 +44,7 @@ import java.io.Serializable;
 @Validated
 public class DistributionAutomationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( DistributionAutomationService.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationService.class);
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -62,107 +62,107 @@ public class DistributionAutomationService {
         // Parameterless constructor required for transactions
     }
 
-    public String enqueueGetPQValuesRequest( @Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @NotNull final GetPQValuesRequest getPQValuesRequest ) throws OsgpException {
+    public String enqueueGetPQValuesRequest(@Identification final String organisationIdentification,
+                                            @Identification final String deviceIdentification, @NotNull final GetPQValuesRequest getPQValuesRequest) throws OsgpException {
 
-        LOGGER.debug( "enqueueGetPQValuesRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification );
+        LOGGER.debug("enqueueGetPQValuesRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
 
-        return processRequest( organisationIdentification, deviceIdentification, getPQValuesRequest, DeviceFunction.GET_POWER_QUALITY_VALUES,
-                DistributionAutomationRequestMessageType.GET_POWER_QUALITY_VALUES );
+        return processRequest(organisationIdentification, deviceIdentification, getPQValuesRequest, DeviceFunction.GET_POWER_QUALITY_VALUES,
+                DistributionAutomationRequestMessageType.GET_POWER_QUALITY_VALUES);
     }
 
-    public GetPQValuesResponse dequeueGetPQValuesResponse( final String correlationUid ) throws OsgpException {
+    public GetPQValuesResponse dequeueGetPQValuesResponse(final String correlationUid) throws OsgpException {
 
-        LOGGER.debug( "dequeueGetPQValuesResponse called with correlation uid {}", correlationUid );
+        LOGGER.debug("dequeueGetPQValuesResponse called with correlation uid {}", correlationUid);
 
-        return (GetPQValuesResponse) processResponse( correlationUid );
+        return (GetPQValuesResponse) processResponse(correlationUid);
     }
 
-    public String enqueueGetPQValuesPeriodicRequest( final String organisationIdentification, final String deviceIdentification,
-            final GetPQValuesPeriodicRequest getPQValuesPeriodicRequest ) throws OsgpException {
+    public String enqueueGetPQValuesPeriodicRequest(final String organisationIdentification, final String deviceIdentification,
+                                                    final GetPQValuesPeriodicRequest getPQValuesPeriodicRequest) throws OsgpException {
 
-        LOGGER.debug( "enqueueGetPQValuesPeriodicRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification );
+        LOGGER.debug("enqueueGetPQValuesPeriodicRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
-        return processRequest( organisationIdentification, deviceIdentification, getPQValuesPeriodicRequest, DeviceFunction.GET_POWER_QUALITY_VALUES,
-                DistributionAutomationRequestMessageType.GET_POWER_QUALITY_VALUES_PERIODIC );
+        return processRequest(organisationIdentification, deviceIdentification, getPQValuesPeriodicRequest, DeviceFunction.GET_POWER_QUALITY_VALUES,
+                DistributionAutomationRequestMessageType.GET_POWER_QUALITY_VALUES_PERIODIC);
     }
 
-    public GetPQValuesResponse dequeueGetPQValuesPeriodicResponse( final String correlationUid ) throws OsgpException {
+    public GetPQValuesResponse dequeueGetPQValuesPeriodicResponse(final String correlationUid) throws OsgpException {
 
-        LOGGER.debug( "dequeueSetDataRequest called with correlation uid {}", correlationUid );
-        return (GetPQValuesResponse) processResponse( correlationUid );
+        LOGGER.debug("dequeueSetDataRequest called with correlation uid {}", correlationUid);
+        return (GetPQValuesResponse) processResponse(correlationUid);
     }
 
-    public String enqueueGetDeviceModelRequest( final String organisationIdentification, final String deviceIdentification,
-            final GetDeviceModelRequest getDeviceModelRequest ) throws OsgpException {
+    public String enqueueGetDeviceModelRequest(final String organisationIdentification, final String deviceIdentification,
+                                               final GetDeviceModelRequest getDeviceModelRequest) throws OsgpException {
 
-        LOGGER.debug( "enqueueGetDeviceModelRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification );
-        return processRequest( organisationIdentification, deviceIdentification, getDeviceModelRequest, DeviceFunction.GET_DEVICE_MODEL,
-                DistributionAutomationRequestMessageType.GET_DEVICE_MODEL );
+        LOGGER.debug("enqueueGetDeviceModelRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        return processRequest(organisationIdentification, deviceIdentification, getDeviceModelRequest, DeviceFunction.GET_DEVICE_MODEL,
+                DistributionAutomationRequestMessageType.GET_DEVICE_MODEL);
     }
 
-    public GetDeviceModelResponse dequeueGetDeviceModelResponse( final String correlationUid ) throws OsgpException {
+    public GetDeviceModelResponse dequeueGetDeviceModelResponse(final String correlationUid) throws OsgpException {
 
-        LOGGER.debug( "dequeueGetDeviceModelRequest called with correlation uid {}", correlationUid );
-        return (GetDeviceModelResponse) processResponse( correlationUid );
+        LOGGER.debug("dequeueGetDeviceModelRequest called with correlation uid {}", correlationUid);
+        return (GetDeviceModelResponse) processResponse(correlationUid);
     }
 
-    public String enqueueGetHealthStatusRequest( final String organisationIdentification, final String deviceIdentification,
-            final GetHealthStatusRequest getHealthStatusRequest ) throws OsgpException {
+    public String enqueueGetHealthStatusRequest(final String organisationIdentification, final String deviceIdentification,
+                                                final GetHealthStatusRequest getHealthStatusRequest) throws OsgpException {
 
-        LOGGER.debug( "enqueueGetHealthStatusRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification );
-        return processRequest( organisationIdentification, deviceIdentification, getHealthStatusRequest, DeviceFunction.GET_HEALTH_STATUS,
-                DistributionAutomationRequestMessageType.GET_HEALTH_STATUS );
+        LOGGER.debug("enqueueGetHealthStatusRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        return processRequest(organisationIdentification, deviceIdentification, getHealthStatusRequest, DeviceFunction.GET_HEALTH_STATUS,
+                DistributionAutomationRequestMessageType.GET_HEALTH_STATUS);
     }
 
-    public GetHealthStatusResponse dequeueGetHealthResponse( final String correlationUid ) throws OsgpException {
+    public GetHealthStatusResponse dequeueGetHealthResponse(final String correlationUid) throws OsgpException {
 
-        LOGGER.debug( "dequeueGetHealthRequest called with correlation uid {}", correlationUid );
-        return (GetHealthStatusResponse) processResponse( correlationUid );
+        LOGGER.debug("dequeueGetHealthRequest called with correlation uid {}", correlationUid);
+        return (GetHealthStatusResponse) processResponse(correlationUid);
     }
 
-    private String processRequest( final String organisationIdentification, final String deviceIdentification, final Serializable request,
-            final DeviceFunction deviceFunction, final DistributionAutomationRequestMessageType messageType ) throws OsgpException {
-        final Organisation organisation = this.domainHelperService.findOrganisation( organisationIdentification );
+    private String processRequest(final String organisationIdentification, final String deviceIdentification, final Serializable request,
+                                  final DeviceFunction deviceFunction, final DistributionAutomationRequestMessageType messageType) throws OsgpException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId( organisationIdentification, deviceIdentification );
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
 
-        final RtuDevice device = this.domainHelperService.findDevice( deviceIdentification );
-        this.domainHelperService.isAllowed( organisation, device, deviceFunction );
+        final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
+        this.domainHelperService.isAllowed(organisation, device, deviceFunction);
 
-        final DistributionAutomationRequestMessage message = new DistributionAutomationRequestMessage( messageType, correlationUid,
-                organisationIdentification, deviceIdentification, request, null );
+        final DistributionAutomationRequestMessage message = new DistributionAutomationRequestMessage(messageType, correlationUid,
+                organisationIdentification, deviceIdentification, request);
 
         try {
-            this.requestMessageSender.send( message );
-        } catch ( final ArgumentNullOrEmptyException e ) {
-            throw new TechnicalException( ComponentType.WS_DISTRIBUTION_AUTOMATION, e );
+            this.requestMessageSender.send(message);
+        } catch (final ArgumentNullOrEmptyException e) {
+            throw new TechnicalException(ComponentType.WS_DISTRIBUTION_AUTOMATION, e);
         }
         return correlationUid;
     }
 
-    private Serializable processResponse( final String correlationUid ) throws OsgpException {
-        final RtuResponseData responseData = this.responseDataService.dequeue( correlationUid, ResponseMessage.class );
+    private Serializable processResponse(final String correlationUid) throws OsgpException {
+        final RtuResponseData responseData = this.responseDataService.dequeue(correlationUid, ResponseMessage.class);
         final ResponseMessage response = (ResponseMessage) responseData.getMessageData();
 
-        switch ( response.getResult() ) {
-        case OK:
-            if ( response.getDataObject() != null ) {
-                return response.getDataObject();
-            }
-            // Should not get here
-            throw new TechnicalException( ComponentType.WS_DISTRIBUTION_AUTOMATION, "Response message contains no data." );
-        case NOT_FOUND:
-            throw new ResponseNotFoundException( ComponentType.WS_DISTRIBUTION_AUTOMATION, "Response message not found." );
-        case NOT_OK:
-            if ( response.getOsgpException() != null ) {
-                throw response.getOsgpException();
-            }
-            throw new TechnicalException( ComponentType.WS_DISTRIBUTION_AUTOMATION, "Response message not ok." );
-        default:
-            // Should not get here
-            throw new TechnicalException( ComponentType.WS_DISTRIBUTION_AUTOMATION, "Response message contains invalid result." );
+        switch (response.getResult()) {
+            case OK:
+                if (response.getDataObject() != null) {
+                    return response.getDataObject();
+                }
+                // Should not get here
+                throw new TechnicalException(ComponentType.WS_DISTRIBUTION_AUTOMATION, "Response message contains no data.");
+            case NOT_FOUND:
+                throw new ResponseNotFoundException(ComponentType.WS_DISTRIBUTION_AUTOMATION, "Response message not found.");
+            case NOT_OK:
+                if (response.getOsgpException() != null) {
+                    throw response.getOsgpException();
+                }
+                throw new TechnicalException(ComponentType.WS_DISTRIBUTION_AUTOMATION, "Response message not ok.");
+            default:
+                // Should not get here
+                throw new TechnicalException(ComponentType.WS_DISTRIBUTION_AUTOMATION, "Response message contains invalid result.");
         }
     }
 }

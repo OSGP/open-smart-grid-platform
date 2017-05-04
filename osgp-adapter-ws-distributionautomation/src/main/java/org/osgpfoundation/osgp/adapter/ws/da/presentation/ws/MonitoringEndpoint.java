@@ -29,28 +29,28 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
-    private static final Logger LOGGER = LoggerFactory.getLogger( MonitoringEndpoint.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringEndpoint.class);
 
     @PayloadRoot(localPart = "GetPQValuesRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public GetPQValuesAsyncResponse getPQValues( @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetPQValuesRequest request ) throws OsgpException {
+    public GetPQValuesAsyncResponse getPQValues(@OrganisationIdentification final String organisationIdentification,
+                                                @RequestPayload final GetPQValuesRequest request) throws OsgpException {
 
-        LOGGER.info( "Get PQ Values Request received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification() );
+        LOGGER.info("Get PQ Values Request received from organisation: {} for device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
 
         GetPQValuesAsyncResponse response = new GetPQValuesAsyncResponse();
 
         try {
-            final org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesRequest getPQValue = this.mapper.map( request, org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesRequest.class );
-            final String correlationUid = this.service.enqueueGetPQValuesRequest( organisationIdentification, request.getDeviceIdentification(), getPQValue );
+            final org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesRequest getPQValue = this.mapper.map(request, org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesRequest.class);
+            final String correlationUid = this.service.enqueueGetPQValuesRequest(organisationIdentification, request.getDeviceIdentification(), getPQValue);
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-        } catch ( final Exception e ) {
-            this.handleException( LOGGER, e );
+        } catch (final Exception e) {
+            this.handleException(LOGGER, e);
         }
         return response;
     }
@@ -58,27 +58,27 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
     @PayloadRoot(localPart = "GetPQValuesAsyncRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public GetPQValuesResponse getPQValuesAsync( @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetPQValuesAsyncRequest request ) throws OsgpException {
+    public GetPQValuesResponse getPQValuesAsync(@OrganisationIdentification final String organisationIdentification,
+                                                @RequestPayload final GetPQValuesAsyncRequest request) throws OsgpException {
 
-        LOGGER.info( "Get PQ Values Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
-                request.getAsyncRequest().getCorrelationUid() );
+        LOGGER.info("Get PQ Values Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
+                request.getAsyncRequest().getCorrelationUid());
 
         GetPQValuesResponse response = new GetPQValuesResponse();
         try {
             final org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesResponse dataResponse = this.service
-                    .dequeueGetPQValuesResponse( request.getAsyncRequest().getCorrelationUid() );
-            if ( dataResponse != null ) {
-                response = this.mapper.map( dataResponse, GetPQValuesResponse.class );
-                response.setResult( OsgpResultType.OK );
+                    .dequeueGetPQValuesResponse(request.getAsyncRequest().getCorrelationUid());
+            if (dataResponse != null) {
+                response = this.mapper.map(dataResponse, GetPQValuesResponse.class);
+                response.setResult(OsgpResultType.OK);
             } else {
-                response.setResult( OsgpResultType.NOT_FOUND );
+                response.setResult(OsgpResultType.NOT_FOUND);
             }
-        } catch ( final ResponseNotFoundException e ) {
-            LOGGER.warn( "ResponseNotFoundException for getGetDataResponse", e );
-            response.setResult( OsgpResultType.NOT_FOUND );
-        } catch ( final Exception e ) {
-            this.handleException( LOGGER, e );
+        } catch (final ResponseNotFoundException e) {
+            LOGGER.warn("ResponseNotFoundException for getGetDataResponse", e);
+            response.setResult(OsgpResultType.NOT_FOUND);
+        } catch (final Exception e) {
+            this.handleException(LOGGER, e);
         }
         response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
         return response;
@@ -87,24 +87,24 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
     @PayloadRoot(localPart = "GetPQValuesPeriodicRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public GetPQValuesPeriodicAsyncResponse getPQValuesPeriodic( @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetPQValuesPeriodicRequest request ) throws OsgpException {
+    public GetPQValuesPeriodicAsyncResponse getPQValuesPeriodic(@OrganisationIdentification final String organisationIdentification,
+                                                                @RequestPayload final GetPQValuesPeriodicRequest request) throws OsgpException {
 
-        LOGGER.info( "Get PQ Values Periodic Request received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification() );
+        LOGGER.info("Get PQ Values Periodic Request received from organisation: {} for device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
 
         GetPQValuesPeriodicAsyncResponse response = new GetPQValuesPeriodicAsyncResponse();
 
         try {
-            final org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesPeriodicRequest getPQValuesPeriodicRequest = this.mapper.map( request, org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesPeriodicRequest.class );
+            final org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesPeriodicRequest getPQValuesPeriodicRequest = this.mapper.map(request, org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesPeriodicRequest.class);
             final String correlationUid = this.service
-                    .enqueueGetPQValuesPeriodicRequest( organisationIdentification, request.getDeviceIdentification(), getPQValuesPeriodicRequest );
+                    .enqueueGetPQValuesPeriodicRequest(organisationIdentification, request.getDeviceIdentification(), getPQValuesPeriodicRequest);
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-        } catch ( final Exception e ) {
-            this.handleException( LOGGER, e );
+        } catch (final Exception e) {
+            this.handleException(LOGGER, e);
         }
         return response;
     }
@@ -112,27 +112,27 @@ public class MonitoringEndpoint extends GenericDistributionAutomationEndPoint {
     @PayloadRoot(localPart = "GetPQValuesPeriodicAsyncRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public GetPQValuesPeriodicResponse getPQValuesPeriodicAsync( @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetPQValuesPeriodicAsyncRequest request ) throws OsgpException {
+    public GetPQValuesPeriodicResponse getPQValuesPeriodicAsync(@OrganisationIdentification final String organisationIdentification,
+                                                                @RequestPayload final GetPQValuesPeriodicAsyncRequest request) throws OsgpException {
 
-        LOGGER.info( "Get PQ Values Periodic Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
-                request.getAsyncRequest().getCorrelationUid() );
+        LOGGER.info("Get PQ Values Periodic Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
+                request.getAsyncRequest().getCorrelationUid());
 
         GetPQValuesPeriodicResponse response = new GetPQValuesPeriodicResponse();
         try {
             final org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesResponse dataResponse = this.service
-                    .dequeueGetPQValuesPeriodicResponse( request.getAsyncRequest().getCorrelationUid() );
-            if ( dataResponse != null ) {
-                response = this.mapper.map( dataResponse, GetPQValuesPeriodicResponse.class );
-                response.setResult( OsgpResultType.OK );
+                    .dequeueGetPQValuesPeriodicResponse(request.getAsyncRequest().getCorrelationUid());
+            if (dataResponse != null) {
+                response = this.mapper.map(dataResponse, GetPQValuesPeriodicResponse.class);
+                response.setResult(OsgpResultType.OK);
             } else {
-                response.setResult( OsgpResultType.NOT_FOUND );
+                response.setResult(OsgpResultType.NOT_FOUND);
             }
-        } catch ( final ResponseNotFoundException e ) {
-            LOGGER.warn( "ResponseNotFoundException for getPQValuesPeriodicAsync", e );
-            response.setResult( OsgpResultType.NOT_FOUND );
-        } catch ( final Exception e ) {
-            this.handleException( LOGGER, e );
+        } catch (final ResponseNotFoundException e) {
+            LOGGER.warn("ResponseNotFoundException for getPQValuesPeriodicAsync", e);
+            response.setResult(OsgpResultType.NOT_FOUND);
+        } catch (final Exception e) {
+            this.handleException(LOGGER, e);
         }
         response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
         return response;

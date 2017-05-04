@@ -28,7 +28,7 @@ public class OsgpCoreResponseMessageSender {
 
     public void send(final ResponseMessage responseMessage, final String messageType) {
 
-        this.osgpCoreResponsesJmsTemplate.send( session -> {
+        this.osgpCoreResponsesJmsTemplate.send(session -> {
             final ObjectMessage objectMessage = session.createObjectMessage();
             objectMessage.setJMSType(messageType);
             objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
@@ -37,6 +37,6 @@ public class OsgpCoreResponseMessageSender {
                     responseMessage.getDeviceIdentification());
             objectMessage.setObject(responseMessage);
             return objectMessage;
-        } );
+        });
     }
 }

@@ -30,26 +30,23 @@ import javax.jms.ObjectMessage;
  * Class for processing da get device model response messages
  */
 @Component("domainDistributionAutomationGetDeviceModelResponseMessageProcessor")
-public class GetDeviceModelResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor
-{
+public class GetDeviceModelResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( GetDeviceModelResponseMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetDeviceModelResponseMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainDistributionAutomationAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    protected GetDeviceModelResponseMessageProcessor()
-    {
-        super( DeviceFunction.GET_DEVICE_MODEL );
+    protected GetDeviceModelResponseMessageProcessor() {
+        super(DeviceFunction.GET_DEVICE_MODEL);
     }
 
     @Override
-    public void processMessage( final ObjectMessage message ) throws JMSException
-    {
-        LOGGER.debug( "Processing DA Get Device Model response message" );
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing DA Get Device Model response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -61,42 +58,38 @@ public class GetDeviceModelResponseMessageProcessor extends AbstractOsgpCoreResp
         OsgpException osgpException = null;
         Object dataObject = null;
 
-        try
-        {
+        try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
-            deviceIdentification = message.getStringProperty( Constants.DEVICE_IDENTIFICATION );
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
             dataObject = responseMessage.getDataObject();
-        } catch ( final JMSException e )
-        {
-            LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
-            LOGGER.debug( "correlationUid: {}", correlationUid );
-            LOGGER.debug( "messageType: {}", messageType );
-            LOGGER.debug( "organisationIdentification: {}", organisationIdentification );
-            LOGGER.debug( "deviceIdentification: {}", deviceIdentification );
-            LOGGER.debug( "responseMessageResultType: {}", responseMessageResultType );
-            LOGGER.debug( "deviceIdentification: {}", deviceIdentification );
-            LOGGER.debug( "osgpException: {}", osgpException );
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("osgpException: {}", osgpException);
             return;
         }
 
-        try
-        {
-            LOGGER.info( "Calling application service function to handle response: {}", messageType );
+        try {
+            LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             final GetDeviceModelResponseDto dataResponse = (GetDeviceModelResponseDto) dataObject;
 
-            this.adHocManagementService.handleGetDeviceModelResponse( dataResponse, deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException );
+            this.adHocManagementService.handleGetDeviceModelResponse(dataResponse, deviceIdentification,
+                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
-        } catch ( final Exception e )
-        {
-            this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, messageType );
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
     }
 }

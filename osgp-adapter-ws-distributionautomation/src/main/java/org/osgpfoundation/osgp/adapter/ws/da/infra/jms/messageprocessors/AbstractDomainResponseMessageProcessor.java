@@ -37,7 +37,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     /**
      * Logger for this class.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( AbstractDomainResponseMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDomainResponseMessageProcessor.class);
 
     /**
      * The hash map of message processor instances.
@@ -59,7 +59,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
      * @param deviceFunction
      *            The message type a message processor can handle.
      */
-    protected AbstractDomainResponseMessageProcessor( final DeviceFunction deviceFunction ) {
+    protected AbstractDomainResponseMessageProcessor(final DeviceFunction deviceFunction) {
         this.deviceFunction = deviceFunction;
     }
 
@@ -71,12 +71,12 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
      */
     @PostConstruct
     public void init() {
-        this.domainResponseMessageProcessorMap.addMessageProcessor( this.deviceFunction.ordinal(), this.deviceFunction.name(), this );
+        this.domainResponseMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(), this.deviceFunction.name(), this);
     }
 
     @Override
-    public void processMessage( final ObjectMessage message ) throws JMSException {
-        LOGGER.debug( "Processing distribution automation response message" );
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing distribution automation response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -92,53 +92,53 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
-            deviceIdentification = message.getStringProperty( Constants.DEVICE_IDENTIFICATION );
-            resultType = ResponseMessageResultType.valueOf( message.getStringProperty( Constants.RESULT ) );
-            resultDescription = message.getStringProperty( Constants.DESCRIPTION );
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
+            resultDescription = message.getStringProperty(Constants.DESCRIPTION);
 
-            notificationMessage = message.getStringProperty( Constants.DESCRIPTION );
-            notificationType = NotificationType.valueOf( messageType );
+            notificationMessage = message.getStringProperty(Constants.DESCRIPTION);
+            notificationType = NotificationType.valueOf(messageType);
 
             dataObject = message.getObject();
-        } catch ( final JMSException e ) {
-            LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
-            LOGGER.debug( "correlationUid: {}", correlationUid );
-            LOGGER.debug( "messageType: {}", messageType );
-            LOGGER.debug( "organisationIdentification: {}", organisationIdentification );
-            LOGGER.debug( "deviceIdentification: {}", deviceIdentification );
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
 
         try {
-            LOGGER.info( "Calling application service function to handle response: {}", messageType );
+            LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.handleMessage( organisationIdentification, messageType, deviceIdentification, correlationUid, resultType, resultDescription,
-                    dataObject );
+            this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid, resultType, resultDescription,
+                    dataObject);
 
             // Send notification indicating data is available.
             this.notificationService
-                    .sendNotification( organisationIdentification, deviceIdentification, resultType.name(), correlationUid, notificationMessage,
-                            notificationType );
+                    .sendNotification(organisationIdentification, deviceIdentification, resultType.name(), correlationUid, notificationMessage,
+                            notificationType);
 
-        } catch ( final Exception e ) {
-            this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, notificationType );
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }
     }
 
-    protected void handleMessage( final String organisationIdentification, final String messageType, final String deviceIdentification,
-            final String correlationUid, final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject ) {
+    protected void handleMessage(final String organisationIdentification, final String messageType, final String deviceIdentification,
+                                 final String correlationUid, final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
 
         Serializable meterResponseObject;
-        if ( dataObject == null ) {
+        if (dataObject == null) {
             meterResponseObject = resultDescription;
         } else {
             meterResponseObject = dataObject;
         }
 
-        final RtuResponseData responseData = new RtuResponseData( organisationIdentification, messageType, deviceIdentification, correlationUid,
-                resultType, meterResponseObject );
-        this.rtuResponseDataService.enqueue( responseData );
+        final RtuResponseData responseData = new RtuResponseData(organisationIdentification, messageType, deviceIdentification, correlationUid,
+                resultType, meterResponseObject);
+        this.rtuResponseDataService.enqueue(responseData);
     }
 
     /**
@@ -151,11 +151,11 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
      * @param deviceIdentification The device identification.
      * @param notificationType The message type.
      */
-    protected void handleError( final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final NotificationType notificationType ) {
+    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
+                               final String deviceIdentification, final NotificationType notificationType) {
 
-        LOGGER.info( "handeling error: {} for notification type: {}", e.getMessage(), notificationType );
+        LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType);
         this.notificationService
-                .sendNotification( organisationIdentification, deviceIdentification, "NOT_OK", correlationUid, e.getMessage(), notificationType );
+                .sendNotification(organisationIdentification, deviceIdentification, "NOT_OK", correlationUid, e.getMessage(), notificationType);
     }
 }

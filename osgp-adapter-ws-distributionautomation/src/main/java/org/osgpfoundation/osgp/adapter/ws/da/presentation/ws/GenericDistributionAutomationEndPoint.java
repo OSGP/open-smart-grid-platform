@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgpfoundation.osgp.adapter.ws.da.presentation.ws;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -17,17 +24,14 @@ public class GenericDistributionAutomationEndPoint {
     @Autowired
     protected DistributionAutomationMapper mapper;
 
-    public GenericDistributionAutomationEndPoint() {
-    }
-
-    protected void handleException( final Logger logger, final Exception e ) throws OsgpException {
+    protected void handleException(final Logger logger, final Exception e) throws OsgpException {
         // Rethrow exception if it already is a functional or technical
         // exception, otherwise throw new technical exception.
-        logger.error( "Exception occurred: ", e );
-        if ( e instanceof OsgpException ) {
+        logger.error("Exception occurred: ", e);
+        if (e instanceof OsgpException) {
             throw (OsgpException) e;
         } else {
-            throw new TechnicalException( ComponentType.WS_DISTRIBUTION_AUTOMATION, e );
+            throw new TechnicalException(ComponentType.WS_DISTRIBUTION_AUTOMATION, e);
         }
     }
 }

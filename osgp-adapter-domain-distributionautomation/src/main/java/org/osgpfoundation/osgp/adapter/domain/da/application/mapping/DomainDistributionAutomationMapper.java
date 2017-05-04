@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 public class DomainDistributionAutomationMapper extends ConfigurableMapper {
 
     @Override
-    protected void configure( final MapperFactory factory ) {
-        factory.getConverterFactory().registerConverter( new PassThroughConverter( DateTime.class ) );
+    protected void configure(final MapperFactory factory) {
+        factory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
         factory.getConverterFactory().registerConverter(new GetHealthStatusRequestConverter());
         factory.getConverterFactory().registerConverter(new GetPQValuesRequestConverter());
     }

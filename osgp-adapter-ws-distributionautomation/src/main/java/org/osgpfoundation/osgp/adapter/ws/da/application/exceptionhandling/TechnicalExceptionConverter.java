@@ -15,16 +15,16 @@ import ma.glasnost.orika.metadata.Type;
 public class TechnicalExceptionConverter extends CustomConverter<TechnicalException, TechnicalFault> {
 
     @Override
-    public TechnicalFault convert( final TechnicalException source, final Type<? extends TechnicalFault> destinationType ) {
-        if ( source == null ) {
+    public TechnicalFault convert(final TechnicalException source, final Type<? extends TechnicalFault> destinationType) {
+        if (source == null) {
             return null;
         }
         final TechnicalFault destination = new TechnicalFault();
-        destination.setComponent( source.getComponentType().name() );
-        destination.setMessage( source.getMessage() );
-        if ( source.getCause() != null ) {
-            destination.setInnerException( source.getCause().getClass().getName() );
-            destination.setInnerMessage( source.getCause().getMessage() );
+        destination.setComponent(source.getComponentType().name());
+        destination.setMessage(source.getMessage());
+        if (source.getCause() != null) {
+            destination.setInnerException(source.getCause().getClass().getName());
+            destination.setInnerMessage(source.getCause().getMessage());
         }
         return destination;
     }

@@ -27,13 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class CommunicationRecoveryService extends BaseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( CommunicationRecoveryService.class );
-
-    private static final int SYSTEM_ID = 1;
-    private static final String SYSTEM_TYPE = "RTU";
-    private static final int MEASUREMENT_ID = 1;
-    private static final String MEASUREMENT_NODE = "Alm1";
-    private static final double MEASUREMENT_VALUE_ALARM_ON = 1.0;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationRecoveryService.class);
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -49,57 +43,57 @@ public class CommunicationRecoveryService extends BaseService {
      *
      * @param rtu
      */
-    public void signalConnectionLost( final RtuDevice rtu ) {
-        LOGGER.info( "Sending connection lost signal for device {}.", rtu.getDeviceIdentification() );
+    public void signalConnectionLost(final RtuDevice rtu) {
+        LOGGER.info("Sending connection lost signal for device {}.", rtu.getDeviceIdentification());
 
-        final GetHealthStatusResponseDto getHealthStatusResponseDto = new GetHealthStatusResponseDto( "NOTRESPONDING" );
+        final GetHealthStatusResponseDto getHealthStatusResponseDto = new GetHealthStatusResponseDto("NOTRESPONDING");
 
-        final String correlationUid = this.createCorrelationUid( rtu );
+        final String correlationUid = this.createCorrelationUid(rtu);
         final String organisationIdentification = rtu.getOwner().getOrganisationIdentification();
         final String deviceIdentification = rtu.getDeviceIdentification();
 
         this.deviceManagementService
-                .handleHealthStatusResponse( getHealthStatusResponseDto, deviceIdentification, organisationIdentification, correlationUid,
-                        DeviceFunction.GET_DATA.toString(), ResponseMessageResultType.OK, null );
+                .handleHealthStatusResponse(getHealthStatusResponseDto, deviceIdentification, organisationIdentification, correlationUid,
+                        DeviceFunction.GET_DATA.toString(), ResponseMessageResultType.OK, null);
     }
 
-    public void restoreCommunication( final RtuDevice rtu ) {
-        LOGGER.info( "Restoring communication for device {}.", rtu.getDeviceIdentification() );
+    public void restoreCommunication(final RtuDevice rtu) {
+        LOGGER.info("Restoring communication for device {}.", rtu.getDeviceIdentification());
 
-        if ( rtu.getOwner() == null ) {
-            LOGGER.warn( "Device {} has no owner. Skipping communication recovery.", rtu.getDeviceIdentification() );
+        if (rtu.getOwner() == null) {
+            LOGGER.warn("Device {} has no owner. Skipping communication recovery.", rtu.getDeviceIdentification());
             return;
         }
 
-        final RequestMessage message = this.createMessage( rtu );
-        this.osgpCoreRequestMessageSender.send( message, DeviceFunction.GET_DATA.toString(), rtu.getIpAddress() );
+        final RequestMessage message = this.createMessage(rtu);
+        this.osgpCoreRequestMessageSender.send(message, DeviceFunction.GET_DATA.toString(), rtu.getIpAddress());
     }
 
-    private RequestMessage createMessage( final RtuDevice rtu ) {
-        LOGGER.debug( "Creating message for device {}.", rtu.getDeviceIdentification() );
+    private RequestMessage createMessage(final RtuDevice rtu) {
+        LOGGER.debug("Creating message for device {}.", rtu.getDeviceIdentification());
 
-        final String correlationUid = this.createCorrelationUid( rtu );
+        final String correlationUid = this.createCorrelationUid(rtu);
         final String organisationIdentification = rtu.getOwner().getOrganisationIdentification();
         final String deviceIdentification = rtu.getDeviceIdentification();
-        final GetHealthStatusRequestDto request = this.createHalthStatusRequest( rtu );
+        final GetHealthStatusRequestDto request = this.createHalthStatusRequest(rtu);
 
-        return new RequestMessage( correlationUid, organisationIdentification, deviceIdentification, request );
+        return new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, request);
     }
 
-    private String createCorrelationUid( final RtuDevice rtu ) {
-        LOGGER.debug( "Creating correlation uid for device {}, with owner {}", rtu.getDeviceIdentification(),
-                rtu.getOwner().getOrganisationIdentification() );
+    private String createCorrelationUid(final RtuDevice rtu) {
+        LOGGER.debug("Creating correlation uid for device {}, with owner {}", rtu.getDeviceIdentification(),
+                rtu.getOwner().getOrganisationIdentification());
 
         final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId( rtu.getOwner().getOrganisationIdentification(), rtu.getDeviceIdentification() );
+                .getCorrelationId(rtu.getOwner().getOrganisationIdentification(), rtu.getDeviceIdentification());
 
-        LOGGER.debug( "Correlation uid {} created.", correlationUid );
+        LOGGER.debug("Correlation uid {} created.", correlationUid);
 
         return correlationUid;
     }
 
-    private GetHealthStatusRequestDto createHalthStatusRequest( final RtuDevice rtu ) {
-        LOGGER.debug( "Creating Health Status request for rtu {}.", rtu.getDeviceIdentification() );
-        return new GetHealthStatusRequestDto( rtu.getDeviceIdentification() );
+    private GetHealthStatusRequestDto createHalthStatusRequest(final RtuDevice rtu) {
+        LOGGER.debug("Creating Health Status request for rtu {}.", rtu.getDeviceIdentification());
+        return new GetHealthStatusRequestDto(rtu.getDeviceIdentification());
     }
 }

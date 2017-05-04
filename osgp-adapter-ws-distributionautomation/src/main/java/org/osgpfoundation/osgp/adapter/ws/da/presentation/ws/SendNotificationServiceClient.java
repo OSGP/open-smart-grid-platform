@@ -21,7 +21,7 @@ public class SendNotificationServiceClient {
     private final DefaultWebServiceTemplateFactory webServiceTemplateFactory;
 
     @Autowired
-    public SendNotificationServiceClient( final DefaultWebServiceTemplateFactory webServiceTemplateFactory ) {
+    public SendNotificationServiceClient(final DefaultWebServiceTemplateFactory webServiceTemplateFactory) {
         this.webServiceTemplateFactory = webServiceTemplateFactory;
     }
 
@@ -37,14 +37,14 @@ public class SendNotificationServiceClient {
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    public void sendNotification( final String organisationIdentification, final Notification notification, final String notificationURL,
-            final String notificationUsername ) throws WebServiceSecurityException {
+    public void sendNotification(final String organisationIdentification, final Notification notification, final String notificationURL,
+                                 final String notificationUsername) throws WebServiceSecurityException {
 
         final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
 
-        sendNotificationRequest.setNotification( notification );
+        sendNotificationRequest.setNotification(notification);
 
-        this.webServiceTemplateFactory.getTemplate( organisationIdentification, notificationUsername, notificationURL )
-                .marshalSendAndReceive( sendNotificationRequest );
+        this.webServiceTemplateFactory.getTemplate(organisationIdentification, notificationUsername, notificationURL)
+                .marshalSendAndReceive(sendNotificationRequest);
     }
 }

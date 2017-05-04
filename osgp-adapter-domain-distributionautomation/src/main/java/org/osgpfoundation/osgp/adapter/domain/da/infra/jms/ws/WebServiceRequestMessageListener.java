@@ -24,37 +24,32 @@ import javax.jms.ObjectMessage;
 
 // Fetch incoming messages from the requests queue of web service adapter.
 @Component(value = "domainDistributionAutomationIncomingWebServiceRequestMessageListener")
-public class WebServiceRequestMessageListener implements MessageListener
-{
+public class WebServiceRequestMessageListener implements MessageListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( WebServiceRequestMessageListener.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceRequestMessageListener.class);
 
     @Autowired
     @Qualifier("domainDistributionAutomationWebServiceRequestMessageProcessorMap")
     private MessageProcessorMap webServiceRequestMessageProcessorMap;
 
-    public WebServiceRequestMessageListener()
-    {
+    public WebServiceRequestMessageListener() {
         // empty constructor
     }
 
     @Override
-    public void onMessage( final Message message )
-    {
-        try
-        {
-            LOGGER.info( "Received message of type: {}", message.getJMSType() );
+    public void onMessage(final Message message) {
+        try {
+            LOGGER.info("Received message of type: {}", message.getJMSType());
 
             final ObjectMessage objectMessage = (ObjectMessage) message;
 
             final MessageProcessor processor = this.webServiceRequestMessageProcessorMap
-                    .getMessageProcessor( objectMessage );
+                    .getMessageProcessor(objectMessage);
 
-            processor.processMessage( objectMessage );
+            processor.processMessage(objectMessage);
 
-        } catch ( final JMSException ex )
-        {
-            LOGGER.error( "Exception: {} ", ex.getMessage(), ex );
+        } catch (final JMSException ex) {
+            LOGGER.error("Exception: {} ", ex.getMessage(), ex);
         }
     }
 }

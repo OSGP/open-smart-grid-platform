@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class MonitoringService extends BaseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( MonitoringService.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
     @Autowired
     private DomainDistributionAutomationMapper mapper;
@@ -44,70 +44,70 @@ public class MonitoringService extends BaseService {
         // Parameterless constructor required for transactions...
     }
 
-    public void getPQValues( final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType, final GetPQValuesRequest getPQValuesRequest ) throws FunctionalException {
+    public void getPQValues(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
+                            final String messageType, final GetPQValuesRequest getPQValuesRequest) throws FunctionalException {
 
-        LOGGER.info( "Get PQ Values for device [{}] with correlation id [{}]", deviceIdentification, correlationUid );
+        LOGGER.info("Get PQ Values for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
-        this.findOrganisation( organisationIdentification );
-        final Device device = this.findActiveDevice( deviceIdentification );
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.findActiveDevice(deviceIdentification);
 
-        final GetPQValuesRequestDto dto = this.mapper.map( getPQValuesRequest, GetPQValuesRequestDto.class );
-
-        this.osgpCoreRequestMessageSender
-                .send( new RequestMessage( correlationUid, organisationIdentification, deviceIdentification, dto ), messageType,
-                        device.getIpAddress() );
-    }
-
-    public void getPQValuesPeriodic( final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType, final GetPQValuesPeriodicRequest getPQValuesPeriodicRequest ) throws FunctionalException {
-
-        LOGGER.info( "Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid );
-
-        this.findOrganisation( organisationIdentification );
-        final Device device = this.findActiveDevice( deviceIdentification );
-
-        final GetPQValuesPeriodicRequestDto dto = this.mapper.map( getPQValuesPeriodicRequest, GetPQValuesPeriodicRequestDto.class );
+        final GetPQValuesRequestDto dto = this.mapper.map(getPQValuesRequest, GetPQValuesRequestDto.class);
 
         this.osgpCoreRequestMessageSender
-                .send( new RequestMessage( correlationUid, organisationIdentification, deviceIdentification, dto ), messageType,
-                        device.getIpAddress() );
+                .send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
+                        device.getIpAddress());
     }
 
-    public void handleGetPQValuesResponse( final GetPQValuesResponseDto getPQValuesResponseDto, final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException ) {
+    public void getPQValuesPeriodic(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
+                                    final String messageType, final GetPQValuesPeriodicRequest getPQValuesPeriodicRequest) throws FunctionalException {
 
-        LOGGER.info( "handleResponse for MessageType: {}", messageType );
+        LOGGER.info("Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
+
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.findActiveDevice(deviceIdentification);
+
+        final GetPQValuesPeriodicRequestDto dto = this.mapper.map(getPQValuesPeriodicRequest, GetPQValuesPeriodicRequestDto.class);
+
+        this.osgpCoreRequestMessageSender
+                .send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
+                        device.getIpAddress());
+    }
+
+    public void handleGetPQValuesResponse(final GetPQValuesResponseDto getPQValuesResponseDto, final String deviceIdentification,
+                                          final String organisationIdentification, final String correlationUid, final String messageType,
+                                          final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         GetPQValuesResponse getPQValuesResponse = null;
         OsgpException exception = null;
 
         try {
-            if ( responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null ) {
-                LOGGER.error( "Device Response not ok.", osgpException );
+            if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
 
-            this.handleResponseMessageReceived( LOGGER, deviceIdentification );
+            this.handleResponseMessageReceived(LOGGER, deviceIdentification);
 
-            getPQValuesResponse = this.mapper.map( getPQValuesResponseDto, GetPQValuesResponse.class );
+            getPQValuesResponse = this.mapper.map(getPQValuesResponseDto, GetPQValuesResponse.class);
 
-        } catch ( final Exception e ) {
-            LOGGER.error( "Unexpected Exception", e );
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            exception = this.ensureOsgpException( e, "Exception occurred while getting PQ Values Response Data" );
+            exception = this.ensureOsgpException(e, "Exception occurred while getting PQ Values Response Data");
         }
 
         // Support for Push messages, generate correlationUid
         String actualCorrelationUid = correlationUid;
-        if ( "no-correlationUid".equals( actualCorrelationUid ) ) {
-            actualCorrelationUid = getCorrelationId( "DeviceGenerated", deviceIdentification );
+        if ("no-correlationUid".equals(actualCorrelationUid)) {
+            actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
         }
 
         this.webServiceResponseMessageSender
-                .send( new ResponseMessage( actualCorrelationUid, organisationIdentification, deviceIdentification, result, exception,
-                        getPQValuesResponse ), messageType );
+                .send(new ResponseMessage(actualCorrelationUid, organisationIdentification, deviceIdentification, result, exception,
+                        getPQValuesResponse), messageType);
     }
 }

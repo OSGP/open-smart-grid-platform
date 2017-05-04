@@ -15,17 +15,17 @@ import ma.glasnost.orika.metadata.Type;
 public class FunctionalExceptionConverter extends CustomConverter<FunctionalException, FunctionalFault> {
 
     @Override
-    public FunctionalFault convert( final FunctionalException source, final Type<? extends FunctionalFault> destinationType ) {
-        if ( source == null ) {
+    public FunctionalFault convert(final FunctionalException source, final Type<? extends FunctionalFault> destinationType) {
+        if (source == null) {
             return null;
         }
         final FunctionalFault destination = new FunctionalFault();
-        destination.setCode( source.getCode() );
-        destination.setComponent( source.getComponentType().name() );
-        destination.setMessage( source.getMessage() );
-        if ( source.getCause() != null ) {
-            destination.setInnerException( source.getCause().getClass().getName() );
-            destination.setInnerMessage( source.getCause().getMessage() );
+        destination.setCode(source.getCode());
+        destination.setComponent(source.getComponentType().name());
+        destination.setMessage(source.getMessage());
+        if (source.getCause() != null) {
+            destination.setInnerException(source.getCause().getClass().getName());
+            destination.setInnerMessage(source.getCause().getMessage());
         }
         return destination;
     }

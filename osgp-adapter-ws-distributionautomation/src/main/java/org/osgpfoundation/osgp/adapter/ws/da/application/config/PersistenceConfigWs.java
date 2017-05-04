@@ -36,10 +36,6 @@ public class PersistenceConfigWs extends AbstractPersistenceConfigBase {
 
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
 
-    private static final String PROPERTY_NAME_FLYWAY_INITIAL_VERSION = "flyway.initial.version";
-    private static final String PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION = "flyway.initial.description";
-    private static final String PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE = "flyway.init.on.migrate";
-
     public PersistenceConfigWs() {
         super("OSGP_WS_ADAPTER_DISTRIBUTION_AUTOMATION", PROPERTY_NAME_DATABASE_USERNAME, PROPERTY_NAME_DATABASE_PW,
                 PROPERTY_NAME_DATABASE_HOST, PROPERTY_NAME_DATABASE_PORT, PROPERTY_NAME_DATABASE_NAME,
@@ -60,12 +56,6 @@ public class PersistenceConfigWs extends AbstractPersistenceConfigBase {
     @Bean(initMethod = "migrate")
     public Flyway flyway() {
         final Flyway flyway = new Flyway();
-
-        // Initialization for non-empty schema with no metadata table
-//        flyway.setInitVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION));
-        //        flyway.setInitDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-        //        flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
-        //                .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
 
         flyway.setDataSource(this.getDataSource());
 

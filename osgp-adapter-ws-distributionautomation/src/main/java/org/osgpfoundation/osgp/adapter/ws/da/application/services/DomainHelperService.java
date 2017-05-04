@@ -36,29 +36,29 @@ public class DomainHelperService {
     @Autowired
     private SecurityService securityService;
 
-    public RtuDevice findDevice( final String deviceIdentification ) throws FunctionalException {
-        final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification( deviceIdentification );
-        if ( device == null ) {
-            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
-                    new UnknownEntityException( RtuDevice.class, deviceIdentification ) );
+    public RtuDevice findDevice(final String deviceIdentification) throws FunctionalException {
+        final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        if (device == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                    new UnknownEntityException(RtuDevice.class, deviceIdentification));
         }
         return device;
     }
 
-    public Organisation findOrganisation( final String organisationIdentification ) throws FunctionalException {
-        final Organisation organisation = this.organisationRepository.findByOrganisationIdentification( organisationIdentification );
-        if ( organisation == null ) {
-            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_ORGANISATION, COMPONENT_TYPE,
-                    new UnknownEntityException( Organisation.class, organisationIdentification ) );
+    public Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
+        final Organisation organisation = this.organisationRepository.findByOrganisationIdentification(organisationIdentification);
+        if (organisation == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, COMPONENT_TYPE,
+                    new UnknownEntityException(Organisation.class, organisationIdentification));
         }
         return organisation;
     }
 
-    public void isAllowed( final Organisation organisation, final Device device, final DeviceFunction deviceFunction ) throws FunctionalException {
+    public void isAllowed(final Organisation organisation, final Device device, final DeviceFunction deviceFunction) throws FunctionalException {
         try {
-            this.securityService.checkAuthorization( organisation, device, deviceFunction );
-        } catch ( final NotAuthorizedException e ) {
-            throw new FunctionalException( FunctionalExceptionType.UNAUTHORIZED, COMPONENT_TYPE, e );
+            this.securityService.checkAuthorization(organisation, device, deviceFunction);
+        } catch (final NotAuthorizedException e) {
+            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, COMPONENT_TYPE, e);
         }
     }
 }

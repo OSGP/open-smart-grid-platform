@@ -11,7 +11,4 @@ import java.io.Serializable;
 
 public class GetPQValuesRequest implements Serializable {
     private static final long serialVersionUID = 4776483459295815849L;
-
-    public GetPQValuesRequest() {
-    }
 }

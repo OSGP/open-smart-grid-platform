@@ -12,7 +12,7 @@ import org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.notifica
 
 public interface NotificationService {
 
-    void sendNotification( @Identification String organisationIdentification, String deviceIdentification, String result, String correlationUid,
-            String message, NotificationType notificationType );
+    void sendNotification(@Identification String organisationIdentification, String deviceIdentification, String result, String correlationUid,
+                          String message, NotificationType notificationType);
 
 }

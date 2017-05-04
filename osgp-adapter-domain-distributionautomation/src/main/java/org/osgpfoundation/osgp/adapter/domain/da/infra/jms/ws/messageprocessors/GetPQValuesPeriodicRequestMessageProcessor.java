@@ -27,26 +27,23 @@ import javax.jms.ObjectMessage;
  * Class for processing da get pq values periodic request messages
  */
 @Component("domainDistributionAutomationGetPQValuesPeriodicRequestMessageProcessor")
-public class GetPQValuesPeriodicRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor
-{
+public class GetPQValuesPeriodicRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( GetPQValuesPeriodicRequestMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetPQValuesPeriodicRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainDistributionAutomationMonitoringService")
     private MonitoringService monitoringService;
 
-    public GetPQValuesPeriodicRequestMessageProcessor()
-    {
-        super( DeviceFunction.GET_POWER_QUALITY_VALUES_PERIODIC );
+    public GetPQValuesPeriodicRequestMessageProcessor() {
+        super(DeviceFunction.GET_POWER_QUALITY_VALUES_PERIODIC);
     }
 
     @Override
-    public void processMessage( final ObjectMessage message )
-    {
-        LOGGER.info( "Processing DA Get PQ Values Periodic request message" );
+    public void processMessage(final ObjectMessage message) {
+        LOGGER.info("Processing DA Get PQ Values Periodic request message");
 
         String correlationUid = null;
         String messageType = null;
@@ -54,38 +51,33 @@ public class GetPQValuesPeriodicRequestMessageProcessor extends AbstractWebServi
         String deviceIdentification = null;
         GetPQValuesPeriodicRequest getPQValuesPeriodicRequest = null;
 
-        try
-        {
+        try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
-            deviceIdentification = message.getStringProperty( Constants.DEVICE_IDENTIFICATION );
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            if ( message.getObject() instanceof GetPQValuesPeriodicRequest )
-            {
+            if (message.getObject() instanceof GetPQValuesPeriodicRequest) {
                 getPQValuesPeriodicRequest = (GetPQValuesPeriodicRequest) message.getObject();
             }
 
-        } catch ( final JMSException e )
-        {
-            LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
-            LOGGER.debug( "correlationUid: {}", correlationUid );
-            LOGGER.debug( "messageType: {}", messageType );
-            LOGGER.debug( "organisationIdentification: {}", organisationIdentification );
-            LOGGER.debug( "deviceIdentification: {}", deviceIdentification );
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
 
-        try
-        {
-            LOGGER.info( "Calling application service function: {}", messageType );
+        try {
+            LOGGER.info("Calling application service function: {}", messageType);
 
-            this.monitoringService.getPQValuesPeriodic( organisationIdentification, deviceIdentification, correlationUid,
-                    messageType, getPQValuesPeriodicRequest );
+            this.monitoringService.getPQValuesPeriodic(organisationIdentification, deviceIdentification, correlationUid,
+                    messageType, getPQValuesPeriodicRequest);
 
-        } catch ( final Exception e )
-        {
-            this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, messageType );
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
     }
 }

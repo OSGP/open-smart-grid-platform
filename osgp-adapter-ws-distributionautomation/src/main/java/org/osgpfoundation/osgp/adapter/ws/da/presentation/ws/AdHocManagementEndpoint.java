@@ -31,23 +31,23 @@ public class AdHocManagementEndpoint extends GenericDistributionAutomationEndPoi
     @PayloadRoot(localPart = "GetDeviceModelRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public GetDeviceModelAsyncResponse getDeviceModel( @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetDeviceModelRequest request ) throws OsgpException {
+    public GetDeviceModelAsyncResponse getDeviceModel(@OrganisationIdentification final String organisationIdentification,
+                                                      @RequestPayload final GetDeviceModelRequest request) throws OsgpException {
 
-        LOGGER.info( "Get Device Model Request received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification() );
+        LOGGER.info("Get Device Model Request received from organisation: {} for device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
         GetDeviceModelAsyncResponse response = new GetDeviceModelAsyncResponse();
         try {
             final org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelRequest getDeviceModelRequest = this.mapper
-                    .map( request, org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelRequest.class );
+                    .map(request, org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelRequest.class);
             final String correlationUid = this.service
-                    .enqueueGetDeviceModelRequest( organisationIdentification, request.getDeviceIdentification(), getDeviceModelRequest );
+                    .enqueueGetDeviceModelRequest(organisationIdentification, request.getDeviceIdentification(), getDeviceModelRequest);
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-        } catch ( final Exception e ) {
-            this.handleException( LOGGER, e );
+        } catch (final Exception e) {
+            this.handleException(LOGGER, e);
         }
         return response;
     }
@@ -55,28 +55,28 @@ public class AdHocManagementEndpoint extends GenericDistributionAutomationEndPoi
     @PayloadRoot(localPart = "GetDeviceModelAsyncRequest",
             namespace = NAMESPACE)
     @ResponsePayload
-    public GetDeviceModelResponse getDeviceModelResponse( @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetDeviceModelAsyncRequest request ) throws OsgpException {
+    public GetDeviceModelResponse getDeviceModelResponse(@OrganisationIdentification final String organisationIdentification,
+                                                         @RequestPayload final GetDeviceModelAsyncRequest request) throws OsgpException {
 
-        LOGGER.info( "Get Device Model Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
-                request.getAsyncRequest().getCorrelationUid() );
+        LOGGER.info("Get Device Model Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
+                request.getAsyncRequest().getCorrelationUid());
 
         GetDeviceModelResponse response = new GetDeviceModelResponse();
         try {
             final org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelResponse dataResponse = this.service
-                    .dequeueGetDeviceModelResponse( request.getAsyncRequest().getCorrelationUid() );
-            if ( dataResponse != null ) {
-                response = this.mapper.map( dataResponse, GetDeviceModelResponse.class );
-                response.setResult( OsgpResultType.OK );
+                    .dequeueGetDeviceModelResponse(request.getAsyncRequest().getCorrelationUid());
+            if (dataResponse != null) {
+                response = this.mapper.map(dataResponse, GetDeviceModelResponse.class);
+                response.setResult(OsgpResultType.OK);
             } else {
 
-                response.setResult( OsgpResultType.NOT_FOUND );
+                response.setResult(OsgpResultType.NOT_FOUND);
             }
-        } catch ( final ResponseNotFoundException e ) {
-            LOGGER.warn( "ResponseNotFoundException for getDeviceModel", e );
-            response.setResult( OsgpResultType.NOT_FOUND );
-        } catch ( final Exception e ) {
-            this.handleException( LOGGER, e );
+        } catch (final ResponseNotFoundException e) {
+            LOGGER.warn("ResponseNotFoundException for getDeviceModel", e);
+            response.setResult(OsgpResultType.NOT_FOUND);
+        } catch (final Exception e) {
+            this.handleException(LOGGER, e);
         }
         response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
         return response;

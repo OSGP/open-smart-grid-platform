@@ -6,7 +6,7 @@
  *
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.osgpfoundation.osgp.adapter.ws.da.infra.jms;
 
@@ -17,13 +17,12 @@ import java.io.Serializable;
 
 public class DistributionAutomationRequestMessage extends RequestMessage {
 
-    private static final long serialVersionUID = -1212784820197545944L;
+    private static final long serialVersionUID = -1212784820197545949L;
 
     private final DistributionAutomationRequestMessageType messageType;
 
     public DistributionAutomationRequestMessage(final DistributionAutomationRequestMessageType messageType, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification, final Serializable request,
-            final DateTime scheduleTime) {
+            final String organisationIdentification, final String deviceIdentification, final Serializable request) {
         super(correlationUid, organisationIdentification, deviceIdentification, request);
         this.messageType = messageType;
     }

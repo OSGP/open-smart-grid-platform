@@ -24,14 +24,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class DistributionAutomationMapper extends ConfigurableMapper {
 
-    private static final String SYSTEM = "system";
-    private static final String SYSTEM_TYPE = "systemType";
-    private static final String TYPE = "type";
-
     @Override
-    public void configure( final MapperFactory mapperFactory ) {
-        mapperFactory.getConverterFactory().registerConverter( new PassThroughConverter( DateTime.class ) );
-        mapperFactory.getConverterFactory().registerConverter( new XMLGregorianCalendarToDateTimeConverter() );
+    public void configure(final MapperFactory mapperFactory) {
+        mapperFactory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
+        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
 
         mapperFactory
                 .classMap(GetHealthStatusResponse.class,

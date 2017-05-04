@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class DeviceManagementService extends BaseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( DeviceManagementService.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
     @Autowired
     private DomainDistributionAutomationMapper mapper;
@@ -42,55 +42,55 @@ public class DeviceManagementService extends BaseService {
         // Parameterless constructor required for transactions...
     }
 
-    public void getHealthStatus( final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType, final GetHealthStatusRequest getHealthStatusRequest ) throws FunctionalException {
+    public void getHealthStatus(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
+                                final String messageType, final GetHealthStatusRequest getHealthStatusRequest) throws FunctionalException {
 
-        LOGGER.info( "Get Health Status for device [{}] with correlation id [{}]", deviceIdentification, correlationUid );
+        LOGGER.info("Get Health Status for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
-        this.findOrganisation( organisationIdentification );
-        final Device device = this.findActiveDevice( deviceIdentification );
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.findActiveDevice(deviceIdentification);
 
-        final GetHealthStatusRequestDto dto = this.mapper.map( getHealthStatusRequest, GetHealthStatusRequestDto.class );
+        final GetHealthStatusRequestDto dto = this.mapper.map(getHealthStatusRequest, GetHealthStatusRequestDto.class);
 
         this.osgpCoreRequestMessageSender
-                .send( new RequestMessage( correlationUid, organisationIdentification, deviceIdentification, dto ), messageType,
-                        device.getIpAddress() );
+                .send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
+                        device.getIpAddress());
     }
 
-    public void handleHealthStatusResponse( final GetHealthStatusResponseDto getHealthStatusResponseDto, final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException ) {
+    public void handleHealthStatusResponse(final GetHealthStatusResponseDto getHealthStatusResponseDto, final String deviceIdentification,
+                                           final String organisationIdentification, final String correlationUid, final String messageType,
+                                           final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
 
-        LOGGER.info( "handleResponse for MessageType: {}", messageType );
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         GetHealthStatusResponse getHealthStatusResponse = null;
         OsgpException exception = null;
 
         try {
-            if ( responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null ) {
-                LOGGER.error( "Device Response not ok.", osgpException );
+            if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
 
-            this.handleResponseMessageReceived( LOGGER, deviceIdentification );
+            this.handleResponseMessageReceived(LOGGER, deviceIdentification);
 
-            getHealthStatusResponse = this.mapper.map( getHealthStatusResponseDto, GetHealthStatusResponse.class );
+            getHealthStatusResponse = this.mapper.map(getHealthStatusResponseDto, GetHealthStatusResponse.class);
 
-        } catch ( final Exception e ) {
-            LOGGER.error( "Unexpected Exception", e );
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            exception = this.ensureOsgpException( e, "Exception occurred while getting Health Status Response Data" );
+            exception = this.ensureOsgpException(e, "Exception occurred while getting Health Status Response Data");
         }
 
         // Support for Push messages, generate correlationUid
         String actualCorrelationUid = correlationUid;
-        if ( "no-correlationUid".equals( actualCorrelationUid ) ) {
-            actualCorrelationUid = getCorrelationId( "DeviceGenerated", deviceIdentification );
+        if ("no-correlationUid".equals(actualCorrelationUid)) {
+            actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
         }
 
         this.webServiceResponseMessageSender
-                .send( new ResponseMessage( actualCorrelationUid, organisationIdentification, deviceIdentification, result, exception,
-                        getHealthStatusResponse ), messageType );
+                .send(new ResponseMessage(actualCorrelationUid, organisationIdentification, deviceIdentification, result, exception,
+                        getHealthStatusResponse), messageType);
     }
 }

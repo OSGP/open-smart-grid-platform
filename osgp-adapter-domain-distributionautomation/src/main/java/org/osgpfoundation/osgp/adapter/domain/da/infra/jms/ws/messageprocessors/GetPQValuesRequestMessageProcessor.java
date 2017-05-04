@@ -27,26 +27,23 @@ import javax.jms.ObjectMessage;
  * Class for processing da get pq values request messages
  */
 @Component("domainDistributionAutomationGetPQValuesRequestMessageProcessor")
-public class GetPQValuesRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor
-{
+public class GetPQValuesRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( GetPQValuesRequestMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetPQValuesRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainDistributionAutomationMonitoringService")
     private MonitoringService monitoringService;
 
-    public GetPQValuesRequestMessageProcessor()
-    {
-        super( DeviceFunction.GET_POWER_QUALITY_VALUES );
+    public GetPQValuesRequestMessageProcessor() {
+        super(DeviceFunction.GET_POWER_QUALITY_VALUES);
     }
 
     @Override
-    public void processMessage( final ObjectMessage message )
-    {
-        LOGGER.info( "Processing DA Get PQ Values request message" );
+    public void processMessage(final ObjectMessage message) {
+        LOGGER.info("Processing DA Get PQ Values request message");
 
         String correlationUid = null;
         String messageType = null;
@@ -54,38 +51,33 @@ public class GetPQValuesRequestMessageProcessor extends AbstractWebServiceReques
         String deviceIdentification = null;
         GetPQValuesRequest getPQValuesRequest = null;
 
-        try
-        {
+        try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
-            deviceIdentification = message.getStringProperty( Constants.DEVICE_IDENTIFICATION );
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            if ( message.getObject() instanceof GetPQValuesRequest )
-            {
+            if (message.getObject() instanceof GetPQValuesRequest) {
                 getPQValuesRequest = (GetPQValuesRequest) message.getObject();
             }
 
-        } catch ( final JMSException e )
-        {
-            LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
-            LOGGER.debug( "correlationUid: {}", correlationUid );
-            LOGGER.debug( "messageType: {}", messageType );
-            LOGGER.debug( "organisationIdentification: {}", organisationIdentification );
-            LOGGER.debug( "deviceIdentification: {}", deviceIdentification );
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
 
-        try
-        {
-            LOGGER.info( "Calling application service function: {}", messageType );
+        try {
+            LOGGER.info("Calling application service function: {}", messageType);
 
-            this.monitoringService.getPQValues( organisationIdentification, deviceIdentification, correlationUid,
-                    messageType, getPQValuesRequest );
+            this.monitoringService.getPQValues(organisationIdentification, deviceIdentification, correlationUid,
+                    messageType, getPQValuesRequest);
 
-        } catch ( final Exception e )
-        {
-            this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, messageType );
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
     }
 }

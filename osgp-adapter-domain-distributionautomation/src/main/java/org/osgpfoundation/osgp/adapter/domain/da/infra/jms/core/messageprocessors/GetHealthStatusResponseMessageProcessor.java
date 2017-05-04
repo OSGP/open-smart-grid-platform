@@ -34,19 +34,19 @@ public class GetHealthStatusResponseMessageProcessor extends AbstractOsgpCoreRes
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( GetHealthStatusResponseMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetHealthStatusResponseMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainDistributionAutomationDeviceManagementService")
     private DeviceManagementService deviceManagementService;
 
     protected GetHealthStatusResponseMessageProcessor() {
-        super( DeviceFunction.GET_HEALTH_STATUS );
+        super(DeviceFunction.GET_HEALTH_STATUS);
     }
 
     @Override
-    public void processMessage( final ObjectMessage message ) throws JMSException {
-        LOGGER.debug( "Processing DA Get Health Status response message" );
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing DA Get Health Status response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -61,35 +61,35 @@ public class GetHealthStatusResponseMessageProcessor extends AbstractOsgpCoreRes
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
-            deviceIdentification = message.getStringProperty( Constants.DEVICE_IDENTIFICATION );
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
             dataObject = responseMessage.getDataObject();
-        } catch ( final JMSException e ) {
-            LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
-            LOGGER.debug( "correlationUid: {}", correlationUid );
-            LOGGER.debug( "messageType: {}", messageType );
-            LOGGER.debug( "organisationIdentification: {}", organisationIdentification );
-            LOGGER.debug( "deviceIdentification: {}", deviceIdentification );
-            LOGGER.debug( "responseMessageResultType: {}", responseMessageResultType );
-            LOGGER.debug( "deviceIdentification: {}", deviceIdentification );
-            LOGGER.debug( "osgpException: {}", osgpException );
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("osgpException: {}", osgpException);
             return;
         }
         try {
-            LOGGER.info( "Calling application service function to handle response: {}", messageType );
+            LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             final GetHealthStatusResponseDto dataResponse = (GetHealthStatusResponseDto) dataObject;
 
             this.deviceManagementService
-                    .handleHealthStatusResponse( dataResponse, deviceIdentification, organisationIdentification, correlationUid, messageType,
-                            responseMessageResultType, osgpException );
+                    .handleHealthStatusResponse(dataResponse, deviceIdentification, organisationIdentification, correlationUid, messageType,
+                            responseMessageResultType, osgpException);
 
-        } catch ( final Exception e ) {
-            this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, messageType );
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
     }
 }

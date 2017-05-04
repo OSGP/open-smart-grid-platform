@@ -32,19 +32,19 @@ public class GetDeviceModelRequestMessageProcessor extends AbstractWebServiceReq
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger( GetDeviceModelRequestMessageProcessor.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetDeviceModelRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainDistributionAutomationAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
     public GetDeviceModelRequestMessageProcessor() {
-        super( DeviceFunction.GET_DEVICE_MODEL );
+        super(DeviceFunction.GET_DEVICE_MODEL);
     }
 
     @Override
-    public void processMessage( final ObjectMessage message ) {
-        LOGGER.info( "Processing DA Get Device Model request message" );
+    public void processMessage(final ObjectMessage message) {
+        LOGGER.info("Processing DA Get Device Model request message");
 
         String correlationUid = null;
         String messageType = null;
@@ -55,29 +55,29 @@ public class GetDeviceModelRequestMessageProcessor extends AbstractWebServiceReq
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty( Constants.ORGANISATION_IDENTIFICATION );
-            deviceIdentification = message.getStringProperty( Constants.DEVICE_IDENTIFICATION );
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            if ( message.getObject() instanceof GetPQValuesRequest ) {
+            if (message.getObject() instanceof GetPQValuesRequest) {
                 getDeviceModelRequest = (GetDeviceModelRequest) message.getObject();
             }
 
-        } catch ( final JMSException e ) {
-            LOGGER.error( "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e );
-            LOGGER.debug( "correlationUid: {}", correlationUid );
-            LOGGER.debug( "messageType: {}", messageType );
-            LOGGER.debug( "organisationIdentification: {}", organisationIdentification );
-            LOGGER.debug( "deviceIdentification: {}", deviceIdentification );
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
         try {
-            LOGGER.info( "Calling application service function: {}", messageType );
+            LOGGER.info("Calling application service function: {}", messageType);
 
             this.adHocManagementService
-                    .getDeviceModel( organisationIdentification, deviceIdentification, correlationUid, messageType, getDeviceModelRequest );
+                    .getDeviceModel(organisationIdentification, deviceIdentification, correlationUid, messageType, getDeviceModelRequest);
 
-        } catch ( final Exception e ) {
-            this.handleError( e, correlationUid, organisationIdentification, deviceIdentification, messageType );
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
     }
 }

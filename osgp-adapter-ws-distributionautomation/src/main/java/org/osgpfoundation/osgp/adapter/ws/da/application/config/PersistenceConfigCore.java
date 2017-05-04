@@ -18,12 +18,12 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @EnableJpaRepositories(transactionManagerRef = "coreTransactionManager",
         entityManagerFactoryRef = "coreEntityManagerFactory",
-        basePackageClasses = { com.alliander.osgp.domain.core.repositories.DeviceRepository.class,
-                org.osgpfoundation.osgp.domain.da.repositories.RtuDeviceRepository.class })
+        basePackageClasses = {com.alliander.osgp.domain.core.repositories.DeviceRepository.class,
+                org.osgpfoundation.osgp.domain.da.repositories.RtuDeviceRepository.class})
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"), @PropertySource(value = "file:${osgp/Global/config}",
+@PropertySources({@PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"), @PropertySource(value = "file:${osgp/Global/config}",
         ignoreResourceNotFound = true), @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}",
-        ignoreResourceNotFound = true), })
+        ignoreResourceNotFound = true),})
 public class PersistenceConfigCore extends AbstractPersistenceConfigBase {
 
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username.core";
@@ -36,8 +36,8 @@ public class PersistenceConfigCore extends AbstractPersistenceConfigBase {
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan.core";
 
     public PersistenceConfigCore() {
-        super( "OSGP_CORE_DISTRIBUTIONAUTOMATION", PROPERTY_NAME_DATABASE_USERNAME, PROPERTY_NAME_DATABASE_PW, PROPERTY_NAME_DATABASE_HOST,
-                PROPERTY_NAME_DATABASE_PORT, PROPERTY_NAME_DATABASE_NAME, PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN, PersistenceConfigCore.class );
+        super("OSGP_CORE_DISTRIBUTIONAUTOMATION", PROPERTY_NAME_DATABASE_USERNAME, PROPERTY_NAME_DATABASE_PW, PROPERTY_NAME_DATABASE_HOST,
+                PROPERTY_NAME_DATABASE_PORT, PROPERTY_NAME_DATABASE_NAME, PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN, PersistenceConfigCore.class);
     }
 
     @Bean(name = "coreTransactionManager")

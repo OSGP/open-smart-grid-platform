@@ -59,64 +59,64 @@ public class BaseService {
     @Autowired
     private Integer lastCommunicationUpdateInterval;
 
-    protected Device findActiveDevice( final String deviceIdentification ) throws FunctionalException {
+    protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
         Device device;
         try {
-            device = this.deviceDomainService.searchActiveDevice( deviceIdentification );
-        } catch ( final UnregisteredDeviceException e ) {
-            throw new FunctionalException( FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e );
-        } catch ( final InactiveDeviceException e ) {
-            throw new FunctionalException( FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e );
-        } catch ( final UnknownEntityException e ) {
-            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e );
+            device = this.deviceDomainService.searchActiveDevice(deviceIdentification);
+        } catch (final UnregisteredDeviceException e) {
+            throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
+        } catch (final InactiveDeviceException e) {
+            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
+        } catch (final UnknownEntityException e) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
         }
         return device;
     }
 
-    protected Organisation findOrganisation( final String organisationIdentification ) throws FunctionalException {
+    protected Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
         Organisation organisation;
         try {
-            organisation = this.organisationDomainService.searchOrganisation( organisationIdentification );
-        } catch ( final UnknownEntityException e ) {
-            throw new FunctionalException( FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e );
+            organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
+        } catch (final UnknownEntityException e) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
         }
         return organisation;
     }
 
-    protected RtuDevice findRtuDeviceForDevice( final Device device ) {
-        return this.rtuDeviceRepository.findById( device.getId() );
+    protected RtuDevice findRtuDeviceForDevice(final Device device) {
+        return this.rtuDeviceRepository.findById(device.getId());
     }
 
-    protected OsgpException ensureOsgpException( final Throwable t, final String defaultMessage ) {
-        if ( t instanceof OsgpException ) {
+    protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {
+        if (t instanceof OsgpException) {
             return (OsgpException) t;
         }
 
-        return new TechnicalException( ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, defaultMessage, t );
+        return new TechnicalException(ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, defaultMessage, t);
     }
 
-    protected void handleResponseMessageReceived( final Logger logger, final String deviceIdentification ) {
+    protected void handleResponseMessageReceived(final Logger logger, final String deviceIdentification) {
         try {
-            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification( deviceIdentification );
-            if ( this.shouldUpdateCommunicationTime( device, this.lastCommunicationUpdateInterval ) ) {
+            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (this.shouldUpdateCommunicationTime(device, this.lastCommunicationUpdateInterval)) {
                 device.messageReceived();
-                this.rtuDeviceRepository.save( device );
+                this.rtuDeviceRepository.save(device);
             } else {
-                logger.info( "Last communication time within {} seconds. Skipping last communication date update.",
-                        this.lastCommunicationUpdateInterval );
+                logger.info("Last communication time within {} seconds. Skipping last communication date update.",
+                        this.lastCommunicationUpdateInterval);
             }
-        } catch ( final OptimisticLockException ex ) {
-            logger.warn( "Last communication time not updated due to optimistic lock exception", ex );
+        } catch (final OptimisticLockException ex) {
+            logger.warn("Last communication time not updated due to optimistic lock exception", ex);
         }
     }
 
-    protected boolean shouldUpdateCommunicationTime( final RtuDevice device, final int lastCommunicationUpdateInterval ) {
-        final DateTime timeToCheck = DateTime.now().minusSeconds( lastCommunicationUpdateInterval );
-        final DateTime timeOfLastCommunication = new DateTime( device.getLastCommunicationTime() );
-        return timeOfLastCommunication.isBefore( timeToCheck );
+    protected boolean shouldUpdateCommunicationTime(final RtuDevice device, final int lastCommunicationUpdateInterval) {
+        final DateTime timeToCheck = DateTime.now().minusSeconds(lastCommunicationUpdateInterval);
+        final DateTime timeOfLastCommunication = new DateTime(device.getLastCommunicationTime());
+        return timeOfLastCommunication.isBefore(timeToCheck);
     }
 
-    protected static String getCorrelationId( final String organisationIdentification, final String deviceIdentification ) {
+    protected static String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {
 
         return organisationIdentification + "|||" + deviceIdentification + "|||" + UUID.randomUUID().toString();
     }
