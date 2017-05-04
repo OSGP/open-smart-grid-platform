@@ -305,4 +305,7 @@ public class Keys {
     public static final String DATE_NOW = "DateNow";
     public static final String TARIFF_RELAY_TYPE = "TariffRelayType";
     public static final String LIGHT_RELAY_TYPE = "LightRelayType";
+
+    public static final String DATE = "Date";
+    public static final String TIME_UNTIL_ON = "TimeUntilOn";
 }
