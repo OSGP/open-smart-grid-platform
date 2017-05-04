@@ -161,6 +161,36 @@ public class CoreDatabase {
             this.organisationRepository.deleteAllInBatch();
         });
 
+        this.deleteAllRemainingRecords();
+
         this.insertDefaultData();
+    }
+
+    public void deleteAllRemainingRecords() {
+        Wait.until(() -> {
+            // First remove stuff from osgp_adapter_protocol_oslp
+            this.oslpDeviceRepository.deleteAll();
+
+            // Then remove stuff from osgp_adapter_protocol_iec61850
+            this.iec61850DeviceRepository.deleteAll();
+
+            // Then remove stuff from the osgp_adapter_ws_microgrids
+            this.rtuResponseDataRepository.deleteAll();
+
+            this.deviceAuthorizationRepository.deleteAll();
+            this.deviceLogItemRepository.deleteAll();
+            this.scheduledTaskRepository.deleteAll();
+            this.deviceFirmwareRepository.deleteAll();
+            this.eventRepository.deleteAll();
+            this.smartMeterRepository.deleteAll();
+            this.relayStatusRepository.deleteAll();
+            this.ssldRepository.deleteAll();
+            this.rtuDeviceRepository.deleteAll();
+            this.deviceRepository.deleteAll();
+            this.firmwareRepository.deleteAll();
+            this.deviceModelRepository.deleteAll();
+            this.manufacturerRepository.deleteAll();
+            this.organisationRepository.deleteAll();
+        });
     }
 }
