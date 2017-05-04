@@ -38,3 +38,5 @@ fitnesse/FitNesseRoot/files/
 fitnesse/FitNesseRoot/ErrorLogs/
 fitnesse/activemq-data/
 fitnesse/velocity.log*
+
+**/.directory
