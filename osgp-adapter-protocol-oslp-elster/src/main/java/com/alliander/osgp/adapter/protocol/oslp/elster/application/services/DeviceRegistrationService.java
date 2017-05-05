@@ -72,8 +72,8 @@ public class DeviceRegistrationService {
     public void sendDeviceRegisterRequest(final InetAddress inetAddress, final String deviceType,
             final boolean hasSchedule, final String deviceIdentification) {
 
-        final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(inetAddress.getHostAddress()
-                .toString(), deviceType, hasSchedule);
+        final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(inetAddress
+                .getHostAddress().toString(), deviceType, hasSchedule);
 
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 deviceIdentification, deviceRegistrationData);
@@ -133,22 +133,20 @@ public class DeviceRegistrationService {
         this.checkSequenceNumber(oslpDevice.getSequenceNumber(), newSequenceNumber);
     }
 
-    private void checkSequenceNumber(final Integer currentSequenceNumber, final Integer newSequenceNumber)
+    public void checkSequenceNumber(final Integer currentSequenceNumber, final Integer newSequenceNumber)
             throws ProtocolAdapterException {
 
-        int maxAllowedSequenceNumber;
-        if (newSequenceNumber <= currentSequenceNumber) {
-            // Assume new cycle
-            maxAllowedSequenceNumber = currentSequenceNumber + this.sequenceNumberWindow - this.sequenceNumberMaximum
-                    - 1;
-        } else {
-            // Assume current cycle
-            maxAllowedSequenceNumber = currentSequenceNumber + this.sequenceNumberWindow;
+        int expectedSequenceNumber = currentSequenceNumber + 1;
+        if (expectedSequenceNumber > this.sequenceNumberMaximum) {
+            expectedSequenceNumber = 0;
         }
 
-        if (maxAllowedSequenceNumber < 0 || newSequenceNumber > maxAllowedSequenceNumber) {
-            // TODO: for increased security, remove this clearly readable
-            // exception message!
+        if (Math.abs(expectedSequenceNumber - newSequenceNumber) <= this.sequenceNumberWindow
+                || Math.abs(expectedSequenceNumber - newSequenceNumber) > this.sequenceNumberMaximum
+                        - this.sequenceNumberWindow) {
+            LOGGER.debug("SequenceNumber OK");
+        } else {
+            LOGGER.debug("SequenceNumber NOT OK");
             throw new ProtocolAdapterException("SequenceNumber incorrect");
         }
     }
