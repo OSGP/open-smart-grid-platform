@@ -49,6 +49,8 @@ public class ScenarioHooks extends GlueBase {
     public void beforeScenario() {
         this.databaseSteps.prepareDatabaseForScenario();
 
+        this.databaseSteps.insertDefaultData();
+
         // Make sure that the scenario context is clean before each test.
         ScenarioContext.context = null;
     }
