@@ -75,6 +75,12 @@ public abstract class BaseDeviceSteps extends GlueBase {
 
         final DeviceModel deviceModel = this.deviceModelRepository
                 .findByModelCode(getString(settings, Keys.KEY_DEVICE_MODEL, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+
+        if (settings.containsKey(Keys.DEVICEMODEL_METERED)) {
+            deviceModel.updateData(Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION,
+                    getBoolean(settings, Keys.DEVICEMODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED));
+        }
+
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
