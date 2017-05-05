@@ -11,14 +11,11 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alliander.osgp.cucumber.platform.dlms.Defaults;
 import com.alliander.osgp.cucumber.platform.dlms.Keys;
 import com.alliander.osgp.cucumber.platform.inputparsers.DateInputParser;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
@@ -41,9 +38,6 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     Date technicalInstallationDate = Defaults.TECHNICAL_INSTALLATION_DATE;
     DeviceModel deviceModel = Defaults.DEVICE_MODEL;
     boolean isActive = Defaults.IS_ACTIVE;
-
-    @Autowired
-    private DeviceRepository deviceRepository;
 
     public T setVersion(final Long version) {
         this.version = version;
