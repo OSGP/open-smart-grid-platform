@@ -18,6 +18,8 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
 @Component
 public class RetrieveAllAttributeValuesRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
@@ -30,7 +32,7 @@ public class RetrieveAllAttributeValuesRequestMessageProcessor extends DeviceReq
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final Serializable requestObject) throws ProtocolAdapterException {
+            final Serializable requestObject) throws ProtocolAdapterException, FunctionalException {
 
         return this.adhocService.retrieveAllAttributeValues(conn, device);
     }

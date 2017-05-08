@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "dlmsAdhocService")
 public class AdhocService {
@@ -52,7 +53,7 @@ public class AdhocService {
     }
 
     public String retrieveAllAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
 
         return this.retrieveAllAttributeValuesCommandExecutor.execute(conn, device, null);
     }
@@ -64,7 +65,7 @@ public class AdhocService {
 
     public Serializable getSpecificAttributeValue(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto)
-                    throws ProtocolAdapterException {
+                    throws ProtocolAdapterException, FunctionalException {
         return this.getSpecificAttributeValueCommandExecutor.execute(conn, device,
                 specificAttributeValueRequestDataDto);
     }

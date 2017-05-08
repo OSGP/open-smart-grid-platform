@@ -29,6 +29,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesResponseDto;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component
 public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
@@ -70,7 +71,7 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
 
     @Override
     public String execute(final DlmsConnectionHolder conn, final DlmsDevice device, final DataObject object)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
