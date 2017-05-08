@@ -15,7 +15,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
 import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -103,8 +102,8 @@ public class CoreDatabase {
      * specific tests. For example: The test-org organization which is used to
      * send authorized requests to the platform.
      */
-    @Transactional
-    private void insertDefaultData() {
+    @Transactional("txMgrCore")
+    public void insertDefaultData() {
         if (this.organisationRepository
                 .findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
@@ -131,36 +130,53 @@ public class CoreDatabase {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-        Wait.until(() -> {
-            // First remove stuff from osgp_adapter_protocol_oslp
-            this.oslpDeviceRepository.deleteAllInBatch();
+        // First remove stuff from osgp_adapter_protocol_oslp
+        this.oslpDeviceRepository.deleteAllInBatch();
 
-            // Then remove stuff from osgp_adapter_protocol_iec61850
-            this.iec61850DeviceRepository.deleteAllInBatch();
+        // Then remove stuff from osgp_adapter_protocol_iec61850
+        this.iec61850DeviceRepository.deleteAllInBatch();
 
-            // Then remove stuff from the osgp_adapter_ws_microgrids
-            this.rtuResponseDataRepository.deleteAllInBatch();
+        // Then remove stuff from the osgp_adapter_ws_microgrids
+        this.rtuResponseDataRepository.deleteAllInBatch();
 
-            // Then remove stuff from osgp_core
-            this.taskRepository.deleteAll();
-            this.deviceAuthorizationRepository.deleteAllInBatch();
-            this.deviceLogItemRepository.deleteAllInBatch();
-            this.scheduledTaskRepository.deleteAllInBatch();
-            this.eanRepository.deleteAllEans();
-            this.deviceRepository.deleteDeviceOutputSettings();
-            this.deviceFirmwareRepository.deleteAllInBatch();
-            this.eventRepository.deleteAllInBatch();
-            this.smartMeterRepository.deleteAllInBatch();
-            this.relayStatusRepository.deleteAllInBatch();
-            this.ssldRepository.deleteAllInBatch();
-            this.rtuDeviceRepository.deleteAllInBatch();
-            this.deviceRepository.deleteAllInBatch();
-            this.firmwareRepository.deleteAllInBatch();
-            this.deviceModelRepository.deleteAllInBatch();
-            this.manufacturerRepository.deleteAllInBatch();
-            this.organisationRepository.deleteAllInBatch();
-        });
+        // Then remove stuff from osgp_core
+        this.taskRepository.deleteAll();
+        this.deviceAuthorizationRepository.deleteAllInBatch();
+        this.deviceLogItemRepository.deleteAllInBatch();
+        this.scheduledTaskRepository.deleteAllInBatch();
+        this.eanRepository.deleteAllEans();
+        this.deviceRepository.deleteDeviceOutputSettings();
+        this.deviceFirmwareRepository.deleteAllInBatch();
+        this.eventRepository.deleteAllInBatch();
+        this.smartMeterRepository.deleteAllInBatch();
+        this.relayStatusRepository.deleteAllInBatch();
+        this.ssldRepository.deleteAllInBatch();
+        this.rtuDeviceRepository.deleteAllInBatch();
+        this.deviceRepository.deleteAllInBatch();
+        this.firmwareRepository.deleteAllInBatch();
+        this.deviceModelRepository.deleteAllInBatch();
+        this.manufacturerRepository.deleteAllInBatch();
+        this.organisationRepository.deleteAllInBatch();
+    }
 
-        this.insertDefaultData();
+    @Transactional("txMgrCore")
+    public void removeLeftOvers() {
+        this.taskRepository.deleteAll();
+        this.deviceAuthorizationRepository.deleteAll();
+        this.deviceLogItemRepository.deleteAll();
+        this.scheduledTaskRepository.deleteAll();
+        this.eanRepository.deleteAllEans();
+        this.deviceRepository.deleteDeviceOutputSettings();
+        this.deviceFirmwareRepository.deleteAll();
+        this.eventRepository.deleteAll();
+        this.smartMeterRepository.deleteAll();
+        this.relayStatusRepository.deleteAll();
+        this.ssldRepository.deleteAll();
+        this.rtuDeviceRepository.deleteAll();
+        this.deviceRepository.deleteAll();
+        this.firmwareRepository.deleteAll();
+        this.deviceModelRepository.deleteAll();
+        this.manufacturerRepository.deleteAll();
+        this.organisationRepository.deleteAll();
     }
 }
