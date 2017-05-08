@@ -131,15 +131,36 @@ public class CoreDatabase {
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
         // First remove stuff from osgp_adapter_protocol_oslp
-        this.oslpDeviceRepository.deleteAll();
+        this.oslpDeviceRepository.deleteAllInBatch();
 
         // Then remove stuff from osgp_adapter_protocol_iec61850
-        this.iec61850DeviceRepository.deleteAll();
+        this.iec61850DeviceRepository.deleteAllInBatch();
 
         // Then remove stuff from the osgp_adapter_ws_microgrids
-        this.rtuResponseDataRepository.deleteAll();
+        this.rtuResponseDataRepository.deleteAllInBatch();
 
         // Then remove stuff from osgp_core
+        this.taskRepository.deleteAll();
+        this.deviceAuthorizationRepository.deleteAllInBatch();
+        this.deviceLogItemRepository.deleteAllInBatch();
+        this.scheduledTaskRepository.deleteAllInBatch();
+        this.eanRepository.deleteAllEans();
+        this.deviceRepository.deleteDeviceOutputSettings();
+        this.deviceFirmwareRepository.deleteAllInBatch();
+        this.eventRepository.deleteAllInBatch();
+        this.smartMeterRepository.deleteAllInBatch();
+        this.relayStatusRepository.deleteAllInBatch();
+        this.ssldRepository.deleteAllInBatch();
+        this.rtuDeviceRepository.deleteAllInBatch();
+        this.deviceRepository.deleteAllInBatch();
+        this.firmwareRepository.deleteAllInBatch();
+        this.deviceModelRepository.deleteAllInBatch();
+        this.manufacturerRepository.deleteAllInBatch();
+        this.organisationRepository.deleteAllInBatch();
+    }
+
+    @Transactional("txMgrCore")
+    public void removeLeftOvers() {
         this.taskRepository.deleteAll();
         this.deviceAuthorizationRepository.deleteAll();
         this.deviceLogItemRepository.deleteAll();
