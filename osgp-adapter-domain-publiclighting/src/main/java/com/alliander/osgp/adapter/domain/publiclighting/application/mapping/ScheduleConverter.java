@@ -7,9 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.publiclighting.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.ActionTimeType;
 import com.alliander.osgp.domain.core.valueobjects.LightValue;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
@@ -17,11 +14,16 @@ import com.alliander.osgp.domain.core.valueobjects.TriggerType;
 import com.alliander.osgp.domain.core.valueobjects.WeekDayType;
 import com.alliander.osgp.domain.core.valueobjects.WindowType;
 
-public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ScheduleDto, Schedule> {
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class ScheduleConverter
+        extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ScheduleDto, Schedule> {
 
     @Override
     public Schedule convertTo(final com.alliander.osgp.dto.valueobjects.ScheduleDto source,
-            final Type<Schedule> destinationType) {
+            final Type<Schedule> destinationType, final MappingContext context) {
 
         final Schedule schedule = new Schedule();
         schedule.setActionTime(this.mapperFacade.map(source.getActionTime(), ActionTimeType.class));
@@ -41,7 +43,7 @@ public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp
 
     @Override
     public com.alliander.osgp.dto.valueobjects.ScheduleDto convertFrom(final Schedule source,
-            final Type<com.alliander.osgp.dto.valueobjects.ScheduleDto> destinationType) {
+            final Type<com.alliander.osgp.dto.valueobjects.ScheduleDto> destinationType, final MappingContext context) {
 
         final com.alliander.osgp.dto.valueobjects.ScheduleDto schedule = new com.alliander.osgp.dto.valueobjects.ScheduleDto();
         schedule.setActionTime(this.mapperFacade.map(source.getActionTime(),
@@ -55,8 +57,8 @@ public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp
                 com.alliander.osgp.dto.valueobjects.TriggerTypeDto.class));
         schedule.setTriggerWindow(this.mapperFacade.map(source.getTriggerWindow(),
                 com.alliander.osgp.dto.valueobjects.WindowTypeDto.class));
-        schedule.setWeekDay(this.mapperFacade.map(source.getWeekDay(),
-                com.alliander.osgp.dto.valueobjects.WeekDayTypeDto.class));
+        schedule.setWeekDay(
+                this.mapperFacade.map(source.getWeekDay(), com.alliander.osgp.dto.valueobjects.WeekDayTypeDto.class));
         schedule.setIndex(source.getIndex());
         schedule.setIsEnabled(source.getIsEnabled());
         schedule.setMinimumLightsOn(source.getMinimumLightsOn());

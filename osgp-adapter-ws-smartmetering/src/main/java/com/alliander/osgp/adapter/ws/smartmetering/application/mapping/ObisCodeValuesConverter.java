@@ -7,18 +7,20 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
+
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
-
-public class ObisCodeValuesConverter
-extends
-BidirectionalConverter<ObisCodeValues, com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues> {
+public class ObisCodeValuesConverter extends
+        BidirectionalConverter<ObisCodeValues, com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues> {
 
     @Override
-    public com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues convertTo(ObisCodeValues source,
-            Type<com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues> destinationType) {
+    public com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues convertTo(
+            final ObisCodeValues source,
+            final Type<com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues> destinationType,
+            final MappingContext context) {
 
         return new com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues((byte) source.getA(),
                 (byte) source.getB(), (byte) source.getC(), (byte) source.getD(), (byte) source.getE(),
@@ -26,8 +28,9 @@ BidirectionalConverter<ObisCodeValues, com.alliander.osgp.domain.core.valueobjec
     }
 
     @Override
-    public ObisCodeValues convertFrom(com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues source,
-            Type<ObisCodeValues> destinationType) {
+    public ObisCodeValues convertFrom(
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues source,
+            final Type<ObisCodeValues> destinationType, final MappingContext context) {
 
         final ObisCodeValues result = new ObisCodeValues();
         result.setA((short) (source.getA() & 0xFF));

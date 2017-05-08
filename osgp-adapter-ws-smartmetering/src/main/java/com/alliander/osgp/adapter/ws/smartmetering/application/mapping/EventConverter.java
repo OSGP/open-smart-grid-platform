@@ -18,17 +18,19 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-public class EventConverter extends
-        BidirectionalConverter<Event, com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> {
+public class EventConverter
+        extends BidirectionalConverter<Event, com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventConverter.class);
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event convertTo(final Event source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -36,8 +38,8 @@ public class EventConverter extends
         try {
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType eventType = com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType
                     .getValue(source.getEventCode());
-            final XMLGregorianCalendar timestamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                    source.getTimestamp().toGregorianCalendar());
+            final XMLGregorianCalendar timestamp = DatatypeFactory.newInstance()
+                    .newXMLGregorianCalendar(source.getTimestamp().toGregorianCalendar());
             final com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event event = new com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event();
             event.setEventType(EventType.fromValue(eventType.toString()));
             event.setTimestamp(timestamp);
@@ -52,14 +54,14 @@ public class EventConverter extends
 
     @Override
     public Event convertFrom(final com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event source,
-            final Type<Event> destinationType) {
+            final Type<Event> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
 
         final DateTime timestamp = new DateTime(source.getTimestamp().toGregorianCalendar().getTime());
-        final Integer eventCode = com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType.valueOf(
-                source.getEventType().toString()).getValue();
+        final Integer eventCode = com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType
+                .valueOf(source.getEventType().toString()).getValue();
         return new Event(timestamp, eventCode, source.getEventCounter());
     }
 }

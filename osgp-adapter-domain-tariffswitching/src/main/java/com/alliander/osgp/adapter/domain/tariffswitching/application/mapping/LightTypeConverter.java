@@ -7,17 +7,18 @@
  */
 package com.alliander.osgp.adapter.domain.tariffswitching.application.mapping;
 
+import com.alliander.osgp.domain.core.valueobjects.LightType;
+
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.LightType;
-
-public class LightTypeConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.LightTypeDto, LightType> {
+public class LightTypeConverter
+        extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.LightTypeDto, LightType> {
 
     @Override
     public LightType convertTo(final com.alliander.osgp.dto.valueobjects.LightTypeDto source,
-            final Type<LightType> destinationType) {
+            final Type<LightType> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -27,7 +28,8 @@ public class LightTypeConverter extends
 
     @Override
     public com.alliander.osgp.dto.valueobjects.LightTypeDto convertFrom(final LightType source,
-            final Type<com.alliander.osgp.dto.valueobjects.LightTypeDto> destinationType) {
+            final Type<com.alliander.osgp.dto.valueobjects.LightTypeDto> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }

@@ -7,19 +7,19 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 
-public class ReadAlarmRegisterDataConverter
-        extends
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class ReadAlarmRegisterDataConverter extends
         CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData, ReadAlarmRegisterData> {
 
     @Override
     public ReadAlarmRegisterData convert(
             final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData source,
-            final Type<? extends ReadAlarmRegisterData> destinationType) {
+            final Type<? extends ReadAlarmRegisterData> destinationType, final MappingContext context) {
         return new ReadAlarmRegisterData();
     }
 

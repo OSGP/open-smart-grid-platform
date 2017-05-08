@@ -19,6 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntryVal
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
 
 import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
 public class ProfileGenericDataResponseConverter extends
@@ -27,7 +28,7 @@ public class ProfileGenericDataResponseConverter extends
     @Override
     public ProfileGenericDataResponse convert(
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source,
-            final Type<? extends ProfileGenericDataResponse> destinationType) {
+            final Type<? extends ProfileGenericDataResponse> destinationType, final MappingContext context) {
 
         final ProfileGenericDataResponse result = new ProfileGenericDataResponse();
         result.setLogicalName(this.mapperFacade.map(source.getLogicalName(), ObisCodeValues.class));

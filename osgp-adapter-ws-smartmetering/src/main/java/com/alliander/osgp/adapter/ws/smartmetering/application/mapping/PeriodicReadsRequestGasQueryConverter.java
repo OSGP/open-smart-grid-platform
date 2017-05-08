@@ -7,24 +7,24 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestGasQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
-public class PeriodicReadsRequestGasQueryConverter
-        extends
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class PeriodicReadsRequestGasQueryConverter extends
         CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestGasQuery, PeriodicMeterReadsQuery> {
 
     @Override
     public PeriodicMeterReadsQuery convert(final PeriodicReadsRequestGasQuery source,
-            final Type<? extends PeriodicMeterReadsQuery> destinationType) {
+            final Type<? extends PeriodicMeterReadsQuery> destinationType, final MappingContext context) {
         return new PeriodicMeterReadsQuery(
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source
-                        .getPeriodicReadsRequestData().getPeriodType().name()), source.getPeriodicReadsRequestData()
-                        .getBeginDate().toGregorianCalendar().getTime(), source.getPeriodicReadsRequestData()
-                        .getEndDate().toGregorianCalendar().getTime(), true, "");
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType
+                        .valueOf(source.getPeriodicReadsRequestData().getPeriodType().name()),
+                source.getPeriodicReadsRequestData().getBeginDate().toGregorianCalendar().getTime(),
+                source.getPeriodicReadsRequestData().getEndDate().toGregorianCalendar().getTime(), true, "");
     }
 
 }

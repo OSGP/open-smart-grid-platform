@@ -9,22 +9,23 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import java.math.BigInteger;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MessageType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SendDestinationAndMethod;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.TransportServiceType;
 
-public class PushSetupAlarmConverter
-extends
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class PushSetupAlarmConverter extends
         BidirectionalConverter<PushSetupAlarm, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm convertTo(
             final PushSetupAlarm source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -46,15 +47,15 @@ extends
     @Override
     public PushSetupAlarm convertFrom(
             final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm source,
-            final Type<PushSetupAlarm> destinationType) {
+            final Type<PushSetupAlarm> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
         final PushSetupAlarm.Builder builder = new PushSetupAlarm.Builder();
 
         final String destination = source.getHost() + ":" + source.getPort();
-        final SendDestinationAndMethod sendDestinationAndMethod = new SendDestinationAndMethod(
-                TransportServiceType.TCP, destination, MessageType.MANUFACTURER_SPECIFIC);
+        final SendDestinationAndMethod sendDestinationAndMethod = new SendDestinationAndMethod(TransportServiceType.TCP,
+                destination, MessageType.MANUFACTURER_SPECIFIC);
         builder.sendDestinationAndMethod(sendDestinationAndMethod);
 
         return builder.build();

@@ -123,7 +123,6 @@ public class ActionMapperResponseService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AssociationLnObjectsResponse.class);
         CLASS_MAP.put(ProfileGenericDataResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse.class);
-
     }
 
     public BundleResponse mapAllActions(final Serializable actionList) throws FunctionalException {

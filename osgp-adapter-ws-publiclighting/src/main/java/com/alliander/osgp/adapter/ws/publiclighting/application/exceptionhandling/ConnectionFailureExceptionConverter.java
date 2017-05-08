@@ -7,17 +7,18 @@
  */
 package com.alliander.osgp.adapter.ws.publiclighting.application.exceptionhandling;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.TechnicalFault;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
 
 public class ConnectionFailureExceptionConverter extends CustomConverter<ConnectionFailureException, TechnicalFault> {
 
     @Override
     public TechnicalFault convert(final ConnectionFailureException source,
-            final Type<? extends TechnicalFault> destinationType) {
+            final Type<? extends TechnicalFault> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
