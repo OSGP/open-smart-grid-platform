@@ -17,7 +17,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
-import org.osgpfoundation.osgp.adapter.ws.da.infra.jms.DistributionAutomationResponseMessageFinder;
 import org.osgpfoundation.osgp.adapter.ws.da.infra.jms.DistributionAutomationResponseMessageListener;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
@@ -60,11 +59,6 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean(name = "wsDistributionAutomationIncomingResponsesJmsTemplate")
     public JmsTemplate distributionautomationResponsesJmsTemplate(final JmsConfiguration responseJmsConfiguration) {
         return responseJmsConfiguration.getJmsTemplate();
-    }
-
-    @Bean(name = "wsDistributionAutomationIncomingResponsesMessageFinder")
-    public DistributionAutomationResponseMessageFinder distributionautomationResponseMessageFinder() {
-        return new DistributionAutomationResponseMessageFinder();
     }
 
     @Bean(name = "wsDistributionAutomationResponsesMessageListenerContainer")
