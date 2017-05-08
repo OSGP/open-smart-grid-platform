@@ -17,17 +17,16 @@ public class GetPQValuesPeriodicRequest implements Serializable {
     private final DateTime from;
     private final DateTime to;
 
-    public GetPQValuesPeriodicRequest( final DateTime from, final DateTime to ) {
-
+    public GetPQValuesPeriodicRequest(final DateTime from, final DateTime to) {
         this.from = from;
         this.to = to;
     }
 
     public DateTime getFrom() {
-        return from;
+        return this.from;
     }
 
     public DateTime getTo() {
-        return to;
+        return this.to;
     }
 }

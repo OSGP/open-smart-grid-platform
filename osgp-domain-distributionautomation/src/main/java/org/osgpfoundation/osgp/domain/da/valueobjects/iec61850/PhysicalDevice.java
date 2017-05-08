@@ -16,16 +16,16 @@ public class PhysicalDevice implements Serializable {
     private final String id;
     private List<LogicalDevice> logicalDevices;
 
-    public PhysicalDevice( final String id, final List<LogicalDevice> logicalDevices ) {
+    public PhysicalDevice(final String id, final List<LogicalDevice> logicalDevices) {
         this.id = id;
         this.logicalDevices = logicalDevices;
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public List<LogicalDevice> getLogicalDevices() {
-        return logicalDevices;
+        return this.logicalDevices;
     }
 }

@@ -15,11 +15,11 @@ import java.util.List;
 public class GetPQValuesResponse implements Serializable{
     private List<LogicalDevice> logicalDevices;
 
-    public GetPQValuesResponse( final List<LogicalDevice> logicalDevices ) {
+    public GetPQValuesResponse(final List<LogicalDevice> logicalDevices) {
         this.logicalDevices = logicalDevices;
     }
 
     public List<LogicalDevice> getLogicalDevices() {
-        return logicalDevices;
+        return this.logicalDevices;
     }
 }

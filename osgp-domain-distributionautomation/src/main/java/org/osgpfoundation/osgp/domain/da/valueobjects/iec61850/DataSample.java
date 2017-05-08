@@ -17,7 +17,7 @@ public class DataSample implements Serializable {
     private Date timestamp;
     private Double value;
 
-    public DataSample( final String sampleType, final Date timestamp, final Double value ) {
+    public DataSample(final String sampleType, final Date timestamp, final Double value) {
 
         this.sampleType = sampleType;
         this.timestamp = timestamp;
@@ -25,14 +25,14 @@ public class DataSample implements Serializable {
     }
 
     public String getSampleType() {
-        return sampleType;
+        return this.sampleType;
     }
 
     public Date getTimestamp() {
-        return timestamp;
+        return this.timestamp;
     }
 
     public Double getValue() {
-        return value;
+        return this.value;
     }
 }

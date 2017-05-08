@@ -16,16 +16,16 @@ public class LogicalNode implements Serializable {
     private final String name;
     private List<DataSample> data;
 
-    public LogicalNode( final String name, final List<DataSample> data ) {
+    public LogicalNode(final String name, final List<DataSample> data) {
         this.name = name;
         this.data = data;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public List<DataSample> getData() {
-        return data;
+        return this.data;
     }
 }

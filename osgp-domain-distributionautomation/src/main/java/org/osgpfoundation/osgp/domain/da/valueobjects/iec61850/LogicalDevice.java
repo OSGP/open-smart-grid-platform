@@ -16,16 +16,16 @@ public class LogicalDevice implements Serializable {
     private final String name;
     private List<LogicalNode> logicalNodes;
 
-    public LogicalDevice( final String name, final List<LogicalNode> logicalNodes ) {
+    public LogicalDevice(final String name, final List<LogicalNode> logicalNodes) {
         this.name = name;
         this.logicalNodes = logicalNodes;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public List<LogicalNode> getLogicalNodes() {
-        return logicalNodes;
+        return this.logicalNodes;
     }
 }
