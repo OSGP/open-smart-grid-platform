@@ -24,7 +24,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "com.alliander.osgp.domain.da",
+@ComponentScan(basePackages = {
     "org.osgpfoundation.osgp.domain.da",
     "org.osgpfoundation.osgp.adapter.ws.da",
     "com.alliander.osgp.domain.logging",
@@ -35,13 +35,6 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
         ignoreResourceNotFound = true), @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}",
         ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
-
-    private static final String PROPERTY_NAME_STUB_RESPONSES = "stub.responses";
-
-    @Bean
-    public boolean stubResponses() {
-        return Boolean.parseBoolean( this.environment.getRequiredProperty( PROPERTY_NAME_STUB_RESPONSES ) );
-    }
 
     @Bean
     public LocalValidatorFactoryBean validator() {
