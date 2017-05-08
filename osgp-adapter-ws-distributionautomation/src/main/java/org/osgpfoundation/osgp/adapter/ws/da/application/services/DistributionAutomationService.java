@@ -90,7 +90,7 @@ public class DistributionAutomationService {
 
     public GetPQValuesResponse dequeueGetPQValuesPeriodicResponse(final String correlationUid) throws OsgpException {
 
-        LOGGER.debug("dequeueSetDataRequest called with correlation uid {}", correlationUid);
+        LOGGER.debug("dequeueGetPQValuesPeriodicResponse called with correlation uid {}", correlationUid);
         return (GetPQValuesResponse) processResponse(correlationUid);
     }
 
@@ -104,7 +104,7 @@ public class DistributionAutomationService {
 
     public GetDeviceModelResponse dequeueGetDeviceModelResponse(final String correlationUid) throws OsgpException {
 
-        LOGGER.debug("dequeueGetDeviceModelRequest called with correlation uid {}", correlationUid);
+        LOGGER.debug("dequeueGetDeviceModelResponse called with correlation uid {}", correlationUid);
         return (GetDeviceModelResponse) processResponse(correlationUid);
     }
 
@@ -118,7 +118,7 @@ public class DistributionAutomationService {
 
     public GetHealthStatusResponse dequeueGetHealthResponse(final String correlationUid) throws OsgpException {
 
-        LOGGER.debug("dequeueGetHealthRequest called with correlation uid {}", correlationUid);
+        LOGGER.debug("dequeueGetHealthResponse called with correlation uid {}", correlationUid);
         return (GetHealthStatusResponse) processResponse(correlationUid);
     }
 
