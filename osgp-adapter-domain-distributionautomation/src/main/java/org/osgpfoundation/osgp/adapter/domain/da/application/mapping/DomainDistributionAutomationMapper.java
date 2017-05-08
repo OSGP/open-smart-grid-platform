@@ -13,6 +13,14 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.joda.time.DateTime;
+import org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelRequest;
+import org.osgpfoundation.osgp.domain.da.valueobjects.GetHealthStatusRequest;
+import org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesPeriodicRequest;
+import org.osgpfoundation.osgp.domain.da.valueobjects.GetPQValuesRequest;
+import org.osgpfoundation.osgp.dto.da.GetDeviceModelRequestDto;
+import org.osgpfoundation.osgp.dto.da.GetHealthStatusRequestDto;
+import org.osgpfoundation.osgp.dto.da.GetPQValuesPeriodicRequestDto;
+import org.osgpfoundation.osgp.dto.da.GetPQValuesRequestDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +29,9 @@ public class DomainDistributionAutomationMapper extends ConfigurableMapper {
     @Override
     protected void configure(final MapperFactory factory) {
         factory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
-        factory.getConverterFactory().registerConverter(new GetHealthStatusRequestConverter());
-        factory.getConverterFactory().registerConverter(new GetPQValuesRequestConverter());
+        factory.classMap(GetDeviceModelRequest.class, GetDeviceModelRequestDto.class).byDefault().register();
+        factory.classMap(GetHealthStatusRequest.class, GetHealthStatusRequestDto.class).byDefault().register();
+        factory.classMap(GetPQValuesRequest.class, GetPQValuesRequestDto.class).byDefault().register();
+        factory.classMap(GetPQValuesPeriodicRequest.class, GetPQValuesPeriodicRequestDto.class).byDefault().register();
     }
 }

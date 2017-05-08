@@ -94,6 +94,6 @@ public class CommunicationRecoveryService extends BaseService {
 
     private GetHealthStatusRequestDto createHalthStatusRequest(final RtuDevice rtu) {
         LOGGER.debug("Creating Health Status request for rtu {}.", rtu.getDeviceIdentification());
-        return new GetHealthStatusRequestDto(rtu.getDeviceIdentification());
+        return new GetHealthStatusRequestDto();
     }
 }
