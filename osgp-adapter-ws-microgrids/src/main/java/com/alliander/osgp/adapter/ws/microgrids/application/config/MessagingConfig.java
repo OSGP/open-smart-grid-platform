@@ -17,7 +17,6 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageSender;
-import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageListener;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
@@ -30,7 +29,7 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
-    public MicrogridsResponseMessageListener microgridsResponseMessageListener;
+    private MicrogridsResponseMessageListener microgridsResponseMessageListener;
 
     // === JMS SETTINGS: Microgrids REQUESTS ===
 
@@ -53,18 +52,8 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.microgrids.responses",
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.microgrids.responses",
                 this.microgridsResponseMessageListener);
-    }
-
-    @Bean(name = "wsMicrogridsIncomingResponsesJmsTemplate")
-    public JmsTemplate microgridsResponsesJmsTemplate(final JmsConfiguration responseJmsConfiguration) {
-        return responseJmsConfiguration.getJmsTemplate();
-    }
-
-    @Bean(name = "wsMicrogridsIncomingResponsesMessageFinder")
-    public MicrogridsResponseMessageFinder microgridsResponseMessageFinder() {
-        return new MicrogridsResponseMessageFinder();
     }
 
     @Bean(name = "wsMicrogridsResponsesMessageListenerContainer")

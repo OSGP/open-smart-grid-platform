@@ -143,8 +143,10 @@ public class DeviceInstallationEndpoint {
 
         try {
             final Device device = this.deviceInstallationMapper.map(request.getDevice(), Device.class);
+            final String ownerOrganisationIdentification = request.getDevice().getOwner();
 
-            this.deviceInstallationService.addDevice(organisationIdentification, device);
+            this.deviceInstallationService.addDevice(organisationIdentification, device,
+                    ownerOrganisationIdentification);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, new Object[] { e.getMessage(),
                     request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
