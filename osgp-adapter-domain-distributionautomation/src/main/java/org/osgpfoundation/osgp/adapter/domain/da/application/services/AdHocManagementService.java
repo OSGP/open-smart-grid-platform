@@ -45,7 +45,7 @@ public class AdHocManagementService extends BaseService {
     public void getDeviceModel(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
                                final String messageType, final GetDeviceModelRequest request) throws FunctionalException {
 
-        LOGGER.info("Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
+        LOGGER.info("Get device model for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);

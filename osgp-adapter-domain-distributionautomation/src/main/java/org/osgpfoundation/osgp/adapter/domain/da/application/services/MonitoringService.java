@@ -62,7 +62,7 @@ public class MonitoringService extends BaseService {
     public void getPQValuesPeriodic(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
                                     final String messageType, final GetPQValuesPeriodicRequest getPQValuesPeriodicRequest) throws FunctionalException {
 
-        LOGGER.info("Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
+        LOGGER.info("Get PQ Values periodic for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
