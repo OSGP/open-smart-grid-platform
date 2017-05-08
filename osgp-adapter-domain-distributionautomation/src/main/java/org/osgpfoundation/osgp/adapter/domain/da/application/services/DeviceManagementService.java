@@ -83,14 +83,8 @@ public class DeviceManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while getting Health Status Response Data");
         }
 
-        // Support for Push messages, generate correlationUid
-        String actualCorrelationUid = correlationUid;
-        if ("no-correlationUid".equals(actualCorrelationUid)) {
-            actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
-        }
-
         this.webServiceResponseMessageSender
-                .send(new ResponseMessage(actualCorrelationUid, organisationIdentification, deviceIdentification, result, exception,
+                .send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, exception,
                         getHealthStatusResponse), messageType);
     }
 }
