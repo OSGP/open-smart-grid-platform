@@ -97,8 +97,8 @@ public class EncryptionService {
             final String errorMessage = String.format("Unexpected exception when reading keys");
             LOGGER.error(errorMessage, e);
 
-            throw new FunctionalException(FunctionalExceptionType.UNEXPECTED_EXCEPTION_WHEN_READING_KEY,
-                    ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.READING_KEY_EXCEPTION,
+                    ComponentType.SHARED, e);
         }
     }
 
@@ -125,8 +125,8 @@ public class EncryptionService {
             final String errorMessage = String.format("Unexpected exception during decryption");
             LOGGER.error(errorMessage, e);
 
-            throw new FunctionalException(FunctionalExceptionType.UNEXPECTED_EXCEPTION_DURING_DECRYPTION,
-                    ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION,
+                    ComponentType.SHARED, e);
         }
     }
 
@@ -172,8 +172,8 @@ public class EncryptionService {
             final String errorMessage = String.format("Unexpected exception during encryption");
             LOGGER.error(errorMessage, e);
 
-            throw new FunctionalException(FunctionalExceptionType.UNEXPECTED_EXCEPTION_DURING_ENCRYPTION,
-                    ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION,
+                    ComponentType.SHARED, e);
         }
     }
 
