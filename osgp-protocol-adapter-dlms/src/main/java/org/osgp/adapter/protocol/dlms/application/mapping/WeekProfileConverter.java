@@ -11,17 +11,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.openmuc.jdlms.datatypes.DataObject;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfileDto;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
 public class WeekProfileConverter extends CustomConverter<WeekProfileDto, DataObject> {
 
     @Override
-    public DataObject convert(final WeekProfileDto source, final Type<? extends DataObject> destinationType) {
+    public DataObject convert(final WeekProfileDto source, final Type<? extends DataObject> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
