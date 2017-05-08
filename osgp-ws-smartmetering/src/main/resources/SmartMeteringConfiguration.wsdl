@@ -181,6 +181,27 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="GetConfigurationObjectRequest">
+    <wsdl:part element="smconf:GetConfigurationObjectRequest"
+      name="GetConfigurationObjectRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetConfigurationObjectAsyncResponse">
+    <wsdl:part element="smconf:GetConfigurationObjectAsyncResponse"
+      name="GetConfigurationObjectAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetConfigurationObjectAsyncRequest">
+    <wsdl:part element="smconf:GetConfigurationObjectAsyncRequest"
+      name="GetConfigurationObjectAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetConfigurationObjectResponse">
+    <wsdl:part element="smconf:GetConfigurationObjectResponse"
+      name="GetConfigurationObjectResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:message name="SetPushSetupAlarmRequest">
     <wsdl:part element="smconf:SetPushSetupAlarmRequest" name="SetPushSetupAlarmRequest">
     </wsdl:part>
@@ -367,6 +388,23 @@
       </wsdl:input>
       <wsdl:output message="tns:SetConfigurationObjectResponse"
         name="SetConfigurationObjectResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetConfigurationObject">
+      <wsdl:input message="tns:GetConfigurationObjectRequest"
+        name="GetConfigurationObjectRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetConfigurationObjectAsyncResponse"
+        name="GetConfigurationObjectAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGetConfigurationObjectResponse">
+      <wsdl:input message="tns:GetConfigurationObjectAsyncRequest"
+        name="GetConfigurationObjectAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetConfigurationObjectResponse"
+        name="GetConfigurationObjectResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -670,6 +708,39 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+
+    <wsdl:operation name="GetConfigurationObject">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetConfigurationObjectRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetConfigurationObjectAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetConfigurationObjectResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetConfigurationObjectAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetConfigurationObjectResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
 
     <wsdl:operation name="SetPushSetupAlarm">
       <soap:operation soapAction="" />

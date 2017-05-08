@@ -146,6 +146,7 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  
   <xsd:complexType name="UpdateFirmwareResponseData">
     <xsd:complexContent>
       <xsd:extension base="tns:GetFirmwareVersionResponseData">
@@ -153,7 +154,15 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-
+  <xsd:complexType name="GetConfigurationObjectResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
 
   <xsd:complexType name="FirmwareVersion">
     <xsd:sequence>
@@ -238,6 +247,38 @@
         <xsd:element name="Result" type="common:OsgpResultType"
           minOccurs="1" />
         <xsd:element name="Description" type="xsd:string"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+ <xsd:element name="GetConfigurationObjectRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetConfigurationObjectAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetConfigurationObjectAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetConfigurationObjectResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="ConfigurationObject" type="tns:ConfigurationObject"
           minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
@@ -641,6 +682,14 @@
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="GetConfigurationObjectRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+
   <xsd:complexType name="SetPushSetupAlarmRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
@@ -650,7 +699,7 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
+  
   <xsd:complexType name="SetPushSetupSmsRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
