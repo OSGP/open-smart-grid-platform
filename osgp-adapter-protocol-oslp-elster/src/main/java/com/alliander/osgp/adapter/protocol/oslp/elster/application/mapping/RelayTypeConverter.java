@@ -7,17 +7,18 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
 import com.alliander.osgp.oslp.Oslp;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class RelayTypeConverter extends BidirectionalConverter<RelayTypeDto, Oslp.RelayType> {
 
     @Override
     public com.alliander.osgp.oslp.Oslp.RelayType convertTo(final RelayTypeDto source,
-            final Type<com.alliander.osgp.oslp.Oslp.RelayType> destinationType) {
+            final Type<com.alliander.osgp.oslp.Oslp.RelayType> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -27,7 +28,7 @@ public class RelayTypeConverter extends BidirectionalConverter<RelayTypeDto, Osl
 
     @Override
     public RelayTypeDto convertFrom(final com.alliander.osgp.oslp.Oslp.RelayType source,
-            final Type<RelayTypeDto> destinationType) {
+            final Type<RelayTypeDto> destinationType, final MappingContext context) {
         if (source == null || source == Oslp.RelayType.RT_NOT_SET) {
             return null;
         }

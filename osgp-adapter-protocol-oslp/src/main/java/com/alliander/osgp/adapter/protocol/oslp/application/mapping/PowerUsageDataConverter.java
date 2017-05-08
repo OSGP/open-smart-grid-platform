@@ -9,9 +9,6 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 
 import java.util.List;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.joda.time.DateTime;
 
 import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
@@ -21,6 +18,10 @@ import com.alliander.osgp.dto.valueobjects.RelayDataDto;
 import com.alliander.osgp.dto.valueobjects.SsldDataDto;
 import com.alliander.osgp.oslp.Oslp;
 
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
 public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDataDto, Oslp.PowerUsageData> {
 
     public PowerUsageDataConverter() {
@@ -28,7 +29,8 @@ public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDa
     }
 
     @Override
-    public Oslp.PowerUsageData convertTo(final PowerUsageDataDto source, final Type<Oslp.PowerUsageData> destinationType) {
+    public Oslp.PowerUsageData convertTo(final PowerUsageDataDto source,
+            final Type<Oslp.PowerUsageData> destinationType, final MappingContext context) {
 
         // Check the input parameter.
         if (source == null) {
@@ -85,7 +87,8 @@ public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDa
     }
 
     @Override
-    public PowerUsageDataDto convertFrom(final Oslp.PowerUsageData source, final Type<PowerUsageDataDto> destinationType) {
+    public PowerUsageDataDto convertFrom(final Oslp.PowerUsageData source,
+            final Type<PowerUsageDataDto> destinationType, final MappingContext context) {
 
         // Check the input parameter.
         if (source == null) {
@@ -109,14 +112,16 @@ public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDa
             final Oslp.SsldData oslpSsldData = source.getSsldData();
 
             // Map the RelayData list.
-            final List<RelayDataDto> list = this.mapperFacade.mapAsList(oslpSsldData.getRelayDataList(), RelayDataDto.class);
+            final List<RelayDataDto> list = this.mapperFacade.mapAsList(oslpSsldData.getRelayDataList(),
+                    RelayDataDto.class);
 
             // Construct SsldData instance using the RelayData list and the
             // other values.
-            final SsldDataDto ssldData = new SsldDataDto(oslpSsldData.getActualCurrent1(), oslpSsldData.getActualCurrent2(),
-                    oslpSsldData.getActualCurrent3(), oslpSsldData.getActualPower1(), oslpSsldData.getActualPower2(),
-                    oslpSsldData.getActualPower3(), oslpSsldData.getAveragePowerFactor1(),
-                    oslpSsldData.getAveragePowerFactor2(), oslpSsldData.getAveragePowerFactor3(), list);
+            final SsldDataDto ssldData = new SsldDataDto(oslpSsldData.getActualCurrent1(),
+                    oslpSsldData.getActualCurrent2(), oslpSsldData.getActualCurrent3(), oslpSsldData.getActualPower1(),
+                    oslpSsldData.getActualPower2(), oslpSsldData.getActualPower3(),
+                    oslpSsldData.getAveragePowerFactor1(), oslpSsldData.getAveragePowerFactor2(),
+                    oslpSsldData.getAveragePowerFactor3(), list);
             // Set SsldData instance in the PowerUsageData instance.
             powerUsageData.setSsldData(ssldData);
         }

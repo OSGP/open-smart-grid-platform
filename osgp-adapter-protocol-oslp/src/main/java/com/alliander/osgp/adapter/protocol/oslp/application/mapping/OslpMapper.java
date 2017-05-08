@@ -7,14 +7,15 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-import ma.glasnost.orika.metadata.Type;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.stereotype.Component;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.impl.ConfigurableMapper;
+import ma.glasnost.orika.metadata.Type;
 
 @Component
 public class OslpMapper extends ConfigurableMapper {
@@ -40,7 +41,8 @@ public class OslpMapper extends ConfigurableMapper {
         factory.getConverterFactory().registerConverter(new CustomConverter<String, DateTime>() {
 
             @Override
-            public DateTime convert(final String source, final Type<? extends DateTime> destinationType) {
+            public DateTime convert(final String source, final Type<? extends DateTime> destinationType,
+                    final MappingContext context) {
                 return DateTimeFormat.forPattern(TIME_FORMAT).withZoneUTC().parseDateTime(source);
             }
         });
@@ -49,7 +51,8 @@ public class OslpMapper extends ConfigurableMapper {
         factory.getConverterFactory().registerConverter(new CustomConverter<DateTime, String>() {
 
             @Override
-            public String convert(final DateTime source, final Type<? extends String> destinationType) {
+            public String convert(final DateTime source, final Type<? extends String> destinationType,
+                    final MappingContext context) {
                 return source.toString(DateTimeFormat.forPattern(TIME_FORMAT).withZoneUTC());
             }
         });

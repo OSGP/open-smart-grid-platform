@@ -7,17 +7,18 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.oslp.Oslp;
 
-public class ConfigurationToOslpSetConfigurationRequestConverter extends
-        CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class ConfigurationToOslpSetConfigurationRequestConverter
+        extends CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
     @Override
     public Oslp.SetConfigurationRequest convert(final ConfigurationDto source,
-            final Type<? extends Oslp.SetConfigurationRequest> destinationType) {
+            final Type<? extends Oslp.SetConfigurationRequest> destinationType, final MappingContext context) {
         final Oslp.SetConfigurationRequest.Builder setConfigurationRequest = Oslp.SetConfigurationRequest.newBuilder();
 
         if (source.getLightType() != null) {
@@ -25,33 +26,33 @@ public class ConfigurationToOslpSetConfigurationRequestConverter extends
         }
 
         if (source.getDaliConfiguration() != null) {
-            setConfigurationRequest.setDaliConfiguration(this.mapperFacade.map(source.getDaliConfiguration(),
-                    Oslp.DaliConfiguration.class));
+            setConfigurationRequest.setDaliConfiguration(
+                    this.mapperFacade.map(source.getDaliConfiguration(), Oslp.DaliConfiguration.class));
         }
 
         if (source.getRelayConfiguration() != null) {
-            setConfigurationRequest.setRelayConfiguration(this.mapperFacade.map(source.getRelayConfiguration(),
-                    Oslp.RelayConfiguration.class));
+            setConfigurationRequest.setRelayConfiguration(
+                    this.mapperFacade.map(source.getRelayConfiguration(), Oslp.RelayConfiguration.class));
         }
 
         if (source.getShortTermHistoryIntervalMinutes() != null) {
-            setConfigurationRequest.setShortTermHistoryIntervalMinutes(this.mapperFacade.map(
-                    source.getShortTermHistoryIntervalMinutes(), Integer.class));
+            setConfigurationRequest.setShortTermHistoryIntervalMinutes(
+                    this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class));
         }
 
         if (source.getLongTermHistoryInterval() != null) {
-            setConfigurationRequest.setLongTermHistoryInterval(this.mapperFacade.map(
-                    source.getLongTermHistoryInterval(), Integer.class));
+            setConfigurationRequest.setLongTermHistoryInterval(
+                    this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class));
         }
 
         if (source.getLongTermHistoryIntervalType() != null) {
-            setConfigurationRequest.setLongTermHistoryIntervalType(this.mapperFacade.map(
-                    source.getLongTermHistoryIntervalType(), Oslp.LongTermIntervalType.class));
+            setConfigurationRequest.setLongTermHistoryIntervalType(
+                    this.mapperFacade.map(source.getLongTermHistoryIntervalType(), Oslp.LongTermIntervalType.class));
         }
 
         if (source.getPreferredLinkType() != null) {
-            setConfigurationRequest.setPreferredLinkType(this.mapperFacade.map(source.getPreferredLinkType(),
-                    Oslp.LinkType.class));
+            setConfigurationRequest
+                    .setPreferredLinkType(this.mapperFacade.map(source.getPreferredLinkType(), Oslp.LinkType.class));
         }
 
         if (source.getMeterType() != null) {

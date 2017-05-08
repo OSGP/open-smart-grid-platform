@@ -10,20 +10,21 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 import java.util.HashMap;
 import java.util.Map;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.DaliConfigurationDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.IndexAddressMap;
 import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.google.protobuf.ByteString;
 
-public class DaliConfigurationToOslpDaliConfigurationConverter extends
-        BidirectionalConverter<DaliConfigurationDto, Oslp.DaliConfiguration> {
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class DaliConfigurationToOslpDaliConfigurationConverter
+        extends BidirectionalConverter<DaliConfigurationDto, Oslp.DaliConfiguration> {
     @Override
     public com.alliander.osgp.oslp.Oslp.DaliConfiguration convertTo(final DaliConfigurationDto source,
-            final Type<com.alliander.osgp.oslp.Oslp.DaliConfiguration> destinationType) {
+            final Type<com.alliander.osgp.oslp.Oslp.DaliConfiguration> destinationType, final MappingContext context) {
         final Oslp.DaliConfiguration.Builder daliConfiguration = Oslp.DaliConfiguration.newBuilder();
 
         if (source == null) {
@@ -50,7 +51,7 @@ public class DaliConfigurationToOslpDaliConfigurationConverter extends
 
     @Override
     public DaliConfigurationDto convertFrom(final com.alliander.osgp.oslp.Oslp.DaliConfiguration source,
-            final Type<DaliConfigurationDto> destinationType) {
+            final Type<DaliConfigurationDto> destinationType, final MappingContext context) {
 
         if (source == null) {
             return null;
@@ -66,7 +67,8 @@ public class DaliConfigurationToOslpDaliConfigurationConverter extends
 
         final Map<Integer, Integer> adresMap = new HashMap<Integer, Integer>();
 
-        return new DaliConfigurationDto(source.hasNumberOfLights() ? this.mapperFacade.map(source.getNumberOfLights(),
-                Integer.class) : numberOfLights, !indexAddressMap.isEmpty() ? indexAddressMap : adresMap);
+        return new DaliConfigurationDto(source.hasNumberOfLights()
+                ? this.mapperFacade.map(source.getNumberOfLights(), Integer.class) : numberOfLights,
+                !indexAddressMap.isEmpty() ? indexAddressMap : adresMap);
     }
 }

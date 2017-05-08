@@ -7,17 +7,18 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
 import com.alliander.osgp.oslp.Oslp;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class MeterTypeConverter extends BidirectionalConverter<MeterTypeDto, Oslp.MeterType> {
 
     @Override
     public com.alliander.osgp.oslp.Oslp.MeterType convertTo(final MeterTypeDto source,
-            final Type<com.alliander.osgp.oslp.Oslp.MeterType> destinationType) {
+            final Type<com.alliander.osgp.oslp.Oslp.MeterType> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -27,7 +28,7 @@ public class MeterTypeConverter extends BidirectionalConverter<MeterTypeDto, Osl
 
     @Override
     public MeterTypeDto convertFrom(final com.alliander.osgp.oslp.Oslp.MeterType source,
-            final Type<MeterTypeDto> destinationType) {
+            final Type<MeterTypeDto> destinationType, final MappingContext context) {
         if (source == null || source == Oslp.MeterType.MT_NOT_SET) {
             return null;
         }

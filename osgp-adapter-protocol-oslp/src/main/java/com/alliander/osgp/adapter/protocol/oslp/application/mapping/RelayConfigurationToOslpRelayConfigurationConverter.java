@@ -10,9 +10,6 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.RelayMapDto;
 import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
@@ -20,11 +17,15 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.IndexAddressMap;
 import com.google.protobuf.ByteString;
 
-public class RelayConfigurationToOslpRelayConfigurationConverter extends
-BidirectionalConverter<RelayConfigurationDto, Oslp.RelayConfiguration> {
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class RelayConfigurationToOslpRelayConfigurationConverter
+        extends BidirectionalConverter<RelayConfigurationDto, Oslp.RelayConfiguration> {
     @Override
     public com.alliander.osgp.oslp.Oslp.RelayConfiguration convertTo(final RelayConfigurationDto source,
-            final Type<com.alliander.osgp.oslp.Oslp.RelayConfiguration> destinationType) {
+            final Type<com.alliander.osgp.oslp.Oslp.RelayConfiguration> destinationType, final MappingContext context) {
         final Oslp.RelayConfiguration.Builder relayConfiguration = Oslp.RelayConfiguration.newBuilder();
 
         if (source.getRelayMap() != null) {
@@ -32,13 +33,12 @@ BidirectionalConverter<RelayConfigurationDto, Oslp.RelayConfiguration> {
             // use of Orika.
             for (final RelayMapDto entry : source.getRelayMap()) {
                 // Map null to OSLP RT_NOT_SET
-                relayConfiguration.addAddressMap(Oslp.IndexAddressMap
-                        .newBuilder()
+                relayConfiguration.addAddressMap(Oslp.IndexAddressMap.newBuilder()
                         .setIndex(this.mapperFacade.map(entry.getIndex(), ByteString.class))
                         .setAddress(this.mapperFacade.map(entry.getAddress(), ByteString.class))
-                        .setRelayType(
-                                entry.getRelayType() != null ? this.mapperFacade.map(entry.getRelayType(),
-                                        Oslp.RelayType.class) : Oslp.RelayType.RT_NOT_SET));
+                        .setRelayType(entry.getRelayType() != null
+                                ? this.mapperFacade.map(entry.getRelayType(), Oslp.RelayType.class)
+                                : Oslp.RelayType.RT_NOT_SET));
             }
         }
 
@@ -47,7 +47,7 @@ BidirectionalConverter<RelayConfigurationDto, Oslp.RelayConfiguration> {
 
     @Override
     public RelayConfigurationDto convertFrom(final com.alliander.osgp.oslp.Oslp.RelayConfiguration source,
-            final Type<RelayConfigurationDto> destinationType) {
+            final Type<RelayConfigurationDto> destinationType, final MappingContext context) {
 
         if (source == null) {
             return null;
@@ -56,10 +56,11 @@ BidirectionalConverter<RelayConfigurationDto, Oslp.RelayConfiguration> {
         final List<RelayMapDto> indexAddressMap = new ArrayList<RelayMapDto>();
         for (final IndexAddressMap entry : source.getAddressMapList()) {
             // Map OSLP RT_NOT_SET to null
-            indexAddressMap.add(new RelayMapDto(this.mapperFacade.map(entry.getIndex(), Integer.class), this.mapperFacade
-                    .map(entry.getAddress(), Integer.class), entry.hasRelayType()
-                    && entry.getRelayType() != Oslp.RelayType.RT_NOT_SET ? this.mapperFacade.map(entry.getRelayType(),
-                            RelayTypeDto.class) : null, null));
+            indexAddressMap.add(new RelayMapDto(this.mapperFacade.map(entry.getIndex(), Integer.class),
+                    this.mapperFacade.map(entry.getAddress(), Integer.class),
+                    entry.hasRelayType() && entry.getRelayType() != Oslp.RelayType.RT_NOT_SET
+                            ? this.mapperFacade.map(entry.getRelayType(), RelayTypeDto.class) : null,
+                    null));
         }
 
         final List<RelayMapDto> relayMaps = new ArrayList<RelayMapDto>();

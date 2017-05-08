@@ -10,9 +10,6 @@ package com.alliander.osgp.adapter.protocol.oslp.elster.application.mapping;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +19,19 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.SetConfigurationRequest;
 import com.google.protobuf.ByteString;
 
-public class ConfigurationToOslpSetConfigurationRequestConverter extends
-CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class ConfigurationToOslpSetConfigurationRequestConverter
+        extends CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ConfigurationToOslpSetConfigurationRequestConverter.class);
 
     @Override
     public SetConfigurationRequest convert(final ConfigurationDto source,
-            final Type<? extends Oslp.SetConfigurationRequest> destinationType) {
+            final Type<? extends Oslp.SetConfigurationRequest> destinationType, final MappingContext context) {
 
         final Oslp.SetConfigurationRequest.Builder setConfigurationRequest = Oslp.SetConfigurationRequest.newBuilder();
 
@@ -38,28 +39,28 @@ CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
             setConfigurationRequest.setLightType(this.mapperFacade.map(source.getLightType(), Oslp.LightType.class));
         }
         if (source.getDaliConfiguration() != null) {
-            setConfigurationRequest.setDaliConfiguration(this.mapperFacade.map(source.getDaliConfiguration(),
-                    Oslp.DaliConfiguration.class));
+            setConfigurationRequest.setDaliConfiguration(
+                    this.mapperFacade.map(source.getDaliConfiguration(), Oslp.DaliConfiguration.class));
         }
         if (source.getRelayConfiguration() != null) {
-            setConfigurationRequest.setRelayConfiguration(this.mapperFacade.map(source.getRelayConfiguration(),
-                    Oslp.RelayConfiguration.class));
+            setConfigurationRequest.setRelayConfiguration(
+                    this.mapperFacade.map(source.getRelayConfiguration(), Oslp.RelayConfiguration.class));
         }
         if (source.getShortTermHistoryIntervalMinutes() != null) {
-            setConfigurationRequest.setShortTermHistoryIntervalMinutes(this.mapperFacade.map(
-                    source.getShortTermHistoryIntervalMinutes(), Integer.class));
+            setConfigurationRequest.setShortTermHistoryIntervalMinutes(
+                    this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class));
         }
         if (source.getLongTermHistoryInterval() != null) {
-            setConfigurationRequest.setLongTermHistoryInterval(this.mapperFacade.map(
-                    source.getLongTermHistoryInterval(), Integer.class));
+            setConfigurationRequest.setLongTermHistoryInterval(
+                    this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class));
         }
         if (source.getLongTermHistoryIntervalType() != null) {
-            setConfigurationRequest.setLongTermHistoryIntervalType(this.mapperFacade.map(
-                    source.getLongTermHistoryIntervalType(), Oslp.LongTermIntervalType.class));
+            setConfigurationRequest.setLongTermHistoryIntervalType(
+                    this.mapperFacade.map(source.getLongTermHistoryIntervalType(), Oslp.LongTermIntervalType.class));
         }
         if (source.getPreferredLinkType() != null) {
-            setConfigurationRequest.setPreferredLinkType(this.mapperFacade.map(source.getPreferredLinkType(),
-                    Oslp.LinkType.class));
+            setConfigurationRequest
+                    .setPreferredLinkType(this.mapperFacade.map(source.getPreferredLinkType(), Oslp.LinkType.class));
         }
         if (source.getMeterType() != null) {
             setConfigurationRequest.setMeterType(this.mapperFacade.map(source.getMeterType(), Oslp.MeterType.class));
@@ -77,19 +78,19 @@ CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
             setConfigurationRequest.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
         }
         if (source.getCommunicationPauseTimeBetweenConnectionTrials() != null) {
-            setConfigurationRequest.setCommunicationPauseTimeBetweenConnectionTrials(source
-                    .getCommunicationPauseTimeBetweenConnectionTrials());
+            setConfigurationRequest.setCommunicationPauseTimeBetweenConnectionTrials(
+                    source.getCommunicationPauseTimeBetweenConnectionTrials());
         }
         if (source.getCommunicationTimeout() != null) {
             setConfigurationRequest.setCommunicationTimeout(source.getCommunicationTimeout());
         }
         if (source.getDeviceFixedIp() != null) {
-            setConfigurationRequest.setDeviceFixIpValue(this.convertTextualIpAddressToByteString(source
-                    .getDeviceFixedIp().getIpAddress()));
-            setConfigurationRequest.setNetMask(this.convertTextualIpAddressToByteString(source.getDeviceFixedIp()
-                    .getNetMask()));
-            setConfigurationRequest.setGateWay(this.convertTextualIpAddressToByteString(source.getDeviceFixedIp()
-                    .getGateWay()));
+            setConfigurationRequest.setDeviceFixIpValue(
+                    this.convertTextualIpAddressToByteString(source.getDeviceFixedIp().getIpAddress()));
+            setConfigurationRequest
+                    .setNetMask(this.convertTextualIpAddressToByteString(source.getDeviceFixedIp().getNetMask()));
+            setConfigurationRequest
+                    .setGateWay(this.convertTextualIpAddressToByteString(source.getDeviceFixedIp().getGateWay()));
         }
         if (source.isDhcpEnabled() != null) {
             setConfigurationRequest.setIsDhcpEnabled(source.isDhcpEnabled());
@@ -108,7 +109,7 @@ CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
         }
         if (source.getOsgpIpAddres() != null) {
             setConfigurationRequest
-            .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOsgpIpAddres()));
+                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOsgpIpAddres()));
         }
         if (source.isRelayRefreshing() != null) {
             setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());
@@ -131,8 +132,8 @@ CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
             setConfigurationRequest.addAllSwitchingDelay(source.getSwitchingDelays());
         }
         if (source.getRelayLinking() != null) {
-            setConfigurationRequest.addAllRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(),
-                    Oslp.RelayMatrix.class));
+            setConfigurationRequest
+                    .addAllRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(), Oslp.RelayMatrix.class));
         }
 
         return setConfigurationRequest.build();
