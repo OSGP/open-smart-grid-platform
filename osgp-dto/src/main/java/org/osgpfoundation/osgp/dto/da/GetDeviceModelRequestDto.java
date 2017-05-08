@@ -11,14 +11,4 @@ import java.io.Serializable;
 
 public class GetDeviceModelRequestDto implements Serializable {
     private static final long serialVersionUID = 4776483459295813108L;
-
-    private final String deviceIdentifier;
-
-    public GetDeviceModelRequestDto(final String deviceIdentifier) {
-        this.deviceIdentifier = deviceIdentifier;
-    }
-
-    public String getDeviceIdentifier() {
-        return this.deviceIdentifier;
-    }
 }

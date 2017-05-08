@@ -11,14 +11,4 @@ import java.io.Serializable;
 
 public class GetHealthStatusRequestDto implements Serializable {
     private static final long serialVersionUID = 4776483459295815498L;
-
-    private final String deviceIdentifier;
-
-    public GetHealthStatusRequestDto(final String deviceIdentifier) {
-        this.deviceIdentifier = deviceIdentifier;
-    }
-
-    public String getDeviceIdentifier() {
-        return this.deviceIdentifier;
-    }
 }
