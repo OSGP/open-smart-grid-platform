@@ -11,7 +11,6 @@
 package org.osgpfoundation.osgp.adapter.ws.da.infra.jms;
 
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
-import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
