@@ -705,7 +705,7 @@ public class FirmwareManagementEndpoint {
             @RequestPayload final SaveCurrentDeviceFirmwareRequest request) throws OsgpException {
 
         LOGGER.info("Saving new device firmware {} to device {}", request.getDeviceFirmware().getFirmware()
-                .getDescription());
+                .getDescription(), request.getDeviceFirmware().getDeviceIdentification());
 
         try {
             this.firmwareManagementService.saveCurrentDeviceFirmware(this.firmwareManagementMapper.map(
