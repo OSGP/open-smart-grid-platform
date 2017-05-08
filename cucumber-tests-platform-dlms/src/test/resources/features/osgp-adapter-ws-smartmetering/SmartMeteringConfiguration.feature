@@ -141,6 +141,7 @@ Feature: SmartMetering Configuration
     And the upgrade of firmware did not succeed
     Then the message "Upgrade of firmware did not succeed" should be given
 
+  @Skip
   Scenario: Get configuration object on a device
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
