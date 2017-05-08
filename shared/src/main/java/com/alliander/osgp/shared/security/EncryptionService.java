@@ -94,7 +94,9 @@ public class EncryptionService {
         try {
             this.key = new SecretKeySpec(Files.readAllBytes(new File(this.keyPath).toPath()), SECRET_KEY_SPEC);
         } catch (final IOException e) {
-            LOGGER.error(FunctionalExceptionType.UNEXPECTED_EXCEPTION_WHEN_READING_KEY.toString(), e);
+            final String errorMessage = String.format("Unexpected exception when reading keys");
+            LOGGER.error(errorMessage, e);
+
             throw new FunctionalException(FunctionalExceptionType.UNEXPECTED_EXCEPTION_WHEN_READING_KEY,
                     ComponentType.PROTOCOL_DLMS, e);
         }
@@ -119,10 +121,12 @@ public class EncryptionService {
             }
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException
-                | InvalidAlgorithmParameterException ex) {
-            LOGGER.error(FunctionalExceptionType.UNEXPECTED_EXCEPTION_DURING_DECRYPTION.toString(), ex);
+                | InvalidAlgorithmParameterException e) {
+            final String errorMessage = String.format("Unexpected exception during decryption");
+            LOGGER.error(errorMessage, e);
+
             throw new FunctionalException(FunctionalExceptionType.UNEXPECTED_EXCEPTION_DURING_DECRYPTION,
-                    ComponentType.PROTOCOL_DLMS, ex);
+                    ComponentType.PROTOCOL_DLMS, e);
         }
     }
 
@@ -165,7 +169,9 @@ public class EncryptionService {
             return cipher.doFinal(inputData);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
                 | BadPaddingException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            LOGGER.error(FunctionalExceptionType.UNEXPECTED_EXCEPTION_DURING_ENCRYPTION.toString(), e);
+            final String errorMessage = String.format("Unexpected exception during encryption");
+            LOGGER.error(errorMessage, e);
+
             throw new FunctionalException(FunctionalExceptionType.UNEXPECTED_EXCEPTION_DURING_ENCRYPTION,
                     ComponentType.PROTOCOL_DLMS, e);
         }
