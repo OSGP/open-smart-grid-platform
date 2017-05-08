@@ -47,7 +47,6 @@ public class DeviceDomainService {
             LOGGER.error(errorMessage);
 
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_CORE);
-            //            throw new UnknownEntityException(Device.class, deviceIdentification);
         }
 
         return device;
