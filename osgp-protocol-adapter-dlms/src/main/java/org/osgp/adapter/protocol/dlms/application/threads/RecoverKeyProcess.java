@@ -76,13 +76,10 @@ public class RecoverKeyProcess implements Runnable {
 
         try {
             this.initDevice();
-        } catch (final FunctionalException e) {
-            // Return original request + exception
-            LOGGER.error("Unexpected exception during {}", e);
-
-            // this.sendResponseMessage(messageMetadata,
-            // ResponseMessageResultType.NOT_OK, e,
-            // this.responseMessageSender, message.getObject(), isScheduled);
+        } catch (final Exception e) {
+            //  Return original exception
+            final String errorMessage = String.format("Unexpected exception during {}", e);
+            LOGGER.error(errorMessage);
         }
         if (!this.device.hasNewSecurityKey()) {
             return;
@@ -160,8 +157,8 @@ public class RecoverKeyProcess implements Runnable {
 
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
                 InetAddress.getByName(this.device.getIpAddress())).setSecuritySuite(securitySuite)
-                        .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
-                        .setClientId(this.clientAccessPoint);
+                .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
+                .setClientId(this.clientAccessPoint);
 
         final Integer challengeLength = this.device.getChallengeLength();
 
@@ -170,7 +167,10 @@ public class RecoverKeyProcess implements Runnable {
                 tcpConnectionBuilder.setChallengeLength(challengeLength);
             }
         } catch (final IllegalArgumentException e) {
-            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
+            final String errorMessage = String.format("Unexpected exception for wrong key format");
+            LOGGER.error(errorMessage);
+
+            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
         }
 
         return tcpConnectionBuilder.build();

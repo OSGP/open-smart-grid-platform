@@ -101,8 +101,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         final byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
         final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
 
-        // Validate keys before jdlms does, so a FunctionalException can be
-        // throwed if necessary
+        // Validate keys before JDLMS does and throw a FunctionalException if necessary
         this.checkKeyLength(decryptedAuthentication, decryptedEncryption);
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(decryptedAuthentication)

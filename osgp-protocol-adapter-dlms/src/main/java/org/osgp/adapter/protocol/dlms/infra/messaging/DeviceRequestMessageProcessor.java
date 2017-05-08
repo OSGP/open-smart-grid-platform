@@ -21,8 +21,6 @@ import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
-//import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
-//     org.osgp.adapter.protocol.jasper.sessionproviders.exceptions
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
