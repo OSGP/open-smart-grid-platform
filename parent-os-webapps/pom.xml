@@ -40,7 +40,7 @@
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.5</apache.httpcomponents.version>
-    <orika.version>1.4.5</orika.version>
+    <orika.version>1.5.1</orika.version>
     <netty.version>3.9.4.Final</netty.version>
     <jxr.version>2.5</jxr.version>
     <maven.project.info.reports.plugin.version>2.8</maven.project.info.reports.plugin.version>
