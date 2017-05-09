@@ -11,34 +11,36 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfileDto;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
 public class SeasonProfileConverter extends CustomConverter<SeasonProfileDto, DataObject> {
 
     @Override
-    public DataObject convert(final SeasonProfileDto source, final Type<? extends DataObject> destinationType) {
+    public DataObject convert(final SeasonProfileDto source, final Type<? extends DataObject> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
 
         final List<DataObject> seasonElements = new ArrayList<>();
 
-        final DataObject seasonProfileNameObject = DataObject.newOctetStringData(source.getSeasonProfileName()
-                .getBytes(StandardCharsets.UTF_8));
+        final DataObject seasonProfileNameObject = DataObject
+                .newOctetStringData(source.getSeasonProfileName().getBytes(StandardCharsets.UTF_8));
         seasonElements.add(seasonProfileNameObject);
 
-        final DataObject seasonStartObject = DataObject.newDateTimeData(this.mapperFacade.map(source.getSeasonStart(),
-                CosemDateTime.class));
+        final DataObject seasonStartObject = DataObject
+                .newDateTimeData(this.mapperFacade.map(source.getSeasonStart(), CosemDateTime.class));
         seasonElements.add(seasonStartObject);
 
-        final DataObject seasonWeekProfileNameObject = DataObject.newOctetStringData(source.getWeekProfile()
-                .getWeekProfileName().getBytes(StandardCharsets.UTF_8));
+        final DataObject seasonWeekProfileNameObject = DataObject
+                .newOctetStringData(source.getWeekProfile().getWeekProfileName().getBytes(StandardCharsets.UTF_8));
         seasonElements.add(seasonWeekProfileNameObject);
 
         return DataObject.newStructureData(seasonElements);

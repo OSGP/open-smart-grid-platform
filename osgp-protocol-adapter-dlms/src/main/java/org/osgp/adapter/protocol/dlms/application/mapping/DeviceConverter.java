@@ -7,20 +7,22 @@
  */
 package org.osgp.adapter.protocol.dlms.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
+import org.apache.commons.codec.binary.Hex;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 
-import org.apache.commons.codec.binary.Hex;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceDto, DlmsDevice> {
 
     @Override
-    public DlmsDevice convertTo(final SmartMeteringDeviceDto source, final Type<DlmsDevice> destinationType) {
+    public DlmsDevice convertTo(final SmartMeteringDeviceDto source, final Type<DlmsDevice> destinationType,
+            final MappingContext context) {
         final DlmsDevice dlmsDevice = new DlmsDevice();
         dlmsDevice.setDeviceIdentification(source.getDeviceIdentification());
         dlmsDevice.setCommunicationMethod(source.getCommunicationMethod());
@@ -36,20 +38,21 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
         }
 
         if (source.getAuthenticationKey() != null) {
-            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION, Hex.encodeHexString(source
-                    .getAuthenticationKey()), source.getDeliveryDate(), null));
+            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION,
+                    Hex.encodeHexString(source.getAuthenticationKey()), source.getDeliveryDate(), null));
         }
 
         if (source.getGlobalEncryptionUnicastKey() != null) {
-            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION, Hex.encodeHexString(source
-                    .getGlobalEncryptionUnicastKey()), source.getDeliveryDate(), null));
+            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION,
+                    Hex.encodeHexString(source.getGlobalEncryptionUnicastKey()), source.getDeliveryDate(), null));
         }
 
         return dlmsDevice;
     }
 
     @Override
-    public SmartMeteringDeviceDto convertFrom(final DlmsDevice source, final Type<SmartMeteringDeviceDto> destinationType) {
+    public SmartMeteringDeviceDto convertFrom(final DlmsDevice source,
+            final Type<SmartMeteringDeviceDto> destinationType, final MappingContext context) {
         throw new UnsupportedOperationException("convertFrom of class DeviceConverter is not implemented.");
     }
 

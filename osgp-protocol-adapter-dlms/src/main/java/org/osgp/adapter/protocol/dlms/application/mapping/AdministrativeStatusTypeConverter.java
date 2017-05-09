@@ -12,10 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
+
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-
-import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 
 public class AdministrativeStatusTypeConverter extends BidirectionalConverter<AdministrativeStatusTypeDto, Integer> {
 
@@ -49,13 +50,14 @@ public class AdministrativeStatusTypeConverter extends BidirectionalConverter<Ad
     }
 
     @Override
-    public Integer convertTo(final AdministrativeStatusTypeDto source, final Type<Integer> destinationType) {
+    public Integer convertTo(final AdministrativeStatusTypeDto source, final Type<Integer> destinationType,
+            final MappingContext context) {
         return administrativeStatusMapReversed.get(source);
     }
 
     @Override
     public AdministrativeStatusTypeDto convertFrom(final Integer source,
-            final Type<AdministrativeStatusTypeDto> destinationType) {
+            final Type<AdministrativeStatusTypeDto> destinationType, final MappingContext context) {
         return administrativeStatusMap.get(source);
     }
 
