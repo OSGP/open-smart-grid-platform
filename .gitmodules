@@ -5,7 +5,7 @@
 [submodule "Protocol-Adapter-OSLP"]
 	path = Protocol-Adapter-OSLP
 	url = https://github.com/OSGP/Protocol-Adapter-OSLP.git
-	branch = development
+	branch = FIXIT_Fix_RelayTypeConverter
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
