@@ -107,7 +107,6 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             notificationType = NotificationType.valueOf(messageType);
 
             dataObject = message.getObject();
-
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
