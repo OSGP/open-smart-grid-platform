@@ -117,6 +117,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetConfigurationObjectRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetConfigurationObjectRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="SetPushSetupAlarmRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -221,6 +228,7 @@
         <xsd:element ref="tns:SetKeysRequest" />
         <xsd:element ref="tns:GetAssociationLnObjectsRequest" />
         <xsd:element ref="tns:SetClockConfigurationRequest" />
+        <xsd:element ref="tns:GetConfigurationObjectRequest" />
         <xsd:element ref="tns:GetProfileGenericDataRequest" />
       </xsd:choice>
     </xsd:sequence>
@@ -344,6 +352,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetConfigurationObjectResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetConfigurationObjectResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="ProfileGenericDataResponse">
     <xsd:complexType>
       <xsd:complexContent>
@@ -368,6 +383,7 @@
         <xsd:element ref="tns:GetFirmwareVersionResponse" />
         <xsd:element ref="tns:UpdateFirmwareResponse" />
         <xsd:element ref="tns:AssociationLnObjectsResponse" />
+        <xsd:element ref="tns:GetConfigurationObjectResponse" />
         <xsd:element ref="tns:ProfileGenericDataResponse" />
       </xsd:choice>
     </xsd:sequence>
