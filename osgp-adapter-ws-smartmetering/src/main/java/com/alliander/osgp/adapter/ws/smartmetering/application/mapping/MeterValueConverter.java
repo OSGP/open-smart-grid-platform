@@ -7,17 +7,19 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
 public class MeterValueConverter extends CustomConverter<OsgpMeterValue, MeterValue> {
 
     @Override
-    public MeterValue convert(final OsgpMeterValue source, final Type<? extends MeterValue> destinationType) {
+    public MeterValue convert(final OsgpMeterValue source, final Type<? extends MeterValue> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }

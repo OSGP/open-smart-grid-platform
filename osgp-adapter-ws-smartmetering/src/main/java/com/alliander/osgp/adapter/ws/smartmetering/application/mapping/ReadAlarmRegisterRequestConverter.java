@@ -7,19 +7,20 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
+
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
-
-public class ReadAlarmRegisterRequestConverter
-        extends
+public class ReadAlarmRegisterRequestConverter extends
         BidirectionalConverter<ReadAlarmRegisterRequest, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest convertTo(
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest> destinationType,
+            final MappingContext context) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest destination = new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest();
         destination.setDeviceIdentification(source.getDeviceIdentification());
@@ -30,7 +31,8 @@ public class ReadAlarmRegisterRequestConverter
     @Override
     public ReadAlarmRegisterRequest convertFrom(
             final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest source,
-            final Type<com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest> destinationType) {
+            final Type<com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest> destinationType,
+            final MappingContext context) {
 
         return new ReadAlarmRegisterRequest(source.getDeviceIdentification());
     }

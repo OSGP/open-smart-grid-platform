@@ -12,23 +12,25 @@ import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
 class FirmwareConverter extends CustomConverter<com.alliander.osgp.domain.core.entities.Firmware, Firmware> {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(FirmwareConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareConverter.class);
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware convert(
             final com.alliander.osgp.domain.core.entities.Firmware source,
-            final Type<? extends com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware> destinationType) {
+            final Type<? extends com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware> destinationType,
+            final MappingContext context) {
 
         final Firmware output = new Firmware();
 

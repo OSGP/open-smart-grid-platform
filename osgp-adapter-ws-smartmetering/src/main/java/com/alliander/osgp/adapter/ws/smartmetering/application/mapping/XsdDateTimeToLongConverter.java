@@ -12,11 +12,12 @@ import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 /**
  * convert a xsd datetime string to a date and back
@@ -28,7 +29,7 @@ public class XsdDateTimeToLongConverter extends BidirectionalConverter<String, L
     private static final Logger LOGGER = LoggerFactory.getLogger(XsdDateTimeToLongConverter.class);
 
     @Override
-    public Long convertTo(final String source, final Type<Long> destinationType) {
+    public Long convertTo(final String source, final Type<Long> destinationType, final MappingContext context) {
         if (source == null || source.isEmpty()) {
             return null;
         }
@@ -42,7 +43,7 @@ public class XsdDateTimeToLongConverter extends BidirectionalConverter<String, L
     }
 
     @Override
-    public String convertFrom(final Long source, final Type<String> destinationType) {
+    public String convertFrom(final Long source, final Type<String> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }

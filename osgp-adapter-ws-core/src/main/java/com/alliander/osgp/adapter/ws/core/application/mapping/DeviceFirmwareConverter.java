@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
 import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
@@ -31,7 +32,7 @@ class DeviceFirmwareConverter extends
     @Override
     public DeviceFirmware convert(
             final com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware source,
-            final Type<? extends DeviceFirmware> destination) {
+            final Type<? extends DeviceFirmware> destination, final MappingContext context) {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(source.getDeviceIdentification());
         final Firmware firmware = this.firmwareRepository.findOne(Long.valueOf(source.getFirmware().getId()));

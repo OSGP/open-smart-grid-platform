@@ -10,9 +10,6 @@ package com.alliander.osgp.adapter.ws.tariffswitching.application.mapping.ws;
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.joda.time.DateTime;
 
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.TariffSchedule;
@@ -23,10 +20,15 @@ import com.alliander.osgp.domain.core.valueobjects.LightValue;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
 import com.alliander.osgp.domain.core.valueobjects.WeekDayType;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
 public class TariffScheduleToScheduleConverter extends CustomConverter<TariffSchedule, Schedule> {
 
     @Override
-    public Schedule convert(final TariffSchedule source, final Type<? extends Schedule> destinationType) {
+    public Schedule convert(final TariffSchedule source, final Type<? extends Schedule> destinationType,
+            final MappingContext context) {
         final Schedule schedule = new Schedule();
 
         // Copy values

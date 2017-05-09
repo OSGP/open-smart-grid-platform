@@ -11,21 +11,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 
-public class AlarmNotificationsConverter
-extends
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class AlarmNotificationsConverter extends
         BidirectionalConverter<AlarmNotifications, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications convertTo(
             final AlarmNotifications source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -54,7 +55,7 @@ extends
     @Override
     public AlarmNotifications convertFrom(
             final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications source,
-            final Type<AlarmNotifications> destinationType) {
+            final Type<AlarmNotifications> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }

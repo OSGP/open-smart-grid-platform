@@ -2,13 +2,14 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
  * Copyright 2015 Smart Society Services B.V.
@@ -60,21 +61,21 @@ public class CosemDateConverterTest {
     public void testWildCards() {
         byte[] source = new byte[] { (byte) 0x07, (byte) 0xDF, 6, (byte) 0xFF, (byte) 0xFF };
         final CosemDateConverter converter = new CosemDateConverter();
-        CosemDate date = converter.convert(source, converter.getBType());
+        CosemDate date = converter.convert(source, converter.getBType(), null);
         Assert.assertEquals(2015, date.getYear());
         Assert.assertEquals(6, date.getMonth());
         Assert.assertEquals(0xFF, date.getDayOfMonth());
         Assert.assertEquals(0xFF, date.getDayOfWeek());
 
         source = new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFE, (byte) 0xFD, (byte) 0xFF };
-        date = converter.convert(source, converter.getBType());
+        date = converter.convert(source, converter.getBType(), null);
         Assert.assertEquals(0xFFFF, date.getYear());
         Assert.assertEquals(0xFE, date.getMonth());
         Assert.assertEquals(0xFD, date.getDayOfMonth());
         Assert.assertEquals(0xFF, date.getDayOfWeek());
 
         source = new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFE, 21, 3 };
-        date = converter.convert(source, converter.getBType());
+        date = converter.convert(source, converter.getBType(), null);
         Assert.assertEquals(0xFFFF, date.getYear());
         Assert.assertEquals(0xFE, date.getMonth());
         Assert.assertEquals(21, date.getDayOfMonth());

@@ -31,6 +31,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
@@ -879,4 +883,52 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
+
+    @PayloadRoot(localPart = "GetConfigurationObjectRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetConfigurationObjectAsyncResponse getConfigurationObject(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetConfigurationObjectRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+
+        final GetConfigurationObjectAsyncResponse response = new GetConfigurationObjectAsyncResponse();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest dataRequest = this.configurationMapper
+                .map(request,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest.class);
+
+        final String correlationUid = this.configurationService.enqueueGetConfigurationObjectRequest(
+                organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest,
+                MessagePriorityEnum.getMessagePriority(messagePriority),
+                this.configurationMapper.map(scheduleTime, Long.class));
+
+        response.setCorrelationUid(correlationUid);
+        response.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "GetConfigurationObjectAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetConfigurationObjectResponse getGetConfigurationObjectResponse(
+            @RequestPayload final GetConfigurationObjectAsyncRequest request) throws OsgpException {
+
+        GetConfigurationObjectResponse response = null;
+        try {
+            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
+                    request.getCorrelationUid(),
+                    com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse.class);
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the configuration object");
+
+            response = this.configurationMapper.map(meterResponseData.getMessageData(),
+                    GetConfigurationObjectResponse.class);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
 }

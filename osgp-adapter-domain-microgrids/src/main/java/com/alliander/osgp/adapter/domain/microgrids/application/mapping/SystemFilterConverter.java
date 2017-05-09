@@ -16,13 +16,15 @@ import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileFilterDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 public class SystemFilterConverter extends BidirectionalConverter<SystemFilter, SystemFilterDto> {
 
     @Override
-    public SystemFilterDto convertTo(final SystemFilter source, final Type<SystemFilterDto> destinationType) {
+    public SystemFilterDto convertTo(final SystemFilter source, final Type<SystemFilterDto> destinationType,
+            final MappingContext context) {
         final List<MeasurementFilterDto> measurementFilters = this.mapperFacade
                 .mapAsList(source.getMeasurementFilters(), MeasurementFilterDto.class);
         final List<ProfileFilterDto> profileFilters = this.mapperFacade.mapAsList(source.getProfileFilters(),
@@ -33,7 +35,8 @@ public class SystemFilterConverter extends BidirectionalConverter<SystemFilter, 
     }
 
     @Override
-    public SystemFilter convertFrom(final SystemFilterDto source, final Type<SystemFilter> destinationType) {
+    public SystemFilter convertFrom(final SystemFilterDto source, final Type<SystemFilter> destinationType,
+            final MappingContext context) {
         final List<MeasurementFilter> measurementFilters = this.mapperFacade.mapAsList(source.getMeasurementFilters(),
                 MeasurementFilter.class);
         final List<ProfileFilter> profileFilters = this.mapperFacade.mapAsList(source.getProfileFilters(),

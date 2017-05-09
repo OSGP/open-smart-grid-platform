@@ -7,16 +7,17 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
 
     @Override
-    public Event convertTo(final EventDto source, final Type<Event> destinationType) {
+    public Event convertTo(final EventDto source, final Type<Event> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -25,7 +26,8 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
     }
 
     @Override
-    public EventDto convertFrom(final Event source, final Type<EventDto> destinationType) {
+    public EventDto convertFrom(final Event source, final Type<EventDto> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }

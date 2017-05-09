@@ -7,26 +7,27 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 
-public class AdministrativeStatusResponseConverter extends
-        CustomConverter<AdministrativeStatusTypeResponseDto, AdministrativeStatusTypeResponse> {
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class AdministrativeStatusResponseConverter
+        extends CustomConverter<AdministrativeStatusTypeResponseDto, AdministrativeStatusTypeResponse> {
 
     @Override
     public AdministrativeStatusTypeResponse convert(final AdministrativeStatusTypeResponseDto source,
-            final Type<? extends AdministrativeStatusTypeResponse> destinationType) {
+            final Type<? extends AdministrativeStatusTypeResponse> destinationType, final MappingContext context) {
 
         if (source == null) {
             return null;
         }
 
-        return new AdministrativeStatusTypeResponse(this.mapperFacade.map(source.getAdministrativeStatusTypeDto(),
-                AdministrativeStatusType.class));
+        return new AdministrativeStatusTypeResponse(
+                this.mapperFacade.map(source.getAdministrativeStatusTypeDto(), AdministrativeStatusType.class));
 
     }
 }

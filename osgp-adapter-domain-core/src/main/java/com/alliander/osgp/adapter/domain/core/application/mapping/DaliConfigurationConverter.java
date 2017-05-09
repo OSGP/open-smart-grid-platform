@@ -9,17 +9,18 @@ package com.alliander.osgp.adapter.domain.core.application.mapping;
 
 import java.util.Map;
 
+import com.alliander.osgp.domain.core.valueobjects.DaliConfiguration;
+
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.DaliConfiguration;
-
-public class DaliConfigurationConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.DaliConfigurationDto, DaliConfiguration> {
+public class DaliConfigurationConverter
+        extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.DaliConfigurationDto, DaliConfiguration> {
 
     @Override
     public DaliConfiguration convertTo(final com.alliander.osgp.dto.valueobjects.DaliConfigurationDto source,
-            final Type<DaliConfiguration> destinationType) {
+            final Type<DaliConfiguration> destinationType, final MappingContext context) {
 
         final Integer numberOfLights = source.getNumberOfLights();
         final Map<Integer, Integer> indexAddressMap = source.getIndexAddressMap();
@@ -29,7 +30,8 @@ public class DaliConfigurationConverter extends
 
     @Override
     public com.alliander.osgp.dto.valueobjects.DaliConfigurationDto convertFrom(final DaliConfiguration source,
-            final Type<com.alliander.osgp.dto.valueobjects.DaliConfigurationDto> destinationType) {
+            final Type<com.alliander.osgp.dto.valueobjects.DaliConfigurationDto> destinationType,
+            final MappingContext context) {
 
         final Integer numberOfLights = source.getNumberOfLights();
         final Map<Integer, Integer> indexAddressMap = source.getIndexAddressMap();

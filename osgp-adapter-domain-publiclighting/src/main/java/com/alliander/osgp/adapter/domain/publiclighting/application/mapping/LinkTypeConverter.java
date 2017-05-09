@@ -7,16 +7,18 @@
  */
 package com.alliander.osgp.adapter.domain.publiclighting.application.mapping;
 
+import com.alliander.osgp.domain.core.valueobjects.LinkType;
+
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.LinkType;
-
-public class LinkTypeConverter extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.LinkTypeDto, LinkType> {
+public class LinkTypeConverter
+        extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.LinkTypeDto, LinkType> {
 
     @Override
     public LinkType convertTo(final com.alliander.osgp.dto.valueobjects.LinkTypeDto source,
-            final Type<LinkType> destinationType) {
+            final Type<LinkType> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
@@ -26,7 +28,7 @@ public class LinkTypeConverter extends BidirectionalConverter<com.alliander.osgp
 
     @Override
     public com.alliander.osgp.dto.valueobjects.LinkTypeDto convertFrom(final LinkType source,
-            final Type<com.alliander.osgp.dto.valueobjects.LinkTypeDto> destinationType) {
+            final Type<com.alliander.osgp.dto.valueobjects.LinkTypeDto> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
