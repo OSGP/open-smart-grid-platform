@@ -77,7 +77,7 @@ public class RecoverKeyProcess implements Runnable {
         try {
             this.initDevice();
         } catch (final Exception e) {
-            final String errorMessage = String.format("Unexpected exception: {%s}", e.getMessage());
+            final String errorMessage = String.format("Unexpected exception: {}", e);
             LOGGER.error(errorMessage);
         }
         if (!this.device.hasNewSecurityKey()) {
