@@ -167,10 +167,10 @@ public class RecoverKeyProcess implements Runnable {
                 tcpConnectionBuilder.setChallengeLength(challengeLength);
             }
         } catch (final IllegalArgumentException e) {
-            final String errorMessage = String.format("Unexpected exception for wrong key format");
+            final String errorMessage = String.format("Invalid key format exception");
             LOGGER.error(errorMessage);
 
-            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
         }
 
         return tcpConnectionBuilder.build();

@@ -111,7 +111,7 @@ public class DlmsHelperService {
         } catch (final IOException e) {
             throw new ConnectionException(e);
         } catch (final Exception e) {
-            final String errorMessage = String.format("Error retrieving attribute value for {%d ,%s ,%d }.",
+            final String errorMessage = String.format("Error retrieving attribute value for classID {%d}, obisCode {%s} and attributeAddressId {%d}.",
                     attributeAddress.getClassId(), attributeAddress.getInstanceId().toObisCode(), attributeAddress.getId());
             LOGGER.error(errorMessage);
 

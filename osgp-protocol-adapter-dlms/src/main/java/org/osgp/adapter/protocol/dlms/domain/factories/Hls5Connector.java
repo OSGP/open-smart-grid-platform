@@ -77,7 +77,7 @@ public class Hls5Connector extends SecureDlmsConnector {
             throw new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
-            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
     }
 
@@ -117,17 +117,17 @@ public class Hls5Connector extends SecureDlmsConnector {
 
         if (encryptionKey == null) {
             LOGGER.error("The key is not allowed to be null");
-            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
         }
 
         if (authenticationKey != null && authenticationKey.length != encryptionKey.length) {
             LOGGER.error("Authentication key length does not match encryption key length");
-            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
         }
 
         if (encryptionKey.length * 8 != AES_GMC_128) {
             LOGGER.error("The key has an invalid length");
-            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
         }
     }
 

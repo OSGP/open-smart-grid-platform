@@ -102,10 +102,10 @@ public class DomainHelperService {
             deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
 
         } catch (final SessionProviderException e) {
-            final String errorMessage = String.format("Unexpected exception for wrong key format");
+            final String errorMessage = String.format("Invalid key format exception");
             LOGGER.error(errorMessage);
 
-            throw new FunctionalException(FunctionalExceptionType.WRONG_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
             throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
