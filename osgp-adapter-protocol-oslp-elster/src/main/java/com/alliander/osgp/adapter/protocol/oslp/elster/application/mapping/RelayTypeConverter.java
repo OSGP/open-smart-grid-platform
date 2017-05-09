@@ -29,11 +29,16 @@ public class RelayTypeConverter extends BidirectionalConverter<RelayTypeDto, Osl
     @Override
     public RelayTypeDto convertFrom(final com.alliander.osgp.oslp.Oslp.RelayType source,
             final Type<RelayTypeDto> destinationType, final MappingContext context) {
-        if (source == null || source == Oslp.RelayType.RT_NOT_SET) {
+        if ((source == null) || (source == Oslp.RelayType.RT_NOT_SET)) {
             return null;
         }
 
         return RelayTypeDto.valueOf(source.toString());
+    }
+
+    @Override
+    public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
+        return this.sourceType.isAssignableFrom(sourceType) && this.destinationType.equals(destinationType);
     }
 
 }
