@@ -8,6 +8,7 @@
 package org.osgpfoundation.osgp.adapter.ws.da.application.exceptionhandling;
 
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import ma.glasnost.orika.MappingContext;
 import org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.common.TechnicalFault;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
@@ -15,7 +16,7 @@ import ma.glasnost.orika.metadata.Type;
 public class TechnicalExceptionConverter extends CustomConverter<TechnicalException, TechnicalFault> {
 
     @Override
-    public TechnicalFault convert(final TechnicalException source, final Type<? extends TechnicalFault> destinationType) {
+    public TechnicalFault convert(final TechnicalException source, final Type<? extends TechnicalFault> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
