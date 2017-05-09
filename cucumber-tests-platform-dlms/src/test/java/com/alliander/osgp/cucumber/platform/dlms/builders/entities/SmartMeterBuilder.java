@@ -42,7 +42,6 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
         device.setActive(this.isActive);
         device.updateProtocol(this.protocolInfo);
         device.updateInMaintenance(this.inMaintenance);
-        device.updateGatewayDevice(this.gatewayDevice);
         device.setVersion(this.version);
         device.setDeviceModel(this.deviceModel);
         device.setTechnicalInstallationDate(this.technicalInstallationDate);
