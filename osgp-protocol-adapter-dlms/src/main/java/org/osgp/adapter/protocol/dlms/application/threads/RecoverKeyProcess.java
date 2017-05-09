@@ -77,8 +77,7 @@ public class RecoverKeyProcess implements Runnable {
         try {
             this.initDevice();
         } catch (final Exception e) {
-            //  Return original exception
-            final String errorMessage = String.format("Unexpected exception during {}", e);
+            final String errorMessage = String.format("Unexpected exception: {%s}", e.getMessage());
             LOGGER.error(errorMessage);
         }
         if (!this.device.hasNewSecurityKey()) {
@@ -167,10 +166,8 @@ public class RecoverKeyProcess implements Runnable {
                 tcpConnectionBuilder.setChallengeLength(challengeLength);
             }
         } catch (final IllegalArgumentException e) {
-            final String errorMessage = String.format("Invalid key format exception");
-            LOGGER.error(errorMessage);
-
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+            LOGGER.error("Exception occurred: Invalid key format");
+            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
 
         return tcpConnectionBuilder.build();

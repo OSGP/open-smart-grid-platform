@@ -35,7 +35,7 @@ public abstract class DlmsConnector {
 
     protected void checkIpAddress(final DlmsDevice device) throws TechnicalException, FunctionalException {
         if (device.getIpAddress() == null) {
-            final String errorMessage = String.format("Unable to get connection for device %s, because the IP address is not valid or empty",
+            final String errorMessage = String.format("Unable to get connection for device %s, because the IP address:%s is not valid or empty",
                     device.getDeviceIdentification(), device.getIpAddress());
             LOGGER.error(errorMessage);
 
@@ -58,11 +58,11 @@ public abstract class DlmsConnector {
                 tcpConnectionBuilder.setChallengeLength(challengeLength);
             }
         } catch (final IllegalArgumentException e) {
-            final String errorMessage = String.format("Challenge length has to be between 8 and 64 for device %s.",
+            final String errorMessage = String.format("Challenge length has to be between 8 and 64 for device %s",
                     device.getDeviceIdentification());
             LOGGER.error(errorMessage);
 
-            throw new FunctionalException(FunctionalExceptionType.CHALLENGE_LENGHT_OUT_OF_RANGE, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.CHALLENGE_LENGHT_OUT_OF_RANGE, ComponentType.PROTOCOL_DLMS, e);
         }
 
     }

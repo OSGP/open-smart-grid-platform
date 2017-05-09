@@ -71,10 +71,10 @@ public class Hls5Connector extends SecureDlmsConnector {
                 this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
 
-            final String errorMessage = String.format("Error creating connection for %s with IP adress: %s and with device port: %s",
+            final String errorMessage = String.format("Error creating connection for %s with IP adress: %s and with device port: %d",
                     device.getDeviceIdentification(), device.getIpAddress(), device.getPort());
             LOGGER.error(errorMessage);
-            throw new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS, e);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
@@ -102,7 +102,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
 
         // Validate keys before JDLMS does and throw a FunctionalException if necessary
-        this.checkKeyLength(decryptedAuthentication, decryptedEncryption);
+        this.validateKeys(decryptedAuthentication, decryptedEncryption);
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(decryptedAuthentication)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
@@ -112,23 +112,40 @@ public class Hls5Connector extends SecureDlmsConnector {
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
     }
 
-    protected void checkKeyLength(final byte[] encryptionKey, final byte[] authenticationKey)
+    private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey)
             throws FunctionalException {
+        if (this.checkEmptyKey(encryptionKey)) {
+            LOGGER.error("The encryption key is empty");
+            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY, ComponentType.PROTOCOL_DLMS);
+        }
 
-        if (encryptionKey == null) {
-            LOGGER.error("The key is not allowed to be null");
+        if (this.checkEmptyKey(authenticationKey)) {
+            LOGGER.error("The authentication key is empty");
+            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY, ComponentType.PROTOCOL_DLMS);
+        }
+
+        if (this.checkLenghtKey(encryptionKey)) {
+            LOGGER.error("The encryption key has an invalid length");
             throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
         }
 
-        if (authenticationKey != null && authenticationKey.length != encryptionKey.length) {
-            LOGGER.error("Authentication key length does not match encryption key length");
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
-        }
-
-        if (encryptionKey.length * 8 != AES_GMC_128) {
-            LOGGER.error("The key has an invalid length");
+        if (this.checkLenghtKey(authenticationKey)) {
+            LOGGER.error("The authentication key has an invalid length");
             throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
         }
     }
 
+    private boolean checkEmptyKey(final byte[] key) {
+        if (key == null) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkLenghtKey(final byte[] key) {
+        if (key.length * 8 != AES_GMC_128) {
+            return true;
+        }
+        return false;
+    }
 }

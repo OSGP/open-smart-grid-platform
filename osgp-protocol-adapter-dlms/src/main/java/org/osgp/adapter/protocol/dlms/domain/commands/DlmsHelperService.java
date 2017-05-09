@@ -115,7 +115,7 @@ public class DlmsHelperService {
                     attributeAddress.getClassId(), attributeAddress.getInstanceId().toObisCode(), attributeAddress.getId());
             LOGGER.error(errorMessage);
 
-            throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS, e);
         }
     }
 

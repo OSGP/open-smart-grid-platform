@@ -102,9 +102,7 @@ public class DomainHelperService {
             deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
 
         } catch (final SessionProviderException e) {
-            final String errorMessage = String.format("Invalid key format exception");
-            LOGGER.error(errorMessage);
-
+            LOGGER.error("Invalid key format exception", e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
