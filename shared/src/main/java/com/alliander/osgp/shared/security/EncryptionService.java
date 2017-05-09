@@ -94,8 +94,7 @@ public class EncryptionService {
         try {
             this.key = new SecretKeySpec(Files.readAllBytes(new File(this.keyPath).toPath()), SECRET_KEY_SPEC);
         } catch (final IOException e) {
-            final String errorMessage = String.format("Unexpected exception when reading keys");
-            LOGGER.error(errorMessage, e);
+            LOGGER.error("Unexpected exception when reading keys", e);
 
             throw new FunctionalException(FunctionalExceptionType.READING_KEY_EXCEPTION,
                     ComponentType.SHARED, e);
@@ -122,8 +121,7 @@ public class EncryptionService {
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException
                 | InvalidAlgorithmParameterException e) {
-            final String errorMessage = String.format("Unexpected exception during decryption");
-            LOGGER.error(errorMessage, e);
+            LOGGER.error("Unexpected exception during decryption", e);
 
             throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION,
                     ComponentType.SHARED, e);
@@ -169,8 +167,7 @@ public class EncryptionService {
             return cipher.doFinal(inputData);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
                 | BadPaddingException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            final String errorMessage = String.format("Unexpected exception during encryption");
-            LOGGER.error(errorMessage, e);
+            LOGGER.error("Unexpected exception during encryption", e);
 
             throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION,
                     ComponentType.SHARED, e);
