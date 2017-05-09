@@ -7,23 +7,27 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
 
 public class FirmwareVersionConverter extends
         CustomConverter<FirmwareVersionDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion> {
 
     @Override
-    public com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion convert(FirmwareVersionDto source,
-            Type<? extends com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion> destinationType) {
+    public com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion convert(
+            final FirmwareVersionDto source,
+            final Type<? extends com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion> destinationType,
+            final MappingContext context) {
 
         if (source != null) {
 
             return new com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion(
-                    com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareModuleType.valueOf(source
-                            .getFirmwareModuleType().name()), source.getVersion());
+                    com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareModuleType
+                            .valueOf(source.getFirmwareModuleType().name()),
+                    source.getVersion());
         }
 
         return null;

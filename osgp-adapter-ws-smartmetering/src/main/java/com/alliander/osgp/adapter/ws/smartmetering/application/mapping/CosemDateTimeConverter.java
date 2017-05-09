@@ -2,18 +2,20 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import java.nio.ByteBuffer;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ClockStatus;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDateTime;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemTime;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
 public class CosemDateTimeConverter extends CustomConverter<byte[], CosemDateTime> {
 
     @Override
-    public CosemDateTime convert(final byte[] source, final Type<? extends CosemDateTime> destinationType) {
+    public CosemDateTime convert(final byte[] source, final Type<? extends CosemDateTime> destinationType,
+            final MappingContext context) {
         final ByteBuffer bb = ByteBuffer.wrap(source);
 
         final int year = bb.getShort() & 0xFFFF;

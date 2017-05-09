@@ -10,9 +10,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DayProfileActionType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DayProfileActionsType;
@@ -28,19 +25,22 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.DayProfileActio
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
-public class ActivityCalendarConverter
-extends
-CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType, ActivityCalendar> {
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
+
+public class ActivityCalendarConverter extends
+        CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType, ActivityCalendar> {
 
     @Override
     public ActivityCalendar convert(final ActivityCalendarType source,
-            final Type<? extends ActivityCalendar> destinationType) {
+            final Type<? extends ActivityCalendar> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
 
-        final CosemDateTime activatePassiveCalendarTime = this.mapperFacade.map(
-                source.getActivatePassiveCalendarTime(), CosemDateTime.class);
+        final CosemDateTime activatePassiveCalendarTime = this.mapperFacade.map(source.getActivatePassiveCalendarTime(),
+                CosemDateTime.class);
 
         return new ActivityCalendar(source.getCalendarName(), activatePassiveCalendarTime,
                 this.processSeasonProfile(source.getSeasonProfile()));

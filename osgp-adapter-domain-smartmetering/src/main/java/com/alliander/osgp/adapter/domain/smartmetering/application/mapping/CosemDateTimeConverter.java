@@ -9,9 +9,6 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import java.util.Objects;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ClockStatus;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDateTime;
@@ -20,6 +17,10 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class CosemDateTimeConverter extends BidirectionalConverter<CosemDateTimeDto, CosemDateTime> {
 
@@ -54,26 +55,28 @@ public class CosemDateTimeConverter extends BidirectionalConverter<CosemDateTime
     }
 
     @Override
-    public CosemDateTime convertTo(final CosemDateTimeDto source, final Type<CosemDateTime> destinationType) {
+    public CosemDateTime convertTo(final CosemDateTimeDto source, final Type<CosemDateTime> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
 
         final ClockStatus clockStatus = new ClockStatus(source.getClockStatus().getStatus());
 
-        return new CosemDateTime(this.mapper.map(source.getDate(), CosemDate.class), this.mapper.map(source.getTime(),
-                CosemTime.class), source.getDeviation(), clockStatus);
+        return new CosemDateTime(this.mapper.map(source.getDate(), CosemDate.class),
+                this.mapper.map(source.getTime(), CosemTime.class), source.getDeviation(), clockStatus);
     }
 
     @Override
-    public CosemDateTimeDto convertFrom(final CosemDateTime source, final Type<CosemDateTimeDto> destinationType) {
+    public CosemDateTimeDto convertFrom(final CosemDateTime source, final Type<CosemDateTimeDto> destinationType,
+            final MappingContext context) {
         if (source == null) {
             return null;
         }
 
         final ClockStatusDto clockStatus = new ClockStatusDto(source.getClockStatus().getStatus());
 
-        return new CosemDateTimeDto(this.mapper.map(source.getDate(), CosemDateDto.class), this.mapper.map(
-                source.getTime(), CosemTimeDto.class), source.getDeviation(), clockStatus);
+        return new CosemDateTimeDto(this.mapper.map(source.getDate(), CosemDateDto.class),
+                this.mapper.map(source.getTime(), CosemTimeDto.class), source.getDeviation(), clockStatus);
     }
 }

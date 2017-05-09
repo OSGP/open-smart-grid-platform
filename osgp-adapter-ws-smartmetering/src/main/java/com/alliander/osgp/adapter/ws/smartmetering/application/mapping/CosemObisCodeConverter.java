@@ -7,14 +7,15 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObisCode;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
 
 public class CosemObisCodeConverter extends CustomConverter<CosemObisCode, byte[]> {
     @Override
-    public byte[] convert(final CosemObisCode arg0, final Type<? extends byte[]> arg1) {
+    public byte[] convert(final CosemObisCode arg0, final Type<? extends byte[]> arg1, final MappingContext context) {
         return arg0.toByteArray();
     }
 }

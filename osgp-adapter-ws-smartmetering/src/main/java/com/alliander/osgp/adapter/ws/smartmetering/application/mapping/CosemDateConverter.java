@@ -9,15 +9,17 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import java.nio.ByteBuffer;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
 
 public class CosemDateConverter extends CustomConverter<byte[], CosemDate> {
 
     @Override
-    public CosemDate convert(final byte[] source, final Type<? extends CosemDate> destinationType) {
+    public CosemDate convert(final byte[] source, final Type<? extends CosemDate> destinationType,
+            final MappingContext context) {
         final ByteBuffer bb = ByteBuffer.wrap(source);
         final int year = bb.getShort() & 0xFFFF;
         final int month = bb.get() & 0xFF;

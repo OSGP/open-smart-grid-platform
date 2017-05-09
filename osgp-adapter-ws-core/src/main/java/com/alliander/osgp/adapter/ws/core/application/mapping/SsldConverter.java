@@ -15,9 +15,6 @@ import java.util.Objects;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +25,10 @@ import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SsldConverter.class);
@@ -42,7 +43,8 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertTo(final Ssld source,
-            final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType,
+            final MappingContext context) {
 
         if (source == null) {
             return null;
@@ -86,7 +88,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
     @Override
     public Ssld convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
-            final Type<Ssld> destinationType) {
+            final Type<Ssld> destinationType, final MappingContext context) {
 
         if (source == null) {
             return null;

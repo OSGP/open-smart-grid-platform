@@ -7,17 +7,18 @@
  */
 package com.alliander.osgp.adapter.ws.admin.application.exceptionhandling;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.admin.common.FunctionalFault;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
 
 public class FunctionalExceptionConverter extends CustomConverter<FunctionalException, FunctionalFault> {
 
     @Override
     public FunctionalFault convert(final FunctionalException source,
-            final Type<? extends FunctionalFault> destinationType) {
+            final Type<? extends FunctionalFault> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }

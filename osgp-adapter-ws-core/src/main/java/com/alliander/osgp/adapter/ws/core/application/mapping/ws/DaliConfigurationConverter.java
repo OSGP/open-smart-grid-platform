@@ -10,20 +10,20 @@ package com.alliander.osgp.adapter.ws.core.application.mapping.ws;
 import java.util.HashMap;
 import java.util.Map;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.IndexAddressMap;
 import com.alliander.osgp.domain.core.valueobjects.DaliConfiguration;
 
-public class DaliConfigurationConverter
-        extends
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class DaliConfigurationConverter extends
         BidirectionalConverter<com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.DaliConfiguration, DaliConfiguration> {
 
     @Override
     public DaliConfiguration convertTo(
             final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.DaliConfiguration source,
-            final Type<DaliConfiguration> destinationType) {
+            final Type<DaliConfiguration> destinationType, final MappingContext context) {
 
         if (source == null) {
             return null;
@@ -40,7 +40,8 @@ public class DaliConfigurationConverter
     @Override
     public com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.DaliConfiguration convertFrom(
             final DaliConfiguration source,
-            final Type<com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.DaliConfiguration> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.DaliConfiguration> destinationType,
+            final MappingContext context) {
 
         if (source == null) {
             return null;

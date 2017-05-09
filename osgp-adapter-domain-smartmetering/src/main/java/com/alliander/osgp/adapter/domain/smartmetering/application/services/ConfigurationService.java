@@ -31,6 +31,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
@@ -39,6 +41,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
@@ -598,13 +602,12 @@ public class ConfigurationService {
         final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        final SetClockConfigurationRequestDto setClockConfigurationRequestDto = this.configurationMapper.map(setClockConfigurationRequest,
-                SetClockConfigurationRequestDto.class);
+        final SetClockConfigurationRequestDto setClockConfigurationRequestDto = this.configurationMapper
+                .map(setClockConfigurationRequest, SetClockConfigurationRequestDto.class);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(), smartMeteringDevice.getIpAddress(), setClockConfigurationRequestDto),
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), setClockConfigurationRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -668,4 +671,48 @@ public class ConfigurationService {
         smartMeteringDevice.setFirmware(firmwares.get(0), organisationIdentification);
         this.smartMeterRepository.save(smartMeteringDevice);
     }
+
+    public void getConfigurationObject(final DeviceMessageMetadata deviceMessageMetadata,
+            final GetConfigurationObjectRequest getConfigurationObjectRequest) throws FunctionalException {
+
+        LOGGER.info("getConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
+
+        final GetConfigurationObjectRequestDto getConfigurationObjectRequestDto = this.configurationMapper
+                .map(getConfigurationObjectRequest, GetConfigurationObjectRequestDto.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), getConfigurationObjectRequestDto),
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                deviceMessageMetadata.getScheduleTime());
+    }
+
+    public void handleGetConfigurationObjectResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final GetConfigurationObjectResponseDto resultData) {
+
+        LOGGER.info("handle GetConfigurationObject response for MessageType: {}",
+                deviceMessageMetadata.getMessageType());
+
+        final GetConfigurationObjectResponse response = this.configurationMapper.map(resultData,
+                GetConfigurationObjectResponse.class);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, response, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+    }
+
 }
