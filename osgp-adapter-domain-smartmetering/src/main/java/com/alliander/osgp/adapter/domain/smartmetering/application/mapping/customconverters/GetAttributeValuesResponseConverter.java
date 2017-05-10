@@ -7,19 +7,19 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAttributeValuesResponse;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesResponseDto;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesResponseDto;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 public class GetAttributeValuesResponseConverter
-        extends CustomConverter<GetAttributeValuesResponseDto, GetAttributeValuesResponse> {
+        extends CustomConverter<GetAllAttributeValuesResponseDto, GetAllAttributeValuesResponse> {
 
     @Override
-    public GetAttributeValuesResponse convert(final GetAttributeValuesResponseDto source,
-            final Type<? extends GetAttributeValuesResponse> destinationType) {
-        return new GetAttributeValuesResponse(source.getConfigurationData());
+    public GetAllAttributeValuesResponse convert(final GetAllAttributeValuesResponseDto source,
+            final Type<? extends GetAllAttributeValuesResponse> destinationType) {
+        return new GetAllAttributeValuesResponse(source.getAttributeValuesData());
 
     }
 

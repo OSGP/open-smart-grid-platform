@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 
 public class GetSpecificAttributeValueRequestMappingTest {
@@ -21,19 +21,19 @@ public class GetSpecificAttributeValueRequestMappingTest {
 
     @Test
     public void test() {
-        final SpecificAttributeValueRequest req1 = this.makeRequest();
+        final GetSpecificAttributeValueRequest req1 = this.makeRequest();
         final Object obj1 = this.mapper.map(req1,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest.class);
         assertTrue((obj1 != null)
                 && (obj1 instanceof com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest));
-        final Object obj2 = this.mapper.map(obj1, SpecificAttributeValueRequest.class);
-        assertTrue((obj2 != null) && (obj2 instanceof SpecificAttributeValueRequest));
-        final SpecificAttributeValueRequest req2 = (SpecificAttributeValueRequest) obj2;
+        final Object obj2 = this.mapper.map(obj1, GetSpecificAttributeValueRequest.class);
+        assertTrue((obj2 != null) && (obj2 instanceof GetSpecificAttributeValueRequest));
+        final GetSpecificAttributeValueRequest req2 = (GetSpecificAttributeValueRequest) obj2;
         assertTrue(req1.getDeviceIdentification().equals(req2.getDeviceIdentification()));
     }
 
-    private SpecificAttributeValueRequest makeRequest() {
-        final SpecificAttributeValueRequest result = new SpecificAttributeValueRequest();
+    private GetSpecificAttributeValueRequest makeRequest() {
+        final GetSpecificAttributeValueRequest result = new GetSpecificAttributeValueRequest();
         final ObisCodeValues obiscode = new ObisCodeValues();
         obiscode.setA((short) 1);
         result.setObisCode(obiscode);

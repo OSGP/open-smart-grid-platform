@@ -7,17 +7,17 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public class GetAttributeValuesResponse extends ActionResponse {
+public class GetAllAttributeValuesResponse extends ActionResponse {
 
     private static final long serialVersionUID = 8942300410552414718L;
 
-    private final String attributeValues;
+    private final String attributeValuesData;
 
-    public GetAttributeValuesResponse(final String attributeValues) {
-        this.attributeValues = attributeValues;
+    public GetAllAttributeValuesResponse(final String attributeValuesData) {
+        this.attributeValuesData = attributeValuesData;
     }
 
-    public String getConfigurationData() {
-        return this.attributeValues;
+    public String getAttributeValuesData() {
+        return this.attributeValuesData;
     }
 }
