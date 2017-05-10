@@ -32,6 +32,10 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     // other
     public static final String DEVICE_TYPE = "DeviceType";
     public static final String GAS_DEVICE_IDENTIFICATION = "GasDeviceIdentification";
+
+    /**
+     * Use this device identification key in sending the request to OSGP
+     */
     public static final String GATEWAY_DEVICE_IDENTIFICATION = "GatewayDeviceIdentification";
 
     public static final String GPS_LATITUDE = "GpsLatitude";

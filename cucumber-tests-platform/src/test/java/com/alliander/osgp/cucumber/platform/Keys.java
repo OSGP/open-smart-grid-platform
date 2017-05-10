@@ -244,6 +244,8 @@ public class Keys {
     public static final String SCHEDULE_WEEKDAY = "WeekDay";
     public static final String SEPARATOR_COMMA = ",";
     public static final String SEPARATOR_SEMICOLON = ";";
+    public static final String SEPARATOR_COLON = ":";
+    public static final String SEPARATOR_SPACE_COLON_SPACE = " : ";
     public static final String SHORT_INTERVAL = "ShortInterval";
     public static final String START_TIME = "StartTime";
     public static final String SUPPLIER = "Supplier";
@@ -304,4 +306,7 @@ public class Keys {
     public static final String DATE_NOW = "DateNow";
     public static final String TARIFF_RELAY_TYPE = "TariffRelayType";
     public static final String LIGHT_RELAY_TYPE = "LightRelayType";
+
+    public static final String DATE = "Date";
+    public static final String TIME_UNTIL_ON = "TimeUntilOn";
 }
