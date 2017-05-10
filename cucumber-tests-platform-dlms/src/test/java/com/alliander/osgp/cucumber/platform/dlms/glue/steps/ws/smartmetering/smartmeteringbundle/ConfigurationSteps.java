@@ -21,7 +21,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ConfigurationObject extends SmartMeteringStepsBase {
+public class ConfigurationSteps extends SmartMeteringStepsBase {
 
     private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
     private static final String TEST_CASE_XML_501 = "501 Retrieve specific attribute value bundle";
