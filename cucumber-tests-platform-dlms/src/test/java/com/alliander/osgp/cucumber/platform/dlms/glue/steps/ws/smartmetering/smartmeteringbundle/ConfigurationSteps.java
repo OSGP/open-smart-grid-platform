@@ -30,21 +30,6 @@ public class ConfigurationSteps extends SmartMeteringStepsBase {
     private static final String TEST_CASE_NAME_REQUEST = "Bundle - Request 1";
     private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetBundleResponse - Request 1";
 
-    @When("^a get specific attribute value request received as part of a bundled request$")
-    public void aGetSpecificAttributeValueRequestIsReceivedAsPartOfABundledRequest(final Map<String, String> settings)
-            throws Throwable {
-        this.setDeviceAndOrganisationProperties(settings);
-        PROPERTIES_MAP.put("ObisCodeA", getString(settings, "ObisCodeA", "0"));
-        PROPERTIES_MAP.put("ObisCodeB", getString(settings, "ObisCodeB", "0"));
-        PROPERTIES_MAP.put("ObisCodeC", getString(settings, "ObisCodeC", "0"));
-        PROPERTIES_MAP.put("ObisCodeD", getString(settings, "ObisCodeD", "0"));
-        PROPERTIES_MAP.put("ObisCodeE", getString(settings, "ObisCodeE", "0"));
-        PROPERTIES_MAP.put("ObisCodeF", getString(settings, "ObisCodeF", "0"));
-
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_501,
-                TEST_SUITE_XML);
-    }
-
     @When("^the get associationLnObjects request is received as part of a bundled request$")
     public void theGetAssociationLnObjectsRequestIsReceivedAsPartOfABundledRequest(final Map<String, String> settings)
             throws Throwable {
