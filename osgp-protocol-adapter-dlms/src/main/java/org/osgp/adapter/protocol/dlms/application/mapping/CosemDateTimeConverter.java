@@ -16,6 +16,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
 
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
@@ -24,7 +25,7 @@ public class CosemDateTimeConverter
 
     @Override
     public org.openmuc.jdlms.datatypes.CosemDateTime convertTo(final CosemDateTimeDto source,
-            final Type<org.openmuc.jdlms.datatypes.CosemDateTime> destinationType) {
+            final Type<org.openmuc.jdlms.datatypes.CosemDateTime> destinationType, final MappingContext context) {
 
         final CosemTimeDto time = source.getTime();
         final CosemDateDto date = source.getDate();
@@ -38,7 +39,7 @@ public class CosemDateTimeConverter
 
     @Override
     public CosemDateTimeDto convertFrom(final org.openmuc.jdlms.datatypes.CosemDateTime source,
-            final Type<CosemDateTimeDto> destinationType) {
+            final Type<CosemDateTimeDto> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }

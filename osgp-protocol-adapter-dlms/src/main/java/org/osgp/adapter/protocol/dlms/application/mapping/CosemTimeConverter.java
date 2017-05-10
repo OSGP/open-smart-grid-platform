@@ -7,18 +7,19 @@
  */
 package org.osgp.adapter.protocol.dlms.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.openmuc.jdlms.datatypes.CosemDateFormat;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
+
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class CosemTimeConverter extends BidirectionalConverter<CosemTimeDto, org.openmuc.jdlms.datatypes.CosemTime> {
 
     @Override
     public org.openmuc.jdlms.datatypes.CosemTime convertTo(final CosemTimeDto source,
-            final Type<org.openmuc.jdlms.datatypes.CosemTime> destinationType) {
+            final Type<org.openmuc.jdlms.datatypes.CosemTime> destinationType, final MappingContext context) {
 
         return new org.openmuc.jdlms.datatypes.CosemTime(source.getHour(), source.getMinute(), source.getSecond(),
                 source.getHundredths());
@@ -26,7 +27,7 @@ public class CosemTimeConverter extends BidirectionalConverter<CosemTimeDto, org
 
     @Override
     public CosemTimeDto convertFrom(final org.openmuc.jdlms.datatypes.CosemTime source,
-            final Type<CosemTimeDto> destinationType) {
+            final Type<CosemTimeDto> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }

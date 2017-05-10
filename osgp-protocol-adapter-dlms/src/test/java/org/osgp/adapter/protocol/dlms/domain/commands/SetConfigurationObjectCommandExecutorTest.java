@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -50,8 +49,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDt
 @RunWith(MockitoJUnitRunner.class)
 public class SetConfigurationObjectCommandExecutorTest {
 
-    private static final String CURRENT_CONFIGURATION_OBJECT_BITSTRING_ALL_ENABLED = "ffc0";
-
     private static final String DEVICE_IDENTIFICATION = "E9998000012345678";
 
     private static final int CLASS_ID = 1;
@@ -69,6 +66,16 @@ public class SetConfigurationObjectCommandExecutorTest {
         FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE);
     }
 
+    private static final List<ConfigurationFlagDto> FLAGS_ENABLED = new ArrayList<>();
+    static {
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.PO_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_3_ON_P_3_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_4_ON_P_3_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_P_3_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_3_ON_PO_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_4_ON_PO_ENABLE, true));
+        FLAGS_ENABLED.add(new ConfigurationFlagDto(ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE, true));
+    }
     @Mock
     private DlmsConnectionHolder connectionHolderMock;
 
@@ -100,7 +107,10 @@ public class SetConfigurationObjectCommandExecutorTest {
     private BitString flagStringMock;
 
     @Mock
-    private DlmsHelperService dlmsHelperService;
+    private DlmsHelperService dlmsHelperService = new DlmsHelperService();
+
+    @Mock
+    private GetConfigurationObjectHelper getConfigurationObjectHelper;
 
     @Spy
     private ConfigurationObjectHelperService configurationObjectHelperService = new ConfigurationObjectHelperService();
@@ -109,9 +119,11 @@ public class SetConfigurationObjectCommandExecutorTest {
     private SetConfigurationObjectCommandExecutor executor;
 
     /*
-     * This test was refactored because in the new jdlms-1.0.0.jar, the interface to DlmsConnection (was ClientConnection) was changed significantly.
-     * As a result, in this test the ArgumentCapture could not be used anymore, hence this test is not completely identical with the orginal version.
-     * A mockito expert may try to fix this.
+     * This test was refactored because in the new jdlms-1.0.0.jar, the
+     * interface to DlmsConnection (was ClientConnection) was changed
+     * significantly. As a result, in this test the ArgumentCapture could not be
+     * used anymore, hence this test is not completely identical with the
+     * orginal version. A mockito expert may try to fix this.
      */
     @Test
     public void testForbiddenFlagsAreNotSet()
@@ -123,15 +135,18 @@ public class SetConfigurationObjectCommandExecutorTest {
         final ConfigurationObjectDto configurationObject = new ConfigurationObjectDto(
                 GprsOperationModeTypeDto.ALWAYS_ON, configurationFlags);
 
-        // Mock the retrieval of the current ConfigurationObject
-        this.mockRetrievalOfCurrentConfigurationObject();
+        final ConfigurationFlagsDto configurationFlagsonDevice = new ConfigurationFlagsDto(FLAGS_ENABLED);
+        final ConfigurationObjectDto configurationObjectOnDevice = new ConfigurationObjectDto(
+                GprsOperationModeTypeDto.ALWAYS_ON, configurationFlagsonDevice);
 
-        final List<AccessResultCode> accessResultCodeList =  new ArrayList<>();
+        final List<AccessResultCode> accessResultCodeList = new ArrayList<>();
         accessResultCodeList.add(AccessResultCode.SUCCESS);
         when(this.connMock.set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(accessResultCodeList);
 
         when(this.connectionHolderMock.getConnection()).thenReturn(this.connMock);
         when(this.connectionHolderMock.getDlmsMessageListener()).thenReturn(this.listenerMock);
+        when(this.getConfigurationObjectHelper.getConfigurationObjectDto(this.connectionHolderMock))
+                .thenReturn(configurationObjectOnDevice);
 
         final DlmsDevice device = this.getDlmsDevice();
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -139,7 +154,7 @@ public class SetConfigurationObjectCommandExecutorTest {
         // Run test
         this.executor.execute(this.connectionHolderMock, device, configurationObject);
 
-        final DataObject obj1 = DataObject.newInteger16Data((short)10);
+        final DataObject obj1 = DataObject.newInteger16Data((short) 10);
         final DataObject obj2 = DataObject.newBoolData(true);
         final List<DataObject> dataobjects = new ArrayList<>();
         dataobjects.add(obj1);
@@ -164,23 +179,6 @@ public class SetConfigurationObjectCommandExecutorTest {
         assertEquals("[LONG_INTEGER Value: 10, BOOL Value: true]", capturedDataObject.getRawValue().toString());
     }
 
-    private void mockRetrievalOfCurrentConfigurationObject() throws IOException, TimeoutException, DecoderException {
-        when(this.connMock.get(eq(false), Matchers.anyListOf(AttributeAddress.class))).thenReturn(this.getResultListMock);
-        when(this.connMock.get(eq(false), Matchers.any(AttributeAddress.class))).thenReturn(this.getResultMock);
-        when(this.connMock.get(eq(Matchers.anyListOf(AttributeAddress.class)))).thenReturn(this.getResultListMock);
-        when(this.connMock.get(eq(Matchers.any(AttributeAddress.class)))).thenReturn(this.getResultMock);
-
-        when(this.getResultMock.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
-        when(this.getResultMock.getResultData()).thenReturn(this.resultDataObjectMock);
-        when(this.resultDataObjectMock.getValue()).thenReturn(this.linkedListMock);
-        when(this.linkedListMock.get(0)).thenReturn(this.gprsOperationModeDataMock);
-        when(this.linkedListMock.get(1)).thenReturn(this.flagsDataMock);
-        when(this.gprsOperationModeDataMock.getValue()).thenReturn(1);
-        when(this.flagsDataMock.getValue()).thenReturn(this.flagStringMock);
-        final byte[] flagByteArray = Hex.decodeHex(CURRENT_CONFIGURATION_OBJECT_BITSTRING_ALL_ENABLED.toCharArray());
-        when(this.flagStringMock.getBitString()).thenReturn(flagByteArray);
-    }
-
     private DlmsDevice getDlmsDevice() {
         final DlmsDevice device = new DlmsDevice(DEVICE_IDENTIFICATION);
         return device;
@@ -193,6 +191,5 @@ public class SetConfigurationObjectCommandExecutorTest {
             listOfConfigurationFlags.add(new ConfigurationFlagDto(confFlagType, false));
         }
         return listOfConfigurationFlags;
-
     }
 }

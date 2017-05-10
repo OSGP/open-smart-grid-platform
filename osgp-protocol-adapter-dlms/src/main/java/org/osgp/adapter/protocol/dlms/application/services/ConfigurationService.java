@@ -12,6 +12,7 @@ import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
@@ -41,6 +42,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
@@ -99,6 +101,9 @@ public class ConfigurationService {
 
     @Autowired
     private SetClockConfigurationCommandExecutor setClockConfigurationCommandExecutor;
+
+    @Autowired
+    private GetConfigurationObjectCommandExecutor getConfigurationObjectCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -285,6 +290,13 @@ public class ConfigurationService {
         LOGGER.info("Updating firmware of device {} to firmware with identifier {}", device, firmwareIdentifier);
 
         return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentifier);
+    }
+
+    public GetConfigurationObjectResponseDto requestGetConfigurationObject(final DlmsConnectionHolder conn,
+            final DlmsDevice device) throws ProtocolAdapterException {
+
+        return new GetConfigurationObjectResponseDto(
+                this.getConfigurationObjectCommandExecutor.execute(conn, device, null));
     }
 
 }

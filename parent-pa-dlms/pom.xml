@@ -4,7 +4,7 @@
 
   <artifactId>parent-pa-dlms</artifactId>
   <groupId>org.osgp</groupId>
-  <version>4.11.0-SNAPSHOT</version>
+  <version>4.12.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-pa-dlms</name>
   <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin 
@@ -47,10 +47,10 @@
 
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.11.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>4.11.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>4.11.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>4.11.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>4.12.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>4.12.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>4.12.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>4.12.0-SNAPSHOT</osgp.jasper-interface.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.5.RELEASE</spring.version>
@@ -70,7 +70,7 @@
     <flyway.version>4.1.2</flyway.version>
     <slf4j.version>1.7.7</slf4j.version>
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
-    <orika.version>1.4.6</orika.version>
+    <orika.version>1.5.1</orika.version>
     <jxr.version>2.5</jxr.version>
     <maven.project.info.reports.plugin.version>2.8</maven.project.info.reports.plugin.version>
     <apache.activemq.version>5.10.0</apache.activemq.version>
@@ -115,6 +115,13 @@
         <groupId>org.openmuc</groupId>
         <artifactId>jdlms</artifactId>
         <version>${openmuc.jdlms.version}</version>
+	<exclusions>
+          <exclusion>
+            <!-- Exclude to ensure compatibility with (older) 1.51 users-->
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- OSGP -->
