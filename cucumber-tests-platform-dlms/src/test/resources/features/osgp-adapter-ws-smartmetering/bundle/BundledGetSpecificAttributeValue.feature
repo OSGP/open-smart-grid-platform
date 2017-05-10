@@ -1,4 +1,4 @@
-@TestThis @SmartMetering @Platform
+@SmartMetering @Platform
 Feature: SmartMetering - Bundle - GetSpecificAttributeValueAction
   As a grid operator 
   I want to retrieve a specific attribute value from a meter

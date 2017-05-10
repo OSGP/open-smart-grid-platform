@@ -1,4 +1,4 @@
-@TestThis @SmartMetering @Platform
+@SmartMetering @Platform
 Feature: SmartMetering - Adhoc - GetAllAttributeValues
   As a grid operator 
   I want to get all attribute values from a meter

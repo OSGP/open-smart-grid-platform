@@ -1,4 +1,4 @@
-@TestThis @SmartMetering @Platform
+@SmartMetering @Platform
 Feature: SmartMetering - Adhoc - GetSpecificAttributeValue
   As a grid operator 
   I want to retrieve a specific attribute value from a meter
@@ -20,4 +20,3 @@ Feature: SmartMetering - Adhoc - GetSpecificAttributeValue
     When the get specific attribute value request is received
     Then a get specific attribute value response should be returned
       | Result | OK |
-#      | ResponsePart | bytes[100, 101, 118, 105, 99, 101, 32, 110, 97, 109, 101] |

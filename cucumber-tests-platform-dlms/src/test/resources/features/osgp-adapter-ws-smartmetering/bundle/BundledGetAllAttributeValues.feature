@@ -1,4 +1,3 @@
-@TestThis
 @SmartMetering @Platform
 Feature: SmartMetering - Bundle - GetAllAttributeValuesAction
   As a grid operator 
