@@ -2,7 +2,7 @@ DO
 $$
 BEGIN
 
-IF NOT EXISTS (SELECT 1 FROM domain_info WHERE "domain" = 'DISTRIBUTION_AUTOMATION') THEN
+IF NOT EXISTS (SELECT 1 FROM domain_info WHERE "domain" = 'DISTRIBUTION_AUTOMATION' AND "domain_version" = '1.0') THEN
   -- Adds the incoming and outgoing queues for the Distribution Automation queues
   INSERT INTO domain_info(creation_time, modification_time, version, domain,
    domain_version, incoming_domain_requests_queue, outgoing_domain_responses_queue,
