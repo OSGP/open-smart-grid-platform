@@ -65,8 +65,6 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
     @Override
     public ActionResponseDto asBundleResponse(final String executionResult) throws ProtocolAdapterException {
         return new ActionResponseDto(executionResult);
-        //
-        // return new GetAllAttributeValuesResponseDto(executionResult);
     }
 
     @Override
