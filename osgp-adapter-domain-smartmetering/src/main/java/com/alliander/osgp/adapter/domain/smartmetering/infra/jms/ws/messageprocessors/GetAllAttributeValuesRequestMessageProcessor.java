@@ -20,13 +20,13 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component
-public class RetrieveAllAttributeValuesRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class GetAllAttributeValuesRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    protected RetrieveAllAttributeValuesRequestMessageProcessor() {
+    protected GetAllAttributeValuesRequestMessageProcessor() {
         super(DeviceFunction.GET_ALL_ATTRIBUTE_VALUES);
     }
 
@@ -36,7 +36,7 @@ public class RetrieveAllAttributeValuesRequestMessageProcessor extends WebServic
 
         final GetAllAttributeValuesRequest request = (GetAllAttributeValuesRequest) dataObject;
 
-        this.adhocService.retrieveAllAttributeValues(deviceMessageMetadata, request);
+        this.adhocService.getAllAttributeValues(deviceMessageMetadata, request);
     }
 
 }
