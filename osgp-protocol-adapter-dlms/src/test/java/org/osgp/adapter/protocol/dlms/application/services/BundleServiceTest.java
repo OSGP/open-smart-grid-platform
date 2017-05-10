@@ -92,8 +92,8 @@ public class BundleServiceTest {
         final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
 
         // Set the point where to throw the ConnectionException
-        this.getStub(FindEventsRequestDto.class).failWithRuntimeException(
-                new ConnectionException("Connection Exception thrown!"));
+        this.getStub(FindEventsRequestDto.class)
+                .failWithRuntimeException(new ConnectionException("Connection Exception thrown!"));
 
         try {
             // Execute all the actions
@@ -215,7 +215,7 @@ public class BundleServiceTest {
         actions.add(new ActionDto(this.builder.makeSetPushSetupAlarmRequestDataDto()));
         actions.add(new ActionDto(this.builder.makeSetPushSetupSmsRequestDataDto()));
         actions.add(new ActionDto(this.builder.makeSynchronizeTimeRequestDataDto()));
-        actions.add(new ActionDto(this.builder.makeGetConfigurationRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeGetAllAttributeValuesRequestDto()));
         actions.add(new ActionDto(this.builder.makeGetFirmwareVersionRequestDataDto()));
         return actions;
     }
