@@ -47,7 +47,7 @@
     </wsdl:part>
   </wsdl:message>
 
-  <!-- RETRIEVE CONFIGURATION OBJECTS -->
+  <!-- RETRIEVE ATTRIBUTE VALUES -->
   <wsdl:message name="SpecificAttributeValueRequest">
     <wsdl:part element="smadhoc:SpecificAttributeValueRequest"
       name="SpecificAttributeValueRequest">
