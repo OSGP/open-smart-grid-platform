@@ -70,8 +70,9 @@ public class GetSpecificAttributeValueSteps {
         final GetSpecificAttributeValueResponse response = this.client
                 .retrieveGetSpecificAttributeValueResponse(asyncRequest);
 
-        // TODO: Use expected result from settings
-        assertEquals("Result is not as expected {},{}", settings.get(Keys.RESULT), response.getResult().name());
-        assertTrue("Result contains no data", StringUtils.isNotBlank(response.getAttributeValueData()));
+        assertEquals("Result is not as expected.", settings.get(Keys.RESULT), response.getResult().name());
+        assertTrue("Result contains no data.", StringUtils.isNotBlank(response.getAttributeValueData()));
+        assertTrue("Result data is not as expected",
+                response.getAttributeValueData().contains(settings.get(Keys.RESPONSE_PART)));
     }
 }

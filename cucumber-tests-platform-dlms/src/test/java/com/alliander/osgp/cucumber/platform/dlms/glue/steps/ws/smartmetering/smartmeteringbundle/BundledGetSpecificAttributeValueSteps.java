@@ -39,5 +39,7 @@ public class BundledGetSpecificAttributeValueSteps extends BaseBundleSteps {
 
         assertEquals("Result is not as expected.", settings.get(Keys.RESULT), response.getResult().name());
         assertTrue("Result contains no data.", StringUtils.isNotBlank(response.getResultString()));
+        assertTrue("Result data is not as expected",
+                response.getResultString().contains(settings.get(Keys.RESPONSE_PART)));
     }
 }
