@@ -12,7 +12,7 @@ import java.io.Serializable;
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificAttributeValueCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveAllAttributeValuesCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetAllAttributeValuesCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -31,7 +31,7 @@ public class AdhocService {
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
     @Autowired
-    private RetrieveAllAttributeValuesCommandExecutor retrieveAllAttributeValuesCommandExecutor;
+    private GetAllAttributeValuesCommandExecutor retrieveAllAttributeValuesCommandExecutor;
 
     @Autowired
     private GetSpecificAttributeValueCommandExecutor getSpecificAttributeValueCommandExecutor;

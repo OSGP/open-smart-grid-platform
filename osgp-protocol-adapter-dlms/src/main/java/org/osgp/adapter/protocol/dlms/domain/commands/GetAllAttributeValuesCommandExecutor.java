@@ -27,11 +27,10 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
 
 @Component
-public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
+public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
 
     private static final int OBIS_CODE_BYTE_ARRAY_LENGTH = 6;
     /* 0 is the index of the class number */
@@ -47,25 +46,27 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
     @Autowired
     private DlmsHelperService dlmsHelper;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveAllAttributeValuesCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetAllAttributeValuesCommandExecutor.class);
 
-    public RetrieveAllAttributeValuesCommandExecutor() {
-        super(GetAttributeValuesRequestDto.class);
+    public GetAllAttributeValuesCommandExecutor() {
+        super(GetAllAttributeValuesRequestDto.class);
     }
 
     @Override
     public DataObject fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
         /*
          * GetAllAttributeValuesRequestDto does not contain any values to pass
-         * on, and the RetrieveAllAttributeValuesCommandExecutor takes a
-         * DataObject as input that is ignored.
+         * on, and the GetAllAttributeValuesCommandExecutor takes a DataObject
+         * as input that is ignored.
          */
         return null;
     }
 
     @Override
     public ActionResponseDto asBundleResponse(final String executionResult) throws ProtocolAdapterException {
-        return new GetAttributeValuesResponseDto(executionResult);
+        return new ActionResponseDto(executionResult);
+        //
+        // return new GetAllAttributeValuesResponseDto(executionResult);
     }
 
     @Override
@@ -139,7 +140,7 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
 
     private String getAllDataFromAttribute(final DlmsConnectionHolder conn, final int classNumber,
             final DataObject obisCode, final int attributeValue)
-                    throws ProtocolAdapterException, IOException, TimeoutException {
+            throws ProtocolAdapterException, IOException, TimeoutException {
 
         if (!obisCode.isByteArray()) {
             this.throwUnexpectedTypeProtocolAdapterException();
@@ -170,9 +171,9 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
 
         for (final DataObject objectListElement : objectListElements) {
             final List<DataObject> objectListElementValues = objectListElement.getValue();
-            final ClassIdObisAttr classIdObisAttr = new ClassIdObisAttr(this.getClassId(objectListElementValues
-                    .get(CLASS_ID_INDEX)), objectListElementValues.get(OBIS_CODE_INDEX),
-                    this.getNoOffAttributes(objectListElementValues));
+            final ClassIdObisAttr classIdObisAttr = new ClassIdObisAttr(
+                    this.getClassId(objectListElementValues.get(CLASS_ID_INDEX)),
+                    objectListElementValues.get(OBIS_CODE_INDEX), this.getNoOffAttributes(objectListElementValues));
 
             allObisCodes.add(classIdObisAttr);
         }
