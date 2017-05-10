@@ -31,7 +31,7 @@ public class AdhocService {
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
     @Autowired
-    private GetAllAttributeValuesCommandExecutor retrieveAllAttributeValuesCommandExecutor;
+    private GetAllAttributeValuesCommandExecutor getAllAttributeValuesCommandExecutor;
 
     @Autowired
     private GetSpecificAttributeValueCommandExecutor getSpecificAttributeValueCommandExecutor;
@@ -51,10 +51,10 @@ public class AdhocService {
         }
     }
 
-    public String retrieveAllAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device)
+    public String getAllAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device)
             throws ProtocolAdapterException {
 
-        return this.retrieveAllAttributeValuesCommandExecutor.execute(conn, device, null);
+        return this.getAllAttributeValuesCommandExecutor.execute(conn, device, null);
     }
 
     public AssociationLnListTypeDto getAssociationLnObjects(final DlmsConnectionHolder conn, final DlmsDevice device)
