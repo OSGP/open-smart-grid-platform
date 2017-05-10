@@ -10,9 +10,10 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 
 public class ReadAlarmRegisterRequest implements Serializable {
+
     private static final long serialVersionUID = -5249256148066126239L;
 
-    private String deviceIdentification;
+    private final String deviceIdentification;
 
     public ReadAlarmRegisterRequest(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
@@ -21,5 +22,4 @@ public class ReadAlarmRegisterRequest implements Serializable {
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
-
 }

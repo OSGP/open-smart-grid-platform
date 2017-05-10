@@ -11,10 +11,11 @@ import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntryValue;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
 
 public class ProfileEntryValueConverter extends
         CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue, ProfileEntryValue> {
@@ -22,11 +23,11 @@ public class ProfileEntryValueConverter extends
     @Override
     public ProfileEntryValue convert(
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue source,
-            final Type<? extends ProfileEntryValue> destinationType) {
+            final Type<? extends ProfileEntryValue> destinationType, final MappingContext context) {
         final ProfileEntryValue result = new ProfileEntryValue();
         if (source.getValue() instanceof Date) {
-            final XMLGregorianCalendar xmlGregCal = this.mapperFacade
-                    .map(source.getValue(), XMLGregorianCalendar.class);
+            final XMLGregorianCalendar xmlGregCal = this.mapperFacade.map(source.getValue(),
+                    XMLGregorianCalendar.class);
             result.getStringValueOrDateValueOrFloatValue().add(xmlGregCal);
         } else {
             result.getStringValueOrDateValueOrFloatValue().add(source.getValue());

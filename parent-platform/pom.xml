@@ -8,7 +8,7 @@
 
   <artifactId>parent-platform</artifactId>
   <groupId>com.alliander.osgp</groupId>
-  <version>4.11.0-SNAPSHOT</version>
+  <version>4.12.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-platform</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -52,7 +52,7 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <shared.version>4.11.0-SNAPSHOT</shared.version>
+    <shared.version>4.12.0-SNAPSHOT</shared.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.5.RELEASE</spring.version>
@@ -71,7 +71,7 @@
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.5</apache.httpcomponents.version>
     <commons.codec.version>1.9</commons.codec.version>
-    <orika.version>1.4.6</orika.version>
+    <orika.version>1.5.1</orika.version>
     <jxr.version>2.5</jxr.version>
     <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
     <apache.activemq.version>5.10.0</apache.activemq.version>
@@ -143,6 +143,11 @@
         <artifactId>osgp-ws-microgrids</artifactId>
         <version>${shared.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.osgpfoundation.osgp</groupId>
+        <artifactId>osgp-ws-distributionautomation</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
@@ -165,6 +170,11 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgpfoundation.osgp</groupId>
+        <artifactId>osgp-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
@@ -191,6 +201,12 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.osgpfoundation.osgp</groupId>
+        <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
@@ -230,6 +246,12 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.osgpfoundation.osgp</groupId>
+        <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>

@@ -14,13 +14,15 @@ import com.alliander.osgp.domain.microgrids.valueobjects.SystemFilter;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 public class GetDataRequestConverter extends BidirectionalConverter<GetDataRequest, GetDataRequestDto> {
 
     @Override
-    public GetDataRequestDto convertTo(final GetDataRequest source, final Type<GetDataRequestDto> destinationType) {
+    public GetDataRequestDto convertTo(final GetDataRequest source, final Type<GetDataRequestDto> destinationType,
+            final MappingContext context) {
         final List<SystemFilterDto> systemFilters = this.mapperFacade.mapAsList(source.getSystemFilters(),
                 SystemFilterDto.class);
 
@@ -28,7 +30,8 @@ public class GetDataRequestConverter extends BidirectionalConverter<GetDataReque
     }
 
     @Override
-    public GetDataRequest convertFrom(final GetDataRequestDto source, final Type<GetDataRequest> destinationType) {
+    public GetDataRequest convertFrom(final GetDataRequestDto source, final Type<GetDataRequest> destinationType,
+            final MappingContext context) {
         final List<SystemFilter> systemFilters = this.mapperFacade.mapAsList(source.getSystemFilters(),
                 SystemFilter.class);
 

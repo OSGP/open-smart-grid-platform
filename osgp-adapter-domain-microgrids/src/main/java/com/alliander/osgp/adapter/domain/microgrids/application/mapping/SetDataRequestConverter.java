@@ -14,13 +14,15 @@ import com.alliander.osgp.domain.microgrids.valueobjects.SetDataSystemIdentifier
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataSystemIdentifierDto;
 
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 public class SetDataRequestConverter extends BidirectionalConverter<SetDataRequest, SetDataRequestDto> {
 
     @Override
-    public SetDataRequestDto convertTo(final SetDataRequest source, final Type<SetDataRequestDto> destinationType) {
+    public SetDataRequestDto convertTo(final SetDataRequest source, final Type<SetDataRequestDto> destinationType,
+            final MappingContext context) {
         final List<SetDataSystemIdentifierDto> setDataSystemIdentifiers = this.mapperFacade
                 .mapAsList(source.getSetDataSystemIdentifiers(), SetDataSystemIdentifierDto.class);
 
@@ -28,7 +30,8 @@ public class SetDataRequestConverter extends BidirectionalConverter<SetDataReque
     }
 
     @Override
-    public SetDataRequest convertFrom(final SetDataRequestDto source, final Type<SetDataRequest> destinationType) {
+    public SetDataRequest convertFrom(final SetDataRequestDto source, final Type<SetDataRequest> destinationType,
+            final MappingContext context) {
         final List<SetDataSystemIdentifier> setDataSystemIdentifiers = this.mapperFacade
                 .mapAsList(source.getSetDataSystemIdentifiers(), SetDataSystemIdentifier.class);
 

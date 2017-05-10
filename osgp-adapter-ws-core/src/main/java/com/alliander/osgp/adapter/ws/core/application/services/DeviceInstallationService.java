@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateMidnight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,56 +100,47 @@ public class DeviceInstallationService {
     }
 
     @Transactional(value = "writableTransactionManager")
-    public void addDevice(@Identification final String organisationIdentification, @Valid final Device newDevice)
-            throws FunctionalException {
+    public void addDevice(@Identification final String organisationIdentification, @Valid final Device newDevice,
+            @Identification final String ownerOrganisationIdentification) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
+        // If the device already exists, throw an exception.
         final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(newDevice
                 .getDeviceIdentification());
+        if (existingDevice != null) {
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
+                    new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
+        }
 
-        if (existingDevice == null) {
-            final Ssld ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(),
-                    newDevice.getContainerCity(), newDevice.getContainerPostalCode(), newDevice.getContainerStreet(),
-                    newDevice.getContainerNumber(), newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(),
-                    newDevice.getGpsLongitude());
-            ssld.setHasSchedule(false);
-            ssld.setDeviceModel(newDevice.getDeviceModel());
-            // device not created yet, add new device
-            final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+        // Create a new SSLD instance.
+        final Ssld ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(),
+                newDevice.getContainerCity(), newDevice.getContainerPostalCode(), newDevice.getContainerStreet(),
+                newDevice.getContainerNumber(), newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(),
+                newDevice.getGpsLongitude());
+        ssld.setHasSchedule(false);
+        ssld.setDeviceModel(newDevice.getDeviceModel());
 
+        // If the device doesn't exists yet, and the optional
+        // ownerOrganisationIdentification is given, create the device and
+        // owner device authorization.
+        if (StringUtils.isNotEmpty(ownerOrganisationIdentification)) {
+            final Organisation ownerOrganisation = this.domainHelperService
+                    .findOrganisation(ownerOrganisationIdentification);
+            final DeviceAuthorization authorization = ssld.addAuthorization(ownerOrganisation,
+                    DeviceFunctionGroup.OWNER);
             // Since the column device in device authorizations is cascaded,
-            // this will also save the SSLD and device entities.
+            // this will also save the SSLD and Device entities.
             this.writableAuthorizationRepository.save(authorization);
-
             LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(),
-                    organisation.getOrganisationIdentification());
+                    ownerOrganisationIdentification);
         } else {
-            final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
-                    existingDevice, DeviceFunctionGroup.OWNER);
-            if (!owners.isEmpty()) {
-                // device is already registered to a different owner
-                throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
-                        new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
-            }
-
-            final Ssld ssld = this.writableSsldRepository.findByDeviceIdentification(existingDevice
-                    .getDeviceIdentification());
-
-            // device is orphan, register for current owner
-            final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
-            // add metadata to the device
-            ssld.updateMetaData(null, newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
-                    newDevice.getContainerStreet(), newDevice.getContainerNumber(), null, newDevice.getGpsLatitude(),
-                    newDevice.getGpsLongitude());
-
-            // Since the column device in device authorizations is cascaded,
-            // this will also save the SSLD and device entities.
-            this.writableAuthorizationRepository.save(authorization);
-
-            LOGGER.info("Registered orphan device {} to owner {}", newDevice.getDeviceIdentification(),
-                    organisation.getOrganisationIdentification());
+            // If the device doesn't exists yet, and the optional
+            // ownerOrganisationIdentification is not given, create device
+            // without owner device authorization.
+            this.writableSsldRepository.save(ssld);
+            LOGGER.info("Created new device {} without owner", newDevice.getDeviceIdentification());
         }
     }
 
@@ -293,5 +285,4 @@ public class DeviceInstallationService {
 
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
-
 }

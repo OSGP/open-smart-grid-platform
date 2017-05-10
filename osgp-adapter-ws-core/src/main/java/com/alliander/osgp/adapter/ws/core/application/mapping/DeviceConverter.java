@@ -9,10 +9,11 @@ package com.alliander.osgp.adapter.ws.core.application.mapping;
 
 import java.util.Objects;
 
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
+
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-
-import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
 
 class DeviceConverter extends BidirectionalConverter<com.alliander.osgp.domain.core.entities.Device, Device> {
 
@@ -22,14 +23,15 @@ class DeviceConverter extends BidirectionalConverter<com.alliander.osgp.domain.c
     @Override
     public com.alliander.osgp.domain.core.entities.Device convertFrom(
             final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
-            final Type<com.alliander.osgp.domain.core.entities.Device> destinationType) {
+            final Type<com.alliander.osgp.domain.core.entities.Device> destinationType, final MappingContext context) {
         return this.helper.initEntity(source);
     }
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertTo(
             final com.alliander.osgp.domain.core.entities.Device source,
-            final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType,
+            final MappingContext context) {
         return this.helper.initJaxb(source);
     }
 

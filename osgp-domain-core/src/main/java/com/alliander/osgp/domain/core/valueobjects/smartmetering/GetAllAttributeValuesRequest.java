@@ -17,12 +17,10 @@ public class GetAllAttributeValuesRequest implements Serializable {
     private final String deviceIdentification;
 
     public GetAllAttributeValuesRequest(final String deviceIdentification) {
-        super();
         this.deviceIdentification = deviceIdentification;
     }
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
-
 }

@@ -11,6 +11,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttribute
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesResponseDto;
 
 import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
 public class GetAttributeValuesResponseConverter
@@ -18,7 +19,7 @@ public class GetAttributeValuesResponseConverter
 
     @Override
     public GetAllAttributeValuesResponse convert(final GetAllAttributeValuesResponseDto source,
-            final Type<? extends GetAllAttributeValuesResponse> destinationType) {
+            final Type<? extends GetAllAttributeValuesResponse> destinationType, final MappingContext context) {
         return new GetAllAttributeValuesResponse(source.getAttributeValuesData());
 
     }

@@ -9,9 +9,6 @@ package com.alliander.osgp.adapter.domain.publiclighting.application.mapping;
 
 import java.util.List;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.joda.time.DateTime;
 
 import com.alliander.osgp.domain.core.valueobjects.MeterType;
@@ -20,12 +17,16 @@ import com.alliander.osgp.domain.core.valueobjects.PsldData;
 import com.alliander.osgp.domain.core.valueobjects.RelayData;
 import com.alliander.osgp.domain.core.valueobjects.SsldData;
 
-public class PowerUsageDataConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.PowerUsageDataDto, PowerUsageData> {
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+public class PowerUsageDataConverter
+        extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.PowerUsageDataDto, PowerUsageData> {
 
     @Override
     public PowerUsageData convertTo(final com.alliander.osgp.dto.valueobjects.PowerUsageDataDto source,
-            final Type<PowerUsageData> destinationType) {
+            final Type<PowerUsageData> destinationType, final MappingContext context) {
 
         // Check the input parameter.
         if (source == null) {
@@ -84,7 +85,8 @@ public class PowerUsageDataConverter extends
 
     @Override
     public com.alliander.osgp.dto.valueobjects.PowerUsageDataDto convertFrom(final PowerUsageData source,
-            final Type<com.alliander.osgp.dto.valueobjects.PowerUsageDataDto> destinationType) {
+            final Type<com.alliander.osgp.dto.valueobjects.PowerUsageDataDto> destinationType,
+            final MappingContext context) {
 
         // Check the input parameter.
         if (source == null) {
