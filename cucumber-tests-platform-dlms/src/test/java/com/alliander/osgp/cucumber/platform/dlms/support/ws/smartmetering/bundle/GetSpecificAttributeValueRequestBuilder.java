@@ -1,22 +1,20 @@
-package com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.adhoc;
+package com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.bundle;
 
 import java.math.BigInteger;
 import java.util.Map;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.cucumber.platform.dlms.Keys;
 
-public class SpecificAttributeValueRequestBuilder {
+public class GetSpecificAttributeValueRequestBuilder {
 
-    private String deviceIdentification;
     private BigInteger classId;
     private ObisCodeValues obisCode;
     private BigInteger attribute;
 
-    public SpecificAttributeValueRequestBuilder fromParameterMap(final Map<String, String> parameters) {
+    public GetSpecificAttributeValueRequestBuilder fromParameterMap(final Map<String, String> parameters) {
 
-        this.deviceIdentification = parameters.get(Keys.DEVICE_IDENTIFICATION);
         this.classId = new BigInteger(parameters.get(Keys.CLASS_ID));
         this.obisCode = new ObisCodeValues();
         this.obisCode.setA(Short.parseShort(parameters.get(Keys.OBIS_CODE_A)));
@@ -29,9 +27,8 @@ public class SpecificAttributeValueRequestBuilder {
         return this;
     }
 
-    public SpecificAttributeValueRequest build() {
-        final SpecificAttributeValueRequest request = new SpecificAttributeValueRequest();
-        request.setDeviceIdentification(this.deviceIdentification);
+    public GetSpecificAttributeValueRequest build() {
+        final GetSpecificAttributeValueRequest request = new GetSpecificAttributeValueRequest();
         request.setClassId(this.classId);
         request.setObisCode(this.obisCode);
         request.setAttribute(this.attribute);

@@ -7,49 +7,71 @@
  */
 package com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.smartmeteringadhoc;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueResponse;
+import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.dlms.Keys;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.adhoc.GetSpecificAttributeValueRequestBuilder;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.adhoc.SmartMeteringAdHocClient;
+
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetSpecificAttributeValueSteps extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT_CONFIGURATION_DATA = "/Envelope/Body/SpecificAttributeValueResponse/ConfigurationData/text()";
+public class GetSpecificAttributeValueSteps {
 
-    private static final String XPATH_MATCHER_RESULT_CONFIGURATION_DATA = "DataObject: Choice=\\w[A-Z]+, ResultData \\w+, value=";
+    private static final String REQUEST = "REQUEST";
+    private static final String ASYNC_RESPONSE = "ASYNC_RESPONSE";
 
-    private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
-    private static final String TEST_CASE_XML = "534 Retrieve specific attribute value";
-    private static final String TEST_CASE_NAME_REQUEST = "GetSpecificAttributeValue - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetSpecificAttributeValueResponse - Request 1";
+    @Autowired
+    private SmartMeteringAdHocClient client;
 
-    @When("^receiving a get specific attribute value request$")
-    public void receivingAGetSpecificAttributeValueRequest(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    @Given("^a get specific attribute value request$")
+    public void givenAGetSpecificAttributeValueRequest(final Map<String, String> settings) throws Throwable {
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final GetSpecificAttributeValueRequest request = new GetSpecificAttributeValueRequestBuilder()
+                .fromParameterMap(settings).build();
+
+        ScenarioContext.Current().put(REQUEST, request);
     }
 
-    @Then("^the specific attribute value should be returned$")
-    public void theSpecificAttributeValueShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID,
-                ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+    @When("^the get specific attribute value request is received$")
+    public void whenTheGetSpecificAttributeValueRequestIsReceived() throws Throwable {
+        final GetSpecificAttributeValueRequest request = (GetSpecificAttributeValueRequest) ScenarioContext.Current()
+                .get(REQUEST);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        final GetSpecificAttributeValueAsyncResponse asyncResponse = this.client
+                .sendGetSpecificAttributeValueRequest(request);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CONFIGURATION_DATA,
-                XPATH_MATCHER_RESULT_CONFIGURATION_DATA));
+        ScenarioContext.Current().put(ASYNC_RESPONSE, asyncResponse);
+    }
+
+    @Then("^a get specific attribute value response should be returned$")
+    public void thenAGetSpecificAttributeValueResponseShouldBeReturned(final Map<String, String> settings)
+            throws Throwable {
+
+        final GetSpecificAttributeValueAsyncResponse asyncResponse = (GetSpecificAttributeValueAsyncResponse) ScenarioContext
+                .Current().get(ASYNC_RESPONSE);
+
+        final GetSpecificAttributeValueAsyncRequest asyncRequest = new GetSpecificAttributeValueAsyncRequest();
+        asyncRequest.setCorrelationUid(asyncResponse.getCorrelationUid());
+        asyncRequest.setDeviceIdentification(asyncResponse.getDeviceIdentification());
+
+        final GetSpecificAttributeValueResponse response = this.client
+                .retrieveGetSpecificAttributeValueResponse(asyncRequest);
+
+        // TODO: Use expected result from settings
+        assertEquals("Result is not as expected {},{}", settings.get(Keys.RESULT), response.getResult().name());
+        assertTrue("Result contains no data", StringUtils.isNotBlank(response.getAttributeValueData()));
     }
 }

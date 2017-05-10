@@ -7,50 +7,69 @@
  */
 package com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.smartmeteringadhoc;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.dlms.Keys;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.adhoc.SmartMeteringAdHocClient;
+
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetAllAttributeValuesSteps extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT = "/Envelope/Body/RetrieveAllAttributeValuesResponse/Result/text()";
-    private static final String PATH_RESULT_OUTPUT = "/Envelope/Body/RetrieveAllAttributeValuesResponse/Output/text()";
+public class GetAllAttributeValuesSteps {
 
-    private static final String XPATH_MATCHER_RESULT_OUTPUT = "DataObject: Choice=\\w+, ResultData \\w+, value=\\S+ logical name: \\S+";
+    private static final String REQUEST = "REQUEST";
+    private static final String ASYNC_RESPONSE = "ASYNC_RESPONSE";
 
-    private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
-    private static final String TEST_CASE_XML = "193 Retrieve all attribute values of a meter";
-    private static final String TEST_CASE_NAME_REQUEST = "RetrieveAllAttributeValues - Request 1";
-    private static final String TEST_CASE_NAME_RESPONSE_REQUEST = "GetRetrieveAllAttributeValuesResponse - Request 1";
+    @Autowired
+    private SmartMeteringAdHocClient client;
 
-    @When("^receiving a get all attribute values request$")
-    public void receivingAGetAllAttributeValuesRequest(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    @Given("^a get all attribute values request$")
+    public void givenAGetAllAttributeValuesRequest(final Map<String, String> settings) throws Throwable {
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final GetAllAttributeValuesRequest request = new GetAllAttributeValuesRequest();
+        request.setDeviceIdentification(settings.get(Keys.DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(REQUEST, request);
     }
 
-    @Then("^all the attribute values should be returned$")
-    public void allTheConfigurationItemsShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID,
-                ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+    @When("^the get all attribute values request is received$")
+    public void whenTheGetAllAttributeValuesRequestIsReceived() throws Throwable {
+        final GetAllAttributeValuesRequest request = (GetAllAttributeValuesRequest) ScenarioContext.Current()
+                .get(REQUEST);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        final GetAllAttributeValuesAsyncResponse asyncResponse = this.client.sendGetAllAttributeValuesRequest(request);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, Defaults.EXPECTED_RESULT_OK));
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_OUTPUT, XPATH_MATCHER_RESULT_OUTPUT));
+        ScenarioContext.Current().put(ASYNC_RESPONSE, asyncResponse);
+    }
+
+    @Then("^a get all attribute values response should be returned$")
+    public void thenAGetAllAttributeValuesResponseShouldBeReturned(final Map<String, String> settings)
+            throws Throwable {
+
+        final GetAllAttributeValuesAsyncResponse asyncResponse = (GetAllAttributeValuesAsyncResponse) ScenarioContext
+                .Current().get(ASYNC_RESPONSE);
+
+        final GetAllAttributeValuesAsyncRequest asyncRequest = new GetAllAttributeValuesAsyncRequest();
+        asyncRequest.setCorrelationUid(asyncResponse.getCorrelationUid());
+        asyncRequest.setDeviceIdentification(asyncResponse.getDeviceIdentification());
+
+        final GetAllAttributeValuesResponse response = this.client.retrieveGetAllAttributeValuesResponse(asyncRequest);
+
+        // TODO: Use expected result from settings
+        assertEquals(OsgpResultType.OK, response.getResult());
+        assertTrue(StringUtils.isNotBlank(response.getOutput()));
     }
 }
