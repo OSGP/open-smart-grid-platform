@@ -11,7 +11,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 
 /**
@@ -33,7 +32,7 @@ public class Defaults extends com.alliander.osgp.cucumber.platform.Defaults {
     public static final String DEVICE_IDENTIFICATION = null;
     public static final DeviceModel DEVICE_MODEL = null;
     public static final String DEVICE_TYPE = null;
-    public static final Device GATEWAY_DEVICE = null;
+    public static final String GATEWAY_DEVICE_IDENTIFICATION = null;
     public static final Float GPS_LATITUDE = null;
     public static final Float GPS_LONGITUDE = null;
 

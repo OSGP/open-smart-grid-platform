@@ -241,7 +241,7 @@ public class DlmsDeviceSteps {
             device = this.smartMeterRepository.save(smartMeter);
 
         } else {
-            device = new DeviceBuilder().withSettings(inputSettings)
+            device = new DeviceBuilder(this.deviceRepository).withSettings(inputSettings)
                     .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
             this.deviceRepository.save(device);
         }

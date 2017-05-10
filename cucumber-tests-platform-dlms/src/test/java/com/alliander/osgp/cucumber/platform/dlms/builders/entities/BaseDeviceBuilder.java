@@ -14,7 +14,6 @@ import java.util.Map;
 import com.alliander.osgp.cucumber.platform.dlms.Defaults;
 import com.alliander.osgp.cucumber.platform.dlms.Keys;
 import com.alliander.osgp.cucumber.platform.inputparsers.DateInputParser;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 
@@ -35,7 +34,7 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     String containerMunicipality = Defaults.CONTAINER_MUNICIPALITY;
     String alias = Defaults.ALIAS;
     boolean inMaintenance = Defaults.IN_MAINTENANCE;
-    Device gatewayDevice = Defaults.GATEWAY_DEVICE;
+    String gatewayDeviceIdentification = Defaults.GATEWAY_DEVICE_IDENTIFICATION;
     Date technicalInstallationDate = Defaults.TECHNICAL_INSTALLATION_DATE;
     DeviceModel deviceModel = Defaults.DEVICE_MODEL;
     boolean isActive = Defaults.IS_ACTIVE;
@@ -115,8 +114,8 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
         return (T) this;
     }
 
-    public T setGatewayDevice(final Device gatewayDevice) {
-        this.gatewayDevice = gatewayDevice;
+    public T setGatewayDevice(final String gatewayDeviceIdentification) {
+        this.gatewayDeviceIdentification = gatewayDeviceIdentification;
         return (T) this;
     }
 
@@ -182,6 +181,11 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
         if (inputSettings.containsKey(Keys.IS_ACTIVE)) {
             this.setIsActive(Boolean.parseBoolean(inputSettings.get(Keys.IS_ACTIVE)));
         }
+        
+        if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
+            this.setGatewayDevice(inputSettings.get(Keys.GATEWAY_DEVICE_IDENTIFICATION));
+        }
+        
         return (T) this;
     }
 

@@ -11,8 +11,15 @@ import java.util.Map;
 
 import com.alliander.osgp.cucumber.platform.core.builders.CucumberBuilder;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 
 public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements CucumberBuilder<Device> {
+
+    private final DeviceRepository deviceRepository;
+
+    public DeviceBuilder(final DeviceRepository deviceRepository) {
+        this.deviceRepository = deviceRepository;
+    }
 
     @Override
     public DeviceBuilder withSettings(final Map<String, String> inputSettings) {
@@ -33,7 +40,10 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements C
 
         device.updateProtocol(this.protocolInfo);
         device.updateInMaintenance(this.inMaintenance);
-        device.updateGatewayDevice(this.gatewayDevice);
+        if (this.gatewayDeviceIdentification != null) {
+            device.updateGatewayDevice(
+                    this.deviceRepository.findByDeviceIdentification(this.gatewayDeviceIdentification));
+        }
         device.setVersion(this.version);
         device.setDeviceModel(this.deviceModel);
         device.setTechnicalInstallationDate(this.technicalInstallationDate);
