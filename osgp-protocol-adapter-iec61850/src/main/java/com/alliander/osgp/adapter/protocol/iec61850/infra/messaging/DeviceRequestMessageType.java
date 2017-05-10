@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -30,5 +30,9 @@ public enum DeviceRequestMessageType {
     REVOKE_KEY,
     UPDATE_DEVICE_SSL_CERTIFICATION,
     GET_DATA,
-    SET_DATA
+    SET_DATA,
+    GET_POWER_QUALITY_VALUES,
+    GET_POWER_QUALITY_VALUES_PERIODIC,
+    GET_DEVICE_MODEL,
+    GET_HEALTH_STATUS
 }
