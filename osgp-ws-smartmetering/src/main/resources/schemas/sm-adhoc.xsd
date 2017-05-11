@@ -46,7 +46,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="RetrieveAllAttributeValuesRequest">
+  <xsd:element name="GetAllAttributeValuesRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
@@ -54,7 +54,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="RetrieveAllAttributeValuesAsyncResponse">
+  <xsd:element name="GetAllAttributeValuesAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"></xsd:extension>
@@ -62,7 +62,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="RetrieveAllAttributeValuesAsyncRequest">
+  <xsd:element name="GetAllAttributeValuesAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"></xsd:extension>
@@ -70,7 +70,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="RetrieveAllAttributeValuesResponse">
+  <xsd:element name="GetAllAttributeValuesResponse">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
@@ -79,9 +79,9 @@
           minOccurs="1" />
       </xsd:sequence>
     </xsd:complexType>
-
   </xsd:element>
-  <xsd:complexType name="GetConfigurationRequestData">
+
+  <xsd:complexType name="GetAllAttributeValuesRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
@@ -89,20 +89,19 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
-  <xsd:complexType name="GetConfigurationResponseData">
+  <xsd:complexType name="GetAllAttributeValuesResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="ConfigurationData" type="xsd:string" />
+          <xsd:element name="AttributeValuesData" type="xsd:string" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="SpecificAttributeValueRequest">
+  <xsd:element name="GetSpecificAttributeValueRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:SpecificAttributeValueRequestData">
+        <xsd:extension base="tns:GetSpecificAttributeValueRequestData">
           <xsd:sequence>
             <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
           </xsd:sequence>
@@ -110,38 +109,47 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SpecificAttributeValueAsyncResponse">
+  <xsd:element name="GetSpecificAttributeValueAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SpecificAttributeValueAsyncRequest">
+  <xsd:element name="GetSpecificAttributeValueAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SpecificAttributeValueResponse">
+  <xsd:element name="GetSpecificAttributeValueResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:Response">
           <xsd:sequence>
-            <xsd:element name="ConfigurationData" type="xsd:string" />
+            <xsd:element name="AttributeValueData" type="xsd:string" />
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:complexType name="SpecificAttributeValueRequestData">
+  <xsd:complexType name="GetSpecificAttributeValueRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
           <xsd:element name="ClassId" type="xsd:integer" />
           <xsd:element name="Attribute" type="xsd:integer" />
           <xsd:element name="ObisCode" type="common:ObisCodeValues" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="GetSpecificAttributeValueResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="AttributeValueData" type="xsd:string" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
