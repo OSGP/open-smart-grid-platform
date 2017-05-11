@@ -10,13 +10,13 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class RetrieveAllAttributeValuesRequest implements Serializable {
+public class GetAllAttributeValuesRequest implements Serializable {
 
     private static final long serialVersionUID = 3107247305216273215L;
 
     private final String deviceIdentification;
 
-    public RetrieveAllAttributeValuesRequest(final String deviceIdentification) {
+    public GetAllAttributeValuesRequest(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
     }
 

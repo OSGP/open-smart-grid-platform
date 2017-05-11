@@ -30,7 +30,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesR
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FaultResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAttributeValuesResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
@@ -46,7 +46,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
@@ -92,7 +92,7 @@ public class ActionMapperResponseService {
         classMap.put(AdministrativeStatusTypeResponseDto.class, AdministrativeStatusTypeResponse.class);
         classMap.put(PeriodicMeterReadsResponseDto.class, PeriodicMeterReadsContainer.class);
         classMap.put(PeriodicMeterReadGasResponseDto.class, PeriodicMeterReadsContainerGas.class);
-        classMap.put(GetAttributeValuesResponseDto.class, GetAttributeValuesResponse.class);
+        classMap.put(GetAllAttributeValuesResponseDto.class, GetAllAttributeValuesResponse.class);
         classMap.put(FirmwareVersionResponseDto.class, FirmwareVersionResponse.class);
         classMap.put(UpdateFirmwareResponseDto.class, UpdateFirmwareResponse.class);
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
@@ -114,7 +114,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(AdministrativeStatusTypeResponseDto.class, this.configurationMapper);
         classToMapperMap.put(PeriodicMeterReadsResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(PeriodicMeterReadGasResponseDto.class, this.monitoringMapper);
-        classToMapperMap.put(GetAttributeValuesResponseDto.class, this.configurationMapper);
+        classToMapperMap.put(GetAllAttributeValuesResponseDto.class, this.configurationMapper);
         classToMapperMap.put(FirmwareVersionResponseDto.class, this.configurationMapper);
         classToMapperMap.put(UpdateFirmwareResponseDto.class, this.configurationMapper);
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);

@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
 @Component
-public class RetrieveAllAttributeValuesResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class GetAllAttributeValuesResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    public RetrieveAllAttributeValuesResponseMessageProcessor() {
+    public GetAllAttributeValuesResponseMessageProcessor() {
         super(DeviceFunction.GET_ALL_ATTRIBUTE_VALUES);
     }
 
