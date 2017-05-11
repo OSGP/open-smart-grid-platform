@@ -14,7 +14,7 @@ import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
-public class GetAttributeValuesResponseConverter
+public class GetAllAttributeValuesResponseConverter
         extends CustomConverter<GetAllAttributeValuesResponseDto, GetAllAttributeValuesResponse> {
 
     @Override
