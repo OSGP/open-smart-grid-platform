@@ -103,7 +103,7 @@ public class DomainHelperService {
 
         } catch (final SessionProviderException e) {
             LOGGER.error("Invalid key format exception", e);
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
             throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()

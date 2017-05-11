@@ -77,7 +77,7 @@ public class Hls5Connector extends SecureDlmsConnector {
             throw new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS, e);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
     }
 
@@ -115,23 +115,19 @@ public class Hls5Connector extends SecureDlmsConnector {
     private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey)
             throws FunctionalException {
         if (this.checkEmptyKey(encryptionKey)) {
-            LOGGER.error("The encryption key is empty");
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY, ComponentType.PROTOCOL_DLMS);
+            this.throwFunctionException("The encryption key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
         }
 
         if (this.checkEmptyKey(authenticationKey)) {
-            LOGGER.error("The authentication key is empty");
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY, ComponentType.PROTOCOL_DLMS);
+            this.throwFunctionException("The authentication key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
         }
 
         if (this.checkLenghtKey(encryptionKey)) {
-            LOGGER.error("The encryption key has an invalid length");
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+            this.throwFunctionException("The encryption key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
         }
 
         if (this.checkLenghtKey(authenticationKey)) {
-            LOGGER.error("The authentication key has an invalid length");
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS);
+            this.throwFunctionException("The authentication key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
         }
     }
 
@@ -147,5 +143,10 @@ public class Hls5Connector extends SecureDlmsConnector {
             return true;
         }
         return false;
+    }
+
+    private void throwFunctionException(final String msg, final FunctionalExceptionType type) throws FunctionalException {
+        LOGGER.error(msg);
+        throw new FunctionalException(type, ComponentType.PROTOCOL_DLMS);
     }
 }

@@ -95,10 +95,6 @@ public class RecoverKeyProcess implements Runnable {
             // Thread can not recover from these exceptions.
             throw new RecoverKeyException(e.getMessage(), e);
         }
-
-        if (this.device == null) {
-            throw new IllegalArgumentException("Device " + this.deviceIdentification + " not found.");
-        }
     }
 
     private void checkState() {
@@ -166,7 +162,7 @@ public class RecoverKeyProcess implements Runnable {
             }
         } catch (final IllegalArgumentException e) {
             LOGGER.error("Exception occurred: Invalid key format");
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
 
         return tcpConnectionBuilder.build();

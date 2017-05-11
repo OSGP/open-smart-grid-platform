@@ -107,7 +107,7 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
                     device.getDeviceIdentification(), securityKeyType.name());
             LOGGER.error(errorMessage);
 
-            throw new FunctionalException(FunctionalExceptionType.INVALID_KEY, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS);
         }
 
         return securityKey;
