@@ -457,6 +457,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         return response;
     }
 
+    public void reset() {
+        this.sequenceNumber = 0;
+    }
+    
     public int doGetNextSequence() {
         int numberToAddToSequenceNumberValue = 1;
 

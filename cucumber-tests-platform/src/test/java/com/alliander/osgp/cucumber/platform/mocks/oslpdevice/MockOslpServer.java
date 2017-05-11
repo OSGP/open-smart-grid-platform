@@ -32,9 +32,6 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.cucumber.platform.Keys;
@@ -77,49 +74,35 @@ import com.alliander.osgp.oslp.OslpUtils;
 import com.alliander.osgp.shared.security.CertificateHelper;
 import com.google.protobuf.ByteString;
 
-@Component
 public class MockOslpServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpServer.class);
 
-    @Autowired
-    private CoreDeviceConfiguration configuration;
+    private final CoreDeviceConfiguration configuration;
 
-    @Value("${oslp.port.server}")
-    private int oslpPortServer;
+    private final int oslpPortServer;
 
-    @Value("${oslp.elster.port.server}")
-    private int oslpElsterPortServer;
+    private final int oslpElsterPortServer;
 
-    @Value("${oslp.security.signature}")
-    private String oslpSignature;
+    private final String oslpSignature;
 
-    @Value("${oslp.security.provider}")
-    private String oslpSignatureProvider;
+    private final String oslpSignatureProvider;
 
-    @Value("${oslp.timeout.connect}")
-    private int connectionTimeout;
+    private final int connectionTimeout;
 
-    @Value("${oslp.security.signkey.path}")
-    private String signKeyPath;
+    private final String signKeyPath;
 
-    @Value("${oslp.security.verifykey.path}")
-    private String verifyKeyPath;
+    private final String verifyKeyPath;
 
-    @Value("${oslp.security.keytype}")
-    private String keytype;
+    private final String keytype;
 
-    @Value("${oslp.sequence.number.window}")
-    private Integer sequenceNumberWindow;
+    private final Integer sequenceNumberWindow;
 
-    @Value("${oslp.sequence.number.maximum}")
-    private Integer sequenceNumberMaximum;
+    private final Integer sequenceNumberMaximum;
 
-    @Value("${response.delay.time}")
-    private Long responseDelayTime;
+    private final Long responseDelayTime;
 
-    @Value("${response.delay.random.range}")
-    private Long reponseDelayRandomRange;
+    private final Long reponseDelayRandomRange;
 
     private ServerBootstrap serverOslp;
     private ServerBootstrap serverOslpElster;
@@ -130,6 +113,25 @@ public class MockOslpServer {
     private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses = new ConcurrentHashMap<>();
     private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests = new ConcurrentHashMap<>();
     private final List<Message> receivedResponses = new ArrayList<>();
+
+    public MockOslpServer(CoreDeviceConfiguration configuration, int oslpPortServer, int oslpElsterPortServer,
+            String oslpSignature, String oslpSignatureProvider, int connectionTimeout, String signKeyPath,
+            String verifyKeyPath, String keytype, Integer sequenceNumberWindow, Integer sequenceNumberMaximum,
+            Long responseDelayTime, Long reponseDelayRandomRange) {
+        this.configuration = configuration;
+        this.oslpPortServer = oslpPortServer;
+        this.oslpElsterPortServer = oslpElsterPortServer;
+        this.oslpSignature = oslpSignature;
+        this.oslpSignatureProvider = oslpSignatureProvider;
+        this.connectionTimeout = connectionTimeout;
+        this.signKeyPath = signKeyPath;
+        this.verifyKeyPath = verifyKeyPath;
+        this.keytype = keytype;
+        this.sequenceNumberWindow = sequenceNumberWindow;
+        this.sequenceNumberMaximum = sequenceNumberMaximum;
+        this.responseDelayTime = responseDelayTime;
+        this.reponseDelayRandomRange = reponseDelayRandomRange;
+    }
 
     public Integer getSequenceNumber() {
         return this.channelHandler.getSequenceNumber();
@@ -168,6 +170,7 @@ public class MockOslpServer {
         this.receivedRequests.clear();
         this.receivedResponses.clear();
         this.mockResponses.clear();
+        this.channelHandler.reset();
     }
 
     public Message waitForRequest(final DeviceRequestMessageType requestType) {

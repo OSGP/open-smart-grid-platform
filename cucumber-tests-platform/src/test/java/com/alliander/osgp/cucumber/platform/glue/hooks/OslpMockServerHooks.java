@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.MockOslpServer;
 
-import cucumber.api.java.After;
 import cucumber.api.java.Before;
 
 public class OslpMockServerHooks extends GlueBase {
@@ -21,18 +20,9 @@ public class OslpMockServerHooks extends GlueBase {
     private MockOslpServer mockServer;
 
     @Before("@OslpMockServer")
-    public void startOslpMockServer() throws Throwable {
+    public void resetServer() throws Throwable {
         if (this.mockServer != null) {
             this.mockServer.resetServer();
-
-            this.mockServer.stop();
         }
-
-        this.mockServer.start();
-    }
-
-    @After("@OslpMockServer")
-    public void stopOslpMockServer() {
-        this.mockServer.stop();
     }
 }
