@@ -15,19 +15,6 @@ Feature: SmartMetering AdHoc
     Then the objectlist should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-  @Skip
-  Scenario: Retrieve all configuration objects from a device
-    When receiving a retrieve configuration request
-      | DeviceIdentification | TEST1024000000001 |
-    Then all the configuration items should be returned
-      | DeviceIdentification | TEST1024000000001 |
-
-  Scenario: Retrieve a specific configuration object from a device
-    When receiving a retrieve specific configuration request
-      | DeviceIdentification | TEST1024000000001 |
-    Then the specific configuration item should be returned
-      | DeviceIdentification | TEST1024000000001 |
-
   Scenario: Retrieve SynchronizeTime result from a device
     When receiving a get synchronize time request
       | DeviceIdentification | TEST1024000000001 |

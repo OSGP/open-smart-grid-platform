@@ -99,9 +99,14 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String DAYLIGHT_SAVINGS_ACTIVE = "DST";
     public static final String DEVIATION = "Deviation";
 
+    public static final String CLASS_ID = "ClassId";
+
+    public static final String ATTRIBUTE = "Attribute";
+
+    public static final String RESPONSE_PART = "ResponsePart";
+
     public static final String BUNDLE_RESPONSE = "BundleResponse";
     public static final String BUNDLE_REQUEST = "BundleRequest";
     public static final String BUNDLE_ACTION_COUNT = "BundleActionCount";
     public static final String BUNDLE_RESPONSE_COUNT = "BundleResponseCount";
-
 }
