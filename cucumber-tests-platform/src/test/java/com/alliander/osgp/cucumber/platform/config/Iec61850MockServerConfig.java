@@ -16,23 +16,10 @@ public class Iec61850MockServerConfig {
 
     @Value("${iec61850.mock.networkaddress}")
     private String iec61850MockNetworkAddress;
-    @Value("${iec61850.mock.icd.filename}")
-    private String iec61850MockIcdFilename;
-    @Value("${iec61850.mock.port}")
-    private int iec61850MockPort;
 
     @Bean
     public String iec61850MockNetworkAddress() {
         return this.iec61850MockNetworkAddress;
     }
 
-    @Bean
-    public int iec61850MockPort() {
-        return this.iec61850MockPort;
-    }
-
-    @Bean
-    public String iec61850MockIcdFilename() {
-        return this.iec61850MockIcdFilename;
-    }
 }
