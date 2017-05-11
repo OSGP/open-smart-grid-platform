@@ -52,6 +52,12 @@ public class XMLGregorianCalendarToDateTimeConverter extends BidirectionalConver
 
     @Override
     public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
+        // The check 'this.sourceType.isAssignableFrom(sourceType)' fails for
+        // org.yoda.DateTime.class.
+        // Use custom check instead.
+        if (sourceType.getRawType().getName() == DateTime.class.getName()) {
+            return true;
+        }
         return this.sourceType.isAssignableFrom(sourceType) && this.destinationType.equals(destinationType);
     }
 
