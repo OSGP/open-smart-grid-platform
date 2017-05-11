@@ -7,22 +7,22 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public class GetAttributeValuesResponseDto extends ActionResponseDto {
+public class GetAllAttributeValuesResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -936146933525914836L;
 
-    private String configurationData;
+    private String attributeValuesData;
 
-    public GetAttributeValuesResponseDto() {
+    public GetAllAttributeValuesResponseDto() {
         // Default constructor
     }
 
-    public GetAttributeValuesResponseDto(final String configurationData) {
-        this.configurationData = configurationData;
+    public GetAllAttributeValuesResponseDto(final String attributeValuesData) {
+        this.attributeValuesData = attributeValuesData;
     }
 
-    public String getConfigurationData() {
-        return this.configurationData;
+    public String getAttributeValuesData() {
+        return this.attributeValuesData;
     }
 
 }
