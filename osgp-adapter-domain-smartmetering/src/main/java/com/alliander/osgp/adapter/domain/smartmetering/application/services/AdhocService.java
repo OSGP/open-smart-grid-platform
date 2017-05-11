@@ -97,9 +97,7 @@ public class AdhocService {
                 deviceMessageMetadata.getMessageType());
     }
 
-    public void getAllAttributeValues(final DeviceMessageMetadata deviceMessageMetadata,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequest request)
-            throws FunctionalException {
+    public void getAllAttributeValues(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
 
         LOGGER.debug("retrieveAllAttributeValues for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());

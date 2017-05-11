@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -34,9 +33,7 @@ public class GetAllAttributeValuesRequestMessageProcessor extends WebServiceRequ
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final GetAllAttributeValuesRequest request = (GetAllAttributeValuesRequest) dataObject;
-
-        this.adhocService.getAllAttributeValues(deviceMessageMetadata, request);
+        this.adhocService.getAllAttributeValues(deviceMessageMetadata);
     }
 
 }
