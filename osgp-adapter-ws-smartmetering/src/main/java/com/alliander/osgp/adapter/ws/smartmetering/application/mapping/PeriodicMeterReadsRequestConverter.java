@@ -19,6 +19,11 @@ public class PeriodicMeterReadsRequestConverter extends
         CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest, PeriodicMeterReadsQuery> {
 
     @Override
+    public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
+        return this.sourceType.isAssignableFrom(sourceType) && this.destinationType.equals(destinationType);
+    }
+
+    @Override
     public PeriodicMeterReadsQuery convert(final PeriodicReadsRequest source,
             final Type<? extends PeriodicMeterReadsQuery> destinationType, final MappingContext context) {
         return new PeriodicMeterReadsQuery(
