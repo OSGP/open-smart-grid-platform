@@ -115,19 +115,19 @@ public class Hls5Connector extends SecureDlmsConnector {
     private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey)
             throws FunctionalException {
         if (this.checkEmptyKey(encryptionKey)) {
-            this.throwFunctionException("The encryption key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
+            this.throwFunctionalException("The encryption key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
         }
 
         if (this.checkEmptyKey(authenticationKey)) {
-            this.throwFunctionException("The authentication key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
+            this.throwFunctionalException("The authentication key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
         }
 
         if (this.checkLenghtKey(encryptionKey)) {
-            this.throwFunctionException("The encryption key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
+            this.throwFunctionalException("The encryption key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
         }
 
         if (this.checkLenghtKey(authenticationKey)) {
-            this.throwFunctionException("The authentication key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
+            this.throwFunctionalException("The authentication key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
         }
     }
 
@@ -145,7 +145,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         return false;
     }
 
-    private void throwFunctionException(final String msg, final FunctionalExceptionType type) throws FunctionalException {
+    private void throwFunctionalException(final String msg, final FunctionalExceptionType type) throws FunctionalException {
         LOGGER.error(msg);
         throw new FunctionalException(type, ComponentType.PROTOCOL_DLMS);
     }
