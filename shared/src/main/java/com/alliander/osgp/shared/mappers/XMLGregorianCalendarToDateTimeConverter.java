@@ -55,7 +55,8 @@ public class XMLGregorianCalendarToDateTimeConverter extends BidirectionalConver
         // The check 'this.sourceType.isAssignableFrom(sourceType)' fails for
         // org.yoda.DateTime.class.
         // Use custom check instead.
-        if (sourceType.getRawType().getName() == DateTime.class.getName()) {
+        if (sourceType.getRawType().getName() == DateTime.class.getName()
+                && destinationType.getRawType().getName() == XMLGregorianCalendar.class.getName()) {
             return true;
         }
         return this.sourceType.isAssignableFrom(sourceType) && this.destinationType.equals(destinationType);
