@@ -12,6 +12,8 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -67,32 +69,55 @@ public class EventSteps extends GlueBase {
     @Then("^the (?:event is|events are) stored$")
     public void theEventIsStored(final Map<String, String> expectedEntity) throws Throwable {
 
+        // Convert comma separated events into a mutable list (for comparison)
+        final List<String> expectedEvents = new ArrayList<>(Arrays.asList((expectedEntity.containsKey(Keys.KEY_EVENTS))
+                ? getString(expectedEntity, Keys.KEY_EVENTS).split(Keys.SEPARATOR_COMMA)
+                : (expectedEntity.containsKey(Keys.KEY_EVENT))
+                        ? getString(expectedEntity, Keys.KEY_EVENT).split(Keys.SEPARATOR_COMMA) : new String[0]));
+
+        // Convert comma separated indexes into a mutable list (for comparison)
+        final List<String> expectedIndexes = new ArrayList<>(Arrays.asList((expectedEntity.containsKey(Keys.KEY_INDEXES))
+                ? getString(expectedEntity, Keys.KEY_INDEXES).split(Keys.SEPARATOR_COMMA)
+                : (expectedEntity.containsKey(Keys.KEY_INDEX)
+                        && !expectedEntity.get(Keys.KEY_INDEX).equals("EMPTY"))
+                                ? getString(expectedEntity, Keys.KEY_INDEX).split(Keys.SEPARATOR_COMMA)
+                                : new String[] {"0"}));
+
+        Assert.assertEquals("Number of events and indexes must be equal in scenario input", 
+                expectedEvents.size(), expectedIndexes.size());
+        
+        // Wait for the correct events to be available
         Wait.until(() -> {
             final Device device = this.deviceRepository
                     .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
 
-            final List<Event> eventsList = this.eventRepository.findByDevice(device);
-
-            final String[] eventsArray = (expectedEntity.containsKey(Keys.KEY_EVENTS))
-                    ? getString(expectedEntity, Keys.KEY_EVENTS).split(Keys.SEPARATOR_COMMA)
-                    : (expectedEntity.containsKey(Keys.KEY_EVENT))
-                            ? getString(expectedEntity, Keys.KEY_EVENT).split(Keys.SEPARATOR_COMMA) : new String[0];
-
-            final String[] indexesArray = (expectedEntity.containsKey(Keys.KEY_INDEXES))
-                    ? getString(expectedEntity, Keys.KEY_INDEXES).split(Keys.SEPARATOR_COMMA)
-                    : (expectedEntity.containsKey(Keys.KEY_INDEX)
-                            && !expectedEntity.get(Keys.KEY_INDEX).equals("EMPTY"))
-                                    ? getString(expectedEntity, Keys.KEY_INDEX).split(Keys.SEPARATOR_COMMA)
-                                    : new String[] { "0" };
+            // Read the actual events received and check the desired size
+            final List<Event> actualEvents = this.eventRepository.findByDevice(device);
 
             if (expectedEntity.containsKey(Keys.NUMBER_OF_EVENTS)) {
-                Assert.assertEquals((int) getInteger(expectedEntity, Keys.NUMBER_OF_EVENTS), eventsList.size());
+                Assert.assertEquals((int) getInteger(expectedEntity, Keys.NUMBER_OF_EVENTS), actualEvents.size());
             }
 
-            for (int i = 0; i < eventsList.size(); i++) {
-                final Event event = eventsList.get(i);
-                Assert.assertEquals(EventType.valueOf(eventsArray[i].trim()), event.getEventType());
-                Assert.assertEquals(Integer.parseInt(indexesArray[i]), Character.getNumericValue(event.getIndex()));
+            // Validate all expected events have been received
+            for (Event actualEvent : actualEvents) {
+                int foundEventIndex = -1;
+                
+                Integer actualIndex = Character.getNumericValue(actualEvent.getIndex());
+                
+                // Try to find each event and corresponding index in the expected events list
+                for (int i = 0; i < expectedEvents.size(); i++) {
+                    if (EventType.valueOf(expectedEvents.get(i).trim()) == actualEvent.getEventType() && 
+                            Integer.parseInt(expectedIndexes.get(i)) == actualIndex) {
+                        foundEventIndex = i;
+                        break;
+                    }
+                }
+
+                Assert.assertTrue("Unable to find event [" + actualEvent.getEventType() + "] with index [" + actualIndex + "]", foundEventIndex != -1);
+
+                // Correct combination of event and index are found, remove them from the expected results lists
+                expectedEvents.remove(foundEventIndex);
+                expectedIndexes.remove(foundEventIndex);
             }
         });
     }
