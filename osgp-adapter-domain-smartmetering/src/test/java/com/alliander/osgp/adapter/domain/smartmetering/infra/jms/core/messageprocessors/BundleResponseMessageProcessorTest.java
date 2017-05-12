@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,19 +44,19 @@ public class BundleResponseMessageProcessorTest {
     @Test
     public void technicalExceptionDetailsAreIncludedInFaultResponse() throws Exception {
 
+        final FunctionalExceptionType functionalException = FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION;
         final ComponentType component = ComponentType.PROTOCOL_DLMS;
-        final String message = "Unexpected exception while handling protocol request/response message";
-        final String innerMessage = "java.net.ConnectException: Connection refused";
-        final Throwable cause = new ConnectException(innerMessage);
-        final Exception exception = new TechnicalException(component, message, cause);
+        final String message = "java.net.ConnectException: Connection refused";
+        final Throwable cause = new RuntimeException(message);
+        final Exception exception = new FunctionalException(functionalException, component, cause);
 
         this.parameters.add(new FaultResponseParameterDto("deviceIdentification", "ESIM9999999999999"));
 
         final FaultResponseDto faultResponse = this.processor.faultResponseForException(exception, this.parameters,
                 this.defaultMessage);
 
-        this.assertResponse(faultResponse, null, message, component.name(), cause.getClass().getName(), innerMessage,
-                this.parameters);
+        this.assertResponse(faultResponse, functionalException.getCode(), functionalException.name(), component.name(),
+                cause.getClass().getName(), message, this.parameters);
     }
 
     @Test

@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +22,16 @@ import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service
 @Validated
 @Transactional(value = "transactionManager")
 public class DeviceDomainService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceDomainService.class);
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -32,19 +39,21 @@ public class DeviceDomainService {
     @Autowired
     private SsldRepository ssldRepository;
 
-    public Device searchDevice(@Identification final String deviceIdentification) throws UnknownEntityException {
+    public Device searchDevice(@Identification final String deviceIdentification) throws UnknownEntityException, FunctionalException {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
         if (device == null) {
-            throw new UnknownEntityException(Device.class, deviceIdentification);
+            final String errorMessage = String.format("Unable to communicate with unknown device: %s", deviceIdentification);
+            LOGGER.error(errorMessage);
+
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_CORE);
         }
 
         return device;
     }
 
     public Device searchActiveDevice(@Identification final String deviceIdentification)
-            throws UnregisteredDeviceException, InactiveDeviceException, UnknownEntityException {
+            throws UnregisteredDeviceException, InactiveDeviceException, UnknownEntityException, FunctionalException {
 
         final Device device = this.searchDevice(deviceIdentification);
         final Ssld ssld = this.ssldRepository.findOne(device.getId());

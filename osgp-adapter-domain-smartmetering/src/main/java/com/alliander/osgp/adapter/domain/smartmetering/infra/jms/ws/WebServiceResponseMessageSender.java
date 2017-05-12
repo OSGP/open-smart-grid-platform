@@ -60,7 +60,9 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
-                if (responseMessage.getOsgpException() != null) {
+                if (responseMessage.getOsgpException() == null) {
+                    objectMessage.setObject(responseMessage.getDataObject());
+                } else {
                     String description = null;
 
                     // If an exception had a cause, get the message of the
@@ -72,9 +74,9 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
                         description = osgpException.getMessage();
                     }
                     objectMessage.setStringProperty(Constants.DESCRIPTION, description);
-
+                    objectMessage.setObject(osgpException);
                 }
-                objectMessage.setObject(responseMessage.getDataObject());
+
                 return objectMessage;
             }
         });
