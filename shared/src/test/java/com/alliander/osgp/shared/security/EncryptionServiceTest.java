@@ -16,6 +16,8 @@ import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
 public class EncryptionServiceTest {
 
     private static final String SRC_TEST_RESOURCES_SECRET = "src/test/resources/secret";
@@ -57,10 +59,12 @@ public class EncryptionServiceTest {
     /**
      * Test decryption of master, encryption and authentication keys using
      * 'secret.aes'.
+     * 
+     * @throws FunctionalException
      */
     @Test
     public void testKeyDecryption() throws NoSuchAlgorithmException, IOException, NoSuchProviderException,
-    DecoderException {
+            DecoderException, FunctionalException {
         // Load the secret key.
         final SecretKeySpec secretKey = this.createSecretKeySpec(SRC_TEST_RESOURCES_KEYS_SECRET_AES);
 
@@ -78,10 +82,11 @@ public class EncryptionServiceTest {
     }
 
     private void decryptKeyTest(final SecretKeySpec secretKey, final String encryptedKey,
-            final String originalKeyFilePath, final String assertMsg) throws DecoderException, IOException {
+            final String originalKeyFilePath, final String assertMsg)
+            throws DecoderException, IOException, FunctionalException {
         // Try to decrypt the encrypted string key.
-        final byte[] decryptedKeyBytes = new TestableEncService(secretKey).decrypt(Hex.decodeHex(encryptedKey
-                .toCharArray()));
+        final byte[] decryptedKeyBytes = new TestableEncService(secretKey)
+                .decrypt(Hex.decodeHex(encryptedKey.toCharArray()));
 
         // Load the original key and get the bytes.
         final SecretKeySpec originalKey = this.createSecretKeySpec(originalKeyFilePath);
@@ -92,7 +97,8 @@ public class EncryptionServiceTest {
     }
 
     @Test
-    public void testEnDecrypt() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+    public void testEnDecrypt()
+            throws NoSuchAlgorithmException, IOException, NoSuchProviderException, FunctionalException {
         final KeyGenerator keygen = KeyGenerator.getInstance(AES, PROVIDER);
         keygen.init(128);
         final SecretKey key = keygen.generateKey();
@@ -107,7 +113,8 @@ public class EncryptionServiceTest {
     }
 
     @Test
-    public void testEnDecryptDifferentService() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+    public void testEnDecryptDifferentService()
+            throws NoSuchAlgorithmException, IOException, NoSuchProviderException, FunctionalException {
         final KeyGenerator keygen = KeyGenerator.getInstance(AES, PROVIDER);
         keygen.init(128);
         final SecretKey key = keygen.generateKey();
@@ -120,7 +127,8 @@ public class EncryptionServiceTest {
     }
 
     @Test
-    public void testOpenSslSecret() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+    public void testOpenSslSecret()
+            throws NoSuchAlgorithmException, IOException, NoSuchProviderException, FunctionalException {
         final SecretKeySpec secretKey = this.createSecretKeySpec(new File(SRC_TEST_RESOURCES_SECRET));
         final byte[] enc = new TestableEncService(secretKey).encrypt(TEST_CONTENT.getBytes());
 
@@ -128,7 +136,8 @@ public class EncryptionServiceTest {
     }
 
     @Test
-    public void testOpenSslEncrypted() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+    public void testOpenSslEncrypted()
+            throws NoSuchAlgorithmException, IOException, NoSuchProviderException, FunctionalException {
         final byte[] encrypted = Files.readAllBytes(new File("src/test/resources/plain.enc").toPath());
         final SecretKeySpec secretKey = this.createSecretKeySpec(new File(SRC_TEST_RESOURCES_SECRET).getPath());
         final byte[] decrypted = new TestableEncService(secretKey).decrypt(encrypted);
@@ -137,7 +146,8 @@ public class EncryptionServiceTest {
     }
 
     @Test
-    public void testPrepended() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+    public void testPrepended()
+            throws NoSuchAlgorithmException, IOException, NoSuchProviderException, FunctionalException {
         final byte[] encrypted_prepended = Files.readAllBytes(new File("src/test/resources/prepended").toPath());
 
         final SecretKeySpec secretKey = this.createSecretKeySpec(new File(SRC_TEST_RESOURCES_SECRET).getPath());

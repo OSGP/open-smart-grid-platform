@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 /**
  * Encryption service class that offers encrypt and decrypt methods to encrypt
@@ -46,9 +48,6 @@ public class EncryptionService {
      * the algorithm used to load the secret key
      */
     public static final String SECRET_KEY_SPEC = "AES";
-    private static final String UNEXPECTED_EXCEPTION_DURING_ENCRYPTION = "Unexpected exception during encryption";
-    private static final String UNEXPECTED_EXCEPTION_DURING_DECRYPTION = "Unexpected exception during decryption";
-    private static final String UNEXPECTED_EXCEPTION_WHEN_READING_KEY = "Unexpected exception when reading key";
     private static final Logger LOGGER = LoggerFactory.getLogger(EncryptionService.class);
     /**
      * the algorithm used for reading the secret key
@@ -91,20 +90,26 @@ public class EncryptionService {
     }
 
     @PostConstruct
-    private void initEncryption() {
+    private void initEncryption() throws FunctionalException {
         try {
             this.key = new SecretKeySpec(Files.readAllBytes(new File(this.keyPath).toPath()), SECRET_KEY_SPEC);
         } catch (final IOException e) {
-            LOGGER.error(UNEXPECTED_EXCEPTION_WHEN_READING_KEY, e);
-            throw new EncrypterException(UNEXPECTED_EXCEPTION_WHEN_READING_KEY, e);
+            final String errorMessage = String.format("Unexpected exception when reading keys. Key Path: %s",
+                    this.keyPath);
+            LOGGER.error(errorMessage);
+
+            throw new FunctionalException(FunctionalExceptionType.READING_KEY_EXCEPTION,
+                    ComponentType.SHARED, e);
         }
     }
 
     /**
      * Decrypts the data using the key, Strips off iv bytes when they are there
      * (first 16 0 bytes).
+     *
+     * @throws FunctionalException
      */
-    public byte[] decrypt(final byte[] inputData) {
+    public byte[] decrypt(final byte[] inputData) throws FunctionalException {
 
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
@@ -117,9 +122,11 @@ public class EncryptionService {
             }
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException
-                | InvalidAlgorithmParameterException ex) {
-            LOGGER.error(UNEXPECTED_EXCEPTION_DURING_DECRYPTION, ex);
-            throw new EncrypterException("Unexpected exception during decryption!", ex);
+                | InvalidAlgorithmParameterException e) {
+            LOGGER.error("Unexpected exception during decryption", e);
+
+            throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION,
+                    ComponentType.SHARED, e);
         }
     }
 
@@ -152,16 +159,20 @@ public class EncryptionService {
 
     /**
      * Encrypts the data using the key
+     *
+     * @throws FunctionalException
      */
-    public byte[] encrypt(final byte[] inputData) {
+    public byte[] encrypt(final byte[] inputData) throws FunctionalException {
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
             cipher.init(Cipher.ENCRYPT_MODE, this.key, new IvParameterSpec(IVBYTES));
             return cipher.doFinal(inputData);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
                 | BadPaddingException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
-            LOGGER.error(UNEXPECTED_EXCEPTION_DURING_ENCRYPTION, e);
-            throw new EncrypterException("Unexpected exception during encryption!", e);
+            LOGGER.error("Unexpected exception during encryption", e);
+
+            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION,
+                    ComponentType.SHARED, e);
         }
     }
 
