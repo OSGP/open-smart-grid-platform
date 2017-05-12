@@ -5,7 +5,7 @@ Feature: SmartMetering Connection security
   So the transferred data is as secure as possible
 
   # Needs a DlmsDevice simulator with security.enabled=false on port 1025
-  Scenario: Retrieve a specific configuration object with LLS1 encryption without sn and hdlc
+  Scenario: Communicate with LLS1 encryption without sn and hdlc
     Given a dlms device
       | DeviceIdentification | TEST1025000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -16,9 +16,9 @@ Feature: SmartMetering Connection security
       | UseHdlc              | false             |
       | Lls1active           | true              |
       | Port                 |              1025 |
-    When receiving a retrieve specific configuration request
+    When the get actual meter reads request is received
       | DeviceIdentification | TEST1025000000001 |
-    Then the specific configuration item should be returned
+    Then the actual meter reads result should be returned
       | DeviceIdentification | TEST1025000000001 |
 
   Scenario: Communicate with HLS5 encryption
