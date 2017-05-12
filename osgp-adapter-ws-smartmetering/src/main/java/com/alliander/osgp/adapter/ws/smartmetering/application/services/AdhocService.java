@@ -21,8 +21,8 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveAllAttributeValuesRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -69,8 +69,8 @@ public class AdhocService {
         return correlationUid;
     }
 
-    public String enqueueRetrieveAllAttributeValuesRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final RetrieveAllAttributeValuesRequest request,
+    public String enqueueGetAllAttributeValuesRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final GetAllAttributeValuesRequest request,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -78,7 +78,7 @@ public class AdhocService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_ALL_ATTRIBUTE_VALUES);
 
-        LOGGER.debug("enqueueRetrieveAllAttributeValuesRequest called with organisation {} and device {}",
+        LOGGER.debug("enqueueGetAllAttributeValuesRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,

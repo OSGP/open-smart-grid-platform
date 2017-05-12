@@ -19,18 +19,18 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAllAttributeValuesResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveAllAttributeValuesAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveAllAttributeValuesAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveAllAttributeValuesRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveAllAttributeValuesResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
@@ -103,22 +103,21 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "RetrieveAllAttributeValuesRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "GetAllAttributeValuesRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public RetrieveAllAttributeValuesAsyncResponse retrieveAllAttributeValues(
+    public GetAllAttributeValuesAsyncResponse getAllAttributeValues(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final RetrieveAllAttributeValuesRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl) throws OsgpException {
+            @RequestPayload final GetAllAttributeValuesRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
-        final RetrieveAllAttributeValuesAsyncResponse response = new RetrieveAllAttributeValuesAsyncResponse();
+        final GetAllAttributeValuesAsyncResponse response = new GetAllAttributeValuesAsyncResponse();
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveAllAttributeValuesRequest retrieveAllAttributeValuesRequest = new com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveAllAttributeValuesRequest(
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequest getAllAttributeValuesRequest = new com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequest(
                 request.getDeviceIdentification());
 
-        final String correlationUid = this.adhocService.enqueueRetrieveAllAttributeValuesRequest(
-                organisationIdentification, retrieveAllAttributeValuesRequest.getDeviceIdentification(),
-                retrieveAllAttributeValuesRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
+        final String correlationUid = this.adhocService.enqueueGetAllAttributeValuesRequest(organisationIdentification,
+                getAllAttributeValuesRequest.getDeviceIdentification(), getAllAttributeValuesRequest,
+                MessagePriorityEnum.getMessagePriority(messagePriority),
                 this.adhocMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
@@ -129,42 +128,37 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SpecificAttributeValueAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "GetAllAttributeValuesAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public SpecificAttributeValueResponse getSpecificAttributeValueResponse(
-            @RequestPayload final SpecificAttributeValueAsyncRequest request) throws OsgpException {
+    public GetAllAttributeValuesResponse getAllAttributeValuesResponse(
+            @RequestPayload final GetAllAttributeValuesAsyncRequest request) throws OsgpException {
 
-        SpecificAttributeValueResponse response = null;
+        GetAllAttributeValuesResponse response = null;
         try {
-            response = new SpecificAttributeValueResponse();
+            response = new GetAllAttributeValuesResponse();
             final MeterResponseData meterResponseData = this.meterResponseDataService
                     .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
-                if (ResponseMessageResultType.OK == meterResponseData.getResultType()) {
-                    response.setConfigurationData((String) meterResponseData.getMessageData());
-                } else {
-                    response.setConfigurationData("");
-                    response.setException((String) meterResponseData.getMessageData());
-                }
+                response.setOutput((String) meterResponseData.getMessageData());
             }
 
         } catch (final Exception e) {
             this.handleException(e);
         }
-
         return response;
     }
 
-    @PayloadRoot(localPart = "SpecificAttributeValueRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "GetSpecificAttributeValueRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public SpecificAttributeValueAsyncResponse getSpecificAttributeValue(
+    public GetSpecificAttributeValueAsyncResponse getSpecificAttributeValue(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SpecificAttributeValueRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @RequestPayload final GetSpecificAttributeValueRequest request,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
 
-        final SpecificAttributeValueAsyncResponse response = new SpecificAttributeValueAsyncResponse();
+        final GetSpecificAttributeValueAsyncResponse response = new GetSpecificAttributeValueAsyncResponse();
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest getSpecificAttributeValueRequest = this.adhocMapper
                 .map(request,
@@ -183,25 +177,31 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "RetrieveAllAttributeValuesAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "GetSpecificAttributeValueAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public RetrieveAllAttributeValuesResponse getRetrieveAllAttributeValuesResponse(
-            @RequestPayload final RetrieveAllAttributeValuesAsyncRequest request) throws OsgpException {
+    public GetSpecificAttributeValueResponse getSpecificAttributeValueResponse(
+            @RequestPayload final GetSpecificAttributeValueAsyncRequest request) throws OsgpException {
 
-        RetrieveAllAttributeValuesResponse response = null;
+        GetSpecificAttributeValueResponse response = null;
         try {
-            response = new RetrieveAllAttributeValuesResponse();
+            response = new GetSpecificAttributeValueResponse();
             final MeterResponseData meterResponseData = this.meterResponseDataService
                     .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
-                response.setOutput((String) meterResponseData.getMessageData());
+                if (ResponseMessageResultType.OK == meterResponseData.getResultType()) {
+                    response.setAttributeValueData((String) meterResponseData.getMessageData());
+                } else {
+                    response.setAttributeValueData("");
+                    response.setException((String) meterResponseData.getMessageData());
+                }
             }
 
         } catch (final Exception e) {
             this.handleException(e);
         }
+
         return response;
     }
 
@@ -232,7 +232,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
     @PayloadRoot(localPart = "GetAssociationLnObjectsAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public GetAssociationLnObjectsResponse getGetAssociationLnObjectsResponse(
+    public GetAssociationLnObjectsResponse getAssociationLnObjectsResponse(
             @RequestPayload final GetAssociationLnObjectsAsyncRequest request) throws OsgpException {
 
         GetAssociationLnObjectsResponse response = null;

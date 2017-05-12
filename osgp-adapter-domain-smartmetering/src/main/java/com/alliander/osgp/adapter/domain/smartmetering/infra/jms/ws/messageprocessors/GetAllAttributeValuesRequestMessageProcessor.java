@@ -15,18 +15,17 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveAllAttributeValuesRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component
-public class RetrieveAllAttributeValuesRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class GetAllAttributeValuesRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    protected RetrieveAllAttributeValuesRequestMessageProcessor() {
+    protected GetAllAttributeValuesRequestMessageProcessor() {
         super(DeviceFunction.GET_ALL_ATTRIBUTE_VALUES);
     }
 
@@ -34,9 +33,7 @@ public class RetrieveAllAttributeValuesRequestMessageProcessor extends WebServic
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final RetrieveAllAttributeValuesRequest request = (RetrieveAllAttributeValuesRequest) dataObject;
-
-        this.adhocService.retrieveAllAttributeValues(deviceMessageMetadata, request);
+        this.adhocService.getAllAttributeValues(deviceMessageMetadata);
     }
 
 }
