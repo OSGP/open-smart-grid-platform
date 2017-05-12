@@ -101,7 +101,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
 
     @Override
     public MethodResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException {
+            final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException, FunctionalException {
         try {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 

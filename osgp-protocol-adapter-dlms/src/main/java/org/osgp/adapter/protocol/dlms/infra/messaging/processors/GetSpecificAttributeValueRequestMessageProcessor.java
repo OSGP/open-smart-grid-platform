@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component
 public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -32,7 +33,7 @@ public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequ
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final Serializable requestObject) throws ProtocolAdapterException {
+            final Serializable requestObject) throws ProtocolAdapterException, FunctionalException {
 
         this.assertRequestObjectType(SpecificAttributeValueRequestDto.class, requestObject);
 

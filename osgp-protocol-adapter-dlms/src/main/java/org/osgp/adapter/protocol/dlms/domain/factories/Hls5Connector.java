@@ -21,7 +21,6 @@ import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessIniti
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,12 +28,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
 public class Hls5Connector extends SecureDlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
+
+    private static final int AES_GMC_128 = 128;
 
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
@@ -49,7 +52,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     @Override
     public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws TechnicalException {
+            throws TechnicalException, FunctionalException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice(device);
@@ -67,21 +70,20 @@ public class Hls5Connector extends SecureDlmsConnector {
                 // Queue key recovery process.
                 this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
-            final String msg = "Error creating conection for " + device.getDeviceIdentification() + " "
-                    + device.getIpAddress() + ":" + device.getPort() + ", " + device.isUseHdlc() + ", "
-                    + device.isUseSn() + ": " + e.getMessage();
-            throw new ConnectionException(msg, e);
+
+            final String errorMessage = String.format("Error creating connection for %s with IP adress: %s and with device port: %d",
+                    device.getDeviceIdentification(), device.getIpAddress(), device.getPort());
+            LOGGER.error(errorMessage);
+            throw new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS, e);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    "decryption on security keys went wrong for device: " + device.getDeviceIdentification());
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
     }
 
-
     @Override
     protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-            throws TechnicalException {
+            throws TechnicalException, FunctionalException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(device, SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(device, SecurityKeyType.E_METER_ENCRYPTION);
 
@@ -99,6 +101,9 @@ public class Hls5Connector extends SecureDlmsConnector {
         final byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
         final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
 
+        // Validate keys before JDLMS does and throw a FunctionalException if necessary
+        this.validateKeys(decryptedAuthentication, decryptedEncryption);
+
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(decryptedAuthentication)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
                 .setGlobalUnicastEncryptionKey(decryptedEncryption)
@@ -107,4 +112,41 @@ public class Hls5Connector extends SecureDlmsConnector {
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
     }
 
+    private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey)
+            throws FunctionalException {
+        if (this.checkEmptyKey(encryptionKey)) {
+            this.throwFunctionalException("The encryption key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
+        }
+
+        if (this.checkEmptyKey(authenticationKey)) {
+            this.throwFunctionalException("The authentication key is empty", FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
+        }
+
+        if (this.checkLenghtKey(encryptionKey)) {
+            this.throwFunctionalException("The encryption key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
+        }
+
+        if (this.checkLenghtKey(authenticationKey)) {
+            this.throwFunctionalException("The authentication key has an invalid length", FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT);
+        }
+    }
+
+    private boolean checkEmptyKey(final byte[] key) {
+        if (key == null) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkLenghtKey(final byte[] key) {
+        if (key.length * 8 != AES_GMC_128) {
+            return true;
+        }
+        return false;
+    }
+
+    private void throwFunctionalException(final String msg, final FunctionalExceptionType type) throws FunctionalException {
+        LOGGER.error(msg);
+        throw new FunctionalException(type, ComponentType.PROTOCOL_DLMS);
+    }
 }

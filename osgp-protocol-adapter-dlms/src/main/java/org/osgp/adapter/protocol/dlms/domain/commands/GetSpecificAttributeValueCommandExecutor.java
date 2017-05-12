@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component
 public class GetSpecificAttributeValueCommandExecutor extends
@@ -42,7 +43,7 @@ AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
 
     @Override
     public String execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final SpecificAttributeValueRequestDto requestData) throws ProtocolAdapterException {
+            final SpecificAttributeValueRequestDto requestData) throws ProtocolAdapterException, FunctionalException {
 
         final ObisCodeValuesDto obisCodeValues = requestData.getObisCode();
         final byte[] obisCodeBytes = { obisCodeValues.getA(), obisCodeValues.getB(), obisCodeValues.getC(),

@@ -26,6 +26,10 @@ import org.osgp.adapter.protocol.dlms.exceptions.RecoverKeyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+
 public class RecoverKeyProcess implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RecoverKeyProcess.class);
@@ -70,7 +74,11 @@ public class RecoverKeyProcess implements Runnable {
 
         LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
 
-        this.initDevice();
+        try {
+            this.initDevice();
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception: {}", e);
+        }
         if (!this.device.hasNewSecurityKey()) {
             return;
         }
@@ -80,16 +88,12 @@ public class RecoverKeyProcess implements Runnable {
         }
     }
 
-    private void initDevice() {
+    private void initDevice() throws FunctionalException {
         try {
             this.device = this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
         } catch (final ProtocolAdapterException e) {
             // Thread can not recover from these exceptions.
             throw new RecoverKeyException(e.getMessage(), e);
-        }
-
-        if (this.device == null) {
-            throw new IllegalArgumentException("Device " + this.deviceIdentification + " not found.");
         }
     }
 
@@ -133,10 +137,11 @@ public class RecoverKeyProcess implements Runnable {
      * @throws IOException
      *             When there are problems in connecting to or communicating
      *             with the device.
+     * @throws FunctionalException
      */
-    private DlmsConnection createConnection() throws IOException {
-        final byte[] authenticationKey = Hex.decode(this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION)
-                .getKey());
+    private DlmsConnection createConnection() throws IOException, FunctionalException {
+        final byte[] authenticationKey = Hex
+                .decode(this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION).getKey());
         final byte[] encryptionKey = Hex.decode(this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getKey());
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(authenticationKey)
@@ -144,13 +149,20 @@ public class RecoverKeyProcess implements Runnable {
                 .setGlobalUnicastEncryptionKey(encryptionKey).setEncryptionMechanism(EncryptionMechanism.AES_GMC_128)
                 .build();
 
-        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
-                .getIpAddress())).setSecuritySuite(securitySuite).setResponseTimeout(this.responseTimeout)
-                .setLogicalDeviceId(this.logicalDeviceAddress).setClientId(this.clientAccessPoint);
+        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
+                InetAddress.getByName(this.device.getIpAddress())).setSecuritySuite(securitySuite)
+                .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
+                .setClientId(this.clientAccessPoint);
 
         final Integer challengeLength = this.device.getChallengeLength();
-        if (challengeLength != null) {
-            tcpConnectionBuilder.setChallengeLength(challengeLength);
+
+        try {
+            if (challengeLength != null) {
+                tcpConnectionBuilder.setChallengeLength(challengeLength);
+            }
+        } catch (final IllegalArgumentException e) {
+            LOGGER.error("Exception occurred: Invalid key format");
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
 
         return tcpConnectionBuilder.build();

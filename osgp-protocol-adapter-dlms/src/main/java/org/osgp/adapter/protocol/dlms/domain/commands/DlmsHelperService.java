@@ -57,6 +57,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElementDto;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
@@ -89,9 +92,10 @@ public class DlmsHelperService {
      *         identified by {@code attributeAddress}.
      * @throws ConnectionException
      * @throws ProtocolAdapterException
+     * @throws FunctionalException
      */
     public DataObject getAttributeValue(final DlmsConnectionHolder conn, final AttributeAddress attributeAddress)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
         Objects.requireNonNull(conn, "conn must not be null");
         Objects.requireNonNull(attributeAddress, "attributeAddress must not be null");
         try {
@@ -107,8 +111,11 @@ public class DlmsHelperService {
         } catch (final IOException e) {
             throw new ConnectionException(e);
         } catch (final Exception e) {
-            throw new ProtocolAdapterException("Error retrieving attribute value for {" + attributeAddress.getClassId()
-                    + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
+            final String errorMessage = String.format("Error retrieving attribute value for classID {%d}, obisCode {%s} and attributeAddressId {%d}.",
+                    attributeAddress.getClassId(), attributeAddress.getInstanceId().toObisCode(), attributeAddress.getId());
+            LOGGER.error(errorMessage);
+
+            throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS, e);
         }
     }
 
@@ -735,8 +742,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -762,10 +769,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-                .append(clockStatus);
+        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+        .append(clockStatus);
 
         return sb.toString();
     }
@@ -860,7 +867,7 @@ public class DlmsHelperService {
         final String resultDataType = resultData.getValue() == null ? "null" : resultData.getValue().getClass()
                 .getName();
         throw new ProtocolAdapterException("Expected ResultData of " + expectedType + ", got: " + resultData.getType()
-                + ", value type: " + resultDataType);
+        + ", value type: " + resultDataType);
     }
 
     public void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,

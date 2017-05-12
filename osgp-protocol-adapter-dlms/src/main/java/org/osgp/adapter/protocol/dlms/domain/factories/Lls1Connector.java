@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
@@ -43,7 +44,7 @@ public class Lls1Connector extends SecureDlmsConnector {
 
     @Override
     public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws TechnicalException {
+            throws TechnicalException, FunctionalException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice(device);
@@ -65,10 +66,9 @@ public class Lls1Connector extends SecureDlmsConnector {
         }
     }
 
-
     @Override
     protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-            throws TechnicalException {
+            throws TechnicalException, FunctionalException {
 
         final SecurityKey validPassword = this.getSecurityKey(device, SecurityKeyType.PASSWORD);
 

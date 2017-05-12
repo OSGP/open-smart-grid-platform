@@ -69,8 +69,8 @@
   
     <modules>
         <module>parent-pa-dlms</module>
-        <module>osgp-protocol-adapter-dlms</module>
         <module>osgp-dlms</module>
+        <module>osgp-protocol-adapter-dlms</module>
         <module>osgp-jasper-interface</module>
         <module>Shared/shared</module>
         <module>Shared/osgp-dto</module>

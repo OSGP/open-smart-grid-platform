@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component
 public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
@@ -69,7 +70,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
 
     @Override
     public String execute(final DlmsConnectionHolder conn, final DlmsDevice device, final DataObject object)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -138,7 +139,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
 
     private String getAllDataFromAttribute(final DlmsConnectionHolder conn, final int classNumber,
             final DataObject obisCode, final int attributeValue)
-            throws ProtocolAdapterException, IOException, TimeoutException {
+                    throws ProtocolAdapterException, IOException, TimeoutException {
 
         if (!obisCode.isByteArray()) {
             this.throwUnexpectedTypeProtocolAdapterException();

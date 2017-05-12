@@ -190,17 +190,14 @@ public class ConfigurationService {
     }
 
     public String setEncryptionKeyExchangeOnGMeter(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException {
+            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
 
         // Get G-Meter
         DlmsDevice gMeterDevice;
-        try {
-            gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo.getDeviceIdentification());
-        } catch (final FunctionalException e) {
-            throw new ProtocolAdapterException("Error while looking up G-Meter", e);
-        }
+        gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo.getDeviceIdentification());
+
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(),
                 gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey(),
@@ -219,7 +216,7 @@ public class ConfigurationService {
         this.setActivityCalendarCommandExecutor.execute(conn, device, activityCalendar);
 
         return "Set Activity Calendar Result is OK for device id: " + device.getDeviceIdentification()
-                + " calendar name: " + activityCalendar.getCalendarName();
+        + " calendar name: " + activityCalendar.getCalendarName();
 
     }
 
@@ -259,7 +256,7 @@ public class ConfigurationService {
     }
 
     public void replaceKeys(final DlmsConnectionHolder conn, final DlmsDevice device, final SetKeysRequestDto keySet)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
 
         try {
             /*

@@ -15,6 +15,8 @@ import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProviderService;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,8 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DomainHelperService.class);
 
     private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
@@ -56,15 +60,19 @@ public class DomainHelperService {
         return dlmsDevice;
     }
 
-    public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws ProtocolAdapterException {
+    public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata)
+            throws ProtocolAdapterException, FunctionalException {
         return this.findDlmsDevice(messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
     }
 
     public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
-            throw new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification);
+            final String errorMessage = String.format("Unable to communicate with unknown device: %s", deviceIdentification);
+            LOGGER.error(errorMessage);
+
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS);
         }
 
         if (dlmsDevice.isIpAddressIsStatic()) {
@@ -75,10 +83,11 @@ public class DomainHelperService {
         return dlmsDevice;
     }
 
-    private String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
+    private String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice)
+            throws ProtocolAdapterException, FunctionalException {
 
-        final SessionProvider sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice
-                .getCommunicationProvider());
+        final SessionProvider sessionProvider = this.sessionProviderService
+                .getSessionProvider(dlmsDevice.getCommunicationProvider());
         String deviceIpAddress = null;
         try {
             deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
@@ -93,19 +102,20 @@ public class DomainHelperService {
             deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
 
         } catch (final SessionProviderException e) {
-            throw new ProtocolAdapterException("", e);
+            LOGGER.error("Invalid key format exception", e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
             throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
-                    + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
-                    + "and iccId: " + dlmsDevice.getIccId());
+            + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
+            + "and iccId: " + dlmsDevice.getIccId());
 
         }
         return deviceIpAddress;
     }
 
     private String pollForSession(final SessionProvider sessionProvider, final DlmsDevice dlmsDevice)
-            throws ProtocolAdapterException {
+            throws ProtocolAdapterException, FunctionalException {
 
         String deviceIpAddress = null;
         try {
