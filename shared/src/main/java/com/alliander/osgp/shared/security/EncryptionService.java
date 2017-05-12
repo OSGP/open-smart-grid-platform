@@ -94,7 +94,9 @@ public class EncryptionService {
         try {
             this.key = new SecretKeySpec(Files.readAllBytes(new File(this.keyPath).toPath()), SECRET_KEY_SPEC);
         } catch (final IOException e) {
-            LOGGER.error("Unexpected exception when reading keys", e);
+            final String errorMessage = String.format("Unexpected exception when reading keys. Key Path: %s",
+                    this.keyPath);
+            LOGGER.error(errorMessage);
 
             throw new FunctionalException(FunctionalExceptionType.READING_KEY_EXCEPTION,
                     ComponentType.SHARED, e);
