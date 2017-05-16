@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,10 +19,10 @@ import java.util.Map;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.core.wait.Wait;
+import com.alliander.osgp.cucumber.core.GlueBase;
+import com.alliander.osgp.cucumber.core.Wait;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
@@ -49,35 +49,35 @@ public class OrganizationSteps extends GlueBase {
     @Given("^an organization$")
     public void anOrganization(final Map<String, String> settings) throws Throwable {
 
-        final String organizationIdentification = getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        final String organizationIdentification = getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
         Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
         if (entity == null) {
             entity = new Organisation(
-                    (organizationIdentification.isEmpty()) ? Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION
+                    (organizationIdentification.isEmpty()) ? PlatformDefaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION
                             : organizationIdentification,
-                    getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
-                    getString(settings, Keys.KEY_PREFIX, Defaults.DEFAULT_PREFIX),
-                    getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
-                            Defaults.PLATFORM_FUNCTION_GROUP));
+                    getString(settings, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_ORGANIZATION_NAME),
+                    getString(settings, PlatformKeys.KEY_PREFIX, PlatformDefaults.DEFAULT_PREFIX),
+                    getEnum(settings, PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
+                            PlatformDefaults.PLATFORM_FUNCTION_GROUP));
         } else {
-            entity.changeOrganisationData(getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
-                    getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
-                            Defaults.PLATFORM_FUNCTION_GROUP));
+            entity.changeOrganisationData(getString(settings, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_ORGANIZATION_NAME),
+                    getEnum(settings, PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
+                            PlatformDefaults.PLATFORM_FUNCTION_GROUP));
         }
 
         // Add all the mandatory stuff.
         entity.setDomains(new ArrayList<>());
-        String domains = Defaults.DEFAULT_DOMAINS;
-        if (settings.containsKey(Keys.KEY_DOMAINS) && !settings.get(Keys.KEY_DOMAINS).isEmpty()) {
-            domains = settings.get(Keys.KEY_DOMAINS);
+        String domains = PlatformDefaults.DEFAULT_DOMAINS;
+        if (settings.containsKey(PlatformKeys.KEY_DOMAINS) && !settings.get(PlatformKeys.KEY_DOMAINS).isEmpty()) {
+            domains = settings.get(PlatformKeys.KEY_DOMAINS);
         }
-        for (final String domain : domains.split(Keys.SEPARATOR_SEMICOLON)) {
+        for (final String domain : domains.split(PlatformKeys.SEPARATOR_SEMICOLON)) {
             entity.addDomain(Enum.valueOf(PlatformDomain.class, domain));
         }
 
-        entity.setIsEnabled(getBoolean(settings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
+        entity.setIsEnabled(getBoolean(settings, PlatformKeys.KEY_ENABLED, PlatformDefaults.DEFAULT_ORGANIZATION_ENABLED));
 
         this.repo.save(entity);
     }
@@ -95,22 +95,22 @@ public class OrganizationSteps extends GlueBase {
 
         Wait.until(() -> {
             final Organisation entity = this.repo
-                    .findByOrganisationIdentification(expectedEntity.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+                    .findByOrganisationIdentification(expectedEntity.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
 
-            Assert.assertEquals(getString(expectedEntity, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME),
+            Assert.assertEquals(getString(expectedEntity, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_NEW_ORGANIZATION_NAME),
                     entity.getName());
-            final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX);
-            Assert.assertEquals((prefix.isEmpty()) ? Defaults.DEFAULT_ORGANIZATION_PREFIX : prefix, entity.getPrefix());
+            final String prefix = getString(expectedEntity, PlatformKeys.KEY_PREFIX, PlatformDefaults.DEFAULT_ORGANIZATION_PREFIX);
+            Assert.assertEquals((prefix.isEmpty()) ? PlatformDefaults.DEFAULT_ORGANIZATION_PREFIX : prefix, entity.getPrefix());
 
-            Assert.assertEquals(getEnum(expectedEntity, Keys.KEY_PLATFORM_FUNCTION_GROUP,
+            Assert.assertEquals(getEnum(expectedEntity, PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP,
                     com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.class,
-                    Defaults.PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
-            Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED),
+                    PlatformDefaults.PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
+            Assert.assertEquals(getBoolean(expectedEntity, PlatformKeys.KEY_ENABLED, PlatformDefaults.DEFAULT_ORGANIZATION_ENABLED),
                     entity.isEnabled());
 
-            String domains = getString(expectedEntity, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
+            String domains = getString(expectedEntity, PlatformKeys.KEY_DOMAINS, PlatformDefaults.DEFAULT_DOMAINS);
             if (domains.isEmpty()) {
-                domains = Defaults.DEFAULT_DOMAINS;
+                domains = PlatformDefaults.DEFAULT_DOMAINS;
             }
             final List<String> expectedDomains = Arrays.asList(domains.split(";"));
             Assert.assertEquals(expectedDomains.size(), entity.getDomains().size());
@@ -131,23 +131,23 @@ public class OrganizationSteps extends GlueBase {
     public void theOrganizationExists(final Map<String, String> expectedOrganization) throws Throwable {
         final Organisation entity = Wait.untilAndReturn(() -> {
             return this.repo
-                    .findByOrganisationIdentification(expectedOrganization.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+                    .findByOrganisationIdentification(expectedOrganization.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
         });
 
         Assert.assertNotNull(entity);
 
-        if (expectedOrganization.containsKey(Keys.KEY_NAME)) {
-            Assert.assertEquals(getString(expectedOrganization, Keys.KEY_NAME), entity.getName());
+        if (expectedOrganization.containsKey(PlatformKeys.KEY_NAME)) {
+            Assert.assertEquals(getString(expectedOrganization, PlatformKeys.KEY_NAME), entity.getName());
         }
-        if (expectedOrganization.containsKey(Keys.KEY_PLATFORM_FUNCTION_GROUP)) {
+        if (expectedOrganization.containsKey(PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP)) {
             Assert.assertEquals(
-                    getEnum(expectedOrganization, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
+                    getEnum(expectedOrganization, PlatformKeys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
                     entity.getFunctionGroup());
         }
 
-        if (expectedOrganization.containsKey(Keys.KEY_DOMAINS)
-                && !expectedOrganization.get(Keys.KEY_DOMAINS).isEmpty()) {
-            for (final String domain : expectedOrganization.get(Keys.KEY_DOMAINS).split(Keys.SEPARATOR_SEMICOLON)) {
+        if (expectedOrganization.containsKey(PlatformKeys.KEY_DOMAINS)
+                && !expectedOrganization.get(PlatformKeys.KEY_DOMAINS).isEmpty()) {
+            for (final String domain : expectedOrganization.get(PlatformKeys.KEY_DOMAINS).split(PlatformKeys.SEPARATOR_SEMICOLON)) {
                 Assert.assertTrue(entity.getDomains().contains(PlatformDomain.valueOf(domain)));
             }
         }

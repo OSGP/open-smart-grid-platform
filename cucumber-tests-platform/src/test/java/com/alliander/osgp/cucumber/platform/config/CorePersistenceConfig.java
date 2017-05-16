@@ -20,11 +20,10 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 
 @Configuration
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore", transactionManagerRef = "txMgrCore", basePackageClasses = {
-        DeviceRepository.class, RtuDeviceRepository.class })
+        DeviceRepository.class })
 public class CorePersistenceConfig extends ApplicationPersistenceConfiguration {
 
     @Value("${db.name.osgp_core}")

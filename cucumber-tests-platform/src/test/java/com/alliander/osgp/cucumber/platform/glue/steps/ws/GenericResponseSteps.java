@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.ws;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -21,9 +21,9 @@ import javax.xml.namespace.QName;
 
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.GlueBase;
+import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.support.ws.FaultDetailElement;
 import com.alliander.osgp.cucumber.platform.support.ws.SoapFaultHelper;
 
@@ -42,8 +42,8 @@ public abstract class GenericResponseSteps extends GlueBase {
      *            The list with expected result.
      */
     public static void verifySoapFault(final Map<String, String> expectedResult) {
-        final SoapFaultClientException soapFault = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+        final SoapFaultClientException soapFault = (SoapFaultClientException) ScenarioContext.current()
+                .get(PlatformKeys.RESPONSE);
 
         final QName qNameFaultCode = soapFault.getFaultCode();
         faultCode = qNameFaultCode.getPrefix() + ":" + qNameFaultCode.getLocalPart();
@@ -56,11 +56,11 @@ public abstract class GenericResponseSteps extends GlueBase {
 
     private static void assertFaultDetails(final Map<String, String> expected, final Object actualObj) {
 
-        if (expected.containsKey(Keys.KEY_FAULTCODE)) {
-            assertEquals(getString(expected, Keys.KEY_FAULTCODE), faultCode);
+        if (expected.containsKey(PlatformKeys.KEY_FAULTCODE)) {
+            assertEquals(getString(expected, PlatformKeys.KEY_FAULTCODE), faultCode);
         }
-        if (expected.containsKey(Keys.KEY_FAULTSTRING)) {
-            assertEquals(getString(expected, Keys.KEY_FAULTSTRING), faultString);
+        if (expected.containsKey(PlatformKeys.KEY_FAULTSTRING)) {
+            assertEquals(getString(expected, PlatformKeys.KEY_FAULTSTRING), faultString);
         }
 
         if (actualObj instanceof EnumMap) {

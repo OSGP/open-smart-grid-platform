@@ -9,7 +9,7 @@ package com.alliander.osgp.cucumber.platform.core.builders;
 
 import java.util.Map;
 
-import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 
@@ -56,20 +56,20 @@ public class DeviceModelBuilder implements CucumberBuilder<DeviceModel> {
     @Override
     public DeviceModelBuilder withSettings(final Map<String, String> inputSettings) {
 
-        if (inputSettings.containsKey(Keys.DEVICEMODEL_MODELCODE)) {
-            this.withModelCode(inputSettings.get(Keys.DEVICEMODEL_MODELCODE));
+        if (inputSettings.containsKey(PlatformKeys.DEVICEMODEL_MODELCODE)) {
+            this.withModelCode(inputSettings.get(PlatformKeys.DEVICEMODEL_MODELCODE));
         }
 
-        if (inputSettings.containsKey(Keys.DEVICEMODEL_DESCRIPTION)) {
-            this.withDescription(inputSettings.get(Keys.DEVICEMODEL_DESCRIPTION));
+        if (inputSettings.containsKey(PlatformKeys.DEVICEMODEL_DESCRIPTION)) {
+            this.withDescription(inputSettings.get(PlatformKeys.DEVICEMODEL_DESCRIPTION));
         }
 
-        if (inputSettings.containsKey(Keys.DEVICEMODEL_FILESTORAGE)) {
-            this.withFileStorage(Boolean.parseBoolean(inputSettings.get(Keys.DEVICEMODEL_FILESTORAGE)));
+        if (inputSettings.containsKey(PlatformKeys.DEVICEMODEL_FILESTORAGE)) {
+            this.withFileStorage(Boolean.parseBoolean(inputSettings.get(PlatformKeys.DEVICEMODEL_FILESTORAGE)));
         }
 
-        if (inputSettings.containsKey(Keys.DEVICEMODEL_METERED)) {
-            this.withMetered(Boolean.parseBoolean(inputSettings.get(Keys.DEVICEMODEL_METERED)));
+        if (inputSettings.containsKey(PlatformKeys.DEVICEMODEL_METERED)) {
+            this.withMetered(Boolean.parseBoolean(inputSettings.get(PlatformKeys.DEVICEMODEL_METERED)));
         }
 
         return this;

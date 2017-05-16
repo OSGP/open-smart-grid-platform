@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.support.ws;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 
 /**
  * Base client.
@@ -17,10 +17,10 @@ import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 public abstract class BaseClient {
 
     protected String getOrganizationIdentification() {
-    	return (String) ScenarioContext.Current().get(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+    	return (String) ScenarioContext.current().get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
     }
     
     protected String getUserName() {
-        return (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
+        return (String) ScenarioContext.current().get(PlatformKeys.KEY_USER_NAME, PlatformDefaults.DEFAULT_USER_NAME);
     }
 }

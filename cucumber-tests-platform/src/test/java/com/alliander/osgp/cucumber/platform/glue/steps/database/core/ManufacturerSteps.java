@@ -7,17 +7,17 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.core.GlueBase;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 
@@ -43,9 +43,9 @@ public class ManufacturerSteps extends GlueBase {
     public void aManufacturer(final Map<String, String> settings) throws Throwable {
 
         final Manufacturer entity = new Manufacturer(
-                getString(settings, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID),
-                getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_MANUFACTURER_NAME),
-                getBoolean(settings, Keys.USE_PREFIX, Defaults.DEFAULT_MANUFACTURER_USE_PREFIX));
+                getString(settings, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID),
+                getString(settings, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME),
+                getBoolean(settings, PlatformKeys.USE_PREFIX, PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX));
 
         this.repo.save(entity);
     }
@@ -60,11 +60,11 @@ public class ManufacturerSteps extends GlueBase {
     public void theEntityManufacturerExists(final Map<String, String> expectedEntity) throws Throwable {
         // TODO: Wait until the stuff is created.
         final Manufacturer entity = this.repo
-                .findByName(getString(expectedEntity, "Name", Defaults.DEFAULT_MANUFACTURER_NAME));
+                .findByName(getString(expectedEntity, "Name", PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
 
-        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
+        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", PlatformDefaults.DEFAULT_MANUFACTURER_ID),
                 entity.getManufacturerId());
-        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", Defaults.DEFAULT_MANUFACTURER_USE_PREFIX),
+        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX),
                 entity.isUsePrefix());
     }
 }

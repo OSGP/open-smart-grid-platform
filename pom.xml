@@ -93,12 +93,12 @@
     <module>Platform/osgp-logging</module>
 
     <!-- Automatic tests project -->
+    <module>cucumber-tests-core</module>
     <module>cucumber-tests-platform</module>
-    <module>cucumber-tests-platform-dlms</module>
-
-    <!-- Fitnesse Acceptance Test Project (Obsolete, but in here because not 
-      all tests are moved to the cucumber projects -->
-    <!--<module>osgp-platform-test</module>-->
+    <module>cucumber-tests-platform-common</module>
+    <module>cucumber-tests-platform-publiclighting</module>
+    <module>cucumber-tests-platform-smartmetering</module>
+    <module>cucumber-tests-platform-microgrids</module>
 
   </modules>
 </project>

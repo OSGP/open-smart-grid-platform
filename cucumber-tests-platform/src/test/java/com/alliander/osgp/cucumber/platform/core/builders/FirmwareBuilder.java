@@ -9,7 +9,7 @@ package com.alliander.osgp.cucumber.platform.core.builders;
 
 import java.util.Map;
 
-import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Firmware;
 
@@ -101,40 +101,40 @@ public class FirmwareBuilder implements CucumberBuilder<Firmware> {
 
     @Override
     public FirmwareBuilder withSettings(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(Keys.FIRMWARE_FILENAME)) {
-            this.withFilename(inputSettings.get(Keys.FIRMWARE_FILENAME));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_FILENAME)) {
+            this.withFilename(inputSettings.get(PlatformKeys.FIRMWARE_FILENAME));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_DESCRIPTION)) {
-            this.withDescription(inputSettings.get(Keys.FIRMWARE_DESCRIPTION));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_DESCRIPTION)) {
+            this.withDescription(inputSettings.get(PlatformKeys.FIRMWARE_DESCRIPTION));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_PUSH_TO_NEW_DEVICES)) {
-            this.withPushToNewDevices(Boolean.parseBoolean(inputSettings.get(Keys.FIRMWARE_PUSH_TO_NEW_DEVICES)));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES)) {
+            this.withPushToNewDevices(Boolean.parseBoolean(inputSettings.get(PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES)));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_COMM)) {
-            this.withModuleVersionComm(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_COMM));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM)) {
+            this.withModuleVersionComm(inputSettings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_FUNC)) {
-            this.withModuleVersionFunc(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_FUNC));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC)) {
+            this.withModuleVersionFunc(inputSettings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_MA)) {
-            this.withModuleVersionMa(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_MA));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_MA)) {
+            this.withModuleVersionMa(inputSettings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_MA));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_MBUS)) {
-            this.withModuleVersionMbus(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_MBUS));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS)) {
+            this.withModuleVersionMbus(inputSettings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_SEC)) {
-            this.withModuleVersionSec(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_SEC));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_SEC)) {
+            this.withModuleVersionSec(inputSettings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_SEC));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_HASH)) {
-            this.withHash(inputSettings.get(Keys.FIRMWARE_HASH));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_HASH)) {
+            this.withHash(inputSettings.get(PlatformKeys.FIRMWARE_HASH));
         }
 
         return this;

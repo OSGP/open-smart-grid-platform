@@ -7,12 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getDate;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getFloat;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getLong;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.core.Helpers.getDate;
+import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.cucumber.core.Helpers.getFloat;
+import static com.alliander.osgp.cucumber.core.Helpers.getLong;
+import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -20,11 +20,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.core.GlueBase;
+import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
-import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
@@ -68,67 +68,67 @@ public abstract class BaseDeviceSteps extends GlueBase {
     public Device updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
-        if (settings.containsKey(Keys.KEY_TECHNICAL_INSTALLATION_DATE)
-                && !settings.get(Keys.KEY_TECHNICAL_INSTALLATION_DATE).isEmpty()) {
-            device.setTechnicalInstallationDate(getDate(settings, Keys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
+        if (settings.containsKey(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE)
+                && !settings.get(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).isEmpty()) {
+            device.setTechnicalInstallationDate(getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
         }
 
         final DeviceModel deviceModel = this.deviceModelRepository
-                .findByModelCode(getString(settings, Keys.KEY_DEVICE_MODEL, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+                .findByModelCode(getString(settings, PlatformKeys.KEY_DEVICE_MODEL, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
 
-        if (settings.containsKey(Keys.DEVICEMODEL_METERED)) {
-            deviceModel.updateData(Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION,
-                    getBoolean(settings, Keys.DEVICEMODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED));
+        if (settings.containsKey(PlatformKeys.DEVICEMODEL_METERED)) {
+            deviceModel.updateData(PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION,
+                    getBoolean(settings, PlatformKeys.DEVICEMODEL_METERED, PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED));
         }
 
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                getString(settings, Keys.KEY_PROTOCOL, Defaults.DEFAULT_PROTOCOL),
-                getString(settings, Keys.KEY_PROTOCOL_VERSION, Defaults.DEFAULT_PROTOCOL_VERSION)));
+                getString(settings, PlatformKeys.KEY_PROTOCOL, PlatformDefaults.DEFAULT_PROTOCOL),
+                getString(settings, PlatformKeys.KEY_PROTOCOL_VERSION, PlatformDefaults.DEFAULT_PROTOCOL_VERSION)));
 
         InetAddress inetAddress;
         try {
             inetAddress = InetAddress
-                    .getByName(getString(settings, Keys.IP_ADDRESS, this.configuration.getDeviceNetworkAddress()));
+                    .getByName(getString(settings, PlatformKeys.IP_ADDRESS, this.configuration.getDeviceNetworkAddress()));
         } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
         device.updateRegistrationData(inetAddress,
-                getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
+                getString(settings, PlatformKeys.KEY_DEVICE_TYPE, PlatformDefaults.DEFAULT_DEVICE_TYPE));
 
-        device.updateInMaintenance(getBoolean(settings, Keys.IN_MAINTENANCE, Defaults.IN_MAINTENANCE));
-        device.setVersion(getLong(settings, Keys.KEY_VERSION));
-        device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.DEFAULT_ACTIVE));
-        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) != "null") {
-            device.addOrganisation(getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                    Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        device.updateInMaintenance(getBoolean(settings, PlatformKeys.IN_MAINTENANCE, PlatformDefaults.IN_MAINTENANCE));
+        device.setVersion(getLong(settings, PlatformKeys.KEY_VERSION));
+        device.setActive(getBoolean(settings, PlatformKeys.KEY_ACTIVE, PlatformDefaults.DEFAULT_ACTIVE));
+        if (getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION) != "null") {
+            device.addOrganisation(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                    PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
-        device.updateMetaData(getString(settings, Keys.KEY_ALIAS, Defaults.DEFAULT_ALIAS),
-                getString(settings, Keys.KEY_CITY, Defaults.DEFAULT_CONTAINER_CITY),
-                getString(settings, Keys.KEY_POSTCODE, Defaults.DEFAULT_CONTAINER_POSTALCODE),
-                getString(settings, Keys.KEY_STREET, Defaults.DEFAULT_CONTAINER_STREET),
-                getString(settings, Keys.KEY_NUMBER, Defaults.DEFAULT_CONTAINER_NUMBER),
-                getString(settings, Keys.KEY_MUNICIPALITY, Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
-                (settings.containsKey(Keys.KEY_LATITUDE) && !settings.get(Keys.KEY_LATITUDE).isEmpty())
-                        ? getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE) : null,
-                (settings.containsKey(Keys.KEY_LONGITUDE) && !settings.get(Keys.KEY_LONGITUDE).isEmpty())
-                        ? getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE) : null);
+        device.updateMetaData(getString(settings, PlatformKeys.KEY_ALIAS, PlatformDefaults.DEFAULT_ALIAS),
+                getString(settings, PlatformKeys.KEY_CITY, PlatformDefaults.DEFAULT_CONTAINER_CITY),
+                getString(settings, PlatformKeys.KEY_POSTCODE, PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
+                getString(settings, PlatformKeys.KEY_STREET, PlatformDefaults.DEFAULT_CONTAINER_STREET),
+                getString(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
+                getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY),
+                (settings.containsKey(PlatformKeys.KEY_LATITUDE) && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
+                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE) : null,
+                (settings.containsKey(PlatformKeys.KEY_LONGITUDE) && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
+                        ? getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformDefaults.DEFAULT_LONGITUDE) : null);
 
-        device.setActivated(getBoolean(settings, Keys.KEY_IS_ACTIVATED, Defaults.DEFAULT_IS_ACTIVATED));
+        device.setActivated(getBoolean(settings, PlatformKeys.KEY_IS_ACTIVATED, PlatformDefaults.DEFAULT_IS_ACTIVATED));
         device = this.deviceRepository.save(device);
 
-        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) != "null") {
+        if (getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION) != "null") {
             final Organisation organization = this.organizationRepository.findByOrganisationIdentification(getString(
-                    settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-            final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICE_FUNCTION_GROUP,
+                    settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+            final DeviceFunctionGroup functionGroup = getEnum(settings, PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
             final Device savedDevice = this.deviceRepository.save(device);
             this.deviceAuthorizationRepository.save(authorization);
-            ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
+            ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
 
             device = savedDevice;
         }

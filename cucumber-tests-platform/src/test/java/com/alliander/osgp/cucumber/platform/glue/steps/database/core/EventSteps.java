@@ -7,10 +7,10 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getDateTime2;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.getDateTime2;
+import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.cucumber.core.Helpers.getInteger;
+import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,10 +21,10 @@ import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.core.wait.Wait;
+import com.alliander.osgp.cucumber.core.GlueBase;
+import com.alliander.osgp.cucumber.core.Wait;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -45,22 +45,22 @@ public class EventSteps extends GlueBase {
     @Given("^an event$")
     public void anEvent(final Map<String, String> data) throws Exception {
         final Device device = this.deviceRepository
-                .findByDeviceIdentification(getString(data, Keys.KEY_DEVICE_IDENTIFICATION));
+                .findByDeviceIdentification(getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-        Event event = new Event(device, getDateTime2(getString(data, Keys.DATE), DateTime.now()).toDate(),
-                getEnum(data, Keys.EVENT_TYPE, EventType.class, EventType.DIAG_EVENTS_GENERAL),
-                getString(data, Keys.KEY_DESCRIPTION, ""), getInteger(data, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+        Event event = new Event(device, getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate(),
+                getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.DIAG_EVENTS_GENERAL),
+                getString(data, PlatformKeys.KEY_DESCRIPTION, ""), getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
 
         this.eventRepository.save(event);
 
-        if (data.containsKey(Keys.TIME_UNTIL_ON)) {
-            final DateTime dateTime = getDateTime2(getString(data, Keys.DATE), DateTime.now());
-            final DateTime dateTimePlus = dateTime.plusHours(getInteger(data, Keys.TIME_UNTIL_ON));
+        if (data.containsKey(PlatformKeys.TIME_UNTIL_ON)) {
+            final DateTime dateTime = getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now());
+            final DateTime dateTimePlus = dateTime.plusHours(getInteger(data, PlatformKeys.TIME_UNTIL_ON));
             if (dateTime.isAfter(dateTimePlus.getMillis())) {
                 dateTimePlus.plusDays(1);
             }
             event = new Event(device, dateTimePlus.toDate(), EventType.LIGHT_EVENTS_LIGHT_OFF, "light off",
-                    getInteger(data, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+                    getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
 
             this.eventRepository.save(event);
         }
@@ -70,17 +70,17 @@ public class EventSteps extends GlueBase {
     public void theEventIsStored(final Map<String, String> expectedEntity) throws Throwable {
 
         // Convert comma separated events into a mutable list (for comparison)
-        final List<String> expectedEvents = new ArrayList<>(Arrays.asList((expectedEntity.containsKey(Keys.KEY_EVENTS))
-                ? getString(expectedEntity, Keys.KEY_EVENTS).split(Keys.SEPARATOR_COMMA)
-                : (expectedEntity.containsKey(Keys.KEY_EVENT))
-                        ? getString(expectedEntity, Keys.KEY_EVENT).split(Keys.SEPARATOR_COMMA) : new String[0]));
+        final List<String> expectedEvents = new ArrayList<>(Arrays.asList((expectedEntity.containsKey(PlatformKeys.KEY_EVENTS))
+                ? getString(expectedEntity, PlatformKeys.KEY_EVENTS).split(PlatformKeys.SEPARATOR_COMMA)
+                : (expectedEntity.containsKey(PlatformKeys.KEY_EVENT))
+                        ? getString(expectedEntity, PlatformKeys.KEY_EVENT).split(PlatformKeys.SEPARATOR_COMMA) : new String[0]));
 
         // Convert comma separated indexes into a mutable list (for comparison)
-        final List<String> expectedIndexes = new ArrayList<>(Arrays.asList((expectedEntity.containsKey(Keys.KEY_INDEXES))
-                ? getString(expectedEntity, Keys.KEY_INDEXES).split(Keys.SEPARATOR_COMMA)
-                : (expectedEntity.containsKey(Keys.KEY_INDEX)
-                        && !expectedEntity.get(Keys.KEY_INDEX).equals("EMPTY"))
-                                ? getString(expectedEntity, Keys.KEY_INDEX).split(Keys.SEPARATOR_COMMA)
+        final List<String> expectedIndexes = new ArrayList<>(Arrays.asList((expectedEntity.containsKey(PlatformKeys.KEY_INDEXES))
+                ? getString(expectedEntity, PlatformKeys.KEY_INDEXES).split(PlatformKeys.SEPARATOR_COMMA)
+                : (expectedEntity.containsKey(PlatformKeys.KEY_INDEX)
+                        && !expectedEntity.get(PlatformKeys.KEY_INDEX).equals("EMPTY"))
+                                ? getString(expectedEntity, PlatformKeys.KEY_INDEX).split(PlatformKeys.SEPARATOR_COMMA)
                                 : new String[] {"0"}));
 
         Assert.assertEquals("Number of events and indexes must be equal in scenario input", 
@@ -89,13 +89,13 @@ public class EventSteps extends GlueBase {
         // Wait for the correct events to be available
         Wait.until(() -> {
             final Device device = this.deviceRepository
-                    .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+                    .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
             // Read the actual events received and check the desired size
             final List<Event> actualEvents = this.eventRepository.findByDevice(device);
 
-            if (expectedEntity.containsKey(Keys.NUMBER_OF_EVENTS)) {
-                Assert.assertEquals((int) getInteger(expectedEntity, Keys.NUMBER_OF_EVENTS), actualEvents.size());
+            if (expectedEntity.containsKey(PlatformKeys.NUMBER_OF_EVENTS)) {
+                Assert.assertEquals((int) getInteger(expectedEntity, PlatformKeys.NUMBER_OF_EVENTS), actualEvents.size());
             }
 
             // Validate all expected events have been received

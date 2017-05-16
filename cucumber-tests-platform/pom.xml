@@ -23,16 +23,32 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
+      <artifactId>logback-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>jgoodies</groupId>
-      <artifactId>forms</artifactId>
+      <groupId>org.logback-extensions</groupId>
+      <artifactId>logback-ext-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
     </dependency>
 
     <!-- Cucumber Framework -->
@@ -43,20 +59,14 @@
     </dependency>
     <dependency>
       <groupId>info.cukes</groupId>
-      <artifactId>cucumber-java</artifactId>
+      <artifactId>cucumber-core</artifactId>
     </dependency>
     <dependency>
       <groupId>info.cukes</groupId>
-      <artifactId>cucumber-spring</artifactId>
-      <scope>test</scope>
+      <artifactId>cucumber-java</artifactId>
     </dependency>
 
     <!-- Spring Framework -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
@@ -69,11 +79,23 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+    </dependency>
 
     <!-- Spring Data -->
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-commons</artifactId>
     </dependency>
 
     <!-- Spring WS -->
@@ -81,106 +103,36 @@
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws-support</artifactId>
-    </dependency>
 
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.0-api</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- OSGP -->
     <dependency>
-      <groupId>org.osgp</groupId>
-      <artifactId>osgp-protocol-adapter-dlms</artifactId>
-      <classifier>classes</classifier>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-domain-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-protocol-adapter-oslp</artifactId>
-      <classifier>classes</classifier>
+      <artifactId>shared</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-protocol-adapter-iec61850</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-domain-microgrids</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-domain-microgrids</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-admin</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-core</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-shared-db</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-microgrids</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-publiclighting</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-tariffswitching</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-smartmetering</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-protocol-simulator-iec61850</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-domain-logging</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>oslp</artifactId>
+      <groupId>com.alliander</groupId>
+      <artifactId>cucumber-tests-core</artifactId>
+      <type>test-jar</type>
     </dependency>
-
-    <dependency>
-      <groupId>com.sun.net.httpserver</groupId>
-      <artifactId>http</artifactId>
-    </dependency>
+    
   </dependencies>
 
   <build>
