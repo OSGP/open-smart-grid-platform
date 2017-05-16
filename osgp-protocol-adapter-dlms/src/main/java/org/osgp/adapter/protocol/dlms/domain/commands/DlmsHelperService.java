@@ -105,7 +105,7 @@ public class DlmsHelperService {
                 return getResult.getResultData();
             }
 
-            final String errorMessage = String.format("Retrieving attribute value for { %d, %s, %d }. Got result: resultCode("
+            final String errorMessage = String.format("Retrieving attribute value for { %d, %s, %d }. Result: resultCode("
                     + "%d), with data: %s", attributeAddress.getClassId(),
                     attributeAddress.getInstanceId().toObisCode(),
                     attributeAddress.getId(),
