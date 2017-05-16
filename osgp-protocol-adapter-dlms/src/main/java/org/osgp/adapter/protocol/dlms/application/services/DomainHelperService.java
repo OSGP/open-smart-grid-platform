@@ -102,8 +102,8 @@ public class DomainHelperService {
             deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
 
         } catch (final SessionProviderException e) {
-            LOGGER.error("Invalid key format exception", e);
-            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
+            LOGGER.error("IccId is probably not supported in this session provider", e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS);
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
             throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()

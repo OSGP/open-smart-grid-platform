@@ -95,7 +95,7 @@ public class DlmsHelperService {
      * @throws FunctionalException
      */
     public DataObject getAttributeValue(final DlmsConnectionHolder conn, final AttributeAddress attributeAddress)
-            throws ProtocolAdapterException, FunctionalException {
+            throws FunctionalException {
         Objects.requireNonNull(conn, "conn must not be null");
         Objects.requireNonNull(attributeAddress, "attributeAddress must not be null");
         try {
@@ -104,18 +104,18 @@ public class DlmsHelperService {
             if (AccessResultCode.SUCCESS == resultCode) {
                 return getResult.getResultData();
             }
-            throw new ProtocolAdapterException("Retrieving attribute value for {" + attributeAddress.getClassId() + ","
-                    + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "} got result: "
-                    + resultCode + "(" + resultCode.getCode() + "), with data: "
-                    + this.getDebugInfo(getResult.getResultData()));
+
+            final String errorMessage = String.format("Retrieving attribute value for { %d, %s, %d }. Got result: resultCode("
+                    + "%d), with data: %s", attributeAddress.getClassId(),
+                    attributeAddress.getInstanceId().toObisCode(),
+                    attributeAddress.getId(),
+                    resultCode.getCode(),
+                    this.getDebugInfo(getResult.getResultData()));
+
+            LOGGER.error(errorMessage);
+            throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS);
         } catch (final IOException e) {
             throw new ConnectionException(e);
-        } catch (final Exception e) {
-            final String errorMessage = String.format("Error retrieving attribute value for classID {%d}, obisCode {%s} and attributeAddressId {%d}.",
-                    attributeAddress.getClassId(), attributeAddress.getInstanceId().toObisCode(), attributeAddress.getId());
-            LOGGER.error(errorMessage);
-
-            throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS, e);
         }
     }
 

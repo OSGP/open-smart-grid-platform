@@ -17,11 +17,17 @@ import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public class Lls0Connector extends DlmsConnector {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Lls0Connector.class);
 
     protected final int responseTimeout;
 
@@ -72,7 +78,9 @@ public class Lls0Connector extends DlmsConnector {
         try {
             return tcpConnectionBuilder.build();
         } catch (final IOException e) {
-            throw new ConnectionException(e);
+            final String errorMessage = String.format("Unable to get connection for device %s", device.getDeviceIdentification());
+            LOGGER.error(errorMessage);
+            throw new FunctionalException(FunctionalExceptionType.COMMUNICATION_TIMEOUT, ComponentType.PROTOCOL_DLMS, e);
         }
     }
 }
