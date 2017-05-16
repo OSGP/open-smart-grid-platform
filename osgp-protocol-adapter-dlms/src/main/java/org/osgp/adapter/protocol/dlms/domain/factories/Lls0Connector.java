@@ -78,7 +78,7 @@ public class Lls0Connector extends DlmsConnector {
         try {
             return tcpConnectionBuilder.build();
         } catch (final IOException e) {
-            final String errorMessage = String.format("Unable to get connection for device %s", device.getDeviceIdentification());
+            final String errorMessage = String.format("Communication timeout for device %s", device.getDeviceIdentification());
             LOGGER.error(errorMessage);
             throw new FunctionalException(FunctionalExceptionType.COMMUNICATION_TIMEOUT, ComponentType.PROTOCOL_DLMS, e);
         }
