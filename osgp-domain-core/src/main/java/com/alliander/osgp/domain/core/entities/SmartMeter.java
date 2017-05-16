@@ -22,11 +22,23 @@ public class SmartMeter extends Device {
      */
     private static final long serialVersionUID = -3526823976188640681L;
 
-    @Column
+    @Column(length = 50)
     private String supplier;
 
     @Column
     private Short channel;
+
+    @Column(length = 8)
+    private String mbusIdentificationNumber;
+
+    @Column(length = 3)
+    private String mbusManufacturerIdentification;
+
+    @Column(length = 3)
+    private String mbusVersion;
+
+    @Column(length = 2)
+    private String mbusDeviceTypeIdentification;
 
     public SmartMeter() {
         // Default constructor for hibernate
@@ -77,20 +89,73 @@ public class SmartMeter extends Device {
         this.deviceIdentification = deviceIdentification;
     }
 
+    public String getMbusIdentificationNumber() {
+        return this.mbusIdentificationNumber;
+    }
+
+    public void setMbusIdentificationNumber(final String mbusIdentificationNumber) {
+        this.mbusIdentificationNumber = mbusIdentificationNumber;
+    }
+
+    public String getMbusManufacturerIdentification() {
+        return this.mbusManufacturerIdentification;
+    }
+
+    public void setMbusManufacturerIdentification(final String mbusManufacturerIdentification) {
+        this.mbusManufacturerIdentification = mbusManufacturerIdentification;
+    }
+
+    public String getMbusVersion() {
+        return this.mbusVersion;
+    }
+
+    public void setMbusVersion(final String mbusVersion) {
+        this.mbusVersion = mbusVersion;
+    }
+
+    public String getMbusDeviceTypeIdentification() {
+        return this.mbusDeviceTypeIdentification;
+    }
+
+    public void setMbusDeviceTypeIdentification(final String mbusDeviceTypeIdentification) {
+        this.mbusDeviceTypeIdentification = mbusDeviceTypeIdentification;
+    }
+
     public SmartMeter(final String supplier, final Short channel) {
         super();
         this.supplier = supplier;
         this.channel = channel;
     }
 
+    public SmartMeter(final String supplier, final Short channel, final String mbusIdentificationNumber,
+            final String mbusManufacturerIdentification, final String mbusVersion,
+            final String mbusdeviceTypeIdentification) {
+        super();
+        this.supplier = supplier;
+        this.channel = channel;
+        this.mbusIdentificationNumber = mbusIdentificationNumber;
+        this.mbusManufacturerIdentification = mbusManufacturerIdentification;
+        this.mbusVersion = mbusVersion;
+        this.mbusDeviceTypeIdentification = mbusdeviceTypeIdentification;
+    }
+
     @Override
     public int hashCode() {
-        return super.hashCode() + Objects.hash(this.supplier, this.channel);
+        return super.hashCode() + Objects.hash(this.supplier, this.channel, this.mbusIdentificationNumber,
+                this.mbusManufacturerIdentification, this.mbusVersion, this.mbusDeviceTypeIdentification);
     }
 
     @Override
     public boolean equals(final Object obj) {
         return super.equals(obj) && Objects.equals(this.supplier, ((SmartMeter) obj).supplier)
-                && Objects.equals(this.channel, ((SmartMeter) obj).channel);
+                && Objects.equals(this.channel, ((SmartMeter) obj).channel) && this.compareMbusAttributes(obj);
+    }
+
+    private boolean compareMbusAttributes(final Object obj) {
+        return Objects.equals(this.mbusIdentificationNumber, ((SmartMeter) obj).mbusIdentificationNumber)
+                && Objects.equals(this.mbusManufacturerIdentification,
+                        ((SmartMeter) obj).mbusManufacturerIdentification)
+                && Objects.equals(this.mbusVersion, ((SmartMeter) obj).mbusVersion)
+                && Objects.equals(this.mbusDeviceTypeIdentification, ((SmartMeter) obj).mbusDeviceTypeIdentification);
     }
 }
