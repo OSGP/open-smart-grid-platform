@@ -10,7 +10,7 @@ package com.alliander.osgp.cucumber.platform.core.builders;
 import java.util.Date;
 import java.util.Map;
 
-import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.UtcDateHelper;
 import com.alliander.osgp.cucumber.platform.inputparsers.DateInputParser;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -63,16 +63,16 @@ public class DeviceFirmwareBuilder implements CucumberBuilder<DeviceFirmware> {
 
     @Override
     public DeviceFirmwareBuilder withSettings(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(Keys.DEVICEFIRMWARE_INSTALLATIONDATE)) {
-            this.withInstallationDate(DateInputParser.parse(inputSettings.get(Keys.DEVICEFIRMWARE_INSTALLATIONDATE)));
+        if (inputSettings.containsKey(PlatformKeys.DEVICEFIRMWARE_INSTALLATIONDATE)) {
+            this.withInstallationDate(DateInputParser.parse(inputSettings.get(PlatformKeys.DEVICEFIRMWARE_INSTALLATIONDATE)));
         }
 
-        if (inputSettings.containsKey(Keys.DEVICEFIRMWARE_INSTALLED_BY)) {
-            this.withInstalledBy(inputSettings.get(Keys.DEVICEFIRMWARE_INSTALLED_BY));
+        if (inputSettings.containsKey(PlatformKeys.DEVICEFIRMWARE_INSTALLED_BY)) {
+            this.withInstalledBy(inputSettings.get(PlatformKeys.DEVICEFIRMWARE_INSTALLED_BY));
         }
 
-        if (inputSettings.containsKey(Keys.DEVICEFIRMWARE_ACTIVE)) {
-            this.withActive(Boolean.parseBoolean(inputSettings.get(Keys.DEVICEFIRMWARE_ACTIVE)));
+        if (inputSettings.containsKey(PlatformKeys.DEVICEFIRMWARE_ACTIVE)) {
+            this.withActive(Boolean.parseBoolean(inputSettings.get(PlatformKeys.DEVICEFIRMWARE_ACTIVE)));
         }
 
         return this;

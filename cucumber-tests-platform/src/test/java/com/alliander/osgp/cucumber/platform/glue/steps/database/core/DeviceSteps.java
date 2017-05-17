@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.util.List;
 import java.util.Map;
@@ -15,8 +15,8 @@ import java.util.Map;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.core.wait.Wait;
+import com.alliander.osgp.cucumber.core.Wait;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
@@ -61,10 +61,10 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceExists(final Map<String, String> settings) throws Throwable {
         final Device device = Wait.untilAndReturn(() -> {
             final Device entity = this.deviceRepository
-                    .findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+                    .findByDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
             if (entity == null) {
                 throw new Exception(
-                        "Device with identification [" + settings.get(Keys.KEY_DEVICE_IDENTIFICATION) + "]");
+                        "Device with identification [" + settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION) + "]");
             }
 
             return entity;
@@ -242,9 +242,9 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceContains(final Map<String, String> expectedEntity) {
         Wait.until(() -> {
             final Device device = this.deviceRepository
-                    .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+                    .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-            Assert.assertEquals(getString(expectedEntity, Keys.IP_ADDRESS), device.getIpAddress());
+            Assert.assertEquals(getString(expectedEntity, PlatformKeys.IP_ADDRESS), device.getIpAddress());
         });
     }
 

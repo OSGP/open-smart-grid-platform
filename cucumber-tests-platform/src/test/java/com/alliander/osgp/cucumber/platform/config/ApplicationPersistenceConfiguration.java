@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.alliander.osgp.cucumber.core.config.BaseApplicationConfiguration;
 import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 

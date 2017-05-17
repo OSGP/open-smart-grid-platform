@@ -8,11 +8,16 @@
 package com.alliander.osgp.cucumber.platform.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 /**
  * Base class for the application configuration.
  */
 @Configuration
-public class PlatformApplicationConfiguration extends BaseApplicationConfiguration {
+@PropertySources({ @PropertySource("classpath:cucumber-tests-platform.properties"),
+        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform.properties", ignoreResourceNotFound = true), })
+public class PlatformApplicationConfiguration extends AbstractPlatformApplicationConfiguration {
 
 }

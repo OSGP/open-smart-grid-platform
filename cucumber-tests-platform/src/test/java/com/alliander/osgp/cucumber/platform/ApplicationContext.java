@@ -7,12 +7,6 @@
  */
 package com.alliander.osgp.cucumber.platform;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+public class ApplicationContext extends com.alliander.osgp.cucumber.core.ApplicationContext {
 
-import com.alliander.osgp.cucumber.platform.config.ws.microgrids.MicrogridsNotificationWebServiceConfig;
-
-@ComponentScan(basePackages = {
-        "com.alliander.osgp.cucumber" }, excludeFilters = @ComponentScan.Filter(value = MicrogridsNotificationWebServiceConfig.class, type = FilterType.ASSIGNABLE_TYPE))
-public class ApplicationContext {
 }

@@ -9,7 +9,7 @@ package com.alliander.osgp.cucumber.platform.core.builders;
 
 import java.util.Map;
 
-import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 
 public class ManufacturerBuilder implements CucumberBuilder<Manufacturer> {
@@ -37,12 +37,12 @@ public class ManufacturerBuilder implements CucumberBuilder<Manufacturer> {
 
     @Override
     public ManufacturerBuilder withSettings(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(Keys.MANUFACTURER_NAME)) {
-            this.withName(inputSettings.get(Keys.MANUFACTURER_NAME));
+        if (inputSettings.containsKey(PlatformKeys.MANUFACTURER_NAME)) {
+            this.withName(inputSettings.get(PlatformKeys.MANUFACTURER_NAME));
         }
 
-        if (inputSettings.containsKey(Keys.MANUFACTURER_USE_PREFIX)) {
-            this.withUsePrefix(Boolean.parseBoolean(inputSettings.get(Keys.MANUFACTURER_USE_PREFIX)));
+        if (inputSettings.containsKey(PlatformKeys.MANUFACTURER_USE_PREFIX)) {
+            this.withUsePrefix(Boolean.parseBoolean(inputSettings.get(PlatformKeys.MANUFACTURER_USE_PREFIX)));
         }
 
         return this;

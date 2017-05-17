@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.common;
 
-import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.GlueBase;
+import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 
 import cucumber.api.java.en.Given;
 
@@ -17,7 +17,7 @@ public class TimeoutSteps extends GlueBase {
     
     @Given("^a timeout of \"([^\"]*)\" seconds$")
     public void aTimeoutOfSeconds(final String seconds) {
-        ScenarioContext.Current().put(Keys.TIMEOUT, seconds);
+        ScenarioContext.current().put(PlatformKeys.TIMEOUT, seconds);
     }
 
 }

@@ -9,7 +9,7 @@ package com.alliander.osgp.cucumber.platform.glue.steps.ws;
 
 import java.util.Map;
 
-import com.alliander.osgp.cucumber.platform.GlueBase;
+import com.alliander.osgp.cucumber.core.GlueBase;
 
 import cucumber.api.java.en.Then;
 

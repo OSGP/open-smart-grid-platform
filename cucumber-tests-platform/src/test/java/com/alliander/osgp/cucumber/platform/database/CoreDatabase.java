@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
-import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
-import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
-import com.alliander.osgp.cucumber.platform.Defaults;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -33,8 +30,6 @@ import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
-import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
-import com.alliander.osgp.domain.microgrids.repositories.TaskRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 @Component
@@ -65,22 +60,10 @@ public class CoreDatabase {
     private FirmwareRepository firmwareRepository;
 
     @Autowired
-    private Iec61850DeviceRepository iec61850DeviceRepository;
-
-    @Autowired
     private ManufacturerRepository manufacturerRepository;
 
     @Autowired
     private OrganisationRepository organisationRepository;
-
-    @Autowired
-    private OslpDeviceRepository oslpDeviceRepository;
-
-    @Autowired
-    private RtuDeviceRepository rtuDeviceRepository;
-
-    @Autowired
-    private RtuResponseDataRepository rtuResponseDataRepository;
 
     @Autowired
     private ScheduledTaskRepository scheduledTaskRepository;
@@ -92,9 +75,6 @@ public class CoreDatabase {
     private SsldRepository ssldRepository;
 
     @Autowired
-    private TaskRepository taskRepository;
-
-    @Autowired
     private RelayStatusRepository relayStatusRepository;
 
     /**
@@ -104,10 +84,10 @@ public class CoreDatabase {
      */
     @Transactional("txMgrCore")
     public void insertDefaultData() {
-        if (this.organisationRepository.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+        if (this.organisationRepository.findByOrganisationIdentification(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
-            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
-                    Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
+            final Organisation testOrg = new Organisation(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
+                    PlatformDefaults.DEFAULT_ORGANIZATION_DESCRIPTION, PlatformDefaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
             testOrg.addDomain(PlatformDomain.COMMON);
             testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
             testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
@@ -117,29 +97,18 @@ public class CoreDatabase {
         }
 
         // Create default test manufacturer
-        final Manufacturer manufacturer = new Manufacturer(Defaults.DEFAULT_MANUFACTURER_ID,
-                Defaults.DEFAULT_MANUFACTURER_NAME, false);
+        final Manufacturer manufacturer = new Manufacturer(PlatformDefaults.DEFAULT_MANUFACTURER_ID,
+                PlatformDefaults.DEFAULT_MANUFACTURER_NAME, false);
         this.manufacturerRepository.save(manufacturer);
 
         // Create the default test model
-        DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
-                Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, true);
+        DeviceModel deviceModel = new DeviceModel(manufacturer, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
+                PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, true);
         deviceModel = this.deviceModelRepository.save(deviceModel);
     }
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-        // First remove stuff from osgp_adapter_protocol_oslp
-        this.oslpDeviceRepository.deleteAllInBatch();
-
-        // Then remove stuff from osgp_adapter_protocol_iec61850
-        this.iec61850DeviceRepository.deleteAllInBatch();
-
-        // Then remove stuff from the osgp_adapter_ws_microgrids
-        this.rtuResponseDataRepository.deleteAllInBatch();
-
-        // Then remove stuff from osgp_core
-        this.taskRepository.deleteAll();
         this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
@@ -150,7 +119,6 @@ public class CoreDatabase {
         this.smartMeterRepository.deleteAllInBatch();
         this.relayStatusRepository.deleteAllInBatch();
         this.ssldRepository.deleteAllInBatch();
-        this.rtuDeviceRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllInBatch();
         this.firmwareRepository.deleteAllInBatch();
         this.deviceModelRepository.deleteAllInBatch();
@@ -160,7 +128,6 @@ public class CoreDatabase {
 
     @Transactional("txMgrCore")
     public void removeLeftOvers() {
-        this.taskRepository.deleteAll();
         this.deviceAuthorizationRepository.deleteAll();
         this.deviceLogItemRepository.deleteAll();
         this.scheduledTaskRepository.deleteAll();
@@ -171,7 +138,6 @@ public class CoreDatabase {
         this.smartMeterRepository.deleteAll();
         this.relayStatusRepository.deleteAll();
         this.ssldRepository.deleteAll();
-        this.rtuDeviceRepository.deleteAll();
         this.deviceRepository.deleteAll();
         this.firmwareRepository.deleteAll();
         this.deviceModelRepository.deleteAll();

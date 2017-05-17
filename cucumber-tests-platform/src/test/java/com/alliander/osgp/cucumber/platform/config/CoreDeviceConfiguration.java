@@ -10,6 +10,8 @@ package com.alliander.osgp.cucumber.platform.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import com.alliander.osgp.cucumber.core.config.BaseApplicationConfiguration;
+
 /**
  * Base core device configuration.
  */

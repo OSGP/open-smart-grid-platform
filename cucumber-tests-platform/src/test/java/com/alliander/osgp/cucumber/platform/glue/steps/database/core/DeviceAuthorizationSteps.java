@@ -7,17 +7,17 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.core.GlueBase;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -51,12 +51,12 @@ public class DeviceAuthorizationSteps extends GlueBase {
     public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final Organisation organization = this.organizationRepository.findByOrganisationIdentification(getString(
-                settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICE_FUNCTION_GROUP,
+        final DeviceFunctionGroup functionGroup = getEnum(settings, PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
                 DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
 
         final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);

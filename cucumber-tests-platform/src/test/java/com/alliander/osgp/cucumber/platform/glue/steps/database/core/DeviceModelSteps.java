@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getLong;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.core.Helpers.getLong;
+import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.util.List;
 import java.util.Map;
@@ -17,9 +17,9 @@ import java.util.Map;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.GlueBase;
-import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.core.GlueBase;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
@@ -58,16 +58,16 @@ public class DeviceModelSteps extends GlueBase {
      */
     @Then("^the entity device model exists$")
     public void theEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
-        final String modelCode = getString(expectedEntity, Keys.KEY_DEVICE_MODEL_MODELCODE,
-                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
-        final String modelDescription = getString(expectedEntity, Keys.KEY_DEVICE_MODEL_DESCRIPTION,
-                Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
-        final boolean modelMetered = getBoolean(expectedEntity, Keys.KEY_DEVICE_MODEL_METERED,
-                Defaults.DEFAULT_DEVICE_MODEL_METERED);
+        final String modelCode = getString(expectedEntity, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
+                PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
+        final String modelDescription = getString(expectedEntity, PlatformKeys.KEY_DEVICE_MODEL_DESCRIPTION,
+                PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
+        final boolean modelMetered = getBoolean(expectedEntity, PlatformKeys.KEY_DEVICE_MODEL_METERED,
+                PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED);
 
         final Manufacturer manufacturer = new Manufacturer();
         manufacturer
-                .setManufacturerId(getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID));
+                .setManufacturerId(getString(expectedEntity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID));
         final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
@@ -90,11 +90,11 @@ public class DeviceModelSteps extends GlueBase {
      */
     @Then("^the entity device model does not exist$")
     public void theEntityDeviceModelDoesNotExists(final Map<String, String> entity) throws Throwable {
-        final String modelCode = getString(entity, Keys.KEY_DEVICE_MODEL_MODELCODE,
-                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
+        final String modelCode = getString(entity, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
+                PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
 
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setManufacturerId(getString(entity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID));
+        manufacturer.setManufacturerId(getString(entity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID));
         final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
@@ -111,17 +111,17 @@ public class DeviceModelSteps extends GlueBase {
     public DeviceModel insertDeviceModel(final Map<String, String> settings) {
         // Get the given manufacturer (or the default).
         final Manufacturer manufacturer = this.manufacturerRepo
-                .findByName(getString(settings, Keys.MANUFACTURER_NAME, Defaults.DEFAULT_MANUFACTURER_NAME));
+                .findByName(getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
 
-        final String description = getString(settings, Keys.KEY_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
+        final String description = getString(settings, PlatformKeys.KEY_DESCRIPTION, PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
 
         // Create the new device model.
         final DeviceModel entity = new DeviceModel(manufacturer,
-                getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
-                description, getBoolean(settings, Keys.KEY_DEVICE_MODEL_FILESTORAGE, Defaults.DEFAULT_FILESTORAGE));
+                getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
+                description, getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_FILESTORAGE, PlatformDefaults.DEFAULT_FILESTORAGE));
 
         entity.updateData(description,
-                getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED));
+                getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_METERED, PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED));
         entity.setVersion(getLong(settings, "Version"));
 
         this.repo.save(entity);

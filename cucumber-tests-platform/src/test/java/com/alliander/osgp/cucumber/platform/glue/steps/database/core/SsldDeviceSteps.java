@@ -7,11 +7,11 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getDateTime2;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.core.Helpers.getDateTime2;
+import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.cucumber.core.Helpers.getInteger;
+import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,9 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.cucumber.platform.Defaults;
-import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.core.wait.Wait;
+import com.alliander.osgp.cucumber.core.Wait;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
@@ -84,18 +84,18 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
     @Transactional("txMgrCore")
     public void aRelayStatus(final Map<String, String> settings) throws Exception {
 
-        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(getString(settings,
+                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        final String[] deviceOutputSettings = getString(settings, Keys.DEVICE_OUTPUT_SETTINGS,
-                Defaults.DEVICE_OUTPUT_SETTINGS).replaceAll(" ", "").split(Keys.SEPARATOR_SEMICOLON),
-                relayStatuses = getString(settings, Keys.RELAY_STATUSES, Defaults.RELAY_STATUSES).replaceAll(" ", "")
-                        .split(Keys.SEPARATOR_SEMICOLON);
+        final String[] deviceOutputSettings = getString(settings, PlatformKeys.DEVICE_OUTPUT_SETTINGS,
+                PlatformDefaults.DEVICE_OUTPUT_SETTINGS).replaceAll(" ", "").split(PlatformKeys.SEPARATOR_SEMICOLON),
+                relayStatuses = getString(settings, PlatformKeys.RELAY_STATUSES, PlatformDefaults.RELAY_STATUSES)
+                        .replaceAll(" ", "").split(PlatformKeys.SEPARATOR_SEMICOLON);
 
         final List<DeviceOutputSetting> dosList = new ArrayList<>();
 
         for (final String dos : deviceOutputSettings) {
-            final String[] deviceOutputSetting = dos.split(Keys.SEPARATOR_COMMA);
+            final String[] deviceOutputSetting = dos.split(PlatformKeys.SEPARATOR_COMMA);
             dosList.add(new DeviceOutputSetting(Integer.parseInt(deviceOutputSetting[0]),
                     Integer.parseInt(deviceOutputSetting[1]), RelayType.valueOf(deviceOutputSetting[2]),
                     deviceOutputSetting[3]));
@@ -104,7 +104,7 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
         ssld.updateOutputSettings(dosList);
 
         for (final String rs : relayStatuses) {
-            final String[] relayStatus = rs.split(Keys.SEPARATOR_COMMA);
+            final String[] relayStatus = rs.split(PlatformKeys.SEPARATOR_COMMA);
             this.relayStatusRepository.save(new RelayStatus(ssld, Integer.parseInt(relayStatus[0]),
                     Boolean.parseBoolean(relayStatus[1]), getDateTime2(relayStatus[2], DateTime.now()).toDate()));
         }
@@ -114,9 +114,9 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
     public void theSsldDeviceContains(final Map<String, String> expectedEntity) {
         Wait.until(() -> {
             final Ssld ssld = this.ssldRepository
-                    .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+                    .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-            Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_HAS_SCHEDULE), ssld.getHasSchedule());
+            Assert.assertEquals(getBoolean(expectedEntity, PlatformKeys.KEY_HAS_SCHEDULE), ssld.getHasSchedule());
             // Assert.assertEquals(getBoolean(expectedEntity,
             // Keys.KEY_PUBLICKEYPRESENT), ssld.isPublicKeyPresent());
         });
@@ -126,18 +126,21 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     private Ssld createAnSsldDevice(final Map<String, String> settings) throws Throwable {
         // Set the required stuff
-        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         Ssld ssld = new Ssld(deviceIdentification);
 
-        ssld.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
-        ssld.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE));
+        ssld.setPublicKeyPresent(
+                getBoolean(settings, PlatformKeys.KEY_PUBLICKEYPRESENT, PlatformDefaults.DEFAULT_PUBLICKEYPRESENT));
+        ssld.setHasSchedule(getBoolean(settings, PlatformKeys.KEY_HAS_SCHEDULE, PlatformDefaults.DEFAULT_HASSCHEDULE));
 
-        if (settings.containsKey(Keys.KEY_INTERNALID) || settings.containsKey(Keys.KEY_EXTERNALID)
-                || settings.containsKey(Keys.KEY_RELAY_TYPE)) {
+        if (settings.containsKey(PlatformKeys.KEY_INTERNALID) || settings.containsKey(PlatformKeys.KEY_EXTERNALID)
+                || settings.containsKey(PlatformKeys.KEY_RELAY_TYPE)) {
             final List<DeviceOutputSetting> dosList = new ArrayList<>();
-            final int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID),
-                    externalId = getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
-            final RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
+            final int internalId = getInteger(settings, PlatformKeys.KEY_INTERNALID,
+                    PlatformDefaults.DEFAULT_INTERNALID),
+                    externalId = getInteger(settings, PlatformKeys.KEY_EXTERNALID, PlatformDefaults.DEFAULT_EXTERNALID);
+            final RelayType relayType = getEnum(settings, PlatformKeys.KEY_RELAY_TYPE, RelayType.class,
+                    RelayType.LIGHT);
 
             if (relayType != null) {
                 dosList.add(new DeviceOutputSetting(internalId, externalId, relayType));
@@ -146,7 +149,8 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
             }
         }
 
-        ssld.updateInMaintenance(getBoolean(settings, Keys.DEVICE_IN_MAINTENANCE, Defaults.DEVICE_IN_MAINTENANCE));
+        ssld.updateInMaintenance(
+                getBoolean(settings, PlatformKeys.DEVICE_IN_MAINTENANCE, PlatformDefaults.DEVICE_IN_MAINTENANCE));
 
         ssld = this.ssldRepository.save(ssld);
 
