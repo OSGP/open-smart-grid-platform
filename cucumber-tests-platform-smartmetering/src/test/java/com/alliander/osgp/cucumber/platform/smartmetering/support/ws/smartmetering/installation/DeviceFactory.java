@@ -24,13 +24,14 @@ public class DeviceFactory {
 
     public static Device fromParameterMap(final Map<String, String> requestParameters) {
 
-        final Map<String, String> settings = SettingsHelper.addDefault(requestParameters, PlatformKeys.KEY_DEVICE_DELIVERY_DATE,
-                PlatformDefaults.DLMS_DEFAULT_DEVICE_DELIVERY_DATE);
+        final Map<String, String> settings = SettingsHelper.addDefault(requestParameters,
+                PlatformKeys.KEY_DEVICE_DELIVERY_DATE, PlatformDefaults.DLMS_DEFAULT_DEVICE_DELIVERY_DATE);
 
         final Device device = new Device();
-        device.setDeviceIdentification(
-                Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        device.setDeviceType(Helpers.getString(settings, PlatformKeys.KEY_DEVICE_TYPE, PlatformDefaults.DEFAULT_DEVICE_TYPE));
+        device.setDeviceIdentification(Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        device.setDeviceType(
+                Helpers.getString(settings, PlatformKeys.KEY_DEVICE_TYPE, PlatformDefaults.DEFAULT_DEVICE_TYPE));
 
         device.setCommunicationMethod(settings.get(PlatformKeys.KEY_DEVICE_COMMUNICATIONMETHOD));
         device.setCommunicationProvider(settings.get(PlatformKeys.KEY_DEVICE_COMMUNICATIONPROVIDER));
@@ -39,21 +40,29 @@ public class DeviceFactory {
         device.setDSMRVersion(settings.get(PlatformKeys.KEY_DEVICE_DSMRVERSION));
         device.setSupplier(settings.get(PlatformKeys.KEY_DEVICE_SUPPLIER));
 
-        device.setHLS3Active(Boolean
-                .valueOf(Helpers.getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS3ACTIVE, PlatformDefaults.DLMS_DEFAULT_HSL3_ACTIVE)));
-        device.setHLS4Active(Boolean
-                .valueOf(Helpers.getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS4ACTIVE, PlatformDefaults.DLMS_DEFAULT_HSL4_ACTIVE)));
-        device.setHLS5Active(Boolean
-                .valueOf(Helpers.getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS5ACTIVE, PlatformDefaults.DLMS_DEFAULT_HSL5_ACTIVE)));
+        device.setHLS3Active(Boolean.valueOf(Helpers.getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS3ACTIVE,
+                PlatformDefaults.DLMS_DEFAULT_HSL3_ACTIVE)));
+        device.setHLS4Active(Boolean.valueOf(Helpers.getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS4ACTIVE,
+                PlatformDefaults.DLMS_DEFAULT_HSL4_ACTIVE)));
+        device.setHLS5Active(Boolean.valueOf(Helpers.getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS5ACTIVE,
+                PlatformDefaults.DLMS_DEFAULT_HSL5_ACTIVE)));
 
         device.setMasterKey(RequestFactoryHelper.hexDecodeDeviceKey(settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY),
                 PlatformKeys.KEY_DEVICE_MASTERKEY));
         device.setAuthenticationKey(RequestFactoryHelper.hexDecodeDeviceKey(
                 settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY), PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
-        device.setGlobalEncryptionUnicastKey(RequestFactoryHelper
-                .hexDecodeDeviceKey(settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY), PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
+        device.setGlobalEncryptionUnicastKey(RequestFactoryHelper.hexDecodeDeviceKey(
+                settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY), PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
 
-        device.setDeliveryDate(SettingsHelper.getXmlGregorianCalendarValue(settings, PlatformKeys.KEY_DEVICE_DELIVERY_DATE));
+        device.setDeliveryDate(
+                SettingsHelper.getXmlGregorianCalendarValue(settings, PlatformKeys.KEY_DEVICE_DELIVERY_DATE));
+
+        device.setMbusIdentificationNumber(Helpers.getString(settings, PlatformKeys.MBUS_IDENTIFICATION_NUMBER));
+        device.setMbusManufacturerIdentification(
+                Helpers.getString(settings, PlatformKeys.MBUS_MANUFACTURER_IDENTIFICATION));
+        device.setMbusVersion(Helpers.getString(settings, PlatformKeys.MBUS_VERSION));
+        device.setMbusDeviceTypeIdentification(
+                Helpers.getString(settings, PlatformKeys.MBUS_DEVICE_TYPE_IDENTIFICATION));
 
         return device;
     }
