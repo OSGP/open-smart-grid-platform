@@ -21,32 +21,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.common.ResponseSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.hooks.SimulatePushedAlarmsHooks;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ServiceEndpoint;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetPushSetupAlarm extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT = "/Envelope/Body/SetPushSetupAlarmResponse/Result/text()";
+public class ReceivedAlarmNotificationsSteps extends SmartMeteringStepsBase {
 
     private static final String XPATH_MATCHER_PUSH_NOTIFICATION = "DlmsPushNotification \\[device = \\w*, trigger type = Push alarm monitor, alarms=\\[(\\w*(, )?)+\\]\\]";
 
-    private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
-    private static final String TEST_CASE_XML = "125 Receive Alarm Notifications";
-    private static final String TEST_CASE_NAME_REQUEST = "SetPushSetupAlarm - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetSetPushSetupAlarmResponse - Request 1";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarm.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReceivedAlarmNotificationsSteps.class);
 
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
@@ -66,29 +56,23 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
         } catch (final Exception e) {
             LOGGER.error("Error occured simulateAlarm: ", e);
         }
-
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
-    @Then("^the alarm should be pushed to OSGP$")
-    public void theAlarmShouldBePushedToOSGP(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
-
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
-
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, PlatformDefaults.EXPECTED_RESULT_OK));
+    @When("^an alarm notification is received from an unknown device$")
+    public void anAlarmNotificationIsReceivedFromAnUnknownDevice(final Map<String, String> settings) throws Throwable {
+        try {
+            final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                    PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 },
+                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
+            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 },
+                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
+        } catch (final Exception e) {
+            LOGGER.error("Error occured simulateAlarm: ", e);
+        }
     }
 
-    @And("^the alarm should be pushed to the osgp_logging database device_log_item table$")
+    @Then("^the alarm should be pushed to the osgp_logging database device_log_item table$")
     public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable(final Map<String, String> settings)
             throws Throwable {
         final Pattern responsePattern = Pattern.compile(XPATH_MATCHER_PUSH_NOTIFICATION);
@@ -98,7 +82,7 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
 
         final List<DeviceLogItem> deviceLogItems = this.findDeviceLogItems(deviceIdentification, 2);
         if (null == deviceLogItems) {
-            Assert.fail("DeviceLogItems where not found in the database");
+            Assert.fail("DeviceLogItems were not found in the database");
         }
 
         for (int i = 0; i < 2; i++) {
@@ -132,41 +116,7 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
         try {
             Thread.sleep(sleepTime);
         } catch (final InterruptedException e) {
-            LOGGER.error("thread sleep was interruped " + e);
+            LOGGER.error("thread sleep was interrupted", e);
         }
-    }
-
-    @When("^an alarm notification is received from an unknown device$")
-    public void anAlarmNotificationIsReceivedFromAnUnknownDevice(final Map<String, String> settings) throws Throwable {
-        try {
-            final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                    PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 },
-                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
-            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 },
-                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
-        } catch (final Exception e) {
-            LOGGER.error("Error occured simulateAlarm: ", e);
-        }
-
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-
-        this.requestRunner(TestStepStatus.FAILED, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
-    }
-
-    /**
-     * Verify that the response contains the fault with the given expectedResult
-     * parameters.
-     *
-     * @param expectedResult
-     * @throws Throwable
-     */
-    @Then("^the response contains$")
-    public void the_response_contains(final Map<String, String> expectedResult) throws Throwable {
-        ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
     }
 }
