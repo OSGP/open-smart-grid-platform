@@ -97,7 +97,7 @@ Feature: MicroGrids Get Heat Pump Data
       | HEAT_PUMP1 | TTMP3.TmpSv.instMag.f  |            8.123456 |
       | HEAT_PUMP1 | TTMP3.TmpSv.q          | VALIDITY_GOOD       |
       | HEAT_PUMP1 | TTMP3.TmpSv.t          | 2017-02-01T12:01:00 |
-      | HEAT_PUMP1 | TTMP4.TmpSv.instMag.f  |                   9 |
+      | HEAT_PUMP1 | TTMP4.TmpSv.instMag.f  |                52.1 |
       | HEAT_PUMP1 | TTMP4.TmpSv.q          | VALIDITY_GOOD       |
       | HEAT_PUMP1 | TTMP4.TmpSv.t          | 2017-02-01T12:02:00 |
       #............................................................
@@ -327,7 +327,7 @@ Feature: MicroGrids Get Heat Pump Data
       | MeasurementTime_1_36      | 2017-02-01T12:02:00.000Z |
       | MeasurementId_1_37        |                        4 |
       | MeasurementNode_1_37      | TmpSv                    |
-      | MeasurementValue_1_37     |                        9 |
+      | MeasurementValue_1_37     |                     52.1 |
       | MeasurementQualifier_1_37 |                        0 |
       | MeasurementTime_1_37      | 2017-02-01T12:02:00.000Z |
       | MeasurementId_1_38        |                        1 |
