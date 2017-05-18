@@ -28,8 +28,8 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.BasicDataAttributes
 
 public abstract class LogicalDevice {
 
-    private String physicalDeviceName;
-    private String logicalDeviceName;
+    private final String physicalDeviceName;
+    private final String logicalDeviceName;
     private ServerModel serverModel;
 
     public LogicalDevice(final String physicalDeviceName, final String logicalDeviceName,
@@ -98,6 +98,12 @@ public abstract class LogicalDevice {
     protected BasicDataAttribute setFixedFloat(final String node, final Fc fc, final int val) {
         final BdaFloat32 value = (BdaFloat32) this.serverModel.findModelNode(this.createNodeName(node), fc);
         value.setFloat((float) val);
+        return value;
+    }
+
+    protected BasicDataAttribute setFixedFloat(final String node, final Fc fc, final float val) {
+        final BdaFloat32 value = (BdaFloat32) this.serverModel.findModelNode(this.createNodeName(node), fc);
+        value.setFloat(val);
         return value;
     }
 
