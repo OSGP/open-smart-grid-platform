@@ -8,14 +8,18 @@
 package org.osgp.adapter.protocol.dlms.application.services;
 
 import org.osgp.adapter.protocol.dlms.application.mapping.InstallationMapper;
+import org.osgp.adapter.protocol.dlms.domain.commands.CoupleMBusDeviceCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "dlmsInstallationService")
 public class InstallationService {
@@ -28,6 +32,9 @@ public class InstallationService {
 
     @Autowired
     private ReEncryptionService reEncryptionService;
+
+    @Autowired
+    private CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
 
     // === ADD METER ===
     public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
@@ -50,17 +57,23 @@ public class InstallationService {
 
     private void reEncryptAuthenticationKey(final SmartMeteringDeviceDto smartMeteringDevice)
             throws ProtocolAdapterException {
-        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService.reEncryptKey(
-                smartMeteringDevice.getAuthenticationKey(),
-                SecurityKeyType.E_METER_AUTHENTICATION);
+        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
+                .reEncryptKey(smartMeteringDevice.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
         smartMeteringDevice.setAuthenticationKey(reEncryptedAuthenticationKey);
     }
 
     private void reEncryptEncryptionKey(final SmartMeteringDeviceDto smartMeteringDevice)
             throws ProtocolAdapterException {
         final byte[] reEncryptedEncryptionKey = this.reEncryptionService
-                .reEncryptKey(smartMeteringDevice.getGlobalEncryptionUnicastKey(),
-                SecurityKeyType.E_METER_ENCRYPTION);
+                .reEncryptKey(smartMeteringDevice.getGlobalEncryptionUnicastKey(), SecurityKeyType.E_METER_ENCRYPTION);
         smartMeteringDevice.setGlobalEncryptionUnicastKey(reEncryptedEncryptionKey);
+    }
+
+    // Couple MBus device
+    public String coupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final MbusChannelElementsDto requestDto) throws ProtocolAdapterException, FunctionalException {
+
+        return this.coupleMBusDeviceCommandExecutor.execute(conn, device, requestDto);
+
     }
 }
