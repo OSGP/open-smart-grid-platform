@@ -117,7 +117,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
             final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
                     .findByDeviceIdentification(deviceId, new PageRequest(0, 2)).getContent();
 
-            if (deviceLogItems != null && deviceLogItems.size() > 1) {
+            if (!deviceLogItems.isEmpty()) {
                 result = PollResult.OK;
             }
         } catch (final Exception e) {
