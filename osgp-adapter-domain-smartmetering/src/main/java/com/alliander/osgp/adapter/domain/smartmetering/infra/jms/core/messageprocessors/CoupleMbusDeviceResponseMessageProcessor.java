@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -33,17 +34,14 @@ public class CoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponseMe
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        System.out.println(responseMessage.getDataObject()); // TODO-JRB
-        return true;
-        // return responseMessage.getDataObject() instanceof
-        // GetConfigurationObjectResponseDto;
+        return responseMessage.getDataObject() instanceof MbusChannelElementsResponseDto;
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
 
-        this.installationService.handleCoupleMbusDeviceResponse(deviceMessageMetadata, responseMessage.getResult(),
-                osgpException);
+        this.installationService.handleCoupleMbusDeviceResponse(deviceMessageMetadata,
+                (MbusChannelElementsResponseDto) responseMessage.getDataObject());
     }
 }

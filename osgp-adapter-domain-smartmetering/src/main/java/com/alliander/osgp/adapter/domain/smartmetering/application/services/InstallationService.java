@@ -22,7 +22,6 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
-import com.alliander.osgp.domain.core.exceptions.ChannelAlreadyOccupiedException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
@@ -31,7 +30,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -74,6 +73,9 @@ public class InstallationService {
 
     @Autowired
     private DomainHelperService domainHelperService;
+
+    @Autowired
+    private MBusGatewayService mBusGatewayService;
 
     public InstallationService() {
         // Parameterless constructor required for transactions...
@@ -165,51 +167,13 @@ public class InstallationService {
     public void coupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
             final CoupleMbusDeviceRequestData requestData) throws FunctionalException {
 
-        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-        final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
-        final short channel = requestData.getChannel();
-
-        LOGGER.debug(
-                "coupleMbusDevice for organisationIdentification: {} for gateway: {}, m-bus device {} and channel {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, mbusDeviceIdentification,
-                channel);
-
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        final MbusChannelElementsDto requestDto = new MbusChannelElementsDto("number", "id", "version", "type");
-
-        final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), requestDto);
-
-        this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
-
-        // this.handleCoupleMBusDevice(deviceMessageMetadata,
-        // deviceIdentification, mbusDeviceIdentification, channel);
+        this.mBusGatewayService.coupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
-    private void handleCoupleMBusDevice(final DeviceMessageMetadata deviceMessageMetadata,
-            final String deviceIdentification, final String mbusDeviceIdentification, final short channel) {
-        OsgpException exception = null;
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+    public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) {
 
-        try {
-            final SmartMeter gateway = this.domainHelperService.findActiveSmartMeter(deviceIdentification);
-            final SmartMeter mbusDevice = this.domainHelperService.findActiveSmartMeter(mbusDeviceIdentification);
-
-            this.checkAndHandleChannelOnGateway(channel, gateway);
-
-            mbusDevice.setChannel(channel);
-            mbusDevice.updateGatewayDevice(gateway);
-            this.smartMeteringDeviceRepository.save(mbusDevice);
-        } catch (final FunctionalException functionalException) {
-            exception = functionalException;
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        this.handleResponse("coupleMbusDevice", deviceMessageMetadata, result, exception);
+        this.mBusGatewayService.handleCoupleMbusDeviceResponse(deviceMessageMetadata, mbusChannelElementsResponseDto);
     }
 
     /**
@@ -260,32 +224,6 @@ public class InstallationService {
         this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
     }
 
-    /**
-     * @param channel
-     *            the channel number
-     * @param gateway
-     *            the {@link SmartMeter} gateway
-     * @throws FunctionalException
-     *             is thrown when channel number is already occupied with on the
-     *             gateway
-     */
-    private void checkAndHandleChannelOnGateway(final short channel, final SmartMeter gateway)
-            throws FunctionalException {
-        final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository
-                .getMbusDevicesForGateway(gateway.getId());
-
-        for (final SmartMeter coupledDevice : alreadyCoupled) {
-            if ((coupledDevice.getChannel() != null) && (coupledDevice.getChannel().equals(channel))) {
-                LOGGER.info("There is already an M-bus device {} coupled to gateway {} on channel {}",
-                        coupledDevice.getDeviceIdentification(), gateway.getDeviceIdentification(), channel);
-
-                throw new FunctionalException(FunctionalExceptionType.CHANNEL_ON_DEVICE_ALREADY_COUPLED,
-                        ComponentType.DOMAIN_SMART_METERING, new ChannelAlreadyOccupiedException(channel));
-
-            }
-        }
-    }
-
     private void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
         LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
@@ -300,12 +238,6 @@ public class InstallationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 result, exception, null, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
-    }
-
-    public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
-
-        this.handleResponse("handleCoupleMbusDeviceResponse", deviceMessageMetadata, deviceResult, exception);
     }
 
 }
