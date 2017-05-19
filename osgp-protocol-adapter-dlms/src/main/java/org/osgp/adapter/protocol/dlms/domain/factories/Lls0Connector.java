@@ -20,6 +20,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
@@ -64,7 +65,10 @@ public class Lls0Connector extends DlmsConnector {
                 tcpConnectionBuilder.useHdlc();
             }
         } catch (final UnknownHostException e) {
-            throw new ConnectionException(e);
+            LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
+            // Unknown IP, unrecoverable.
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                    "The IP address is not found: " + device.getIpAddress());
         }
 
         this.setOptionalValues(device, tcpConnectionBuilder);
@@ -83,6 +87,7 @@ public class Lls0Connector extends DlmsConnector {
                     device.isUseHdlc(),
                     device.isUseSn(),
                     e.getMessage());
+            LOGGER.error(msg);
             throw new ConnectionException(msg, e);
         }
     }

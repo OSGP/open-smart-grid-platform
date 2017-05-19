@@ -62,7 +62,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         try {
             return this.createConnection(device, dlmsMessageListener);
         } catch (final UnknownHostException e) {
-            LOGGER.warn("The IP address is not found: {}", device.getIpAddress(), e);
+            LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
             // Unknown IP, unrecoverable.
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
@@ -78,6 +78,7 @@ public class Hls5Connector extends SecureDlmsConnector {
                     device.isUseHdlc(),
                     device.isUseSn(),
                     e.getMessage());
+            LOGGER.error(msg);
             throw new ConnectionException(msg, e);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
@@ -143,7 +144,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     }
 
     private boolean checkLenghtKey(final byte[] key) {
-        if (key.length * 8 != AES_GMC_128) {
+        if ((key.length * 8) != AES_GMC_128) {
             return true;
         }
         return false;
