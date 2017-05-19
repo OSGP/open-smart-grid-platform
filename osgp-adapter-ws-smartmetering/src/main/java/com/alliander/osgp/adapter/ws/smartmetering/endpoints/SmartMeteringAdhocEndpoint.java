@@ -40,7 +40,9 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapp
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnListType;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -189,15 +191,17 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                     .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                if (ResponseMessageResultType.OK == meterResponseData.getResultType()) {
-                    response.setAttributeValueData((String) meterResponseData.getMessageData());
-                } else {
-                    response.setAttributeValueData("");
-                    response.setException((String) meterResponseData.getMessageData());
-                }
+            if (ResponseMessageResultType.OK == meterResponseData.getResultType()) {
+                response.setAttributeValueData((String) meterResponseData.getMessageData());
+            } else if (meterResponseData.getMessageData() instanceof OsgpException) {
+                throw (OsgpException) meterResponseData.getMessageData();
+            } else if (meterResponseData.getMessageData() instanceof Exception) {
+                throw new TechnicalException(ComponentType.WS_SMART_METERING,
+                        "An exception occurred: Get specific attribute value", (Exception) meterResponseData.getMessageData());
+            } else {
+                throw new TechnicalException(ComponentType.WS_SMART_METERING,
+                        "An exception occurred: Get specific attribute value", null);
             }
-
         } catch (final Exception e) {
             this.handleException(e);
         }
