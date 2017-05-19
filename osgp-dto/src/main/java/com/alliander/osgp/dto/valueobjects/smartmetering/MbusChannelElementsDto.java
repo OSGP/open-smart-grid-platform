@@ -20,18 +20,27 @@ public class MbusChannelElementsDto implements Serializable {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
-    private String mbusIdentificationNumber;
-    private String mbusManufacturerIdentification;
-    private String mbusVersion;
-    private String mbusDeviceTypeIdentification;
+    // this is name of the gas-meter that is given in the request
+    private final String mbusDeviceIdentification;
+    // these are the properties that belong to this gas-meter in the core dbs.
+    private final String mbusIdentificationNumber;
+    private final String mbusManufacturerIdentification;
+    private final String mbusVersion;
+    private final String mbusDeviceTypeIdentification;
 
-    public MbusChannelElementsDto(final String mbusIdentificationNumber, final String mbusManufacturerIdentification,
-            final String mbusVersion, final String mbusDeviceTypeIdentification) {
+    public MbusChannelElementsDto(final String mbusDeviceIdentification, final String mbusIdentificationNumber,
+            final String mbusManufacturerIdentification, final String mbusVersion,
+            final String mbusDeviceTypeIdentification) {
         super();
+        this.mbusDeviceIdentification = mbusDeviceIdentification;
         this.mbusIdentificationNumber = mbusIdentificationNumber;
         this.mbusManufacturerIdentification = mbusManufacturerIdentification;
         this.mbusVersion = mbusVersion;
         this.mbusDeviceTypeIdentification = mbusDeviceTypeIdentification;
+    }
+
+    public String getMbusDeviceIdentification() {
+        return this.mbusDeviceIdentification;
     }
 
     public String getMbusIdentificationNumber() {

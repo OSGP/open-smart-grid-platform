@@ -22,13 +22,13 @@ public class ChannelElementValues implements Serializable {
 
     private int channel;
     // these values correspond with attr 6..9 that are read from the meter
-    private String identificationNumber;
-    private String manufacturerIdentification;
-    private String version;
-    private String deviceTypeIdentification;
+    private int identificationNumber;
+    private int manufacturerIdentification;
+    private short version;
+    private short deviceTypeIdentification;
 
-    public ChannelElementValues(final int channel, final String identificationNumber,
-            final String manufacturerIdentification, final String version, final String deviceTypeIdentification) {
+    public ChannelElementValues(final int channel, final int identificationNumber, final int manufacturerIdentification,
+            final short version, final short deviceTypeIdentification) {
         super();
         this.channel = channel;
         this.identificationNumber = identificationNumber;
@@ -37,28 +37,31 @@ public class ChannelElementValues implements Serializable {
         this.deviceTypeIdentification = deviceTypeIdentification;
     }
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
     public int getChannel() {
         return this.channel;
     }
 
-    public String getIdentificationNumber() {
+    public int getIdentificationNumber() {
         return this.identificationNumber;
     }
 
-    public String getManufacturerIdentification() {
+    public int getManufacturerIdentification() {
         return this.manufacturerIdentification;
     }
 
-    public String getVersion() {
+    public short getVersion() {
         return this.version;
     }
 
-    public String getDeviceTypeIdentification() {
+    public short getDeviceTypeIdentification() {
         return this.deviceTypeIdentification;
+    }
+
+    @Override
+    public String toString() {
+        return "ChannelElementValues [channel=" + this.channel + ", identificationNumber=" + this.identificationNumber
+                + ", manufacturerIdentification=" + this.manufacturerIdentification + ", version=" + this.version
+                + ", deviceTypeIdentification=" + this.deviceTypeIdentification + "]";
     }
 
 }

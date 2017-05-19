@@ -67,4 +67,5 @@ public class MbusChannelElementsResponseDto implements Serializable {
     public void addChannelElements(final ChannelElementValues channelElements) {
         this.channelElements.add(channelElements);
     }
+
 }
