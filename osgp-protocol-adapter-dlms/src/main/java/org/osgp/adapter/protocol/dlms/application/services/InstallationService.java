@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
@@ -70,7 +71,7 @@ public class InstallationService {
     }
 
     // Couple MBus device
-    public String coupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
             final MbusChannelElementsDto requestDto) throws ProtocolAdapterException, FunctionalException {
 
         return this.coupleMBusDeviceCommandExecutor.execute(conn, device, requestDto);
