@@ -68,7 +68,7 @@ public class ReceivedAlarmNotificationsSteps extends SmartMeteringStepsBase {
             SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 },
                     this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
         } catch (final Exception e) {
-            LOGGER.error("Error occured simulateAlarm: ", e);
+            LOGGER.error("Error occured simulating an alarm", e);
         }
     }
 
@@ -116,7 +116,7 @@ public class ReceivedAlarmNotificationsSteps extends SmartMeteringStepsBase {
         try {
             Thread.sleep(sleepTime);
         } catch (final InterruptedException e) {
-            LOGGER.error("thread sleep was interrupted", e);
+            LOGGER.error("Thread sleep was interrupted", e);
         }
     }
 }
