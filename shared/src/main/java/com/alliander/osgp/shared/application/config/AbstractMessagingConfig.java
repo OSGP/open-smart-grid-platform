@@ -22,7 +22,7 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Value("${jms.activemq.broker.url:tcp://localhost:61616}")
-    protected String aciveMqBroker;
+    protected String activeMqBroker;
 
     @Value("${jms.activemq.connection.pool.size:10}")
     protected int connectionPoolSize;
@@ -38,7 +38,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
      * from the properties file that start with: 'jms.activemq'
      */
     protected String getActiveMQBroker() {
-        return this.aciveMqBroker;
+        return this.activeMqBroker;
     }
 
     protected int getConnectionPoolSize() {
