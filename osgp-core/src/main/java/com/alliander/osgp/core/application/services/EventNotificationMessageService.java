@@ -98,7 +98,8 @@ public class EventNotificationMessageService {
                     eventNotification.getDescription(), eventNotification.getIndex());
             this.eventRepository.save(event);
 
-            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
+            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON)
+                    || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
                 lightSwitchingEvents.add(event);
             }
         }
@@ -164,7 +165,8 @@ public class EventNotificationMessageService {
         this.deviceRepository.save(device);
     }
 
-    private void updateRelayStatus(final int index, final Device device, final Date dateTime, final EventType eventType) {
+    private void updateRelayStatus(final int index, final Device device, final Date dateTime,
+            final EventType eventType) {
 
         final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
@@ -177,8 +179,11 @@ public class EventNotificationMessageService {
             LOGGER.info("Handling new event {} for device {} to update the relay status for index {} with date {}.",
                     eventType.name(), device.getDeviceIdentification(), index, dateTime);
 
-            ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, isRelayOn, dateTime == null ? DateTime
-                    .now().toDate() : dateTime));
+            if (ssld.getRelayStatusByIndex(index) == null
+                    || dateTime.after(ssld.getRelayStatusByIndex(index).getLastKnowSwitchingTime())) {
+                ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, isRelayOn,
+                        dateTime == null ? DateTime.now().toDate() : dateTime));
+            }
         }
     }
 }
