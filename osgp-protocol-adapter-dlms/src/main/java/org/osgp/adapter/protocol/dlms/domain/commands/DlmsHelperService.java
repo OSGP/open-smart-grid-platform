@@ -158,7 +158,7 @@ public class DlmsHelperService {
             throws ProtocolAdapterException {
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received: " + description);
-        } else if ((getResultList.size() == 1) && (AccessResultCode.SUCCESS != getResultList.get(0).getResultCode())) {
+        } else if (getResultList.size() == 1 && AccessResultCode.SUCCESS != getResultList.get(0).getResultCode()) {
             throw new ProtocolAdapterException(getResultList.get(0).getResultCode().name());
         }
 
@@ -313,7 +313,7 @@ public class DlmsHelperService {
     public CosemDateTimeDto readDateTime(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
-        if ((resultData == null) || resultData.isNull()) {
+        if (resultData == null || resultData.isNull()) {
             return null;
         }
         if (resultData.isByteArray()) {
@@ -563,7 +563,7 @@ public class DlmsHelperService {
             message = MessageTypeDto.XML_ENCODED_X_DLMS_APDU;
             break;
         default:
-            if ((enumValue < 128) || (enumValue > 255)) {
+            if (enumValue < 128 || enumValue > 255) {
                 LOGGER.error("Unexpected Enum value for MessageType: {}", enumValue);
                 throw new ProtocolAdapterException("Unknown Enum value for MessageType: " + enumValue);
             }
@@ -647,7 +647,7 @@ public class DlmsHelperService {
             objectText = this.getDebugInfoByteArray((byte[]) dataObject.getValue());
         } else if (dataObject.isBitString()) {
             objectText = this.getDebugInfoBitStringBytes(((BitString) dataObject.getValue()).getBitString());
-        } else if (dataObject.isCosemDateFormat() && (dataObject.getValue() instanceof CosemDateTime)) {
+        } else if (dataObject.isCosemDateFormat() && dataObject.getValue() instanceof CosemDateTime) {
             objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.getValue()).encode());
         } else {
             objectText = String.valueOf(dataObject.getRawValue());
@@ -789,7 +789,7 @@ public class DlmsHelperService {
     }
 
     private String byteArrayToString(final byte[] bitStringValue) {
-        if ((bitStringValue == null) || (bitStringValue.length == 0)) {
+        if (bitStringValue == null || bitStringValue.length == 0) {
             return null;
         }
         final StringBuilder sb = new StringBuilder();
@@ -801,7 +801,7 @@ public class DlmsHelperService {
     }
 
     private BigInteger byteArrayToBigInteger(final byte[] bitStringValue) {
-        if ((bitStringValue == null) || (bitStringValue.length == 0)) {
+        if (bitStringValue == null || bitStringValue.length == 0) {
             return null;
         }
         BigInteger value = BigInteger.valueOf(0);
@@ -819,7 +819,7 @@ public class DlmsHelperService {
     private Number readNumber(final DataObject resultData, final String description, final String interpretation)
             throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
-        if ((resultData == null) || resultData.isNull()) {
+        if (resultData == null || resultData.isNull()) {
             return null;
         }
         final Object resultValue = resultData.getValue();
@@ -832,7 +832,7 @@ public class DlmsHelperService {
     private byte[] readByteArray(final DataObject resultData, final String description, final String interpretation)
             throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
-        if ((resultData == null) || resultData.isNull()) {
+        if (resultData == null || resultData.isNull()) {
             return new byte[0];
         }
         final Object resultValue = resultData.getValue();
@@ -847,7 +847,7 @@ public class DlmsHelperService {
     private List<DataObject> readList(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
-        if ((resultData == null) || resultData.isNull()) {
+        if (resultData == null || resultData.isNull()) {
             return Collections.emptyList();
         }
         final Object resultValue = resultData.getValue();

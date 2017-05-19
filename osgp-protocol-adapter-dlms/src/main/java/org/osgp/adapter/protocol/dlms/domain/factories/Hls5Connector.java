@@ -144,7 +144,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     }
 
     private boolean checkLenghtKey(final byte[] key) {
-        if ((key.length * 8) != AES_GMC_128) {
+        if (key.length * 8 != AES_GMC_128) {
             return true;
         }
         return false;
