@@ -16,13 +16,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.exception.MBusChannelNotFoundException;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.exceptions.ChannelAlreadyOccupiedException;
+import com.alliander.osgp.domain.core.exceptions.MBusChannelNotFoundException;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValues;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -39,6 +40,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class MBusGatewayService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MBusGatewayService.class);
+    private static final String FUNCT_EXP_MSG_TEMPLATE = "channel: %d, deviceId: %d, manufacturerId: %d, version: %d, type: %d, \n";
 
     @Autowired
     @Qualifier(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
@@ -70,17 +72,14 @@ public class MBusGatewayService {
 
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
-        final short channel = requestData.getChannel();
 
-        LOGGER.debug(
-                "coupleMbusDevice for organisationIdentification: {} for gateway: {}, m-bus device {} and channel {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, mbusDeviceIdentification,
-                channel);
+        LOGGER.debug("coupleMbusDevice for organisationIdentification: {} for gateway: {}, m-bus device {} ",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, mbusDeviceIdentification);
 
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
         final SmartMeter gasMeterDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
-        this.checkAndHandleChannelOnGateway(channel, gatewayDevice);
+        this.checkAndHandleChannelOnGateway(gatewayDevice);
 
         final MbusChannelElementsDto mbusChannelElementsDto = this.makeMbusChannelElementsDto(gasMeterDevice);
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
@@ -107,6 +106,7 @@ public class MBusGatewayService {
                 gatewayDevice.setChannel(mbusChannelElementsResponseDto.getChannel().shortValue());
                 this.smartMeteringDeviceRepository.save(gatewayDevice);
                 gasMeterDevice.updateGatewayDevice(gatewayDevice);
+                this.smartMeteringDeviceRepository.save(gasMeterDevice);
             } catch (final FunctionalException functionalException) {
                 exception = functionalException;
                 result = ResponseMessageResultType.NOT_OK;
@@ -114,7 +114,7 @@ public class MBusGatewayService {
         } else {
             exception = new FunctionalException(FunctionalExceptionType.NO_MBUS_DEVICE_CHANNEL_FOUND,
                     ComponentType.DOMAIN_SMART_METERING,
-                    new MBusChannelNotFoundException(mbusChannelElementsResponseDto));
+                    new MBusChannelNotFoundException(this.buildErrorMessage(mbusChannelElementsResponseDto)));
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -128,26 +128,25 @@ public class MBusGatewayService {
     }
 
     /**
-     * @param channel
-     *            the channel number
      * @param gateway
      *            the {@link SmartMeter} gateway
      * @throws FunctionalException
      *             is thrown when channel number is already occupied with on the
      *             gateway
      */
-    private void checkAndHandleChannelOnGateway(final short channel, final SmartMeter gateway)
-            throws FunctionalException {
+    private void checkAndHandleChannelOnGateway(final SmartMeter gateway) throws FunctionalException {
         final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository
                 .getMbusDevicesForGateway(gateway.getId());
 
         for (final SmartMeter coupledDevice : alreadyCoupled) {
-            if ((coupledDevice.getChannel() != null) && (coupledDevice.getChannel().equals(channel))) {
+            if (coupledDevice.getChannel() != null) {
                 LOGGER.info("There is already an M-bus device {} coupled to gateway {} on channel {}",
-                        coupledDevice.getDeviceIdentification(), gateway.getDeviceIdentification(), channel);
+                        coupledDevice.getDeviceIdentification(), gateway.getDeviceIdentification(),
+                        coupledDevice.getChannel());
 
                 throw new FunctionalException(FunctionalExceptionType.CHANNEL_ON_DEVICE_ALREADY_COUPLED,
-                        ComponentType.DOMAIN_SMART_METERING, new ChannelAlreadyOccupiedException(channel));
+                        ComponentType.DOMAIN_SMART_METERING,
+                        new ChannelAlreadyOccupiedException(coupledDevice.getChannel()));
 
             }
         }
@@ -167,6 +166,19 @@ public class MBusGatewayService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 result, exception, null, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
+    }
+
+    private String buildErrorMessage(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) {
+        final StringBuilder sb = new StringBuilder();
+        mbusChannelElementsResponseDto.getChannelElements().forEach(f -> this.appendMessage(sb, f));
+        return sb.toString();
+    }
+
+    private void appendMessage(final StringBuilder sb, final ChannelElementValues channelElements) {
+        final String msg = String.format(FUNCT_EXP_MSG_TEMPLATE, channelElements.getChannel(),
+                channelElements.getDeviceTypeIdentification(), channelElements.getManufacturerIdentification(),
+                channelElements.getVersion(), channelElements.getDeviceTypeIdentification());
+        sb.append(msg);
     }
 
 }

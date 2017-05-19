@@ -149,16 +149,15 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final String mbusDeviceIdentification = request.getMbusDeviceIdentification();
-        final short channel = request.getChannel();
         LOGGER.info("Incoming CoupleMbusDeviceRequest for meter: {} and mbus device {} on channel {}.",
-                deviceIdentification, mbusDeviceIdentification, channel);
+                deviceIdentification, mbusDeviceIdentification);
 
         CoupleMbusDeviceAsyncResponse response = null;
         try {
             response = new CoupleMbusDeviceAsyncResponse();
 
             final String correlationUid = this.installationService.enqueueCoupleMbusDeviceRequest(
-                    organisationIdentification, deviceIdentification, mbusDeviceIdentification, channel,
+                    organisationIdentification, deviceIdentification, mbusDeviceIdentification,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.installationMapper.map(scheduleTime, Long.class));
 
@@ -167,10 +166,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while coupling devices: {} and {} on channel {} for organisation {}.",
-                    new Object[] { e.getMessage(), deviceIdentification, mbusDeviceIdentification, channel,
-                            organisationIdentification },
-                    e);
+            LOGGER.error("Exception: {} while coupling devices: {} and {} for organisation {}.", new Object[] {
+                    e.getMessage(), deviceIdentification, mbusDeviceIdentification, organisationIdentification }, e);
 
             this.handleException(e);
         }
