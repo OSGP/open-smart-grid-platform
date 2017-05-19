@@ -113,7 +113,7 @@ public class DlmsHelperService {
 
             LOGGER.error(errorMessage);
             throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS,
-                    new ProtocolAdapterException(errorMessage).getCause());
+                    new ProtocolAdapterException(errorMessage));
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
