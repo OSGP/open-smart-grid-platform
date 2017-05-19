@@ -40,7 +40,6 @@ Feature: AdminDeviceManagement Device Removal
     Then the remove device response contains soap fault
       | FaultCode    | SOAP-ENV:Server                              |
       | FaultString  | UNKNOWN_DEVICE                               |
-      | InnerMessage | Device with id "unknown" could not be found. |
 
   Scenario: Remove a device with empty device identification
     When receiving a remove device request with empty device identification
