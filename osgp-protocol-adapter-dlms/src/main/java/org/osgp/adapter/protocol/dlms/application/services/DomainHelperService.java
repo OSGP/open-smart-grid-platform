@@ -103,7 +103,7 @@ public class DomainHelperService {
 
         } catch (final SessionProviderException e) {
             LOGGER.error("IccId is probably not supported in this session provider", e);
-            throw new FunctionalException(FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS, e);
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
             throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()

@@ -20,9 +20,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public class Lls0Connector extends DlmsConnector {
@@ -78,9 +76,14 @@ public class Lls0Connector extends DlmsConnector {
         try {
             return tcpConnectionBuilder.build();
         } catch (final IOException e) {
-            final String errorMessage = String.format("Communication timeout for device %s", device.getDeviceIdentification());
-            LOGGER.error(errorMessage);
-            throw new FunctionalException(FunctionalExceptionType.COMMUNICATION_TIMEOUT, ComponentType.PROTOCOL_DLMS, e);
+            final String msg = String.format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b Message:%s",
+                    device.getDeviceIdentification(),
+                    device.getIpAddress(),
+                    device.getPort(),
+                    device.isUseHdlc(),
+                    device.isUseSn(),
+                    e.getMessage());
+            throw new ConnectionException(msg, e);
         }
     }
 }

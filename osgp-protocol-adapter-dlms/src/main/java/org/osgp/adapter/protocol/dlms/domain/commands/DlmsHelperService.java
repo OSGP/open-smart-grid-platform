@@ -91,7 +91,6 @@ public class DlmsHelperService {
      * @return a result from trying to retrieve the value for the attribute
      *         identified by {@code attributeAddress}.
      * @throws ConnectionException
-     * @throws ProtocolAdapterException
      * @throws FunctionalException
      */
     public DataObject getAttributeValue(final DlmsConnectionHolder conn, final AttributeAddress attributeAddress)
@@ -113,7 +112,12 @@ public class DlmsHelperService {
                     this.getDebugInfo(getResult.getResultData()));
 
             LOGGER.error(errorMessage);
-            throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS);
+            throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS,
+                    new ProtocolAdapterException("Retrieving attribute value for {" + attributeAddress.getClassId() + ","
+                            + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "} Result: "
+                            + resultCode + "(" + resultCode.getCode() + "), with data: "
+                            + this.getDebugInfo(getResult.getResultData())).getCause()
+                    );
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
