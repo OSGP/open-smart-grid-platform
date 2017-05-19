@@ -41,8 +41,6 @@ public class AuditTrail extends SmartMeteringStepsBase {
 
     @Then("^the audit trail contains multiple retry log records$")
     public void theAuditTrailContainsMultipleRetryLogRecords(final Map<String, String> settings) throws Throwable {
-        final String pattern = PATTERN_RETRY_OPERATION;
-
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
@@ -53,12 +51,11 @@ public class AuditTrail extends SmartMeteringStepsBase {
         final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, new PageRequest(0, 2)).getContent();
 
-        for (int i = 0; i < deviceLogItems.size(); i++) {
-            final DeviceLogItem item = deviceLogItems.get(i);
-            LOGGER.info("CreationTime: {}", item.getCreationTime().toString());
-            LOGGER.info("DecodedMessage: {}", item.getDecodedMessage());
+        for (final DeviceLogItem deviceLogItem : deviceLogItems) {
+            LOGGER.info("CreationTime: {}", deviceLogItem.getCreationTime().toString());
+            LOGGER.info("DecodedMessage: {}", deviceLogItem.getDecodedMessage());
 
-            final boolean isMatchRetryOperation = Pattern.matches(pattern, item.getDecodedMessage());
+            final boolean isMatchRetryOperation = Pattern.matches(PATTERN_RETRY_OPERATION, deviceLogItem.getDecodedMessage());
             assertTrue("No retry log item found.", isMatchRetryOperation);
         }
     }

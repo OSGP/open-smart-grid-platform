@@ -38,6 +38,9 @@ public class ResponseNotifierImpl implements ResponseNotifier {
 
     @Override
     public boolean waitForResponse(final String correlationUid, final int timeout, final int maxtime) {
+        if (timeout < 1) {
+            throw new IllegalArgumentException("Timeout < 1 is not possible");
+        }
 
         try {
             // check if we have (almost) immediate response
@@ -68,6 +71,9 @@ public class ResponseNotifierImpl implements ResponseNotifier {
 
     @Override
     public boolean waitForLog(final String deviceId, final int timeout, final int maxtime) {
+        if (timeout < 1) {
+            throw new IllegalArgumentException("Timeout < 1 is not possible");
+        }
 
         try {
             // check if we have (almost) immediate response
