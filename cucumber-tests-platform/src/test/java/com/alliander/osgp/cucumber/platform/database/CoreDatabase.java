@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.database;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,8 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 @Component
 public class CoreDatabase {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoreDatabase.class);
+    
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
@@ -76,7 +80,7 @@ public class CoreDatabase {
 
     @Autowired
     private RelayStatusRepository relayStatusRepository;
-
+    
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -109,6 +113,27 @@ public class CoreDatabase {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
+        try {
+            batchDeleteAll();
+        } catch (Exception ex) {
+            LOGGER.warn("Unable to delete entities in batch: {}, retry once", ex.toString());
+            
+            batchDeleteAll();
+        }
+    }
+
+    @Transactional("txMgrCore")
+    public void removeLeftOvers() {
+        try {
+            normalDeleteAll();
+        } catch (Exception ex) {
+            LOGGER.warn("Unable to delete entities: {}, retry once", ex.toString());
+
+            normalDeleteAll();
+        }
+    }
+    
+    private void batchDeleteAll() {
         this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
@@ -125,9 +150,8 @@ public class CoreDatabase {
         this.manufacturerRepository.deleteAllInBatch();
         this.organisationRepository.deleteAllInBatch();
     }
-
-    @Transactional("txMgrCore")
-    public void removeLeftOvers() {
+    
+    private void normalDeleteAll() {
         this.deviceAuthorizationRepository.deleteAll();
         this.deviceLogItemRepository.deleteAll();
         this.scheduledTaskRepository.deleteAll();
