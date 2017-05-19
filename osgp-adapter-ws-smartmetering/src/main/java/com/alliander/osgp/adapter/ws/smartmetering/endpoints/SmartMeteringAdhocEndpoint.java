@@ -195,9 +195,12 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                 response.setAttributeValueData((String) meterResponseData.getMessageData());
             } else if (meterResponseData.getMessageData() instanceof OsgpException) {
                 throw (OsgpException) meterResponseData.getMessageData();
+            } else if (meterResponseData.getMessageData() instanceof Exception) {
+                throw new TechnicalException(ComponentType.WS_SMART_METERING,
+                        ("An exception occurred: Get specific attribute value"), (Exception) meterResponseData.getMessageData());
             } else {
                 throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                        String.format("An exception occurred %s.", "Get specific attribute value"), null);
+                        ("An exception occurred: Get specific attribute value"), null);
             }
         } catch (final Exception e) {
             this.handleException(e);
