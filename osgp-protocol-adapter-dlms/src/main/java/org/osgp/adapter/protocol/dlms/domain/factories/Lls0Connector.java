@@ -17,11 +17,16 @@ import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public class Lls0Connector extends DlmsConnector {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Lls0Connector.class);
 
     protected final int responseTimeout;
 
@@ -60,7 +65,10 @@ public class Lls0Connector extends DlmsConnector {
                 tcpConnectionBuilder.useHdlc();
             }
         } catch (final UnknownHostException e) {
-            throw new ConnectionException(e);
+            LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
+            // Unknown IP, unrecoverable.
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                    "The IP address is not found: " + device.getIpAddress());
         }
 
         this.setOptionalValues(device, tcpConnectionBuilder);
@@ -72,7 +80,15 @@ public class Lls0Connector extends DlmsConnector {
         try {
             return tcpConnectionBuilder.build();
         } catch (final IOException e) {
-            throw new ConnectionException(e);
+            final String msg = String.format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b Message:%s",
+                    device.getDeviceIdentification(),
+                    device.getIpAddress(),
+                    device.getPort(),
+                    device.isUseHdlc(),
+                    device.isUseSn(),
+                    e.getMessage());
+            LOGGER.error(msg);
+            throw new ConnectionException(msg, e);
         }
     }
 }

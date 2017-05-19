@@ -21,6 +21,7 @@ import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessIniti
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         try {
             return this.createConnection(device, dlmsMessageListener);
         } catch (final UnknownHostException e) {
-            LOGGER.warn("The IP address is not found: {}", device.getIpAddress(), e);
+            LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
             // Unknown IP, unrecoverable.
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
@@ -70,11 +71,15 @@ public class Hls5Connector extends SecureDlmsConnector {
                 // Queue key recovery process.
                 this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
-
-            final String errorMessage = String.format("Error creating connection for %s with IP adress: %s and with device port: %d",
-                    device.getDeviceIdentification(), device.getIpAddress(), device.getPort());
-            LOGGER.error(errorMessage);
-            throw new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS, e);
+            final String msg = String.format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b Message:%s",
+                    device.getDeviceIdentification(),
+                    device.getIpAddress(),
+                    device.getPort(),
+                    device.isUseHdlc(),
+                    device.isUseSn(),
+                    e.getMessage());
+            LOGGER.error(msg);
+            throw new ConnectionException(msg, e);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);

@@ -10,6 +10,8 @@ package org.osgp.adapter.protocol.dlms.exceptions;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
@@ -40,6 +42,9 @@ public class OsgpExceptionConverter {
     public OsgpException ensureOsgpOrTechnicalException(final Exception e) {
         if (e instanceof OsgpException) {
             return (OsgpException) e;
+        }
+        if (e instanceof ConnectionException) {
+            return new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS, e);
         }
 
         return new TechnicalException(ComponentType.PROTOCOL_DLMS,

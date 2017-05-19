@@ -43,7 +43,7 @@ AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
 
     @Override
     public String execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final SpecificAttributeValueRequestDto requestData) throws ProtocolAdapterException, FunctionalException {
+            final SpecificAttributeValueRequestDto requestData) throws FunctionalException {
 
         final ObisCodeValuesDto obisCodeValues = requestData.getObisCode();
         final byte[] obisCodeBytes = { obisCodeValues.getA(), obisCodeValues.getB(), obisCodeValues.getC(),
