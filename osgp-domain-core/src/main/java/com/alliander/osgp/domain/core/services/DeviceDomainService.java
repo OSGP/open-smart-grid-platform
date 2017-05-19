@@ -39,16 +39,13 @@ public class DeviceDomainService {
     @Autowired
     private SsldRepository ssldRepository;
 
-    public Device searchDevice(@Identification final String deviceIdentification) throws UnknownEntityException, FunctionalException {
+    public Device searchDevice(@Identification final String deviceIdentification) throws FunctionalException {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         if (device == null) {
-            final String errorMessage = String.format("Unable to communicate with unknown device: %s", deviceIdentification);
-            LOGGER.error(errorMessage);
-
+            LOGGER.error("Device with id {} could not be found", deviceIdentification);
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_CORE);
         }
-
         return device;
     }
 
