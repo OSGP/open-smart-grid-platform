@@ -10,7 +10,6 @@ package com.alliander.osgp.domain.core.entities;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -26,7 +25,7 @@ public class RelayStatus extends AbstractEntity {
 
     private static final long serialVersionUID = -6288672019209482063L;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "device_id", nullable = false)
     private Device device;
 

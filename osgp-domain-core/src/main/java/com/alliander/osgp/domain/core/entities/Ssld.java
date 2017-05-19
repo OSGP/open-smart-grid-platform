@@ -60,7 +60,7 @@ public class Ssld extends Device {
     @CollectionTable(name = "device_output_setting", joinColumns = @JoinColumn(name = "device_id"))
     private List<DeviceOutputSetting> outputSettings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "device", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<RelayStatus> relayStatusses;
 
