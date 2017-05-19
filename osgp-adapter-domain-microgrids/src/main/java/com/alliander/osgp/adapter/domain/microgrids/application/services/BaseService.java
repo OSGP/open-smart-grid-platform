@@ -59,8 +59,6 @@ public class BaseService {
                     e);
         } catch (final InactiveDeviceException e) {
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e);
         }
         return device;
     }

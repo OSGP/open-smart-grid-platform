@@ -621,13 +621,7 @@ public class DeviceManagementService {
     }
 
     private Device findDevice(final String deviceIdentification) throws FunctionalException {
-        Device device;
-        try {
-            device = this.deviceDomainService.searchDevice(deviceIdentification);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_ADMIN, e);
-        }
-        return device;
+        return this.deviceDomainService.searchDevice(deviceIdentification);
     }
 
     private ProtocolInfo findProtocolInfo(final String protocol, final String protocolVersion)
