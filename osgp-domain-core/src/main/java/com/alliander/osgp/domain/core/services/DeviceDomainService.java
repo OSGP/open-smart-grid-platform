@@ -50,7 +50,7 @@ public class DeviceDomainService {
     }
 
     public Device searchActiveDevice(@Identification final String deviceIdentification)
-            throws UnregisteredDeviceException, InactiveDeviceException, UnknownEntityException, FunctionalException {
+            throws UnregisteredDeviceException, InactiveDeviceException, FunctionalException {
 
         final Device device = this.searchDevice(deviceIdentification);
         final Ssld ssld = this.ssldRepository.findOne(device.getId());

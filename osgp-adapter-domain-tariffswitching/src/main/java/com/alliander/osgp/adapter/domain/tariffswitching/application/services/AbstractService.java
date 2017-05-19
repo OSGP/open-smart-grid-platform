@@ -57,9 +57,6 @@ public class AbstractService {
                     ComponentType.DOMAIN_TARIFF_SWITCHING, e);
         } catch (final InactiveDeviceException e) {
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_TARIFF_SWITCHING, e);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE,
-                    ComponentType.DOMAIN_TARIFF_SWITCHING, e);
         }
         return device;
     }
