@@ -36,24 +36,22 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
-    @When("^the Couple G-meter \"([^\"]*)\" request on channel (\\d+) is received$")
-    public void theCoupleGMeterRequestIsReceived(final String gasMeter, final Short channel)
-            throws WebServiceSecurityException {
+    @When("^the Couple G-meter \"([^\"]*)\" request is received$")
+    public void theCoupleGMeterRequestIsReceived(final String gasMeter) throws WebServiceSecurityException {
 
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDeviceAndChannel(gasMeter,
-                channel);
+        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDeviceAndChannel(gasMeter);
         final CoupleMbusDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient
                 .coupleMbusDevice(request);
 
         this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
     }
 
-    @When("^the Couple G-meter \"([^\"]*)\" to E-meter \"([^\"]*)\" request on channel (\\d+) is received for an unknown gateway$")
+    @When("^the Couple G-meter \"([^\"]*)\" to E-meter \"([^\"]*)\" request is received for an unknown gateway$")
     public void theCoupleGMeterToEMeterRequestOnChannelIsReceivedForAnUnknownGateway(final String gasMeter,
-            final String eMeter, final Short channel) throws WebServiceSecurityException {
+            final String eMeter) throws WebServiceSecurityException {
 
         final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDeviceAndChannel(eMeter,
-                gasMeter, channel);
+                gasMeter);
 
         try {
             this.smartMeteringInstallationClient.coupleMbusDevice(request);
@@ -63,12 +61,11 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
         }
     }
 
-    @When("^the Couple G-meter \"([^\"]*)\" request on channel (\\d+) is received for an inactive device$")
-    public void theCoupleGMeterRequestOnChannelIsReceivedForAnInactiveDevice(final String gasMeter, final Short channel)
+    @When("^the Couple G-meter \"([^\"]*)\" request is received for an inactive device$")
+    public void theCoupleGMeterRequestOnChannelIsReceivedForAnInactiveDevice(final String gasMeter)
             throws WebServiceSecurityException {
 
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDeviceAndChannel(gasMeter,
-                channel);
+        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDeviceAndChannel(gasMeter);
 
         try {
             this.smartMeteringInstallationClient.coupleMbusDevice(request);

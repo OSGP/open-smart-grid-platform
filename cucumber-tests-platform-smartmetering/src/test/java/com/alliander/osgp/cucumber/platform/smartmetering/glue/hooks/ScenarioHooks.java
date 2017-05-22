@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.database.DlmsDatabase;
+import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation.DeviceSimulatorSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ServiceEndpoint;
 
 import cucumber.api.java.After;
@@ -31,6 +32,9 @@ public class ScenarioHooks extends GlueBase {
 
     @Autowired
     private DlmsDatabase dlmsDatabaseSteps;
+
+    @Autowired
+    private DeviceSimulatorSteps deviceSimulatorSteps;
 
     @Autowired
     private ServiceEndpoint serviceEndpoint;
@@ -62,6 +66,7 @@ public class ScenarioHooks extends GlueBase {
      */
     @Before(order = 1000)
     public void beforeScenario() {
+        this.deviceSimulatorSteps.removeAllTemporaryPropertiesFiles();
         this.dlmsDatabaseSteps.prepareDatabaseForScenario();
         this.prepareServiceEndpoint();
     }

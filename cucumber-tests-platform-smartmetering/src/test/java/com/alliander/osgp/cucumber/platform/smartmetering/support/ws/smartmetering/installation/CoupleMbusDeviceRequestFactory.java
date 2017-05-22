@@ -17,18 +17,16 @@ public class CoupleMbusDeviceRequestFactory {
         // Private constructor for utility class.
     }
 
-    public static CoupleMbusDeviceRequest forMbusDeviceAndChannel(final String mbusDeviceIdentification,
-            final short channel) {
+    public static CoupleMbusDeviceRequest forMbusDeviceAndChannel(final String mbusDeviceIdentification) {
         return forGatewayMbusDeviceAndChannel(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext(),
-                mbusDeviceIdentification, channel);
+                mbusDeviceIdentification);
     }
 
     public static CoupleMbusDeviceRequest forGatewayMbusDeviceAndChannel(final String gatewayDeviceIdentification,
-            final String mbusDeviceIdentification, final Short channel) {
+            final String mbusDeviceIdentification) {
         final CoupleMbusDeviceRequest coupleMbusDeviceRequest = new CoupleMbusDeviceRequest();
         coupleMbusDeviceRequest.setDeviceIdentification(gatewayDeviceIdentification);
         coupleMbusDeviceRequest.setMbusDeviceIdentification(mbusDeviceIdentification);
-        coupleMbusDeviceRequest.setChannel(channel);
         return coupleMbusDeviceRequest;
     }
 
