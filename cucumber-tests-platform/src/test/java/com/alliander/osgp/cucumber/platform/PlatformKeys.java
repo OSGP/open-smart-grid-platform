@@ -309,9 +309,4 @@ public class PlatformKeys {
 
     public static final String DATE = "Date";
     public static final String TIME_UNTIL_ON = "TimeUntilOn";
-
-    public static final String MBUS_IDENTIFICATION_NUMBER = "MbusIdentificationNumber";
-    public static final String MBUS_MANUFACTURER_IDENTIFICATION = "MbusManufacturerIdentification";
-    public static final String MBUS_VERSION = "MbusVersion";
-    public static final String MBUS_DEVICE_TYPE_IDENTIFICATION = "MbusDeviceTypeIdentification";
 }
