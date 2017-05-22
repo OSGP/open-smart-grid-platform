@@ -151,6 +151,10 @@ public class Ssld extends Device {
         return this.relayStatusses;
     }
 
+    public void setRelayStatusses(final List<RelayStatus> relayStatusses) {
+        this.relayStatusses = relayStatusses;
+    }
+
     /**
      * Returns the {@link RelayStatus} for the given index, or null if it
      * doesn't exist.
