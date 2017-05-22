@@ -51,6 +51,24 @@ public class SmartMeter extends Device {
                 containerMunicipality, gpsLatitude, gpsLongitude);
     }
 
+    public SmartMeter(final String supplier, final Short channel) {
+        super();
+        this.supplier = supplier;
+        this.channel = channel;
+    }
+
+    public SmartMeter(final String supplier, final Short channel, final String mbusIdentificationNumber,
+            final String mbusManufacturerIdentification, final String mbusVersion,
+            final String mbusdeviceTypeIdentification) {
+        super();
+        this.supplier = supplier;
+        this.channel = channel;
+        this.mbusIdentificationNumber = mbusIdentificationNumber;
+        this.mbusManufacturerIdentification = mbusManufacturerIdentification;
+        this.mbusVersion = mbusVersion;
+        this.mbusDeviceTypeIdentification = mbusdeviceTypeIdentification;
+    }
+
     public void setDeviceType(final String deviceType) {
         this.deviceType = deviceType;
     }
@@ -119,24 +137,6 @@ public class SmartMeter extends Device {
 
     public void setMbusDeviceTypeIdentification(final String mbusDeviceTypeIdentification) {
         this.mbusDeviceTypeIdentification = mbusDeviceTypeIdentification;
-    }
-
-    public SmartMeter(final String supplier, final Short channel) {
-        super();
-        this.supplier = supplier;
-        this.channel = channel;
-    }
-
-    public SmartMeter(final String supplier, final Short channel, final String mbusIdentificationNumber,
-            final String mbusManufacturerIdentification, final String mbusVersion,
-            final String mbusdeviceTypeIdentification) {
-        super();
-        this.supplier = supplier;
-        this.channel = channel;
-        this.mbusIdentificationNumber = mbusIdentificationNumber;
-        this.mbusManufacturerIdentification = mbusManufacturerIdentification;
-        this.mbusVersion = mbusVersion;
-        this.mbusDeviceTypeIdentification = mbusdeviceTypeIdentification;
     }
 
     @Override
