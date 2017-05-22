@@ -49,7 +49,7 @@ public class Load extends LogicalDevice {
             values.add(this.setRandomFloat(MMXU + i + ".MinWPhs.mag.f", Fc.MX, 0, 500));
             values.add(this.setTime(MMXU + i + ".MinWPhs.t", Fc.MX, timestamp));
 
-            values.add(this.setFixedFloat(MMXU + i + ".TotW.mag.f", Fc.MX, i));
+            values.add(this.setFixedFloat(MMXU + i + ".TotW.mag.f", Fc.MX, (float) i));
             values.add(this.setTime(MMXU + i + ".TotW.t", Fc.MX, timestamp));
 
             values.add(this.setFixedInt(MMTR + i + ".TotWh.actVal", Fc.ST, i));

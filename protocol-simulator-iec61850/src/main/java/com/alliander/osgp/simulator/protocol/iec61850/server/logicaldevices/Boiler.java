@@ -174,11 +174,9 @@ public class Boiler extends LogicalDevice {
 
     private static final Set<String> INT32_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(GGIO1_INTIN1_STVAL, GGIO1_INTIN2_STVAL, DGEN1_OPTMSRS_STVAL,
-                    DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHDCAT_SETVAL,
-                    DSCH2_SCHDID_SETVAL, DSCH2_SCHDTYP_SETVAL, DSCH2_SCHDCAT_SETVAL,
-                    DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL, DSCH3_SCHDCAT_SETVAL,
-                    DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHDCAT_SETVAL
-                    )));
+                    DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHDCAT_SETVAL, DSCH2_SCHDID_SETVAL,
+                    DSCH2_SCHDTYP_SETVAL, DSCH2_SCHDCAT_SETVAL, DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL,
+                    DSCH3_SCHDCAT_SETVAL, DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHDCAT_SETVAL)));
 
     private static final Set<String> QUALITY_NODES = Collections.unmodifiableSet(new TreeSet<>(
             Arrays.asList(LLN0_HEALTH_Q, LLN0_BEH_Q, LLN0_MOD_Q, GGIO1_ALM1_Q, GGIO1_ALM2_Q, GGIO1_ALM3_Q, GGIO1_ALM4_Q,
@@ -491,7 +489,7 @@ public class Boiler extends LogicalDevice {
         }
 
         if (FLOAT32_NODES.contains(node)) {
-            return this.setFixedFloat(node, fc, Integer.parseInt(value));
+            return this.setFixedFloat(node, fc, Float.parseFloat(value));
         }
 
         if (INT8_NODES.contains(node)) {

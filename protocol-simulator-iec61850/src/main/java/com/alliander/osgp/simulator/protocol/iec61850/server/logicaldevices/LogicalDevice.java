@@ -95,12 +95,6 @@ public abstract class LogicalDevice {
         return value;
     }
 
-    protected BasicDataAttribute setFixedFloat(final String node, final Fc fc, final int val) {
-        final BdaFloat32 value = (BdaFloat32) this.serverModel.findModelNode(this.createNodeName(node), fc);
-        value.setFloat((float) val);
-        return value;
-    }
-
     protected BasicDataAttribute setFixedFloat(final String node, final Fc fc, final float val) {
         final BdaFloat32 value = (BdaFloat32) this.serverModel.findModelNode(this.createNodeName(node), fc);
         value.setFloat(val);

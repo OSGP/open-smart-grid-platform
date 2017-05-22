@@ -73,31 +73,22 @@ public class Rtu extends LogicalDevice {
     private static final String DSCH4_SCHDABSTM_VAL_3 = "DSCH4.SchdAbsTm.val.3";
     private static final String DSCH4_SCHDABSTM_TIME_3 = "DSCH4.SchdAbsTm.time.3";
 
-    private static final Set<String> FLOAT32_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(DSCH1_SCHDABSTM_VAL_0, DSCH1_SCHDABSTM_VAL_1,
-                    DSCH1_SCHDABSTM_VAL_2, DSCH1_SCHDABSTM_VAL_3,
-                    DSCH2_SCHDABSTM_VAL_0, DSCH2_SCHDABSTM_VAL_1,
-                    DSCH2_SCHDABSTM_VAL_2, DSCH2_SCHDABSTM_VAL_3,
-                    DSCH3_SCHDABSTM_VAL_0, DSCH3_SCHDABSTM_VAL_1,
-                    DSCH3_SCHDABSTM_VAL_2, DSCH3_SCHDABSTM_VAL_3)));
+    private static final Set<String> FLOAT32_NODES = Collections.unmodifiableSet(new TreeSet<>(
+            Arrays.asList(DSCH1_SCHDABSTM_VAL_0, DSCH1_SCHDABSTM_VAL_1, DSCH1_SCHDABSTM_VAL_2, DSCH1_SCHDABSTM_VAL_3,
+                    DSCH2_SCHDABSTM_VAL_0, DSCH2_SCHDABSTM_VAL_1, DSCH2_SCHDABSTM_VAL_2, DSCH2_SCHDABSTM_VAL_3,
+                    DSCH3_SCHDABSTM_VAL_0, DSCH3_SCHDABSTM_VAL_1, DSCH3_SCHDABSTM_VAL_2, DSCH3_SCHDABSTM_VAL_3)));
 
-    private static final Set<String> INT32_NODES = Collections
-            .unmodifiableSet(
-                    new TreeSet<>(Arrays.asList(DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHDCAT_SETVAL,
-                            DSCH2_SCHDID_SETVAL, DSCH2_SCHDTYP_SETVAL, DSCH2_SCHDCAT_SETVAL,
-                            DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL, DSCH3_SCHDCAT_SETVAL,
-                            DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHDCAT_SETVAL)));
+    private static final Set<String> INT32_NODES = Collections.unmodifiableSet(new TreeSet<>(
+            Arrays.asList(DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHDCAT_SETVAL, DSCH2_SCHDID_SETVAL,
+                    DSCH2_SCHDTYP_SETVAL, DSCH2_SCHDCAT_SETVAL, DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL,
+                    DSCH3_SCHDCAT_SETVAL, DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHDCAT_SETVAL)));
 
     private static final Set<String> TIMESTAMP_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(DSCH1_SCHDABSTM_TIME_0, DSCH1_SCHDABSTM_TIME_1,
-                    DSCH1_SCHDABSTM_TIME_2, DSCH1_SCHDABSTM_TIME_3,
-                    DSCH2_SCHDABSTM_TIME_0, DSCH2_SCHDABSTM_TIME_1,
-                    DSCH2_SCHDABSTM_TIME_2, DSCH2_SCHDABSTM_TIME_3,
-                    DSCH3_SCHDABSTM_TIME_0, DSCH3_SCHDABSTM_TIME_1,
-                    DSCH3_SCHDABSTM_TIME_2, DSCH3_SCHDABSTM_TIME_3,
-                    DSCH4_SCHDABSTM_TIME_0, DSCH4_SCHDABSTM_TIME_1,
-                    DSCH4_SCHDABSTM_TIME_2, DSCH4_SCHDABSTM_TIME_3
-                    )));
+                    DSCH1_SCHDABSTM_TIME_2, DSCH1_SCHDABSTM_TIME_3, DSCH2_SCHDABSTM_TIME_0, DSCH2_SCHDABSTM_TIME_1,
+                    DSCH2_SCHDABSTM_TIME_2, DSCH2_SCHDABSTM_TIME_3, DSCH3_SCHDABSTM_TIME_0, DSCH3_SCHDABSTM_TIME_1,
+                    DSCH3_SCHDABSTM_TIME_2, DSCH3_SCHDABSTM_TIME_3, DSCH4_SCHDABSTM_TIME_0, DSCH4_SCHDABSTM_TIME_1,
+                    DSCH4_SCHDABSTM_TIME_2, DSCH4_SCHDABSTM_TIME_3)));
 
     private static final Map<String, Fc> FC_BY_NODE;
     static {
@@ -273,7 +264,7 @@ public class Rtu extends LogicalDevice {
         }
 
         if (FLOAT32_NODES.contains(node)) {
-            return this.setFixedFloat(node, fc, Integer.parseInt(value));
+            return this.setFixedFloat(node, fc, Float.parseFloat(value));
         }
 
         if (INT32_NODES.contains(node)) {
