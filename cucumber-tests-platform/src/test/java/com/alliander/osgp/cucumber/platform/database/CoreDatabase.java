@@ -38,7 +38,7 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 public class CoreDatabase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoreDatabase.class);
-    
+
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
@@ -80,7 +80,7 @@ public class CoreDatabase {
 
     @Autowired
     private RelayStatusRepository relayStatusRepository;
-    
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -88,10 +88,12 @@ public class CoreDatabase {
      */
     @Transactional("txMgrCore")
     public void insertDefaultData() {
-        if (this.organisationRepository.findByOrganisationIdentification(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+        if (this.organisationRepository
+                .findByOrganisationIdentification(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
-                    PlatformDefaults.DEFAULT_ORGANIZATION_DESCRIPTION, PlatformDefaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
+                    PlatformDefaults.DEFAULT_ORGANIZATION_DESCRIPTION, PlatformDefaults.DEFAULT_PREFIX,
+                    PlatformFunctionGroup.ADMIN);
             testOrg.addDomain(PlatformDomain.COMMON);
             testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
             testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
@@ -113,27 +115,16 @@ public class CoreDatabase {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-        try {
-            batchDeleteAll();
-        } catch (Exception ex) {
-            LOGGER.warn("Unable to delete entities in batch: {}, retry once", ex.toString());
-            
-            batchDeleteAll();
-        }
+        this.batchDeleteAll();
     }
 
     @Transactional("txMgrCore")
     public void removeLeftOvers() {
-        try {
-            normalDeleteAll();
-        } catch (Exception ex) {
-            LOGGER.warn("Unable to delete entities: {}, retry once", ex.toString());
-
-            normalDeleteAll();
-        }
+        this.normalDeleteAll();
     }
-    
+
     private void batchDeleteAll() {
+        LOGGER.info("Starting batchDeleteAll()");
         this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
@@ -150,8 +141,9 @@ public class CoreDatabase {
         this.manufacturerRepository.deleteAllInBatch();
         this.organisationRepository.deleteAllInBatch();
     }
-    
+
     private void normalDeleteAll() {
+        LOGGER.info("Starting normalDeleteAll()");
         this.deviceAuthorizationRepository.deleteAll();
         this.deviceLogItemRepository.deleteAll();
         this.scheduledTaskRepository.deleteAll();
