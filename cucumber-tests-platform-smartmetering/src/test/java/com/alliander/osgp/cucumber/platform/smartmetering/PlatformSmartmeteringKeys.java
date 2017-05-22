@@ -109,4 +109,9 @@ public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platf
     public static final String BUNDLE_REQUEST = "BundleRequest";
     public static final String BUNDLE_ACTION_COUNT = "BundleActionCount";
     public static final String BUNDLE_RESPONSE_COUNT = "BundleResponseCount";
+
+    public static final String MBUS_IDENTIFICATION_NUMBER = "MbusIdentificationNumber";
+    public static final String MBUS_MANUFACTURER_IDENTIFICATION = "MbusManufacturerIdentification";
+    public static final String MBUS_VERSION = "MbusVersion";
+    public static final String MBUS_DEVICE_TYPE_IDENTIFICATION = "MbusDeviceTypeIdentification";
 }
