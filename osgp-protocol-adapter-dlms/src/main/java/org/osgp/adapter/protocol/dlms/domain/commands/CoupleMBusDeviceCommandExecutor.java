@@ -84,8 +84,7 @@ public class CoupleMBusDeviceCommandExecutor
 
     private boolean mbusChannelMatches(final int channel, final ChannelElementValues channelValues,
             final MbusChannelElementsDto requestData) {
-        System.out.println(channelValues); // TODO-JRB
-        return (channel == 2); // TODO-JRB
+        return (channelValues.getPrimaryAddress() > 0); // TODO-JRB
     }
 
     private ChannelElementValues makeChannelElementValues(final int channel, final List<GetResult> resultList) {
