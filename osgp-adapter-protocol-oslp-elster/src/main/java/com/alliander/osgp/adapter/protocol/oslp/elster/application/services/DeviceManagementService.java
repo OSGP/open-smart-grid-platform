@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -98,14 +101,35 @@ public class DeviceManagementService {
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.ADD_EVENT_NOTIFICATION.name());
     }
 
+    /**
+     * Send an event notification to OSGP Core.
+     *
+     * @param deviceIdentification
+     *            The identification of the device.
+     * @param eventNotifications
+     *            The event notifications.
+     *
+     * @throws ProtocolAdapterException
+     *             In case the device can not be found in the database.
+     */
+    public void addEventNotifications(final String deviceIdentification,
+            final List<EventNotificationDto> eventNotifications) throws ProtocolAdapterException {
+        LOGGER.info("addEventNotifications called for device {}: {}", deviceIdentification, eventNotifications);
+
+        final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
+                deviceIdentification, new ArrayList<>(eventNotifications));
+
+        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.ADD_EVENT_NOTIFICATION.name());
+    }
+
     // === UPDATE KEY ===
 
     public void updateKey(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DeviceResponseMessageSender responseMessageSender, final String domain,
             final String domainVersion, final String messageType, final String publicKey) {
 
-        LOGGER.info("updateKey called for device: {} for organisation: {} with new publicKey: {}",
-                deviceIdentification, organisationIdentification, publicKey);
+        LOGGER.info("updateKey called for device: {} for organisation: {} with new publicKey: {}", deviceIdentification,
+                organisationIdentification, publicKey);
 
         try {
             OslpDevice oslpDevice = this.oslpDeviceSettingsService
