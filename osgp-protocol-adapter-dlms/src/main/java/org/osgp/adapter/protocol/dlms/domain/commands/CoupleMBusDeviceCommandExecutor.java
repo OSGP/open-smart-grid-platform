@@ -38,10 +38,10 @@ public class CoupleMBusDeviceCommandExecutor
     private static final int CLASS_ID = 72;
     private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
 
-    private static final int NR_OF_ATTRIBUTES = 4;
+    private static final int NR_OF_ATTRIBUTES = 5;
     // we need to collect data for NR_OF_ATTRIBUTES attribites, starting from
     // attr-id: 6
-    private static final int START_ATTRIBUTE = 6;
+    private static final int START_ATTRIBUTE = 5;
     // and we start at channel 1 until channel 4
     private static final int FIRST_CHANNEL = 1;
     private static final int NR_OF_CHANNELS = 4;
@@ -89,10 +89,11 @@ public class CoupleMBusDeviceCommandExecutor
     }
 
     private ChannelElementValues makeChannelElementValues(final int channel, final List<GetResult> resultList) {
-        final int attr6 = Integer.parseInt(resultList.get(0).getResultData().getRawValue().toString());
-        final int attr7 = Integer.parseInt(resultList.get(1).getResultData().getRawValue().toString());
-        final short attr8 = Short.parseShort(resultList.get(2).getResultData().getRawValue().toString());
-        final short attr9 = Short.parseShort(resultList.get(3).getResultData().getRawValue().toString());
-        return new ChannelElementValues(channel, attr6, attr7, attr8, attr9);
+        final short attr5 = Short.parseShort(resultList.get(0).getResultData().getRawValue().toString());
+        final int attr6 = Integer.parseInt(resultList.get(1).getResultData().getRawValue().toString());
+        final int attr7 = Integer.parseInt(resultList.get(2).getResultData().getRawValue().toString());
+        final short attr8 = Short.parseShort(resultList.get(3).getResultData().getRawValue().toString());
+        final short attr9 = Short.parseShort(resultList.get(4).getResultData().getRawValue().toString());
+        return new ChannelElementValues(channel, attr5, attr6, attr7, attr8, attr9);
     }
 }
