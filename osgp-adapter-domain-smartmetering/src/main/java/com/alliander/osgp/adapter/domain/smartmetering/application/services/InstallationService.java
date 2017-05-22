@@ -171,7 +171,7 @@ public class InstallationService {
     }
 
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) {
+            final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
 
         this.mBusGatewayService.handleCoupleMbusDeviceResponse(deviceMessageMetadata, mbusChannelElementsResponseDto);
     }
