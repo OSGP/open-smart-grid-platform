@@ -129,12 +129,10 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
         Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
+            Assert.assertNull("Device with identification [" + deviceIdentification + "] should be removed", entity);
 
             final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(entity);
-
-            Assert.assertNotNull(entity);
-            Assert.assertTrue(devAuths.size() == 0);
+            Assert.assertTrue("DeviceAuthorizations for device with identification [" + deviceIdentification + "] should be removed", devAuths.isEmpty());
         });
     }
 

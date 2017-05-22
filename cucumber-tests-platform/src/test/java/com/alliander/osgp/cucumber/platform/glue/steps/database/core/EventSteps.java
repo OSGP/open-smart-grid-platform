@@ -52,18 +52,6 @@ public class EventSteps extends GlueBase {
                 getString(data, PlatformKeys.KEY_DESCRIPTION, ""), getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
 
         this.eventRepository.save(event);
-
-        if (data.containsKey(PlatformKeys.TIME_UNTIL_ON)) {
-            final DateTime dateTime = getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now());
-            final DateTime dateTimePlus = dateTime.plusHours(getInteger(data, PlatformKeys.TIME_UNTIL_ON));
-            if (dateTime.isAfter(dateTimePlus.getMillis())) {
-                dateTimePlus.plusDays(1);
-            }
-            event = new Event(device, dateTimePlus.toDate(), EventType.LIGHT_EVENTS_LIGHT_OFF, "light off",
-                    getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
-
-            this.eventRepository.save(event);
-        }
     }
 
     @Then("^the (?:event is|events are) stored$")
