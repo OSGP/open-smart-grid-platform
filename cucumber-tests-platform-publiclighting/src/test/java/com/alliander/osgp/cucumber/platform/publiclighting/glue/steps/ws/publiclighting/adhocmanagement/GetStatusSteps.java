@@ -134,7 +134,7 @@ public class GetStatusSteps {
             }
 
             count++;
-            Thread.sleep(1000);
+            Thread.sleep(5000);
 
             try {
                 final GetStatusResponse response = this.client.getGetStatusResponse(request);
@@ -155,7 +155,7 @@ public class GetStatusSteps {
                         && !expectedResult.get(PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
                     Assert.assertEquals(
                             getString(expectedResult, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS, PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS)
-                                    .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
+                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
                             deviceStatus.getEventNotifications().size());
                     for (final String eventNotification : getString(expectedResult, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
                             PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS).split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
@@ -201,7 +201,7 @@ public class GetStatusSteps {
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\" which contains soap fault$")
     public void thePlatformBuffersAGetStatusResponseMessageForDeviceWhichContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
         try {
             this.client.getGetStatusResponse(this.getGetStatusAsyncRequest(deviceIdentification));
         } catch (final SoapFaultClientException sfce) {
