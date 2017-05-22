@@ -14,6 +14,7 @@ import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
 public class DeviceFactory {
@@ -57,12 +58,13 @@ public class DeviceFactory {
         device.setDeliveryDate(
                 SettingsHelper.getXmlGregorianCalendarValue(settings, PlatformKeys.KEY_DEVICE_DELIVERY_DATE));
 
-        device.setMbusIdentificationNumber(Helpers.getString(settings, PlatformKeys.MBUS_IDENTIFICATION_NUMBER));
+        device.setMbusIdentificationNumber(
+                Helpers.getString(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
         device.setMbusManufacturerIdentification(
-                Helpers.getString(settings, PlatformKeys.MBUS_MANUFACTURER_IDENTIFICATION));
-        device.setMbusVersion(Helpers.getString(settings, PlatformKeys.MBUS_VERSION));
+                Helpers.getString(settings, PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
+        device.setMbusVersion(Helpers.getString(settings, PlatformSmartmeteringKeys.MBUS_VERSION));
         device.setMbusDeviceTypeIdentification(
-                Helpers.getString(settings, PlatformKeys.MBUS_DEVICE_TYPE_IDENTIFICATION));
+                Helpers.getString(settings, PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION));
 
         return device;
     }
