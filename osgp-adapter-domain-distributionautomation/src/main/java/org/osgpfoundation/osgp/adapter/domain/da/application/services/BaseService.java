@@ -67,8 +67,6 @@ public class BaseService {
             throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
         } catch (final InactiveDeviceException e) {
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
         }
         return device;
     }
