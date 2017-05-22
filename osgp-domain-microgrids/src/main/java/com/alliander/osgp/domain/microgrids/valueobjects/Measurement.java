@@ -8,6 +8,8 @@
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
 import java.io.Serializable;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import org.joda.time.DateTime;
 
@@ -23,9 +25,11 @@ public class Measurement extends NodeIdentifier implements Serializable {
 
     public Measurement(final int id, final String node, final int qualifier, final DateTime time, final double value) {
         super(id, node);
+        final DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.HALF_UP);
         this.qualifier = qualifier;
         this.time = time;
-        this.value = value;
+        this.value = Double.parseDouble(df.format(value));
     }
 
     public int getQualifier() {
