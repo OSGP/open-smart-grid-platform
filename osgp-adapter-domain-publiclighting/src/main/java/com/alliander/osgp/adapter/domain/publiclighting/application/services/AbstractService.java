@@ -57,9 +57,6 @@ public class AbstractService {
                     ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
         } catch (final InactiveDeviceException e) {
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_PUBLIC_LIGHTING,
-                    e);
         }
         return device;
     }
