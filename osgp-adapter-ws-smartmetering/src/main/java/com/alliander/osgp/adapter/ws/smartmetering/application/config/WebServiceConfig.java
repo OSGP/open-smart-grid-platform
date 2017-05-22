@@ -53,6 +53,8 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
         @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
+    private static final String SERVER = "SERVER";
+
     @Value("${jaxb2.marshaller.context.path.smartmetering.adhoc}")
     private String marshallerContextPathAdhoc;
     @Value("${jaxb2.marshaller.context.path.smartmetering.bundle}")
@@ -399,7 +401,10 @@ public class WebServiceConfig extends AbstractConfig {
         exceptionResolver.setOrder(1);
 
         final Properties props = new Properties();
-        props.put("com.alliander.osgp.shared.exceptionhandling.FunctionalException", "SERVER");
+        props.put("com.alliander.osgp.shared.exceptionhandling.OsgpException", SERVER);
+        props.put("com.alliander.osgp.shared.exceptionhandling.FunctionalException", SERVER);
+        props.put("com.alliander.osgp.shared.exceptionhandling.TechnicalException", SERVER);
+        props.put("com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException", SERVER);
         exceptionResolver.setExceptionMappings(props);
         return exceptionResolver;
     }
