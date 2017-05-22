@@ -20,17 +20,19 @@ public class ChannelElementValues implements Serializable {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
-    private int channel;
-    // these values correspond with attr 6..9 that are read from the meter
-    private int identificationNumber;
-    private int manufacturerIdentification;
-    private short version;
-    private short deviceTypeIdentification;
+    private final int channel;
+    // these values correspond with attr 5..9 that are read from the meter
+    private final short primaryAddress;
+    private final int identificationNumber;
+    private final int manufacturerIdentification;
+    private final short version;
+    private final short deviceTypeIdentification;
 
-    public ChannelElementValues(final int channel, final int identificationNumber, final int manufacturerIdentification,
-            final short version, final short deviceTypeIdentification) {
+    public ChannelElementValues(final int channel, final short primaryAddress, final int identificationNumber,
+            final int manufacturerIdentification, final short version, final short deviceTypeIdentification) {
         super();
         this.channel = channel;
+        this.primaryAddress = primaryAddress;
         this.identificationNumber = identificationNumber;
         this.manufacturerIdentification = manufacturerIdentification;
         this.version = version;
@@ -39,6 +41,10 @@ public class ChannelElementValues implements Serializable {
 
     public int getChannel() {
         return this.channel;
+    }
+
+    public short getPrimaryAddress() {
+        return this.primaryAddress;
     }
 
     public int getIdentificationNumber() {
