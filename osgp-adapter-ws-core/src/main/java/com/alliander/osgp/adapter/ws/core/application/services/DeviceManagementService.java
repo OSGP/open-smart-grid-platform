@@ -307,7 +307,7 @@ public class DeviceManagementService {
                 if (relayStatusSet.size() < ssld.getRelayStatusses().size()) {
                     LOGGER.error("There are too many RelayStatus entities available for device: {}",
                             device.getDeviceIdentification());
-                    this.repairRelayStatussesForDevice(device);
+                    this.repairRelayStatusesForDevice(device);
                 }
             }
         }
@@ -315,7 +315,14 @@ public class DeviceManagementService {
         return devices;
     }
 
-    private void repairRelayStatussesForDevice(final Device device) {
+    /**
+     * Verifies the device and makes sure there exists only one relay status per
+     * relay. This method replaces the RelayStatus list with the corrected one.
+     *
+     * @param device
+     *            The device to verify.
+     */
+    private void repairRelayStatusesForDevice(final Device device) {
         final Ssld ssld = (Ssld) device;
         final List<RelayStatus> correctedList = new ArrayList<>();
 
