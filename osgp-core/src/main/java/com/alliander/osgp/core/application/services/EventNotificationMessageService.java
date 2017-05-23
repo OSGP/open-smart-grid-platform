@@ -92,10 +92,10 @@ public class EventNotificationMessageService {
         final List<Event> lightSwitchingEvents = new ArrayList<>();
 
         for (final EventNotificationDto eventNotification : eventNotifications) {
-
+            final DateTime eventTime = eventNotification.getDateTime();
             final EventType eventType = EventType.valueOf(eventNotification.getEventType().name());
-            final Event event = new Event(device, eventNotification.getDateTime().toDate(), eventType,
-                    eventNotification.getDescription(), eventNotification.getIndex());
+            final Event event = new Event(device, eventTime != null ? eventTime.toDate() : DateTime.now().toDate(),
+                    eventType, eventNotification.getDescription(), eventNotification.getIndex());
             this.eventRepository.save(event);
 
             if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON)
