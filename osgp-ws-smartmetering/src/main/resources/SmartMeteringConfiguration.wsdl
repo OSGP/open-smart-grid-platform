@@ -298,6 +298,29 @@
     </wsdl:part>
   </wsdl:message>
 
+
+
+
+  <wsdl:message name="GenerateAndReplaceKeysRequest">
+    <wsdl:part element="smconf:GenerateAndReplaceKeysRequest" name="GenerateAndReplaceKeysRequest" />
+  </wsdl:message>
+  <wsdl:message name="GenerateAndReplaceKeysAsyncResponse">
+    <wsdl:part element="smconf:GenerateAndReplaceKeysAsyncResponse" name="GenerateAndReplaceKeysAsyncResponse" />
+  </wsdl:message>
+  <wsdl:message name="GenerateAndReplaceKeysAsyncRequest">
+    <wsdl:part element="smconf:GenerateAndReplaceKeysAsyncRequest" name="GenerateAndReplaceKeysAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GenerateAndReplaceKeysResponse">
+    <wsdl:part element="smconf:GenerateAndReplaceKeysResponse" name="GenerateAndReplaceKeysResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+
+
+
+
+
   <wsdl:message name="SetClockConfigurationRequest">
     <wsdl:part element="smconf:SetClockConfigurationRequest" name="SetClockConfigurationRequest" />
   </wsdl:message>
@@ -543,6 +566,28 @@
       <wsdl:output message="tns:ReplaceKeysResponse" name="ReplaceKeysResponse">
       </wsdl:output>
     </wsdl:operation>
+
+
+
+
+
+
+    <wsdl:operation name="GenerateAndReplaceKeys">
+      <wsdl:input message="tns:GenerateAndReplaceKeysRequest" name="GenerateAndReplaceKeysRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GenerateAndReplaceKeysAsyncResponse"
+        name="GenerateAndReplaceKeysAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGenerateAndReplaceKeysResponse">
+      <wsdl:input message="tns:GenerateAndReplaceKeysAsyncRequest" name="GenerateAndReplaceKeysAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GenerateAndReplaceKeysResponse" name="GenerateAndReplaceKeysResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+
+
 
     <wsdl:operation name="SetClockConfiguration">
       <wsdl:input message="tns:SetClockConfigurationRequest" name="SetClockConfigurationRequest">
@@ -994,6 +1039,47 @@
       </wsdl:output>
     </wsdl:operation>
 
+
+
+
+
+
+    <wsdl:operation name="GenerateAndReplaceKeys">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GenerateAndReplaceKeysRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GenerateAndReplaceKeysAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGenerateAndReplaceKeysResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GenerateAndReplaceKeysAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GenerateAndReplaceKeysResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+
+
+    
+    
+    
     <wsdl:operation name="SetClockConfiguration">
       <soap:operation soapAction="" />
       <wsdl:input name="SetClockConfigurationRequest">
