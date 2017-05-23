@@ -130,10 +130,10 @@ public class MBusGatewayService {
 
     private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter gasMeterDevice) {
 
-        final String mbusIdentificationNumber = "302289504"; // gasMeterDevice.getmbusIdentificationNumber();
-        final String mbusManufacturerIdentification = "12514"; // gasMeterDevice.mbusManufacturerIdentification();
-        final String mbusVersion = "66"; // gasMeterDevice.mbusVersion();
-        final String mbusDeviceTypeIdentification = "3"; // gasMeterDevice.mbusDeviceTypeIdentification();
+        final String mbusIdentificationNumber = gasMeterDevice.getMbusDeviceTypeIdentification();
+        final String mbusManufacturerIdentification = gasMeterDevice.getMbusManufacturerIdentification();
+        final String mbusVersion = gasMeterDevice.getMbusVersion();
+        final String mbusDeviceTypeIdentification = gasMeterDevice.getMbusDeviceTypeIdentification();
 
         return new MbusChannelElementsDto(gasMeterDevice.getDeviceIdentification(), mbusIdentificationNumber,
                 mbusManufacturerIdentification, mbusVersion, mbusDeviceTypeIdentification);
