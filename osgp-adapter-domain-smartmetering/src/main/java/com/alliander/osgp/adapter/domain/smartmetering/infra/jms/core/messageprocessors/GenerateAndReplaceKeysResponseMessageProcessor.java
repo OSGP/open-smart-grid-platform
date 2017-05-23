@@ -1,0 +1,36 @@
+package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+
+@Component
+public class GenerateAndReplaceKeysResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+
+    @Autowired
+    private ConfigurationService configurationService;
+
+    protected GenerateAndReplaceKeysResponseMessageProcessor() {
+        super(DeviceFunction.GENERATE_AND_REPLACE_KEYS);
+    }
+
+    @Override
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        // Only the result is used, no need to check the dataObject.
+        return true;
+    }
+
+    @Override
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
+
+        this.configurationService.handleGenerateAndReplaceKeysResponse(deviceMessageMetadata, responseMessage.getResult(),
+                osgpException);
+    }
+}

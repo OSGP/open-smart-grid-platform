@@ -27,6 +27,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
@@ -776,6 +780,67 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         return asyncResponse;
     }
+
+
+
+
+    @PayloadRoot(localPart = "GenerateAndReplaceKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GenerateAndReplaceKeysAsyncResponse generateAndReplaceKeys(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GenerateAndReplaceKeysRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+
+        GenerateAndReplaceKeysAsyncResponse asyncResponse = null;
+        try {
+
+            LOGGER.info("Generate and replace keys request received from organisation {} for device {}.",
+                    organisationIdentification, request.getDeviceIdentification());
+            //            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData keySet = this.configurationMapper
+            //                    .map(request.getSetKeysRequestData(),
+            //                            com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
+
+            final String correlationUid = this.configurationService.enqueueGenerateAndReplaceKeysRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.configurationMapper.map(scheduleTime, Long.class));
+
+            asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+                    .createGenerateAndReplaceKeysAsyncResponse();
+
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "GenerateAndReplaceKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(@RequestPayload final GenerateAndReplaceKeysAsyncRequest request)
+            throws OsgpException {
+
+        GenerateAndReplaceKeysResponse response = null;
+        try {
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
+
+            response = new GenerateAndReplaceKeysResponse();
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+
+
 
     @PayloadRoot(localPart = "ReplaceKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
