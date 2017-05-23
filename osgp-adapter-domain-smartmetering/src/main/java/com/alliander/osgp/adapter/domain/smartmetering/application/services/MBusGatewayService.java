@@ -129,8 +129,14 @@ public class MBusGatewayService {
     }
 
     private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter gasMeterDevice) {
-        // TODO-JRB vul met nieuwe properties
-        return new MbusChannelElementsDto(gasMeterDevice.getDeviceIdentification(), "302289504", "12514", "66", "3");
+
+        final String mbusIdentificationNumber = "302289504"; // gasMeterDevice.getmbusIdentificationNumber();
+        final String mbusManufacturerIdentification = "12514"; // gasMeterDevice.mbusManufacturerIdentification();
+        final String mbusVersion = "66"; // gasMeterDevice.mbusVersion();
+        final String mbusDeviceTypeIdentification = "3"; // gasMeterDevice.mbusDeviceTypeIdentification();
+
+        return new MbusChannelElementsDto(gasMeterDevice.getDeviceIdentification(), mbusIdentificationNumber,
+                mbusManufacturerIdentification, mbusVersion, mbusDeviceTypeIdentification);
     }
 
     /**
