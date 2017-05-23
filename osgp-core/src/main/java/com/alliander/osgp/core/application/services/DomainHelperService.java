@@ -40,13 +40,7 @@ public class DomainHelperService {
     private SecurityService securityService;
 
     public Device findDevice(final String deviceIdentification) throws FunctionalException {
-        Device device;
-        try {
-            device = this.deviceDomainService.searchDevice(deviceIdentification);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE, e);
-        }
-        return device;
+        return this.deviceDomainService.searchDevice(deviceIdentification);
     }
 
     public Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
@@ -57,8 +51,6 @@ public class DomainHelperService {
             throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, COMPONENT_TYPE, e);
         } catch (final InactiveDeviceException e) {
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, COMPONENT_TYPE, e);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE, e);
         }
         return device;
     }

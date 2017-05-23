@@ -56,8 +56,6 @@ public class AbstractService {
             throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_CORE, e);
         } catch (final InactiveDeviceException e) {
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_CORE, e);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_CORE, e);
         }
         return device;
     }
