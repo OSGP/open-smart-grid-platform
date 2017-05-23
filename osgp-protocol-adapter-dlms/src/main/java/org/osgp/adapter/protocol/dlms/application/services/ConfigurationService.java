@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
+import org.osgp.adapter.protocol.dlms.domain.commands.GenerateAndReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
@@ -104,6 +105,9 @@ public class ConfigurationService {
 
     @Autowired
     private GetConfigurationObjectCommandExecutor getConfigurationObjectCommandExecutor;
+
+    @Autowired
+    private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -254,6 +258,31 @@ public class ConfigurationService {
 
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
     }
+
+
+
+
+    public void generateAndReplaceKeys(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final SetKeysRequestDto keySet)
+                    throws ProtocolAdapterException, FunctionalException {
+
+        try {
+            /*
+             * Call executeBundleAction, since it knows to deal with the
+             * SetKeysRequestDto containing authentication and encryption key,
+             * while execute deals with a single key only.
+             */
+
+            this.generateAndReplaceKeyCommandExecutor.executeBundleAction(conn, device, keySet);
+
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Unexpected exception during replaceKeys.", e);
+            throw e;
+        }
+
+    }
+
+
 
     public void replaceKeys(final DlmsConnectionHolder conn, final DlmsDevice device, final SetKeysRequestDto keySet)
             throws ProtocolAdapterException, FunctionalException {
