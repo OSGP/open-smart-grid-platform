@@ -12,6 +12,7 @@ import java.util.List;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -88,11 +89,20 @@ public class CoupleMBusDeviceCommandExecutor
     }
 
     private ChannelElementValues makeChannelElementValues(final int channel, final List<GetResult> resultList) {
-        final short attr5 = Short.parseShort(resultList.get(0).getResultData().getRawValue().toString());
-        final int attr6 = Integer.parseInt(resultList.get(1).getResultData().getRawValue().toString());
-        final int attr7 = Integer.parseInt(resultList.get(2).getResultData().getRawValue().toString());
-        final short attr8 = Short.parseShort(resultList.get(3).getResultData().getRawValue().toString());
-        final short attr9 = Short.parseShort(resultList.get(4).getResultData().getRawValue().toString());
+        final short attr5 = Short.parseShort(this.getResultDataValue(resultList, 0));
+        final int attr6 = Integer.parseInt(this.getResultDataValue(resultList, 1));
+        final int attr7 = Integer.parseInt(this.getResultDataValue(resultList, 2));
+        final short attr8 = Short.parseShort(this.getResultDataValue(resultList, 3));
+        final short attr9 = Short.parseShort(this.getResultDataValue(resultList, 4));
         return new ChannelElementValues(channel, attr5, attr6, attr7, attr8, attr9);
+    }
+
+    private String getResultDataValue(final List<GetResult> resultList, final int index) {
+        final DataObject data = resultList.get(index).getResultData();
+        if (data != null && data.getRawValue() != null) {
+            return data.getRawValue().toString();
+        } else {
+            return "0";
+        }
     }
 }
