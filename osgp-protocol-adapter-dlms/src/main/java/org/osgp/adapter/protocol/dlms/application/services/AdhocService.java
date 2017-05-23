@@ -65,7 +65,7 @@ public class AdhocService {
 
     public Serializable getSpecificAttributeValue(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto)
-                    throws ProtocolAdapterException, FunctionalException {
+                    throws FunctionalException {
         return this.getSpecificAttributeValueCommandExecutor.execute(conn, device,
                 specificAttributeValueRequestDataDto);
     }

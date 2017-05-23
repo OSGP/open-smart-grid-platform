@@ -62,7 +62,7 @@ public abstract class DlmsConnector {
                     device.getDeviceIdentification());
             LOGGER.error(errorMessage);
 
-            throw new FunctionalException(FunctionalExceptionType.CHALLENGE_LENGHT_OUT_OF_RANGE, ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.CHALLENGE_LENGTH_OUT_OF_RANGE, ComponentType.PROTOCOL_DLMS, e);
         }
 
     }

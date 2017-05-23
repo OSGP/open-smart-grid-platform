@@ -91,11 +91,10 @@ public class DlmsHelperService {
      * @return a result from trying to retrieve the value for the attribute
      *         identified by {@code attributeAddress}.
      * @throws ConnectionException
-     * @throws ProtocolAdapterException
      * @throws FunctionalException
      */
     public DataObject getAttributeValue(final DlmsConnectionHolder conn, final AttributeAddress attributeAddress)
-            throws ProtocolAdapterException, FunctionalException {
+            throws FunctionalException {
         Objects.requireNonNull(conn, "conn must not be null");
         Objects.requireNonNull(attributeAddress, "attributeAddress must not be null");
         try {
@@ -104,18 +103,19 @@ public class DlmsHelperService {
             if (AccessResultCode.SUCCESS == resultCode) {
                 return getResult.getResultData();
             }
-            throw new ProtocolAdapterException("Retrieving attribute value for {" + attributeAddress.getClassId() + ","
-                    + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "} got result: "
-                    + resultCode + "(" + resultCode.getCode() + "), with data: "
-                    + this.getDebugInfo(getResult.getResultData()));
+
+            final String errorMessage = String.format("Retrieving attribute value for { %d, %s, %d }. Result: resultCode("
+                    + "%d), with data: %s", attributeAddress.getClassId(),
+                    attributeAddress.getInstanceId().toObisCode(),
+                    attributeAddress.getId(),
+                    resultCode.getCode(),
+                    this.getDebugInfo(getResult.getResultData()));
+
+            LOGGER.error(errorMessage);
+            throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS,
+                    new ProtocolAdapterException(errorMessage));
         } catch (final IOException e) {
             throw new ConnectionException(e);
-        } catch (final Exception e) {
-            final String errorMessage = String.format("Error retrieving attribute value for classID {%d}, obisCode {%s} and attributeAddressId {%d}.",
-                    attributeAddress.getClassId(), attributeAddress.getInstanceId().toObisCode(), attributeAddress.getId());
-            LOGGER.error(errorMessage);
-
-            throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS, e);
         }
     }
 
@@ -541,7 +541,7 @@ public class DlmsHelperService {
     }
 
     private TransportServiceTypeDto getTransportServiceTypeForEnumValue(final int enumValue) {
-        if (enumValue >= 200 && enumValue <= 255) {
+        if ((enumValue >= 200) && (enumValue <= 255)) {
             return TransportServiceTypeDto.MANUFACTURER_SPECIFIC;
         }
         return TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.get(enumValue);

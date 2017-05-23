@@ -1,5 +1,4 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
-
+	branch = SLIM-975-Modify_CoupleMbusDevice_for_properly_installed_gasmeters
