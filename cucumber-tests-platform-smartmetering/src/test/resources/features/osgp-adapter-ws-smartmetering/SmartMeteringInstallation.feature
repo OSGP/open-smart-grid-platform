@@ -3,9 +3,6 @@ Feature: SmartMetering Installation
   As a grid operator
   I want to be able to perform SmartMeteringInstallation operations on a device
 
-  #Remove this temporary Skip tag once the code for SLIM-961 is merged
-  # and the changes are deployed to the OSGP Nightly Build test server.
-  @Skip
   Scenario: Add a new gas device
     When receiving a smartmetering add device request
       | DeviceIdentification           | TEST1024G00000001 |
