@@ -282,22 +282,17 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             final String description = event.getDescription();
             Assert.notNull(description);
 
-            String timestamp = null;
+            DateTime dateTime = null;
             if (StringUtils.isNotEmpty(event.getTimestamp())) {
+                String timestamp = event.getTimestamp();
+                final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss Z");
+                dateTime = dateTimeFormatter.withOffsetParsed().parseDateTime(timestamp.concat(" +0000"));
                 timestamp = event.getTimestamp();
+                LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
             }
             Integer index = null;
             if (!event.getIndex().isEmpty()) {
                 index = (int) event.getIndex().byteAt(0);
-            }
-            DateTime dateTime;
-            if (StringUtils.isEmpty(timestamp)) {
-                dateTime = DateTime.now();
-                LOGGER.info("timestamp is empty, using DateTime.now(): {}", dateTime);
-            } else {
-                final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss Z");
-                dateTime = dateTimeFormatter.withOffsetParsed().parseDateTime(timestamp.concat(" +0000"));
-                LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
             }
 
             events.add(new EventNotificationDto(oslpDevice.getDeviceIdentification(), dateTime,
