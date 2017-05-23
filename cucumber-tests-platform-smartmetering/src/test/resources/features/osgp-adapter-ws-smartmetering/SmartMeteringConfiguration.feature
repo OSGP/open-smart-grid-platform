@@ -29,22 +29,13 @@ Feature: SmartMetering Configuration
   Scenario: Handle a received alarm notification from a known device
     When an alarm notification is received from a known device
       | DeviceIdentification | TEST1024000000001 |
-    Then the alarm should be pushed to OSGP
-      | DeviceIdentification | TEST1024000000001 |
-    And the alarm should be pushed to the osgp_logging database device_log_item table
+    Then the alarm should be pushed to the osgp_logging database device_log_item table
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: Handle a received alarm notification from an unknown device
     When an alarm notification is received from an unknown device
       | DeviceIdentification | UNKNOWN0000000001 |
-    Then the response contains
-      | FaultCode      | SOAP-ENV:Server                                                  |
-      | FaultString    | UNKNOWN_DEVICE                                                   |
-      | FaultType      | FunctionalFault                                                  |
-      | Component      | WS_SMART_METERING                                                |
-      | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
-      | InnerMessage   | Device with id "UNKNOWN0000000001" could not be found.           |
-    And the alarm should be pushed to the osgp_logging database device_log_item table
+    Then the alarm should be pushed to the osgp_logging database device_log_item table
       | DeviceIdentification | UNKNOWN0000000001 |
 
   Scenario: Set alarm notifications on a device

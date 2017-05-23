@@ -3,6 +3,30 @@ Feature: SmartMetering Installation
   As a grid operator
   I want to be able to perform SmartMeteringInstallation operations on a device
 
+  #Remove this temporary Skip tag once the code for SLIM-961 is merged
+  # and the changes are deployed to the OSGP Nightly Build test server.
+  @Skip
+  Scenario: Add a new gas device
+    When receiving a smartmetering add device request
+      | DeviceIdentification           | TEST1024G00000001 |
+      | DeviceType                     | SMART_METER_G     |
+      | CommunicationMethod            | GPRS              |
+      | MbusIdentificationNumber       |          02615107 |
+      | MbusManufacturerIdentification | ITG               |
+      | MbusVersion                    |               066 |
+      | MbusDeviceTypeIdentification   |                03 |
+      | DSMR_version                   | 4.2.2             |
+    Then the get add device response should be returned
+      | DeviceIdentification | TEST1024G00000001 |
+      | Result               | OK                |
+    And the dlms device with identification "TEST1024G00000001" exists
+    And the smart meter is registered in the core database
+      | DeviceIdentification           | TEST1024G00000001 |
+      | MbusIdentificationNumber       |          02615107 |
+      | MbusManufacturerIdentification | ITG               |
+      | MbusVersion                    |               066 |
+      | MbusDeviceTypeIdentification   |                03 |
+
   Scenario: Add a new device
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
@@ -45,39 +69,40 @@ Feature: SmartMetering Installation
       | Result               | NOT_OK            |
     And the dlms device with identification "TEST1024000000001" does not exist
 
-  @TEST
+  @Skip
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on first channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And a dlms device
-      | DeviceIdentification       | TESTG102400000001 |
-      | DeviceType                 | SMART_METER_G     |
-      | mbus.identification.number |         302289504 |
-      | mbus.manufacturer.id       |             12514 |
-      | mbus.version               |                66 |
-      | mbus.devicetype            |                 3 |
+      | DeviceIdentification           | TESTG102400000001 |
+      | DeviceType                     | SMART_METER_G     |
+      | MbusIdentificationNumber       |          30228950 |
+      | MbusManufacturerIdentification |               ITG |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
     And device simulate with classid 72 osiscode "0-1:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302289504 |
-      | 7 |     12514 |
+      | 7 |       ITG |
       | 8 |        66 |
       | 9 |         3 |
     When the Couple G-meter "TESTG102400000001" request is received
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
+  @Skip
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on second channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And a dlms device
-      | DeviceIdentification       | TESTG102400000001 |
-      | DeviceType                 | SMART_METER_G     |
-      | mbus.identification.number |         302289504 |
-      | mbus.manufacturer.id       |             12514 |
-      | mbus.version               |                66 |
-      | mbus.devicetype            |                 3 |
+      | DeviceIdentification           | TESTG102400000001 |
+      | DeviceType                     | SMART_METER_G     |
+      | MbusIdentificationNumber       |          30228950 |
+      | MbusManufacturerIdentification |               ITG |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
     And device simulate with classid 72 osiscode "0-1:24.1.0" and attributes
       | 5 | 0 |
       | 6 | 0 |
@@ -87,13 +112,14 @@ Feature: SmartMetering Installation
     And device simulate with classid 72 osiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302289504 |
-      | 7 |     12514 |
+      | 7 |       ITG |
       | 8 |        66 |
       | 9 |         3 |
     When the Couple G-meter "TESTG102400000001" request is received
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 2
 
+  @Skip
   Scenario: Couple G-meter to an E-meter on occupied MBUS channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -112,6 +138,7 @@ Feature: SmartMetering Installation
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
     And the mbus device "TESTG102400000002" is not coupled to the device "TEST1024000000001"
 
+  @Skip
   Scenario: Couple unknown G-meter to an E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -120,6 +147,7 @@ Feature: SmartMetering Installation
     Then the Couple response is "NOT_OK" and contains
       | SmartMeter with id "TESTG10240unknown" could not be found |
 
+  @Skip
   Scenario: Couple G-meter to an unknown E-meter
     Given a dlms device
       | DeviceIdentification | TESTG102400000001 |
@@ -128,6 +156,7 @@ Feature: SmartMetering Installation
     Then a SOAP fault should have been returned
       | Message | UNKNOWN_DEVICE |
 
+  @Skip
   Scenario: Couple inactive G-meter to an E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -140,6 +169,7 @@ Feature: SmartMetering Installation
     Then the Couple response is "NOT_OK" and contains
       | Device TESTG102400000001 is not active in the platform |
 
+  @Skip
   Scenario: Couple G-meter to an inactive E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |

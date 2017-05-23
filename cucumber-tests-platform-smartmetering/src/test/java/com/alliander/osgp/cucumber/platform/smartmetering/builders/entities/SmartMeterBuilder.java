@@ -72,6 +72,11 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
         device.setSupplier(this.supplier);
         device.setChannel(this.channel);
 
+        device.setMbusIdentificationNumber(this.mbusIdentificationNumber);
+        device.setMbusManufacturerIdentification(this.mbusManufacturerIdentification);
+        device.setMbusVersion(this.mbusVersion);
+        device.setMbusDeviceTypeIdentification(this.mbusDeviceTypeIdentification);
+
         return device;
     }
 
@@ -85,17 +90,20 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.SUPPLIER)) {
             this.setSupplier(inputSettings.get(PlatformSmartmeteringKeys.SUPPLIER));
         }
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NR)) {
-            this.setMbusDeviceTypeIdentificationl(inputSettings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NR));
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER)) {
+            this.setMbusDeviceTypeIdentificationl(
+                    inputSettings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
         }
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_ID)) {
-            this.setMbusManufacturerIdentification(inputSettings.get(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_ID));
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION)) {
+            this.setMbusManufacturerIdentification(
+                    inputSettings.get(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_VERSION)) {
             this.setMbusVersion(inputSettings.get(PlatformSmartmeteringKeys.MBUS_VERSION));
         }
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE)) {
-            this.setMbusDeviceTypeIdentificationl(inputSettings.get(PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE));
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION)) {
+            this.setMbusDeviceTypeIdentificationl(
+                    inputSettings.get(PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION));
         }
 
         return this;

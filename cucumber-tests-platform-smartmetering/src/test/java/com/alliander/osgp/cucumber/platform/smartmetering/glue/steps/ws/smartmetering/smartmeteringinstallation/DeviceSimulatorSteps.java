@@ -49,7 +49,6 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
             System.out.println(httpResponse);
         } catch (final IOException e) {
             LOGGER.error("error while calling CleanupProperties request", e);
-            Assert.fail("error while calling CleanupProperties request");
         }
     }
 
@@ -73,7 +72,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
             props.append(key + "=" + settings.get(key) + ";");
         }
 
-        final String filename = String.format("%d_%s.", classId, obisCode);
+        final String filename = String.format("%d_%s", classId, obisCode);
         return String.format(ADD_PROPS_REQUEST, this.getUrl(), filename, props.toString());
     }
 

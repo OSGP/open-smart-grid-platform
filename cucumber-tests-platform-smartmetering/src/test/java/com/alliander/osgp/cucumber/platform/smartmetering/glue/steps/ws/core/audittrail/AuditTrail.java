@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -30,11 +29,9 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import cucumber.api.java.en.Then;
 
 public class AuditTrail extends SmartMeteringStepsBase {
-    private static final String XPATH_MATCHER_RETRY_OPERATION = "retry count= \\d, correlationuid= \\w*";
+    private static final String PATTERN_RETRY_OPERATION = "retry count= .*, correlationuid= .*";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditTrail.class);
-
-    private static final Integer MULTIPLE_RETRY_COUNT = 2;
 
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
@@ -44,25 +41,22 @@ public class AuditTrail extends SmartMeteringStepsBase {
 
     @Then("^the audit trail contains multiple retry log records$")
     public void theAuditTrailContainsMultipleRetryLogRecords(final Map<String, String> settings) throws Throwable {
-        final Pattern responsePattern = Pattern.compile(XPATH_MATCHER_RETRY_OPERATION);
-
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
         assertTrue("DeviceLogItems are not found in the database",
-                this.responseNotifier.waitForLog(deviceIdentification, 0, 3000000));
+                // Wait 10 minutes with a timeout of 1 sec for the logged retry exceptions
+                this.responseNotifier.waitForLog(deviceIdentification, 1000, 600000));
 
         final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
                 .findByDeviceIdentification(deviceIdentification, new PageRequest(0, 2)).getContent();
 
-        for (int i = 0; i < MULTIPLE_RETRY_COUNT; i++) {
-            final DeviceLogItem item = deviceLogItems.get(i);
-            LOGGER.info("CreationTime: {}", item.getCreationTime().toString());
-            LOGGER.info("DecodedMessage: {}", item.getDecodedMessage());
+        for (final DeviceLogItem deviceLogItem : deviceLogItems) {
+            LOGGER.info("CreationTime: {}", deviceLogItem.getCreationTime().toString());
+            LOGGER.info("DecodedMessage: {}", deviceLogItem.getDecodedMessage());
 
-            final Matcher responseMatcher = responsePattern.matcher(item.getDecodedMessage());
-            assertTrue("No retry log item found.", responseMatcher.find());
+            final boolean isMatchRetryOperation = Pattern.matches(PATTERN_RETRY_OPERATION, deviceLogItem.getDecodedMessage());
+            assertTrue("No retry log item found.", isMatchRetryOperation);
         }
     }
-
 }

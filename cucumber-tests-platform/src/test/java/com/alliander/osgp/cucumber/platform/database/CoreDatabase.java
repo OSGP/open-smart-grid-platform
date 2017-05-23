@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.database;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,8 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 @Component
 public class CoreDatabase {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoreDatabase.class);
 
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
@@ -84,10 +88,12 @@ public class CoreDatabase {
      */
     @Transactional("txMgrCore")
     public void insertDefaultData() {
-        if (this.organisationRepository.findByOrganisationIdentification(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+        if (this.organisationRepository
+                .findByOrganisationIdentification(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
-                    PlatformDefaults.DEFAULT_ORGANIZATION_DESCRIPTION, PlatformDefaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
+                    PlatformDefaults.DEFAULT_ORGANIZATION_DESCRIPTION, PlatformDefaults.DEFAULT_PREFIX,
+                    PlatformFunctionGroup.ADMIN);
             testOrg.addDomain(PlatformDomain.COMMON);
             testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
             testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
@@ -109,6 +115,16 @@ public class CoreDatabase {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
+        this.batchDeleteAll();
+    }
+
+    @Transactional("txMgrCore")
+    public void removeLeftOvers() {
+        this.normalDeleteAll();
+    }
+
+    private void batchDeleteAll() {
+        LOGGER.info("Starting batchDeleteAll()");
         this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
@@ -126,8 +142,8 @@ public class CoreDatabase {
         this.organisationRepository.deleteAllInBatch();
     }
 
-    @Transactional("txMgrCore")
-    public void removeLeftOvers() {
+    private void normalDeleteAll() {
+        LOGGER.info("Starting normalDeleteAll()");
         this.deviceAuthorizationRepository.deleteAll();
         this.deviceLogItemRepository.deleteAll();
         this.scheduledTaskRepository.deleteAll();

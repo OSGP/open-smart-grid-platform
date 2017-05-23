@@ -110,9 +110,8 @@ public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platf
     public static final String BUNDLE_ACTION_COUNT = "BundleActionCount";
     public static final String BUNDLE_RESPONSE_COUNT = "BundleResponseCount";
 
-    // new keys for SmartMeter device
-    public static final String MBUS_IDENTIFICATION_NR = "mbus.identification.number";
-    public static final String MBUS_MANUFACTURER_ID = "mbus.manufacturer.id";
-    public static final String MBUS_VERSION = "mbus.version";
-    public static final String MBUS_DEVICE_TYPE = "mbus.devicetype";
+    public static final String MBUS_IDENTIFICATION_NUMBER = "MbusIdentificationNumber";
+    public static final String MBUS_MANUFACTURER_IDENTIFICATION = "MbusManufacturerIdentification";
+    public static final String MBUS_VERSION = "MbusVersion";
+    public static final String MBUS_DEVICE_TYPE_IDENTIFICATION = "MbusDeviceTypeIdentification";
 }

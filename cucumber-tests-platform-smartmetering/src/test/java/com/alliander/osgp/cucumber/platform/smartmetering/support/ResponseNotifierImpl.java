@@ -38,6 +38,9 @@ public class ResponseNotifierImpl implements ResponseNotifier {
 
     @Override
     public boolean waitForResponse(final String correlationUid, final int timeout, final int maxtime) {
+        if (timeout < 1) {
+            throw new IllegalArgumentException("Timeout < 1 is not possible");
+        }
 
         try {
             // check if we have (almost) immediate response
@@ -68,6 +71,9 @@ public class ResponseNotifierImpl implements ResponseNotifier {
 
     @Override
     public boolean waitForLog(final String deviceId, final int timeout, final int maxtime) {
+        if (timeout < 1) {
+            throw new IllegalArgumentException("Timeout < 1 is not possible");
+        }
 
         try {
             // check if we have (almost) immediate response
@@ -117,7 +123,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
             final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
                     .findByDeviceIdentification(deviceId, new PageRequest(0, 2)).getContent();
 
-            if (deviceLogItems != null && deviceLogItems.size() > 1) {
+            if (!deviceLogItems.isEmpty()) {
                 result = PollResult.OK;
             }
         } catch (final Exception e) {

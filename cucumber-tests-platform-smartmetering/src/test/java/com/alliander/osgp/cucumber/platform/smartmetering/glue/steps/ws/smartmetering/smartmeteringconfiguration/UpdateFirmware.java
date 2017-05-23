@@ -11,10 +11,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.xml.sax.SAXException;
 
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
@@ -24,7 +29,6 @@ import com.alliander.osgp.cucumber.platform.glue.steps.database.core.DeviceModel
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Firmware;
-import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
@@ -41,6 +45,10 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     private static final String PATH_RESULT_FIRMWAREVERSION_VERSION = "/Envelope/Body/UpdateFirmwareResponse/FirmwareVersion/Version";
 
     private static final String PATH_SOAP_FAULT_FAULTSTRING = "/Envelope/Body/Fault/faultstring/text()";
+    private static final String PATH_SOAP_FAULT_FUNCTIONAL_FAULT_MESSAGE = "/Envelope/Body/Fault/detail/FunctionalFault/Message/text()";
+    private static final String PATH_SOAP_FAULT_FUNCTIONAL_FAULT_INNER_MESSAGE = "/Envelope/Body/Fault/detail/FunctionalFault/InnerMessage/text()";
+    private static final String PATH_SOAP_FAULT_TECHNICAL_FAULT_MESSAGE = "/Envelope/Body/Fault/detail/TechnicalFault/Message/text()";
+    private static final String PATH_SOAP_FAULT_TECHNICAL_FAULT_INNER_MESSAGE = "/Envelope/Body/Fault/detail/TechnicalFault/InnerMessage/text()";
 
     private static final String XPATH_MATCHER_RESULT_STATUS = "OK";
     private static final String XPATH_MATCHER_FIRMWAREVERSION_TYPE = "(MODULE_|COMMUNICATION_MODULE_)?ACTIVE_FIRMWARE";
@@ -53,9 +61,6 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @Autowired
     private DeviceRepository deviceRepository;
-
-    @Autowired
-    private DeviceModelRepository deviceModelRepository;
 
     @Autowired
     private FirmwareRepository firmwareRepository;
@@ -138,8 +143,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
-        assertTrue("Message '" + message + "' not found in response.",
-                this.runXpathResult.assertXpath(this.response, PATH_SOAP_FAULT_FAULTSTRING, message));
+        assertTrue("Message '" + message + "' not found in response.", this.responseMessagesContain(message));
     }
 
     @Given("^the installation file is corrupt$")
@@ -153,6 +157,20 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     public void theUpgradeOfFirmwareDidNotSucceed() throws Throwable {
         // Not influenced by cucumber at this time. Nothing can be done here to
         // make the update fail.
+    }
+
+    private boolean responseMessagesContain(final String text) {
+        try {
+            return this.runXpathResult.assertXpath(this.response, PATH_SOAP_FAULT_FAULTSTRING, text)
+                    || this.runXpathResult.assertXpath(this.response, PATH_SOAP_FAULT_FUNCTIONAL_FAULT_MESSAGE, text)
+                    || this.runXpathResult.assertXpath(this.response, PATH_SOAP_FAULT_FUNCTIONAL_FAULT_INNER_MESSAGE,
+                            text)
+                    || this.runXpathResult.assertXpath(this.response, PATH_SOAP_FAULT_TECHNICAL_FAULT_MESSAGE, text)
+                    || this.runXpathResult.assertXpath(this.response, PATH_SOAP_FAULT_TECHNICAL_FAULT_INNER_MESSAGE,
+                            text);
+        } catch (XPathExpressionException | ParserConfigurationException | SAXException | IOException e) {
+            throw new AssertionError("Exception not expected on XPath assert with text: " + text, e);
+        }
     }
 
     private void insertCoreFirmware(final Map<String, String> settings) {
