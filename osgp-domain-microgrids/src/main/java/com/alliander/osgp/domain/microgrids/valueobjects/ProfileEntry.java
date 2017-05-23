@@ -24,9 +24,7 @@ public class ProfileEntry implements Serializable {
     public ProfileEntry(final int id, final DateTime time, final double value) {
         this.id = id;
         this.time = time;
-        final DecimalFormat df = new DecimalFormat("#.#####");
-        df.setRoundingMode(RoundingMode.HALF_UP);
-        this.value = Double.parseDouble(df.format(value));
+        this.value = roundValue(value);
     }
 
     public int getId() {
@@ -39,5 +37,11 @@ public class ProfileEntry implements Serializable {
 
     public double getValue() {
         return this.value;
+    }
+    
+    private double roundValue(final double value) {
+        final DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return Double.parseDouble(df.format(value));
     }
 }

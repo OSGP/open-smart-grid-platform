@@ -25,11 +25,9 @@ public class Measurement extends NodeIdentifier implements Serializable {
 
     public Measurement(final int id, final String node, final int qualifier, final DateTime time, final double value) {
         super(id, node);
-        final DecimalFormat df = new DecimalFormat("#.#####");
-        df.setRoundingMode(RoundingMode.HALF_UP);
         this.qualifier = qualifier;
         this.time = time;
-        this.value = Double.parseDouble(df.format(value));
+        this.value = roundValue(value);
     }
 
     public int getQualifier() {
@@ -42,5 +40,11 @@ public class Measurement extends NodeIdentifier implements Serializable {
 
     public double getValue() {
         return this.value;
+    }
+    
+    private double roundValue(final double value) {
+        final DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return Double.parseDouble(df.format(value));
     }
 }
