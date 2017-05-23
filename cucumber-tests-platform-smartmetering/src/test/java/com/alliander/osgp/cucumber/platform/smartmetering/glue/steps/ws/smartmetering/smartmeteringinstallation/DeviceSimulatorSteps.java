@@ -7,13 +7,14 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,38 +24,62 @@ import cucumber.api.java.en.Given;
 
 public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
+    private String serviceEndpoint;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSimulatorSteps.class);
-    private static final String DEVSIM_PROPERTIES_PATH = "/tmp/device-simulator";
+
+    private static final String CLEANUP_PROPS_REQUEST = "http://%s:4567/CleanupProperties";
+    private static final String ADD_PROPS_REQUEST = "http://%s:4567/AddProperties/%s/%s";
 
     @Given("^device simulate with classid (\\d+) osiscode \"([^\"]*)\" and attributes$")
     public void deviceSimulateWithClassidOsiscodeAndAttributes(final int classId, final String obisCode,
             final Map<String, String> settings) throws Throwable {
 
-        final Properties properties = new Properties();
-        for (final String key : settings.keySet()) {
-            properties.put(key, settings.get(key));
-        }
-
-        final File path = new File(DEVSIM_PROPERTIES_PATH);
-        if (!path.exists()) {
-            path.mkdir();
-        }
-
-        final String filename = String.format("%s/%d_%s.properties", DEVSIM_PROPERTIES_PATH, classId, obisCode);
-        final File outputFile = new File(filename);
-        try (final FileOutputStream os = new FileOutputStream(outputFile)) {
-            properties.store(os, "temporary device simulator properties");
-        }
+        this.setRemoteProperties(classId, obisCode, settings);
     }
 
-    public void removeAllTemporaryPropertiesFiles() {
-        final File path = new File(DEVSIM_PROPERTIES_PATH);
+    public void removeAllTemporaryPropertiesFiles(final String serviceEndpoint) {
+        this.serviceEndpoint = serviceEndpoint;
+
+        final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         try {
-            if (path.exists()) {
-                FileUtils.cleanDirectory(path);
-            }
+            final String request = String.format(CLEANUP_PROPS_REQUEST, this.getUrl());
+            final HttpGet httpGetRequest = new HttpGet(request);
+            final HttpResponse httpResponse = httpClient.execute(httpGetRequest);
+            System.out.println(httpResponse);
         } catch (final IOException e) {
-            LOGGER.error("error deleting temporary properties file from " + path, e);
+            LOGGER.error("error while calling CleanupProperties request", e);
+            Assert.fail("error while calling CleanupProperties request");
         }
     }
+
+    private void setRemoteProperties(final int classId, final String obisCode, final Map<String, String> settings) {
+
+        final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        try {
+            final String request = this.makeRequest(classId, obisCode, settings);
+            final HttpGet httpGetRequest = new HttpGet(request);
+            final HttpResponse httpResponse = httpClient.execute(httpGetRequest);
+            System.out.println(httpResponse);
+        } catch (final IOException e) {
+            LOGGER.error("error while calling AddProperties request", e);
+            Assert.fail("error while calling AddProperties request");
+        }
+    }
+
+    private String makeRequest(final int classId, final String obisCode, final Map<String, String> settings) {
+        final StringBuilder props = new StringBuilder();
+        for (final String key : settings.keySet()) {
+            props.append(key + "=" + settings.get(key) + ";");
+        }
+
+        final String filename = String.format("%d_%s.", classId, obisCode);
+        return String.format(ADD_PROPS_REQUEST, this.getUrl(), filename, props.toString());
+    }
+
+    private String getUrl() {
+        final int delimAt = this.serviceEndpoint.indexOf(":");
+        return (delimAt > 0) ? this.serviceEndpoint.substring(0, delimAt) : this.serviceEndpoint;
+    }
+
 }

@@ -66,7 +66,7 @@ public class ScenarioHooks extends GlueBase {
      */
     @Before(order = 1000)
     public void beforeScenario() {
-        this.deviceSimulatorSteps.removeAllTemporaryPropertiesFiles();
+        this.deviceSimulatorSteps.removeAllTemporaryPropertiesFiles(this.serviceEndpointHost);
         this.dlmsDatabaseSteps.prepareDatabaseForScenario();
         this.prepareServiceEndpoint();
     }
