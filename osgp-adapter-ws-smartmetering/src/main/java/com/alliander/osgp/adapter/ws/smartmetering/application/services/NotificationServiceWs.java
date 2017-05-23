@@ -44,7 +44,7 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
             final String result, final String correlationUid, final String message, final Object notificationType) {
 
         final String notifyUrl = this.notificationUrl(correlationUid);
-        if (notifyUrl != null && !notifyUrl.isEmpty() && !notifyUrl.equals("\"\"")) {
+        if (notifyUrl != null && !notifyUrl.isEmpty() && !"\"\"".equals(notifyUrl)) {
             final SendNotificationRequest notificationRequest = this.notificationRequest(organisationIdentification,
                     deviceIdentification, result, correlationUid, message, notificationType);
             this.doSendNotification(this.webServiceTemplateFactory, organisationIdentification,
