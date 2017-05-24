@@ -59,8 +59,10 @@ public class GetDataSteps extends GlueBase {
         final GetDataRequest getDataRequest = GetDataRequestBuilder.fromParameterMap(requestParameters);
         final GetDataAsyncResponse response = this.client.getDataAsync(getDataRequest);
 
-        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, response.getAsyncResponse().getDeviceId());
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID,
+                response.getAsyncResponse().getCorrelationUid());
+        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                response.getAsyncResponse().getDeviceId());
     }
 
     @Then("^the get data response should be returned$")
@@ -81,7 +83,8 @@ public class GetDataSteps extends GlueBase {
             throw new AssertionError("The Step DataTable must contain the expected number of systems with key \""
                     + PlatformKeys.KEY_NUMBER_OF_SYSTEMS + "\" when confirming a returned get data response.");
         }
-        final int expectedNumberOfSystems = Integer.parseInt(responseParameters.get(PlatformKeys.KEY_NUMBER_OF_SYSTEMS));
+        final int expectedNumberOfSystems = Integer
+                .parseInt(responseParameters.get(PlatformKeys.KEY_NUMBER_OF_SYSTEMS));
 
         final List<GetDataSystemIdentifier> systemIdentifiers = response.getSystem();
         assertEquals("Number of Systems", expectedNumberOfSystems, systemIdentifiers.size());
