@@ -80,9 +80,9 @@ Feature: SmartMetering Installation
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 |         9 |
+      | 5 |         9 | 
       | 6 | 302289504 |
-      | 7 |       ITG |
+      | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
     When the Couple G-meter "TESTG102400000001" request is received
@@ -111,7 +111,7 @@ Feature: SmartMetering Installation
     And device simulate with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302289504 |
-      | 7 |       ITG |
+      | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
     When the Couple G-meter "TESTG102400000001" request is received
@@ -136,7 +136,7 @@ Feature: SmartMetering Installation
       | DeviceIdentification           | TESTG102400000002 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          30228952 |
-      | MbusManufacturerIdentification |               ITG |
+      | MbusManufacturerIdentification |             12514 |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
@@ -148,7 +148,7 @@ Feature: SmartMetering Installation
     And device simulate with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302289504 |
-      | 7 |       ITG |
+      | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
     When the Couple G-meter "TESTG102400000002" request is received
@@ -172,7 +172,7 @@ Feature: SmartMetering Installation
     And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302289504 |
-      | 7 |       ITG |
+      | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
     When the Couple G-meter "TESTG102400000001" request is received

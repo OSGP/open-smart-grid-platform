@@ -45,8 +45,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
         try {
             final String request = String.format(CLEANUP_PROPS_REQUEST, this.getUrl());
             final HttpGet httpGetRequest = new HttpGet(request);
-            final HttpResponse httpResponse = httpClient.execute(httpGetRequest);
-            System.out.println(httpResponse);
+            httpClient.execute(httpGetRequest);
         } catch (final IOException e) {
             LOGGER.error("error while calling CleanupProperties request", e);
         }
@@ -59,7 +58,9 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
             final String request = this.makeRequest(classId, obisCode, settings);
             final HttpGet httpGetRequest = new HttpGet(request);
             final HttpResponse httpResponse = httpClient.execute(httpGetRequest);
-            System.out.println(httpResponse);
+            final String msg = String.format("add device-simulator properties %s, status=", request,
+                    httpResponse.getStatusLine());
+            LOGGER.debug(msg);
         } catch (final IOException e) {
             LOGGER.error("error while calling AddProperties request", e);
             Assert.fail("error while calling AddProperties request");

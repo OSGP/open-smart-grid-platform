@@ -66,7 +66,10 @@ public class ScenarioHooks extends GlueBase {
      */
     @Before(order = 1000)
     public void beforeScenario() {
-        this.deviceSimulatorSteps.removeAllTemporaryPropertiesFiles(this.serviceEndpointHost);
+        // TODO uncomment when slim-975 is deployed and port 4567 is opened on
+        // the machine where device-simulator is running.
+        // this.deviceSimulatorSteps.removeAllTemporaryPropertiesFiles(this.serviceEndpointHost);
+
         this.dlmsDatabaseSteps.prepareDatabaseForScenario();
         this.prepareServiceEndpoint();
     }
