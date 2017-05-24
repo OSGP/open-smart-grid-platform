@@ -167,7 +167,7 @@ public class PlatformDefaults {
 
     public static final Boolean DEVICE_IN_MAINTENANCE = false;
 
-    public static final String LOCALHOST = "localhost";
+    public static final String LOCALHOST = "127.0.0.1";
     public static final Integer OSLP_SERVER_PORT = 12121;
     public static final Integer RANDOM_DEVICE = 0;
     public static final Integer OSLP_ELSTER_SERVER_PORT = 12122;

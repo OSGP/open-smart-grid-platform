@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 
 /**
@@ -94,12 +95,14 @@ public class PlatformSmartmeteringDefaults extends com.alliander.osgp.cucumber.p
     public static final Byte DEVIATION = -60;
 
     static {
+
         InetAddress localhost;
         try {
-            localhost = InetAddress.getLocalHost();
+            localhost = InetAddress.getByName(PlatformDefaults.LOCALHOST);
         } catch (final UnknownHostException e) {
-            localhost = null;
+            localhost = InetAddress.getLoopbackAddress();
         }
         NETWORK_ADDRESS = localhost;
+
     }
 }
