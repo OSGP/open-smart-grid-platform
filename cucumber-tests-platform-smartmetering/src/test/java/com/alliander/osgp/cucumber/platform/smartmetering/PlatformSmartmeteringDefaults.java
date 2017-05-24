@@ -100,7 +100,7 @@ public class PlatformSmartmeteringDefaults extends com.alliander.osgp.cucumber.p
         try {
             localhost = InetAddress.getByName(PlatformDefaults.LOCALHOST);
         } catch (final UnknownHostException e) {
-            localhost = InetAddress.getLoopbackAddress();
+            localhost = null;
         }
         NETWORK_ADDRESS = localhost;
 
