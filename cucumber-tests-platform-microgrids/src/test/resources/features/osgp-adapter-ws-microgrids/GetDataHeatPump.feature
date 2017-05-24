@@ -1,11 +1,10 @@
-@MicroGrids @Platform
-@Iec61850MockServer
+@MicroGrids @Platform @Iec61850MockServer
 Feature: MicroGrids Get Heat Pump Data
   As an OSGP client
   I want to get Heat Pump data from an RTU
   So this data can be used by other processes
 
-  @Iec61850MockServerMarkerWadden
+@Skip  @Iec61850MockServerMarkerWadden
   Scenario: Request HEAT_PUMP
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-MARKER-WADDEN |
@@ -89,16 +88,16 @@ Feature: MicroGrids Get Heat Pump Data
       | HEAT_PUMP1 | DGEN1.OpTmsRs.q        | VALIDITY_GOOD       |
       | HEAT_PUMP1 | DGEN1.OpTmsRs.t        | 2017-02-01T12:02:00 |
       #...........................................................
-      | HEAT_PUMP1 | TTMP1.TmpSv.instMag.f  |                   6 |
+      | HEAT_PUMP1 | TTMP1.TmpSv.instMag.f  |             6.12345 |
       | HEAT_PUMP1 | TTMP1.TmpSv.q          | VALIDITY_GOOD       |
       | HEAT_PUMP1 | TTMP1.TmpSv.t          | 2017-02-01T12:01:00 |
-      | HEAT_PUMP1 | TTMP2.TmpSv.instMag.f  |                   7 |
+      | HEAT_PUMP1 | TTMP2.TmpSv.instMag.f  |            7.123454 |
       | HEAT_PUMP1 | TTMP2.TmpSv.q          | VALIDITY_GOOD       |
       | HEAT_PUMP1 | TTMP2.TmpSv.t          | 2017-02-01T12:02:00 |
-      | HEAT_PUMP1 | TTMP3.TmpSv.instMag.f  |                   8 |
+      | HEAT_PUMP1 | TTMP3.TmpSv.instMag.f  |            8.123456 |
       | HEAT_PUMP1 | TTMP3.TmpSv.q          | VALIDITY_GOOD       |
       | HEAT_PUMP1 | TTMP3.TmpSv.t          | 2017-02-01T12:01:00 |
-      | HEAT_PUMP1 | TTMP4.TmpSv.instMag.f  |                   9 |
+      | HEAT_PUMP1 | TTMP4.TmpSv.instMag.f  |                52.1 |
       | HEAT_PUMP1 | TTMP4.TmpSv.q          | VALIDITY_GOOD       |
       | HEAT_PUMP1 | TTMP4.TmpSv.t          | 2017-02-01T12:02:00 |
       #............................................................
@@ -313,22 +312,22 @@ Feature: MicroGrids Get Heat Pump Data
       | MeasurementValue_1_33     |                     15.0 |
       | MeasurementId_1_34        |                        1 |
       | MeasurementNode_1_34      | TmpSv                    |
-      | MeasurementValue_1_34     |                      6.0 |
+      | MeasurementValue_1_34     |                  6.12345 |
       | MeasurementQualifier_1_34 |                        0 |
       | MeasurementTime_1_34      | 2017-02-01T12:02:00.000Z |
       | MeasurementId_1_35        |                        2 |
       | MeasurementNode_1_35      | TmpSv                    |
-      | MeasurementValue_1_35     |                        7 |
+      | MeasurementValue_1_35     |                  7.12345 |
       | MeasurementQualifier_1_35 |                        0 |
       | MeasurementTime_1_35      | 2017-02-01T12:02:00.000Z |
       | MeasurementId_1_36        |                        3 |
       | MeasurementNode_1_36      | TmpSv                    |
-      | MeasurementValue_1_36     |                        8 |
+      | MeasurementValue_1_36     |                  8.12346 |
       | MeasurementQualifier_1_36 |                        0 |
       | MeasurementTime_1_36      | 2017-02-01T12:02:00.000Z |
       | MeasurementId_1_37        |                        4 |
       | MeasurementNode_1_37      | TmpSv                    |
-      | MeasurementValue_1_37     |                        9 |
+      | MeasurementValue_1_37     |                     52.1 |
       | MeasurementQualifier_1_37 |                        0 |
       | MeasurementTime_1_37      | 2017-02-01T12:02:00.000Z |
       | MeasurementId_1_38        |                        1 |

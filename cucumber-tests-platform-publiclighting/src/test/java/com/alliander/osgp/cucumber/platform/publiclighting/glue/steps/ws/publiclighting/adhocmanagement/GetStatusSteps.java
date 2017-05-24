@@ -71,7 +71,8 @@ public class GetStatusSteps {
 
         final GetStatusRequest request = new GetStatusRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.client.getStatus(request));
@@ -84,7 +85,8 @@ public class GetStatusSteps {
     public void receivingAGetStatusRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
-        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                "unknown-organization");
 
         this.receivingAGetStatusRequest(requestParameters);
     }
@@ -101,7 +103,8 @@ public class GetStatusSteps {
     @Then("^the get status async response contains$")
     public void theGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
 
-        final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.current().get(PlatformPubliclightingKeys.RESPONSE);
+        final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.current()
+                .get(PlatformPubliclightingKeys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
@@ -113,7 +116,8 @@ public class GetStatusSteps {
                 getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: ["
+                + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the get status response contains soap fault$")
@@ -139,12 +143,16 @@ public class GetStatusSteps {
             try {
                 final GetStatusResponse response = this.client.getGetStatusResponse(request);
 
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
+                Assert.assertNotNull(response);
+
+                Assert.assertEquals(
+                        Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
                         response.getResult());
 
                 final DeviceStatus deviceStatus = response.getDeviceStatus();
 
-                Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
+                Assert.assertEquals(
+                        getEnum(expectedResult, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
                         deviceStatus.getPreferredLinkType());
                 Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class),
                         deviceStatus.getActualLinkType());
@@ -154,11 +162,14 @@ public class GetStatusSteps {
                 if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES)
                         && !expectedResult.get(PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
                     Assert.assertEquals(
-                            getString(expectedResult, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS, PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS)
+                            getString(expectedResult, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
+                                    PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS)
                             .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
                             deviceStatus.getEventNotifications().size());
-                    for (final String eventNotification : getString(expectedResult, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
-                            PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS).split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
+                    for (final String eventNotification : getString(expectedResult,
+                            PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
+                            PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS)
+                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
                         Assert.assertTrue(deviceStatus.getEventNotifications()
                                 .contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
                     }
@@ -166,10 +177,14 @@ public class GetStatusSteps {
 
                 if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_LIGHTVALUES)
                         && !expectedResult.get(PlatformPubliclightingKeys.KEY_LIGHTVALUES).isEmpty()) {
-                    Assert.assertEquals(getString(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTVALUES, PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
-                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length, deviceStatus.getLightValues().size());
+                    Assert.assertEquals(
+                            getString(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
+                                    PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
+                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
+                            deviceStatus.getLightValues().size());
                     for (final String lightValues : getString(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
-                            PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES).split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
+                            PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
+                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
 
                         final String[] parts = lightValues.split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON);
                         final Integer index = Integer.parseInt(parts[0]);
@@ -192,9 +207,9 @@ public class GetStatusSteps {
 
                 success = true;
             } catch (final Exception ex) {
-                // Do nothing
                 LOGGER.info(ex.getMessage());
             }
+
         }
     }
 
@@ -202,6 +217,7 @@ public class GetStatusSteps {
     public void thePlatformBuffersAGetStatusResponseMessageForDeviceWhichContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult)
                     throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
         try {
             this.client.getGetStatusResponse(this.getGetStatusAsyncRequest(deviceIdentification));
         } catch (final SoapFaultClientException sfce) {
@@ -215,7 +231,8 @@ public class GetStatusSteps {
         final GetStatusAsyncRequest request = new GetStatusAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+        asyncRequest.setCorrelationUid(
+                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
         return request;
