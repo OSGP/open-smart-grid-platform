@@ -90,6 +90,7 @@ public class EventNotificationMessageService {
          * once for the last switching in the list.
          */
         final List<Event> lightSwitchingEvents = new ArrayList<>();
+        final List<Event> tariffSwitchingEvents = new ArrayList<>();
 
         for (final EventNotificationDto eventNotification : eventNotifications) {
             final DateTime eventTime = eventNotification.getDateTime();
@@ -101,10 +102,14 @@ public class EventNotificationMessageService {
             if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON)
                     || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
                 lightSwitchingEvents.add(event);
+            } else if (eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
+                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
+                tariffSwitchingEvents.add(event);
             }
         }
 
         this.handleLightSwitchingEvents(device, lightSwitchingEvents);
+        this.handleTariffSwitchingEvents(device, tariffSwitchingEvents);
     }
 
     private void handleLightSwitchingEvents(final Device device, final List<Event> lightSwitchingEvents) {
@@ -136,6 +141,43 @@ public class EventNotificationMessageService {
                 if (lastRelayStatusPerIndex.get(index) == null
                         || switchingTime.after(lastRelayStatusPerIndex.get(index).getLastKnowSwitchingTime())) {
                     lastRelayStatusPerIndex.put(index, new RelayStatus(device, relayIndex, lightsOn, switchingTime));
+                }
+            }
+        }
+
+        if (!lastRelayStatusPerIndex.isEmpty()) {
+            ssld.updateRelayStatusses(lastRelayStatusPerIndex);
+            this.deviceRepository.save(device);
+        }
+    }
+
+    private void handleTariffSwitchingEvents(final Device device, final List<Event> tariffSwitchingEvents) {
+
+        if (tariffSwitchingEvents.isEmpty()) {
+            return;
+        }
+
+        final Map<Integer, RelayStatus> lastRelayStatusPerIndex = new TreeMap<>();
+        final Set<Integer> indexesTariffRelays = new TreeSet<>();
+        final Ssld ssld = this.ssldRepository.findOne(device.getId());
+
+        for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
+            if (deviceOutputSetting.getOutputType().equals(RelayType.TARIFF)) {
+                indexesTariffRelays.add(deviceOutputSetting.getExternalId());
+            }
+        }
+
+        for (final Event tariffSwitchingEvent : tariffSwitchingEvents) {
+            final Date switchingTime = tariffSwitchingEvent.getDateTime();
+            final Set<Integer> switchIndexes = new TreeSet<>();
+            switchIndexes.add(tariffSwitchingEvent.getIndex());
+
+            for (final Integer relayIndex : switchIndexes) {
+                final boolean tariffOn = EventType.TARIFF_EVENTS_TARIFF_ON.equals(tariffSwitchingEvent.getEventType());
+                if (lastRelayStatusPerIndex.get(tariffSwitchingEvent.getIndex()) == null || switchingTime.after(
+                        lastRelayStatusPerIndex.get(tariffSwitchingEvent.getIndex()).getLastKnowSwitchingTime())) {
+                    lastRelayStatusPerIndex.put(tariffSwitchingEvent.getIndex(),
+                            new RelayStatus(device, relayIndex, tariffOn, switchingTime));
                 }
             }
         }
