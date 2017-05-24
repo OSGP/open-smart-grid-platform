@@ -31,8 +31,8 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     private static final String CLEANUP_PROPS_REQUEST = "http://%s:4567/CleanupProperties";
     private static final String ADD_PROPS_REQUEST = "http://%s:4567/AddProperties/%s/%s";
 
-    @Given("^device simulate with classid (\\d+) osiscode \"([^\"]*)\" and attributes$")
-    public void deviceSimulateWithClassidOsiscodeAndAttributes(final int classId, final String obisCode,
+    @Given("^device simulate with classid (\\d+) obiscode \"([^\"]*)\" and attributes$")
+    public void deviceSimulateWithClassidObiscodeAndAttributes(final int classId, final String obisCode,
             final Map<String, String> settings) throws Throwable {
 
         this.setRemoteProperties(classId, obisCode, settings);
