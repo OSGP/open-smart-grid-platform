@@ -150,7 +150,7 @@ public class HeatBuffer extends LogicalDevice {
         }
 
         if (FIXED_FLOAT_NODES.contains(node)) {
-            return this.setFixedFloat(node, fc, Integer.parseInt(value));
+            return this.setFixedFloat(node, fc, Float.parseFloat(value));
         }
 
         if (QUALITY_NODES.contains(node)) {

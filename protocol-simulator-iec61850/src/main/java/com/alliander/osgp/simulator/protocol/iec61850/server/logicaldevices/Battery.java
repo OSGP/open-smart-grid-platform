@@ -484,7 +484,7 @@ public class Battery extends LogicalDevice {
         }
 
         if (FLOAT32_NODES.contains(node)) {
-            return this.setFixedFloat(node, fc, Integer.parseInt(value));
+            return this.setFixedFloat(node, fc, Float.parseFloat(value));
         }
 
         if (INT8_NODES.contains(node)) {
