@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
+import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationUidInScenarioContext;
 
@@ -18,10 +19,15 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.DeviceStatus;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.LightType;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.LightValue;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.LinkType;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.EventNotificationType;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
@@ -44,8 +50,8 @@ public class GetStatusSteps extends GlueBase {
     public void receivingADeviceInstallationGetStatusRequest(final Map<String, String> settings) throws Throwable {
         final GetStatusRequest request = new GetStatusRequest();
 
-        request.setDeviceIdentification(
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.getStatus(request));
@@ -57,7 +63,8 @@ public class GetStatusSteps extends GlueBase {
     @Then("the device installation get status async response contains")
     public void theDeviceInstallationGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-        final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.current().get(PlatformKeys.RESPONSE);
+        final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.current()
+                .get(PlatformKeys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
@@ -104,5 +111,55 @@ public class GetStatusSteps extends GlueBase {
 
         Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)),
                 response.getResult());
+
+        final DeviceStatus deviceStatus = response.getDeviceStatus();
+
+        Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
+                deviceStatus.getPreferredLinkType());
+        Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_ACTUAL_LINKTYPE, LinkType.class),
+                deviceStatus.getActualLinkType());
+        Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_LIGHTTYPE, LightType.class),
+                deviceStatus.getLightType());
+
+        if (expectedResult.containsKey(PlatformKeys.KEY_EVENTNOTIFICATIONTYPES)
+                && !expectedResult.get(PlatformKeys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
+            Assert.assertEquals(
+                    getString(expectedResult, PlatformKeys.KEY_EVENTNOTIFICATIONS,
+                            PlatformDefaults.DEFAULT_EVENTNOTIFICATIONS).split(PlatformKeys.SEPARATOR_COMMA).length,
+                    deviceStatus.getEventNotifications().size());
+            for (final String eventNotification : getString(expectedResult, PlatformKeys.KEY_EVENTNOTIFICATIONS,
+                    PlatformDefaults.DEFAULT_EVENTNOTIFICATIONS).split(PlatformKeys.SEPARATOR_COMMA)) {
+                Assert.assertTrue(deviceStatus.getEventNotifications()
+                        .contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
+            }
+        }
+
+        if (expectedResult.containsKey(PlatformKeys.KEY_LIGHTVALUES)
+                && !expectedResult.get(PlatformKeys.KEY_LIGHTVALUES).isEmpty()) {
+            Assert.assertEquals(
+                    getString(expectedResult, PlatformKeys.KEY_LIGHTVALUES, PlatformDefaults.DEFAULT_LIGHTVALUES)
+                            .split(PlatformKeys.SEPARATOR_COMMA).length,
+                    deviceStatus.getLightValues().size());
+            for (final String lightValues : getString(expectedResult, PlatformKeys.KEY_LIGHTVALUES,
+                    PlatformDefaults.DEFAULT_LIGHTVALUES).split(PlatformKeys.SEPARATOR_COMMA)) {
+
+                final String[] parts = lightValues.split(PlatformKeys.SEPARATOR_SEMICOLON);
+                final Integer index = Integer.parseInt(parts[0]);
+                final Boolean on = Boolean.parseBoolean(parts[1]);
+                final Integer dimValue = Integer.parseInt(parts[2]);
+
+                boolean found = false;
+                for (final LightValue lightValue : deviceStatus.getLightValues()) {
+
+                    if (lightValue.getIndex() == index && lightValue.isOn() == on
+                            && lightValue.getDimValue() == dimValue) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                Assert.assertTrue(found);
+            }
+        }
     }
 }
