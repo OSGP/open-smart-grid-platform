@@ -27,7 +27,7 @@ public class Measurement extends NodeIdentifier implements Serializable {
         super(id, node);
         this.qualifier = qualifier;
         this.time = time;
-        this.value = roundValue(value);
+        this.value = this.roundValue(value);
     }
 
     public int getQualifier() {
@@ -41,7 +41,7 @@ public class Measurement extends NodeIdentifier implements Serializable {
     public double getValue() {
         return this.value;
     }
-    
+
     private double roundValue(final double value) {
         final DecimalFormat df = new DecimalFormat("#.#####");
         df.setRoundingMode(RoundingMode.HALF_UP);
