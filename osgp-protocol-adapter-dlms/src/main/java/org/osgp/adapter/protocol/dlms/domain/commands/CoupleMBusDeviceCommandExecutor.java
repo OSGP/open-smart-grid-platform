@@ -41,7 +41,7 @@ public class CoupleMBusDeviceCommandExecutor
 
     private static final int NR_OF_ATTRIBUTES = 5;
     // we need to collect data for NR_OF_ATTRIBUTES attribites, starting from
-    // attr-id: 6
+    // attr-id: 5
     private static final int START_ATTRIBUTE = 5;
     // and we start at channel 1 until channel 4
     private static final int FIRST_CHANNEL = 1;
