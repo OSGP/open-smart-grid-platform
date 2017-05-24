@@ -22,17 +22,37 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Value("${jms.activemq.broker.url:tcp://localhost:61616}")
-    protected String aciveMqBroker;
+    protected String activeMqBroker;
 
     @Value("${jms.activemq.connection.pool.size:10}")
     protected int connectionPoolSize;
 
     @Value("${jms.activemq.connection.pool.max.active.sessions:500}")
     protected int maximumActiveSessionPerConnection;
-    
+
     @Value("${jms.activemq.connection.queue.prefetch:1000}")
     protected int queuePrefetch;
-    
+
+    /*
+     * Override the getters below, if you dont want the use the default setting
+     * from the properties file that start with: 'jms.activemq'
+     */
+    protected String getActiveMQBroker() {
+        return this.activeMqBroker;
+    }
+
+    protected int getConnectionPoolSize() {
+        return this.connectionPoolSize;
+    }
+
+    protected int getMaximumActiveSessionPerConnection() {
+        return this.maximumActiveSessionPerConnection;
+    }
+
+    protected int getQueuePrefetch() {
+        return this.queuePrefetch;
+    }
+
     @Bean
     protected JmsConfigurationFactory jmsConfigurationFactory(final PooledConnectionFactory pooledConnectionFactory,
             final RedeliveryPolicyMap redeliveryPolicyMap) {
@@ -43,18 +63,18 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     protected PooledConnectionFactory pooledConnectionFactory() {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
-        pooledConnectionFactory.setMaxConnections(this.connectionPoolSize);
-        pooledConnectionFactory.setMaximumActiveSessionPerConnection(this.maximumActiveSessionPerConnection);
+        pooledConnectionFactory.setMaxConnections(this.getConnectionPoolSize());
+        pooledConnectionFactory.setMaximumActiveSessionPerConnection(this.getMaximumActiveSessionPerConnection());
         return pooledConnectionFactory;
     }
 
     protected ActiveMQConnectionFactory connectionFactory() {
         final ActiveMQPrefetchPolicy activeMQPrefetchPolicy = new ActiveMQPrefetchPolicy();
-        activeMQPrefetchPolicy.setQueuePrefetch(this.queuePrefetch);
-        
+        activeMQPrefetchPolicy.setQueuePrefetch(this.getQueuePrefetch());
+
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
-        activeMQConnectionFactory.setBrokerURL(this.aciveMqBroker);
+        activeMQConnectionFactory.setBrokerURL(this.getActiveMQBroker());
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
         activeMQConnectionFactory.setPrefetchPolicy(activeMQPrefetchPolicy);
         return activeMQConnectionFactory;
