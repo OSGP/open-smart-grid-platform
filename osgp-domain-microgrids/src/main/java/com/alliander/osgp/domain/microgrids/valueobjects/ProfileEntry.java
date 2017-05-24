@@ -8,6 +8,8 @@
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
 import java.io.Serializable;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import org.joda.time.DateTime;
 
@@ -15,14 +17,14 @@ public class ProfileEntry implements Serializable {
 
     private static final long serialVersionUID = -6843459709647885422L;
 
-    private int id;
-    private DateTime time;
-    private double value;
+    private final int id;
+    private final DateTime time;
+    private final double value;
 
     public ProfileEntry(final int id, final DateTime time, final double value) {
         this.id = id;
         this.time = time;
-        this.value = value;
+        this.value = this.roundValue(value);
     }
 
     public int getId() {
@@ -35,5 +37,11 @@ public class ProfileEntry implements Serializable {
 
     public double getValue() {
         return this.value;
+    }
+
+    private double roundValue(final double value) {
+        final DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return Double.parseDouble(df.format(value));
     }
 }
