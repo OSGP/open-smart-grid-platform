@@ -13,6 +13,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.commands.utils.FindMatchingChannelHelper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -85,7 +86,7 @@ public class CoupleMBusDeviceCommandExecutor
 
     private boolean mbusChannelMatches(final int channel, final ChannelElementValues channelValues,
             final MbusChannelElementsDto requestData) {
-        return (channelValues.getPrimaryAddress() > 0); // TODO-JRB
+        return FindMatchingChannelHelper.mbusChannelMatches(channel, channelValues, requestData);
     }
 
     private ChannelElementValues makeChannelElementValues(final int channel, final List<GetResult> resultList) {
