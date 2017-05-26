@@ -60,7 +60,8 @@ public class EventNotificationMessageService {
         if (device != null) {
             // If the event belonged to an existing device, then save it,
             // otherwise don't.
-            this.eventRepository.save(new Event(device, dateTime, eventType, description, index));
+            this.eventRepository.save(new Event(device, dateTime != null ? dateTime : DateTime.now().toDate(),
+                    eventType, description, index));
 
             // Checking to see if it was a switching event
             if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
@@ -72,6 +73,18 @@ public class EventNotificationMessageService {
         } else {
             throw new UnknownEntityException(Device.class, deviceIdentification);
         }
+    }
+
+
+    public void handleEvent(final String deviceIdentification, final EventNotificationDto event)
+            throws UnknownEntityException {
+
+        final Date dateTime = event.getDateTime() != null ? event.getDateTime().toDate() : DateTime.now().toDate();
+        final EventType eventType = EventType.valueOf(event.getEventType().name());
+        final String description = event.getDescription();
+        final Integer index = event.getIndex();
+
+        this.handleEvent(deviceIdentification, dateTime, eventType, description, index);
     }
 
     @Transactional(value = "transactionManager")
