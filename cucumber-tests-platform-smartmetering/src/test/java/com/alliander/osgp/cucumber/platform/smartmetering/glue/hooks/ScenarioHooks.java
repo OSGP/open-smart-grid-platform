@@ -42,6 +42,12 @@ public class ScenarioHooks extends GlueBase {
     @Value("${service.endpoint.host}")
     private String serviceEndpointHost;
 
+    @Value("${dynamic.properties.host}")
+    private String dynamicPropertiesHost;
+
+    @Value("${dynamic.properties.port}")
+    private int dynamicPropertiesPort;
+
     /**
      * Executed after each scenario.
      *
@@ -68,7 +74,8 @@ public class ScenarioHooks extends GlueBase {
     public void beforeScenario() {
         // TODO uncomment when slim-975 is deployed and port 4567 is opened on
         // the machine where device-simulator is running.
-        // this.deviceSimulatorSteps.removeAllTemporaryPropertiesFiles(this.serviceEndpointHost);
+        this.deviceSimulatorSteps.removeAllTemporaryPropertiesFiles(this.dynamicPropertiesHost,
+                this.dynamicPropertiesPort);
 
         this.dlmsDatabaseSteps.prepareDatabaseForScenario();
         this.prepareServiceEndpoint();

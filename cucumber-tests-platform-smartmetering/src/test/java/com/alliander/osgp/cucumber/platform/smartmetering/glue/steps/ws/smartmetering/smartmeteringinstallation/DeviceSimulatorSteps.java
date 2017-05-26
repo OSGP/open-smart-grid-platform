@@ -24,7 +24,8 @@ import cucumber.api.java.en.Given;
 
 public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
-    private String serviceEndpoint;
+    private String dynamicPropertiesHost;
+    private int dynamicPropertiesPort;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSimulatorSteps.class);
 
@@ -38,8 +39,9 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
         this.setRemoteProperties(classId, obisCode, settings);
     }
 
-    public void removeAllTemporaryPropertiesFiles(final String serviceEndpoint) {
-        this.serviceEndpoint = serviceEndpoint;
+    public void removeAllTemporaryPropertiesFiles(final String dynamicPropertiesHost, final int dynamicPropertiesPort) {
+        this.dynamicPropertiesHost = dynamicPropertiesHost;
+        this.dynamicPropertiesPort = dynamicPropertiesPort;
 
         final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         try {
@@ -78,8 +80,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     }
 
     private String getUrl() {
-        final int delimAt = this.serviceEndpoint.indexOf(":");
-        return (delimAt > 0) ? this.serviceEndpoint.substring(0, delimAt) : this.serviceEndpoint;
+        return this.dynamicPropertiesHost + ":" + this.dynamicPropertiesPort;
     }
 
 }
