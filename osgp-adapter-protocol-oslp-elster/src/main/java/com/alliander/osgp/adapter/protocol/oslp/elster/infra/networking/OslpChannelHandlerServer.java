@@ -9,24 +9,19 @@ package com.alliander.osgp.adapter.protocol.oslp.elster.infra.networking;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
@@ -35,11 +30,8 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.oslp
 import com.alliander.osgp.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.core.db.api.application.services.DeviceDataService;
-import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
-import com.alliander.osgp.dto.valueobjects.EventTypeDto;
 import com.alliander.osgp.dto.valueobjects.GpsCoordinatesDto;
 import com.alliander.osgp.oslp.Oslp;
-import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.LocationInfo;
 import com.alliander.osgp.oslp.Oslp.Message;
@@ -267,39 +259,10 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     Oslp.EventNotificationResponse.newBuilder().setStatus(Oslp.Status.REJECTED)).build();
         }
 
-        // Send event notifications to osgp core
         final Oslp.Status oslpStatus = Oslp.Status.OK;
         final String deviceUid = Base64.encodeBase64String(deviceId);
-        final List<EventNotificationDto> events = new ArrayList<>();
-        final OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByUid(deviceUid);
-        if (oslpDevice == null) {
-            throw new ProtocolAdapterException("Unable to find device using deviceUid: " + deviceUid);
-        }
 
-        for (final EventNotification event : request.getNotificationsList()) {
-            final String eventType = event.getEvent().name();
-            Assert.notNull(eventType);
-            final String description = event.getDescription();
-            Assert.notNull(description);
-
-            DateTime dateTime = null;
-            if (StringUtils.isNotEmpty(event.getTimestamp())) {
-                String timestamp = event.getTimestamp();
-                final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss Z");
-                dateTime = dateTimeFormatter.withOffsetParsed().parseDateTime(timestamp.concat(" +0000"));
-                timestamp = event.getTimestamp();
-                LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
-            }
-            Integer index = null;
-            if (!event.getIndex().isEmpty()) {
-                index = (int) event.getIndex().byteAt(0);
-            }
-
-            events.add(new EventNotificationDto(oslpDevice.getDeviceIdentification(), dateTime,
-                    EventTypeDto.valueOf(eventType), description, index));
-        }
-
-        this.deviceManagementService.addEventNotifications(oslpDevice.getDeviceIdentification(), events);
+        this.deviceManagementService.addEventNotifications(deviceUid, request.getNotificationsList());
 
         return Oslp.Message.newBuilder()
                 .setEventNotificationResponse(Oslp.EventNotificationResponse.newBuilder().setStatus(oslpStatus))
