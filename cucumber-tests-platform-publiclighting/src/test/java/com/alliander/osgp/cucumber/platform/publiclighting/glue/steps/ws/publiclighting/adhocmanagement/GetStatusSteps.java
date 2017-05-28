@@ -140,7 +140,7 @@ public class GetStatusSteps {
             }
 
             count++;
-            Thread.sleep(100);
+            Thread.sleep(1000);
 
             try {
                 LOGGER.info("GetStatusSteps CorrelationUID: {}", request.getAsyncRequest().getCorrelationUid());
