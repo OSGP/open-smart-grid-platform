@@ -330,8 +330,6 @@ public class RegisterDevice {
 
         try {
             // Set index when provided in request.
-            // final Integer idx =
-            // this.determineRelayIndexForEventNotification(index);
             final int sequenceNumber = device.doGetNextSequence();
             final String timestamp = this.getFormattedCurrentTimestamp();
             final Oslp.Event oslpEvent = Oslp.Event.valueOf(event);
