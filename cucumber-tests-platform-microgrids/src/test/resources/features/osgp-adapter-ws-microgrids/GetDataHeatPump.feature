@@ -4,7 +4,7 @@ Feature: MicroGrids Get Heat Pump Data
   I want to get Heat Pump data from an RTU
   So this data can be used by other processes
 
-@Skip  @Iec61850MockServerMarkerWadden
+  @Iec61850MockServerMarkerWadden
   Scenario: Request HEAT_PUMP
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-MARKER-WADDEN |
