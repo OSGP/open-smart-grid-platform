@@ -74,22 +74,24 @@ public class GetPowerUsageHistorySteps {
 
         final GetPowerUsageHistoryRequest request = new GetPowerUsageHistoryRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final TimePeriod tp = new TimePeriod();
-        tp.setStartTime(DatatypeFactory.newInstance()
-                .newXMLGregorianCalendar(DateTime.parse(getString(requestParameters, PlatformPubliclightingKeys.FROM_DATE))
+        tp.setStartTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                DateTime.parse(getString(requestParameters, PlatformPubliclightingKeys.FROM_DATE))
                         .toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
-        tp.setEndTime(DatatypeFactory.newInstance()
-                .newXMLGregorianCalendar(DateTime.parse(getString(requestParameters, PlatformPubliclightingKeys.UNTIL_DATE))
+        tp.setEndTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                DateTime.parse(getString(requestParameters, PlatformPubliclightingKeys.UNTIL_DATE))
                         .toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
         request.setTimePeriod(tp);
 
-        request.setHistoryTermType(getEnum(requestParameters, PlatformPubliclightingKeys.HISTORY_TERM_TYPE, HistoryTermType.class,
-                PlatformPubliclightingDefaults.DEFAULT_HISTORY_TERM_TYPE));
+        request.setHistoryTermType(getEnum(requestParameters, PlatformPubliclightingKeys.HISTORY_TERM_TYPE,
+                HistoryTermType.class, PlatformPubliclightingDefaults.DEFAULT_HISTORY_TERM_TYPE));
 
         try {
-            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.client.getPowerUsageHistory(request));
+            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                    this.client.getPowerUsageHistory(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, ex);
         }
@@ -99,7 +101,8 @@ public class GetPowerUsageHistorySteps {
     public void receivingAGetPowerUsageHistoryRequestAsAnUnknownOrganization(
             final Map<String, String> requestParameters) throws Throwable {
         // Force the request being sent to the platform as a given organization.
-        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                "unknown-organization");
 
         this.receivingAGetPowerUsageHistoryRequest(requestParameters);
     }
@@ -130,7 +133,8 @@ public class GetPowerUsageHistorySteps {
                 getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: ["
+                + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the get power usage history response contains soap fault$")
@@ -151,7 +155,8 @@ public class GetPowerUsageHistorySteps {
         final GetPowerUsageHistoryAsyncRequest request = new GetPowerUsageHistoryAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+        asyncRequest.setCorrelationUid(
+                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
         GetPowerUsageHistoryResponse response = null;
@@ -169,7 +174,8 @@ public class GetPowerUsageHistorySteps {
             success = true;
         }
 
-        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_STATUS)),
+        Assert.assertEquals(
+                Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_STATUS)),
                 response.getResult());
         final String expectedDescription = expectedResult.get(PlatformPubliclightingKeys.KEY_DESCRIPTION);
         if (!expectedDescription.isEmpty()) {
@@ -177,11 +183,14 @@ public class GetPowerUsageHistorySteps {
         }
 
         for (final PowerUsageData data : response.getPowerUsageData()) {
-            Assert.assertEquals(expectedResult.get(PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER), data.getActualConsumedPower());
-            Assert.assertEquals(expectedResult.get(PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY), data.getTotalConsumedEnergy());
-            Assert.assertEquals(Enum.valueOf(MeterType.class, expectedResult.get(PlatformPubliclightingKeys.METER_TYPE)),
+            Assert.assertEquals(Integer.parseInt(expectedResult.get(PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER)),
+                    data.getActualConsumedPower());
+            Assert.assertEquals(Long.parseLong(expectedResult.get(PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY)),
+                    data.getTotalConsumedEnergy());
+            Assert.assertEquals(MeterType.fromValue(expectedResult.get(PlatformPubliclightingKeys.METER_TYPE)),
                     data.getMeterType());
-            Assert.assertEquals(expectedResult.get(PlatformPubliclightingKeys.RECORD_TIME), data.getRecordTime());
+            Assert.assertEquals(DateTime.parse(expectedResult.get(PlatformPubliclightingKeys.RECORD_TIME)).toString(),
+                    DateTime.parse(data.getRecordTime().toString()).toString());
             Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS),
                     data.getPsldData().getTotalLightingHours());
             Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CURRENT1),

@@ -17,6 +17,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -29,6 +30,8 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +40,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMes
 import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.DaliConfiguration;
 import com.alliander.osgp.oslp.Oslp.GetConfigurationResponse;
@@ -114,10 +118,11 @@ public class MockOslpServer {
     private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests = new ConcurrentHashMap<>();
     private final List<Message> receivedResponses = new ArrayList<>();
 
-    public MockOslpServer(CoreDeviceConfiguration configuration, int oslpPortServer, int oslpElsterPortServer,
-            String oslpSignature, String oslpSignatureProvider, int connectionTimeout, String signKeyPath,
-            String verifyKeyPath, String keytype, Integer sequenceNumberWindow, Integer sequenceNumberMaximum,
-            Long responseDelayTime, Long reponseDelayRandomRange) {
+    public MockOslpServer(final CoreDeviceConfiguration configuration, final int oslpPortServer,
+            final int oslpElsterPortServer, final String oslpSignature, final String oslpSignatureProvider,
+            final int connectionTimeout, final String signKeyPath, final String verifyKeyPath, final String keytype,
+            final Integer sequenceNumberWindow, final Integer sequenceNumberMaximum, final Long responseDelayTime,
+            final Long reponseDelayRandomRange) {
         this.configuration = configuration;
         this.oslpPortServer = oslpPortServer;
         this.oslpElsterPortServer = oslpElsterPortServer;
@@ -500,15 +505,92 @@ public class MockOslpServer {
                 Oslp.Message.newBuilder().setGetActualPowerUsageResponse(response).build());
     }
 
-    public void mockGetPowerUsageHistoryResponse(final Oslp.Status status, final String recordTime, final Integer index,
-            final Integer actualConsumedPower, final MeterType meterType, final Integer totalConsumedEnergy,
-            final Integer totalLightingHours, final Integer actualCurrent1, final Integer actualCurrent2,
-            final Integer actualCurrent3, final Integer actualPower1, final Integer actualPower2,
-            final Integer actualPower3, final Integer averagePowerFactor1, final Integer averagePowerFactor2,
-            final Integer averagePowerFactor3, final String relayData) {
+    public void mockGetPowerUsageHistoryResponse(final Oslp.Status status, final Map<String, String[]> requestMap) {
 
-        final com.alliander.osgp.oslp.Oslp.SsldData.Builder ssldData = SsldData.newBuilder();
+        com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryResponse response = null;
 
+        final com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryResponse.Builder builder = com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryResponse
+                .newBuilder();
+
+        if (requestMap.containsKey(PlatformPubliclightingKeys.RECORD_TIME)) {
+
+            this.creatingPowerUsageDataAndAddingToBuilder(builder, requestMap);
+
+            response = builder.setStatus(status).build();
+        } else {
+            response = builder.setStatus(status).build();
+        }
+
+        this.mockResponses.put(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY,
+                Oslp.Message.newBuilder().setGetPowerUsageHistoryResponse(response).build());
+    }
+
+    private void creatingPowerUsageDataAndAddingToBuilder(
+            final com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryResponse.Builder builder,
+            final Map<String, String[]> requestMap) {
+
+        for (int i = 0; i < requestMap.get(PlatformPubliclightingKeys.RECORD_TIME).length; i++) {
+
+            final com.alliander.osgp.oslp.Oslp.SsldData.Builder ssldData = SsldData.newBuilder();
+
+            this.addRelayDataToSsldData(ssldData, requestMap, i);
+
+            final com.alliander.osgp.oslp.Oslp.PowerUsageData.Builder powerUsageData = PowerUsageData.newBuilder();
+
+            this.addDataToPowerUsageData(powerUsageData, requestMap, i);
+
+            final Integer actualConsumedPower = Integer
+                    .parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER)[i]),
+                    totalConsumedEnergy = Integer
+                            .parseInt(requestMap.get(PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY)[i]),
+                    actualCurrent1 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_CURRENT1)[i]),
+                    actualCurrent2 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_CURRENT2)[i]),
+                    actualCurrent3 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_CURRENT3)[i]),
+                    actualPower1 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_POWER1)[i]),
+                    actualPower2 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_POWER2)[i]),
+                    actualPower3 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_POWER3)[i]),
+                    averagePowerFactor1 = Integer
+                            .parseInt(requestMap.get(PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR1)[i]),
+                    averagePowerFactor2 = Integer
+                            .parseInt(requestMap.get(PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR2)[i]),
+                    averagePowerFactor3 = Integer
+                            .parseInt(requestMap.get(PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR3)[i]);
+
+            builder.addPowerUsageData(powerUsageData.setActualConsumedPower(actualConsumedPower)
+                    .setTotalConsumedEnergy(totalConsumedEnergy)
+                    .setSsldData(ssldData.setActualCurrent1(actualCurrent1).setActualCurrent2(actualCurrent2)
+                            .setActualCurrent3(actualCurrent3).setActualPower1(actualPower1)
+                            .setActualPower2(actualPower2).setActualPower3(actualPower3)
+                            .setAveragePowerFactor1(averagePowerFactor1).setAveragePowerFactor2(averagePowerFactor2)
+                            .setAveragePowerFactor3(averagePowerFactor3).build())
+                    .build());
+        }
+    }
+
+    private void addDataToPowerUsageData(final com.alliander.osgp.oslp.Oslp.PowerUsageData.Builder powerUsageData,
+            final Map<String, String[]> requestMap, final Integer currentItem) {
+        final MeterType meterType = MeterType
+                .valueOf(requestMap.get(PlatformPubliclightingKeys.METER_TYPE)[currentItem]);
+        if (meterType != null) {
+            powerUsageData.setMeterType(meterType);
+        }
+
+        final Integer totalLightingHours = Integer
+                .parseInt(requestMap.get(PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS)[currentItem]);
+        if (totalLightingHours != null) {
+            powerUsageData.setPsldData(PsldData.newBuilder().setTotalLightingHours(totalLightingHours).build());
+        }
+
+        final String recordTime = DateTime.parse(requestMap.get(PlatformPubliclightingKeys.RECORD_TIME)[currentItem])
+                .toDateTime(DateTimeZone.UTC).toString("yyyyMMddHHmmss");
+        if (!recordTime.isEmpty()) {
+            powerUsageData.setRecordTime(recordTime);
+        }
+    }
+
+    private void addRelayDataToSsldData(final com.alliander.osgp.oslp.Oslp.SsldData.Builder ssldData,
+            final Map<String, String[]> requestMap, final Integer currentItem) {
+        final String relayData = requestMap.get(PlatformPubliclightingKeys.RELAY_DATA)[currentItem];
         if (relayData != null && !relayData.isEmpty()) {
             for (final String data : relayData.split(PlatformKeys.SEPARATOR_SEMICOLON)) {
                 final String[] dataParts = data.split(PlatformKeys.SEPARATOR_COMMA);
@@ -519,41 +601,6 @@ public class MockOslpServer {
                 ssldData.addRelayData(r);
             }
         }
-
-        final com.alliander.osgp.oslp.Oslp.PowerUsageData.Builder powerUsageData = PowerUsageData.newBuilder();
-
-        if (meterType != null) {
-            powerUsageData.setMeterType(meterType);
-        }
-
-        if (totalLightingHours != null) {
-            powerUsageData.setPsldData(PsldData.newBuilder().setTotalLightingHours(totalLightingHours).build());
-        }
-
-        if (!recordTime.isEmpty()) {
-            powerUsageData.setRecordTime(recordTime);
-        }
-
-        com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryResponse response = null;
-
-        final com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryResponse.Builder builder = com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryResponse
-                .newBuilder();
-
-        if (builder.getPowerUsageDataCount() > 0) {
-            response = builder.setStatus(status).setPowerUsageData(index, powerUsageData
-                    .setActualConsumedPower(actualConsumedPower).setTotalConsumedEnergy(totalConsumedEnergy)
-                    .setSsldData(ssldData.setActualCurrent1(actualCurrent1).setActualCurrent2(actualCurrent2)
-                            .setActualCurrent3(actualCurrent3).setActualPower1(actualPower1)
-                            .setActualPower2(actualPower2).setActualPower3(actualPower3)
-                            .setAveragePowerFactor1(averagePowerFactor1).setAveragePowerFactor2(averagePowerFactor2)
-                            .setAveragePowerFactor3(averagePowerFactor3).build())
-                    .build()).build();
-        } else {
-            response = builder.setStatus(status).build();
-        }
-
-        this.mockResponses.put(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY,
-                Oslp.Message.newBuilder().setGetPowerUsageHistoryResponse(response).build());
     }
 
     public String getOslpSignature() {
