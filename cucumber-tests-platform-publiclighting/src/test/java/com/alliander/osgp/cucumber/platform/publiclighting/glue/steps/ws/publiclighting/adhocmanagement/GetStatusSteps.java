@@ -39,6 +39,7 @@ import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
+import com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.mocks.PollingHelper;
 import com.alliander.osgp.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
@@ -129,6 +130,7 @@ public class GetStatusSteps {
     public void thePlatformBuffersAGetStatusResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
         final GetStatusAsyncRequest request = this.getGetStatusAsyncRequest(deviceIdentification);
+        final PollingHelper pollingHelper = new PollingHelper();
 
         boolean success = false;
         int count = 0;
@@ -138,10 +140,17 @@ public class GetStatusSteps {
             }
 
             count++;
-            Thread.sleep(5000);
+            Thread.sleep(1000);
 
             try {
+                LOGGER.info("GetStatusSteps CorrelationUID: {}", request.getAsyncRequest().getCorrelationUid());
+
                 final GetStatusResponse response = this.client.getGetStatusResponse(request);
+                final String osgpResponse = response.getResult().name();
+                LOGGER.info("GetStatusSteps osgpResponse: {}", osgpResponse);
+                if (pollingHelper.poll(osgpResponse)) {
+                    continue;
+                }
 
                 Assert.assertNotNull(response);
 
@@ -207,7 +216,7 @@ public class GetStatusSteps {
 
                 success = true;
             } catch (final Exception ex) {
-                LOGGER.info(ex.getMessage());
+                LOGGER.error("Exception during thePlatformBuffersAGetStatusResponseMessageForDevice()", ex);
             }
 
         }
