@@ -1,7 +1,0 @@
-!2 Narrative
-As an operator I want to retrieve the users for an organisation
-
-!2 Scenario: Successfully retrieve users for an organisation
-|given|a logged in operator of an organisation                                |
-|when |the retrieve users for a particular organisation request is received   |
-|then |the list of users for the particular organisation is returned and shown|

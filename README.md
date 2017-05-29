@@ -8,15 +8,12 @@
 
 ### Component Description
 
-This repository contains all the tests to verify the platform. At the time the project was started, it was a good solution to use Fitnesse. But that became a bit difficult to maintain.
-From now on it is meant that new tests will be written in cucumber.
+This repository contains all the tests to verify the platform.
+Tests are written in cucumber.
 
 - Cucumber
   - cucumber-tests-platform, The test project where all new platform tests are put.
   - cucumber-tests-platform-dlms, The test project where all new dlms related platform tests are put.
-- Fitnesse (deprecated, please use the integration-tests-cucumber project):
-  - fitnesse, The Fitnesse program and the wiki pages for the test suite
-  - osgp-platform-test, The domain steps for the test suite
   - local-maven-repo, A local maven repository, needed for givwenzen.jar because it was removed from the maven repository.
 - Shared, Platform and Protocol-Adapter-*, The components under test
 
@@ -56,5 +53,3 @@ There are a few rules on how to implement the automatic tests.
 * Each time you implement new functionality or solve bugs, make sure you execute the automatic tests.
 
 Note: Scenarios which are dependent on a DLMS device simulator need to be implemented in the cucumber-tests-platform-dlms project.
-
-Note. At the time of writing this readme there are still Fitnesse tests. They should be converted to cucumber tests in time. So if you touch existing functionality, please see whether it is in time possible to convert the corresponding fitnesse tests as well.
