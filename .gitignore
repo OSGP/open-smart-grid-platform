@@ -31,10 +31,6 @@ local.properties
 # PDT-specific
 .buildpath
 
-#FitNesse data
-KahaDB/
-fitnesse/FitNesseRoot/files/
-
 ####################
 # IntelliJ
 ####################
