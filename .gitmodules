@@ -1,15 +1,15 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
+	branch = feature/OP-598
 [submodule "Protocol-Adapter-OSLP"]
 	path = Protocol-Adapter-OSLP
 	url = https://github.com/OSGP/Protocol-Adapter-OSLP.git
-	branch = development
+	branch = feature/OP-598
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
-	branch = development
+	branch = feature/OP-598
 [submodule "Protocol-Adapter-DLMS"]
 	path = Protocol-Adapter-DLMS
 	url = https://github.com/OSGP/Protocol-Adapter-DLMS.git
@@ -17,4 +17,4 @@
 [submodule "Protocol-Adapter-IEC61850"]
 	path = Protocol-Adapter-IEC61850
 	url = https://github.com/OSGP/Protocol-Adapter-IEC61850.git
-	branch = development
+	branch = feature/OP-598
