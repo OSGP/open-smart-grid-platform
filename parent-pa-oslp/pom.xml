@@ -382,13 +382,6 @@
         <version>${commons.pool.version}</version>
       </dependency>
 
-      <!-- REQUIRED FOR FITNESSE -->
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-kahadb-store</artifactId>
-        <version>${apache.activemq.version}</version>
-      </dependency>
-
       <!-- Orika (mapping framework) -->
       <dependency>
         <groupId>ma.glasnost.orika</groupId>
