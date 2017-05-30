@@ -114,8 +114,7 @@ public class MBusGatewayService {
 
         final short channel = mbusChannelElementsResponseDto.getChannel().shortValue();
         mbusDevice.setChannel(channel);
-        mbusDevice.setMbusPrimaryAddress(
-                mbusChannelElementsResponseDto.getChannelElements().get(channel).getPrimaryAddress());
+        mbusDevice.setMbusPrimaryAddress(this.getPrimaryAddress(mbusChannelElementsResponseDto, channel));
 
         mbusDevice.updateGatewayDevice(gatewayDevice);
         this.smartMeteringDeviceRepository.save(mbusDevice);
@@ -127,7 +126,7 @@ public class MBusGatewayService {
 
     private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {
 
-        final String mbusIdentificationNumber = mbusDevice.getMbusDeviceTypeIdentification();
+        final String mbusIdentificationNumber = mbusDevice.getMbusIdentificationNumber();
         final String mbusManufacturerIdentification = mbusDevice.getMbusManufacturerIdentification();
         final String mbusVersion = mbusDevice.getMbusVersion();
         final String mbusDeviceTypeIdentification = mbusDevice.getMbusDeviceTypeIdentification();
@@ -195,7 +194,6 @@ public class MBusGatewayService {
             } else {
                 return true;
             }
-
         }
     }
 
@@ -219,4 +217,9 @@ public class MBusGatewayService {
         sb.append(msg);
     }
 
+    private short getPrimaryAddress(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto,
+            final int channel) {
+        // because the List is 0-based, we need to subtract 1
+        return mbusChannelElementsResponseDto.getChannelElements().get(channel - 1).getPrimaryAddress();
+    }
 }
