@@ -70,7 +70,6 @@ public class InstallationService {
         smartMeteringDevice.setGlobalEncryptionUnicastKey(reEncryptedEncryptionKey);
     }
 
-    // Couple MBus device
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
             final MbusChannelElementsDto requestDto) throws ProtocolAdapterException, FunctionalException {
 

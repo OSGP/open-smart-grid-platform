@@ -16,20 +16,22 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
  */
 public class FindMatchingChannelHelper {
 
+    private static final int DWORD = 16;
+
     private FindMatchingChannelHelper() {
-        // empty ctor because it onlu contains static method
+        // empty ctor because it only contains static methods
     }
 
     /**
      * Here we check if the values from the database that came from the shipment
      * file, match with the corresponding return values from the e-meter. The
-     * primary-address is not stored in the database, and the rule is, that
-     * value (that corresponds with attr-id:5) is > 0. For the other fields, the
-     * rule is that return values from the e-meter may be empty. In that case
-     * they match, otherwise this value should be compared with the dbs value,
-     * where some specific converting rules may apply.
+     * primary-address is not stored in the database, and the rule for this
+     * value (that corresponds with attr-id:5) matches if it is > 0. For the
+     * other fields, the rule is that return values from the e-meter may be
+     * empty, which result in 0 values. In that case they match, otherwise this
+     * value should be compared with the dbs value, where some specific
+     * converting rules may apply.
      *
-     * @param channel
      * @param channelValues
      * @param requestData
      * @return
@@ -37,26 +39,20 @@ public class FindMatchingChannelHelper {
     public static boolean mbusChannelMatches(final ChannelElementValues channelValues,
             final MbusChannelElementsDto requestData) {
 
-        if (channelValues.getPrimaryAddress() == 0) {
-            return false;
-        } else if (!matchIdentificationNumber(channelValues, requestData)) {
-            return false;
-        } else if (!matchManufacturerId(channelValues, requestData)) {
-            return false;
-        } else if (!matchDeviceType(channelValues, requestData)) {
-            return false;
-        } else if (!matchVersion(channelValues, requestData)) {
-            return false;
-        } else {
-            return true;
-        }
+        return (channelValues.getPrimaryAddress() > 0) && matchIdentificationNumber(channelValues, requestData)
+                && matchManufacturerId(channelValues, requestData) && matchDeviceType(channelValues, requestData)
+                && matchVersion(channelValues, requestData);
     }
 
     private static boolean matchIdentificationNumber(final ChannelElementValues channelValues,
             final MbusChannelElementsDto requestData) {
+
+        // the ResultData object from the meter may empty, which result in a 0
+        // value, if that cases it matches! (the same applies for the methods
+        // below)
         if (channelValues.getIdentificationNumber() > 0) {
             final String mbusId = requestData.getMbusIdentificationNumber();
-            final long hexValue = mbusId == null ? -1 : Long.parseLong(mbusId, 16);
+            final long hexValue = mbusId == null ? -1 : Long.parseLong(mbusId, DWORD);
             if (channelValues.getIdentificationNumber() != hexValue) {
                 return false;
             }
