@@ -22,17 +22,23 @@ public class MbusChannelElementsResponseDto implements Serializable {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
-    // This contains the channel on with gas-meter is connected.
-    // It is null if no channel is found that matches the original values from
-    // the request dto
-    // see also isChannelFound()
+    /**
+     * This contains the channel on witch the mbus-device is connected. It is
+     * null if NO channel is found that matches the original values from the
+     * request dto see also isChannelFound()
+     */
     private Integer channel;
 
-    // this contains the values read from the e-meter until a match is found.
-    // if no channel is found, it will contain 4 entries/
+    /**
+     * this contains the values read from the e-meter until a match is found. if
+     * no channel is found, it will contain 4 entries
+     */
     private List<ChannelElementValues> channelElements = new ArrayList<>();
 
-    // the original values from the request dto
+    /**
+     * the original values from the request dto, which are retrieved from
+     * smartmeter database table.
+     */
     private final MbusChannelElementsDto mbusChannelElementsDto;
 
     public MbusChannelElementsResponseDto(final MbusChannelElementsDto mbusChannelElementsDto) {
@@ -54,10 +60,6 @@ public class MbusChannelElementsResponseDto implements Serializable {
 
     public List<ChannelElementValues> getChannelElements() {
         return this.channelElements;
-    }
-
-    public void setChannelElements(final List<ChannelElementValues> channelElements) {
-        this.channelElements = channelElements;
     }
 
     public MbusChannelElementsDto getMbusChannelElementsDto() {

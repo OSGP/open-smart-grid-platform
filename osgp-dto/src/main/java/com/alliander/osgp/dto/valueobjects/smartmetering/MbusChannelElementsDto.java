@@ -20,9 +20,15 @@ public class MbusChannelElementsDto implements Serializable {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
-    // this is name of the gas-meter that is given in the request
+    /**
+     * this is the name of the mbus-device that is given in the request
+     */
     private final String mbusDeviceIdentification;
-    // these are the properties that belong to this gas-meter in the core dbs.
+
+    /**
+     * these are the properties that belong to this mbus-device in the core dbs
+     * (smartmeter table)
+     */
     private final String mbusIdentificationNumber;
     private final String mbusManufacturerIdentification;
     private final String mbusVersion;
