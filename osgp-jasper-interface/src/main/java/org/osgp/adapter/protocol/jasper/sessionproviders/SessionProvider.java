@@ -10,10 +10,12 @@ package org.osgp.adapter.protocol.jasper.sessionproviders;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
 public abstract class SessionProvider {
 
     @Autowired
     protected SessionProviderMap sessionProviderMap;
 
-    public abstract String getIpAddress(String iccId) throws SessionProviderException;
+    public abstract String getIpAddress(String iccId) throws SessionProviderException, FunctionalException;
 }

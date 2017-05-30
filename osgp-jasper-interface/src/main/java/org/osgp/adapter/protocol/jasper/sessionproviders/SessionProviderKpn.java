@@ -17,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.jasperwireless.api.ws.service.GetSessionInfoResponse;
 import com.jasperwireless.api.ws.service.SessionInfoType;
 
@@ -39,15 +43,14 @@ public class SessionProviderKpn extends SessionProvider {
     }
 
     @Override
-    public String getIpAddress(final String iccId) throws SessionProviderException {
+    public String getIpAddress(final String iccId) throws SessionProviderException, FunctionalException {
         GetSessionInfoResponse response = null;
         try {
             response = this.jasperWirelessTerminalClient.getSession(iccId);
         } catch (final SoapFaultClientException e) {
-            final String errorMessage = String.format("iccId %s is probably not supported in this session provider",
-                    iccId);
-            LOGGER.warn(errorMessage);
-            throw new SessionProviderException(errorMessage, e);
+            final String errorMessage = String.format("iccId %s is probably not supported in this session provider", iccId);
+            LOGGER.error(errorMessage, e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_ICCID, ComponentType.PROTOCOL_DLMS, new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
         }
 
         final SessionInfoType sessionInfoType = this.getSessionInfo(response);

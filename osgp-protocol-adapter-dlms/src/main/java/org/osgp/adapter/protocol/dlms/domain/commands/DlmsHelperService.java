@@ -60,6 +60,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElementDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
@@ -113,7 +114,8 @@ public class DlmsHelperService {
 
             LOGGER.error(errorMessage);
             throw new FunctionalException(FunctionalExceptionType.ERROR_RETRIEVING_ATTRIBUTE_VALUE, ComponentType.PROTOCOL_DLMS,
-                    new ProtocolAdapterException(errorMessage));
+                    new OsgpException(ComponentType.PROTOCOL_DLMS, errorMessage));
+
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
