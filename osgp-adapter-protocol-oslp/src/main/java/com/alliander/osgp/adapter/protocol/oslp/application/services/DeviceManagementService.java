@@ -70,7 +70,8 @@ public class DeviceManagementService {
         LOGGER.info("addEventNotification called for device: {} with eventType: {}, description: {} and index: {}",
                 oslpDevice.getDeviceIdentification(), eventType, description, index);
 
-        final EventNotificationDto eventNotification = new EventNotificationDto(deviceUid, EventTypeDto.valueOf(eventType),
+        final EventNotificationDto eventNotification = new EventNotificationDto(deviceUid, null,
+                EventTypeDto.valueOf(eventType),
                 description, index);
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 oslpDevice.getDeviceIdentification(), eventNotification);

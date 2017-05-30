@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -26,6 +29,7 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OsgpReque
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 import com.alliander.osgp.dto.valueobjects.EventTypeDto;
+import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -55,31 +59,34 @@ public class DeviceManagementService {
     // === ADD EVENT NOTIFICATION ===
 
     /**
-     * Send a new event notification to OSGP Core with the given arguments.
+     * Create a new event notification DTO with the given arguments.
      *
-     * @param deviceId
-     *            The Uid of the device.
+     * @param deviceIdentitication
+     *            The identification of the device.
+     * @param deviceUid
+     *            The UID of the device.
      * @param eventType
      *            The event type. May not be empty or null.
      * @param description
      *            The description which came along with the event from the
      *            device. May be an empty string, but not null.
      * @param index
-     *            The index of the device.
+     *            The index of the relay. May not be null.
      * @param timestamp
      *            The date and time of the event. May be an empty string or
      *            null.
      */
-    public void addEventNotification(final String deviceUid, final String eventType, final String description,
-            final int index, final String timestamp) {
+    private EventNotificationDto createEventNotificationDto(final String deviceIdentification, final String deviceUid,
+            final String eventType, final String description,
+            final Integer index, final String timestamp) {
         Assert.notNull(eventType);
         Assert.notNull(description);
+        Assert.notNull(index);
 
-        final OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByUid(deviceUid);
+        LOGGER.info("addEventNotification called for device: {} with eventType: {}, description: {} and timestamp: {}",
+                deviceIdentification, eventType, description, timestamp);
 
-        LOGGER.info("addEventNotification called for device: {} with eventType: {}, description: {} and index: {}",
-                oslpDevice.getDeviceIdentification(), eventType, description, index);
-
+        // Convert timestamp to DateTime.
         DateTime dateTime;
         if (StringUtils.isEmpty(timestamp)) {
             dateTime = DateTime.now();
@@ -90,10 +97,39 @@ public class DeviceManagementService {
             LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
         }
 
-        final EventNotificationDto eventNotification = new EventNotificationDto(deviceUid, dateTime,
+        return new EventNotificationDto(deviceUid, dateTime,
                 EventTypeDto.valueOf(eventType), description, index);
+    }
+
+    /**
+     * Send a list of event notifications to OSGP Core.
+     *
+     * @param deviceIdentification
+     *            The identification of the device.
+     * @param eventNotifications
+     *            The event notifications.
+     *
+     * @throws ProtocolAdapterException
+     *             In case the device can not be found in the database.
+     */
+    public void addEventNotifications(final String deviceUid, final List<Oslp.EventNotification> eventNotifications) {
+        LOGGER.info("addEventNotifications called for device {}", deviceUid);
+        final OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByUid(deviceUid);
+        final String deviceIdentification = oslpDevice.getDeviceIdentification();
+
+        final List<EventNotificationDto> eventNotificationDtos = new ArrayList<>();
+        for (final Oslp.EventNotification eventNotification : eventNotifications) {
+            final String eventType = eventNotification.getEvent().name();
+            final String description = eventNotification.getDescription();
+            final int index = eventNotification.getIndex().isEmpty() ? 0 : (int) eventNotification.getIndex().byteAt(0);
+            final String timestamp = eventNotification.getTimestamp();
+            final EventNotificationDto dto = this.createEventNotificationDto(deviceIdentification, deviceUid, eventType,
+                    description, index, timestamp);
+            eventNotificationDtos.add(dto);
+        }
+
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
-                oslpDevice.getDeviceIdentification(), eventNotification);
+                deviceIdentification, new ArrayList<>(eventNotificationDtos));
 
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.ADD_EVENT_NOTIFICATION.name());
     }
@@ -104,8 +140,8 @@ public class DeviceManagementService {
             final String correlationUid, final DeviceResponseMessageSender responseMessageSender, final String domain,
             final String domainVersion, final String messageType, final String publicKey) {
 
-        LOGGER.info("updateKey called for device: {} for organisation: {} with new publicKey: {}",
-                deviceIdentification, organisationIdentification, publicKey);
+        LOGGER.info("updateKey called for device: {} for organisation: {} with new publicKey: {}", deviceIdentification,
+                organisationIdentification, publicKey);
 
         try {
             OslpDevice oslpDevice = this.oslpDeviceSettingsService

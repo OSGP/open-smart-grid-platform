@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
@@ -33,7 +32,6 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.exceptions.ProtocolAdapte
 import com.alliander.osgp.core.db.api.application.services.DeviceDataService;
 import com.alliander.osgp.dto.valueobjects.GpsCoordinatesDto;
 import com.alliander.osgp.oslp.Oslp;
-import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.LocationInfo;
 import com.alliander.osgp.oslp.Oslp.Message;
@@ -131,8 +129,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     payload = this.handleEventNotificationRequest(message.getDeviceId(), message.getSequenceNumber(),
                             message.getPayloadMessage().getEventNotificationRequest());
                 } else {
-                    LOGGER.warn("{} Received unknown payload. Received: {}.", channelId, message.getPayloadMessage()
-                            .toString());
+                    LOGGER.warn("{} Received unknown payload. Received: {}.", channelId,
+                            message.getPayloadMessage().toString());
                     // Optional extra: return error code to device.
                     return;
                 }
@@ -160,8 +158,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     public void processSignedOslpEnvelope(final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 
         // Try to find the channel.
-        final Integer channelId = Integer.parseInt(signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto()
-                .getCorrelationUid());
+        final Integer channelId = Integer
+                .parseInt(signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto().getCorrelationUid());
         final Channel channel = this.findChannel(channelId);
         if (channel == null) {
             LOGGER.error("Unable to find channel for channelId: {}. Can't send response message to device.", channelId);
@@ -193,8 +191,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         this.deviceRegistrationService.sendDeviceRegisterRequest(inetAddress, deviceType, hasSchedule,
                 deviceIdentification);
 
-        OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(registerRequest
-                .getDeviceIdentification());
+        OslpDevice oslpDevice = this.oslpDeviceSettingsService
+                .getDeviceByDeviceIdentification(registerRequest.getDeviceIdentification());
 
         // Save the security related values in the OSLP database.
         oslpDevice.updateRegistrationData(deviceUid, registerRequest.getDeviceType().toString(),
@@ -240,13 +238,12 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             throw new ProtocolAdapterException("ConfirmRegisterDevice failed", e);
         }
 
-        return Oslp.Message
-                .newBuilder()
-                .setConfirmRegisterDeviceResponse(
-                        Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+        return Oslp.Message.newBuilder()
+                .setConfirmRegisterDeviceResponse(Oslp.ConfirmRegisterDeviceResponse.newBuilder()
+                        .setStatus(Oslp.Status.OK).setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
                         .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                        .setSequenceWindow(this.sequenceNumberWindow)).build();
+                        .setSequenceWindow(this.sequenceNumberWindow))
+                .build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,
@@ -258,30 +255,14 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     SequenceNumberUtils.convertByteArrayToInteger(sequenceNumber));
         } catch (final ProtocolAdapterException ex) {
             LOGGER.error("handle event notification request exception", ex);
-            return Oslp.Message
-                    .newBuilder()
-                    .setEventNotificationResponse(
-                            Oslp.EventNotificationResponse.newBuilder().setStatus(Oslp.Status.REJECTED)).build();
+            return Oslp.Message.newBuilder().setEventNotificationResponse(
+                    Oslp.EventNotificationResponse.newBuilder().setStatus(Oslp.Status.REJECTED)).build();
         }
 
-        // Send event notifications to osgp core
         final Oslp.Status oslpStatus = Oslp.Status.OK;
-        for (final EventNotification event : request.getNotificationsList()) {
-            Integer index = null;
-            if (!event.getIndex().isEmpty()) {
-                index = (int) event.getIndex().byteAt(0);
-            }
-            // Determine if the event notification contains a timestamp. Older
-            // version of OSLP don't use this variable.
-            String timestamp = null;
-            if (StringUtils.isNotEmpty(event.getTimestamp())) {
-                timestamp = event.getTimestamp();
-            }
-            // Send the event notification to OSGP-CORE to save in the
-            // database.
-            this.deviceManagementService.addEventNotification(Base64.encodeBase64String(deviceId), event.getEvent()
-                    .name(), event.getDescription(), index, timestamp);
-        }
+        final String deviceUid = Base64.encodeBase64String(deviceId);
+
+        this.deviceManagementService.addEventNotifications(deviceUid, request.getNotificationsList());
 
         return Oslp.Message.newBuilder()
                 .setEventNotificationResponse(Oslp.EventNotificationResponse.newBuilder().setStatus(oslpStatus))

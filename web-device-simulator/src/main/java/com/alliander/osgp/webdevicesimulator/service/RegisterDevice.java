@@ -19,6 +19,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -114,17 +115,17 @@ public class RegisterDevice {
                     .createEnvelopeBuilder(device.getDeviceUid(), sequenceNumber)
                     .withPayloadMessage(
                             Message.newBuilder()
-                                    .setRegisterDeviceRequest(
-                                            Oslp.RegisterDeviceRequest
-                                                    .newBuilder()
-                                                    .setDeviceIdentification(device.getDeviceIdentification())
-                                                    .setIpAddress(
-                                                            ByteString.copyFrom(InetAddress.getByName(
-                                                                    device.getIpAddress()).getAddress()))
-                                                    .setDeviceType(
-                                                            device.getDeviceType().isEmpty() ? DeviceType.PSLD
-                                                                    : DeviceType.valueOf(device.getDeviceType()))
-                                                    .setHasSchedule(hasSchedule).setRandomDevice(randomDevice)).build())
+                            .setRegisterDeviceRequest(
+                                    Oslp.RegisterDeviceRequest
+                                    .newBuilder()
+                                    .setDeviceIdentification(device.getDeviceIdentification())
+                                    .setIpAddress(
+                                            ByteString.copyFrom(InetAddress.getByName(
+                                                    device.getIpAddress()).getAddress()))
+                                    .setDeviceType(
+                                            device.getDeviceType().isEmpty() ? DeviceType.PSLD
+                                                    : DeviceType.valueOf(device.getDeviceType()))
+                                    .setHasSchedule(hasSchedule).setRandomDevice(randomDevice)).build())
                     .build();
 
             // Write outgoing request to log.
@@ -186,10 +187,10 @@ public class RegisterDevice {
                     .createEnvelopeBuilder(device.getDeviceUid(), sequenceNumber)
                     .withPayloadMessage(
                             Message.newBuilder()
-                                    .setConfirmRegisterDeviceRequest(
-                                            Oslp.ConfirmRegisterDeviceRequest.newBuilder()
-                                                    .setRandomDevice(device.getRandomDevice())
-                                                    .setRandomPlatform(device.getRandomPlatform())).build()).build();
+                            .setConfirmRegisterDeviceRequest(
+                                    Oslp.ConfirmRegisterDeviceRequest.newBuilder()
+                                    .setRandomDevice(device.getRandomDevice())
+                                    .setRandomPlatform(device.getRandomPlatform())).build()).build();
 
             // Write outgoing request to log.
             this.writeOslpLogItem(oslpRequest, device, false);
@@ -220,7 +221,7 @@ public class RegisterDevice {
                 this.sendEventNotificationCommand(outOfSequenceEvent.getDeviceId(),
                         Oslp.Event.SECURITY_EVENTS_OUT_OF_SEQUENCE_VALUE,
                         "out of sequence event occurred at time stamp: " + outOfSequenceEvent.getTimestamp().toString()
-                                + " for request: " + outOfSequenceEvent.getRequest(), null);
+                        + " for request: " + outOfSequenceEvent.getRequest(), null);
 
                 // Check if there has been another event, this will return null
                 // if no more events are present in the list.
@@ -241,15 +242,6 @@ public class RegisterDevice {
         }
     }
 
-    private int determineRelayIndexForEventNotification(final Integer index) {
-        // Test the index provided in request.
-        if (index == null) {
-            return 0;
-        } else {
-            return index;
-        }
-    }
-
     private String getFormattedCurrentTimestamp() {
         final String format = "yyyyMMddHHmmss";
         final DateTime dateTime = DateTime.now().toDateTime(DateTimeZone.UTC);
@@ -266,19 +258,25 @@ public class RegisterDevice {
 
         // Create an event notification depending on device protocol (for now
         // with 1 event).
+
         Oslp.EventNotification eventNotification = null;
         if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
             eventNotification = EventNotification.newBuilder().setEvent(event)
                     .setDescription(description == null ? "" : description)
-                    .setIndex(ByteString.copyFrom(new byte[] { index.byteValue() })).build();
-        } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString()) && hasTimestamp) {
-            eventNotification = EventNotification.newBuilder().setEvent(event)
-                    .setDescription(description == null ? "" : description)
-                    .setIndex(ByteString.copyFrom(new byte[] { index.byteValue() })).setTimestamp(timestamp).build();
-        } else {
-            eventNotification = EventNotification.newBuilder().setEvent(event)
-                    .setDescription(description == null ? "" : description)
-                    .setIndex(ByteString.copyFrom(new byte[] { index.byteValue() })).build();
+                    .setIndex(ByteString.copyFrom(new byte[] { index == null ? 0 : index.byteValue() })).build();
+        } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
+            final Oslp.EventNotification.Builder builder = EventNotification.newBuilder();
+            builder.setEvent(event);
+            if (StringUtils.isNotEmpty(description)) {
+                builder.setDescription(description);
+            }
+            if (index != null) {
+                builder.setIndex(ByteString.copyFrom(new byte[] { index.byteValue() }));
+            }
+            if (timestamp != null && hasTimestamp) {
+                builder.setTimestamp(timestamp);
+            }
+            eventNotification = builder.build();
         }
         Assert.notNull(eventNotification,
                 "Failed to create EventNotification. Is the protocol for the simulated device supported?");
@@ -299,7 +297,7 @@ public class RegisterDevice {
     }
 
     private OslpEnvelope sendRequest(final Device device, final OslpEnvelope request) throws IOException,
-            DeviceSimulatorException {
+    DeviceSimulatorException {
         // Original protocol port.
         int port = this.oslpPortClient;
         // Newer protocol port.
@@ -332,14 +330,13 @@ public class RegisterDevice {
 
         try {
             // Set index when provided in request.
-            final Integer idx = this.determineRelayIndexForEventNotification(index);
             final int sequenceNumber = device.doGetNextSequence();
             final String timestamp = this.getFormattedCurrentTimestamp();
             final Oslp.Event oslpEvent = Oslp.Event.valueOf(event);
 
             // Create request and write outgoing request to log.
             final OslpEnvelope request = this.createEventNotificationRequest(device, sequenceNumber, oslpEvent,
-                    description, idx, timestamp, hasTimestamp);
+                    description, index, timestamp, hasTimestamp);
             this.writeOslpLogItem(request, device, false);
 
             // Send event notification message and receive response.
@@ -420,8 +417,8 @@ public class RegisterDevice {
         if (randomDevice - responseRandomDevice != 0) {
             throw new DeviceSimulatorException(
                     MessageFormat
-                            .format("random device number incorrect - expected random device number: {0} actual random device number: {1}",
-                                    randomDevice, responseRandomDevice));
+                    .format("random device number incorrect - expected random device number: {0} actual random device number: {1}",
+                            randomDevice, responseRandomDevice));
         }
         if (responseRandomPlatform == null) {
             throw new DeviceSimulatorException("random platform Integer is null");
@@ -438,8 +435,8 @@ public class RegisterDevice {
         if (randomPlatform - responseRandomPlatform != 0) {
             throw new DeviceSimulatorException(
                     MessageFormat
-                            .format("random platform number incorrect - expected random platform number: {0} actual random platform number: {1}",
-                                    randomPlatform, responseRandomPlatform));
+                    .format("random platform number incorrect - expected random platform number: {0} actual random platform number: {1}",
+                            randomPlatform, responseRandomPlatform));
         }
     }
 
