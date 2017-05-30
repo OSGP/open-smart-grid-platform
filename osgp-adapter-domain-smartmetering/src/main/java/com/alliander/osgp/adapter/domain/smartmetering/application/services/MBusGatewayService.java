@@ -96,18 +96,22 @@ public class MBusGatewayService {
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
 
-        this.checkAndHandleIfChannelNotFound(mbusChannelElementsResponseDto);
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        this.checkAndHandleIfChannelNotFound(mbusChannelElementsResponseDto);
         this.checkAndHandleChannelOnGateway(gatewayDevice, mbusChannelElementsResponseDto);
-        this.handleChannelFound(deviceMessageMetadata, mbusChannelElementsResponseDto);
+        this.doCoupleMBusDevice(gatewayDevice, mbusChannelElementsResponseDto);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                ResponseMessageResultType.OK, null, null, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
     }
 
-    private void handleChannelFound(final DeviceMessageMetadata deviceMessageMetadata,
+    private void doCoupleMBusDevice(final SmartMeter gatewayDevice,
             final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
 
-        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-        final SmartMeter gatewayDevice = this.domainHelperService.findActiveSmartMeter(deviceIdentification);
         final String mbusDeviceIdentification = mbusChannelElementsResponseDto.getMbusChannelElementsDto()
                 .getMbusDeviceIdentification();
         final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
@@ -118,10 +122,6 @@ public class MBusGatewayService {
 
         mbusDevice.updateGatewayDevice(gatewayDevice);
         this.smartMeteringDeviceRepository.save(mbusDevice);
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                ResponseMessageResultType.OK, null, null, deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
     }
 
     private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {
@@ -187,12 +187,12 @@ public class MBusGatewayService {
         } else {
             if (coupledDevice.getDeviceIdentification().equals(mbusIdentification)
                     && coupledDevice.getChannel() == channel) {
-                final String msg = String.format("device %s is already coupled with %s on channeld %d",
+                final String msg = String.format("device %s is already coupled with requested device %s on channeld %d",
                         gateway.getDeviceIdentification(), coupledDevice.getDeviceIdentification(), channel);
                 LOGGER.warn(msg);
                 return false;
             } else {
-                return true;
+                return channel == coupledDevice.getChannel();
             }
         }
     }
