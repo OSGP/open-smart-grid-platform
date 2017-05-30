@@ -109,6 +109,14 @@ public class MBusGatewayService {
                 deviceMessageMetadata.getMessageType());
     }
 
+    /**
+     * this will perform the actual dbs transactions that completed the couple
+     * mbus device request.
+     * 
+     * @param gatewayDevice
+     * @param mbusChannelElementsResponseDto
+     * @throws FunctionalException
+     */
     private void doCoupleMBusDevice(final SmartMeter gatewayDevice,
             final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
 
@@ -137,7 +145,8 @@ public class MBusGatewayService {
 
     /**
      * This method checks if a channel was found on the gateway, and if not it
-     * will throw a FunctionalException
+     * will throw a FunctionalException with the NO_MBUS_DEVICE_CHANNEL_FOUND
+     * type.
      */
     private void checkAndHandleIfChannelNotFound(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto)
             throws FunctionalException {
