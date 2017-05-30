@@ -60,7 +60,8 @@ public class EventNotificationMessageService {
         if (device != null) {
             // If the event belonged to an existing device, then save it,
             // otherwise don't.
-            this.eventRepository.save(new Event(device, dateTime, eventType, description, index));
+            this.eventRepository.save(new Event(device, dateTime != null ? dateTime : DateTime.now().toDate(),
+                    eventType, description, index));
 
             // Checking to see if it was a switching event
             if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
@@ -72,6 +73,18 @@ public class EventNotificationMessageService {
         } else {
             throw new UnknownEntityException(Device.class, deviceIdentification);
         }
+    }
+
+
+    public void handleEvent(final String deviceIdentification, final EventNotificationDto event)
+            throws UnknownEntityException {
+
+        final Date dateTime = event.getDateTime() != null ? event.getDateTime().toDate() : DateTime.now().toDate();
+        final EventType eventType = EventType.valueOf(event.getEventType().name());
+        final String description = event.getDescription();
+        final Integer index = event.getIndex();
+
+        this.handleEvent(deviceIdentification, dateTime, eventType, description, index);
     }
 
     @Transactional(value = "transactionManager")
@@ -93,10 +106,10 @@ public class EventNotificationMessageService {
         final List<Event> tariffSwitchingEvents = new ArrayList<>();
 
         for (final EventNotificationDto eventNotification : eventNotifications) {
-
+            final DateTime eventTime = eventNotification.getDateTime();
             final EventType eventType = EventType.valueOf(eventNotification.getEventType().name());
-            final Event event = new Event(device, eventNotification.getDateTime().toDate(), eventType,
-                    eventNotification.getDescription(), eventNotification.getIndex());
+            final Event event = new Event(device, eventTime != null ? eventTime.toDate() : DateTime.now().toDate(),
+                    eventType, eventNotification.getDescription(), eventNotification.getIndex());
             this.eventRepository.save(event);
 
             if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON)
@@ -221,8 +234,11 @@ public class EventNotificationMessageService {
             LOGGER.info("Handling new event {} for device {} to update the relay status for index {} with date {}.",
                     eventType.name(), device.getDeviceIdentification(), index, dateTime);
 
-            ssld.updateRelayStatusByIndex(index,
-                    new RelayStatus(device, index, isRelayOn, dateTime == null ? DateTime.now().toDate() : dateTime));
+            if (ssld.getRelayStatusByIndex(index) == null
+                    || dateTime.after(ssld.getRelayStatusByIndex(index).getLastKnowSwitchingTime())) {
+                ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, isRelayOn,
+                        dateTime == null ? DateTime.now().toDate() : dateTime));
+            }
         }
     }
 }

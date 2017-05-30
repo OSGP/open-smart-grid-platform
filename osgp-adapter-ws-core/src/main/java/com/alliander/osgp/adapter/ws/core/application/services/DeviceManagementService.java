@@ -10,7 +10,9 @@ package com.alliander.osgp.adapter.ws.core.application.services;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -44,6 +46,7 @@ import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
@@ -298,9 +301,43 @@ public class DeviceManagementService {
             for (final DeviceAuthorization deviceAutorization : device.getAuthorizations()) {
                 device.addOrganisation(deviceAutorization.getOrganisation().getOrganisationIdentification());
             }
+            if (device instanceof Ssld) {
+                final Ssld ssld = (Ssld) device;
+                final Set<RelayStatus> relayStatusSet = new HashSet<>(ssld.getRelayStatusses());
+                if (relayStatusSet.size() < ssld.getRelayStatusses().size()) {
+                    LOGGER.error("There are too many RelayStatus entities available for device: {}",
+                            device.getDeviceIdentification());
+                    this.repairRelayStatusesForDevice(device);
+                }
+            }
         }
 
         return devices;
+    }
+
+    /**
+     * Verifies the device and makes sure there exists only one relay status per
+     * relay. This method replaces the RelayStatus list with the corrected one.
+     *
+     * @param device
+     *            The device to verify.
+     */
+    private void repairRelayStatusesForDevice(final Device device) {
+        final Ssld ssld = (Ssld) device;
+        final List<RelayStatus> correctedList = new ArrayList<>();
+
+        for (final RelayStatus status : ssld.getRelayStatusses()) {
+            if (correctedList.contains(status)) {
+                final RelayStatus existingStatus = correctedList.get(correctedList.indexOf(status));
+                if (existingStatus.getLastKnowSwitchingTime().before(status.getLastKnowSwitchingTime())) {
+                    correctedList.remove(existingStatus);
+                    correctedList.add(status);
+                }
+            } else {
+                correctedList.add(status);
+            }
+        }
+        ssld.setRelayStatusses(correctedList);
     }
 
     @Transactional(value = "transactionManager")
