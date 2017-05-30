@@ -56,7 +56,7 @@ extends AbstractCommandExecutor<GenerateAndReplaceKeyCommandExecutor.KeyWrapper,
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateAndReplaceKeyCommandExecutor.class);
 
-    private static final String REPLACE_KEYS = "Replace keys for device: ";
+    private static final String GENERATE_AND_REPLACE_KEYS = "Generate and replace keys for device: ";
     private static final String WAS_SUCCESFULL = " was successful";
 
     @Autowired
@@ -100,14 +100,17 @@ extends AbstractCommandExecutor<GenerateAndReplaceKeyCommandExecutor.KeyWrapper,
         return new KeyWrapper(bytes, keyId, securityKeyType);
     }
 
+    //@Override
     @Override
     public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
 
-        this.checkActionRequestType(actionRequestDto);
-        final SetKeysRequestDto setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
+        //      waarschijnlijk als je de bundle implementeert
+        //this.checkActionRequestType(actionRequestDto);
+        //final SetKeysRequestDto setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
+        final SetKeysRequestDto setKeysRequestDto = ((SetKeysRequestDto) actionRequestDto);
 
-        LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), setKeysRequestDto);
+        LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(),(actionRequestDto));
 
         DlmsDevice devicePostSave = this.execute(conn, device,
                 GenerateAndReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
@@ -117,7 +120,7 @@ extends AbstractCommandExecutor<GenerateAndReplaceKeyCommandExecutor.KeyWrapper,
                 GenerateAndReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getEncryptionKey(),
                         KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY, SecurityKeyType.E_METER_ENCRYPTION));
 
-        return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
+        return new ActionResponseDto(GENERATE_AND_REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
     }
 
     private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
@@ -166,7 +169,6 @@ extends AbstractCommandExecutor<GenerateAndReplaceKeyCommandExecutor.KeyWrapper,
         try {
             // Decrypt the cipher text using the private key.
             final byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
-
             final byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
 
             final MethodParameter methodParameterAuth = SecurityUtils.keyChangeMethodParamFor(decryptedMasterKey,
