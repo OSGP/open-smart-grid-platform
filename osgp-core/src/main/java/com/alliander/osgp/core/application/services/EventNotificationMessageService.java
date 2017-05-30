@@ -90,6 +90,7 @@ public class EventNotificationMessageService {
          * once for the last switching in the list.
          */
         final List<Event> lightSwitchingEvents = new ArrayList<>();
+        final List<Event> tariffSwitchingEvents = new ArrayList<>();
 
         for (final EventNotificationDto eventNotification : eventNotifications) {
 
@@ -98,12 +99,17 @@ public class EventNotificationMessageService {
                     eventNotification.getDescription(), eventNotification.getIndex());
             this.eventRepository.save(event);
 
-            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
+            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON)
+                    || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
                 lightSwitchingEvents.add(event);
+            } else if (eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
+                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
+                tariffSwitchingEvents.add(event);
             }
         }
 
         this.handleLightSwitchingEvents(device, lightSwitchingEvents);
+        this.handleTariffSwitchingEvents(device, tariffSwitchingEvents);
     }
 
     private void handleLightSwitchingEvents(final Device device, final List<Event> lightSwitchingEvents) {
@@ -145,6 +151,43 @@ public class EventNotificationMessageService {
         }
     }
 
+    private void handleTariffSwitchingEvents(final Device device, final List<Event> tariffSwitchingEvents) {
+
+        if (tariffSwitchingEvents.isEmpty()) {
+            return;
+        }
+
+        final Map<Integer, RelayStatus> lastRelayStatusPerIndex = new TreeMap<>();
+        final Set<Integer> indexesTariffRelays = new TreeSet<>();
+        final Ssld ssld = this.ssldRepository.findOne(device.getId());
+
+        for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
+            if (deviceOutputSetting.getOutputType().equals(RelayType.TARIFF)) {
+                indexesTariffRelays.add(deviceOutputSetting.getExternalId());
+            }
+        }
+
+        for (final Event tariffSwitchingEvent : tariffSwitchingEvents) {
+            final Date switchingTime = tariffSwitchingEvent.getDateTime();
+            final Set<Integer> switchIndexes = new TreeSet<>();
+            switchIndexes.add(tariffSwitchingEvent.getIndex());
+
+            for (final Integer relayIndex : switchIndexes) {
+                final boolean tariffOn = EventType.TARIFF_EVENTS_TARIFF_ON.equals(tariffSwitchingEvent.getEventType());
+                if (lastRelayStatusPerIndex.get(tariffSwitchingEvent.getIndex()) == null || switchingTime.after(
+                        lastRelayStatusPerIndex.get(tariffSwitchingEvent.getIndex()).getLastKnowSwitchingTime())) {
+                    lastRelayStatusPerIndex.put(tariffSwitchingEvent.getIndex(),
+                            new RelayStatus(device, relayIndex, tariffOn, switchingTime));
+                }
+            }
+        }
+
+        if (!lastRelayStatusPerIndex.isEmpty()) {
+            ssld.updateRelayStatusses(lastRelayStatusPerIndex);
+            this.deviceRepository.save(device);
+        }
+    }
+
     private void handleSwitchingEvent(final Device device, final Date dateTime, final EventType eventType,
             final int index) {
 
@@ -164,7 +207,8 @@ public class EventNotificationMessageService {
         this.deviceRepository.save(device);
     }
 
-    private void updateRelayStatus(final int index, final Device device, final Date dateTime, final EventType eventType) {
+    private void updateRelayStatus(final int index, final Device device, final Date dateTime,
+            final EventType eventType) {
 
         final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
@@ -177,8 +221,8 @@ public class EventNotificationMessageService {
             LOGGER.info("Handling new event {} for device {} to update the relay status for index {} with date {}.",
                     eventType.name(), device.getDeviceIdentification(), index, dateTime);
 
-            ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, isRelayOn, dateTime == null ? DateTime
-                    .now().toDate() : dateTime));
+            ssld.updateRelayStatusByIndex(index,
+                    new RelayStatus(device, index, isRelayOn, dateTime == null ? DateTime.now().toDate() : dateTime));
         }
     }
 }

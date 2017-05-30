@@ -42,6 +42,14 @@ public class SmartMeteringDevice implements Serializable {
 
     private Date deliveryDate;
 
+    private String mbusIdentificationNumber;
+
+    private String mbusManufacturerIdentification;
+
+    private String mbusVersion;
+
+    private String mbusDeviceTypeIdentification;
+
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
@@ -152,6 +160,38 @@ public class SmartMeteringDevice implements Serializable {
 
     public void setDeliveryDate(final Date deliveryDate) {
         this.deliveryDate = deliveryDate;
+    }
+
+    public String getMbusIdentificationNumber() {
+        return this.mbusIdentificationNumber;
+    }
+
+    public void setMbusIdentificationNumber(final String mbusIdentificationNumber) {
+        this.mbusIdentificationNumber = mbusIdentificationNumber;
+    }
+
+    public String getMbusManufacturerIdentification() {
+        return this.mbusManufacturerIdentification;
+    }
+
+    public void setMbusManufacturerIdentification(final String mbusManufacturerIdentification) {
+        this.mbusManufacturerIdentification = mbusManufacturerIdentification;
+    }
+
+    public String getMbusVersion() {
+        return this.mbusVersion;
+    }
+
+    public void setMbusVersion(final String mbusVersion) {
+        this.mbusVersion = mbusVersion;
+    }
+
+    public String getMbusDeviceTypeIdentification() {
+        return this.mbusDeviceTypeIdentification;
+    }
+
+    public void setMbusDeviceTypeIdentification(final String mbusDeviceTypeIdentification) {
+        this.mbusDeviceTypeIdentification = mbusDeviceTypeIdentification;
     }
 
 }
