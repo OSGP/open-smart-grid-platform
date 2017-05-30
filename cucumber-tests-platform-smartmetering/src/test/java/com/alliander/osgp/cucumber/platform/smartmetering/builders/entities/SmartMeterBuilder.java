@@ -47,7 +47,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
         return this;
     }
 
-    public SmartMeterBuilder setMbusDeviceTypeIdentificationl(final String value) {
+    public SmartMeterBuilder setMbusDeviceTypeIdentification(final String value) {
         this.mbusDeviceTypeIdentification = value;
         return this;
     }
@@ -91,8 +91,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
             this.setSupplier(inputSettings.get(PlatformSmartmeteringKeys.SUPPLIER));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER)) {
-            this.setMbusDeviceTypeIdentificationl(
-                    inputSettings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
+            this.setMbusIdentificationNumber(inputSettings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION)) {
             this.setMbusManufacturerIdentification(
@@ -102,7 +101,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
             this.setMbusVersion(inputSettings.get(PlatformSmartmeteringKeys.MBUS_VERSION));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION)) {
-            this.setMbusDeviceTypeIdentificationl(
+            this.setMbusDeviceTypeIdentification(
                     inputSettings.get(PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION));
         }
 

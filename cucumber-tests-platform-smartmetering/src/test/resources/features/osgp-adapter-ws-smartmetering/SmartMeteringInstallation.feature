@@ -75,13 +75,13 @@ Feature: SmartMetering Installation
     And a dlms device
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
-      | MbusIdentificationNumber       |          30228950 |
+      | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification |               ITG |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
       | 5 |         9 | 
-      | 6 | 302289504 |
+      | 6 | 302343985 |
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
@@ -98,7 +98,7 @@ Feature: SmartMetering Installation
     And a dlms device
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
-      | MbusIdentificationNumber       |          30228950 |
+      | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification |               ITG |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
@@ -110,7 +110,7 @@ Feature: SmartMetering Installation
       | 9 | 0 |
     And device simulate with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
-      | 6 | 302289504 |
+      | 6 | 302343985 |
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
@@ -128,14 +128,14 @@ Feature: SmartMetering Installation
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
       | Channel                        |                 1 |
-      | MbusIdentificationNumber       |          30228951 |
+      | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification |               ITG |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And a dlms device
       | DeviceIdentification           | TESTG102400000002 |
       | DeviceType                     | SMART_METER_G     |
-      | MbusIdentificationNumber       |          30228952 |
+      | MbusIdentificationNumber       |          12056732 |
       | MbusManufacturerIdentification |             12514 |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
@@ -147,7 +147,7 @@ Feature: SmartMetering Installation
       | 9 | 0 |
     And device simulate with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
-      | 6 | 302289504 |
+      | 6 | 302343985 |
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
@@ -165,13 +165,13 @@ Feature: SmartMetering Installation
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
       | Channel                        |                 1 |
-      | MbusIdentificationNumber       |         302289504 |
+      | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification |               ITG |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
       | 5 |         9 |
-      | 6 | 302289504 |
+      | 6 | 302343985 |
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
