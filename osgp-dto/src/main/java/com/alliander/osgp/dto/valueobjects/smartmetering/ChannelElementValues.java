@@ -21,7 +21,9 @@ public class ChannelElementValues implements Serializable {
     private static final long serialVersionUID = 5377631203726277889L;
 
     private final int channel;
-    // these values correspond with attr 5..9 that are read from the meter
+    /**
+     * these values correspond with attr 5..9 that are read from the meter
+     */
     private final short primaryAddress;
     private final int identificationNumber;
     private final int manufacturerIdentification;
@@ -65,9 +67,9 @@ public class ChannelElementValues implements Serializable {
 
     @Override
     public String toString() {
-        return "ChannelElementValues [channel=" + this.channel + ", identificationNumber=" + this.identificationNumber
-                + ", manufacturerIdentification=" + this.manufacturerIdentification + ", version=" + this.version
-                + ", deviceTypeIdentification=" + this.deviceTypeIdentification + "]";
+        return "ChannelElementValues [channel=" + this.channel + ", primaryAddress=" + this.primaryAddress
+                + ", identificationNumber=" + this.identificationNumber + ", manufacturerIdentification="
+                + this.manufacturerIdentification + ", version=" + this.version + ", deviceTypeIdentification="
+                + this.deviceTypeIdentification + "]";
     }
-
 }

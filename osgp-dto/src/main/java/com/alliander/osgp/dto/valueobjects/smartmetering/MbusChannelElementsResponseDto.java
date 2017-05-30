@@ -23,7 +23,7 @@ public class MbusChannelElementsResponseDto implements Serializable {
     private static final long serialVersionUID = 5377631203726277889L;
 
     /**
-     * This contains the channel on witch the mbus-device is connected. It is
+     * This contains the channel on which the mbus-device is connected. It is
      * null if NO channel is found that matches the original values from the
      * request dto see also isChannelFound()
      */
