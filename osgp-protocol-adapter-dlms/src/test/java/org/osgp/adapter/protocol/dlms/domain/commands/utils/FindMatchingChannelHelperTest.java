@@ -14,10 +14,13 @@ public class FindMatchingChannelHelperTest {
      */
     @Test
     public void test() {
-        final int channel = 1;
-        final ChannelElementValues channelValues = new ChannelElementValues(1, (short) 1, 1, 1, (short) 1, (short) 1);
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto("", "", "", "", "");
-        final boolean matches = FindMatchingChannelHelper.mbusChannelMatches(channel, channelValues, requestData);
+        final Integer channel = 1;
+        final short primaryAddress = (short) 1;
+        final int identificationNumber = 302343985;
+        final ChannelElementValues channelValues = new ChannelElementValues(channel, primaryAddress,
+                identificationNumber, 1, (short) 1, (short) 1);
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto("TESTE1024", "12056731", "", "", "");
+        final boolean matches = FindMatchingChannelHelper.mbusChannelMatches(channelValues, requestData);
         Assert.assertTrue("mbus channel should match", matches);
     }
 

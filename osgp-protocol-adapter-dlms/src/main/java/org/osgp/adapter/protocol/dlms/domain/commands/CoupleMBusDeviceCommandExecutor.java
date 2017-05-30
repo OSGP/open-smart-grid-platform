@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -41,10 +41,14 @@ public class CoupleMBusDeviceCommandExecutor
     private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
 
     private static final int NR_OF_ATTRIBUTES = 5;
-    // we need to collect data for NR_OF_ATTRIBUTES attribites, starting from
-    // attr-id: 5
+    /**
+     * we need to collect data for NR_OF_ATTRIBUTES attribites, starting from
+     * attr-id: 5
+     */
     private static final int START_ATTRIBUTE = 5;
-    // and we start at channel 1 until channel 4
+    /**
+     * and we start at channel 1 until channel 4
+     */
     private static final int FIRST_CHANNEL = 1;
     private static final int NR_OF_CHANNELS = 4;
 
@@ -59,15 +63,15 @@ public class CoupleMBusDeviceCommandExecutor
         LOGGER.debug("retrieving mbus info on e-meter");
         final MbusChannelElementsResponseDto responseDto = new MbusChannelElementsResponseDto(requestDto);
 
-        for (int c = FIRST_CHANNEL; c < FIRST_CHANNEL + NR_OF_CHANNELS; c++) {
-            final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(c);
+        for (int channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
+            final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
             conn.getDlmsMessageListener().setDescription("CoupleMBusDevice, retrieve attribute: "
                     + JdlmsObjectToStringUtil.describeAttributes(attrAddresses));
             final List<GetResult> resultList = this.dlmsHelper.getWithList(conn, device, attrAddresses);
-            final ChannelElementValues channelValues = this.makeChannelElementValues(c, resultList);
+            final ChannelElementValues channelValues = this.makeChannelElementValues(channel, resultList);
             responseDto.addChannelElements(channelValues);
-            if (this.mbusChannelMatches(c, channelValues, requestDto)) {
-                responseDto.setChannel(c);
+            if (this.mbusChannelMatches(channelValues, requestDto)) {
+                responseDto.setChannel(channel);
                 break;
             }
         }
@@ -84,9 +88,9 @@ public class CoupleMBusDeviceCommandExecutor
         return attrAddresses;
     }
 
-    private boolean mbusChannelMatches(final int channel, final ChannelElementValues channelValues,
+    private boolean mbusChannelMatches(final ChannelElementValues channelValues,
             final MbusChannelElementsDto requestData) {
-        return FindMatchingChannelHelper.mbusChannelMatches(channel, channelValues, requestData);
+        return FindMatchingChannelHelper.mbusChannelMatches(channelValues, requestData);
     }
 
     private ChannelElementValues makeChannelElementValues(final int channel, final List<GetResult> resultList) {
