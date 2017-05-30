@@ -17,15 +17,17 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.cucumber.platform.smartmetering.config.DlmsSimulatorConfig;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 
 import cucumber.api.java.en.Given;
 
 public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
-    private String dynamicPropertiesHost;
-    private int dynamicPropertiesPort;
+    @Autowired
+    private DlmsSimulatorConfig dlmsSimulatorConfig;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSimulatorSteps.class);
 
@@ -39,10 +41,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
         this.setRemoteProperties(classId, obisCode, settings);
     }
 
-    public void removeAllTemporaryPropertiesFiles(final String dynamicPropertiesHost, final int dynamicPropertiesPort) {
-        this.dynamicPropertiesHost = dynamicPropertiesHost;
-        this.dynamicPropertiesPort = dynamicPropertiesPort;
-
+    public void removeAllTemporaryPropertiesFiles() {
         try {
             final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
             final String request = String.format(CLEANUP_PROPS_REQUEST, this.getUrl());
@@ -80,7 +79,8 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     }
 
     private String getUrl() {
-        return this.dynamicPropertiesHost + ":" + this.dynamicPropertiesPort;
+        return this.dlmsSimulatorConfig.getDynamicPropertiesHost() + ":"
+                + this.dlmsSimulatorConfig.getDynamicPropertiesPort();
     }
 
 }
