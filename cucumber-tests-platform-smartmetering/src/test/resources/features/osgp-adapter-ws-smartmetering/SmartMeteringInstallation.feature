@@ -9,7 +9,7 @@ Feature: SmartMetering Installation
       | DeviceType                     | SMART_METER_G     |
       | CommunicationMethod            | GPRS              |
       | MbusIdentificationNumber       |          02615107 |
-      | MbusManufacturerIdentification | ITG               |
+      | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |               066 |
       | MbusDeviceTypeIdentification   |                03 |
       | DSMR_version                   | 4.2.2             |
@@ -20,7 +20,7 @@ Feature: SmartMetering Installation
     And the smart meter is registered in the core database
       | DeviceIdentification           | TEST1024G00000001 |
       | MbusIdentificationNumber       |          02615107 |
-      | MbusManufacturerIdentification | ITG               |
+      | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |               066 |
       | MbusDeviceTypeIdentification   |                03 |
 
@@ -76,7 +76,7 @@ Feature: SmartMetering Installation
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification |               ITG |
+      | MbusManufacturerIdentification |               LGB |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
@@ -99,7 +99,7 @@ Feature: SmartMetering Installation
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification |               ITG |
+      | MbusManufacturerIdentification |               LGB |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
@@ -129,7 +129,7 @@ Feature: SmartMetering Installation
       | DeviceType                     | SMART_METER_G     |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification |               ITG |
+      | MbusManufacturerIdentification |               LGB |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And a dlms device
@@ -166,7 +166,7 @@ Feature: SmartMetering Installation
       | DeviceType                     | SMART_METER_G     |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification |               ITG |
+      | MbusManufacturerIdentification |               LGB |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
