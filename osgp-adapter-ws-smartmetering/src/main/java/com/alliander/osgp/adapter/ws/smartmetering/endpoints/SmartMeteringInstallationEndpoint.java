@@ -149,8 +149,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final String mbusDeviceIdentification = request.getMbusDeviceIdentification();
-        LOGGER.info("Incoming CoupleMbusDeviceRequest for meter: {} and mbus device {} on channel {}.",
-                deviceIdentification, mbusDeviceIdentification);
+        LOGGER.info("Incoming CoupleMbusDeviceRequest for meter: {} and mbus device {}.", deviceIdentification,
+                mbusDeviceIdentification);
 
         CoupleMbusDeviceAsyncResponse response = null;
         try {

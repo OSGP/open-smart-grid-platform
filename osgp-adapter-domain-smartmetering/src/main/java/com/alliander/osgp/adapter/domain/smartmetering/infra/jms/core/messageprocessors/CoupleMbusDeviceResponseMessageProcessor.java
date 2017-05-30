@@ -10,10 +10,9 @@
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
+import com.alliander.osgp.adapter.domain.smartmetering.application.services.MBusGatewayService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
@@ -26,8 +25,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 public class CoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
-    @Qualifier("domainSmartMeteringInstallationService")
-    private InstallationService installationService;
+    private MBusGatewayService mBusGatewayService;
 
     protected CoupleMbusDeviceResponseMessageProcessor() {
         super(DeviceFunction.COUPLE_MBUS_DEVICE);
@@ -42,7 +40,7 @@ public class CoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponseMe
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
-        this.installationService.handleCoupleMbusDeviceResponse(deviceMessageMetadata,
+        this.mBusGatewayService.handleCoupleMbusDeviceResponse(deviceMessageMetadata,
                 (MbusChannelElementsResponseDto) responseMessage.getDataObject());
     }
 }

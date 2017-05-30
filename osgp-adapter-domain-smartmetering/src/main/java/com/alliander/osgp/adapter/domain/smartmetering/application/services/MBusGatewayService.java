@@ -62,10 +62,10 @@ public class MBusGatewayService {
     /**
      * @param deviceMessageMetadata
      *            the metadata of the message, including the correlationUid, the
-     *            deviceIdentification and the organisation
+     *            deviceIdentification and the organization
      * @param requestData
-     *            the requestData of the message, including the identificatin of
-     *            the m-bus device and the channel
+     *            the requestData of the message, including the identification
+     *            of the m-bus device and the channel
      */
     public void coupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
             final CoupleMbusDeviceRequestData requestData) throws FunctionalException {
@@ -73,15 +73,15 @@ public class MBusGatewayService {
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
 
-        LOGGER.debug("coupleMbusDevice for organisationIdentification: {} for gateway: {}, m-bus device {} ",
+        LOGGER.debug("coupleMbusDevice for organizationIdentification: {} for gateway: {}, m-bus device {} ",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, mbusDeviceIdentification);
 
         try {
             final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
-            final SmartMeter gasMeterDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
+            final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
-            this.checkGasMeter(gasMeterDevice);
-            final MbusChannelElementsDto mbusChannelElementsDto = this.makeMbusChannelElementsDto(gasMeterDevice);
+            this.checkMbusDevice(mbusDevice);
+            final MbusChannelElementsDto mbusChannelElementsDto = this.makeMbusChannelElementsDto(mbusDevice);
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
@@ -110,45 +110,54 @@ public class MBusGatewayService {
         final SmartMeter gatewayDevice = this.domainHelperService.findActiveSmartMeter(deviceIdentification);
         final String mbusDeviceIdentification = mbusChannelElementsResponseDto.getMbusChannelElementsDto()
                 .getMbusDeviceIdentification();
-        final SmartMeter gasMeterDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
+        final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
-        gasMeterDevice.setChannel(mbusChannelElementsResponseDto.getChannel().shortValue());
-        gasMeterDevice.updateGatewayDevice(gatewayDevice);
-        this.smartMeteringDeviceRepository.save(gasMeterDevice);
+        final short channel = mbusChannelElementsResponseDto.getChannel().shortValue();
+        mbusDevice.setChannel(channel);
+        mbusDevice.setMbusPrimaryAddress(
+                mbusChannelElementsResponseDto.getChannelElements().get(channel).getPrimaryAddress());
+
+        mbusDevice.updateGatewayDevice(gatewayDevice);
+        this.smartMeteringDeviceRepository.save(mbusDevice);
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 ResponseMessageResultType.OK, null, null, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
 
-    private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter gasMeterDevice) {
+    private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {
 
-        final String mbusIdentificationNumber = gasMeterDevice.getMbusDeviceTypeIdentification();
-        final String mbusManufacturerIdentification = gasMeterDevice.getMbusManufacturerIdentification();
-        final String mbusVersion = gasMeterDevice.getMbusVersion();
-        final String mbusDeviceTypeIdentification = gasMeterDevice.getMbusDeviceTypeIdentification();
+        final String mbusIdentificationNumber = mbusDevice.getMbusDeviceTypeIdentification();
+        final String mbusManufacturerIdentification = mbusDevice.getMbusManufacturerIdentification();
+        final String mbusVersion = mbusDevice.getMbusVersion();
+        final String mbusDeviceTypeIdentification = mbusDevice.getMbusDeviceTypeIdentification();
 
-        return new MbusChannelElementsDto(gasMeterDevice.getDeviceIdentification(), mbusIdentificationNumber,
+        return new MbusChannelElementsDto(mbusDevice.getDeviceIdentification(), mbusIdentificationNumber,
                 mbusManufacturerIdentification, mbusVersion, mbusDeviceTypeIdentification);
     }
 
     /**
-     * This method check if a channel was found on the gateway, and if not it
+     * This method checks if a channel was found on the gateway, and if not it
      * will throw a FunctionalException
      */
     private void checkAndHandleIfChannelNotFound(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto)
             throws FunctionalException {
-        if (!mbusChannelElementsResponseDto.isChannelFound()) {
+        if (!this.isChannelFound(mbusChannelElementsResponseDto)) {
             throw new FunctionalException(FunctionalExceptionType.NO_MBUS_DEVICE_CHANNEL_FOUND,
                     ComponentType.DOMAIN_SMART_METERING,
                     new MBusChannelNotFoundException(this.buildErrorMessage(mbusChannelElementsResponseDto)));
         }
     }
 
+    private boolean isChannelFound(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) {
+        return mbusChannelElementsResponseDto.getChannel() != null;
+    }
+
     /**
-     * This method checks if gateway is not already with another gas-meter. In
-     * that case it will throw a FunctionalException, if it already connected
-     * with the gasmeter on the given chanel, it will only display a warning.
+     * This method checks if a gateway is not already connected with another
+     * mbus-device. In that case it will throw a FunctionalException, if it
+     * already connected with the provided mbus-device on the given channel, it
+     * will only display a warning.
      */
     private void checkAndHandleChannelOnGateway(final SmartMeter gateway,
             final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
@@ -156,7 +165,7 @@ public class MBusGatewayService {
                 .getMbusDevicesForGateway(gateway.getId());
 
         for (final SmartMeter coupledDevice : alreadyCoupled) {
-            if (this.alReadyCoupledWithOtherDevice(gateway, coupledDevice, mbusChannelElementsResponseDto)) {
+            if (this.allReadyCoupledWithOtherDevice(gateway, coupledDevice, mbusChannelElementsResponseDto)) {
                 LOGGER.info("There is already an M-bus device {} coupled to gateway {} on channel {}",
                         coupledDevice.getDeviceIdentification(), gateway.getDeviceIdentification(),
                         coupledDevice.getChannel());
@@ -168,16 +177,16 @@ public class MBusGatewayService {
         }
     }
 
-    private boolean alReadyCoupledWithOtherDevice(final SmartMeter gateway, final SmartMeter coupledDevice,
+    private boolean allReadyCoupledWithOtherDevice(final SmartMeter gateway, final SmartMeter coupledDevice,
             final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) {
-        final String gasMeterIdentification = mbusChannelElementsResponseDto.getMbusChannelElementsDto()
+        final String mbusIdentification = mbusChannelElementsResponseDto.getMbusChannelElementsDto()
                 .getMbusDeviceIdentification();
         final int channel = mbusChannelElementsResponseDto.getChannel();
 
         if (coupledDevice.getChannel() == null) {
             return false;
         } else {
-            if (coupledDevice.getDeviceIdentification().equals(gasMeterIdentification)
+            if (coupledDevice.getDeviceIdentification().equals(mbusIdentification)
                     && coupledDevice.getChannel() == channel) {
                 final String msg = String.format("device %s is already coupled with %s on channeld %d",
                         gateway.getDeviceIdentification(), coupledDevice.getDeviceIdentification(), channel);
@@ -190,10 +199,10 @@ public class MBusGatewayService {
         }
     }
 
-    private void checkGasMeter(final SmartMeter gasMeter) throws FunctionalException {
-        if (!gasMeter.isActive()) {
+    private void checkMbusDevice(final SmartMeter mbusDevice) throws FunctionalException {
+        if (!mbusDevice.isActive()) {
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_SMART_METERING,
-                    new InactiveDeviceException(gasMeter.getDeviceIdentification()));
+                    new InactiveDeviceException(mbusDevice.getDeviceIdentification()));
         }
     }
 

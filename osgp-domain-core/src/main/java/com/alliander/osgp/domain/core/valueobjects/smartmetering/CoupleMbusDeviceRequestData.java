@@ -19,7 +19,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
  */
 public class CoupleMbusDeviceRequestData implements Serializable, ActionRequest {
 
-    private static final long serialVersionUID = 8993111326494612489L;
+    private static final long serialVersionUID = 8993111326494612480L;
 
     private final String mbusDeviceIdentification;
 

@@ -40,6 +40,9 @@ public class SmartMeter extends Device {
     @Column(length = 2)
     private String mbusDeviceTypeIdentification;
 
+    @Column
+    private Short mbusPrimaryAddress;
+
     public SmartMeter() {
         // Default constructor for hibernate
     }
@@ -59,7 +62,7 @@ public class SmartMeter extends Device {
 
     public SmartMeter(final String supplier, final Short channel, final String mbusIdentificationNumber,
             final String mbusManufacturerIdentification, final String mbusVersion,
-            final String mbusdeviceTypeIdentification) {
+            final String mbusdeviceTypeIdentification, final Short mbusPrimaryAddress) {
         super();
         this.supplier = supplier;
         this.channel = channel;
@@ -67,6 +70,7 @@ public class SmartMeter extends Device {
         this.mbusManufacturerIdentification = mbusManufacturerIdentification;
         this.mbusVersion = mbusVersion;
         this.mbusDeviceTypeIdentification = mbusdeviceTypeIdentification;
+        this.mbusPrimaryAddress = mbusPrimaryAddress;
     }
 
     public void setDeviceType(final String deviceType) {
@@ -139,6 +143,14 @@ public class SmartMeter extends Device {
         this.mbusDeviceTypeIdentification = mbusDeviceTypeIdentification;
     }
 
+    public Short getMbusPrimaryAddress() {
+        return this.mbusPrimaryAddress;
+    }
+
+    public void setMbusPrimaryAddress(final Short mbusPrimaryAddress) {
+        this.mbusPrimaryAddress = mbusPrimaryAddress;
+    }
+
     @Override
     public int hashCode() {
         return super.hashCode() + Objects.hash(this.supplier, this.channel, this.mbusIdentificationNumber,
@@ -156,6 +168,7 @@ public class SmartMeter extends Device {
                 && Objects.equals(this.mbusManufacturerIdentification,
                         ((SmartMeter) obj).mbusManufacturerIdentification)
                 && Objects.equals(this.mbusVersion, ((SmartMeter) obj).mbusVersion)
-                && Objects.equals(this.mbusDeviceTypeIdentification, ((SmartMeter) obj).mbusDeviceTypeIdentification);
+                && Objects.equals(this.mbusDeviceTypeIdentification, ((SmartMeter) obj).mbusDeviceTypeIdentification)
+                && Objects.equals(this.mbusPrimaryAddress, ((SmartMeter) obj).mbusPrimaryAddress);
     }
 }
