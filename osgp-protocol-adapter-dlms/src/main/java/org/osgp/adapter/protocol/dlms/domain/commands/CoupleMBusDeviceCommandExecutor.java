@@ -25,8 +25,8 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValues;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDtoBuilder;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component
 public class CoupleMBusDeviceCommandExecutor
@@ -58,10 +58,11 @@ public class CoupleMBusDeviceCommandExecutor
 
     @Override
     public MbusChannelElementsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final MbusChannelElementsDto requestDto) throws ProtocolAdapterException, FunctionalException {
+            final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
 
         LOGGER.debug("retrieving mbus info on e-meter");
-        final MbusChannelElementsResponseDto responseDto = new MbusChannelElementsResponseDto(requestDto);
+        final MbusChannelElementsResponseDtoBuilder builder = new MbusChannelElementsResponseDtoBuilder()
+                .withMbusChannelElementsDto(requestDto);
 
         for (int channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
             final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
@@ -69,14 +70,14 @@ public class CoupleMBusDeviceCommandExecutor
                     + JdlmsObjectToStringUtil.describeAttributes(attrAddresses));
             final List<GetResult> resultList = this.dlmsHelper.getWithList(conn, device, attrAddresses);
             final ChannelElementValues channelValues = this.makeChannelElementValues(channel, resultList);
-            responseDto.addChannelElements(channelValues);
+            builder.withAddChannelValues(channelValues);
             if (this.mbusChannelMatches(channelValues, requestDto)) {
-                responseDto.setChannel(channel);
+                builder.withChannel(channel);
                 break;
             }
         }
 
-        return responseDto;
+        return builder.build();
     }
 
     private AttributeAddress[] makeAttributeAddresses(final int channel) {

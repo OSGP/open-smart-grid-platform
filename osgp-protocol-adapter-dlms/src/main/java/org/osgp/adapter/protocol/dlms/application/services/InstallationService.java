@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "dlmsInstallationService")
 public class InstallationService {
@@ -71,7 +70,7 @@ public class InstallationService {
     }
 
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final MbusChannelElementsDto requestDto) throws ProtocolAdapterException, FunctionalException {
+            final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
 
         return this.coupleMBusDeviceCommandExecutor.execute(conn, device, requestDto);
 
