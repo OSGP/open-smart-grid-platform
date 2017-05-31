@@ -8,7 +8,7 @@
 
   <artifactId>parent-integration-tests</artifactId>
   <groupId>com.alliander.osgp</groupId>
-  <version>4.12.0-SNAPSHOT</version>
+  <version>4.13.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-integration-tests</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
