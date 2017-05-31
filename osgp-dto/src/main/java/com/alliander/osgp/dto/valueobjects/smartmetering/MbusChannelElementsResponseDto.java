@@ -8,6 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +58,7 @@ public class MbusChannelElementsResponseDto implements Serializable {
     }
 
     public List<ChannelElementValues> getChannelElements() {
-        return this.channelElements;
+        return new ArrayList<>(this.channelElements);
     }
 
     public MbusChannelElementsDto getMbusChannelElementsDto() {
