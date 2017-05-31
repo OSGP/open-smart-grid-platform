@@ -81,6 +81,7 @@ public class MBusGatewayService {
             final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
             this.checkMbusDevice(mbusDevice);
+            this.checkAndHandleIfGivenMBusAlreadyCoupled(gatewayDevice, mbusDeviceIdentification);
             final MbusChannelElementsDto mbusChannelElementsDto = this.makeMbusChannelElementsDto(mbusDevice);
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
@@ -102,7 +103,10 @@ public class MBusGatewayService {
         this.checkAndHandleIfChannelNotFound(mbusChannelElementsResponseDto);
         this.checkAndHandleChannelOnGateway(gatewayDevice, mbusChannelElementsResponseDto);
         this.doCoupleMBusDevice(gatewayDevice, mbusChannelElementsResponseDto);
+        this.sendResponse(deviceMessageMetadata);
+    }
 
+    private void sendResponse(final DeviceMessageMetadata deviceMessageMetadata) {
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 ResponseMessageResultType.OK, null, null, deviceMessageMetadata.getMessagePriority()),
@@ -112,7 +116,7 @@ public class MBusGatewayService {
     /**
      * this will perform the actual dbs transactions that completed the couple
      * mbus device request.
-     * 
+     *
      * @param gatewayDevice
      * @param mbusChannelElementsResponseDto
      * @throws FunctionalException
@@ -162,6 +166,28 @@ public class MBusGatewayService {
     }
 
     /**
+     * This method checks if a the given gateway is not already connected with
+     * the given mbus-device. In that case it will throw a FunctionalException.
+     */
+    private void checkAndHandleIfGivenMBusAlreadyCoupled(final SmartMeter gateway,
+            final String mbusDeviceIdentification) throws FunctionalException {
+        final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository
+                .getMbusDevicesForGateway(gateway.getId());
+
+        for (final SmartMeter coupledDevice : alreadyCoupled) {
+            if (this.allReadyCoupledWithGivenDevice(coupledDevice, mbusDeviceIdentification)) {
+                LOGGER.info("The given M-bus device {} is coupled to gateway {} on channel {}",
+                        coupledDevice.getDeviceIdentification(), gateway.getDeviceIdentification(),
+                        coupledDevice.getChannel());
+
+                throw new FunctionalException(FunctionalExceptionType.GIVEN_MBUS_DEVICE_ALREADY_COUPLED,
+                        ComponentType.DOMAIN_SMART_METERING,
+                        new ChannelAlreadyOccupiedException(coupledDevice.getChannel()));
+            }
+        }
+    }
+
+    /**
      * This method checks if a gateway is not already connected with another
      * mbus-device. In that case it will throw a FunctionalException, if it
      * already connected with the provided mbus-device on the given channel, it
@@ -173,7 +199,7 @@ public class MBusGatewayService {
                 .getMbusDevicesForGateway(gateway.getId());
 
         for (final SmartMeter coupledDevice : alreadyCoupled) {
-            if (this.allReadyCoupledWithOtherDevice(gateway, coupledDevice, mbusChannelElementsResponseDto)) {
+            if (this.allReadyCoupledWithOtherDevice(coupledDevice, mbusChannelElementsResponseDto)) {
                 LOGGER.info("There is already an M-bus device {} coupled to gateway {} on channel {}",
                         coupledDevice.getDeviceIdentification(), gateway.getDeviceIdentification(),
                         coupledDevice.getChannel());
@@ -185,25 +211,18 @@ public class MBusGatewayService {
         }
     }
 
-    private boolean allReadyCoupledWithOtherDevice(final SmartMeter gateway, final SmartMeter coupledDevice,
-            final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) {
-        final String mbusIdentification = mbusChannelElementsResponseDto.getMbusChannelElementsDto()
-                .getMbusDeviceIdentification();
-        final int channel = mbusChannelElementsResponseDto.getChannel();
+    private boolean allReadyCoupledWithGivenDevice(final SmartMeter coupledDevice,
+            final String mbusDeviceIdentification) {
 
-        if (coupledDevice.getChannel() == null) {
-            return false;
-        } else {
-            if (coupledDevice.getDeviceIdentification().equals(mbusIdentification)
-                    && coupledDevice.getChannel() == channel) {
-                final String msg = String.format("device %s is already coupled with requested device %s on channeld %d",
-                        gateway.getDeviceIdentification(), coupledDevice.getDeviceIdentification(), channel);
-                LOGGER.warn(msg);
-                return false;
-            } else {
-                return channel == coupledDevice.getChannel();
-            }
-        }
+        return coupledDevice.getChannel() != null
+                && coupledDevice.getDeviceIdentification().equals(mbusDeviceIdentification);
+    }
+
+    private boolean allReadyCoupledWithOtherDevice(final SmartMeter coupledDevice,
+            final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) {
+
+        final int channel = mbusChannelElementsResponseDto.getChannel();
+        return channel == coupledDevice.getChannel();
     }
 
     private void checkMbusDevice(final SmartMeter mbusDevice) throws FunctionalException {

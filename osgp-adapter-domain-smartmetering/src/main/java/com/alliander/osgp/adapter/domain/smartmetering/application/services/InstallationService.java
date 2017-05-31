@@ -27,10 +27,8 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -73,9 +71,6 @@ public class InstallationService {
 
     @Autowired
     private DomainHelperService domainHelperService;
-
-    @Autowired
-    private MBusGatewayService mBusGatewayService;
 
     public InstallationService() {
         // Parameterless constructor required for transactions...
@@ -154,26 +149,6 @@ public class InstallationService {
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         this.handleResponse("handleDefaultDeviceResponse", deviceMessageMetadata, deviceResult, exception);
-    }
-
-    /**
-     * @param deviceMessageMetadata
-     *            the metadata of the message, including the correlationUid, the
-     *            deviceIdentification and the organisation
-     * @param requestData
-     *            the requestData of the message, including the identificatin of
-     *            the m-bus device and the channel
-     */
-    public void coupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
-            final CoupleMbusDeviceRequestData requestData) throws FunctionalException {
-
-        this.mBusGatewayService.coupleMbusDevice(deviceMessageMetadata, requestData);
-    }
-
-    public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
-
-        this.mBusGatewayService.handleCoupleMbusDeviceResponse(deviceMessageMetadata, mbusChannelElementsResponseDto);
     }
 
     /**
