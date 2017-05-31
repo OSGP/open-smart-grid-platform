@@ -16,7 +16,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
  */
 public class FindMatchingChannelHelper {
 
-    private static final int DWORD = 16;
+    private static final int L16 = 16;
+    private static final int L32 = 32;
+    private static final int L64 = 64;
 
     private FindMatchingChannelHelper() {
         // empty ctor because it only contains static methods
@@ -52,7 +54,7 @@ public class FindMatchingChannelHelper {
         // below)
         if (channelValues.getIdentificationNumber() > 0) {
             final String mbusId = requestData.getMbusIdentificationNumber();
-            final long hexValue = mbusId == null ? -1 : Long.parseLong(mbusId, DWORD);
+            final long hexValue = mbusId == null ? -1 : Long.parseLong(mbusId, L16);
             if (channelValues.getIdentificationNumber() != hexValue) {
                 return false;
             }
@@ -113,9 +115,9 @@ public class FindMatchingChannelHelper {
         int result = 0;
         if (mbusManufacturerIdentification.length() == 3) {
             final char[] chars = mbusManufacturerIdentification.toCharArray();
-            result += (chars[0] - 64) * 32 * 32;
-            result += (chars[1] - 64) * 32;
-            result += (chars[2] - 64);
+            result += (chars[0] - L64) * L32 * L32;
+            result += (chars[1] - L64) * L32;
+            result += (chars[2] - L64);
         }
         return result;
     }
