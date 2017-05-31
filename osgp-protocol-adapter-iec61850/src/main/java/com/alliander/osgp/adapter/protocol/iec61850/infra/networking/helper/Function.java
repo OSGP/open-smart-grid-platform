@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
+
 /**
  * An interface, containing a function that can be applied. <R> is the given
  * return type. Can be {@link Void}
@@ -16,5 +18,5 @@ public interface Function<R> {
     /**
      * The function, containing the business logic of the Function
      */
-    R apply() throws Exception;
+    R apply(DeviceMessageLog deviceMessageLog) throws Exception;
 }

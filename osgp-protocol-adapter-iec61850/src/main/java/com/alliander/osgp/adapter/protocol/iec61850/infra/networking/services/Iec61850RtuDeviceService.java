@@ -29,6 +29,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyD
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -76,7 +77,8 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
             final GetDataResponseDto getDataResponse = this.handleGetData(
                     new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
-                            serverModel), deviceRequest.getDeviceIdentification(), serverName), deviceRequest);
+                            serverModel), deviceRequest.getDeviceIdentification(), deviceRequest
+                            .getOrganisationIdentification(), serverName), deviceRequest);
 
             final GetDataDeviceResponse deviceResponse = new GetDataDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -111,9 +113,10 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            this.handleSetData(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
-                    clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification(), serverName),
-                    deviceRequest);
+            this.handleSetData(
+                    new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
+                            serverModel), deviceRequest.getDeviceIdentification(), deviceRequest
+                            .getOrganisationIdentification(), serverName), deviceRequest);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -147,8 +150,8 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             throws ProtocolAdapterException {
 
         this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
-                deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU, serverName,
-                LogicalDevice.RTU.getDescription() + 1);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getOrganisationIdentification(), IED.ZOWN_RTU,
+                serverName, LogicalDevice.RTU.getDescription() + 1);
         return this.iec61850DeviceConnectionService.getServerModel(deviceRequest.getDeviceIdentification());
     }
 
@@ -165,7 +168,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
         final Function<GetDataResponseDto> function = new Function<GetDataResponseDto>() {
 
             @Override
-            public GetDataResponseDto apply() throws Exception {
+            public GetDataResponseDto apply(final DeviceMessageLog deviceMessageLog) throws Exception {
                 final Iec61850RtuDeviceReportingService reportingService = new Iec61850RtuDeviceReportingService(
                         serverName);
                 reportingService.enableReportingOnDevice(connection, deviceRequest.getDeviceIdentification());
@@ -194,7 +197,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
         final Function<Void> function = new Function<Void>() {
             @Override
-            public Void apply() throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
 
                 final Iec61850RtuDeviceReportingService reportingService = new Iec61850RtuDeviceReportingService(
                         serverName);

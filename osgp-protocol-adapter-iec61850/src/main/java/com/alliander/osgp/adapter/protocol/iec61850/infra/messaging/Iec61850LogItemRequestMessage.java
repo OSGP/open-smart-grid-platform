@@ -23,19 +23,35 @@ public class Iec61850LogItemRequestMessage {
 
     private String deviceIdentification;
 
+    private String organisationIdentification;
+
     private boolean valid;
 
     private int payloadMessageSerializedSize;
 
-    public Iec61850LogItemRequestMessage(final String deviceIdentification, final boolean incoming, final boolean valid,
-            final RegisterDeviceRequest message, final int payloadMessageSerializedSize) {
+    public Iec61850LogItemRequestMessage(final String deviceIdentification, final boolean incoming,
+            final boolean valid, final RegisterDeviceRequest message, final int payloadMessageSerializedSize) {
         this.deviceIdentification = deviceIdentification;
+        this.organisationIdentification = "";
         this.incoming = incoming;
         this.valid = valid;
         this.payloadMessageSerializedSize = payloadMessageSerializedSize;
 
         // Truncate the log-items to max length.
         this.encodedMessage = StringUtils.substring(bytesToCArray(message.toByteArray()), 0, MAX_MESSAGE_LENGTH);
+        this.decodedMessage = StringUtils.substring(message.toString(), 0, MAX_MESSAGE_LENGTH);
+    }
+
+    public Iec61850LogItemRequestMessage(final String deviceIdentification, final String organisationIdentification,
+            final boolean incoming, final boolean valid, final String message, final int payloadMessageSerializedSize) {
+        this.deviceIdentification = deviceIdentification;
+        this.organisationIdentification = organisationIdentification;
+        this.incoming = incoming;
+        this.valid = valid;
+        this.payloadMessageSerializedSize = payloadMessageSerializedSize;
+
+        // Truncate the log-items to max length.
+        this.encodedMessage = null;
         this.decodedMessage = StringUtils.substring(message.toString(), 0, MAX_MESSAGE_LENGTH);
     }
 
@@ -53,6 +69,10 @@ public class Iec61850LogItemRequestMessage {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public String getOrganisationIdentification() {
+        return this.organisationIdentification;
     }
 
     private static String bytesToCArray(final byte[] bytes) {

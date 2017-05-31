@@ -15,6 +15,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -25,6 +26,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto;
 import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
@@ -45,7 +47,7 @@ public class Iec61850PowerUsageHistoryCommand {
         final Function<List<PowerUsageDataDto>> function = new Function<List<PowerUsageDataDto>>() {
 
             @Override
-            public List<PowerUsageDataDto> apply() throws Exception {
+            public List<PowerUsageDataDto> apply(final DeviceMessageLog deviceMessageLog) throws Exception {
                 final HistoryTermTypeDto historyTermType = powerUsageHistoryContainer.getHistoryTermType();
                 if (historyTermType != null) {
                     LOGGER.info("device: {}, ignoring HistoryTermType ({}) determining power usage history",
@@ -57,9 +59,13 @@ public class Iec61850PowerUsageHistoryCommand {
                 for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettingsLightRelays) {
                     final List<PowerUsageDataDto> powerUsageData = Iec61850PowerUsageHistoryCommand.this
                             .getPowerUsageHistoryDataFromRelay(iec61850Client, deviceConnection, timePeriod,
-                                    deviceOutputSetting);
+                                    deviceOutputSetting, deviceMessageLog);
                     powerUsageHistoryData.addAll(powerUsageData);
                 }
+
+                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                        deviceConnection.getOrganisationIdentification(), false);
+
                 /*
                  * This way of gathering leads to PowerUsageData elements per
                  * relay. If it is necessary to only include one PowerUsageData
@@ -77,12 +83,14 @@ public class Iec61850PowerUsageHistoryCommand {
             }
         };
 
-        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        return iec61850Client.sendCommandWithRetry(function, "GetPowerUsageHistory",
+                deviceConnection.getDeviceIdentification());
     }
 
     private List<PowerUsageDataDto> getPowerUsageHistoryDataFromRelay(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final TimePeriodDto timePeriod,
-            final DeviceOutputSetting deviceOutputSetting) throws NodeReadException {
+            final DeviceOutputSetting deviceOutputSetting, final DeviceMessageLog deviceMessageLog)
+                    throws NodeReadException {
         final List<PowerUsageDataDto> powerUsageHistoryDataFromRelay = new ArrayList<>();
 
         final int relayIndex = deviceOutputSetting.getExternalId();
@@ -94,6 +102,9 @@ public class Iec61850PowerUsageHistoryCommand {
                 onIntervalBuffer.getFcmodelNode());
 
         final Short lastIndex = onIntervalBuffer.getUnsignedByte(SubDataAttribute.LAST_INDEX).getValue();
+
+        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SWITCH_ON_INTERVAL_BUFFER,
+                Fc.ST, SubDataAttribute.LAST_INDEX, lastIndex.toString());
 
         /*
          * Last index is the last index written in the 60-entry buffer. When the
@@ -116,8 +127,16 @@ public class Iec61850PowerUsageHistoryCommand {
             LOGGER.info("device: {}, itv{}.itv: {}", deviceConnection.getDeviceIdentification(), bufferIndex + 1,
                     itvNode);
 
+            deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                    DataAttribute.SWITCH_ON_INTERVAL_BUFFER, Fc.ST, SubDataAttribute.INTERVAL,
+                    SubDataAttribute.INTERVAL, itvNode + "");
+
             final DateTime date = new DateTime(indexedItvNode.getDate(SubDataAttribute.DAY));
             LOGGER.info("device: {}, itv{}.day: {}", deviceConnection.getDeviceIdentification(), bufferIndex + 1, date);
+
+            deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                    DataAttribute.SWITCH_ON_INTERVAL_BUFFER, Fc.ST, SubDataAttribute.INTERVAL, SubDataAttribute.DAY,
+                    itvNode + "");
 
             final int totalMinutesOnForDate = itvNode;
             final boolean includeEntryInResponse = this.timePeriodContainsDateTime(timePeriod, date,
@@ -135,6 +154,9 @@ public class Iec61850PowerUsageHistoryCommand {
             powerUsageData.setSsldData(ssldData);
             powerUsageHistoryDataFromRelay.add(powerUsageData);
         }
+
+        DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                deviceConnection.getOrganisationIdentification(), false);
 
         return powerUsageHistoryDataFromRelay;
     }

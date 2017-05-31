@@ -14,6 +14,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -23,6 +24,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.dto.valueobjects.FirmwareModuleType;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 
@@ -35,7 +37,7 @@ public class Iec61850GetFirmwareVersionCommand {
         final Function<List<FirmwareVersionDto>> function = new Function<List<FirmwareVersionDto>>() {
 
             @Override
-            public List<FirmwareVersionDto> apply() throws Exception {
+            public List<FirmwareVersionDto> apply(final DeviceMessageLog deviceMessageLog) throws Exception {
                 final List<FirmwareVersionDto> output = new ArrayList<>();
 
                 // Getting the functional firmware version
@@ -50,6 +52,9 @@ public class Iec61850GetFirmwareVersionCommand {
                 // Adding it to the list
                 output.add(new FirmwareVersionDto(FirmwareModuleType.FUNCTIONAL, functionalFirmwareVersion));
 
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.FUNCTIONAL_FIRMWARE,
+                        Fc.ST, SubDataAttribute.CURRENT_VERSION, functionalFirmwareVersion);
+
                 // Getting the security firmware version
                 LOGGER.info("Reading the security firmware version");
                 final NodeContainer securityFirmwareNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
@@ -61,10 +66,17 @@ public class Iec61850GetFirmwareVersionCommand {
                 // Adding it to the list
                 output.add(new FirmwareVersionDto(FirmwareModuleType.SECURITY, securityFirmwareVersion));
 
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SECURITY_FIRMWARE,
+                        Fc.ST, SubDataAttribute.CURRENT_VERSION, securityFirmwareVersion);
+
+                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                        deviceConnection.getOrganisationIdentification(), false);
+
                 return output;
             }
         };
 
-        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        return iec61850Client.sendCommandWithRetry(function, "GetFirmwareVersion",
+                deviceConnection.getDeviceIdentification());
     }
 }

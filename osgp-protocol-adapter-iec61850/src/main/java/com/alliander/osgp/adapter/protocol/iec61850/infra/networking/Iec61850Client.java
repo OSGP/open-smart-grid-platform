@@ -24,12 +24,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ConnectionState;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientEventListenerFactory;
 
@@ -90,7 +93,8 @@ public class Iec61850Client {
         // connect using SSL.
         final ClientSap clientSap = new ClientSap();
         final Iec61850ClientAssociation clientAssociation;
-        LOGGER.info("Attempting to connect to server: {} on port: {}, max redelivery count: {} and max retry count: {}",
+        LOGGER.info(
+                "Attempting to connect to server: {} on port: {}, max redelivery count: {} and max retry count: {}",
                 ipAddress.getHostAddress(), port, this.maxRedeliveriesForIec61850Requests, this.maxRetryCount);
 
         try {
@@ -235,12 +239,42 @@ public class Iec61850Client {
         T output = null;
 
         try {
-            output = function.apply();
+            output = function.apply(null);
         } catch (final NodeWriteException | NodeReadException e) {
             if (ConnectionState.OK.equals(e.getConnectionState())) {
                 // ServiceError means we have to retry.
                 LOGGER.error("Caught ServiceError, retrying", e);
-                this.sendCommandWithRetry(function, deviceIdentification, 1);
+                this.sendCommandWithRetry(function, deviceIdentification, 1, null);
+            } else {
+                LOGGER.error("Caught IOException, connection with device is broken.", e);
+            }
+        } catch (final ConnectionFailureException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw new ProtocolAdapterException(e == null ? "Could not execute command" : e.getMessage(), e);
+        }
+
+        return output;
+    }
+
+    /**
+     * Executes the apply method of the given {@link Function} with retries and
+     * message logging.
+     *
+     * @return The given T.
+     */
+    public <T> T sendCommandWithRetry(final Function<T> function, final String functionName,
+            final String deviceIdentification) throws ProtocolAdapterException {
+        T output = null;
+        final DeviceMessageLog deviceMessageLog = new DeviceMessageLog(IED.FLEX_OVL, LogicalDevice.LIGHTING,
+                functionName);
+        try {
+            output = function.apply(deviceMessageLog);
+        } catch (final NodeWriteException | NodeReadException e) {
+            if (ConnectionState.OK.equals(e.getConnectionState())) {
+                // ServiceError means we have to retry.
+                LOGGER.error("Caught ServiceError, retrying", e);
+                this.sendCommandWithRetry(function, deviceIdentification, 1, deviceMessageLog);
             } else {
                 LOGGER.error("Caught IOException, connection with device is broken.", e);
             }
@@ -257,7 +291,7 @@ public class Iec61850Client {
      * Basically the same as sendCommandWithRetry, but with a retry parameter.
      */
     private <T> T sendCommandWithRetry(final Function<T> function, final String deviceIdentification,
-            final int retryCount) throws ProtocolAdapterException {
+            final int retryCount, final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
         T output = null;
 
@@ -265,12 +299,12 @@ public class Iec61850Client {
                 deviceIdentification);
 
         try {
-            output = function.apply();
+            output = function.apply(deviceMessageLog);
         } catch (final ProtocolAdapterException e) {
             if (retryCount >= this.maxRetryCount) {
                 throw e;
             } else {
-                this.sendCommandWithRetry(function, deviceIdentification, retryCount + 1);
+                this.sendCommandWithRetry(function, deviceIdentification, retryCount + 1, deviceMessageLog);
             }
         } catch (final Exception e) {
             throw new ProtocolAdapterException(e == null ? "Could not execute command" : e.getMessage(), e);

@@ -22,14 +22,16 @@ public class DeviceConnection {
     private final String serverName;
     private final Iec61850Connection connection;
     private final String deviceIdentification;
+    private final String organisationIdentification;
 
     public static final String LOGICAL_NODE_SEPARATOR = "/";
     public static final String DATA_ATTRIBUTE_SEPARATOR = ".";
 
     public DeviceConnection(final Iec61850Connection connection, final String deviceIdentification,
-            final String serverName) {
+            final String organisationIdentification, final String serverName) {
         this.connection = connection;
         this.deviceIdentification = deviceIdentification;
+        this.organisationIdentification = organisationIdentification;
         this.serverName = serverName;
     }
 
@@ -101,6 +103,10 @@ public class DeviceConnection {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public String getOrganisationIdentification() {
+        return this.organisationIdentification;
     }
 
     public Iec61850Connection getConnection() {

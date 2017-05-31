@@ -78,25 +78,29 @@ public class Iec61850DeviceConnectionService {
     private boolean isIcdFileUsed;
 
     public DeviceConnection connectWithoutConnectionCaching(final String ipAddress, final String deviceIdentification,
-            final IED ied, final String serverName, final String logicalDevice) throws ConnectionFailureException {
-        return this.connect(ipAddress, deviceIdentification, ied, serverName, logicalDevice, false);
+            final String organisationIdentification, final IED ied, final String serverName, final String logicalDevice)
+                    throws ConnectionFailureException {
+        return this.connect(ipAddress, deviceIdentification, organisationIdentification, ied, serverName,
+                logicalDevice, false);
     }
 
-    public DeviceConnection connect(final String ipAddress, final String deviceIdentification, final IED ied,
-            final String serverName, final String logicalDevice) throws ConnectionFailureException {
-        return this.connect(ipAddress, deviceIdentification, ied, serverName, logicalDevice, true);
+    public DeviceConnection connect(final String ipAddress, final String deviceIdentification,
+            final String organisationIdentification, final IED ied, final String serverName, final String logicalDevice)
+                    throws ConnectionFailureException {
+        return this.connect(ipAddress, deviceIdentification, organisationIdentification, ied, serverName,
+                logicalDevice, true);
     }
 
     public synchronized DeviceConnection connect(final String ipAddress, final String deviceIdentification,
-            final IED ied, final String serverName, final String logicalDevice, final boolean cacheConnection)
-                    throws ConnectionFailureException {
+            final String organisationIdentification, final IED ied, final String serverName,
+            final String logicalDevice, final boolean cacheConnection) throws ConnectionFailureException {
         // When connection-caching is used, check if a connection is available
         // an usable for the given deviceIdentification.
         try {
             if (cacheConnection
                     && this.testIfConnectionIsCachedAndAlive(deviceIdentification, ied, serverName, logicalDevice)) {
                 return new DeviceConnection(this.fetchIec61850Connection(deviceIdentification), deviceIdentification,
-                        serverName);
+                        organisationIdentification, serverName);
             }
         } catch (final ProtocolAdapterException e) {
             this.logProtocolAdapterException(deviceIdentification, e);
@@ -155,7 +159,7 @@ public class Iec61850DeviceConnectionService {
                 "Connected to device: {}, fetched server model. Start time: {}, end time: {}, total time in milliseconds: {}",
                 deviceIdentification, startTime, endTime, endTime.minus(startTime.getMillis()).getMillis());
 
-        return new DeviceConnection(iec61850Connection, deviceIdentification, serverName);
+        return new DeviceConnection(iec61850Connection, deviceIdentification, organisationIdentification, serverName);
     }
 
     private void logProtocolAdapterException(final String deviceIdentification, final ProtocolAdapterException e) {

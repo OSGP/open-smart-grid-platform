@@ -7,27 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.processors;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
-import org.openmuc.openiec61850.BdaFloat32;
-import org.openmuc.openiec61850.BdaQuality;
-import org.openmuc.openiec61850.BdaTimestamp;
-import org.openmuc.openiec61850.ConstructedDataAttribute;
-import org.openmuc.openiec61850.Fc;
-import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.LogicalDevice;
-import org.openmuc.openiec61850.LogicalNode;
-import org.openmuc.openiec61850.ModelNode;
-import org.openmuc.openiec61850.ServerModel;
-import org.osgpfoundation.osgp.dto.da.iec61850.DataSampleDto;
-import org.osgpfoundation.osgp.dto.da.iec61850.LogicalDeviceDto;
-import org.osgpfoundation.osgp.dto.da.iec61850.LogicalNodeDto;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -40,7 +19,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openmuc.openiec61850.BdaFloat32;
+import org.openmuc.openiec61850.BdaQuality;
+import org.openmuc.openiec61850.BdaTimestamp;
+import org.openmuc.openiec61850.ConstructedDataAttribute;
+import org.openmuc.openiec61850.Fc;
+import org.openmuc.openiec61850.FcModelNode;
+import org.openmuc.openiec61850.LogicalDevice;
+import org.openmuc.openiec61850.LogicalNode;
+import org.openmuc.openiec61850.ModelNode;
+import org.openmuc.openiec61850.ServerModel;
 import org.osgpfoundation.osgp.dto.da.GetPQValuesResponseDto;
+import org.osgpfoundation.osgp.dto.da.iec61850.DataSampleDto;
+import org.osgpfoundation.osgp.dto.da.iec61850.LogicalDeviceDto;
+import org.osgpfoundation.osgp.dto.da.iec61850.LogicalNodeDto;
+import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 
 /**
  * Class for processing distribution automation get pq values request messages
@@ -52,18 +53,19 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
     }
 
     @Override
-    public Function<GetPQValuesResponseDto> getDataFunction(final Iec61850Client client, final DeviceConnection connection, final DaDeviceRequest deviceRequest) {
-        return () -> {
-            ServerModel serverModel = connection.getConnection().getServerModel();
-            return new GetPQValuesResponseDto(processPQValuesLogicalDevice(serverModel));
+    public Function<GetPQValuesResponseDto> getDataFunction(final Iec61850Client client,
+            final DeviceConnection connection, final DaDeviceRequest deviceRequest) {
+        return (final DeviceMessageLog deviceMessageLog) -> {
+            final ServerModel serverModel = connection.getConnection().getServerModel();
+            return new GetPQValuesResponseDto(this.processPQValuesLogicalDevice(serverModel));
         };
     }
 
-    private synchronized List<LogicalDeviceDto> processPQValuesLogicalDevice(ServerModel model) {
-        List<LogicalDeviceDto> logicalDevices = new ArrayList<>();
-        for (ModelNode node : model.getChildren()) {
+    private synchronized List<LogicalDeviceDto> processPQValuesLogicalDevice(final ServerModel model) {
+        final List<LogicalDeviceDto> logicalDevices = new ArrayList<>();
+        for (final ModelNode node : model.getChildren()) {
             if (node instanceof LogicalDevice) {
-                List<LogicalNodeDto> logicalNodes = processPQValuesLogicalNodes((LogicalDevice) node);
+                final List<LogicalNodeDto> logicalNodes = this.processPQValuesLogicalNodes((LogicalDevice) node);
                 if (!logicalNodes.isEmpty()) {
                     logicalDevices.add(new LogicalDeviceDto(node.getName(), logicalNodes));
                 }
@@ -72,11 +74,11 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         return logicalDevices;
     }
 
-    private List<LogicalNodeDto> processPQValuesLogicalNodes(LogicalDevice node) {
-        List<LogicalNodeDto> logicalNodes = new ArrayList<>();
-        for (ModelNode subNode : node.getChildren()) {
+    private List<LogicalNodeDto> processPQValuesLogicalNodes(final LogicalDevice node) {
+        final List<LogicalNodeDto> logicalNodes = new ArrayList<>();
+        for (final ModelNode subNode : node.getChildren()) {
             if (subNode instanceof LogicalNode) {
-                List<DataSampleDto> data = processPQValueNodeChildren((LogicalNode) subNode);
+                final List<DataSampleDto> data = this.processPQValueNodeChildren((LogicalNode) subNode);
                 if (!data.isEmpty()) {
                     logicalNodes.add(new LogicalNodeDto(subNode.getName(), data));
                 }
@@ -85,18 +87,19 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         return logicalNodes;
     }
 
-    private List<DataSampleDto> processPQValueNodeChildren(LogicalNode node) {
-        List<DataSampleDto> data = new ArrayList<>();
-        Collection<ModelNode> children = node.getChildren();
-        Map<String, Set<Fc>> childMap = new HashMap<>();
-        for (ModelNode child : children) {
+    private List<DataSampleDto> processPQValueNodeChildren(final LogicalNode node) {
+        final List<DataSampleDto> data = new ArrayList<>();
+        final Collection<ModelNode> children = node.getChildren();
+        final Map<String, Set<Fc>> childMap = new HashMap<>();
+        for (final ModelNode child : children) {
             if (!childMap.containsKey(child.getName())) {
                 childMap.put(child.getName(), new HashSet<Fc>());
             }
             childMap.get(child.getName()).add(((FcModelNode) child).getFc());
         }
-        for (Map.Entry<String, Set<Fc>> childEntry : childMap.entrySet()) {
-            List<DataSampleDto> childData = processPQValuesFunctionalConstraintObject( node, childEntry.getKey(), childEntry.getValue());
+        for (final Map.Entry<String, Set<Fc>> childEntry : childMap.entrySet()) {
+            final List<DataSampleDto> childData = this.processPQValuesFunctionalConstraintObject(node,
+                    childEntry.getKey(), childEntry.getValue());
             if (!childData.isEmpty()) {
                 data.addAll(childData);
             }
@@ -104,11 +107,12 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         return data;
     }
 
-    private List<DataSampleDto> processPQValuesFunctionalConstraintObject(LogicalNode parentNode, String childName,
-                                                           Set<Fc> childFcs) {
-        List<DataSampleDto> data = new ArrayList<>();
-        for (Fc constraint : childFcs) {
-            List<DataSampleDto> childData = processPQValuesFunctionalChildConstraintObject(parentNode, childName, constraint);
+    private List<DataSampleDto> processPQValuesFunctionalConstraintObject(final LogicalNode parentNode,
+            final String childName, final Set<Fc> childFcs) {
+        final List<DataSampleDto> data = new ArrayList<>();
+        for (final Fc constraint : childFcs) {
+            final List<DataSampleDto> childData = this.processPQValuesFunctionalChildConstraintObject(parentNode,
+                    childName, constraint);
             if (!childData.isEmpty()) {
                 data.addAll(childData);
             }
@@ -116,23 +120,24 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         return data;
     }
 
-    private List<DataSampleDto> processPQValuesFunctionalChildConstraintObject(LogicalNode parentNode, String childName, Fc constraint) {
-        List<DataSampleDto> data = new ArrayList<>();
-        ModelNode node = parentNode.getChild(childName, constraint);
-        if (Fc.MX == constraint && node.getChildren()!=null) {
-            if (nodeHasBdaQualityChild(node)) {
-                data.add(processPQValue(node));
+    private List<DataSampleDto> processPQValuesFunctionalChildConstraintObject(final LogicalNode parentNode,
+            final String childName, final Fc constraint) {
+        final List<DataSampleDto> data = new ArrayList<>();
+        final ModelNode node = parentNode.getChild(childName, constraint);
+        if (Fc.MX == constraint && node.getChildren() != null) {
+            if (this.nodeHasBdaQualityChild(node)) {
+                data.add(this.processPQValue(node));
             } else {
-                for (ModelNode subNode : node.getChildren()) {
-                    data.add(processPQValue(node, subNode));
+                for (final ModelNode subNode : node.getChildren()) {
+                    data.add(this.processPQValue(node, subNode));
                 }
             }
         }
         return data;
     }
 
-    private boolean nodeHasBdaQualityChild(ModelNode node) {
-        for (ModelNode subNode : node.getChildren()) {
+    private boolean nodeHasBdaQualityChild(final ModelNode node) {
+        for (final ModelNode subNode : node.getChildren()) {
             if (subNode instanceof BdaQuality) {
                 return true;
             }
@@ -140,25 +145,24 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         return false;
     }
 
-    private DataSampleDto processPQValue(ModelNode node) {
+    private DataSampleDto processPQValue(final ModelNode node) {
         Date ts = null;
         String type = null;
         BigDecimal value = null;
         if (node.getChildren() != null) {
-            ts = findBdaTimestampNodeValue(node);
-            ModelNode floatNode = findBdaFloat32NodeInConstructedDataAttribute(node);
+            ts = this.findBdaTimestampNodeValue(node);
+            final ModelNode floatNode = this.findBdaFloat32NodeInConstructedDataAttribute(node);
             if (floatNode != null) {
                 type = node.getName() + "." + floatNode.getParent().getName() + "." + floatNode.getName();
-                value = new BigDecimal(((BdaFloat32) floatNode).getFloat(),
-                        new MathContext(3, RoundingMode.HALF_EVEN));
+                value = new BigDecimal(((BdaFloat32) floatNode).getFloat(), new MathContext(3, RoundingMode.HALF_EVEN));
             }
         }
         return new DataSampleDto(type, ts, value);
     }
 
-    private Date findBdaTimestampNodeValue(ModelNode node) {
+    private Date findBdaTimestampNodeValue(final ModelNode node) {
         Date timestamp = null;
-        for (ModelNode subNode : node.getChildren()) {
+        for (final ModelNode subNode : node.getChildren()) {
             if (subNode instanceof BdaTimestamp) {
                 timestamp = ((BdaTimestamp) subNode).getDate();
             }
@@ -166,19 +170,19 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         return timestamp;
     }
 
-    private ModelNode findBdaFloat32NodeInConstructedDataAttribute(ModelNode node) {
+    private ModelNode findBdaFloat32NodeInConstructedDataAttribute(final ModelNode node) {
         ModelNode floatNode = null;
-        for (ModelNode subNode : node.getChildren()) {
-            if (subNode instanceof ConstructedDataAttribute && subNode.getChildren()!=null) {
-                floatNode = findBdaFloat32Node(subNode);
+        for (final ModelNode subNode : node.getChildren()) {
+            if (subNode instanceof ConstructedDataAttribute && subNode.getChildren() != null) {
+                floatNode = this.findBdaFloat32Node(subNode);
             }
         }
         return floatNode;
     }
 
-    private ModelNode findBdaFloat32Node(ModelNode node) {
+    private ModelNode findBdaFloat32Node(final ModelNode node) {
         ModelNode floatNode = null;
-        for (ModelNode subNode : node.getChildren()) {
+        for (final ModelNode subNode : node.getChildren()) {
             if (subNode instanceof BdaFloat32) {
                 floatNode = subNode;
             }
@@ -186,32 +190,33 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
         return floatNode;
     }
 
-    private DataSampleDto processPQValue(ModelNode parentNode, ModelNode node) {
+    private DataSampleDto processPQValue(final ModelNode parentNode, final ModelNode node) {
         Date ts = null;
         String type = null;
         BigDecimal value = null;
         if (node.getChildren() != null) {
-            ts = findBdaTimestampNodeValue(node);
-            ModelNode floatNode = findDeeperBdaFloat32NodeInConstructedDataAttributeChildren(node);
+            ts = this.findBdaTimestampNodeValue(node);
+            final ModelNode floatNode = this.findDeeperBdaFloat32NodeInConstructedDataAttributeChildren(node);
             if (floatNode != null) {
-                type = parentNode.getName() + "." + node.getName() + "." + floatNode.getParent().getParent().getName() + "." + floatNode.getParent().getName() + "." + floatNode.getName();
-                value = getNodeBigDecimal(floatNode);
+                type = parentNode.getName() + "." + node.getName() + "." + floatNode.getParent().getParent().getName()
+                        + "." + floatNode.getParent().getName() + "." + floatNode.getName();
+                value = this.getNodeBigDecimal(floatNode);
             }
         }
         return new DataSampleDto(type, ts, value);
     }
 
-    private ModelNode findDeeperBdaFloat32NodeInConstructedDataAttributeChildren(ModelNode node) {
+    private ModelNode findDeeperBdaFloat32NodeInConstructedDataAttributeChildren(final ModelNode node) {
         ModelNode floatNode = null;
-        for (ModelNode subNode : node.getChildren()) {
-            if (subNode instanceof ConstructedDataAttribute && subNode.getChildren()!=null) {
-                floatNode = findBdaFloat32NodeInConstructedDataAttribute(subNode);
+        for (final ModelNode subNode : node.getChildren()) {
+            if (subNode instanceof ConstructedDataAttribute && subNode.getChildren() != null) {
+                floatNode = this.findBdaFloat32NodeInConstructedDataAttribute(subNode);
             }
         }
         return floatNode;
     }
 
-    private BigDecimal getNodeBigDecimal(ModelNode node) {
+    private BigDecimal getNodeBigDecimal(final ModelNode node) {
         return new BigDecimal(((BdaFloat32) node).getFloat(), new MathContext(3, RoundingMode.HALF_EVEN));
     }
 }

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -26,6 +27,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
@@ -49,14 +51,13 @@ public class Iec61850GetConfigurationCommand {
 
     public ConfigurationDto getConfigurationFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final Ssld ssld, final Iec61850Mapper mapper)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
         final Function<ConfigurationDto> function = new Function<ConfigurationDto>() {
 
             @Override
-            public ConfigurationDto apply() throws Exception {
+            public ConfigurationDto apply(final DeviceMessageLog deviceMessageLog) throws Exception {
                 // Keeping the hardcoded values and values that aren't fetched
-                // from the
-                // device out of the Function
+                // from the device out of the Function.
 
                 // Hardcoded (not supported)
                 final MeterTypeDto meterType = MeterTypeDto.AUX;
@@ -73,7 +74,7 @@ public class Iec61850GetConfigurationCommand {
 
                 for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                     Iec61850GetConfigurationCommand.this.checkRelayType(iec61850Client, deviceConnection,
-                            deviceOutputSetting);
+                            deviceOutputSetting, deviceMessageLog);
                     relayMaps.add(mapper.map(deviceOutputSetting, RelayMapDto.class));
                 }
 
@@ -94,11 +95,22 @@ public class Iec61850GetConfigurationCommand {
                 if (lightTypeValue == null || lightTypeValue.isEmpty()) {
                     lightTypeValue = "RELAY";
                 }
+
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                        DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.LIGHT_TYPE, lightTypeValue);
+
                 final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue);
                 final short astroGateSunRiseOffset = softwareConfiguration.getShort(
                         SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET).getValue();
                 final short astroGateSunSetOffset = softwareConfiguration.getShort(
                         SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET).getValue();
+
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                        DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
+                        Short.toString(astroGateSunRiseOffset));
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                        DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
+                        Short.toString(astroGateSunSetOffset));
 
                 final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration,
                         relayConfiguration, shortTermHistoryIntervalMinutes, preferredLinkType, meterType,
@@ -117,6 +129,11 @@ public class Iec61850GetConfigurationCommand {
                 configuration.setOsgpIpAddress(serverAddress);
                 configuration.setOsgpPortNumber(serverPort);
 
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF,
+                        SubDataAttribute.SERVER_ADDRESS, serverAddress);
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF,
+                        SubDataAttribute.SERVER_PORT, Integer.toString(serverPort));
+
                 // getting the IP configuration values
                 LOGGER.info("Reading the IP configuration values");
                 final NodeContainer ipConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
@@ -134,6 +151,15 @@ public class Iec61850GetConfigurationCommand {
 
                 configuration.setDeviceFixedIp(deviceFixedIp);
                 configuration.setDhcpEnabled(isDhcpEnabled);
+
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
+                        Fc.CF, SubDataAttribute.IP_ADDRESS, deviceFixedIpAddress);
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
+                        Fc.CF, SubDataAttribute.NETMASK, deviceFixedIpNetmask);
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
+                        Fc.CF, SubDataAttribute.GATEWAY, deviceFixedIpGateway);
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION,
+                        Fc.CF, SubDataAttribute.ENABLE_DHCP, Boolean.toString(isDhcpEnabled));
 
                 // setting the software configuration values
                 configuration.setAstroGateSunRiseOffset((int) astroGateSunRiseOffset);
@@ -159,6 +185,16 @@ public class Iec61850GetConfigurationCommand {
                 configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM,
                         winterTimeDetails).getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                        SubDataAttribute.TIME_SYNC_FREQUENCY, Integer.toString(timeSyncFrequency));
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                        SubDataAttribute.AUTOMATIC_SUMMER_TIMING_ENABLED,
+                        Boolean.toString(automaticSummerTimingEnabled));
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                        SubDataAttribute.SUMMER_TIME_DETAILS, summerTimeDetails);
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                        SubDataAttribute.WINTER_TIME_DETAILS, winterTimeDetails);
+
                 // getting the TLS configuration values
                 // LOGGER.info("Reading the TLS configuration values");
                 // final NodeContainer tls =
@@ -180,15 +216,20 @@ public class Iec61850GetConfigurationCommand {
                 // configuration.setTlsEnabled(tlsEnabled);
                 // configuration.setCommonNameString(commonName);
 
+                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                        deviceConnection.getOrganisationIdentification(), false);
+
                 return configuration;
             }
         };
 
-        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        return iec61850Client.sendCommandWithRetry(function, "GetConfiguration",
+                deviceConnection.getDeviceIdentification());
     }
 
     private void checkRelayType(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final DeviceOutputSetting deviceOutputSetting) throws ProtocolAdapterException {
+            final DeviceOutputSetting deviceOutputSetting, final DeviceMessageLog deviceMessageLog)
+                    throws ProtocolAdapterException {
         final RelayType registeredRelayType = deviceOutputSetting.getRelayType();
 
         final int expectedSwType;
@@ -222,5 +263,8 @@ public class Iec61850GetConfigurationCommand {
                             : (switchTypeValue == SWITCH_TYPE_LIGHT ? "Light switch (1)" : "Unknown value: "
                                     + switchTypeValue)));
         }
+
+        deviceMessageLog.addVariable(logicalNode, DataAttribute.SWITCH_TYPE, Fc.ST, SubDataAttribute.STATE,
+                Integer.toString(switchTypeValue));
     }
 }

@@ -7,6 +7,17 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
+import java.io.Serializable;
+
+import javax.jms.JMSException;
+
+import org.openmuc.openiec61850.ClientAssociation;
+import org.openmuc.openiec61850.ServerModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
@@ -26,15 +37,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Devi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
-import org.openmuc.openiec61850.ClientAssociation;
-import org.openmuc.openiec61850.ServerModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import javax.jms.JMSException;
-import java.io.Serializable;
 
 @Component
 public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
@@ -51,8 +53,8 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
     private Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Override
-    public void getData(final DaDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler, final DaRtuDeviceRequestMessageProcessor messageProcessor)
-            throws JMSException {
+    public void getData(final DaDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
+            final DaRtuDeviceRequestMessageProcessor messageProcessor) throws JMSException {
         try {
             final String serverName = this.getServerName(deviceRequest);
             final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest, serverName);
@@ -62,11 +64,12 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
 
             final Serializable dataResponse = this.handleGetData(
                     new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
-                            serverModel), deviceRequest.getDeviceIdentification(), serverName), deviceRequest, messageProcessor);
+                            serverModel), deviceRequest.getDeviceIdentification(), deviceRequest
+                            .getOrganisationIdentification(), serverName), deviceRequest, messageProcessor);
 
-            final DaDeviceResponse deviceResponse = new DaDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, (Serializable) dataResponse);
+            final DaDeviceResponse deviceResponse = new DaDeviceResponse(deviceRequest.getOrganisationIdentification(),
+                    deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK,
+                    dataResponse);
 
             deviceResponseHandler.handleResponse(deviceResponse);
         } catch (final ConnectionFailureException se) {
@@ -96,8 +99,8 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
             throws ProtocolAdapterException {
 
         this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
-                deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU, serverName,
-                LogicalDevice.RTU.getDescription() + 1);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getOrganisationIdentification(), IED.ZOWN_RTU,
+                serverName, LogicalDevice.RTU.getDescription() + 1);
         return this.iec61850DeviceConnectionService.getServerModel(deviceRequest.getDeviceIdentification());
     }
 
@@ -105,9 +108,9 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
     // PRIVATE HELPER METHODS =
     // ========================
 
-    private <T> T handleGetData(final DeviceConnection connection, final DaDeviceRequest deviceRequest, final DaRtuDeviceRequestMessageProcessor messageProcessor)
-            throws ProtocolAdapterException {
-        Function<T> function = messageProcessor.getDataFunction(this.iec61850Client, connection, deviceRequest);
+    private <T> T handleGetData(final DeviceConnection connection, final DaDeviceRequest deviceRequest,
+            final DaRtuDeviceRequestMessageProcessor messageProcessor) throws ProtocolAdapterException {
+        final Function<T> function = messageProcessor.getDataFunction(this.iec61850Client, connection, deviceRequest);
         return this.iec61850Client.sendCommandWithRetry(function, deviceRequest.getDeviceIdentification());
     }
 

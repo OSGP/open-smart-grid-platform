@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -25,6 +26,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.DeviceFixedIpDto;
 import com.alliander.osgp.dto.valueobjects.RelayMapDto;
@@ -42,7 +44,7 @@ public class Iec61850SetConfigurationCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply() throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
 
                 if (configuration.getRelayConfiguration() != null
                         && configuration.getRelayConfiguration().getRelayMap() != null) {
@@ -70,6 +72,10 @@ public class Iec61850SetConfigurationCommand {
 
                         ctlVal.setValue(switchTypeValue);
                         operation.write();
+
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SWITCH_TYPE, Fc.CO,
+                                SubDataAttribute.OPERATION, SubDataAttribute.CONTROL_VALUE,
+                                Byte.toString(switchTypeValue));
                     }
                 }
 
@@ -85,13 +91,20 @@ public class Iec61850SetConfigurationCommand {
                     if (configuration.getOsgpIpAddres() != null) {
                         LOGGER.info("Updating OspgIpAddress to {}", configuration.getOsgpIpAddres());
                         registration.writeString(SubDataAttribute.SERVER_ADDRESS, configuration.getOsgpIpAddres());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.REGISTRATION, Fc.CF, SubDataAttribute.SERVER_ADDRESS,
+                                configuration.getOsgpIpAddres());
                     }
 
                     if (configuration.getOsgpPortNumber() != null) {
                         LOGGER.info("Updating OsgpPortNumber to {}", configuration.getOsgpPortNumber());
                         registration.writeInteger(SubDataAttribute.SERVER_PORT, configuration.getOsgpPortNumber());
-                    }
 
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.REGISTRATION, Fc.CF, SubDataAttribute.SERVER_PORT, configuration
+                                        .getOsgpPortNumber().toString());
+                    }
                 }
 
                 // Checking to see if all software configuration values are
@@ -109,18 +122,31 @@ public class Iec61850SetConfigurationCommand {
                         LOGGER.info("Updating AstroGateSunRiseOffset to {}", configuration.getAstroGateSunRiseOffset());
                         softwareConfiguration.writeShort(SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET, configuration
                                 .getAstroGateSunRiseOffset().shortValue());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF,
+                                SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET,
+                                Short.toString(configuration.getAstroGateSunRiseOffset().shortValue()));
                     }
 
                     if (configuration.getAstroGateSunSetOffset() != null) {
                         LOGGER.info("Updating AstroGateSunSetOffset to {}", configuration.getAstroGateSunSetOffset());
                         softwareConfiguration.writeShort(SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET, configuration
                                 .getAstroGateSunSetOffset().shortValue());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
+                                Short.toString(configuration.getAstroGateSunSetOffset().shortValue()));
                     }
 
                     if (configuration.getLightType() != null) {
                         LOGGER.info("Updating LightType to {}", configuration.getLightType());
                         softwareConfiguration.writeString(SubDataAttribute.LIGHT_TYPE, configuration.getLightType()
                                 .name());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.LIGHT_TYPE, configuration
+                                        .getLightType().name());
                     }
                 }
 
@@ -139,6 +165,10 @@ public class Iec61850SetConfigurationCommand {
                         LOGGER.info("Updating TimeSyncFrequency to {}", configuration.getTimeSyncFrequency());
                         clock.writeUnsignedShort(SubDataAttribute.TIME_SYNC_FREQUENCY,
                                 configuration.getTimeSyncFrequency());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK,
+                                Fc.CF, SubDataAttribute.TIME_SYNC_FREQUENCY,
+                                Integer.toString(configuration.getTimeSyncFrequency()));
                     }
 
                     if (configuration.isAutomaticSummerTimingEnabled() != null) {
@@ -146,6 +176,10 @@ public class Iec61850SetConfigurationCommand {
                                 configuration.isAutomaticSummerTimingEnabled());
                         clock.writeBoolean(SubDataAttribute.AUTOMATIC_SUMMER_TIMING_ENABLED,
                                 configuration.isAutomaticSummerTimingEnabled());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK,
+                                Fc.CF, SubDataAttribute.AUTOMATIC_SUMMER_TIMING_ENABLED,
+                                Boolean.toString(configuration.isAutomaticSummerTimingEnabled()));
                     }
 
                     /*
@@ -168,6 +202,9 @@ public class Iec61850SetConfigurationCommand {
                         LOGGER.info("Updating DstBeginTime to {} based on SummerTimeDetails {}", mwdValueForBeginOfDst,
                                 summerTimeDetails);
                         clock.writeString(SubDataAttribute.SUMMER_TIME_DETAILS, mwdValueForBeginOfDst);
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK,
+                                Fc.CF, SubDataAttribute.SUMMER_TIME_DETAILS, mwdValueForBeginOfDst);
                     }
                     if (winterTimeDetails != null) {
 
@@ -176,6 +213,9 @@ public class Iec61850SetConfigurationCommand {
                         LOGGER.info("Updating DstEndTime to {} based on WinterTimeDetails {}", mwdValueForEndOfDst,
                                 winterTimeDetails);
                         clock.writeString(SubDataAttribute.WINTER_TIME_DETAILS, mwdValueForEndOfDst);
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK,
+                                Fc.CF, SubDataAttribute.WINTER_TIME_DETAILS, mwdValueForEndOfDst);
                     }
                 }
 
@@ -191,6 +231,10 @@ public class Iec61850SetConfigurationCommand {
                     if (configuration.isDhcpEnabled() != null) {
                         LOGGER.info("Updating DhcpEnabled to {}", configuration.isDhcpEnabled());
                         ipConfiguration.writeBoolean(SubDataAttribute.ENABLE_DHCP, configuration.isDhcpEnabled());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                                DataAttribute.IP_CONFIGURATION, Fc.CF, SubDataAttribute.ENABLE_DHCP,
+                                Boolean.toString(configuration.isDhcpEnabled()));
                     }
 
                     // All values in DeviceFixedIpDto are non-nullable, so no
@@ -200,11 +244,23 @@ public class Iec61850SetConfigurationCommand {
                     LOGGER.info("Updating deviceFixedIpAddress to {}", configuration.getDeviceFixedIp().getIpAddress());
                     ipConfiguration.writeString(SubDataAttribute.IP_ADDRESS, deviceFixedIp.getIpAddress());
 
+                    deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                            DataAttribute.IP_CONFIGURATION, Fc.CF, SubDataAttribute.IP_ADDRESS,
+                            deviceFixedIp.getIpAddress());
+
                     LOGGER.info("Updating deviceFixedIpNetmask to {}", configuration.getDeviceFixedIp().getNetMask());
                     ipConfiguration.writeString(SubDataAttribute.NETMASK, deviceFixedIp.getNetMask());
 
+                    deviceMessageLog
+                            .addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION, Fc.CF,
+                            SubDataAttribute.NETMASK, deviceFixedIp.getNetMask());
+
                     LOGGER.info("Updating deviceFixIpGateway to {}", configuration.getDeviceFixedIp().getGateWay());
                     ipConfiguration.writeString(SubDataAttribute.GATEWAY, deviceFixedIp.getGateWay());
+
+                    deviceMessageLog
+                            .addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION, Fc.CF,
+                            SubDataAttribute.GATEWAY, deviceFixedIp.getGateWay());
                 }
 
                 // Checking to see if all TLS values are null, so that we
@@ -242,10 +298,13 @@ public class Iec61850SetConfigurationCommand {
                 // }
                 // }
 
+                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                        deviceConnection.getOrganisationIdentification(), false);
+
                 return null;
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        iec61850Client.sendCommandWithRetry(function, "SetConfiguration", deviceConnection.getDeviceIdentification());
     }
 }

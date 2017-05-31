@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.joda.time.DateTime;
@@ -14,6 +15,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -25,6 +27,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.dto.valueobjects.FirmwareModuleData;
 import com.alliander.osgp.dto.valueobjects.FirmwareModuleType;
 
@@ -32,12 +35,14 @@ public class Iec61850UpdateFirmwareCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850UpdateFirmwareCommand.class);
 
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
     public void pushFirmwareToDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final String fullUrl, final FirmwareModuleData firmwareModuleData) throws ProtocolAdapterException {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply() throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
                 final int count = firmwareModuleData.countNumberOfModules();
                 if (count != 1) {
                     throw new ProtocolAdapterException(String.format(
@@ -48,11 +53,11 @@ public class Iec61850UpdateFirmwareCommand {
                 // updated.
                 if (FirmwareModuleType.FUNCTIONAL.name().equalsIgnoreCase(firmwareModuleData.getModuleVersionFunc())) {
                     Iec61850UpdateFirmwareCommand.this.updateFunctionalFirmware(iec61850Client, deviceConnection,
-                            fullUrl);
+                            fullUrl, deviceMessageLog);
                 } else if (FirmwareModuleType.SECURITY.name()
                         .equalsIgnoreCase(firmwareModuleData.getModuleVersionSec())) {
-                    Iec61850UpdateFirmwareCommand.this
-                    .updateSecurityFirmware(iec61850Client, deviceConnection, fullUrl);
+                    Iec61850UpdateFirmwareCommand.this.updateSecurityFirmware(iec61850Client, deviceConnection,
+                            fullUrl, deviceMessageLog);
                 } else {
                     throw new ProtocolAdapterException(
                             String.format(
@@ -63,15 +68,18 @@ public class Iec61850UpdateFirmwareCommand {
                                     firmwareModuleData.getModuleVersionSec(), fullUrl));
                 }
 
+                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                        deviceConnection.getOrganisationIdentification(), false);
+
                 return null;
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        iec61850Client.sendCommandWithRetry(function, "UpdateFirmware", deviceConnection.getDeviceIdentification());
     }
 
     private void updateFunctionalFirmware(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final String fullUrl) throws NodeException {
+            final String fullUrl, final DeviceMessageLog deviceMessageLog) throws NodeException {
         LOGGER.info("Reading the functional firmware node for device: {}", deviceConnection.getDeviceIdentification());
         final NodeContainer functionalFirmwareNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.FUNCTIONAL_FIRMWARE, Fc.CF);
@@ -89,14 +97,20 @@ public class Iec61850UpdateFirmwareCommand {
                 deviceConnection.getDeviceIdentification());
         functionalFirmwareNode.writeString(SubDataAttribute.URL, fullUrl);
 
+        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.FUNCTIONAL_FIRMWARE, Fc.CF,
+                SubDataAttribute.URL, fullUrl);
+
         final Date oneMinuteFromNow = this.determineFirmwareUpdateDateTime(iec61850Client, deviceConnection);
         LOGGER.info("Updating the functional firmware download start time to: {} for device: {}", oneMinuteFromNow,
                 deviceConnection.getDeviceIdentification());
         functionalFirmwareNode.writeDate(SubDataAttribute.START_TIME, oneMinuteFromNow);
+
+        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.FUNCTIONAL_FIRMWARE, Fc.CF,
+                SubDataAttribute.START_TIME, simpleDateFormat.format(oneMinuteFromNow));
     }
 
     private void updateSecurityFirmware(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final String fullUrl) throws NodeException {
+            final String fullUrl, final DeviceMessageLog deviceMessageLog) throws NodeException {
         LOGGER.info("Reading the security firmware node for device: {}", deviceConnection.getDeviceIdentification());
         final NodeContainer securityFirmwareNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SECURITY_FIRMWARE, Fc.CF);
@@ -113,10 +127,16 @@ public class Iec61850UpdateFirmwareCommand {
                 deviceConnection.getDeviceIdentification());
         securityFirmwareNode.writeString(SubDataAttribute.URL, fullUrl);
 
+        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SECURITY_FIRMWARE, Fc.CF,
+                SubDataAttribute.URL, fullUrl);
+
         final Date oneMinuteFromNow = this.determineFirmwareUpdateDateTime(iec61850Client, deviceConnection);
         LOGGER.info("Updating the security firmware download start time to: {} for device: {}", oneMinuteFromNow,
                 deviceConnection.getDeviceIdentification());
         securityFirmwareNode.writeDate(SubDataAttribute.START_TIME, oneMinuteFromNow);
+
+        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SECURITY_FIRMWARE, Fc.CF,
+                SubDataAttribute.START_TIME, simpleDateFormat.format(oneMinuteFromNow));
     }
 
     private Date determineFirmwareUpdateDateTime(final Iec61850Client iec61850Client,

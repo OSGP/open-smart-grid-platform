@@ -12,6 +12,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -21,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 
 public class Iec61850RebootCommand {
 
@@ -31,7 +33,7 @@ public class Iec61850RebootCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply() throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
                 final NodeContainer rebootOperationNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REBOOT_OPERATION, Fc.CO);
                 iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
@@ -51,10 +53,17 @@ public class Iec61850RebootCommand {
                 LOGGER.info("device: {}, set ctlVal to true in order to reboot the device",
                         deviceConnection.getDeviceIdentification());
                 oper.write();
+
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REBOOT_OPERATION,
+                        Fc.ST, SubDataAttribute.OPERATION, SubDataAttribute.CONTROL_VALUE, Boolean.toString(true));
+
+                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                        deviceConnection.getOrganisationIdentification(), false);
+
                 return null;
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        iec61850Client.sendCommandWithRetry(function, "Reboot", deviceConnection.getDeviceIdentification());
     }
 }

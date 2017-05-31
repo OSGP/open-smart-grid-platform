@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.joda.time.DateTime;
@@ -14,6 +15,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -23,11 +25,14 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.dto.valueobjects.CertificationDto;
 
 public class Iec61850UpdateSslCertificateCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850UpdateSslCertificateCommand.class);
+
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     public void pushSslCertificateToDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final CertificationDto certification)
@@ -35,7 +40,7 @@ public class Iec61850UpdateSslCertificateCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply() throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
 
                 LOGGER.info("Reading the certificate authority url");
                 final NodeContainer sslConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
@@ -60,22 +65,32 @@ public class Iec61850UpdateSslCertificateCommand {
                 LOGGER.info("Updating the certificate download url to {}", fullUrl);
                 sslConfiguration.writeString(SubDataAttribute.URL, fullUrl);
 
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                        DataAttribute.CERTIFICATE_AUTHORITY_REPLACE, Fc.CF, SubDataAttribute.URL, fullUrl);
+
                 final NodeContainer clock = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF);
                 iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
                         clock.getFcmodelNode());
 
                 final DateTime deviceTime = new DateTime(clock.getDate(SubDataAttribute.CURRENT_TIME));
-
                 final Date oneMinuteFromNow = deviceTime.plusMinutes(1).toDate();
 
                 LOGGER.info("Updating the certificate download start time to: {}", oneMinuteFromNow);
                 sslConfiguration.writeDate(SubDataAttribute.START_TIME, oneMinuteFromNow);
 
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                        DataAttribute.CERTIFICATE_AUTHORITY_REPLACE, Fc.CF, SubDataAttribute.START_TIME,
+                        simpleDateFormat.format(oneMinuteFromNow));
+
+                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                        deviceConnection.getOrganisationIdentification(), false);
+
                 return null;
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        iec61850Client.sendCommandWithRetry(function, "UpdateSslCertificate",
+                deviceConnection.getDeviceIdentification());
     }
 }

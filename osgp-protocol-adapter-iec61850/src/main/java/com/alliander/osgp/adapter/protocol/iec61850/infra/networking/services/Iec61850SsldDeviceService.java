@@ -140,8 +140,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                     ssld, RelayType.LIGHT);
 
             final List<PowerUsageDataDto> powerUsageHistoryData = new Iec61850PowerUsageHistoryCommand()
-                    .getPowerUsageHistoryDataFromDevice(this.iec61850Client, deviceConnection,
-                            deviceRequest.getPowerUsageHistoryContainer(), deviceOutputSettingsLightRelays);
+            .getPowerUsageHistoryDataFromDevice(this.iec61850Client, deviceConnection,
+                    deviceRequest.getPowerUsageHistoryContainer(), deviceOutputSettingsLightRelays);
 
             final GetPowerUsageHistoryDeviceResponse deviceResponse = new GetPowerUsageHistoryDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -237,7 +237,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
     private List<LightValueDto> createListOfInternalIndicesToSwitch(
             final List<DeviceOutputSetting> deviceOutputSettings, final List<LightValueDto> lightValues)
-            throws FunctionalException {
+                    throws FunctionalException {
         final List<LightValueDto> relaysWithInternalIdToSwitch = new ArrayList<>();
         LOGGER.info("creating list of internal indices using device output settings and external indices from light values");
         for (final LightValueDto lightValue : lightValues) {
@@ -441,7 +441,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             deviceConnection = this.connectToDevice(deviceRequest);
 
             final List<FirmwareVersionDto> firmwareVersions = new Iec61850GetFirmwareVersionCommand()
-                    .getFirmwareVersionFromDevice(this.iec61850Client, deviceConnection);
+            .getFirmwareVersionFromDevice(this.iec61850Client, deviceConnection);
 
             final GetFirmwareVersionDeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -547,8 +547,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
     private DeviceConnection connectToDevice(final DeviceRequest deviceRequest) throws ConnectionFailureException {
         return this.iec61850DeviceConnectionService.connectWithoutConnectionCaching(deviceRequest.getIpAddress(),
-                deviceRequest.getDeviceIdentification(), IED.FLEX_OVL, IED.FLEX_OVL.getDescription(),
-                LogicalDevice.LIGHTING.getDescription());
+                deviceRequest.getDeviceIdentification(), deviceRequest.getOrganisationIdentification(), IED.FLEX_OVL,
+                IED.FLEX_OVL.getDescription(), LogicalDevice.LIGHTING.getDescription());
     }
 
     // ========================

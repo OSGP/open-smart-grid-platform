@@ -13,6 +13,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -22,6 +23,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.TransitionTypeDto;
 
@@ -43,7 +45,7 @@ public class Iec61850TransitionCommand {
 
         final Function<Void> function = new Function<Void>() {
             @Override
-            public Void apply() throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
 
                 final NodeContainer sensorNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SENSOR, Fc.CO);
@@ -60,12 +62,19 @@ public class Iec61850TransitionCommand {
                 ctlVal.setValue(controlValueForTransition);
                 LOGGER.info("device: {}, set ctlVal to {} in order to transition the device",
                         deviceConnection.getDeviceIdentification(), controlValueForTransition);
-
                 oper.write();
+
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SENSOR, Fc.CO,
+                        SubDataAttribute.OPERATION, SubDataAttribute.CONTROL_VALUE,
+                        Boolean.toString(controlValueForTransition));
+
+                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                        deviceConnection.getOrganisationIdentification(), false);
+
                 return null;
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        iec61850Client.sendCommandWithRetry(function, "SetTransition", deviceConnection.getDeviceIdentification());
     }
 }

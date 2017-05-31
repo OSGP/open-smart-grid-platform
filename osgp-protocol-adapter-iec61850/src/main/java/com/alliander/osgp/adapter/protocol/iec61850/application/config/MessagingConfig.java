@@ -25,6 +25,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRespon
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.Iec61850LogItemRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpResponseMessageListener;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
@@ -35,8 +36,8 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 @Configuration
 @EnableTransactionManagement()
 @PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
@@ -94,14 +95,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     // === JMS SETTINGS: IEC61850 LOG ITEM REQUESTS ===
 
     @Bean
-    public JmsConfiguration iec61850LogItemRequestJmsConfiguration(
-            final JmsConfigurationFactory jmsConfigurationFactory) {
+    public JmsConfiguration iec61850LogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeConfiguration("jms.iec61850.log.item.requests");
     }
 
     @Bean
-    public JmsTemplate iec61850LogItemRequestsJmsTemplate(
-            final JmsConfiguration iec61850LogItemRequestJmsConfiguration) {
+    public JmsTemplate iec61850LogItemRequestsJmsTemplate(final JmsConfiguration iec61850LogItemRequestJmsConfiguration) {
         return iec61850LogItemRequestJmsConfiguration.getJmsTemplate();
     }
 
@@ -146,4 +145,10 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return osgpResponseJmsConfiguration.getMessageListenerContainer();
     }
 
+    // === DEVICE MESSAGE LOGGING ===
+
+    @Bean
+    public DeviceMessageLoggingService deviceMessageLoggingService() {
+        return new DeviceMessageLoggingService(this.iec61850LogItemRequestMessageSender());
+    }
 }

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -58,6 +59,8 @@ public class DeviceRegistrationService {
      *            The IP address of the device.
      * @param ied
      *            The type of IED.
+     * @param serverName
+     *            The server name.
      *
      * @throws ProtocolAdapterException
      *             In case the connection to the device can not be established
@@ -67,13 +70,13 @@ public class DeviceRegistrationService {
             final String serverName) throws ProtocolAdapterException {
 
         final DeviceConnection deviceConnection = this.iec61850DeviceConnectionService.connectWithoutConnectionCaching(
-                ipAddress.getHostAddress(), deviceIdentification, ied, serverName,
+                ipAddress.getHostAddress(), deviceIdentification, "", ied, serverName,
                 LogicalDevice.LIGHTING.getDescription());
 
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply() throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
                 DeviceRegistrationService.this.disableRegistration(deviceConnection);
                 DeviceRegistrationService.this.setLocationInformation(deviceConnection);
                 if (DeviceRegistrationService.this.isReportingAfterDeviceRegistrationEnabled) {

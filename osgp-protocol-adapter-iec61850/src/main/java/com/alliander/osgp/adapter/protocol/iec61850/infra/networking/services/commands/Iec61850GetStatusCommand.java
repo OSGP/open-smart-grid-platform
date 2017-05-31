@@ -16,6 +16,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -26,6 +27,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
@@ -43,7 +45,7 @@ public class Iec61850GetStatusCommand {
         final Function<DeviceStatusDto> function = new Function<DeviceStatusDto>() {
 
             @Override
-            public DeviceStatusDto apply() throws Exception {
+            public DeviceStatusDto apply(final DeviceMessageLog deviceMessageLog) throws Exception {
                 // getting the light relay values
                 final List<LightValueDto> lightValues = new ArrayList<>();
 
@@ -60,6 +62,8 @@ public class Iec61850GetStatusCommand {
 
                     LOGGER.info(String.format("Got status of relay %d => %s", deviceOutputSetting.getInternalId(),
                             on ? "on" : "off"));
+
+                    deviceMessageLog.addVariable(logicalNode, DataAttribute.POSITION, Fc.ST, Boolean.toString(on));
                 }
 
                 final NodeContainer eventBuffer = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
@@ -68,6 +72,9 @@ public class Iec61850GetStatusCommand {
                         eventBuffer.getFcmodelNode());
                 final String filter = eventBuffer.getString(SubDataAttribute.EVENT_BUFFER_FILTER);
                 LOGGER.info("Got EvnBuf.enbEvnType filter {}", filter);
+
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.EVENT_BUFFER, Fc.CF,
+                        filter);
 
                 final Set<EventNotificationTypeDto> notificationTypes = EventType.getNotificationTypesForFilter(filter);
                 int eventNotificationsMask = 0;
@@ -86,6 +93,12 @@ public class Iec61850GetStatusCommand {
                 }
                 final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue);
 
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                        DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, lightTypeValue);
+
+                DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
+                        deviceConnection.getOrganisationIdentification(), false);
+
                 /*
                  * The preferredLinkType and actualLinkType are hard-coded to
                  * LinkTypeDto.ETHERNET, other link types do not apply to the
@@ -96,6 +109,6 @@ public class Iec61850GetStatusCommand {
             }
         };
 
-        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        return iec61850Client.sendCommandWithRetry(function, "GetStatus", deviceConnection.getDeviceIdentification());
     }
 }

@@ -12,6 +12,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -21,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 
 public class Iec61850SetLightCommand {
 
@@ -32,7 +34,7 @@ public class Iec61850SetLightCommand {
         final Function<Boolean> function = new Function<Boolean>() {
 
             @Override
-            public Boolean apply() throws Exception {
+            public Boolean apply(final DeviceMessageLog deviceMessageLog) throws Exception {
 
                 try {
                     final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(index);
@@ -52,6 +54,9 @@ public class Iec61850SetLightCommand {
                         // Set the value to true.
                         masterControl.writeBoolean(SubDataAttribute.ENABLE_OPERATION, true);
                         LOGGER.info("set masterControl.enbOper to true to enable switching of relay {}", index);
+
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.MASTER_CONTROL, Fc.CF,
+                                SubDataAttribute.ENABLE_OPERATION, Boolean.toString(true));
                     }
 
                     // Switch the relay using Pos.Oper.ctlVal [CO].
@@ -68,6 +73,13 @@ public class Iec61850SetLightCommand {
                     controlValue.setValue(on);
                     operation.write();
 
+                    deviceMessageLog.addVariable(logicalNode, DataAttribute.POSITION, Fc.CO,
+                            SubDataAttribute.OPERATION, SubDataAttribute.CONTROL_VALUE, Boolean.toString(on));
+
+                    DeviceMessageLoggingService.logMessage(deviceMessageLog,
+                            deviceConnection.getDeviceIdentification(),
+                            deviceConnection.getOrganisationIdentification(), false);
+
                     return true;
                 } catch (final Exception e) {
                     LOGGER.error("Exception during switchLightRelay()", e);
@@ -76,6 +88,6 @@ public class Iec61850SetLightCommand {
             }
         };
 
-        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
+        return iec61850Client.sendCommandWithRetry(function, "SetLight", deviceConnection.getDeviceIdentification());
     }
 }

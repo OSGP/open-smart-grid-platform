@@ -44,6 +44,8 @@ public class Iec61850LogItemRequestMessageSender {
                         iec61850LogItemRequestMessage.getDecodedMessage());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         iec61850LogItemRequestMessage.getDeviceIdentification());
+                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                        iec61850LogItemRequestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.IS_VALID, iec61850LogItemRequestMessage.isValid().toString());
                 objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
                         iec61850LogItemRequestMessage.getPayloadMessageSerializedSize());
