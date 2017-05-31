@@ -54,8 +54,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
     private void setRemoteProperties(final int classId, final String obisCode, final Map<String, String> settings) {
 
-        final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-        try {
+        try (final CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
             final String request = this.makeRequest(classId, obisCode, settings);
             final HttpGet httpGetRequest = new HttpGet(request);
             final HttpResponse httpResponse = httpClient.execute(httpGetRequest);

@@ -127,6 +127,7 @@ Feature: SmartMetering Installation
     And a dlms device
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
+      | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056700 |
       | MbusManufacturerIdentification |               NVT |
@@ -157,13 +158,14 @@ Feature: SmartMetering Installation
 
   # remove tag when slim-975 is deployed
   @Skip
-  Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on which is already coupled on channel 1
+  Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" which is already coupled on channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And a dlms device
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
+      | GatewayDeviceIdentification 	 | TEST1024000000001 |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification |               LGB |
@@ -176,7 +178,7 @@ Feature: SmartMetering Installation
       | 8 |        66 |
       | 9 |         3 |
     When the Couple G-meter "TESTG102400000001" request is received
-    Then the Couple response is "OK"
+    Then the Couple response is "NOT_OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
 	# remove tag when slim-975 is deployed
@@ -197,7 +199,7 @@ Feature: SmartMetering Installation
       | 5 |         9 |
       When the Couple G-meter "TESTG102400000002" request is received
     Then the Couple response is "NOT_OK" and contains
-      | There is already a device coupled on Mbus channel 1 |
+      | There is already a device coupled on Mbus channel 2 |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 2
     And the mbus device "TESTG102400000002" is not coupled to the device "TEST1024000000001"
 
