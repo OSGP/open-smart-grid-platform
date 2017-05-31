@@ -8,7 +8,6 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,13 +26,13 @@ public class MbusChannelElementsResponseDto implements Serializable {
      * null if NO channel is found that matches the original values from the
      * request dto see also isChannelFound()
      */
-    private Integer channel;
+    private final Integer channel;
 
     /**
      * this contains the values read from the e-meter until a match is found. if
      * no channel is found, it will contain 4 entries
      */
-    private List<ChannelElementValues> channelElements = new ArrayList<>();
+    private final List<ChannelElementValues> channelElements;
 
     /**
      * the original values from the request dto, which are retrieved from
@@ -41,9 +40,12 @@ public class MbusChannelElementsResponseDto implements Serializable {
      */
     private final MbusChannelElementsDto mbusChannelElementsDto;
 
-    public MbusChannelElementsResponseDto(final MbusChannelElementsDto mbusChannelElementsDto) {
+    MbusChannelElementsResponseDto(final MbusChannelElementsDto mbusChannelElementsDto, final Integer channel,
+            final List<ChannelElementValues> channelElements) {
         super();
         this.mbusChannelElementsDto = mbusChannelElementsDto;
+        this.channel = channel;
+        this.channelElements = channelElements;
     }
 
     public boolean isChannelFound() {
@@ -54,20 +56,12 @@ public class MbusChannelElementsResponseDto implements Serializable {
         return this.channel;
     }
 
-    public void setChannel(final Integer channel) {
-        this.channel = channel;
-    }
-
     public List<ChannelElementValues> getChannelElements() {
         return this.channelElements;
     }
 
     public MbusChannelElementsDto getMbusChannelElementsDto() {
         return this.mbusChannelElementsDto;
-    }
-
-    public void addChannelElements(final ChannelElementValues channelElements) {
-        this.channelElements.add(channelElements);
     }
 
 }
