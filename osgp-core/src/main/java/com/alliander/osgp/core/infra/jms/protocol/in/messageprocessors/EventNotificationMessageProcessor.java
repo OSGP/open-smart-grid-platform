@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.jms.JMSException;
@@ -55,19 +54,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
             if (dataObject instanceof EventNotificationDto) {
 
                 final EventNotificationDto eventNotification = (EventNotificationDto) dataObject;
-
-                Date dateTime;
-                if (eventNotification.getDateTime() == null) {
-                    LOGGER.warn("Event Notification for device {} did not contain date/time, using new Date().",
-                            deviceIdentification);
-                    dateTime = new Date();
-                } else {
-                    dateTime = eventNotification.getDateTime().toDate();
-                }
-
-                this.eventNotificationMessageService.handleEvent(deviceIdentification, dateTime,
-                        com.alliander.osgp.domain.core.valueobjects.EventType.valueOf(eventNotification.getEventType()
-                                .name()), eventNotification.getDescription(), eventNotification.getIndex());
+                this.eventNotificationMessageService.handleEvent(deviceIdentification, eventNotification);
 
             } else if (dataObject instanceof List) {
 
