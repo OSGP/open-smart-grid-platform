@@ -41,8 +41,8 @@ public class ActivateDeviceSteps extends GlueBase {
     public void receivingAnActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
 
         final ActivateDeviceRequest request = new ActivateDeviceRequest();
-        request.setDeviceIdentification(
-                getString(requestSettings, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestSettings, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.activateDevice(request));
@@ -69,10 +69,12 @@ public class ActivateDeviceSteps extends GlueBase {
      */
     @Then("^the activate device response contains$")
     public void theActivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
-        final ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
+        final ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
 
         Assert.assertEquals(response.getResult(),
                 getEnum(expectedResponse, PlatformCommonKeys.KEY_RESULT, OsgpResultType.class, OsgpResultType.OK));
+
     }
 
     @Then("^the activate device response contains soap fault$")

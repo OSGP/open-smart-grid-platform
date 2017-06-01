@@ -6,11 +6,11 @@ Feature: BasicOsgpFunctions Authorizing Platform Functions
 
   Scenario Outline: Call a platform function and verify whether this is allowed
     Given an organization
-      | OrganizationIdentification | org-test                |
+      | OrganizationIdentification | test-org                |
       | PlatformFunctionGroup      | <PlatformFunctionGroup> |
     When receiving a platform function request
       | DeviceIdentification       | TEST1024000000001      |
-      | OrganizationIdentification | org-test               |
+      | OrganizationIdentification | test-org               |
       | OrganisationFunction       | <OrganisationFunction> |
     Then the platform function response is "<Allowed>"
 

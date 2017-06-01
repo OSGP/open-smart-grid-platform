@@ -31,7 +31,6 @@ import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
@@ -42,9 +41,6 @@ public class StartDeviceSteps extends GlueBase {
 
     @Autowired
     private CoreDeviceInstallationClient client;
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     /**
      *
@@ -58,8 +54,8 @@ public class StartDeviceSteps extends GlueBase {
     public void receivingAStartDeviceRequest(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final StartDeviceTestRequest request = new StartDeviceTestRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.startDeviceTest(request));
@@ -82,13 +78,18 @@ public class StartDeviceSteps extends GlueBase {
         asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        Wait.untilAndReturn(() -> {
-            final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
-
-            Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class), response.getResult());
-
-            return response;
+        Wait.until(() -> {
+            StartDeviceTestResponse response = null;
+            try {
+                response = this.client.getStartDeviceTestResponse(request);
+            } catch (final Exception e) {
+                // do nothing
+            }
+            Assert.assertNotNull(response);
+            Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class),
+                    response.getResult());
         });
+
     }
 
     @Then("^the platform buffers no start device test response message for device \"([^\"]*)\"$")
@@ -100,22 +101,16 @@ public class StartDeviceSteps extends GlueBase {
         asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        int count = 0;
-        while (count / 1000 < this.configuration.getTimeout()) {
-
+        Wait.until(() -> {
+            StartDeviceTestResponse response = null;
             try {
-                final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
-
-                if (!response.getResult().equals(OsgpResultType.NOT_FOUND)) {
-                    Assert.fail("Received a start device response.");
-                }
-            } catch (final Exception ex) {
-                // Do nothing
+                response = this.client.getStartDeviceTestResponse(request);
+            } catch (final Exception e) {
+                // do nothing
             }
-
-            count += this.configuration.getSleepTime();
-            Thread.sleep(this.configuration.getSleepTime());
-        }
+            Assert.assertNotNull(response);
+            Assert.assertNotEquals(OsgpResultType.NOT_FOUND, response.getResult());
+        });
     }
 
     /**
@@ -125,16 +120,16 @@ public class StartDeviceSteps extends GlueBase {
      */
     @Then("the start device async response contains")
     public void theStartDeviceAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final StartDeviceTestAsyncResponse response = (StartDeviceTestAsyncResponse) ScenarioContext.current()
+        final StartDeviceTestAsyncResponse asyncResponse = (StartDeviceTestAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }

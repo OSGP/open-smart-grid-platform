@@ -37,7 +37,6 @@ Feature: PublicLightingDeviceMonitoring Get Power Usage History
       | UntilDate | <UntilDate> |
     And the platform buffers a get power usage history response message for device "TEST1024000000001"
       | Status              | OK                    |
-      | Description         |                       |
       | RecordTime          | <RecordTime>          |
       | MeterType           | <MeterType>           |
       | TotalConsumedEnergy | <TotalConsumedEnergy> |

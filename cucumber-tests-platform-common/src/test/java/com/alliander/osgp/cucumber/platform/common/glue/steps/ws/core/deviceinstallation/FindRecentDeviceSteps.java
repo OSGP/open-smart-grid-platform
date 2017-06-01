@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDe
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.common.PlatformCommonKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 
@@ -45,7 +46,7 @@ public class FindRecentDeviceSteps extends GlueBase {
     @Then("the find recent devices response contains \"([^\"]*)\" devices?")
     public void theFindRecentDevicesResponseContains(final Integer numberOfDevices) {
         final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.current()
-                .get(PlatformKeys.RESPONSE);
+                .get(PlatformCommonKeys.RESPONSE);
 
         final List<Device> devices = response.getDevices();
         Assert.assertEquals((int) numberOfDevices, (devices != null) ? devices.size() : 0);
@@ -55,7 +56,7 @@ public class FindRecentDeviceSteps extends GlueBase {
     public void theFindRecentDevicesResponseContainsAtIndex(final Integer index,
             final Map<String, String> expectedDevice) throws Throwable {
         final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.current()
-                .get(PlatformKeys.RESPONSE);
+                .get(PlatformCommonKeys.RESPONSE);
 
         final Device device = response.getDevices().get(index - 1);
         Assert.assertNotNull(device);

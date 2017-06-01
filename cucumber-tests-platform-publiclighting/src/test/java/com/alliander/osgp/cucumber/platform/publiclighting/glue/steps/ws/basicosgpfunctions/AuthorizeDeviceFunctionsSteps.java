@@ -43,6 +43,8 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.Wi
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.TariffSchedule;
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.TariffValue;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.Wait;
+import com.alliander.osgp.cucumber.platform.common.PlatformCommonKeys;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import com.alliander.osgp.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingAdHocManagementClient;
@@ -84,7 +86,8 @@ public class AuthorizeDeviceFunctionsSteps {
     @When("receiving a publiclighting device function request")
     public void receivingAPublicLightingDeviceFunctionRequest(final Map<String, String> requestParameters)
             throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException, IOException {
-        this.deviceFunction = getEnum(requestParameters, PlatformPubliclightingKeys.DEVICE_FUNCTION, DeviceFunction.class);
+        this.deviceFunction = getEnum(requestParameters, PlatformPubliclightingKeys.DEVICE_FUNCTION,
+                DeviceFunction.class);
 
         try {
             switch (this.deviceFunction) {
@@ -126,12 +129,19 @@ public class AuthorizeDeviceFunctionsSteps {
 
     @Then("the publiclighting device function response is \"([^\"]*)\"")
     public void thePublicLightingDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
-        final Object response = ScenarioContext.current().get(PlatformPubliclightingKeys.RESPONSE);
-
         if (allowed) {
-            Assert.assertTrue(!(response instanceof SoapFaultClientException));
+            Wait.until(() -> {
+                Object response = null;
+                try {
+                    response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
+                } catch (final Exception ex) {
+                    // do nothing
+                }
+                Assert.assertNotNull(response);
+                Assert.assertTrue(!(response instanceof SoapFaultClientException));
+            });
         } else {
-            Assert.assertTrue(this.throwable != null);
+            Assert.assertNotNull(this.throwable);
 
             if (!this.throwable.getMessage().equals("METHOD_NOT_ALLOWED_FOR_OWNER")) {
                 Assert.assertEquals("UNAUTHORIZED", this.throwable.getMessage());
@@ -143,20 +153,23 @@ public class AuthorizeDeviceFunctionsSteps {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetLightRequest request = new SetLightRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         final LightValue lightValue = new LightValue();
         lightValue.setIndex(0);
         lightValue.setDimValue(100);
         lightValue.setOn(true);
         request.getLightValue().add(lightValue);
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.publicLightingAdHocManagementClient.setLight(request));
+        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                this.publicLightingAdHocManagementClient.setLight(request));
     }
 
     private void setLightSchedule(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest request = new com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         final Schedule schedule = new Schedule();
         schedule.setActionTime(ActionTimeType.SUNRISE);
         schedule.setIndex(0);
@@ -175,14 +188,16 @@ public class AuthorizeDeviceFunctionsSteps {
         windowType.setMinutesBefore(0);
         schedule.setTriggerWindow(windowType);
         request.getSchedules().add(schedule);
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.publicLightingScheduleManagementClient.setSchedule(request));
+        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                this.publicLightingScheduleManagementClient.setSchedule(request));
     }
 
     private void setTariffSchedule(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleRequest request = new com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final TariffSchedule schedule = new TariffSchedule();
         final TariffValue tariffValue = new TariffValue();
@@ -195,14 +210,16 @@ public class AuthorizeDeviceFunctionsSteps {
         schedule.setIsEnabled(true);
         schedule.setMinimumLightsOn(10);
         request.getSchedules().add(schedule);
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.tariffSwitchingScheduleManagementClient.setSchedule(request));
+        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                this.tariffSwitchingScheduleManagementClient.setSchedule(request));
     }
 
     private void getActualPowerUsage(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetActualPowerUsageRequest request = new GetActualPowerUsageRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
                 this.publicLightingDeviceMonitoringClient.getActualPowerUsage(request));
@@ -212,7 +229,8 @@ public class AuthorizeDeviceFunctionsSteps {
             throws WebServiceSecurityException, GeneralSecurityException, IOException, DatatypeConfigurationException {
         final GetPowerUsageHistoryRequest request = new GetPowerUsageHistoryRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         final TimePeriod timePeriod = new TimePeriod();
         timePeriod.setEndTime(
                 DatatypeFactory.newInstance().newXMLGregorianCalendar(DateTime.now().toGregorianCalendar()));
@@ -229,33 +247,41 @@ public class AuthorizeDeviceFunctionsSteps {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final ResumeScheduleRequest request = new ResumeScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.publicLightingAdHocManagementClient.resumeSchedule(request));
+        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                this.publicLightingAdHocManagementClient.resumeSchedule(request));
     }
 
     private void setTransition(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException, DatatypeConfigurationException {
         final SetTransitionRequest request = new SetTransitionRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setTransitionType(TransitionType.DAY_NIGHT);
 
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.publicLightingAdHocManagementClient.setTransition(request));
+        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                this.publicLightingAdHocManagementClient.setTransition(request));
     }
 
     private void getTariffStatus(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest request = new com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.tariffSwitchingAdHocManagementClient.getStatus(request));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                this.tariffSwitchingAdHocManagementClient.getStatus(request));
     }
 
     private void getLightStatus(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetStatusRequest request = new GetStatusRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                this.publicLightingAdHocManagementClient.getStatus(request));
     }
 }
