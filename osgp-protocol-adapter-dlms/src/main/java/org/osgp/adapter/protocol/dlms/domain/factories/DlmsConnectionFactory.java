@@ -15,15 +15,24 @@ import javax.naming.OperationNotSupportedException;
 import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Component
 public class DlmsConnectionFactory {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionFactory.class);
 
     @Autowired
     @Qualifier("hls5Connector")
@@ -68,8 +77,8 @@ public class DlmsConnectionFactory {
         } else if (device.communicateUnencrypted()) {
             connector = this.lls0ConnectorProvider.get();
         } else {
-            throw new UnsupportedOperationException(
-                    "Only HLS 5, LLS 1 and public (LLS 0) connections are currently supported");
+            LOGGER.error("Only HLS 5, LLS 1 and public (LLS 0) connections are currently supported");
+            throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_COMMUNICATION_SETTING, ComponentType.PROTOCOL_DLMS);
         }
 
         final DlmsConnectionHolder holder = new DlmsConnectionHolder(connector, device, dlmsMessageListener);
