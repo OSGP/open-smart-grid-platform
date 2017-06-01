@@ -24,21 +24,6 @@ public class EventNotificationDto implements Serializable {
     private final String description;
     private final Integer index;
 
-    /**
-     * Earlier constructor without the DateTime the event occurred. For lack of
-     * a better default this will use {@code DateTime.now()} as the moment
-     * registered with the event.
-     *
-     * @deprecated Use
-     *             {@link #EventNotificationDto(String, DateTime, EventTypeDto, String, Integer)}
-     *             if the time the event occurred is known.
-     */
-    @Deprecated
-    public EventNotificationDto(final String deviceUid, final EventTypeDto eventType, final String description,
-            final Integer index) {
-        this(deviceUid, DateTime.now(), eventType, description, index);
-    }
-
     public EventNotificationDto(final String deviceUid, final DateTime dateTime, final EventTypeDto eventType,
             final String description, final Integer index) {
         this.deviceUid = deviceUid;
