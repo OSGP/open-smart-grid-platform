@@ -76,7 +76,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         return (GenerateAndReplaceKeysAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
     }
 
-    public GenerateAndReplaceKeysResponse getGenerateAndeReplaceKeysResponse(final GenerateAndReplaceKeysAsyncRequest asyncRequest)
+    public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(final GenerateAndReplaceKeysAsyncRequest asyncRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
