@@ -7,22 +7,12 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.io.IOException;
-import java.util.Date;
+import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.openmuc.jdlms.MethodParameter;
-import org.openmuc.jdlms.MethodResultCode;
-import org.openmuc.jdlms.SecurityUtils;
-import org.openmuc.jdlms.SecurityUtils.KeyId;
-import org.osgp.adapter.protocol.dlms.application.services.ReEncryptionService;
+import javax.crypto.KeyGenerator;
+
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +21,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GenerateAndReplaceKeysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
-import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
@@ -52,210 +42,56 @@ import com.alliander.osgp.shared.security.EncryptionService;
  */
 @Component
 public class GenerateAndReplaceKeyCommandExecutor
-extends AbstractCommandExecutor<GenerateAndReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
+extends AbstractCommandExecutor<ActionRequestDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateAndReplaceKeyCommandExecutor.class);
-
-    private static final String GENERATE_AND_REPLACE_KEYS = "Generate and replace keys for device: ";
-    private static final String WAS_SUCCESFULL = " was successful";
 
     @Autowired
     private EncryptionService encryptionService;
 
     @Autowired
-    private ReEncryptionService reEncryptionService;
+    private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
-
-    static class KeyWrapper {
-        private final byte[] bytes;
-        private final KeyId keyId;
-        private final SecurityKeyType securityKeyType;
-
-        public KeyWrapper(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
-            this.bytes = bytes;
-            this.keyId = keyId;
-            this.securityKeyType = securityKeyType;
-        }
-
-        public byte[] getBytes() {
-            return this.bytes;
-        }
-
-        public KeyId getKeyId() {
-            return this.keyId;
-        }
-
-        public SecurityKeyType getSecurityKeyType() {
-            return this.securityKeyType;
-        }
-    }
+    public static final int AES_GMC_128_KEY_SIZE = 128;
 
     public GenerateAndReplaceKeyCommandExecutor() {
-        super(SetKeysRequestDto.class);
+        super(GenerateAndReplaceKeysRequestDataDto.class);
     }
 
-    public static KeyWrapper wrap(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
-        return new KeyWrapper(bytes, keyId, securityKeyType);
-    }
-
-    //@Override
     @Override
     public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
 
-        //      waarschijnlijk als je de bundle implementeert
-        //this.checkActionRequestType(actionRequestDto);
-        //final SetKeysRequestDto setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
-        final SetKeysRequestDto setKeysRequestDto = ((SetKeysRequestDto) actionRequestDto);
-
-        LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(),(actionRequestDto));
-
-        DlmsDevice devicePostSave = this.execute(conn, device,
-                GenerateAndReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
-                        SecurityKeyType.E_METER_AUTHENTICATION));
-
-        devicePostSave = this.execute(conn, devicePostSave,
-                GenerateAndReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getEncryptionKey(),
-                        KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY, SecurityKeyType.E_METER_ENCRYPTION));
-
-        return new ActionResponseDto(GENERATE_AND_REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
-    }
-
-    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
-
-        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
-                .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
-        final byte[] reEncryptedEncryptionKey = this.reEncryptionService
-                .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
-
-        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
+        return this.execute(conn, device, actionRequestDto);
     }
 
     @Override
-    public DlmsDevice execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GenerateAndReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
+    public ActionResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final ActionRequestDto actionRequestDto)
                     throws ProtocolAdapterException, FunctionalException {
 
-        // Add the new key and store in the repo
-        DlmsDevice devicePostSave = this.storeNewKey(device, keyWrapper.getBytes(), keyWrapper.getSecurityKeyType());
+        final SetKeysRequestDto setKeysRequestDto = this.generateKeys();
 
-        // Send the key to the device.
-        this.sendToDevice(conn, devicePostSave, keyWrapper);
-
-        // Update key status
-        devicePostSave = this.storeNewKeyState(devicePostSave, keyWrapper.getSecurityKeyType());
-
-        return devicePostSave;
+        return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequestDto);
     }
 
-    /**
-     * Send the key to the device.
-     *
-     * @param conn
-     *            jDLMS connection.
-     * @param device
-     *            Device instance
-     * @param keyWrapper
-     *            Key data
-     * @throws IOException
-     * @throws ProtocolAdapterException
-     * @throws FunctionalException
-     */
-    private void sendToDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GenerateAndReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
-                    throws ProtocolAdapterException, FunctionalException {
+    private SetKeysRequestDto generateKeys() throws FunctionalException {
+        final byte[] authenticationKey = this.generateKey();
+        final byte[] encryptionKey = this.generateKey();
+
+        final byte[] encryptedAuthenticationKey = this.encryptionService.encrypt(authenticationKey);
+        final byte[] encryptedEncryptionKey = this.encryptionService.encrypt(encryptionKey);
+
+        return new SetKeysRequestDto(encryptedAuthenticationKey, encryptedEncryptionKey);
+    }
+
+    private final byte[] generateKey() {
         try {
-            // Decrypt the cipher text using the private key.
-            final byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
-            final byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
-
-            final MethodParameter methodParameterAuth = SecurityUtils.keyChangeMethodParamFor(decryptedMasterKey,
-                    decryptedKey, keyWrapper.getKeyId());
-
-            conn.getDlmsMessageListener()
-            .setDescription("ReplaceKey for " + keyWrapper.securityKeyType + " " + keyWrapper.getKeyId()
-            + ", call method: " + JdlmsObjectToStringUtil.describeMethod(methodParameterAuth));
-
-            final MethodResultCode methodResultCode = conn.getConnection().action(methodParameterAuth).getResultCode();
-
-            if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
-                throw new ProtocolAdapterException(
-                        "AccessResultCode for replace keys was not SUCCESS: " + methodResultCode);
-            }
-
-            // Update key of current connection
-            if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_AUTHENTICATION) {
-                conn.getConnection().changeClientGlobalAuthenticationKey(decryptedKey);
-            } else if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_ENCRYPTION) {
-                conn.getConnection().changeClientGlobalEncryptionKey(decryptedKey);
-            }
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        } catch (final EncrypterException e) {
-            LOGGER.error("Unexpected exception during decryption of security keys", e);
-            throw new ProtocolAdapterException(
-                    "Unexpected exception during decryption of security keys, reason = " + e.getMessage());
+            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator.init(AES_GMC_128_KEY_SIZE);
+            return keyGenerator.generateKey().getEncoded();
+        } catch (final NoSuchAlgorithmException e) {
+            throw new AssertionError("Expected AES algorithm to be available for key generation.", e);
         }
-    }
-
-    /**
-     * Get the valid master key from the device.
-     *
-     * @param device
-     *            Device instance
-     * @return The valid master key.
-     * @throws ProtocolAdapterException
-     *             when master key can not be decoded to a valid hex value.
-     */
-    private byte[] getMasterKey(final DlmsDevice device) throws ProtocolAdapterException {
-        try {
-            final SecurityKey masterKey = device.getValidSecurityKey(SecurityKeyType.E_METER_MASTER);
-            return Hex.decodeHex(masterKey.getKey().toCharArray());
-        } catch (final DecoderException e) {
-            throw new ProtocolAdapterException("Error while decoding key hex string.", e);
-        }
-    }
-
-    /**
-     * Store new key
-     *
-     * CAUTION: only call when a successful connection with the device has been
-     * made, and you are sure any existing new key data is NOT VALID.
-     *
-     * @param device
-     *            Device
-     * @param key
-     *            Key data
-     * @param securityKeyType
-     *            Type of key
-     * @return Saved device
-     */
-    private DlmsDevice storeNewKey(final DlmsDevice device, final byte[] key, final SecurityKeyType securityKeyType) {
-        // If a new key exists, delete this key.
-        final SecurityKey existingKey = device.getNewSecurityKey(securityKeyType);
-        if (existingKey != null) {
-            device.getSecurityKeys().remove(existingKey);
-        }
-
-        device.addSecurityKey(new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), null, null));
-        return this.dlmsDeviceRepository.save(device);
-    }
-
-    /**
-     * Store new key state
-     *
-     * @param device
-     *            Device
-     * @param securityKeyType
-     *            Type of key
-     * @return Saved device
-     */
-    private DlmsDevice storeNewKeyState(final DlmsDevice device, final SecurityKeyType securityKeyType) {
-        final Date now = new Date();
-        device.getValidSecurityKey(securityKeyType).setValidTo(now);
-        device.getNewSecurityKey(securityKeyType).setValidFrom(now);
-        return this.dlmsDeviceRepository.save(device);
     }
 }

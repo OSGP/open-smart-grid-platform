@@ -7,10 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-
-import javax.crypto.KeyGenerator;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
@@ -57,8 +54,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.security.EncryptionService;
-import com.alliander.osgp.shared.security.RsaEncryptionService;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService {
@@ -115,11 +110,7 @@ public class ConfigurationService {
     private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
 
     @Autowired
-    private RsaEncryptionService rsaEncryptionService;
-
-    @Autowired
-    private EncryptionService encryptionService;
-
+    private ReEncryptionService reEncryptionService;
 
     public static final int AES_GMC_128_KEY_SIZE = 128;
 
@@ -273,37 +264,19 @@ public class ConfigurationService {
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
     }
 
-
-
-
     public void generateAndEncrypt(final DlmsConnectionHolder conn, final DlmsDevice device)
             throws ProtocolAdapterException, FunctionalException {
         try {
-
-            final byte[] authenticationKey = this.generateKey();
-            final byte[] encryptionKey = this.generateKey();
-
-            final byte[] encryptedAuthenticationKey = this.encryptionService.encrypt(authenticationKey);
-            final byte[] encryptedEncryptionKey = this.encryptionService.encrypt(encryptionKey);
-
-            final SetKeysRequestDto keySet = new SetKeysRequestDto(encryptedAuthenticationKey, encryptedEncryptionKey);
-
-            this.generateAndReplaceKeyCommandExecutor.executeBundleAction(conn, device, keySet);
+            /*
+             * Call executeBundleAction, since it knows to deal with the
+             * SetKeysRequestDto containing authentication and encryption key,
+             * while execute deals with a single key only.
+             */
+            this.generateAndReplaceKeyCommandExecutor.executeBundleAction(conn, device, null);
 
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw e;
-        }
-
-    }
-
-    private final byte[] generateKey() {
-        try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(AES_GMC_128_KEY_SIZE);
-            return keyGenerator.generateKey().getEncoded();
-        } catch (final NoSuchAlgorithmException e) {
-            throw new AssertionError("Expected AES algorithm to be available for key generation.", e);
         }
     }
 
@@ -316,7 +289,9 @@ public class ConfigurationService {
              * SetKeysRequestDto containing authentication and encryption key,
              * while execute deals with a single key only.
              */
-            this.replaceKeyCommandExecutor.executeBundleAction(conn, device, keySet);
+            final SetKeysRequestDto setKeysRequestDto = this.reEncryptKeys(keySet);
+            this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequestDto);
+
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw e;
@@ -346,6 +321,16 @@ public class ConfigurationService {
 
         return new GetConfigurationObjectResponseDto(
                 this.getConfigurationObjectCommandExecutor.execute(conn, device, null));
+    }
+
+    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
+
+        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
+                .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
+        final byte[] reEncryptedEncryptionKey = this.reEncryptionService
+                .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
+
+        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
     }
 
 }

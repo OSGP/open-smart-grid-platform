@@ -16,7 +16,6 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
-import org.osgp.adapter.protocol.dlms.application.services.ReEncryptionService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -52,7 +51,7 @@ import com.alliander.osgp.shared.security.EncryptionService;
  */
 @Component
 public class ReplaceKeyCommandExecutor
-        extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
+extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
@@ -61,9 +60,6 @@ public class ReplaceKeyCommandExecutor
 
     @Autowired
     private EncryptionService encryptionService;
-
-    @Autowired
-    private ReEncryptionService reEncryptionService;
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
@@ -105,35 +101,24 @@ public class ReplaceKeyCommandExecutor
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
 
         this.checkActionRequestType(actionRequestDto);
-        final SetKeysRequestDto setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
 
-        LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), setKeysRequestDto);
+        LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), actionRequestDto);
 
         DlmsDevice devicePostSave = this.execute(conn, device,
-                ReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
+                ReplaceKeyCommandExecutor.wrap(((SetKeysRequestDto) actionRequestDto).getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
                         SecurityKeyType.E_METER_AUTHENTICATION));
 
         devicePostSave = this.execute(conn, devicePostSave,
-                ReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getEncryptionKey(),
+                ReplaceKeyCommandExecutor.wrap(((SetKeysRequestDto) actionRequestDto).getEncryptionKey(),
                         KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY, SecurityKeyType.E_METER_ENCRYPTION));
 
         return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
     }
 
-    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
-
-        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
-                .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
-        final byte[] reEncryptedEncryptionKey = this.reEncryptionService
-                .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
-
-        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
-    }
-
     @Override
     public DlmsDevice execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
-            throws ProtocolAdapterException, FunctionalException {
+                    throws ProtocolAdapterException, FunctionalException {
 
         // Add the new key and store in the repo
         DlmsDevice devicePostSave = this.storeNewKey(device, keyWrapper.getBytes(), keyWrapper.getSecurityKeyType());
@@ -162,7 +147,7 @@ public class ReplaceKeyCommandExecutor
      */
     private void sendToDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
-            throws ProtocolAdapterException, FunctionalException {
+                    throws ProtocolAdapterException, FunctionalException {
         try {
             // Decrypt the cipher text using the private key.
             final byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
@@ -173,8 +158,8 @@ public class ReplaceKeyCommandExecutor
                     decryptedKey, keyWrapper.getKeyId());
 
             conn.getDlmsMessageListener()
-                    .setDescription("ReplaceKey for " + keyWrapper.securityKeyType + " " + keyWrapper.getKeyId()
-                            + ", call method: " + JdlmsObjectToStringUtil.describeMethod(methodParameterAuth));
+            .setDescription("ReplaceKey for " + keyWrapper.securityKeyType + " " + keyWrapper.getKeyId()
+            + ", call method: " + JdlmsObjectToStringUtil.describeMethod(methodParameterAuth));
 
             final MethodResultCode methodResultCode = conn.getConnection().action(methodParameterAuth).getResultCode();
 
