@@ -31,8 +31,8 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSimulatorSteps.class);
 
-    private static final String CLEANUP_PROPS_REQUEST = "http://%s:4567/CleanupProperties";
-    private static final String ADD_PROPS_REQUEST = "http://%s:4567/AddProperties/%s/%s";
+    private static final String CLEANUP_PROPS_REQUEST = "http://%s/RESTfulExample/rest/CleanupProperties";
+    private static final String ADD_PROPS_REQUEST = "http://%s/RESTfulExample/rest/AddProperties/%s/%s";
 
     @Given("^device simulate with classid (\\d+) obiscode \"([^\"]*)\" and attributes$")
     public void deviceSimulateWithClassidObiscodeAndAttributes(final int classId, final String obisCode,
@@ -70,7 +70,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     private String makeRequest(final int classId, final String obisCode, final Map<String, String> settings) {
         final StringBuilder props = new StringBuilder();
         for (final String key : settings.keySet()) {
-            props.append(key + "=" + settings.get(key) + ";");
+            props.append(key + "=" + settings.get(key) + ",");
         }
 
         final String filename = String.format("%d_%s", classId, obisCode);
