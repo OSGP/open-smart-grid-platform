@@ -18,11 +18,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -30,7 +32,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.PowerUsageData;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
@@ -588,22 +592,15 @@ public class OslpDeviceSteps {
     @Given("^the device returns a get power usage history response \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final String result, final String protocol,
             final Map<String, String> requestParameters) {
-        this.oslpMockServer.mockGetPowerUsageHistoryResponse(Enum.valueOf(Status.class, result),
-                getString(requestParameters, PlatformPubliclightingKeys.RECORD_TIME), getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX),
-                getInteger(requestParameters, PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER, null),
-                getEnum(requestParameters, PlatformPubliclightingKeys.METER_TYPE, MeterType.class),
-                getInteger(requestParameters, PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.ACTUAL_CURRENT1, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.ACTUAL_CURRENT2, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.ACTUAL_CURRENT3, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.ACTUAL_POWER1, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.ACTUAL_POWER2, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.ACTUAL_POWER3, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR1, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR2, null),
-                getInteger(requestParameters, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR3, null),
-                getString(requestParameters, PlatformPubliclightingKeys.RELAY_DATA, null));
+    	
+    	Map<String, String[]> requestMap = new HashMap<>();
+    	
+    	for (String key : requestParameters.keySet()) {
+    		String[] values = requestParameters.get(key).split(PlatformPubliclightingKeys.SEPARATOR_SPACE_COLON_SPACE);
+    		requestMap.put(key, values);
+    	}
+    	
+    	this.oslpMockServer.mockGetPowerUsageHistoryResponse(Enum.valueOf(Status.class, result), requestMap);
     }
 
     /**

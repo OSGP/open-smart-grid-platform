@@ -1,7 +1,0 @@
-1 - Set event notificatiions for a not registered device
-
-2 - Multiple selection
-
-3 - Via SOAP two times the same event in the message
-
-!contents -R2 -g -p -f -h

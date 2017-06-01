@@ -1,9 +1,0 @@
-!1 Remarks
-
-!2 What is recent?
-
-!2 How do i get incorrect OSLP-messages?
-
-Incorrect messages refer to (among other things, check with Hans Rooden) messages for which the public and private keys do not match between platform and device (e.g. the device adds a security key to the message which was signed by a private key while the platform has public key for the device which does not match the device´s private key. One could test this by changing the AME public key on the platform (i.e. use a different public key).
-
-!contents -R2 -g -p -f -h

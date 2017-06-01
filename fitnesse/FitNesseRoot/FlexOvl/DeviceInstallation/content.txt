@@ -1,3 +1,0 @@
-!2 Installation of a device
-
-!3 !contents -R1 -h -g -p -f -h

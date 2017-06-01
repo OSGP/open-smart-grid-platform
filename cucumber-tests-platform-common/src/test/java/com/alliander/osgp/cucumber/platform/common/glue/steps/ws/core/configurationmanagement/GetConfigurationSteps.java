@@ -189,8 +189,7 @@ public class GetConfigurationSteps {
             }
         }
 
-        //// Note: This information isn't added in the fitnesse test, how to
-        //// test this?
+        //// Note: How to test this?
         // configuration.getRelayLinking();
 
         if (expectedResponseData.containsKey(PlatformKeys.KEY_PREFERRED_LINKTYPE)
