@@ -202,6 +202,17 @@
     </xsd:complexType>
   </xsd:element>
 
+
+  <xsd:element name="GenerateAndReplaceKeysRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GenerateAndReplaceKeysData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+
+
   <xsd:complexType name="Actions">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">
@@ -230,6 +241,7 @@
         <xsd:element ref="tns:SetClockConfigurationRequest" />
         <xsd:element ref="tns:GetConfigurationObjectRequest" />
         <xsd:element ref="tns:GetProfileGenericDataRequest" />
+        <xsd:element ref="tns:GenerateAndReplaceKeysRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
@@ -373,6 +385,7 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+
 
   <xsd:complexType name="AllResponses">
     <xsd:sequence>

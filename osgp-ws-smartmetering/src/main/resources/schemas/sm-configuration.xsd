@@ -592,6 +592,16 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:complexType name="GenerateAndReplaceKeysData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+
   <xsd:element name="GenerateAndReplaceKeysAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
