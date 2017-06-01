@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -26,20 +26,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
-/**
- * Some code may look odd, specifically in the execute() method. The reason is
- * that the device may (sometimes) return NOT_OK after a replacekeys request but
- * was in fact successful! Actually the situation is that (sometimes) the device
- * returns NOT_OK but does replace the keys. So the key that was sent to the
- * device that received the status NOT_OK should be saved, so in case the
- * supposedly valid key (the key that was on the device before replace keys was
- * executed) does not work anymore the new (but supposedly NOT_OK) key can be
- * tried. This key is recognized because both: valid_to=null and valid_from=null
- * ! If that key works we know the device gave the wrong response and this key
- * should be made valid. See also DlmsDevice: discardInvalidKeys,
- * promoteInvalidKeys, get/hasNewSecurityKey.
- *
- */
 @Component
 public class GenerateAndReplaceKeyCommandExecutor
 extends AbstractCommandExecutor<ActionRequestDto, ActionResponseDto> {
@@ -69,13 +55,13 @@ extends AbstractCommandExecutor<ActionRequestDto, ActionResponseDto> {
     public ActionResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto)
                     throws ProtocolAdapterException, FunctionalException {
-
-        final SetKeysRequestDto setKeysRequestDto = this.generateKeys();
+        LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
+        final SetKeysRequestDto setKeysRequestDto = this.generateAndEncryptKeys();
 
         return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequestDto);
     }
 
-    private SetKeysRequestDto generateKeys() throws FunctionalException {
+    private SetKeysRequestDto generateAndEncryptKeys() throws FunctionalException {
         final byte[] authenticationKey = this.generateKey();
         final byte[] encryptionKey = this.generateKey();
 

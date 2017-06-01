@@ -267,13 +267,8 @@ public class ConfigurationService {
     public void generateAndEncrypt(final DlmsConnectionHolder conn, final DlmsDevice device)
             throws ProtocolAdapterException, FunctionalException {
         try {
-            /*
-             * Call executeBundleAction, since it knows to deal with the
-             * SetKeysRequestDto containing authentication and encryption key,
-             * while execute deals with a single key only.
-             */
-            this.generateAndReplaceKeyCommandExecutor.executeBundleAction(conn, device, null);
 
+            this.generateAndReplaceKeyCommandExecutor.executeBundleAction(conn, device, null);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw e;
@@ -324,7 +319,6 @@ public class ConfigurationService {
     }
 
     private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
-
         final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
                 .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
         final byte[] reEncryptedEncryptionKey = this.reEncryptionService
