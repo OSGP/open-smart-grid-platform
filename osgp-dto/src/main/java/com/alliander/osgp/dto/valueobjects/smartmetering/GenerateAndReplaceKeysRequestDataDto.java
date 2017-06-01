@@ -11,4 +11,8 @@ public class GenerateAndReplaceKeysRequestDataDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 2733945253731054997L;
 
+    public GenerateAndReplaceKeysRequestDataDto() {
+        // default constructor
+    }
+
 }
