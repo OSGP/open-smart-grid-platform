@@ -492,16 +492,10 @@ public class ConfigurationService {
         return correlationUid;
     }
 
-
-
-
-
-
-
     /**
      * Checks if the organization (identified by the oranisationIdentification)
      * is allowed to execute this function. Creates a correlation id, sends the
-     * generate And replace request from the ws-adapter to the domain-adapter and
+     * generate and replace request from the ws-adapter to the domain-adapter and
      * returns the correlation id.
      *
      * @param organisationIdentification

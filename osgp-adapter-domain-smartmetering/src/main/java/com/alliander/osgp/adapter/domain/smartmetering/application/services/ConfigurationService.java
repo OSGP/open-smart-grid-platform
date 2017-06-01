@@ -463,9 +463,22 @@ public class ConfigurationService {
                 deviceMessageMetadata.getScheduleTime());
     }
 
+    public void handleReplaceKeysResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
+        LOGGER.info("handleReplaceKeysResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Replace Keys Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
 
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, null, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+    }
 
     public void generateAndReplaceKeys(final DeviceMessageMetadata deviceMessageMetadata)
             throws FunctionalException {
@@ -492,23 +505,6 @@ public class ConfigurationService {
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
             LOGGER.error("Generate and replace keys response not ok. Unexpected Exception", exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
-    }
-
-    public void handleReplaceKeysResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
-
-        LOGGER.info("handleReplaceKeysResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
-
-        ResponseMessageResultType result = deviceResult;
-        if (exception != null) {
-            LOGGER.error("Replace Keys Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 

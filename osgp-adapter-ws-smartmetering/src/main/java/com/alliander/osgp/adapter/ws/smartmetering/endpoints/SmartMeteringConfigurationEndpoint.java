@@ -781,8 +781,27 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         return asyncResponse;
     }
 
+    @PayloadRoot(localPart = "ReplaceKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public ReplaceKeysResponse getReplaceKeysResponse(@RequestPayload final ReplaceKeysAsyncRequest request)
+            throws OsgpException {
 
+        ReplaceKeysResponse response = null;
+        try {
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
+            response = new ReplaceKeysResponse();
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
 
     @PayloadRoot(localPart = "GenerateAndReplaceKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
@@ -792,12 +811,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GenerateAndReplaceKeysAsyncResponse asyncResponse = null;
         try {
-
             LOGGER.info("Generate and replace keys request received from organisation {} for device {}.",
                     organisationIdentification, request.getDeviceIdentification());
-            //            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData keySet = this.configurationMapper
-            //                    .map(request.getSetKeysRequestData(),
-            //                            com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
 
             final String correlationUid = this.configurationService.enqueueGenerateAndReplaceKeysRequest(
                     organisationIdentification, request.getDeviceIdentification(),
@@ -828,31 +843,6 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                     .dequeue(request.getCorrelationUid());
 
             response = new GenerateAndReplaceKeysResponse();
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
-            }
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-
-
-
-    @PayloadRoot(localPart = "ReplaceKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public ReplaceKeysResponse getReplaceKeysResponse(@RequestPayload final ReplaceKeysAsyncRequest request)
-            throws OsgpException {
-
-        ReplaceKeysResponse response = null;
-        try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
-
-            response = new ReplaceKeysResponse();
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
