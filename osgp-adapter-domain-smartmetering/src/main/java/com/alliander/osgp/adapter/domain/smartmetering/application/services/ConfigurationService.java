@@ -501,10 +501,6 @@ public class ConfigurationService {
                 deviceMessageMetadata.getMessageType());
     }
 
-
-
-
-
     public void handleReplaceKeysResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
