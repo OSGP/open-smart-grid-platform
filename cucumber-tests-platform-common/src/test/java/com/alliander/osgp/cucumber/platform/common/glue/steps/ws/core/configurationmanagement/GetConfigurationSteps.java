@@ -68,8 +68,8 @@ public class GetConfigurationSteps {
     @When("^receiving a get configuration request$")
     public void receivingAGetConfigurationRequest(final Map<String, String> requestParameters) throws Throwable {
         final GetConfigurationRequest request = new GetConfigurationRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.getConfiguration(request));
@@ -89,16 +89,16 @@ public class GetConfigurationSteps {
      */
     @Then("^the get configuration async response contains$")
     public void theGetConfigurationResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final GetConfigurationAsyncResponse response = (GetConfigurationAsyncResponse) ScenarioContext.current()
+        final GetConfigurationAsyncResponse asyncResponse = (GetConfigurationAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
@@ -129,6 +129,7 @@ public class GetConfigurationSteps {
 
         final GetConfigurationResponse response = Wait.untilAndReturn(() -> {
             final GetConfigurationResponse retval = this.client.getGetConfiguration(request);
+            Assert.assertNotNull(retval);
             Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class),
                     retval.getResult());
             return retval;
@@ -138,7 +139,8 @@ public class GetConfigurationSteps {
         Assert.assertNotNull(configuration);
 
         if (expectedResponseData.containsKey(PlatformKeys.KEY_LIGHTTYPE)
-                && !expectedResponseData.get(PlatformKeys.KEY_LIGHTTYPE).isEmpty() && configuration.getLightType() != null) {
+                && !expectedResponseData.get(PlatformKeys.KEY_LIGHTTYPE).isEmpty()
+                && configuration.getLightType() != null) {
             Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_LIGHTTYPE, LightType.class),
                     configuration.getLightType());
         }
@@ -146,13 +148,15 @@ public class GetConfigurationSteps {
         final DaliConfiguration daliConfiguration = configuration.getDaliConfiguration();
         if (daliConfiguration != null) {
 
-            if (expectedResponseData.containsKey(PlatformKeys.DC_LIGHTS) && !expectedResponseData.get(PlatformKeys.DC_LIGHTS).isEmpty()
+            if (expectedResponseData.containsKey(PlatformKeys.DC_LIGHTS)
+                    && !expectedResponseData.get(PlatformKeys.DC_LIGHTS).isEmpty()
                     && daliConfiguration.getNumberOfLights() != 0) {
                 Assert.assertEquals((int) getInteger(expectedResponseData, PlatformKeys.DC_LIGHTS),
                         daliConfiguration.getNumberOfLights());
             }
 
-            if (expectedResponseData.containsKey(PlatformKeys.DC_MAP) && !expectedResponseData.get(PlatformKeys.DC_MAP).isEmpty()
+            if (expectedResponseData.containsKey(PlatformKeys.DC_MAP)
+                    && !expectedResponseData.get(PlatformKeys.DC_MAP).isEmpty()
                     && daliConfiguration.getIndexAddressMap() != null) {
                 final List<IndexAddressMap> indexAddressMapList = daliConfiguration.getIndexAddressMap();
                 final String[] dcMapArray = getString(expectedResponseData, PlatformKeys.DC_MAP).split(";");
@@ -168,7 +172,8 @@ public class GetConfigurationSteps {
         final RelayConfiguration relayConfiguration = configuration.getRelayConfiguration();
         if (relayConfiguration != null) {
 
-            if (expectedResponseData.containsKey(PlatformKeys.RC_MAP) && !expectedResponseData.get(PlatformKeys.RC_MAP).isEmpty()
+            if (expectedResponseData.containsKey(PlatformKeys.RC_MAP)
+                    && !expectedResponseData.get(PlatformKeys.RC_MAP).isEmpty()
                     && relayConfiguration.getRelayMap() != null) {
                 final List<RelayMap> relayMapList = relayConfiguration.getRelayMap();
                 final String[] rcMapArray = getString(expectedResponseData, PlatformKeys.RC_MAP).split(";");
@@ -181,7 +186,8 @@ public class GetConfigurationSteps {
                         if (expectedResponseData.containsKey(PlatformKeys.KEY_RELAY_TYPE)
                                 && !expectedResponseData.get(PlatformKeys.KEY_RELAY_TYPE).isEmpty()
                                 && relayMapList.get(i).getRelayType() != null) {
-                            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_RELAY_TYPE, RelayType.class),
+                            Assert.assertEquals(
+                                    getEnum(expectedResponseData, PlatformKeys.KEY_RELAY_TYPE, RelayType.class),
                                     relayMapList.get(i).getRelayType());
                         }
                     }
@@ -203,7 +209,8 @@ public class GetConfigurationSteps {
         // enumerations with the name MeterType, but not all of them has all
         // values the same. Some with underscore and some without.
 
-        if (expectedResponseData.containsKey(PlatformKeys.METER_TYPE) && !expectedResponseData.get(PlatformKeys.METER_TYPE).isEmpty()
+        if (expectedResponseData.containsKey(PlatformKeys.METER_TYPE)
+                && !expectedResponseData.get(PlatformKeys.METER_TYPE).isEmpty()
                 && configuration.getMeterType() != null) {
             MeterType meterType = null;
             final String sMeterType = getString(expectedResponseData, PlatformKeys.METER_TYPE);
@@ -220,15 +227,17 @@ public class GetConfigurationSteps {
         if (expectedResponseData.containsKey(PlatformKeys.SHORT_INTERVAL)
                 && !expectedResponseData.get(PlatformKeys.SHORT_INTERVAL).isEmpty()
                 && configuration.getShortTermHistoryIntervalMinutes() != null) {
-            Assert.assertEquals(getInteger(expectedResponseData, PlatformKeys.SHORT_INTERVAL, PlatformDefaults.DEFAULT_SHORT_INTERVAL),
+            Assert.assertEquals(
+                    getInteger(expectedResponseData, PlatformKeys.SHORT_INTERVAL,
+                            PlatformDefaults.DEFAULT_SHORT_INTERVAL),
                     configuration.getShortTermHistoryIntervalMinutes());
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.LONG_INTERVAL)
                 && !expectedResponseData.get(PlatformKeys.LONG_INTERVAL).isEmpty()
                 && configuration.getLongTermHistoryInterval() != null) {
-            Assert.assertEquals(getInteger(expectedResponseData, PlatformKeys.LONG_INTERVAL, PlatformDefaults.DEFAULT_LONG_INTERVAL),
-                    configuration.getLongTermHistoryInterval());
+            Assert.assertEquals(getInteger(expectedResponseData, PlatformKeys.LONG_INTERVAL,
+                    PlatformDefaults.DEFAULT_LONG_INTERVAL), configuration.getLongTermHistoryInterval());
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.INTERVAL_TYPE)
@@ -242,18 +251,21 @@ public class GetConfigurationSteps {
     @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\" contains soap fault$")
     public void thePlatformBufferesAGetConfigurationResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
-        try {
-            final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
-            final AsyncRequest asyncRequest = new AsyncRequest();
-            asyncRequest.setDeviceId(deviceIdentification);
-            asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
-            request.setAsyncRequest(asyncRequest);
+        final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
 
-            Wait.untilAndReturn(() -> {
-                return this.client.getGetConfiguration(request);
-            });
-        } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_MESSAGE), ex.getMessage());
-        }
+        Wait.until(() -> {
+            GetConfigurationResponse response = null;
+            try {
+                response = this.client.getGetConfiguration(request);
+            } catch (final Exception e) {
+                // do nothing
+            }
+
+            Assert.assertNotNull(response);
+        });
     }
 }

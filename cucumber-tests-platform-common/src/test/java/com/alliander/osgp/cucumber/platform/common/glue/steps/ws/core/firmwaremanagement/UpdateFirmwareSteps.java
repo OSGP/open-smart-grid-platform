@@ -25,6 +25,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModu
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.common.PlatformCommonKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreFirmwareManagementClient;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
@@ -78,20 +79,23 @@ public class UpdateFirmwareSteps {
         firmware.setId((int) firmwareId);
         firmware.setFilename(getString(requestParameters, PlatformKeys.FIRMWARE_FILENAME, ""));
         firmware.setDescription(getString(requestParameters, PlatformKeys.FIRMWARE_DESCRIPTION, ""));
-        firmware.setPushToNewDevices(
-                getBoolean(requestParameters, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES, PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
+        firmware.setPushToNewDevices(getBoolean(requestParameters, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
+                PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
         firmware.setFirmwareModuleData(new FirmwareModuleData());
-        firmware.setManufacturer(getString(requestParameters, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.MANUFACTURER_NAME));
-        firmware.setModelCode(
-                getString(requestParameters, PlatformKeys.DEVICEMODEL_MODELCODE, PlatformDefaults.DEVICE_MODEL_MODEL_CODE));
+        firmware.setManufacturer(
+                getString(requestParameters, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.MANUFACTURER_NAME));
+        firmware.setModelCode(getString(requestParameters, PlatformKeys.DEVICEMODEL_MODELCODE,
+                PlatformDefaults.DEVICE_MODEL_MODEL_CODE));
         return firmware;
     }
 
     @Then("^the update firmware response contains$")
     public void theUpdateFirmwareResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final ChangeFirmwareResponse response = (ChangeFirmwareResponse) ScenarioContext.current().get(PlatformKeys.RESPONSE);
+        final ChangeFirmwareResponse response = (ChangeFirmwareResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
 
-        Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class), response.getResult());
+        Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class),
+                response.getResult());
     }
 
     @Then("^the update firmware response contains soap fault$")

@@ -29,7 +29,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Resum
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
@@ -42,9 +42,6 @@ import cucumber.api.java.en.When;
  * Class with all the set light requests steps
  */
 public class ResumeScheduleSteps {
-    @Autowired
-    private CoreDeviceConfiguration configuration;
-
     @Autowired
     private PublicLightingAdHocManagementClient client;
 
@@ -63,9 +60,12 @@ public class ResumeScheduleSteps {
 
         final ResumeScheduleRequest request = new ResumeScheduleRequest();
 
-        request.setDeviceIdentification(getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
-        request.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX, PlatformPubliclightingDefaults.DEFAULT_INDEX));
-        request.setIsImmediate(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ISIMMEDIATE, PlatformPubliclightingDefaults.DEFAULT_ISIMMEDIATE));
+        request.setDeviceIdentification(
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
+        request.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX,
+                PlatformPubliclightingDefaults.DEFAULT_INDEX));
+        request.setIsImmediate(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ISIMMEDIATE,
+                PlatformPubliclightingDefaults.DEFAULT_ISIMMEDIATE));
 
         try {
             ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.client.resumeSchedule(request));
@@ -78,7 +78,8 @@ public class ResumeScheduleSteps {
     public void receivingASetResumeScheduleByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
-        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                "unknown-organization");
 
         this.receivingAResumeScheduleRequest(requestParameters);
     }
@@ -95,29 +96,40 @@ public class ResumeScheduleSteps {
     @Then("^the resume schedule async response contains$")
     public void theResumeScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-        final ResumeScheduleAsyncResponse response = (ResumeScheduleAsyncResponse) ScenarioContext.current()
+        final ResumeScheduleAsyncResponse asyncResponse = (ResumeScheduleAsyncResponse) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: ["
+                + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a resume schedule response message for device \"([^\"]*)\"$")
     public void thenThePlatformBuffersAResumeScheduleResponseMessage(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
-        final ResumeScheduleResponse response = this.getResponseWithCorrelationUID(deviceIdentification,
-                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
-        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
-                response.getResult());
+        Wait.until(() -> {
+            ResumeScheduleResponse response = null;
+            try {
+                response = this.getResponseWithCorrelationUID(deviceIdentification,
+                        (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+            } catch (final Exception e) {
+                // do nothing
+            }
+            Assert.assertNotNull(response);
+            Assert.assertEquals(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
+                    response.getResult());
+        });
+
     }
 
     @Then("^the resume schedule async response contains soap fault$")
@@ -135,7 +147,8 @@ public class ResumeScheduleSteps {
             this.getResponseWithCorrelationUID(deviceIdentification,
                     asyncResponse.getAsyncResponse().getCorrelationUid());
         } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResult, PlatformPubliclightingKeys.KEY_FAULTSTRING), ex.getFaultStringOrReason());
+            Assert.assertEquals(getString(expectedResult, PlatformPubliclightingKeys.KEY_FAULTSTRING),
+                    ex.getFaultStringOrReason());
         }
     }
 
@@ -147,22 +160,10 @@ public class ResumeScheduleSteps {
         asyncRequest.setCorrelationUid(correlationUID);
         request.setAsyncRequest(asyncRequest);
 
-        int count = 0;
-        while (true) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-            Thread.sleep(1000);
-
-            try {
-                return this.client.getResumeScheduleResponse(request);
-            } catch (final SoapFaultClientException ex) {
-                throw ex;
-            } catch (final Exception ex) {
-                // Do nothing
-            }
-        }
+        return Wait.untilAndReturn(() -> {
+            final ResumeScheduleResponse retval = this.client.getResumeScheduleResponse(request);
+            Assert.assertNotNull(retval);
+            return retval;
+        });
     }
 }

@@ -31,7 +31,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLi
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
@@ -44,9 +44,6 @@ import cucumber.api.java.en.When;
  * Class with all the set light requests steps
  */
 public class SetLightSteps {
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private PublicLightingAdHocManagementClient client;
@@ -66,14 +63,18 @@ public class SetLightSteps {
 
         final SetLightRequest request = new SetLightRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         final LightValue lightValue = new LightValue();
-        lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX, PlatformPubliclightingDefaults.DEFAULT_INDEX));
+        lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX,
+                PlatformPubliclightingDefaults.DEFAULT_INDEX));
         if (requestParameters.containsKey(PlatformPubliclightingKeys.KEY_DIMVALUE)
                 && !StringUtils.isEmpty(requestParameters.get(PlatformPubliclightingKeys.KEY_DIMVALUE))) {
-            lightValue.setDimValue(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_DIMVALUE, PlatformPubliclightingDefaults.DEFAULT_DIMVALUE));
+            lightValue.setDimValue(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_DIMVALUE,
+                    PlatformPubliclightingDefaults.DEFAULT_DIMVALUE));
         }
-        lightValue.setOn(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ON, PlatformPubliclightingDefaults.DEFAULT_ON));
+        lightValue.setOn(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ON,
+                PlatformPubliclightingDefaults.DEFAULT_ON));
         request.getLightValue().add(lightValue);
 
         try {
@@ -88,19 +89,24 @@ public class SetLightSteps {
             final Integer nofInvalidLightValues, final Map<String, String> requestParameters) throws Throwable {
         final SetLightRequest request = new SetLightRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         for (int i = 0; i < nofValidLightValues; i++) {
             final LightValue lightValue = new LightValue();
-            lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX, PlatformPubliclightingDefaults.DEFAULT_INDEX));
-            lightValue.setDimValue(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_DIMVALUE, PlatformPubliclightingDefaults.DEFAULT_DIMVALUE));
-            lightValue.setOn(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ON, PlatformPubliclightingDefaults.DEFAULT_ON));
+            lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX,
+                    PlatformPubliclightingDefaults.DEFAULT_INDEX));
+            lightValue.setDimValue(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_DIMVALUE,
+                    PlatformPubliclightingDefaults.DEFAULT_DIMVALUE));
+            lightValue.setOn(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ON,
+                    PlatformPubliclightingDefaults.DEFAULT_ON));
             request.getLightValue().add(lightValue);
         }
 
         for (int i = 0; i < nofInvalidLightValues; i++) {
             final LightValue lightValue = new LightValue();
-            lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX, PlatformPubliclightingDefaults.DEFAULT_INDEX));
+            lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX,
+                    PlatformPubliclightingDefaults.DEFAULT_INDEX));
             lightValue.setDimValue(50);
             lightValue.setOn(false);
             request.getLightValue().add(lightValue);
@@ -118,13 +124,17 @@ public class SetLightSteps {
             final Map<String, String> requestParameters) throws Throwable {
         final SetLightRequest request = new SetLightRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         for (int i = 0; i < nofLightValues; i++) {
             final LightValue lightValue = new LightValue();
-            lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX, PlatformPubliclightingDefaults.DEFAULT_INDEX));
-            lightValue.setDimValue(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_DIMVALUE, PlatformPubliclightingDefaults.DEFAULT_DIMVALUE));
-            lightValue.setOn(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ON, PlatformPubliclightingDefaults.DEFAULT_ON));
+            lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX,
+                    PlatformPubliclightingDefaults.DEFAULT_INDEX));
+            lightValue.setDimValue(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_DIMVALUE,
+                    PlatformPubliclightingDefaults.DEFAULT_DIMVALUE));
+            lightValue.setOn(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ON,
+                    PlatformPubliclightingDefaults.DEFAULT_ON));
             request.getLightValue().add(lightValue);
         }
 
@@ -147,19 +157,21 @@ public class SetLightSteps {
     @Then("^the set light async response contains$")
     public void theSetLightResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
 
-        final SetLightAsyncResponse response = (SetLightAsyncResponse) ScenarioContext.current().get(PlatformPubliclightingKeys.RESPONSE);
+        final SetLightAsyncResponse asyncResponse = (SetLightAsyncResponse) ScenarioContext.current()
+                .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: ["
+                + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the set light response contains soap fault$")
@@ -173,29 +185,21 @@ public class SetLightSteps {
         final SetLightAsyncRequest request = new SetLightAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+        asyncRequest.setCorrelationUid(
+                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-            Thread.sleep(1000);
-
+        Wait.until(() -> {
+            SetLightResponse response = null;
             try {
-                final SetLightResponse response = this.client.getSetLightResponse(request);
-
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
-                        response.getResult());
-
-                success = true;
-            } catch (final Exception ex) {
-                // Do nothing
+                response = this.client.getSetLightResponse(request);
+            } catch (final Exception e) {
+                // do nothing
             }
-        }
+            Assert.assertNotNull(response);
+            Assert.assertEquals(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
+                    response.getResult());
+        });
     }
 }

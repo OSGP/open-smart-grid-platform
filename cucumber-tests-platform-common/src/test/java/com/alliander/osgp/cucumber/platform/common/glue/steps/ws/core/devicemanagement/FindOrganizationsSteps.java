@@ -23,6 +23,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.common.PlatformCommonKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
@@ -84,8 +85,9 @@ public class FindOrganizationsSteps {
      */
     @Then("^the get all organizations response contains \"([^\"]*)\" organizations?$")
     public void theGetAllOrganizationsResponseContainsOrganization(final Integer expectedCount) {
-        final FindAllOrganisationsResponse response = ((FindAllOrganisationsResponse) ScenarioContext.current()
-                .get(PlatformKeys.RESPONSE));
+        final FindAllOrganisationsResponse response = (FindAllOrganisationsResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
+
         Assert.assertEquals((int) expectedCount, response.getOrganisations().size());
     }
 
@@ -105,13 +107,16 @@ public class FindOrganizationsSteps {
     @Then("^the get all organizations response contains at index \"([^\"]*)\"$")
     public void theGetAllOrganizationsResponseContainsAtIndex(final Integer expectedIndex,
             final Map<String, String> expectedResult) {
-        final FindAllOrganisationsResponse response = ((FindAllOrganisationsResponse) ScenarioContext.current()
-                .get(PlatformKeys.RESPONSE));
+        final FindAllOrganisationsResponse response = (FindAllOrganisationsResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
 
         final Organisation organisation = response.getOrganisations().get(expectedIndex - 1);
-        Assert.assertEquals(getString(expectedResult, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION), organisation.getOrganisationIdentification());
-        Assert.assertEquals(getString(expectedResult, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_ORGANIZATION_NAME),
+        Assert.assertEquals(
+                getString(expectedResult, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION),
+                organisation.getOrganisationIdentification());
+        Assert.assertEquals(
+                getString(expectedResult, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_ORGANIZATION_NAME),
                 organisation.getName());
         final String domains = getString(expectedResult, PlatformKeys.KEY_DOMAINS, PlatformDefaults.DEFAULT_DOMAINS);
         Assert.assertEquals("[" + domains.replaceAll(";", ", ") + "]", organisation.getDomains().toString());

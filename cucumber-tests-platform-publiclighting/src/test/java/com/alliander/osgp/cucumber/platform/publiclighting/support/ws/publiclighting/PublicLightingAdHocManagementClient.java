@@ -54,15 +54,9 @@ public class PublicLightingAdHocManagementClient extends BaseClient {
         return (ResumeScheduleResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public SetLightResponse getSetLightResponse(final SetLightAsyncRequest request) {
-        WebServiceTemplate webServiceTemplate = null;
-        try {
-            webServiceTemplate = this.publicLightingAdHocManagementWstf
-                    .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        } catch (final WebServiceSecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public SetLightResponse getSetLightResponse(final SetLightAsyncRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetLightResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 

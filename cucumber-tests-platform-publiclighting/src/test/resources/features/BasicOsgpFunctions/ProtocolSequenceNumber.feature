@@ -5,7 +5,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
   In order to ...
 
   @OslpMockServer
-  Scenario Outline: Valid sequence number ranges
+  Scenario Outline: Valid sequence number ranges platform initiates communication
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
@@ -54,7 +54,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
       | OSLP ELSTER |                         7 |
 
   @OslpMockServer
-  Scenario Outline: Invalid sequence number ranges
+  Scenario Outline: Invalid sequence number ranges platform initiates communication
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
@@ -85,7 +85,51 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
       | OSLP ELSTER |                         9 |
 
   @OslpMockServer
-  Scenario Outline: Send sequence number to platform from device
+  Scenario Outline: Valid sequence number ranges device initiates communication
+    Given an ssld oslp device
+      | DeviceIdentification | TESTDEVICE0000001 |
+      | Protocol             | <Protocol>        |
+    When the device sends an event notification request with sequencenumber "<SequenceNumber>" to the platform over "<Protocol>"
+      | Event       | DIAG_EVENTS_GENERAL |
+      | Description | General problem     |
+      | Index       | EMPTY               |
+      | Protocol    | <Protocol>          |
+    Then the event notification response contains
+      | Status | <Status> |
+    And the event is stored
+      | DeviceIdentification | TESTDEVICE0000001   |
+      | Event                | DIAG_EVENTS_GENERAL |
+      | Index                | EMPTY               |
+
+    Examples: 
+      | Protocol    | SequenceNumber | Status |
+      | OSLP        |             -5 | OK     |
+      | OSLP        |             -4 | OK     |
+      | OSLP        |             -3 | OK     |
+      | OSLP        |             -2 | OK     |
+      | OSLP        |             -1 | OK     |
+      | OSLP        |              0 | OK     |
+      | OSLP        |              1 | OK     |
+      | OSLP        |              2 | OK     |
+      | OSLP        |              3 | OK     |
+      | OSLP        |              4 | OK     |
+      | OSLP        |              5 | OK     |
+      | OSLP        |              6 | OK     |
+      | OSLP ELSTER |             -5 | OK     |
+      | OSLP ELSTER |             -4 | OK     |
+      | OSLP ELSTER |             -3 | OK     |
+      | OSLP ELSTER |             -2 | OK     |
+      | OSLP ELSTER |             -1 | OK     |
+      | OSLP ELSTER |              0 | OK     |
+      | OSLP ELSTER |              1 | OK     |
+      | OSLP ELSTER |              2 | OK     |
+      | OSLP ELSTER |              3 | OK     |
+      | OSLP ELSTER |              4 | OK     |
+      | OSLP ELSTER |              5 | OK     |
+      | OSLP ELSTER |              6 | OK     |
+
+  @OslpMockServer
+  Scenario Outline: Invalid sequence number ranges device initiates communication
     Given an ssld oslp device
       | DeviceIdentification | TESTDEVICE0000001 |
       | Protocol             | <Protocol>        |
@@ -99,34 +143,10 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
 
     Examples: 
       | Protocol    | SequenceNumber | Status   |
-      | OSLP        |             -5 | OK       |
-      | OSLP        |             -4 | OK       |
-      | OSLP        |             -3 | OK       |
-      | OSLP        |             -2 | OK       |
-      | OSLP        |             -1 | OK       |
-      | OSLP        |              0 | OK       |
-      | OSLP        |              1 | OK       |
-      | OSLP        |              2 | OK       |
-      | OSLP        |              3 | OK       |
-      | OSLP        |              4 | OK       |
-      | OSLP        |              5 | OK       |
-      | OSLP        |              6 | OK       |
       | OSLP        |             -7 | REJECTED |
       | OSLP        |             -6 | REJECTED |
       | OSLP        |              8 | REJECTED |
       | OSLP        |              9 | REJECTED |
-      | OSLP ELSTER |             -5 | OK       |
-      | OSLP ELSTER |             -4 | OK       |
-      | OSLP ELSTER |             -3 | OK       |
-      | OSLP ELSTER |             -2 | OK       |
-      | OSLP ELSTER |             -1 | OK       |
-      | OSLP ELSTER |              0 | OK       |
-      | OSLP ELSTER |              1 | OK       |
-      | OSLP ELSTER |              2 | OK       |
-      | OSLP ELSTER |              3 | OK       |
-      | OSLP ELSTER |              4 | OK       |
-      | OSLP ELSTER |              5 | OK       |
-      | OSLP ELSTER |              6 | OK       |
       | OSLP ELSTER |             -7 | REJECTED |
       | OSLP ELSTER |             -6 | REJECTED |
       | OSLP ELSTER |              8 | REJECTED |

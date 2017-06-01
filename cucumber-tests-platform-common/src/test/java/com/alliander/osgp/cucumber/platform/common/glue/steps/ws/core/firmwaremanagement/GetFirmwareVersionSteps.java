@@ -28,10 +28,10 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareV
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreFirmwareManagementClient;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 
 import cucumber.api.java.en.Given;
@@ -41,9 +41,6 @@ import cucumber.api.java.en.Then;
  * Class with all the firmware requests steps
  */
 public class GetFirmwareVersionSteps {
-    @Autowired
-    private CoreDeviceConfiguration configuration;
-
     @Autowired
     private CoreFirmwareManagementClient client;
 
@@ -61,8 +58,8 @@ public class GetFirmwareVersionSteps {
     public void receivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
 
         final GetFirmwareVersionRequest request = new GetFirmwareVersionRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.getFirmwareVersion(request));
@@ -82,16 +79,16 @@ public class GetFirmwareVersionSteps {
      */
     @Then("^the get firmware version async response contains$")
     public void theGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final GetFirmwareVersionAsyncResponse response = (GetFirmwareVersionAsyncResponse) ScenarioContext.current()
-                .get(PlatformKeys.RESPONSE);
+        final GetFirmwareVersionAsyncResponse asyncResponse = (GetFirmwareVersionAsyncResponse) ScenarioContext
+                .current().get(PlatformKeys.RESPONSE);
 
         Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+                asyncResponse.getAsyncResponse().getDeviceId());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
@@ -107,26 +104,13 @@ public class GetFirmwareVersionSteps {
         asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        GetFirmwareVersionResponse response = null;
-
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-            Thread.sleep(1000);
-
-            response = this.client.getGetFirmwareVersion(request);
-
-            if (getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
-                continue;
-            }
-
-            success = true;
-        }
+        final GetFirmwareVersionResponse response = Wait.untilAndReturn(() -> {
+            final GetFirmwareVersionResponse retval = this.client.getGetFirmwareVersion(request);
+            Assert.assertNotNull(retval);
+            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class),
+                    retval.getResult());
+            return retval;
+        });
 
         if (response.getFirmwareVersion() != null) {
             final FirmwareVersion fwv = response.getFirmwareVersion().get(0);

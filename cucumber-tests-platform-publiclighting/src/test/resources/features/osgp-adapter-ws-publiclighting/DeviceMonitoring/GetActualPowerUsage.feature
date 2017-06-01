@@ -31,7 +31,6 @@ Feature: PublicLightingDeviceMonitoring Get Actual Power Usage
     And a get actual power usage OSLP message is sent to the device
     And the platform buffers a get actual power usage response message for device "TEST1024000000001"
       | Status              | OK                    |
-      | Description         |                       |
       | RecordTime          | <RecordTime>          |
       | MeterType           | <MeterType>           |
       | TotalConsumedEnergy | <TotalConsumedEnergy> |

@@ -26,19 +26,16 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestResponse;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class StopDeviceSteps extends GlueBase {
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private CoreDeviceInstallationClient client;
@@ -53,8 +50,8 @@ public class StopDeviceSteps extends GlueBase {
     @When("receiving a stop device test request")
     public void receivingAStopDeviceRequest(final Map<String, String> requestParameters) throws Throwable {
         final StopDeviceTestRequest request = new StopDeviceTestRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.stopDeviceTest(request));
@@ -70,16 +67,16 @@ public class StopDeviceSteps extends GlueBase {
      */
     @Then("the stop device async response contains")
     public void theStopDeviceAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final StopDeviceTestAsyncResponse response = (StopDeviceTestAsyncResponse) ScenarioContext.current()
+        final StopDeviceTestAsyncResponse asyncResponse = (StopDeviceTestAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
@@ -105,26 +102,17 @@ public class StopDeviceSteps extends GlueBase {
         asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-            Thread.sleep(1000);
-
+        Wait.until(() -> {
+            StopDeviceTestResponse response = null;
             try {
-                final StopDeviceTestResponse response = this.client.getStopDeviceTestResponse(request);
-
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)),
-                        response.getResult());
-
-                success = true;
-            } catch (final Exception ex) {
-                // Do nothing
+                response = this.client.getStopDeviceTestResponse(request);
+            } catch (final Exception e) {
+                // do nothing
             }
-        }
+            Assert.assertNotNull(response);
+            Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)),
+                    response.getResult());
+        });
+
     }
 }

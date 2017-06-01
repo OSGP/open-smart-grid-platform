@@ -38,8 +38,8 @@ public class DeactivateDeviceSteps extends GlueBase {
     public void receivingADeactivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
 
         final DeactivateDeviceRequest request = new DeactivateDeviceRequest();
-        request.setDeviceIdentification(
-                getString(requestSettings, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestSettings, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.deactivateDevice(request));
@@ -55,10 +55,12 @@ public class DeactivateDeviceSteps extends GlueBase {
      */
     @Then("^the deactivate device response contains$")
     public void theDeactivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
+
         final DeactivateDeviceResponse response = (DeactivateDeviceResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
 
-        Assert.assertEquals(getEnum(expectedResponse, PlatformCommonKeys.KEY_RESULT, OsgpResultType.class), response.getResult());
+        Assert.assertEquals(getEnum(expectedResponse, PlatformCommonKeys.KEY_RESULT, OsgpResultType.class),
+                response.getResult());
     }
 
     /**
