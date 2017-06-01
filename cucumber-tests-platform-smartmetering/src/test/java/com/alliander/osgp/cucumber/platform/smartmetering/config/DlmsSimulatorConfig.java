@@ -18,17 +18,11 @@ public class DlmsSimulatorConfig extends AbstractConfig {
     public DlmsSimulatorConfig() {
     }
 
-    @Value("${dynamic.properties.host}")
-    private String dynamicPropertiesHost;
+    @Value("${dynamic.properties.base.url}")
+    private String dynamicPropertiesBaseUrl;
 
-    @Value("${dynamic.properties.port}")
-    private int dynamicPropertiesPort;
-
-    public String getDynamicPropertiesHost() {
-        return this.dynamicPropertiesHost;
+    public String getDynamicPropertiesBaseurl() {
+        return this.dynamicPropertiesBaseUrl;
     }
 
-    public int getDynamicPropertiesPort() {
-        return this.dynamicPropertiesPort;
-    }
 }

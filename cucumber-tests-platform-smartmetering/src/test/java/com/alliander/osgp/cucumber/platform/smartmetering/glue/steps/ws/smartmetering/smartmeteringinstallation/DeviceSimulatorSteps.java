@@ -31,25 +31,33 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSimulatorSteps.class);
 
-    private static final String CLEANUP_PROPS_REQUEST = "http://%s/RESTfulExample/rest/CleanupProperties";
-    private static final String ADD_PROPS_REQUEST = "http://%s/RESTfulExample/rest/AddProperties/%s/%s";
+    private static final String CLEANUP_PROPS_REQUEST = "http://%s/CleanupProperties";
+    private static final String ADD_PROPS_REQUEST = "http://%s/AddProperties/%s/%s";
+
+    public void removeAllTemporaryPropertiesFiles() {
+        if (this.isBaseUrlEnabled()) {
+            try {
+                final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+                final String request = String.format(CLEANUP_PROPS_REQUEST, this.getBaseUrl());
+                final HttpGet httpGetRequest = new HttpGet(request);
+                httpClient.execute(httpGetRequest);
+            } catch (final IOException e) {
+                LOGGER.error("error while calling CleanupProperties request", e);
+            }
+        }
+    }
 
     @Given("^device simulate with classid (\\d+) obiscode \"([^\"]*)\" and attributes$")
     public void deviceSimulateWithClassidObiscodeAndAttributes(final int classId, final String obisCode,
             final Map<String, String> settings) throws Throwable {
 
-        this.setRemoteProperties(classId, obisCode, settings);
+        if (this.isBaseUrlEnabled()) {
+            this.setRemoteProperties(classId, obisCode, settings);
+        }
     }
 
-    public void removeAllTemporaryPropertiesFiles() {
-        try {
-            final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-            final String request = String.format(CLEANUP_PROPS_REQUEST, this.getUrl());
-            final HttpGet httpGetRequest = new HttpGet(request);
-            httpClient.execute(httpGetRequest);
-        } catch (final IOException e) {
-            LOGGER.error("error while calling CleanupProperties request", e);
-        }
+    private boolean isBaseUrlEnabled() {
+        return this.getBaseUrl() != null && this.getBaseUrl().indexOf("{") < 0;
     }
 
     private void setRemoteProperties(final int classId, final String obisCode, final Map<String, String> settings) {
@@ -74,12 +82,11 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
         }
 
         final String filename = String.format("%d_%s", classId, obisCode);
-        return String.format(ADD_PROPS_REQUEST, this.getUrl(), filename, props.toString());
+        return String.format(ADD_PROPS_REQUEST, this.getBaseUrl(), filename, props.toString());
     }
 
-    private String getUrl() {
-        return this.dlmsSimulatorConfig.getDynamicPropertiesHost() + ":"
-                + this.dlmsSimulatorConfig.getDynamicPropertiesPort();
+    private String getBaseUrl() {
+        return this.dlmsSimulatorConfig.getDynamicPropertiesBaseurl();
     }
 
 }
