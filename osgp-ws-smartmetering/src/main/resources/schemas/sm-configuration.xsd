@@ -216,7 +216,6 @@
     </xsd:complexType>
   </xsd:element>
 
-
   <xsd:element name="SetConfigurationObjectRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -573,10 +572,6 @@
     </xsd:complexType>
   </xsd:element>
 
-
-
-
-
   <xsd:element name="GenerateAndReplaceKeysRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -600,8 +595,6 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
-
   <xsd:element name="GenerateAndReplaceKeysAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -619,10 +612,6 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
-
-
-
 
   <xsd:element name="SetClockConfigurationRequest">
     <xsd:complexType>
@@ -987,6 +976,5 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
 
 </xsd:schema>
