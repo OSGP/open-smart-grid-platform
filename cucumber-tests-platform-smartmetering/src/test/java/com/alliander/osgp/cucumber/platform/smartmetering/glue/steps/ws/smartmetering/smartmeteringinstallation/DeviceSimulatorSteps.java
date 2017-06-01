@@ -86,7 +86,8 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     }
 
     private String getBaseUrl() {
-        return this.dlmsSimulatorConfig.getDynamicPropertiesBaseurl();
+        final String baseUrl = this.dlmsSimulatorConfig.getDynamicPropertiesBaseurl();
+        return (baseUrl == null) ? null : baseUrl.trim();
     }
 
 }
