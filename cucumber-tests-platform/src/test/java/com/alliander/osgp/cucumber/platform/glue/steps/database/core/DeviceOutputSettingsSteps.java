@@ -47,12 +47,39 @@ public class DeviceOutputSettingsSteps extends GlueBase {
 
         final List<DeviceOutputSetting> outputSettings = new ArrayList<>();
         final DeviceOutputSetting deviceOutputSetting = new DeviceOutputSetting(
-                getInteger(settings, PlatformKeys.KEY_INTERNALID, PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID),
-                getInteger(settings, PlatformKeys.KEY_EXTERNALID, PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID),
+                getInteger(settings, PlatformKeys.KEY_INTERNALID,
+                        PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID),
+                getInteger(settings, PlatformKeys.KEY_EXTERNALID,
+                        PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID),
                 getEnum(settings, PlatformKeys.KEY_RELAY_TYPE, RelayType.class,
                         PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE),
                 getString(settings, PlatformKeys.KEY_ALIAS, PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS));
         outputSettings.add(deviceOutputSetting);
+        device.updateOutputSettings(outputSettings);
+
+        this.ssldRepository.save(device);
+    }
+
+    @Given("^device output settings$")
+    public void deviceOutputSettings(final Map<String, String> settings) throws Throwable {
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+
+        final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+
+        final String[] deviceOutputSettings = getString(settings, PlatformKeys.DEVICE_OUTPUT_SETTINGS, "")
+                .split(PlatformKeys.SEPARATOR_SEMICOLON);
+
+        final List<DeviceOutputSetting> outputSettings = new ArrayList<>();
+        for (final String deviceOutputSetting : deviceOutputSettings) {
+            final String[] deviceOutputSettingsPart = deviceOutputSetting.split(PlatformKeys.SEPARATOR_COMMA);
+
+            final DeviceOutputSetting deviceOutputSettingsForLightValue = new DeviceOutputSetting(
+                    Integer.parseInt(deviceOutputSettingsPart[0]), Integer.parseInt(deviceOutputSettingsPart[1]),
+                    Enum.valueOf(RelayType.class, deviceOutputSettingsPart[2]), deviceOutputSettingsPart[3]);
+            outputSettings.add(deviceOutputSettingsForLightValue);
+        }
+
         device.updateOutputSettings(outputSettings);
 
         this.ssldRepository.save(device);
@@ -65,8 +92,8 @@ public class DeviceOutputSettingsSteps extends GlueBase {
 
         final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
 
-        final String[] lightValues = getString(settings, PlatformKeys.KEY_LIGHTVALUES, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION)
-                .split(PlatformKeys.SEPARATOR_SEMICOLON);
+        final String[] lightValues = getString(settings, PlatformKeys.KEY_LIGHTVALUES,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).split(PlatformKeys.SEPARATOR_SEMICOLON);
 
         final String[] deviceOutputSettings = getString(settings, PlatformKeys.DEVICE_OUTPUT_SETTINGS, "")
                 .split(PlatformKeys.SEPARATOR_SEMICOLON);
