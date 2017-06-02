@@ -36,7 +36,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
 
 @Component()
@@ -121,15 +120,22 @@ public class SetConfigurationObjectCommandExecutor
             final ConfigurationObjectDto configurationObjectOnDevice) {
 
         final List<DataObject> linkedList = new LinkedList<>();
-        if (GprsOperationModeTypeDto.ALWAYS_ON.equals(configurationObject.getGprsOperationMode())) {
-            linkedList.add(DataObject.newEnumerateData(1));
-        } else if (GprsOperationModeTypeDto.TRIGGERED.equals(configurationObject.getGprsOperationMode())) {
-            linkedList.add(DataObject.newEnumerateData(0));
+        if (configurationObject.getGprsOperationMode() != null) {
+            linkedList.add(DataObject.newEnumerateData(configurationObject.getGprsOperationMode().getValue()));
+            // }
+            // if
+            // (GprsOperationModeTypeDto.ALWAYS_ON.equals(configurationObject.getGprsOperationMode()))
+            // {
+            // linkedList.add(DataObject.newEnumerateData(1));
+            // } else if
+            // (GprsOperationModeTypeDto.TRIGGERED.equals(configurationObject.getGprsOperationMode()))
+            // {
+            // linkedList.add(DataObject.newEnumerateData(0));
         } else {
             // copy from meter if there is a set gprsoperationmode
             if (configurationObjectOnDevice.getGprsOperationMode() != null) {
-                linkedList
-                        .add(DataObject.newEnumerateData(configurationObjectOnDevice.getGprsOperationMode().ordinal()));
+                linkedList.add(
+                        DataObject.newEnumerateData(configurationObjectOnDevice.getGprsOperationMode().getValue()));
             }
         }
 
