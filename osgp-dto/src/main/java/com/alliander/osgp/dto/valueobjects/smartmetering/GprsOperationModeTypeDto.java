@@ -11,7 +11,16 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 public enum GprsOperationModeTypeDto {
 
-    ALWAYS_ON,
-    TRIGGERED;
+    ALWAYS_ON(1),
+    TRIGGERED(2);
 
+    private int value;
+
+    private GprsOperationModeTypeDto(final int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return this.value;
+    }
 }
