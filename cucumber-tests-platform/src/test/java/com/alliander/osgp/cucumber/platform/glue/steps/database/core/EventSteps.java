@@ -94,13 +94,9 @@ public class EventSteps extends GlueBase {
             final List<Event> actualEvents = this.eventRepository.findByDevice(device);
 
             // Assume default 1 expected event
-            int expectedNumberOfEvents = 1;
-            if (expectedEntity.containsKey(PlatformKeys.NUMBER_OF_EVENTS)) {
-                expectedNumberOfEvents = (int) getInteger(expectedEntity, PlatformKeys.NUMBER_OF_EVENTS);
-            }
-
+            final int expectedNumberOfEvents = getInteger(expectedEntity, PlatformKeys.NUMBER_OF_EVENTS, 1);
             Assert.assertEquals(expectedNumberOfEvents, actualEvents.size());
-            
+
             // Validate all expected events have been received
             for (final Event actualEvent : actualEvents) {
                 int foundEventIndex = -1;
@@ -129,7 +125,7 @@ public class EventSteps extends GlueBase {
         });
 
         // Wait until the relay statuses have been updated in the DB
-        final int numStatuses = Integer.parseInt(getString(expectedEntity, PlatformKeys.NUMBER_OF_STATUSES));
+        final int numStatuses = getInteger(expectedEntity, PlatformKeys.NUMBER_OF_STATUSES, 0);
         if (numStatuses > 0) {
             Wait.until(() -> {
                 final Ssld ssld = this.ssldRepository

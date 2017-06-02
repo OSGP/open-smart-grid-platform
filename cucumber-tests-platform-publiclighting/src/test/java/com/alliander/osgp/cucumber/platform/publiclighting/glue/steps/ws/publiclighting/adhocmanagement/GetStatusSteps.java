@@ -35,11 +35,10 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LinkT
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
-import com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.mocks.PollingHelper;
 import com.alliander.osgp.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
@@ -50,9 +49,6 @@ import cucumber.api.java.en.When;
  * Class with all the set light requests steps
  */
 public class GetStatusSteps {
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private PublicLightingAdHocManagementClient client;
@@ -104,16 +100,16 @@ public class GetStatusSteps {
     @Then("^the get status async response contains$")
     public void theGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
 
-        final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.current()
+        final GetStatusAsyncResponse asyncResponse = (GetStatusAsyncResponse) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
@@ -130,103 +126,75 @@ public class GetStatusSteps {
     public void thePlatformBuffersAGetStatusResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
         final GetStatusAsyncRequest request = this.getGetStatusAsyncRequest(deviceIdentification);
-        final PollingHelper pollingHelper = new PollingHelper();
+        final GetStatusResponse response = Wait.untilAndReturn(() -> {
+            final GetStatusResponse retval = this.client.getGetStatusResponse(request);
+            Assert.assertNotNull(retval);
+            Assert.assertEquals(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
+                    retval.getResult());
+            return retval;
+        });
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
+        final DeviceStatus deviceStatus = response.getDeviceStatus();
 
-            count++;
-            Thread.sleep(1000);
+        Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
+                deviceStatus.getPreferredLinkType());
+        Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class),
+                deviceStatus.getActualLinkType());
+        Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class),
+                deviceStatus.getLightType());
 
-            try {
-                LOGGER.info("GetStatusSteps CorrelationUID: {}", request.getAsyncRequest().getCorrelationUid());
-
-                final GetStatusResponse response = this.client.getGetStatusResponse(request);
-                final String osgpResponse = response.getResult().name();
-                LOGGER.info("GetStatusSteps osgpResponse: {}", osgpResponse);
-                if (pollingHelper.poll(osgpResponse)) {
-                    continue;
-                }
-
-                Assert.assertNotNull(response);
-
-                Assert.assertEquals(
-                        Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
-                        response.getResult());
-
-                final DeviceStatus deviceStatus = response.getDeviceStatus();
-
-                Assert.assertEquals(
-                        getEnum(expectedResult, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
-                        deviceStatus.getPreferredLinkType());
-                Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class),
-                        deviceStatus.getActualLinkType());
-                Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class),
-                        deviceStatus.getLightType());
-
-                if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES)
-                        && !expectedResult.get(PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
-                    Assert.assertEquals(
-                            getString(expectedResult, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
-                                    PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS)
-                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
-                            deviceStatus.getEventNotifications().size());
-                    for (final String eventNotification : getString(expectedResult,
-                            PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
+        if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES)
+                && !expectedResult.get(PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
+            Assert.assertEquals(
+                    getString(expectedResult, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
                             PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS)
+                                    .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
+                    deviceStatus.getEventNotifications().size());
+            for (final String eventNotification : getString(expectedResult,
+                    PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONS,
+                    PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONS)
                             .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
-                        Assert.assertTrue(deviceStatus.getEventNotifications()
-                                .contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
-                    }
-                }
-
-                if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_LIGHTVALUES)
-                        && !expectedResult.get(PlatformPubliclightingKeys.KEY_LIGHTVALUES).isEmpty()) {
-                    Assert.assertEquals(
-                            getString(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
-                                    PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
-                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
-                            deviceStatus.getLightValues().size());
-                    for (final String lightValues : getString(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
-                            PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
-                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
-
-                        final String[] parts = lightValues.split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON);
-                        final Integer index = Integer.parseInt(parts[0]);
-                        final Boolean on = Boolean.parseBoolean(parts[1]);
-                        final Integer dimValue = Integer.parseInt(parts[2]);
-
-                        boolean found = false;
-                        for (final LightValue lightValue : deviceStatus.getLightValues()) {
-
-                            if (lightValue.getIndex() == index && lightValue.isOn() == on
-                                    && lightValue.getDimValue() == dimValue) {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        Assert.assertTrue(found);
-                    }
-                }
-
-                success = true;
-            } catch (final Exception ex) {
-                LOGGER.error("Exception during thePlatformBuffersAGetStatusResponseMessageForDevice()", ex);
+                Assert.assertTrue(deviceStatus.getEventNotifications()
+                        .contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
             }
+        }
 
+        if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_LIGHTVALUES)
+                && !expectedResult.get(PlatformPubliclightingKeys.KEY_LIGHTVALUES).isEmpty()) {
+            Assert.assertEquals(
+                    getString(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
+                            PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
+                                    .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length,
+                    deviceStatus.getLightValues().size());
+            for (final String lightValues : getString(expectedResult, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
+                    PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
+                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
+
+                final String[] parts = lightValues.split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON);
+                final Integer index = Integer.parseInt(parts[0]);
+                final Boolean on = Boolean.parseBoolean(parts[1]);
+                final Integer dimValue = Integer.parseInt(parts[2]);
+
+                boolean found = false;
+                for (final LightValue lightValue : deviceStatus.getLightValues()) {
+
+                    if (lightValue.getIndex() == index && lightValue.isOn() == on
+                            && lightValue.getDimValue() == dimValue) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                Assert.assertTrue(found);
+            }
         }
     }
 
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\" which contains soap fault$")
     public void thePlatformBuffersAGetStatusResponseMessageForDeviceWhichContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult)
-                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
-
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         try {
             this.client.getGetStatusResponse(this.getGetStatusAsyncRequest(deviceIdentification));
         } catch (final SoapFaultClientException sfce) {

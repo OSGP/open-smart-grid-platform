@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceActivatedFilterType;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceExternalManagedFilterType;
@@ -27,6 +28,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FirmwareModule
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.common.PlatformCommonKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -55,8 +57,10 @@ public class FindDeviceSteps extends GlueBase {
 
         if (requestParameters.containsKey(PlatformKeys.KEY_DEVICE_IDENTIFICATION)
                 || requestParameters.containsKey(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION)
-                || requestParameters.containsKey(PlatformKeys.KEY_ALIAS) || requestParameters.containsKey(PlatformKeys.KEY_CITY)
-                || requestParameters.containsKey(PlatformKeys.KEY_POSTCODE) || requestParameters.containsKey(PlatformKeys.KEY_STREET)
+                || requestParameters.containsKey(PlatformKeys.KEY_ALIAS)
+                || requestParameters.containsKey(PlatformKeys.KEY_CITY)
+                || requestParameters.containsKey(PlatformKeys.KEY_POSTCODE)
+                || requestParameters.containsKey(PlatformKeys.KEY_STREET)
                 || requestParameters.containsKey(PlatformKeys.KEY_NUMBER)
                 || requestParameters.containsKey(PlatformKeys.KEY_MUNICIPALITY)
                 || requestParameters.containsKey(PlatformKeys.KEY_DEVICE_TYPE)
@@ -65,7 +69,8 @@ public class FindDeviceSteps extends GlueBase {
                 || requestParameters.containsKey(PlatformKeys.KEY_DEVICE_EXTERNAL_MANAGED)
                 || requestParameters.containsKey(PlatformKeys.KEY_DEVICE_ACTIVATED)
                 || requestParameters.containsKey(PlatformKeys.KEY_DEVICE_MAINTENANCE)
-                || requestParameters.containsKey(PlatformKeys.KEY_SORT_DIR) || requestParameters.containsKey(PlatformKeys.KEY_SORTED_BY)
+                || requestParameters.containsKey(PlatformKeys.KEY_SORT_DIR)
+                || requestParameters.containsKey(PlatformKeys.KEY_SORTED_BY)
                 || requestParameters.containsKey(PlatformKeys.KEY_HAS_TECHNICAL_INSTALLATION)
                 || requestParameters.containsKey(PlatformKeys.KEY_OWNER)
                 || requestParameters.containsKey(PlatformKeys.KEY_FIRMWARE_MODULE_TYPE)
@@ -74,12 +79,13 @@ public class FindDeviceSteps extends GlueBase {
             final DeviceFilter deviceFilter = new DeviceFilter();
 
             if (requestParameters.containsKey(PlatformKeys.KEY_DEVICE_IDENTIFICATION)) {
-                deviceFilter.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+                deviceFilter
+                        .setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
-                deviceFilter
-                        .setOrganisationIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+                deviceFilter.setOrganisationIdentification(
+                        getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_ALIAS)) {
@@ -119,8 +125,8 @@ public class FindDeviceSteps extends GlueBase {
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_DEVICE_EXTERNAL_MANAGED)) {
-                deviceFilter.setDeviceExternalManaged(getEnum(requestParameters, PlatformKeys.KEY_DEVICE_EXTERNAL_MANAGED,
-                        DeviceExternalManagedFilterType.class));
+                deviceFilter.setDeviceExternalManaged(getEnum(requestParameters,
+                        PlatformKeys.KEY_DEVICE_EXTERNAL_MANAGED, DeviceExternalManagedFilterType.class));
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_DEVICE_ACTIVATED)) {
@@ -129,8 +135,8 @@ public class FindDeviceSteps extends GlueBase {
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_DEVICE_MAINTENANCE)) {
-                deviceFilter.setDeviceInMaintenance(
-                        getEnum(requestParameters, PlatformKeys.KEY_DEVICE_MAINTENANCE, DeviceInMaintetanceFilterType.class));
+                deviceFilter.setDeviceInMaintenance(getEnum(requestParameters, PlatformKeys.KEY_DEVICE_MAINTENANCE,
+                        DeviceInMaintetanceFilterType.class));
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_SORT_DIR)) {
@@ -151,12 +157,13 @@ public class FindDeviceSteps extends GlueBase {
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_FIRMWARE_MODULE_TYPE)) {
-                deviceFilter.setFirmwareModuleType(
-                        getEnum(requestParameters, PlatformKeys.KEY_FIRMWARE_MODULE_TYPE, FirmwareModuleFilterType.class));
+                deviceFilter.setFirmwareModuleType(getEnum(requestParameters, PlatformKeys.KEY_FIRMWARE_MODULE_TYPE,
+                        FirmwareModuleFilterType.class));
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_FIRMWARE_MODULE_VERSION)) {
-                deviceFilter.setFirmwareModuleVersion(getString(requestParameters, PlatformKeys.KEY_FIRMWARE_MODULE_VERSION));
+                deviceFilter.setFirmwareModuleVersion(
+                        getString(requestParameters, PlatformKeys.KEY_FIRMWARE_MODULE_VERSION));
             }
 
             if (requestParameters.containsKey(PlatformKeys.KEY_EXACT_MATCH)) {
@@ -166,20 +173,26 @@ public class FindDeviceSteps extends GlueBase {
             request.setDeviceFilter(deviceFilter);
         }
 
-        ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.findDevices(request));
+        try {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.findDevices(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
+        }
     }
 
     @Then("the find devices response contains \"([^\"]*)\" devices")
     public void theFindDevicesResponseContainsDevices(final Integer numberOfDevices) throws Throwable {
-        final FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.current().get(PlatformKeys.RESPONSE);
+        final FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
 
-        Assert.assertTrue(response.getDevices().size() == numberOfDevices);
+        Assert.assertEquals((int) numberOfDevices, response.getDevices().size());
     }
 
     @Then("the find devices response contains at index \"([^\"]*)\"")
     public void theFindDevicesResponseContainsAtIndex(final Integer index, final Map<String, String> expectedDevice)
             throws Throwable {
-        final FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.current().get(PlatformKeys.RESPONSE);
+        final FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
 
         DeviceSteps.checkDevice(expectedDevice, response.getDevices().get(index - 1));
     }

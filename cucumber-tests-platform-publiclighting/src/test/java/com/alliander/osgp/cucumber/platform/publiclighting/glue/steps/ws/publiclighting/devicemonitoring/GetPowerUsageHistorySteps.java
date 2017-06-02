@@ -9,6 +9,7 @@
  */
 package com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.devicemonitoring;
 
+import static com.alliander.osgp.cucumber.core.Helpers.getDate;
 import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
@@ -39,7 +40,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.Powe
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.RelayData;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.TimePeriod;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
@@ -52,9 +53,6 @@ import cucumber.api.java.en.When;
  * Class with all the get power usage history requests steps
  */
 public class GetPowerUsageHistorySteps {
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private PublicLightingDeviceMonitoringClient client;
@@ -120,16 +118,16 @@ public class GetPowerUsageHistorySteps {
     public void theGetPowerUsageHistoryAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
 
-        final GetPowerUsageHistoryAsyncResponse response = (GetPowerUsageHistoryAsyncResponse) ScenarioContext.current()
-                .get(PlatformPubliclightingKeys.RESPONSE);
+        final GetPowerUsageHistoryAsyncResponse asyncResponse = (GetPowerUsageHistoryAsyncResponse) ScenarioContext
+                .current().get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
@@ -159,38 +157,44 @@ public class GetPowerUsageHistorySteps {
                 (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        GetPowerUsageHistoryResponse response = null;
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
+        final GetPowerUsageHistoryResponse response = Wait.untilAndReturn(() -> {
+            final GetPowerUsageHistoryResponse retval = this.client.getGetPowerUsageHistoryResponse(request);
+            Assert.assertNotNull(retval);
+            Assert.assertEquals(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_STATUS)),
+                    retval.getResult());
+            return retval;
+        });
 
-            count++;
-            Thread.sleep(1000);
-
-            response = this.client.getGetPowerUsageHistoryResponse(request);
-            success = true;
-        }
-
-        Assert.assertEquals(
-                Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_STATUS)),
-                response.getResult());
-        final String expectedDescription = expectedResult.get(PlatformPubliclightingKeys.KEY_DESCRIPTION);
-        if (!expectedDescription.isEmpty()) {
-            Assert.assertEquals(expectedDescription, response.getDescription());
+        if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION)) {
+            Assert.assertEquals(
+                    getString(expectedResult, PlatformPubliclightingKeys.KEY_DESCRIPTION,
+                            PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_DESCRIPTION),
+                    response.getDescription());
         }
 
         for (final PowerUsageData data : response.getPowerUsageData()) {
-            Assert.assertEquals(Integer.parseInt(expectedResult.get(PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER)),
+            Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER, 0),
                     data.getActualConsumedPower());
-            Assert.assertEquals(Long.parseLong(expectedResult.get(PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY)),
+            Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY, 0),
                     data.getTotalConsumedEnergy());
-            Assert.assertEquals(MeterType.fromValue(expectedResult.get(PlatformPubliclightingKeys.METER_TYPE)),
-                    data.getMeterType());
-            Assert.assertEquals(DateTime.parse(expectedResult.get(PlatformPubliclightingKeys.RECORD_TIME)).toString(),
-                    DateTime.parse(data.getRecordTime().toString()).toString());
+
+            // Note: This piece of code has been made because there are multiple
+            // enumerations with the name MeterType, but not all of them has all
+            // values the same. Some with underscore and some without.
+            final String meterType = getString(expectedResult, PlatformPubliclightingKeys.METER_TYPE);
+            if (data.getMeterType().toString().contains("_") && !meterType.contains("_")) {
+                final String[] sMeterTypeArray = meterType.split("");
+                Assert.assertEquals(sMeterTypeArray[0] + "_" + sMeterTypeArray[1], data.getMeterType().toString());
+            } else {
+                Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.METER_TYPE, MeterType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_METER_TYPE), data.getMeterType());
+            }
+
+            Assert.assertEquals(DatatypeFactory.newInstance()
+                    .newXMLGregorianCalendar((getDate(expectedResult, PlatformPubliclightingKeys.RECORD_TIME))
+                            .toDateTime(DateTimeZone.UTC).toGregorianCalendar()),
+                    data.getRecordTime());
             Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS),
                     data.getPsldData().getTotalLightingHours());
             Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CURRENT1),

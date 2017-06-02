@@ -19,6 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerReque
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
@@ -44,8 +45,8 @@ public class SetOwnerSteps extends GlueBase {
     public void receivingAFindDevicesRequest(final Map<String, String> requestParameters) throws Throwable {
         final SetOwnerRequest request = new SetOwnerRequest();
 
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setOrganisationIdentification(getString(requestParameters, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
@@ -63,8 +64,12 @@ public class SetOwnerSteps extends GlueBase {
     public void theFindDevicesResponseContainsAtIndex(final String deviceIdentification,
             final Map<String, String> expectedOrganization) throws Throwable {
 
-        final List<DeviceAuthorization> deviceAuthorization = this.deviceAuthorizationRepo
-                .findByDevice(this.deviceRepository.findByDeviceIdentification(deviceIdentification));
+        final List<DeviceAuthorization> deviceAuthorization = Wait.untilAndReturn(() -> {
+            final List<DeviceAuthorization> retval = this.deviceAuthorizationRepo
+                    .findByDevice(this.deviceRepository.findByDeviceIdentification(deviceIdentification));
+            Assert.assertNotNull(retval);
+            return retval;
+        });
 
         Assert.assertEquals(
                 getString(expectedOrganization, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,

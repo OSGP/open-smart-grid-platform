@@ -16,7 +16,6 @@ import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -40,7 +39,8 @@ import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.T
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.TariffValue;
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.WeekDayType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.core.Wait;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
@@ -53,9 +53,6 @@ import cucumber.api.java.en.When;
  * Class with all the set requests steps
  */
 public class SetTariffScheduleSteps {
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private TariffSwitchingScheduleManagementClient client;
@@ -96,16 +93,19 @@ public class SetTariffScheduleSteps {
 
         final SetScheduleRequest request = new SetScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         if (requestParameters.containsKey(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)) {
-            request.setScheduledTime(DatatypeFactory.newInstance()
-                    .newXMLGregorianCalendar(((requestParameters.get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME).isEmpty())
-                            ? DateTime.now() : getDate(requestParameters, PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME))
+            request.setScheduledTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                    ((requestParameters.get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME).isEmpty())
+                            ? DateTime.now()
+                            : getDate(requestParameters, PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME))
                                     .toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
         }
 
         for (int i = 0; i < countSchedules; i++) {
-            this.addScheduleForRequest(request, getEnum(requestParameters, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, WeekDayType.class),
+            this.addScheduleForRequest(request,
+                    getEnum(requestParameters, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, WeekDayType.class),
                     getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_STARTDAY),
                     getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_ENDDAY),
                     getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_TIME),
@@ -160,7 +160,8 @@ public class SetTariffScheduleSteps {
     public void receivingASetTariffScheduleRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
-        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                "unknown-organization");
 
         this.receivingASetTariffScheduleRequest(requestParameters);
     }
@@ -177,20 +178,21 @@ public class SetTariffScheduleSteps {
     @Then("^the set tariff schedule async response contains$")
     public void theSetTariffScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-        final SetScheduleAsyncResponse response = (SetScheduleAsyncResponse) ScenarioContext.current()
+        final SetScheduleAsyncResponse asyncResponse = (SetScheduleAsyncResponse) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: ["
+                + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the set tariff schedule response contains soap fault$")
@@ -204,39 +206,38 @@ public class SetTariffScheduleSteps {
         final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+        asyncRequest.setCorrelationUid(
+                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                throw new TimeoutException();
-            }
+        final SetScheduleResponse response = Wait.untilAndReturn(() -> {
+            final SetScheduleResponse retval = this.client.getSetSchedule(request);
+            Assert.assertNotNull(retval);
+            Assert.assertEquals(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class),
+                    retval.getResult());
+            return retval;
+        });
 
-            count++;
-            Thread.sleep(1000);
-
-            final SetScheduleResponse response = this.client.getSetSchedule(request);
-
-            if (getEnum(expectedResult, PlatformPubliclightingKeys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
-                continue;
-            }
-
-            if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION)
-                    && !getString(expectedResult, PlatformPubliclightingKeys.KEY_DESCRIPTION).equals(response.getDescription())) {
-                continue;
-            }
-
-            success = true;
+        if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION)) {
+            Assert.assertEquals(
+                    getString(expectedResult, PlatformPubliclightingKeys.KEY_DESCRIPTION,
+                            PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_DESCRIPTION),
+                    response.getDescription());
         }
     }
 
     @Then("^the platform buffers a set tariff schedule response message for device \"([^\"]*)\" contains soap fault$")
     public void thePlatformBuffersASetTariffScheduleResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+        final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid(
+                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
         try {
-            this.thePlatformBuffersASetTariffScheduleResponseMessageForDevice(deviceIdentification, expectedResult);
+            this.client.getSetSchedule(request);
         } catch (final SoapFaultClientException ex) {
             Assert.assertEquals(getString(expectedResult, PlatformPubliclightingKeys.KEY_MESSAGE), ex.getMessage());
         }

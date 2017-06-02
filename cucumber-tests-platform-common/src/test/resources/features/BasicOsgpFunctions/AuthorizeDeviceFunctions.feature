@@ -1,16 +1,18 @@
 @PublicLighting @Platform @BasicOsgpFunctions
-Feature: BasicOsgpFunctions Authorizing Device Functions
+Feature: BasicOsgpFunctions Common Authorizing Device Functions
   As a ...
   I want to ...
   In order to ...
 
   Scenario Outline: Call a device function and verify whether this is allowed
     Given a device
-      | DeviceIdentification | TEST1024000000001     |
-      | DeviceFunctionGroup  | <DeviceFunctionGroup> |
+      | DeviceIdentification       | TEST1024000000001     |
+      | OrganizationIdentification | test-org              |
+      | DeviceFunctionGroup        | <DeviceFunctionGroup> |
     When receiving a device function request
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceFunction       | <DeviceFunction>  |
+      | DeviceIdentification       | TEST1024000000001 |
+      | OrganizationIdentification | test-org          |
+      | DeviceFunction             | <DeviceFunction>  |
     Then the device function response is "<Allowed>"
 
     Examples: 

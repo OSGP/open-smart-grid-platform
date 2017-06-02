@@ -89,7 +89,8 @@ public class AuthorizePlatformFunctionsSteps {
     @When("receiving a platform function request")
     public void receivingADeviceFunctionRequest(final Map<String, String> requestParameters)
             throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException, IOException {
-        this.platformFunction = getEnum(requestParameters, PlatformCommonKeys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunction.class);
+        this.platformFunction = getEnum(requestParameters, PlatformCommonKeys.KEY_PLATFORM_FUNCTION_GROUP,
+                PlatformFunction.class);
 
         try {
             switch (this.platformFunction) {
@@ -186,12 +187,13 @@ public class AuthorizePlatformFunctionsSteps {
 
     @Then("the platform function response is \"([^\"]*)\"")
     public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
-        final Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
-
         if (allowed) {
+            final Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
             Assert.assertTrue(!(response instanceof SoapFaultClientException));
         } else {
-            Assert.assertTrue(this.throwable != null);
+            Assert.assertNotNull(this.throwable);
+
+            Assert.assertNull(this.throwable.getMessage());
         }
     }
 
@@ -202,20 +204,22 @@ public class AuthorizePlatformFunctionsSteps {
         final Organisation organisation = new Organisation();
         organisation.setName(PlatformCommonDefaults.DEFAULT_ORGANIZATION_NAME);
         organisation.setOrganisationIdentification(PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-        organisation.setFunctionGroup(
-                getEnum(requestParameters, PlatformCommonKeys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class));
+        organisation.setFunctionGroup(getEnum(requestParameters, PlatformCommonKeys.KEY_PLATFORM_FUNCTION_GROUP,
+                PlatformFunctionGroup.class));
         organisation.setPrefix(PlatformCommonDefaults.DEFAULT_ORGANIZATION_PREFIX);
         organisation.setEnabled(PlatformCommonDefaults.DEFAULT_ORGANIZATION_ENABLED);
         request.setOrganisation(organisation);
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.createOrganization(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.createOrganization(request));
     }
 
     private void removeOrganisation(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final RemoveOrganisationRequest request = new RemoveOrganisationRequest();
         request.setOrganisationIdentification(PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.removeOrganization(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.removeOrganization(request));
     }
 
     private void changeOrganisation(final Map<String, String> requestParameters)
@@ -223,8 +227,10 @@ public class AuthorizePlatformFunctionsSteps {
         final ChangeOrganisationRequest request = new ChangeOrganisationRequest();
         request.setOrganisationIdentification(PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         request.setNewOrganisationName(PlatformCommonDefaults.DEFAULT_NEW_ORGANIZATION_NAME);
-        request.setNewOrganisationPlatformFunctionGroup(PlatformCommonDefaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.changeOrganization(request));
+        request.setNewOrganisationPlatformFunctionGroup(
+                PlatformCommonDefaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.changeOrganization(request));
     }
 
     private void getOrganisations(final Map<String, String> requestParameters)
@@ -237,10 +243,11 @@ public class AuthorizePlatformFunctionsSteps {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
 
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.findMessageLogs(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.findMessageLogs(request));
     }
 
     private void getDevicesWithoutOwner(final Map<String, String> requestParameters)
@@ -258,10 +265,11 @@ public class AuthorizePlatformFunctionsSteps {
     private void setOwner(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetOwnerRequest request = new SetOwnerRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setOrganisationIdentification(getString(requestParameters, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setOrganisationIdentification(
+                getString(requestParameters, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.setOwner(request));
     }
@@ -269,34 +277,38 @@ public class AuthorizePlatformFunctionsSteps {
     private void updateKey(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final UpdateKeyRequest request = new UpdateKeyRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setProtocolInfoId(PlatformCommonDefaults.DEFAULT_PROTOCOL_INFO_ID);
         request.setPublicKey(PlatformCommonDefaults.DEFAULT_PUBLIC_KEY);
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.getUpdateKeyResponse(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.getUpdateKeyResponse(request));
     }
 
     private void revokeKey(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final RevokeKeyRequest request = new RevokeKeyRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.getRevokeKeyResponse(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.getRevokeKeyResponse(request));
     }
 
     private void activateDevice(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final ActivateDeviceRequest request = new ActivateDeviceRequest();
         request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.activateDevice(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.activateDevice(request));
     }
 
     private void removeFirmware(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final RemoveFirmwareRequest request = new RemoveFirmwareRequest();
         request.setId(PlatformCommonDefaults.FIRMWARE_ID);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.firmwareManagementClient.removeFirmware(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.firmwareManagementClient.removeFirmware(request));
     }
 
     private void changeFirmware(final Map<String, String> requestParameters)
@@ -309,7 +321,8 @@ public class AuthorizePlatformFunctionsSteps {
         firmware.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         firmware.setPushToNewDevices(PlatformCommonDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE);
         request.setFirmware(firmware);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.firmwareManagementClient.changeFirmware(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.firmwareManagementClient.changeFirmware(request));
     }
 
     private void createFirmware(final Map<String, String> requestParameters) throws WebServiceSecurityException {
@@ -337,14 +350,16 @@ public class AuthorizePlatformFunctionsSteps {
         deviceModel.setMetered(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED);
         deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         request.setDeviceModel(deviceModel);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.firmwareManagementClient.changeDeviceModel(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.firmwareManagementClient.changeDeviceModel(request));
     }
 
     private void removeDeviceModel(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final RemoveDeviceModelRequest request = new RemoveDeviceModelRequest();
         request.setDeviceManufacturerId(PlatformCommonDefaults.DEFAULT_MANUFACTURER_ID);
         request.setDeviceModelId(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.firmwareManagementClient.removeDeviceModel(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.firmwareManagementClient.removeDeviceModel(request));
     }
 
     private void createDeviceModel(final Map<String, String> requestParameters) throws WebServiceSecurityException {
@@ -355,7 +370,8 @@ public class AuthorizePlatformFunctionsSteps {
         deviceModel.setMetered(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED);
         deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         request.setDeviceModel(deviceModel);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.firmwareManagementClient.addDeviceModel(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.firmwareManagementClient.addDeviceModel(request));
     }
 
     private void getDeviceModels(final Map<String, String> requestParameters) throws WebServiceSecurityException {
@@ -370,7 +386,8 @@ public class AuthorizePlatformFunctionsSteps {
         protocolInfo.setProtocol(PlatformCommonDefaults.DEFAULT_PROTOCOL);
         protocolInfo.setProtocolVersion(PlatformCommonDefaults.DEFAULT_PROTOCOL_VERSION);
         request.setProtocolInfo(protocolInfo);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.updateDeviceProtocol(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.updateDeviceProtocol(request));
     }
 
     private void getProtocolInfos(final Map<String, String> requestParameters) throws WebServiceSecurityException {
@@ -382,7 +399,8 @@ public class AuthorizePlatformFunctionsSteps {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final DeactivateDeviceRequest request = new DeactivateDeviceRequest();
         request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.deactivateDevice(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.deactivateDevice(request));
     }
 
     private void getManufacturers(final Map<String, String> requestParameters) throws WebServiceSecurityException {
@@ -397,13 +415,15 @@ public class AuthorizePlatformFunctionsSteps {
         manufacturer.setName(PlatformCommonDefaults.MANUFACTURER_NAME);
         manufacturer.setUsePrefix(PlatformCommonDefaults.MANUFACTURER_USE_PREFIX);
         request.setManufacturer(manufacturer);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.changeManufacturer(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.changeManufacturer(request));
     }
 
     private void removeManufacturer(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final RemoveManufacturerRequest request = new RemoveManufacturerRequest();
         request.setManufacturerId(PlatformCommonDefaults.MANUFACTURER_CODE);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.removeManufacturer(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.removeManufacturer(request));
     }
 
     private void createManufacturer(final Map<String, String> requestParameters) throws WebServiceSecurityException {
@@ -413,13 +433,15 @@ public class AuthorizePlatformFunctionsSteps {
         manufacturer.setName(PlatformCommonDefaults.MANUFACTURER_NAME);
         manufacturer.setUsePrefix(PlatformCommonDefaults.MANUFACTURER_USE_PREFIX);
         request.setManufacturer(manufacturer);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.addManufacturer(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.addManufacturer(request));
     }
 
     private void findScheduledTasks(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final FindScheduledTasksRequest request = new FindScheduledTasksRequest();
         request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreDeviceManagementClient.findScheduledTasks(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreDeviceManagementClient.findScheduledTasks(request));
     }
 
 }
