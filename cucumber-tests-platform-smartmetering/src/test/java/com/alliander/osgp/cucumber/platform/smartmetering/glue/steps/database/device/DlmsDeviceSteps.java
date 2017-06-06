@@ -25,6 +25,7 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.DeviceSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
@@ -103,12 +104,13 @@ public class DlmsDeviceSteps {
         assertEquals(smartMeter.getSupplier(), settings.get(PlatformSmartmeteringKeys.SUPPLIER));
         assertEquals(smartMeter.getChannel(), settings.get(PlatformSmartmeteringKeys.CHANNEL));
         assertEquals(smartMeter.getMbusIdentificationNumber(),
-                settings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
+                Helpers.getLong(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER, null));
         assertEquals(smartMeter.getMbusManufacturerIdentification(),
                 settings.get(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
-        assertEquals(smartMeter.getMbusVersion(), settings.get(PlatformSmartmeteringKeys.MBUS_VERSION));
+        assertEquals(smartMeter.getMbusVersion(),
+                Helpers.getShort(settings, PlatformSmartmeteringKeys.MBUS_VERSION, null));
         assertEquals(smartMeter.getMbusDeviceTypeIdentification(),
-                settings.get(PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION));
+                Helpers.getShort(settings, PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION, null));
     }
 
     @Then("^the dlms device with identification \"([^\"]*)\" does not exist$")
