@@ -10,12 +10,15 @@ package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
+import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.cucumber.core.GlueBase;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -27,6 +30,7 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class DeviceAuthorizationSteps extends GlueBase {
 
@@ -50,11 +54,12 @@ public class DeviceAuthorizationSteps extends GlueBase {
     @Transactional("txMgrCore")
     public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
 
-        final Device device = this.deviceRepository.findByDeviceIdentification(
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        final Device device = this.deviceRepository.findByDeviceIdentification(getString(settings,
+                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        final Organisation organization = this.organizationRepository.findByOrganisationIdentification(getString(
-                settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        final Organisation organization = this.organizationRepository
+                .findByOrganisationIdentification(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         final DeviceFunctionGroup functionGroup = getEnum(settings, PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
                 DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
@@ -62,5 +67,39 @@ public class DeviceAuthorizationSteps extends GlueBase {
         final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
 
         this.deviceAuthorizationRepository.save(authorization);
+    }
+
+    /**
+     * Generic method to check if the device authorizations are created as
+     * expected in the database.
+     *
+     * @param expectedEntity
+     *            The expected settings.
+     * @throws Throwable
+     */
+    @Then("^the entity device authorizations exist$")
+    public void thenTheEntityDeviceAuthorizationsExist(final Map<String, String> expectedEntity) throws Throwable {
+
+        Wait.until(() -> {
+            final Device device = this.deviceRepository
+                    .findByDeviceIdentification(expectedEntity.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+            final List<DeviceAuthorization> deviceAuthorizations = this.deviceAuthorizationRepository
+                    .findByDevice(device);
+            final DeviceFunctionGroup expectedFunctionGroup = getEnum(expectedEntity,
+                    PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
+                    com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.class,
+                    PlatformDefaults.DEVICE_FUNCTION_GROUP);
+            final String expectedOrganizationIdentification = getString(expectedEntity,
+                    PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+            boolean testPassed = false;
+            for (final DeviceAuthorization deviceAuthorization : deviceAuthorizations) {
+                if (expectedOrganizationIdentification
+                        .equals(deviceAuthorization.getOrganisation().getOrganisationIdentification())
+                        && expectedFunctionGroup == deviceAuthorization.getFunctionGroup()) {
+                    testPassed = true;
+                }
+            }
+            Assert.assertTrue(testPassed);
+        });
     }
 }
