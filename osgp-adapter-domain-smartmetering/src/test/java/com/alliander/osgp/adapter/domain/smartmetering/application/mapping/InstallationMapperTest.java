@@ -45,10 +45,10 @@ public class InstallationMapperTest {
         smartMeteringDevice.setHLS4Active(true);
         smartMeteringDevice.setHLS5Active(true);
         smartMeteringDevice.setDeliveryDate(new Date());
-        smartMeteringDevice.setMbusIdentificationNumber("12345678");
-        smartMeteringDevice.setMbusManufacturerIdentification("mId");
-        smartMeteringDevice.setMbusVersion("v2c");
-        smartMeteringDevice.setMbusDeviceTypeIdentification("TA");
+        smartMeteringDevice.setMbusIdentificationNumber(12345678L);
+        smartMeteringDevice.setMbusManufacturerIdentification("XYZ");
+        smartMeteringDevice.setMbusVersion((short) 66);
+        smartMeteringDevice.setMbusDeviceTypeIdentification((short) 3);
 
         final SmartMeter device = this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeter.class);
 
@@ -81,10 +81,10 @@ public class InstallationMapperTest {
         smartMeteringDevice.setHLS4Active(true);
         smartMeteringDevice.setHLS5Active(true);
         smartMeteringDevice.setDeliveryDate(new Date());
-        smartMeteringDevice.setMbusIdentificationNumber("12345678");
-        smartMeteringDevice.setMbusManufacturerIdentification("mId");
-        smartMeteringDevice.setMbusVersion("v2c");
-        smartMeteringDevice.setMbusDeviceTypeIdentification("TA");
+        smartMeteringDevice.setMbusIdentificationNumber(12345678L);
+        smartMeteringDevice.setMbusManufacturerIdentification("XYZ");
+        smartMeteringDevice.setMbusVersion((short) 112);
+        smartMeteringDevice.setMbusDeviceTypeIdentification((short) 3);
 
         final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade()
                 .map(smartMeteringDevice, SmartMeteringDeviceDto.class);
