@@ -57,11 +57,15 @@ public class ScenarioContext {
     }
 
     @SuppressWarnings("unchecked")
+    public <T> List<T> getList(final String key) {
+        return (List<T>) this.data.get(key);
+    }
+
+    @SuppressWarnings("unchecked")
     public <T> void addToList(final String key, final T value) {
         if (this.data.containsKey(key)) {
             ((List<T>) this.data.get(key)).add(value);
-        }
-        else{
+        } else {
             this.data.put(key, new ArrayList<>(Arrays.asList(value)));
         }
     }
