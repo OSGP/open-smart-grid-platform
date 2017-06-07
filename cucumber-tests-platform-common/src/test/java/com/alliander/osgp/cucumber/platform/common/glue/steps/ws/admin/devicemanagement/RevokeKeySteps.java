@@ -48,8 +48,8 @@ public class RevokeKeySteps extends GlueBase {
 
         // TODO: Change to Revoke Key
         final RevokeKeyRequest request = new RevokeKeyRequest();
-        request.setDeviceIdentification(
-                getString(requestSettings, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestSettings, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.getRevokeKeyResponse(request));
@@ -65,10 +65,10 @@ public class RevokeKeySteps extends GlueBase {
      */
     @Then("^the revoke key response contains$")
     public void the_revoke_key_response_contains(final Map<String, String> expectedResult) throws Throwable {
-        // TODO: Check what the "Revoke Key Response" has to return
-
-        Assert.assertTrue(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof RevokeKeyResponse);
-        final RevokeKeyResponse response = (RevokeKeyResponse) ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
+        // TODO: Check what the "Revoke Key Response" has to return, for now
+        // there is no information to check.
+        final RevokeKeyResponse response = (RevokeKeyResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
         Assert.assertNotNull(response);
     }
 
@@ -81,7 +81,8 @@ public class RevokeKeySteps extends GlueBase {
     public void the_revoke_key_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
         // TODO: Check what the "Revoke Key Response" has to return
 
-        Assert.assertTrue(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof SoapFaultClientException);
+        Assert.assertTrue(
+                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof SoapFaultClientException);
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
         Assert.assertEquals(getString(expectedResult, PlatformCommonKeys.KEY_MESSAGE), response.getMessage());

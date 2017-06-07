@@ -29,10 +29,10 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -43,9 +43,6 @@ import cucumber.api.java.en.When;
 public class SetEventNotificationsSteps extends GlueBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEventNotificationsSteps.class);
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private CoreDeviceManagementClient client;
@@ -61,8 +58,8 @@ public class SetEventNotificationsSteps extends GlueBase {
     public void receivingASetEventNotificationMessageRequest(final Map<String, String> requestParameters)
             throws Throwable {
         final SetEventNotificationsRequest request = new SetEventNotificationsRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         for (final String event : getString(requestParameters, PlatformKeys.KEY_EVENT).split(",")) {
             request.getEventNotifications().add(Enum.valueOf(EventNotificationType.class, event.trim()));
         }
@@ -86,16 +83,16 @@ public class SetEventNotificationsSteps extends GlueBase {
     @Then("^the set event notification async response contains$")
     public void theSetEventNotificationAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-        final SetEventNotificationsAsyncResponse response = (SetEventNotificationsAsyncResponse) ScenarioContext
+        final SetEventNotificationsAsyncResponse asyncResponse = (SetEventNotificationsAsyncResponse) ScenarioContext
                 .current().get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
@@ -111,26 +108,16 @@ public class SetEventNotificationsSteps extends GlueBase {
         asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-            Thread.sleep(1000);
-
+        Wait.until(() -> {
+            SetEventNotificationsResponse response = null;
             try {
-                final SetEventNotificationsResponse response = this.client.getSetEventNotificationsResponse(request);
-
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)),
-                        response.getResult());
-
-                success = true;
-            } catch (final Exception ex) {
-                LOGGER.debug(ex.getMessage());
+                response = this.client.getSetEventNotificationsResponse(request);
+            } catch (final Exception e) {
+                // do nothing
             }
-        }
+            Assert.assertNotNull(response);
+            Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)),
+                    response.getResult());
+        });
     }
 }

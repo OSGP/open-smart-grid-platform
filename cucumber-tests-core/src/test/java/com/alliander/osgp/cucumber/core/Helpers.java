@@ -167,6 +167,10 @@ public class Helpers {
             throw new Exception("Incorrect dateString [" + dateString
                     + "], expected the string to begin with tomorrow, yesterday or now or today");
         }
+        
+        // Normalize the seconds and milliseconds to zero
+        retval = retval.withSecondOfMinute(0);
+        retval = retval.withMillisOfSecond(0);
 
         if (whenMatcher.groupCount() > 1 && whenMatcher.group(2).equals("at")) {
 

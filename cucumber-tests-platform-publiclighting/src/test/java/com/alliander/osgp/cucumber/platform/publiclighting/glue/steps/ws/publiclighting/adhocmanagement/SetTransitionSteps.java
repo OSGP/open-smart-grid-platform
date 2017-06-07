@@ -34,7 +34,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Trans
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import com.alliander.osgp.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingAdHocManagementClient;
@@ -46,9 +46,6 @@ import cucumber.api.java.en.When;
  * Class with all the set light requests steps
  */
 public class SetTransitionSteps {
-    @Autowired
-    private CoreDeviceConfiguration configuration;
-
     @Autowired
     private PublicLightingAdHocManagementClient client;
 
@@ -67,19 +64,24 @@ public class SetTransitionSteps {
 
         final SetTransitionRequest request = new SetTransitionRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         if (requestParameters.containsKey(PlatformPubliclightingKeys.KEY_TRANSITION_TYPE)
                 && !requestParameters.get(PlatformPubliclightingKeys.KEY_TRANSITION_TYPE).isEmpty()) {
-            request.setTransitionType(getEnum(requestParameters, PlatformPubliclightingKeys.KEY_TRANSITION_TYPE, TransitionType.class,
-                    PlatformPubliclightingDefaults.DEFAULT_TRANSITION_TYPE));
+            request.setTransitionType(getEnum(requestParameters, PlatformPubliclightingKeys.KEY_TRANSITION_TYPE,
+                    TransitionType.class, PlatformPubliclightingDefaults.DEFAULT_TRANSITION_TYPE));
         }
 
-        if (requestParameters.containsKey(PlatformPubliclightingKeys.KEY_TIME) && !requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).isEmpty()) {
+        if (requestParameters.containsKey(PlatformPubliclightingKeys.KEY_TIME)
+                && !requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).isEmpty()) {
             final GregorianCalendar gcal = new GregorianCalendar();
-            gcal.add(Calendar.HOUR, Integer.parseInt(requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).substring(0, 2)));
-            gcal.add(Calendar.MINUTE, Integer.parseInt(requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).substring(2, 4)));
-            gcal.add(Calendar.SECOND, Integer.parseInt(requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).substring(4, 6)));
+            gcal.add(Calendar.HOUR,
+                    Integer.parseInt(requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).substring(0, 2)));
+            gcal.add(Calendar.MINUTE,
+                    Integer.parseInt(requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).substring(2, 4)));
+            gcal.add(Calendar.SECOND,
+                    Integer.parseInt(requestParameters.get(PlatformPubliclightingKeys.KEY_TIME).substring(4, 6)));
             final XMLGregorianCalendar xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
             request.setTime(xgcal);
         }
@@ -95,7 +97,8 @@ public class SetTransitionSteps {
     public void receivingASetTransitionRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
-        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                "unknown-organization");
 
         this.receivingASetTransitionRequest(requestParameters);
     }
@@ -111,20 +114,21 @@ public class SetTransitionSteps {
      */
     @Then("^the set transition async response contains$")
     public void theSetTransitionAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final SetTransitionAsyncResponse response = (SetTransitionAsyncResponse) ScenarioContext.current()
+        final SetTransitionAsyncResponse asyncResponse = (SetTransitionAsyncResponse) ScenarioContext.current()
                 .get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: ["
+                + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a set transition response message for device \"([^\"]*)\"$")
@@ -133,30 +137,22 @@ public class SetTransitionSteps {
         final SetTransitionAsyncRequest request = new SetTransitionAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+        asyncRequest.setCorrelationUid(
+                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-            Thread.sleep(1000);
-
+        Wait.until(() -> {
+            SetTransitionResponse response = null;
             try {
-                final SetTransitionResponse response = this.client.getSetTransitionResponse(request);
-
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
-                        response.getResult());
-
-                success = true;
-            } catch (final Exception ex) {
-                // Do nothing
+                response = this.client.getSetTransitionResponse(request);
+            } catch (final Exception e) {
+                // do nothing
             }
-        }
+            Assert.assertNotNull(response);
+            Assert.assertEquals(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
+                    response.getResult());
+        });
     }
 
     @Then("^the set transition async response contains a soap fault$")

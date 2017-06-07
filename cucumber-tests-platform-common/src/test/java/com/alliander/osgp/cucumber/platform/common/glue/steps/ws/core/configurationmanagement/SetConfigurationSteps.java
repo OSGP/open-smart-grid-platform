@@ -13,7 +13,6 @@ import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -38,10 +37,10 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConf
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.PlatformCommonDefaults;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreConfigurationManagementClient;
-import com.alliander.osgp.cucumber.platform.config.PlatformApplicationConfiguration;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 
 import cucumber.api.java.en.Then;
@@ -52,9 +51,6 @@ import cucumber.api.java.en.When;
  */
 public class SetConfigurationSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationSteps.class);
-
-    @Autowired
-    private PlatformApplicationConfiguration configuration;
 
     @Autowired
     private CoreConfigurationManagementClient client;
@@ -107,7 +103,8 @@ public class SetConfigurationSteps {
                         relayMap.setAddress(Integer.parseInt(subRelayMapElement[1]));
                     }
                 }
-                if (requestParameters.containsKey(PlatformKeys.RC_TYPE) && !requestParameters.get(PlatformKeys.RC_TYPE).isEmpty()) {
+                if (requestParameters.containsKey(PlatformKeys.RC_TYPE)
+                        && !requestParameters.get(PlatformKeys.RC_TYPE).isEmpty()) {
                     relayMap.setRelayType(getEnum(requestParameters, PlatformKeys.RC_TYPE, RelayType.class));
                 }
                 if (relayMap.getIndex() != 0 || relayMap.getAddress() != 0 || relayMap.getRelayType() != null) {
@@ -131,8 +128,8 @@ public class SetConfigurationSteps {
     @When("^receiving a set configuration request$")
     public void receivingASetConfigurationRequest(final Map<String, String> requestParameters) throws Throwable {
         final SetConfigurationRequest request = new SetConfigurationRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final Configuration config = new Configuration();
 
@@ -142,10 +139,12 @@ public class SetConfigurationSteps {
         this.addFilledDaliConfigurationToConfiguration(requestParameters, config);
         this.addFilledRelayConfigurationToConfiguration(requestParameters, config);
 
-        final LinkType preferredLinkType = getEnum(requestParameters, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class);
+        final LinkType preferredLinkType = getEnum(requestParameters, PlatformKeys.KEY_PREFERRED_LINKTYPE,
+                LinkType.class);
         config.setPreferredLinkType(preferredLinkType);
 
-        if (requestParameters.containsKey(PlatformKeys.METER_TYPE) && !requestParameters.get(PlatformKeys.METER_TYPE).isEmpty()) {
+        if (requestParameters.containsKey(PlatformKeys.METER_TYPE)
+                && !requestParameters.get(PlatformKeys.METER_TYPE).isEmpty()) {
             // Note: This piece of code has been made because there are multiple
             // enumerations with the name MeterType, but not all of them has all
             // values the same. Some with underscore and some without.
@@ -167,13 +166,14 @@ public class SetConfigurationSteps {
                     getInteger(requestParameters, PlatformKeys.SHORT_INTERVAL, PlatformCommonDefaults.SHORT_INTERVAL));
         }
 
-        if (requestParameters.containsKey(PlatformKeys.INTERVAL_TYPE) && !requestParameters.get(PlatformKeys.INTERVAL_TYPE).isEmpty()) {
+        if (requestParameters.containsKey(PlatformKeys.INTERVAL_TYPE)
+                && !requestParameters.get(PlatformKeys.INTERVAL_TYPE).isEmpty()) {
             final LongTermIntervalType intervalType = getEnum(requestParameters, PlatformKeys.INTERVAL_TYPE,
                     LongTermIntervalType.class, PlatformCommonDefaults.INTERVAL_TYPE);
             if (requestParameters.containsKey(PlatformKeys.LONG_INTERVAL)
                     && !requestParameters.get(PlatformKeys.LONG_INTERVAL).isEmpty()) {
-                config.setLongTermHistoryInterval(
-                        getInteger(requestParameters, PlatformKeys.LONG_INTERVAL, PlatformCommonDefaults.LONG_INTERVAL));
+                config.setLongTermHistoryInterval(getInteger(requestParameters, PlatformKeys.LONG_INTERVAL,
+                        PlatformCommonDefaults.LONG_INTERVAL));
                 config.setLongTermHistoryIntervalType(intervalType);
             }
         }
@@ -184,47 +184,6 @@ public class SetConfigurationSteps {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.setConfiguration(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
-        }
-    }
-
-    @Then("^the platform buffers a set configuration response message for device \"([^\"]*)\"$")
-    public void thePlatformBufferesASetConfigurationResponseMessageForDevice(final String deviceIdentification,
-            final Map<String, String> expectedResponseData) throws Throwable {
-        final SetConfigurationAsyncRequest request = new SetConfigurationAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
-
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                throw new TimeoutException();
-            }
-
-            count++;
-            Thread.sleep(1000);
-
-            final SetConfigurationResponse response = this.client.getSetConfiguration(request);
-
-            if (!expectedResponseData.containsKey(PlatformKeys.KEY_RESULT)
-                    || getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
-                continue;
-            }
-
-            success = true;
-        }
-    }
-
-    @Then("^the platform buffers a set configuration response message for device \"([^\"]*)\" contains soap fault$")
-    public void thePlatformBufferesASetConfigurationResponseMessageForDeviceContainsSoapFault(
-            final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
-        try {
-            this.thePlatformBufferesASetConfigurationResponseMessageForDevice(deviceIdentification,
-                    expectedResponseData);
-        } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_MESSAGE), ex.getMessage());
         }
     }
 
@@ -239,20 +198,56 @@ public class SetConfigurationSteps {
      */
     @Then("^the set configuration async response contains$")
     public void theSetConfigurationResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final SetConfigurationAsyncResponse response = (SetConfigurationAsyncResponse) ScenarioContext.current()
+        final SetConfigurationAsyncResponse asyncResponse = (SetConfigurationAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID) + "]");
+    }
+
+    @Then("^the platform buffers a set configuration response message for device \"([^\"]*)\"$")
+    public void thePlatformBufferesASetConfigurationResponseMessageForDevice(final String deviceIdentification,
+            final Map<String, String> expectedResponseData) throws Throwable {
+        final SetConfigurationAsyncRequest request = new SetConfigurationAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        final SetConfigurationResponse response = Wait.untilAndReturn(() -> {
+            final SetConfigurationResponse retval = this.client.getSetConfiguration(request);
+            Assert.assertNotNull(retval);
+            return retval;
+        });
+
+        Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class),
+                response.getResult());
+    }
+
+    @Then("^the platform buffers a set configuration response message for device \"([^\"]*)\" contains soap fault$")
+    public void thePlatformBufferesASetConfigurationResponseMessageForDeviceContainsSoapFault(
+            final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
+        final SetConfigurationAsyncRequest request = new SetConfigurationAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        try {
+            this.client.getSetConfiguration(request);
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
+            GenericResponseSteps.verifySoapFault(expectedResponseData);
+        }
     }
 
     /**

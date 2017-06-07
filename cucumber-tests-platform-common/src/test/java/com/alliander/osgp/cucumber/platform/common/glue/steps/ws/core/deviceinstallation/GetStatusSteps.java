@@ -30,10 +30,10 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.LinkType;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.EventNotificationType;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreDeviceInstallationClient;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -42,9 +42,6 @@ public class GetStatusSteps extends GlueBase {
 
     @Autowired
     private CoreDeviceInstallationClient client;
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @When("receiving a device installation get status request")
     public void receivingADeviceInstallationGetStatusRequest(final Map<String, String> settings) throws Throwable {
@@ -63,14 +60,14 @@ public class GetStatusSteps extends GlueBase {
     @Then("the device installation get status async response contains")
     public void theDeviceInstallationGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-        final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.current()
+        final GetStatusAsyncResponse asyncResponse = (GetStatusAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
@@ -89,28 +86,13 @@ public class GetStatusSteps extends GlueBase {
         asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        GetStatusResponse response = null;
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-            Thread.sleep(1000);
-
-            try {
-                response = this.client.getStatusResponse(request);
-
-                success = true;
-            } catch (final Exception ex) {
-                // Do nothing
-            }
-        }
-
-        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)),
-                response.getResult());
+        final GetStatusResponse response = Wait.untilAndReturn(() -> {
+            final GetStatusResponse retval = this.client.getStatusResponse(request);
+            Assert.assertNotNull(retval);
+            Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformKeys.KEY_RESULT)),
+                    retval.getResult());
+            return retval;
+        });
 
         final DeviceStatus deviceStatus = response.getDeviceStatus();
 

@@ -50,11 +50,12 @@ public class UpdateKeySteps extends GlueBase {
 
         // TODO: Change to Update Key
         final UpdateKeyRequest request = new UpdateKeyRequest();
-        request.setDeviceIdentification(
-                getString(requestSettings, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setPublicKey(getString(requestSettings, PlatformCommonKeys.KEY_PUBLIC_KEY, PlatformCommonDefaults.DEFAULT_PUBLIC_KEY));
-        request.setProtocolInfoId(
-                getLong(requestSettings, PlatformCommonKeys.KEY_PROTOCOL_INFO_ID, PlatformCommonDefaults.DEFAULT_PROTOCOL_INFO_ID));
+        request.setDeviceIdentification(getString(requestSettings, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setPublicKey(getString(requestSettings, PlatformCommonKeys.KEY_PUBLIC_KEY,
+                PlatformCommonDefaults.DEFAULT_PUBLIC_KEY));
+        request.setProtocolInfoId(getLong(requestSettings, PlatformCommonKeys.KEY_PROTOCOL_INFO_ID,
+                PlatformCommonDefaults.DEFAULT_PROTOCOL_INFO_ID));
 
         try {
             ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.getUpdateKeyResponse(request));
@@ -70,9 +71,11 @@ public class UpdateKeySteps extends GlueBase {
      */
     @Then("^the update key response contains$")
     public void the_update_key_response_contains(final Map<String, String> expectedResult) throws Throwable {
-        final Object obj = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
-        Assert.assertTrue(obj instanceof UpdateKeyResponse);
-        Assert.assertNotNull(obj);
+        // TODO: Check what the "Update Key Response" has to return, for now
+        // there is no information to check.
+        final UpdateKeyResponse response = (UpdateKeyResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
+        Assert.assertNotNull(response);
     }
 
     /**

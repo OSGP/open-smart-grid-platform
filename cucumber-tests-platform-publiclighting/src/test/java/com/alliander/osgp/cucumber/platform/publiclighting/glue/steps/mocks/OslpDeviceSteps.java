@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -32,9 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.PowerUsageData;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
@@ -147,18 +144,25 @@ public class OslpDeviceSteps {
         Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
 
         final GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
-        Assert.assertEquals(getEnum(expectedParameters, PlatformPubliclightingKeys.HISTORY_TERM_TYPE, HistoryTermType.class,
-                PlatformPubliclightingDefaults.DEFAULT_OSLP_HISTORY_TERM_TYPE), request.getTermType());
-        if (expectedParameters.containsKey(PlatformPubliclightingKeys.KEY_PAGE) && !expectedParameters.get(PlatformPubliclightingKeys.KEY_PAGE).isEmpty()) {
-            Assert.assertEquals((int) getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_PAGE), request.getPage());
+        Assert.assertEquals(getEnum(expectedParameters, PlatformPubliclightingKeys.HISTORY_TERM_TYPE,
+                HistoryTermType.class, PlatformPubliclightingDefaults.DEFAULT_OSLP_HISTORY_TERM_TYPE),
+                request.getTermType());
+        if (expectedParameters.containsKey(PlatformPubliclightingKeys.KEY_PAGE)
+                && !expectedParameters.get(PlatformPubliclightingKeys.KEY_PAGE).isEmpty()) {
+            Assert.assertEquals((int) getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_PAGE),
+                    request.getPage());
         }
-        if (expectedParameters.containsKey(PlatformPubliclightingKeys.START_TIME) && !expectedParameters.get(PlatformPubliclightingKeys.START_TIME).isEmpty()
+        if (expectedParameters.containsKey(PlatformPubliclightingKeys.START_TIME)
+                && !expectedParameters.get(PlatformPubliclightingKeys.START_TIME).isEmpty()
                 && expectedParameters.get(PlatformPubliclightingKeys.START_TIME) != null) {
-            Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.START_TIME), request.getTimePeriod().getStartTime());
+            Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.START_TIME),
+                    request.getTimePeriod().getStartTime());
         }
-        if (expectedParameters.containsKey(PlatformPubliclightingKeys.END_TIME) && !expectedParameters.get(PlatformPubliclightingKeys.END_TIME).isEmpty()
+        if (expectedParameters.containsKey(PlatformPubliclightingKeys.END_TIME)
+                && !expectedParameters.get(PlatformPubliclightingKeys.END_TIME).isEmpty()
                 && expectedParameters.get(PlatformPubliclightingKeys.END_TIME) != null) {
-            Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.END_TIME), request.getTimePeriod().getEndTime());
+            Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.END_TIME),
+                    request.getTimePeriod().getEndTime());
         }
     }
 
@@ -215,7 +219,8 @@ public class OslpDeviceSteps {
 
         final ResumeScheduleRequest request = message.getResumeScheduleRequest();
 
-        Assert.assertEquals(getBoolean(expectedRequest, PlatformPubliclightingKeys.KEY_ISIMMEDIATE), request.getImmediate());
+        Assert.assertEquals(getBoolean(expectedRequest, PlatformPubliclightingKeys.KEY_ISIMMEDIATE),
+                request.getImmediate());
         Assert.assertEquals(getInteger(expectedRequest, PlatformPubliclightingKeys.KEY_INDEX),
                 OslpUtils.byteStringToInteger(request.getIndex()));
     }
@@ -279,14 +284,19 @@ public class OslpDeviceSteps {
 
         final LightValue lightValue = message.getSetLightRequest().getValues(0);
 
-        Assert.assertEquals(getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_INDEX, PlatformPubliclightingDefaults.DEFAULT_INDEX),
+        Assert.assertEquals(
+                getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_INDEX,
+                        PlatformPubliclightingDefaults.DEFAULT_INDEX),
                 OslpUtils.byteStringToInteger(lightValue.getIndex()));
         if (expectedParameters.containsKey(PlatformPubliclightingKeys.KEY_DIMVALUE)
                 && !StringUtils.isEmpty(expectedParameters.get(PlatformPubliclightingKeys.KEY_DIMVALUE))) {
-            Assert.assertEquals(getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_DIMVALUE, PlatformPubliclightingDefaults.DEFAULT_DIMVALUE),
+            Assert.assertEquals(
+                    getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_DIMVALUE,
+                            PlatformPubliclightingDefaults.DEFAULT_DIMVALUE),
                     OslpUtils.byteStringToInteger(lightValue.getDimValue()));
         }
-        Assert.assertEquals(getBoolean(expectedParameters, PlatformPubliclightingKeys.KEY_ON, PlatformPubliclightingDefaults.DEFAULT_ON), lightValue.getOn());
+        Assert.assertEquals(getBoolean(expectedParameters, PlatformPubliclightingKeys.KEY_ON,
+                PlatformPubliclightingDefaults.DEFAULT_ON), lightValue.getOn());
     }
 
     /**
@@ -364,7 +374,8 @@ public class OslpDeviceSteps {
 
         final SetTransitionRequest request = message.getSetTransitionRequest();
 
-        Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_TRANSITION_TYPE, TransitionType.class),
+        Assert.assertEquals(
+                getEnum(expectedResult, PlatformPubliclightingKeys.KEY_TRANSITION_TYPE, TransitionType.class),
                 request.getTransitionType());
         if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_TIME)) {
             // TODO: How to check the time?
@@ -422,24 +433,26 @@ public class OslpDeviceSteps {
 
         for (final Schedule schedule : request.getSchedulesList()) {
             if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
-                Assert.assertEquals(getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, Weekday.class),
+                Assert.assertEquals(
+                        getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, Weekday.class),
                         schedule.getWeekday());
             }
             if (!expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_STARTDAY).isEmpty()) {
-                final String startDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY).toDateTime(DateTimeZone.UTC)
-                        .toString("yyyyMMdd");
+                final String startDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
+                        .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
 
                 Assert.assertEquals(startDay, schedule.getStartDay());
             }
             if (!expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_ENDDAY).isEmpty()) {
-                final String endDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY).toDateTime(DateTimeZone.UTC)
-                        .toString("yyyyMMdd");
+                final String endDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY)
+                        .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
 
                 Assert.assertEquals(endDay, schedule.getEndDay());
             }
 
             if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
-                Assert.assertEquals(getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ACTIONTIME, ActionTime.class),
+                Assert.assertEquals(
+                        getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ACTIONTIME, ActionTime.class),
                         schedule.getActionTime());
             }
             String expectedTime = getString(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TIME).replace(":", "");
@@ -448,7 +461,8 @@ public class OslpDeviceSteps {
             }
             Assert.assertEquals(expectedTime, schedule.getTime());
             final String scheduleLightValue = getString(expectedRequest,
-                    (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) ? PlatformPubliclightingKeys.SCHEDULE_LIGHTVALUES
+                    (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE)
+                            ? PlatformPubliclightingKeys.SCHEDULE_LIGHTVALUES
                             : PlatformPubliclightingKeys.SCHEDULE_TARIFFVALUES);
             final String[] scheduleLightValues = scheduleLightValue.split(";");
             Assert.assertEquals(scheduleLightValues.length, schedule.getValueCount());
@@ -465,11 +479,15 @@ public class OslpDeviceSteps {
             }
 
             if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
-                Assert.assertEquals((!getString(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE).isEmpty())
-                        ? getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE, TriggerType.class)
-                        : TriggerType.TT_NOT_SET, schedule.getTriggerType());
+                Assert.assertEquals(
+                        (!getString(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE).isEmpty())
+                                ? getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE,
+                                        TriggerType.class)
+                                : TriggerType.TT_NOT_SET,
+                        schedule.getTriggerType());
 
-                final String[] windowTypeValues = getString(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TRIGGERWINDOW).split(",");
+                final String[] windowTypeValues = getString(expectedRequest,
+                        PlatformPubliclightingKeys.SCHEDULE_TRIGGERWINDOW).split(",");
                 if (windowTypeValues.length == 2) {
                     Assert.assertEquals(Integer.parseInt(windowTypeValues[0]), schedule.getWindow().getMinutesBefore());
                     Assert.assertEquals(Integer.parseInt(windowTypeValues[1]), schedule.getWindow().getMinutesAfter());
@@ -528,13 +546,15 @@ public class OslpDeviceSteps {
 
         this.oslpMockServer.mockGetActualPowerUsageResponse(Enum.valueOf(Status.class, result),
                 getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER, null), meterType,
-                getDate(responseData, PlatformPubliclightingKeys.RECORD_TIME).toDateTime(DateTimeZone.UTC).toString("yyyyMMddHHmmss"),
+                getDate(responseData, PlatformPubliclightingKeys.RECORD_TIME).toDateTime(DateTimeZone.UTC)
+                        .toString("yyyyMMddHHmmss"),
                 getInteger(responseData, PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY, null),
                 getInteger(responseData, PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS, null),
                 getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_CURRENT1, null),
                 getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_CURRENT2, null),
                 getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_CURRENT3, null),
-                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_POWER1, null), getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_POWER2, null),
+                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_POWER1, null),
+                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_POWER2, null),
                 getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_POWER3, null),
                 getInteger(responseData, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR1, null),
                 getInteger(responseData, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR2, null),
@@ -546,8 +566,8 @@ public class OslpDeviceSteps {
     public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final String protocol,
             final Map<String, String> requestParameters) {
         this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(
-                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_STATUS, Status.class, Status.OK).name(), protocol,
-                requestParameters);
+                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_STATUS, Status.class, Status.OK).name(),
+                protocol, requestParameters);
     }
 
     /**
@@ -574,12 +594,17 @@ public class OslpDeviceSteps {
 
         this.oslpMockServer.mockGetConfigurationResponse(Enum.valueOf(Status.class, result),
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class),
-                getString(requestParameters, PlatformPubliclightingKeys.DC_LIGHTS, PlatformPubliclightingDefaults.DC_LIGHTS),
-                getString(requestParameters, PlatformPubliclightingKeys.DC_MAP), getEnum(requestParameters, PlatformPubliclightingKeys.RC_TYPE, RelayType.class),
+                getString(requestParameters, PlatformPubliclightingKeys.DC_LIGHTS,
+                        PlatformPubliclightingDefaults.DC_LIGHTS),
+                getString(requestParameters, PlatformPubliclightingKeys.DC_MAP),
+                getEnum(requestParameters, PlatformPubliclightingKeys.RC_TYPE, RelayType.class),
                 getString(requestParameters, PlatformPubliclightingKeys.RC_MAP),
-                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class), meterType,
-                getInteger(requestParameters, PlatformPubliclightingKeys.SHORT_INTERVAL, PlatformPubliclightingDefaults.SHORT_INTERVAL),
-                getInteger(requestParameters, PlatformPubliclightingKeys.LONG_INTERVAL, PlatformPubliclightingDefaults.LONG_INTERVAL),
+                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
+                meterType,
+                getInteger(requestParameters, PlatformPubliclightingKeys.SHORT_INTERVAL,
+                        PlatformPubliclightingDefaults.SHORT_INTERVAL),
+                getInteger(requestParameters, PlatformPubliclightingKeys.LONG_INTERVAL,
+                        PlatformPubliclightingDefaults.LONG_INTERVAL),
                 getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE, LongTermIntervalType.class));
     }
 
@@ -592,15 +617,16 @@ public class OslpDeviceSteps {
     @Given("^the device returns a get power usage history response \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final String result, final String protocol,
             final Map<String, String> requestParameters) {
-    	
-    	Map<String, String[]> requestMap = new HashMap<>();
-    	
-    	for (String key : requestParameters.keySet()) {
-    		String[] values = requestParameters.get(key).split(PlatformPubliclightingKeys.SEPARATOR_SPACE_COLON_SPACE);
-    		requestMap.put(key, values);
-    	}
-    	
-    	this.oslpMockServer.mockGetPowerUsageHistoryResponse(Enum.valueOf(Status.class, result), requestMap);
+
+        final Map<String, String[]> requestMap = new HashMap<>();
+
+        for (final String key : requestParameters.keySet()) {
+            final String[] values = requestParameters.get(key)
+                    .split(PlatformPubliclightingKeys.SEPARATOR_SPACE_COLON_SPACE);
+            requestMap.put(key, values);
+        }
+
+        this.oslpMockServer.mockGetPowerUsageHistoryResponse(Enum.valueOf(Status.class, result), requestMap);
     }
 
     /**
@@ -612,9 +638,11 @@ public class OslpDeviceSteps {
     @Given("^the device returns a get status response over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetStatusResponseOverOSLP(final String protocol, final Map<String, String> result) {
         int eventNotificationTypes = 0;
-        final String eventNotificationTypesString = getString(result, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES,
+        final String eventNotificationTypesString = getString(result,
+                PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES,
                 PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONTYPES);
-        for (final String eventNotificationType : eventNotificationTypesString.split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
+        for (final String eventNotificationType : eventNotificationTypesString
+                .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
             if (!eventNotificationType.isEmpty()) {
                 eventNotificationTypes = eventNotificationTypes
                         + Enum.valueOf(EventNotificationTypeDto.class, eventNotificationType.trim()).getValue();
@@ -622,12 +650,15 @@ public class OslpDeviceSteps {
         }
 
         final List<LightValue> lightValues = new ArrayList<>();
-        if (!getString(result, PlatformPubliclightingKeys.KEY_LIGHTVALUES, PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES).isEmpty()
-                && getString(result, PlatformPubliclightingKeys.KEY_LIGHTVALUES, PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
-                        .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON).length > 0) {
+        if (!getString(result, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
+                PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES).isEmpty()
+                && getString(result, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
+                        PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
+                                .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON).length > 0) {
 
-            for (final String lightValueString : getString(result, PlatformPubliclightingKeys.KEY_LIGHTVALUES, PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
-                    .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON)) {
+            for (final String lightValueString : getString(result, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
+                    PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
+                            .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON)) {
                 final String[] parts = lightValueString.split(PlatformPubliclightingKeys.SEPARATOR_COMMA);
 
                 final LightValue lightValue = LightValue.newBuilder()
@@ -640,10 +671,14 @@ public class OslpDeviceSteps {
         }
 
         this.oslpMockServer.mockGetStatusResponse(
-                getEnum(result, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class, PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
-                getEnum(result, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_LINKTYPE),
-                getEnum(result, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class, PlatformPubliclightingDefaults.DEFAULT_LIGHTTYPE),
-                eventNotificationTypes, getEnum(result, PlatformPubliclightingKeys.KEY_STATUS, Oslp.Status.class, PlatformPubliclightingDefaults.DEFAULT_STATUS),
+                getEnum(result, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
+                getEnum(result, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_ACTUAL_LINKTYPE),
+                getEnum(result, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_LIGHTTYPE),
+                eventNotificationTypes, getEnum(result, PlatformPubliclightingKeys.KEY_STATUS, Oslp.Status.class,
+                        PlatformPubliclightingDefaults.DEFAULT_STATUS),
                 lightValues);
     }
 
@@ -657,10 +692,13 @@ public class OslpDeviceSteps {
             final Map<String, String> requestParameters) {
 
         int eventNotificationTypes = 0;
-        if (getString(requestParameters, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES, PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONTYPES)
-                .trim().split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length > 0) {
-            for (final String eventNotificationType : getString(requestParameters, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES,
-                    PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
+        if (getString(requestParameters, PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES,
+                PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim()
+                        .split(PlatformPubliclightingKeys.SEPARATOR_COMMA).length > 0) {
+            for (final String eventNotificationType : getString(requestParameters,
+                    PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES,
+                    PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim()
+                            .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
                 if (!eventNotificationType.isEmpty()) {
                     eventNotificationTypes = eventNotificationTypes
                             + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).getValue();
@@ -669,12 +707,15 @@ public class OslpDeviceSteps {
         }
 
         final List<LightValue> lightValues = new ArrayList<>();
-        if (!getString(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTVALUES, PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES).isEmpty()
-                && getString(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTVALUES, PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
-                        .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON).length > 0) {
+        if (!getString(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
+                PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES).isEmpty()
+                && getString(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
+                        PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
+                                .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON).length > 0) {
 
-            for (final String lightValueString : getString(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
-                    PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES).split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON)) {
+            for (final String lightValueString : getString(requestParameters,
+                    PlatformPubliclightingKeys.KEY_LIGHTVALUES, PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
+                            .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON)) {
                 final String[] parts = lightValueString.split(PlatformPubliclightingKeys.SEPARATOR_COMMA);
 
                 final LightValue lightValue = LightValue.newBuilder()
@@ -689,8 +730,10 @@ public class OslpDeviceSteps {
         this.oslpMockServer.mockGetStatusResponse(
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
                         PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
-                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_LINKTYPE),
-                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class, PlatformPubliclightingDefaults.DEFAULT_LIGHTTYPE),
+                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_ACTUAL_LINKTYPE),
+                getEnum(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class,
+                        PlatformPubliclightingDefaults.DEFAULT_LIGHTTYPE),
                 eventNotificationTypes, Enum.valueOf(Status.class, result), lightValues);
     }
 
@@ -842,8 +885,10 @@ public class OslpDeviceSteps {
     public void theDeviceSendsARegisterDeviceRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
-        LOGGER.info("IpAddress from feature: [{}]", getString(settings, PlatformPubliclightingKeys.IP_ADDRESS, PlatformPubliclightingDefaults.LOCALHOST));
-        final InetAddress address = InetAddress.getByName(getString(settings, PlatformPubliclightingKeys.IP_ADDRESS, PlatformPubliclightingDefaults.LOCALHOST));
+        LOGGER.info("IpAddress from feature: [{}]",
+                getString(settings, PlatformPubliclightingKeys.IP_ADDRESS, PlatformPubliclightingDefaults.LOCALHOST));
+        final InetAddress address = InetAddress.getByName(
+                getString(settings, PlatformPubliclightingKeys.IP_ADDRESS, PlatformPubliclightingDefaults.LOCALHOST));
         final byte[] ba = address.getAddress();
         LOGGER.info("getAddress() from inetAddress: [{}.{}.{}.{}]", ba[0], ba[1], ba[2], ba[3]);
         LOGGER.info("getHostAddress() from inetAddress: [{}]", address.getHostAddress());
@@ -851,17 +896,28 @@ public class OslpDeviceSteps {
 
         try {
             final OslpEnvelope request = this
-                    .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID, PlatformPubliclightingDefaults.DEVICE_UID),
-                            this.oslpMockServer.getSequenceNumber())
-                    .withPayloadMessage(Message.newBuilder().setRegisterDeviceRequest(Oslp.RegisterDeviceRequest
-                            .newBuilder()
-                            .setDeviceIdentification(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
-                                    PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION))
-                            .setIpAddress(ByteString.copyFrom(InetAddress
-                                    .getByName(getString(settings, PlatformPubliclightingKeys.IP_ADDRESS, PlatformPubliclightingDefaults.LOCALHOST)).getAddress()))
-                            .setDeviceType(getEnum(settings, PlatformPubliclightingKeys.KEY_DEVICE_TYPE, DeviceType.class, DeviceType.PSLD))
-                            .setHasSchedule(getBoolean(settings, PlatformPubliclightingKeys.KEY_HAS_SCHEDULE, PlatformPubliclightingDefaults.DEFAULT_HASSCHEDULE))
-                            .setRandomDevice(getInteger(settings, PlatformPubliclightingKeys.RANDOM_DEVICE, PlatformPubliclightingDefaults.RANDOM_DEVICE))).build())
+                    .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
+                            PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber())
+                    .withPayloadMessage(
+                            Message.newBuilder()
+                                    .setRegisterDeviceRequest(Oslp.RegisterDeviceRequest.newBuilder()
+                                            .setDeviceIdentification(getString(settings,
+                                                    PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                                                    PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION))
+                                            .setIpAddress(ByteString.copyFrom(InetAddress
+                                                    .getByName(
+                                                            getString(settings, PlatformPubliclightingKeys.IP_ADDRESS,
+                                                                    PlatformPubliclightingDefaults.LOCALHOST))
+                                                    .getAddress()))
+                                            .setDeviceType(getEnum(settings, PlatformPubliclightingKeys.KEY_DEVICE_TYPE,
+                                                    DeviceType.class, DeviceType.PSLD))
+                                            .setHasSchedule(
+                                                    getBoolean(settings, PlatformPubliclightingKeys.KEY_HAS_SCHEDULE,
+                                                            PlatformPubliclightingDefaults.DEFAULT_HASSCHEDULE))
+                                            .setRandomDevice(
+                                                    getInteger(settings, PlatformPubliclightingKeys.RANDOM_DEVICE,
+                                                            PlatformPubliclightingDefaults.RANDOM_DEVICE)))
+                                    .build())
                     .build();
 
             this.send(request, settings);
@@ -883,13 +939,14 @@ public class OslpDeviceSteps {
                 .setEvent(getEnum(settings, PlatformPubliclightingKeys.KEY_EVENT, Event.class))
                 .setDescription(getString(settings, PlatformPubliclightingKeys.KEY_DESCRIPTION));
 
-        builder.setIndex((settings.containsKey(PlatformPubliclightingKeys.KEY_INDEX) && !settings.get(PlatformPubliclightingKeys.KEY_INDEX).equals("EMPTY"))
-                ? ByteString.copyFrom(getString(settings, PlatformPubliclightingKeys.KEY_INDEX).getBytes())
-                : ByteString.copyFrom("0".getBytes()));
+        builder.setIndex((settings.containsKey(PlatformPubliclightingKeys.KEY_INDEX)
+                && !settings.get(PlatformPubliclightingKeys.KEY_INDEX).equals("EMPTY"))
+                        ? ByteString.copyFrom(getString(settings, PlatformPubliclightingKeys.KEY_INDEX).getBytes())
+                        : ByteString.copyFrom("0".getBytes()));
 
         final OslpEnvelope request = this
-                .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID, PlatformPubliclightingDefaults.DEVICE_UID),
-                        this.oslpMockServer.getSequenceNumber())
+                .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
+                        PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber())
                 .withPayloadMessage(Message.newBuilder()
                         .setEventNotificationRequest(
                                 Oslp.EventNotificationRequest.newBuilder().addNotifications(builder.build()))
@@ -908,8 +965,10 @@ public class OslpDeviceSteps {
         final Oslp.EventNotificationRequest.Builder requestBuilder = Oslp.EventNotificationRequest.newBuilder();
         final Oslp.EventNotification.Builder builder = Oslp.EventNotification.newBuilder();
 
-        final String[] events = getString(settings, PlatformPubliclightingKeys.KEY_EVENTS).split(PlatformPubliclightingKeys.SEPARATOR_COMMA),
-                indexes = getString(settings, PlatformPubliclightingKeys.KEY_INDEXES).split(PlatformPubliclightingKeys.SEPARATOR_COMMA);
+        final String[] events = getString(settings, PlatformPubliclightingKeys.KEY_EVENTS)
+                .split(PlatformPubliclightingKeys.SEPARATOR_COMMA),
+                indexes = getString(settings, PlatformPubliclightingKeys.KEY_INDEXES)
+                        .split(PlatformPubliclightingKeys.SEPARATOR_COMMA);
 
         for (int i = 0; i < events.length; i++) {
             if (!events[i].isEmpty() && !indexes[i].isEmpty()) {
@@ -921,8 +980,8 @@ public class OslpDeviceSteps {
         }
 
         final OslpEnvelope request = this
-                .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID, PlatformPubliclightingDefaults.DEVICE_UID),
-                        this.oslpMockServer.getSequenceNumber())
+                .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
+                        PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber())
                 .withPayloadMessage(Message.newBuilder().setEventNotificationRequest(requestBuilder.build()).build())
                 .build();
 
@@ -942,7 +1001,8 @@ public class OslpDeviceSteps {
 
         final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
 
-        Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS), response.getStatus().name());
+        Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS),
+                response.getStatus().name());
     }
 
     @Given("^the device sends an event notification request with sequencenumber \"([^\"]*)\" to the platform over \"([^\"]*)\"$")
@@ -973,7 +1033,8 @@ public class OslpDeviceSteps {
             Assert.assertNotNull(response.getLocationInfo().getLatitude());
             Assert.assertNotNull(response.getLocationInfo().getTimeOffset());
 
-            Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS), response.getStatus().name());
+            Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS),
+                    response.getStatus().name());
         } else {
             Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.MESSAGE), e.getMessage());
         }
@@ -995,7 +1056,8 @@ public class OslpDeviceSteps {
             throws IOException, DeviceSimulatorException {
         final String deviceIdentification = getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION);
         final String hostname = this.configuration.getPlatform();
-        final String protocol = getString(settings, PlatformPubliclightingKeys.KEY_PROTOCOL, PlatformPubliclightingDefaults.DEFAULT_PROTOCOL);
+        final String protocol = getString(settings, PlatformPubliclightingKeys.KEY_PROTOCOL,
+                PlatformPubliclightingDefaults.DEFAULT_PROTOCOL);
 
         InetSocketAddress address = null;
 

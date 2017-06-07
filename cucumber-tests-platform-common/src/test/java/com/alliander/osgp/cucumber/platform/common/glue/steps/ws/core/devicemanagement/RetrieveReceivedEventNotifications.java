@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -27,6 +28,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsRequ
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
@@ -64,7 +66,8 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
             final Event event = new Event(device,
                     getDateTime(getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP)).toDate(),
                     getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
-                    getString(data, PlatformKeys.KEY_DESCRIPTION), getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
+                    getString(data, PlatformKeys.KEY_DESCRIPTION),
+                    getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
 
             this.eventRepository.save(event);
         }
@@ -75,29 +78,29 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final FindEventsRequest request = new FindEventsRequest();
-        request.setDeviceIdentification(
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setPageSize(getInteger(settings, PlatformKeys.KEY_PAGE_SIZE, PlatformDefaults.DEFAULT_PAGE_SIZE));
         request.setPage(getInteger(settings, PlatformKeys.REQUESTED_PAGE, PlatformDefaults.REQUESTED_PAGE));
 
         try {
             ScenarioContext.current()
-                    .put(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION)
-                            .concat("_").concat(PlatformKeys.RESPONSE), this.client.findEventsResponse(request));
+                    .put(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                            PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE),
+                            this.client.findEventsResponse(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.current()
-                    .put(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION)
-                            .concat("_").concat(PlatformKeys.RESPONSE), ex);
+                    .put(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                            PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE),
+                            ex);
         }
-
     }
 
     @Then("^the retrieve event notification request contains$")
     public void theRetrieveEventNotificationRequestContains(final Map<String, String> expectedResponse) {
-
         final FindEventsResponse response = (FindEventsResponse) ScenarioContext.current()
-                .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION)
-                        .concat("_").concat(PlatformKeys.RESPONSE));
+                .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE));
 
         final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event> events = response.getEvents();
 
@@ -105,15 +108,15 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
 
         for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event e : events) {
             Assert.assertNotNull(e.getTimestamp());
-            Assert.assertEquals(
-                    getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION),
-                    e.getDeviceIdentification());
+            Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                    PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION), e.getDeviceIdentification());
             Assert.assertEquals(
                     getEnum(expectedResponse, PlatformKeys.EVENT_TYPE,
                             com.alliander.osgp.adapter.ws.schema.core.devicemanagement.EventType.class),
                     e.getEventType());
             Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION), e.getDescription());
-            Assert.assertEquals(getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX), e.getIndex());
+            Assert.assertEquals(getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX),
+                    e.getIndex());
         }
     }
 
@@ -121,24 +124,26 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
     public void theRetrieveEventNotificationRequestIsReceived(final int totalPages,
             final Map<String, String> expectedResponse) {
         final FindEventsResponse response = (FindEventsResponse) ScenarioContext.current()
-                .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION)
-                        .concat("_").concat(PlatformKeys.RESPONSE));
+                .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE));
+
         Assert.assertEquals(totalPages, (response.getPage().getTotalPages()));
     }
 
     @Then("^the stored events from \"([^\"]*)\" are filtered and retrieved$")
     public void theStoredEventsFromADeviceAreFilteredAndRetrieved(final String deviceIdentification,
             final Map<String, String> expectedResponse) throws Throwable {
-
         final List<Event> events = new ArrayList<>();
         final List<Event> eventIterator = this.retrieveStoredEvents(deviceIdentification);
+        final DateTime fromTimestamp = getDateTime(getString(expectedResponse, PlatformKeys.FROM_TIMESTAMP)),
+                toTimestamp = getDateTime(getString(expectedResponse, PlatformKeys.TO_TIMESTAMP));
 
         for (final Event e : eventIterator) {
-            if (getDateTime(getString(expectedResponse, PlatformKeys.FROM_TIMESTAMP)).isBefore(e.getDateTime().getTime())
-                    && getDateTime(getString(expectedResponse, PlatformKeys.TO_TIMESTAMP)).isAfter(e.getDateTime().getTime())) {
+            if (fromTimestamp.isBefore(e.getDateTime().getTime()) && toTimestamp.isAfter(e.getDateTime().getTime())) {
                 events.add(e);
             }
         }
+
         Assert.assertEquals((int) getInteger(expectedResponse, PlatformKeys.KEY_RESULT), events.size());
     }
 
@@ -146,24 +151,33 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
     public void theStoredEventsAreRetrieved(final String deviceIdentification,
             final Map<String, String> expectedResponse) throws Throwable {
 
-        final List<Event> events = this.retrieveStoredEvents(deviceIdentification);
+        final List<Event> events = Wait.untilAndReturn(() -> {
+            final List<Event> retval = this.retrieveStoredEvents(deviceIdentification);
+            Assert.assertNotNull(retval);
+            Assert.assertTrue(retval.size() > 0);
+            return retval;
+        });
 
         for (final Event e : events) {
             Assert.assertEquals(getEnum(expectedResponse, PlatformKeys.EVENT_TYPE, EventType.class), e.getEventType());
-            Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION), e.getDescription().toString());
-            Assert.assertEquals((int) getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX),
+            Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION),
+                    e.getDescription().toString());
+            Assert.assertEquals(
+                    (int) getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX),
                     (int) e.getIndex());
         }
     }
 
     @Then("^the stored events are filtered and retrieved$")
     public void theStoredEventsAreFilteredAndRetrieved(final Map<String, String> expectedResponse) throws Throwable {
-        final List<Event> events;
+        List<Event> events = null;
+
         if (getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION).isEmpty()) {
             events = this.retrieveStoredEvents();
         } else {
             events = this.retrieveStoredEvents(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         }
+
         Assert.assertEquals((int) getInteger(expectedResponse, PlatformKeys.KEY_RESULT), events.size());
     }
 

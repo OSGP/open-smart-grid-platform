@@ -147,12 +147,11 @@ public class AuthorizeDeviceFunctionsSteps {
 
     @Then("the device function response is \"([^\"]*)\"")
     public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
-        final Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
-
         if (allowed) {
+            final Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
             Assert.assertTrue(!(response instanceof SoapFaultClientException));
         } else {
-            Assert.assertTrue(this.throwable != null);
+            Assert.assertNotNull(this.throwable);
 
             if (!this.throwable.getMessage().equals("METHOD_NOT_ALLOWED_FOR_OWNER")) {
                 Assert.assertEquals("UNAUTHORIZED", this.throwable.getMessage());
@@ -163,8 +162,8 @@ public class AuthorizeDeviceFunctionsSteps {
     private void findDeviceAuthorisations(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException, OperationNotSupportedException {
         final FindDeviceAuthorisationsRequest findDeviceAuthorisationsRequest = new FindDeviceAuthorisationsRequest();
-        findDeviceAuthorisationsRequest.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        findDeviceAuthorisationsRequest.setDeviceIdentification(getString(requestParameters,
+                PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final FindDeviceAuthorisationsResponse response = this.adminDeviceManagementClient
                 .findDeviceAuthorisations(findDeviceAuthorisationsRequest);
@@ -184,35 +183,38 @@ public class AuthorizeDeviceFunctionsSteps {
     private void startSelfTest(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final StartDeviceTestRequest request = new StartDeviceTestRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreDeviceInstallationClient.startDeviceTest(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreDeviceInstallationClient.startDeviceTest(request));
     }
 
     private void stopSelfTest(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final StopDeviceTestRequest request = new StopDeviceTestRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreDeviceInstallationClient.stopDeviceTest(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreDeviceInstallationClient.stopDeviceTest(request));
     }
 
     private void getStatus(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusRequest request = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreDeviceInstallationClient.getStatus(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreDeviceInstallationClient.getStatus(request));
     }
 
     private void getDeviceAuthorization(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final FindDeviceAuthorisationsRequest request = new FindDeviceAuthorisationsRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
                 this.adminDeviceManagementClient.findDeviceAuthorisations(request));
@@ -221,46 +223,50 @@ public class AuthorizeDeviceFunctionsSteps {
     private void setEventNotifications(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetEventNotificationsRequest request = new SetEventNotificationsRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreDeviceManagementClient.setEventNotifications(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreDeviceManagementClient.setEventNotifications(request));
     }
 
     private void getEventNotifications(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final FindEventsRequest request = new FindEventsRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreDeviceManagementClient.findEventsResponse(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreDeviceManagementClient.findEventsResponse(request));
     }
 
     private void updateFirmware(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final UpdateFirmwareRequest request = new UpdateFirmwareRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setFirmwareIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_FIRMWARE_IDENTIFICATION, PlatformCommonDefaults.FIRMWARE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setFirmwareIdentification(getString(requestParameters, PlatformCommonKeys.KEY_FIRMWARE_IDENTIFICATION,
+                PlatformCommonDefaults.FIRMWARE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreFirmwareManagementClient.updateFirmware(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreFirmwareManagementClient.updateFirmware(request));
     }
 
     private void getFirmwareVersion(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetFirmwareVersionRequest request = new GetFirmwareVersionRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreFirmwareManagementClient.getFirmwareVersion(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreFirmwareManagementClient.getFirmwareVersion(request));
     }
 
     private void setConfiguration(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetConfigurationRequest request = new SetConfigurationRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final Configuration config = new Configuration();
 
@@ -271,32 +277,35 @@ public class AuthorizeDeviceFunctionsSteps {
 
         request.setConfiguration(config);
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreConfigurationManagementClient.setConfiguration(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreConfigurationManagementClient.setConfiguration(request));
     }
 
     private void getConfiguration(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetConfigurationRequest request = new GetConfigurationRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreConfigurationManagementClient.getConfiguration(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.coreConfigurationManagementClient.getConfiguration(request));
     }
 
     private void removeDevice(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final RemoveDeviceRequest request = new RemoveDeviceRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.removeDevice(request));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.removeDevice(request));
     }
 
     private void setReboot(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetRebootRequest request = new SetRebootRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreAdHocManagementClient.setReboot(request));
     }
@@ -304,21 +313,23 @@ public class AuthorizeDeviceFunctionsSteps {
     private void deactivateDevice(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final DeactivateDeviceRequest request = new DeactivateDeviceRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.deactivateDevice(request));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
+                this.adminDeviceManagementClient.deactivateDevice(request));
     }
 
     private void setDeviceAuthorization(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final UpdateDeviceAuthorisationsRequest request = new UpdateDeviceAuthorisationsRequest();
         final DeviceAuthorisation deviceAuthorisation = new DeviceAuthorisation();
-        deviceAuthorisation.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        deviceAuthorisation.setDeviceIdentification(getString(requestParameters,
+                PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         deviceAuthorisation.setOrganisationIdentification(PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         deviceAuthorisation.setRevoked(false);
         request.getDeviceAuthorisations().add(deviceAuthorisation);
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
                 this.adminDeviceManagementClient.updateDeviceAuthorisations(request));
+
     }
 }

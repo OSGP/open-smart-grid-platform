@@ -37,7 +37,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.Mete
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.PowerUsageData;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.RelayData;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
@@ -50,9 +50,6 @@ import cucumber.api.java.en.When;
  * Class with all the get actual power usage requests steps
  */
 public class GetActualPowerUsageSteps {
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private PublicLightingDeviceMonitoringClient client;
@@ -72,10 +69,12 @@ public class GetActualPowerUsageSteps {
 
         final GetActualPowerUsageRequest request = new GetActualPowerUsageRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION, PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.client.getActualPowerUsage(request));
+            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                    this.client.getActualPowerUsage(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, ex);
         }
@@ -85,7 +84,8 @@ public class GetActualPowerUsageSteps {
     public void receivingAGetActualPowerUsageRequestAsAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being sent to the platform as a given organization.
-        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                "unknown-organization");
 
         this.receivingAGetActualPowerUsageRequest(requestParameters);
     }
@@ -103,20 +103,21 @@ public class GetActualPowerUsageSteps {
     public void theGetActualPowerUsageAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
 
-        final GetActualPowerUsageAsyncResponse response = (GetActualPowerUsageAsyncResponse) ScenarioContext.current()
-                .get(PlatformPubliclightingKeys.RESPONSE);
+        final GetActualPowerUsageAsyncResponse asyncResponse = (GetActualPowerUsageAsyncResponse) ScenarioContext
+                .current().get(PlatformPubliclightingKeys.RESPONSE);
 
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
+                asyncResponse.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
                         PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: ["
+                + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the get actual power usage response contains soap fault$")
@@ -137,45 +138,31 @@ public class GetActualPowerUsageSteps {
         final GetActualPowerUsageAsyncRequest request = new GetActualPowerUsageAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+        asyncRequest.setCorrelationUid(
+                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        boolean success = false;
-        int count = 0;
-        GetActualPowerUsageResponse response = null;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
+        final GetActualPowerUsageResponse response = Wait.untilAndReturn(() -> {
+            final GetActualPowerUsageResponse retval = this.client.getGetActualPowerUsageResponse(request);
+            Assert.assertNotNull(retval);
+            Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.KEY_STATUS, OsgpResultType.class,
+                    PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_STATUS), retval.getResult());
+            return retval;
+        });
 
-            count++;
-            Thread.sleep(1000);
-
-            response = this.client.getGetActualPowerUsageResponse(request);
-
-            if (getEnum(expectedResult, PlatformPubliclightingKeys.KEY_STATUS, OsgpResultType.class,
-                    PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_STATUS) != response.getResult()) {
-                continue;
-            }
-
-            final String expectedDescription = getString(expectedResult, PlatformPubliclightingKeys.KEY_DESCRIPTION,
-                    PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_DESCRIPTION);
-            if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION) && !expectedDescription.isEmpty()
-                    && expectedDescription != response.getDescription()) {
-                continue;
-            }
-
-            success = true;
+        if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION)) {
+            Assert.assertEquals(
+                    getString(expectedResult, PlatformPubliclightingKeys.KEY_DESCRIPTION,
+                            PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_DESCRIPTION),
+                    response.getDescription());
         }
 
         final PowerUsageData data = response.getPowerUsageData();
 
-        Assert.assertEquals(
-                (int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CONSUMED_POWER),
-                data.getActualConsumedPower());
-        Assert.assertEquals(
-                (int) getInteger(expectedResult, PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CONSUMED_ENERGY),
-                data.getTotalConsumedEnergy());
+        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER,
+                PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CONSUMED_POWER), data.getActualConsumedPower());
+        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY,
+                PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CONSUMED_ENERGY), data.getTotalConsumedEnergy());
 
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
@@ -185,38 +172,48 @@ public class GetActualPowerUsageSteps {
             final String[] sMeterTypeArray = meterType.split("");
             Assert.assertEquals(sMeterTypeArray[0] + "_" + sMeterTypeArray[1], data.getMeterType().toString());
         } else {
-            Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.METER_TYPE, MeterType.class, PlatformPubliclightingDefaults.DEFAULT_METER_TYPE),
-                    data.getMeterType());
+            Assert.assertEquals(getEnum(expectedResult, PlatformPubliclightingKeys.METER_TYPE, MeterType.class,
+                    PlatformPubliclightingDefaults.DEFAULT_METER_TYPE), data.getMeterType());
         }
 
-        Assert.assertEquals(
-                DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                        (getDate(expectedResult, PlatformPubliclightingKeys.RECORD_TIME)).toDateTime(DateTimeZone.UTC).toGregorianCalendar()),
+        Assert.assertEquals(DatatypeFactory.newInstance()
+                .newXMLGregorianCalendar((getDate(expectedResult, PlatformPubliclightingKeys.RECORD_TIME))
+                        .toDateTime(DateTimeZone.UTC).toGregorianCalendar()),
                 data.getRecordTime());
 
         Assert.assertEquals(
-                (int) getInteger(expectedResult, PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS, PlatformPubliclightingDefaults.DEFAULT_TOTAL_LIGHTING_HOURS),
+                (int) getInteger(expectedResult, PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS,
+                        PlatformPubliclightingDefaults.DEFAULT_TOTAL_LIGHTING_HOURS),
                 data.getPsldData().getTotalLightingHours());
-        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CURRENT1, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CURRENT1),
-                data.getSsldData().getActualCurrent1());
-        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CURRENT2, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CURRENT2),
-                data.getSsldData().getActualCurrent2());
-        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CURRENT3, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CURRENT3),
-                data.getSsldData().getActualCurrent3());
-        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_POWER1, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_POWER1),
-                data.getSsldData().getActualPower1());
-        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_POWER2, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_POWER2),
-                data.getSsldData().getActualPower2());
-        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_POWER3, PlatformPubliclightingDefaults.DEFAULT_ACTUAL_POWER3),
-                data.getSsldData().getActualPower3());
         Assert.assertEquals(
-                (int) getInteger(expectedResult, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR1, PlatformPubliclightingDefaults.DEFAULT_AVERAGE_POWER_FACTOR1),
+                (int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CURRENT1,
+                        PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CURRENT1),
+                data.getSsldData().getActualCurrent1());
+        Assert.assertEquals(
+                (int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CURRENT2,
+                        PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CURRENT2),
+                data.getSsldData().getActualCurrent2());
+        Assert.assertEquals(
+                (int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_CURRENT3,
+                        PlatformPubliclightingDefaults.DEFAULT_ACTUAL_CURRENT3),
+                data.getSsldData().getActualCurrent3());
+        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_POWER1,
+                PlatformPubliclightingDefaults.DEFAULT_ACTUAL_POWER1), data.getSsldData().getActualPower1());
+        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_POWER2,
+                PlatformPubliclightingDefaults.DEFAULT_ACTUAL_POWER2), data.getSsldData().getActualPower2());
+        Assert.assertEquals((int) getInteger(expectedResult, PlatformPubliclightingKeys.ACTUAL_POWER3,
+                PlatformPubliclightingDefaults.DEFAULT_ACTUAL_POWER3), data.getSsldData().getActualPower3());
+        Assert.assertEquals(
+                (int) getInteger(expectedResult, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR1,
+                        PlatformPubliclightingDefaults.DEFAULT_AVERAGE_POWER_FACTOR1),
                 data.getSsldData().getAveragePowerFactor1());
         Assert.assertEquals(
-                (int) getInteger(expectedResult, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR2, PlatformPubliclightingDefaults.DEFAULT_AVERAGE_POWER_FACTOR2),
+                (int) getInteger(expectedResult, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR2,
+                        PlatformPubliclightingDefaults.DEFAULT_AVERAGE_POWER_FACTOR2),
                 data.getSsldData().getAveragePowerFactor2());
         Assert.assertEquals(
-                (int) getInteger(expectedResult, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR3, PlatformPubliclightingDefaults.DEFAULT_AVERAGE_POWER_FACTOR3),
+                (int) getInteger(expectedResult, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR3,
+                        PlatformPubliclightingDefaults.DEFAULT_AVERAGE_POWER_FACTOR3),
                 data.getSsldData().getAveragePowerFactor3());
 
         final List<RelayData> relayDataList = data.getSsldData().getRelayData();

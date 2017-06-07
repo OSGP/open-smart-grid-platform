@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,8 @@ public class Wait {
                 // We have a response, so exit
                 // the while loop immediately
                 break;
+            } catch (final StaleElementReferenceException domError) {
+                handleStaleELementError(logger, domError);
             } catch (final AssertionError error) {
                 handleAssertionError(logger, error);
             } catch (final Exception ex) {
@@ -112,6 +115,8 @@ public class Wait {
                 // We have a response, so exit
                 // the while loop immediately
                 break;
+            } catch (final StaleElementReferenceException domError) {
+                handleStaleELementError(logger, domError);
             } catch (final AssertionError error) {
                 handleAssertionError(logger, error);
             } catch (final Exception ex) {
@@ -124,6 +129,11 @@ public class Wait {
                 handleException(logger, ex);
             }
         }
+    }
+
+    private static void handleStaleELementError(final Logger logger, final StaleElementReferenceException ex) {
+        logger.error("Stale element error: " + ex.getMessage());
+        logger.debug("               : stacktrace [" + ex.getStackTrace() + "]");
     }
 
     private static void handleAssertionError(final Logger logger, final AssertionError error) {
