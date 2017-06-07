@@ -51,7 +51,7 @@ import com.alliander.osgp.shared.security.EncryptionService;
  */
 @Component
 public class ReplaceKeyCommandExecutor
-extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
+        extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
@@ -102,11 +102,11 @@ extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice
 
         this.checkActionRequestType(actionRequestDto);
 
-        LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), actionRequestDto);
+        LOGGER.info("Keys set on device :{}", device.getDeviceIdentification());
 
         DlmsDevice devicePostSave = this.execute(conn, device,
-                ReplaceKeyCommandExecutor.wrap(((SetKeysRequestDto) actionRequestDto).getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
-                        SecurityKeyType.E_METER_AUTHENTICATION));
+                ReplaceKeyCommandExecutor.wrap(((SetKeysRequestDto) actionRequestDto).getAuthenticationKey(),
+                        KeyId.AUTHENTICATION_KEY, SecurityKeyType.E_METER_AUTHENTICATION));
 
         devicePostSave = this.execute(conn, devicePostSave,
                 ReplaceKeyCommandExecutor.wrap(((SetKeysRequestDto) actionRequestDto).getEncryptionKey(),
@@ -118,7 +118,7 @@ extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice
     @Override
     public DlmsDevice execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
-                    throws ProtocolAdapterException, FunctionalException {
+            throws ProtocolAdapterException, FunctionalException {
 
         // Add the new key and store in the repo
         DlmsDevice devicePostSave = this.storeNewKey(device, keyWrapper.getBytes(), keyWrapper.getSecurityKeyType());
@@ -147,7 +147,7 @@ extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice
      */
     private void sendToDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
-                    throws ProtocolAdapterException, FunctionalException {
+            throws ProtocolAdapterException, FunctionalException {
         try {
             // Decrypt the cipher text using the private key.
             final byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
@@ -158,8 +158,8 @@ extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice
                     decryptedKey, keyWrapper.getKeyId());
 
             conn.getDlmsMessageListener()
-            .setDescription("ReplaceKey for " + keyWrapper.securityKeyType + " " + keyWrapper.getKeyId()
-            + ", call method: " + JdlmsObjectToStringUtil.describeMethod(methodParameterAuth));
+                    .setDescription("ReplaceKey for " + keyWrapper.securityKeyType + " " + keyWrapper.getKeyId()
+                            + ", call method: " + JdlmsObjectToStringUtil.describeMethod(methodParameterAuth));
 
             final MethodResultCode methodResultCode = conn.getConnection().action(methodParameterAuth).getResultCode();
 
