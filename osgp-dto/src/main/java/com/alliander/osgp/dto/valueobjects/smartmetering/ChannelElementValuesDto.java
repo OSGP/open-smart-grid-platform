@@ -63,6 +63,22 @@ public class ChannelElementValuesDto implements Serializable {
         return this.deviceTypeIdentification;
     }
 
+    public boolean hasIdentificationNumber() {
+        return this.identificationNumber > 0;
+    }
+
+    public boolean hasManufacturerIdentification() {
+        return this.manufacturerIdentification > 0;
+    }
+
+    public boolean hasVersion() {
+        return this.version > 0;
+    }
+
+    public boolean hasDeviceTypeIdentification() {
+        return this.deviceTypeIdentification > 0;
+    }
+
     @Override
     public String toString() {
         return "ChannelElementValues [channel=" + this.channel + ", primaryAddress=" + this.primaryAddress
