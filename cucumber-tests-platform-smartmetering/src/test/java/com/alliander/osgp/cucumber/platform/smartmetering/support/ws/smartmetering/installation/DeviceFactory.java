@@ -59,12 +59,12 @@ public class DeviceFactory {
                 SettingsHelper.getXmlGregorianCalendarValue(settings, PlatformKeys.KEY_DEVICE_DELIVERY_DATE));
 
         device.setMbusIdentificationNumber(
-                Helpers.getString(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
+                Helpers.getLong(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER, null));
         device.setMbusManufacturerIdentification(
                 Helpers.getString(settings, PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
-        device.setMbusVersion(Helpers.getString(settings, PlatformSmartmeteringKeys.MBUS_VERSION));
+        device.setMbusVersion(Helpers.getShort(settings, PlatformSmartmeteringKeys.MBUS_VERSION, null));
         device.setMbusDeviceTypeIdentification(
-                Helpers.getString(settings, PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION));
+                Helpers.getShort(settings, PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION, null));
 
         return device;
     }
