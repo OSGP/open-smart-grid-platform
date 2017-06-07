@@ -72,7 +72,7 @@ public class Iec61850PowerUsageHistoryCommand {
                  * element for the device, where data for the different relays
                  * is combined in the SsldData.relayData some sort of merge
                  * needs to be performed.
-                 * 
+                 *
                  * This can either be a rework of the list currently returned,
                  * or it can be a list constructed based on an altered return
                  * type from getPowerUsageHistoryDataFromRelay (for instance a
@@ -90,7 +90,7 @@ public class Iec61850PowerUsageHistoryCommand {
     private List<PowerUsageDataDto> getPowerUsageHistoryDataFromRelay(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final TimePeriodDto timePeriod,
             final DeviceOutputSetting deviceOutputSetting, final DeviceMessageLog deviceMessageLog)
-                    throws NodeReadException {
+            throws NodeReadException {
         final List<PowerUsageDataDto> powerUsageHistoryDataFromRelay = new ArrayList<>();
 
         final int relayIndex = deviceOutputSetting.getExternalId();
@@ -128,15 +128,17 @@ public class Iec61850PowerUsageHistoryCommand {
                     itvNode);
 
             deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
-                    DataAttribute.SWITCH_ON_INTERVAL_BUFFER, Fc.ST, SubDataAttribute.INTERVAL,
-                    SubDataAttribute.INTERVAL, itvNode + "");
+                    DataAttribute.SWITCH_ON_INTERVAL_BUFFER, Fc.ST,
+                    SubDataAttribute.INTERVAL.getDescription().concat(Integer.toString(bufferIndex + 1)),
+                    SubDataAttribute.INTERVAL, itvNode.toString());
 
             final DateTime date = new DateTime(indexedItvNode.getDate(SubDataAttribute.DAY));
             LOGGER.info("device: {}, itv{}.day: {}", deviceConnection.getDeviceIdentification(), bufferIndex + 1, date);
 
             deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
-                    DataAttribute.SWITCH_ON_INTERVAL_BUFFER, Fc.ST, SubDataAttribute.INTERVAL, SubDataAttribute.DAY,
-                    itvNode + "");
+                    DataAttribute.SWITCH_ON_INTERVAL_BUFFER, Fc.ST,
+                    SubDataAttribute.INTERVAL.getDescription().concat(Integer.toString(bufferIndex + 1)),
+                    SubDataAttribute.DAY, date.toString("yyyy-MM-dd"));
 
             final int totalMinutesOnForDate = itvNode;
             final boolean includeEntryInResponse = this.timePeriodContainsDateTime(timePeriod, date,
@@ -154,9 +156,6 @@ public class Iec61850PowerUsageHistoryCommand {
             powerUsageData.setSsldData(ssldData);
             powerUsageHistoryDataFromRelay.add(powerUsageData);
         }
-
-        DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
-                deviceConnection.getOrganisationIdentification(), false);
 
         return powerUsageHistoryDataFromRelay;
     }
