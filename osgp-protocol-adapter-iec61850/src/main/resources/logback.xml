@@ -33,7 +33,7 @@
         </encoder>
     </appender>
 
-    <root level="INFO" additivity="false">
+    <root level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
 <!--		
