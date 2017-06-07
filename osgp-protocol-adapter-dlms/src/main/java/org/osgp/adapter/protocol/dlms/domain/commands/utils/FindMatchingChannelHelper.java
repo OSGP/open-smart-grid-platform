@@ -7,97 +7,118 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands.utils;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValues;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 
-/**
- * because the logic how to match a channel to couple a gas-meter to an e-meter,
- * this dedicated class and a corresponding junit is created
- */
 public class FindMatchingChannelHelper {
 
-    private static final int L16 = 16;
-    private static final int L32 = 32;
-    private static final int L64 = 64;
+    private static final int INT16 = 16;
+    private static final int INT32 = 32;
+    private static final int INT64 = 64;
 
     private FindMatchingChannelHelper() {
-        // empty ctor because it only contains static methods
+        // empty constructor because it only contains static methods
     }
 
     /**
-     * Here we check if the values from the database that came from the shipment
-     * file, match with the corresponding return values from the e-meter. The
-     * primary-address is not stored in the database, and the rule for this
-     * value (that corresponds with attr-id:5) matches if it is > 0. For the
-     * other fields, the rule is that return values from the e-meter may be
-     * empty, which result in 0 values. In that case they match, otherwise this
-     * value should be compared with the dbs value, where some specific
-     * converting rules may apply.
+     * Here we calculate a score that indicates how the values from the given
+     * ChannelElementValuesDto matches the corresponding values from the given
+     * the MbusChannelElementsDto. The rule is that the primaryAddress must
+     * greater than 0, otherwise a score of 0 is returned. A matching
+     * identificationNumber will result in a higher score than an empty
+     * identificationNumber or (for example) a matching vesion.
      *
-     * @param channelValues
-     * @param requestData
+     * @param channelElementValuesDto
+     * @param mbusChannelElementsDto
      * @return
      */
-    public static boolean mbusChannelMatches(final ChannelElementValues channelValues,
-            final MbusChannelElementsDto requestData) {
+    public static short getMbusDeviceMatchesScore(final ChannelElementValuesDto channelElementValuesDto,
+            final MbusChannelElementsDto mbusChannelElementsDto) {
 
-        return (channelValues.getPrimaryAddress() > 0) && matchIdentificationNumber(channelValues, requestData)
-                && matchManufacturerId(channelValues, requestData) && matchDeviceType(channelValues, requestData)
-                && matchVersion(channelValues, requestData);
-    }
+        short score = 0;
 
-    private static boolean matchIdentificationNumber(final ChannelElementValues channelValues,
-            final MbusChannelElementsDto requestData) {
-
-        // the ResultData object from the meter may empty, which result in a 0
-        // value, if that cases it matches! (the same applies for the methods
-        // below)
-        if (channelValues.getIdentificationNumber() > 0) {
-            final String mbusId = requestData.getMbusIdentificationNumber();
-            final long hexValue = mbusId == null ? -1 : Long.parseLong(mbusId, L16);
-            if (channelValues.getIdentificationNumber() != hexValue) {
-                return false;
-            }
+        if (isMbusSlaveDeviceConfigured(channelElementValuesDto)) {
+            score += 1;
+        } else {
+            return 0;
         }
-        return true;
+
+        score += matchIdentificationNumber(channelElementValuesDto, mbusChannelElementsDto);
+        score += matchManufacturerId(channelElementValuesDto, mbusChannelElementsDto);
+        score += matchDeviceType(channelElementValuesDto, mbusChannelElementsDto);
+        score += matchVersion(channelElementValuesDto, mbusChannelElementsDto);
+
+        return score;
+
     }
 
-    private static boolean matchManufacturerId(final ChannelElementValues channelValues,
+    /**
+     * The given MbusChannelElementsDto does not contain a corresponding
+     * primaryAddress, hence here only check the given primaryAddress
+     *
+     * @param channelValues
+     * @return
+     */
+    private static boolean isMbusSlaveDeviceConfigured(final ChannelElementValuesDto channelValues) {
+        return channelValues.getPrimaryAddress() > 0;
+    }
+
+    private static short matchIdentificationNumber(final ChannelElementValuesDto channelValues,
             final MbusChannelElementsDto requestData) {
-        if (channelValues.getManufacturerIdentification() > 0) {
+
+        if (channelValues.hasIdentificationNumber()) {
+            final Long mbusId = requestData.getMbusIdentificationNumber();
+            final long hexValue = mbusId == null ? -1 : Long.parseLong(mbusId.toString(), INT16);
+            if (channelValues.getIdentificationNumber() == hexValue) {
+                return 5;
+            } else {
+                return 0;
+            }
+        } else {
+            return 1;
+        }
+    }
+
+    private static short matchManufacturerId(final ChannelElementValuesDto channelValues,
+            final MbusChannelElementsDto requestData) {
+        if (channelValues.hasManufacturerIdentification()) {
             final int manufacturerId = calcManufacturerId(requestData.getMbusManufacturerIdentification());
-            if (channelValues.getManufacturerIdentification() != manufacturerId) {
-                return false;
+            if (channelValues.getManufacturerIdentification() == manufacturerId) {
+                return 2;
+            } else {
+                return 0;
             }
+        } else {
+            return 1;
         }
-
-        return true;
     }
 
-    private static boolean matchDeviceType(final ChannelElementValues channelValues,
+    private static short matchDeviceType(final ChannelElementValuesDto channelValues,
             final MbusChannelElementsDto requestData) {
-        if (channelValues.getDeviceTypeIdentification() > 0) {
-            final String dbsDeviceType = requestData.getMbusDeviceTypeIdentification();
-            final int deviceType = (dbsDeviceType == null) ? -1 : Integer.parseInt(dbsDeviceType);
-            if (channelValues.getDeviceTypeIdentification() != deviceType) {
-                return false;
+        if (channelValues.hasDeviceTypeIdentification()) {
+            final Short dbsDeviceType = requestData.getMbusDeviceTypeIdentification();
+            if (dbsDeviceType != null && channelValues.getDeviceTypeIdentification() == dbsDeviceType) {
+                return 2;
+            } else {
+                return 0;
             }
+        } else {
+            return 1;
         }
-
-        return true;
     }
 
-    private static boolean matchVersion(final ChannelElementValues channelValues,
+    private static short matchVersion(final ChannelElementValuesDto channelValues,
             final MbusChannelElementsDto requestData) {
-        if (channelValues.getVersion() > 0) {
-            final String dbsVersion = requestData.getMbusVersion();
-            final int version = (dbsVersion == null) ? -1 : Integer.parseInt(dbsVersion);
-            if (channelValues.getVersion() != version) {
-                return false;
+        if (channelValues.hasVersion()) {
+            final Short dbsVersion = requestData.getMbusVersion();
+            if (dbsVersion != null && channelValues.getVersion() == dbsVersion) {
+                return 2;
+            } else {
+                return 0;
             }
+        } else {
+            return 1;
         }
-
-        return true;
     }
 
     /**
@@ -113,11 +134,11 @@ public class FindMatchingChannelHelper {
      */
     private static int calcManufacturerId(final String mbusManufacturerIdentification) {
         int result = 0;
-        if (mbusManufacturerIdentification.length() == 3) {
+        if (mbusManufacturerIdentification != null && mbusManufacturerIdentification.length() == 3) {
             final char[] chars = mbusManufacturerIdentification.toCharArray();
-            result += (chars[0] - L64) * L32 * L32;
-            result += (chars[1] - L64) * L32;
-            result += (chars[2] - L64);
+            result += (chars[0] - INT64) * INT32 * INT32;
+            result += (chars[1] - INT64) * INT32;
+            result += (chars[2] - INT64);
         }
         return result;
     }

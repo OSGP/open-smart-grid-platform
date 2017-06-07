@@ -70,9 +70,9 @@ public class InstallationService {
     }
 
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
+            final MbusChannelElementsDto mbusChannelElementsDto) throws ProtocolAdapterException {
 
-        return this.coupleMBusDeviceCommandExecutor.execute(conn, device, requestDto);
+        return this.coupleMBusDeviceCommandExecutor.execute(conn, device, mbusChannelElementsDto);
 
     }
 }

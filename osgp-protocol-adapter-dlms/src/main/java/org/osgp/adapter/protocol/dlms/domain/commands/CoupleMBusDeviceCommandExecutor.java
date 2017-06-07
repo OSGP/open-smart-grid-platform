@@ -12,7 +12,8 @@ import java.util.List;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.interfaceclass.InterfaceClass;
+import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
 import org.osgp.adapter.protocol.dlms.domain.commands.utils.FindMatchingChannelHelper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValues;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDtoBuilder;
@@ -37,15 +38,17 @@ public class CoupleMBusDeviceCommandExecutor
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoupleMBusDeviceCommandExecutor.class);
 
-    private static final int CLASS_ID = 72;
+    private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
     private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
 
-    private static final int NR_OF_ATTRIBUTES = 5;
     /**
-     * we need to collect data for NR_OF_ATTRIBUTES attribites, starting from
-     * attr-id: 5
+     * We need to collect data for NR_OF_ATTRIBUTES attributes, starting from
+     * attribute-ID: 5
      */
-    private static final int START_ATTRIBUTE = 5;
+    private static final int[] ATTRIBUTE_IDS = new int[] { MbusClientAttribute.PRIMARY_ADDRESS.attributeId(),
+            MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId(), MbusClientAttribute.MANUFACTURER_ID.attributeId(),
+            MbusClientAttribute.VERSION.attributeId(), MbusClientAttribute.DEVICE_TYPE.attributeId() };
+
     /**
      * and we start at channel 1 until channel 4
      */
@@ -63,52 +66,75 @@ public class CoupleMBusDeviceCommandExecutor
         LOGGER.debug("retrieving mbus info on e-meter");
         final MbusChannelElementsResponseDtoBuilder builder = new MbusChannelElementsResponseDtoBuilder()
                 .withMbusChannelElementsDto(requestDto);
+        final short[] mbusChannelMatchScores = new short[FIRST_CHANNEL + NR_OF_CHANNELS];
 
-        for (int channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
-            final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
-            conn.getDlmsMessageListener().setDescription("CoupleMBusDevice, retrieve attribute: "
-                    + JdlmsObjectToStringUtil.describeAttributes(attrAddresses));
-            final List<GetResult> resultList = this.dlmsHelper.getWithList(conn, device, attrAddresses);
-            final ChannelElementValues channelValues = this.makeChannelElementValues(channel, resultList);
+        for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
+            final List<GetResult> resultList = this.getResultList(conn, device, channel);
+            final ChannelElementValuesDto channelValues = this.makeChannelElementValues(channel, resultList);
             builder.withAddChannelValues(channelValues);
-            if (this.mbusChannelMatches(channelValues, requestDto)) {
-                builder.withChannel(channel);
-                break;
-            }
+            mbusChannelMatchScores[channel - 1] = this.mbusChannelMatchScore(channelValues, requestDto);
         }
 
+        final short bestChannel = this.getBestChannelScore(mbusChannelMatchScores);
+        if (bestChannel > 0) {
+            builder.withChannel(bestChannel);
+        }
         return builder.build();
     }
 
+    private short getBestChannelScore(final short[] mbusChannelMatchScores) {
+        short bestChannelScore = 0;
+        for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
+            if (mbusChannelMatchScores[channel] > bestChannelScore) {
+                bestChannelScore = mbusChannelMatchScores[channel];
+            }
+        }
+        return bestChannelScore;
+    }
+
+    private List<GetResult> getResultList(final DlmsConnectionHolder conn, final DlmsDevice device, final short channel)
+            throws ProtocolAdapterException {
+        final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
+        conn.getDlmsMessageListener().setDescription("CoupleMBusDevice, retrieve M-Bus client setup attributes: "
+                + JdlmsObjectToStringUtil.describeAttributes(attrAddresses));
+        return this.dlmsHelper.getWithList(conn, device, attrAddresses);
+    }
+
     private AttributeAddress[] makeAttributeAddresses(final int channel) {
-        final AttributeAddress[] attrAddresses = new AttributeAddress[NR_OF_ATTRIBUTES];
+        final AttributeAddress[] attrAddresses = new AttributeAddress[ATTRIBUTE_IDS.length];
         final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, channel));
         for (int i = 0; i < attrAddresses.length; i++) {
-            attrAddresses[i] = new AttributeAddress(CLASS_ID, obiscode, START_ATTRIBUTE + i);
+            attrAddresses[i] = new AttributeAddress(CLASS_ID, obiscode, ATTRIBUTE_IDS[i]);
         }
         return attrAddresses;
     }
 
-    private boolean mbusChannelMatches(final ChannelElementValues channelValues,
+    private short mbusChannelMatchScore(final ChannelElementValuesDto channelValues,
             final MbusChannelElementsDto requestData) {
-        return FindMatchingChannelHelper.mbusChannelMatches(channelValues, requestData);
+        return FindMatchingChannelHelper.getMbusDeviceMatchesScore(channelValues, requestData);
     }
 
-    private ChannelElementValues makeChannelElementValues(final int channel, final List<GetResult> resultList) {
-        final short attr5 = Short.parseShort(this.getResultDataValue(resultList, 0));
-        final int attr6 = Integer.parseInt(this.getResultDataValue(resultList, 1));
-        final int attr7 = Integer.parseInt(this.getResultDataValue(resultList, 2));
-        final short attr8 = Short.parseShort(this.getResultDataValue(resultList, 3));
-        final short attr9 = Short.parseShort(this.getResultDataValue(resultList, 4));
-        return new ChannelElementValues(channel, attr5, attr6, attr7, attr8, attr9);
+    private ChannelElementValuesDto makeChannelElementValues(final short channel, final List<GetResult> resultList)
+            throws ProtocolAdapterException {
+        final short primaryAddress = this.readShort(resultList, 0, "primaryAddress");
+        final int identificationNumber = this.readInt(resultList, 1, "identificationNumber");
+        final int manufacturerIdentification = this.readInt(resultList, 2, "manufacturerIdentification");
+        final short version = this.readShort(resultList, 3, "version");
+        final short deviceTypeIdentification = this.readShort(resultList, 4, "deviceTypeIdentification");
+        return new ChannelElementValuesDto(channel, primaryAddress, identificationNumber, manufacturerIdentification,
+                version, deviceTypeIdentification);
     }
 
-    private String getResultDataValue(final List<GetResult> resultList, final int index) {
-        final DataObject data = resultList.get(index).getResultData();
-        if (data != null && data.getRawValue() != null) {
-            return data.getRawValue().toString();
-        } else {
-            return "0";
-        }
+    private int readInt(final List<GetResult> resultList, final int index, final String description)
+            throws ProtocolAdapterException {
+        final Integer value = this.dlmsHelper.readInt(resultList.get(index), description);
+        return value == null ? 0 : value;
     }
+
+    private short readShort(final List<GetResult> resultList, final int index, final String description)
+            throws ProtocolAdapterException {
+        final Short value = this.dlmsHelper.readShort(resultList.get(index), description);
+        return value == null ? 0 : value;
+    }
+
 }
