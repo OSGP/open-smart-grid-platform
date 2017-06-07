@@ -12,11 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This Dto is used to transfer information from the the protocol adapter back
- * to the core. It contains the original request values, plus the values it
- * found on the e-meter in the smart_meter table.
- *
- *
+ * This Dto is used to transfer information from the protocol adapter back to
+ * the core. It contains the original request values, plus the values it found
+ * on the e-meter in the smart_meter table.
  */
 public class MbusChannelElementsResponseDto implements Serializable {
 
@@ -25,15 +23,15 @@ public class MbusChannelElementsResponseDto implements Serializable {
     /**
      * This contains the channel on which the mbus-device is connected. It is
      * null if NO channel is found that matches the original values from the
-     * request dto see also isChannelFound()
+     * request dto @see MbusChannelElementsDto.
      */
-    private final Integer channel;
+    private final Short channel;
 
     /**
-     * this contains the values read from the e-meter until a match is found. if
-     * no channel is found, it will contain 4 entries
+     * This contains the values read from the e-meter until a match is found. if
+     * no channel is found, it will contain 4 entries.
      */
-    private final List<ChannelElementValues> channelElements;
+    private final List<ChannelElementValuesDto> retrievedChannelElements;
 
     /**
      * the original values from the request dto, which are retrieved from
@@ -41,24 +39,23 @@ public class MbusChannelElementsResponseDto implements Serializable {
      */
     private final MbusChannelElementsDto mbusChannelElementsDto;
 
-    MbusChannelElementsResponseDto(final MbusChannelElementsDto mbusChannelElementsDto, final Integer channel,
-            final List<ChannelElementValues> channelElements) {
-        super();
+    MbusChannelElementsResponseDto(final MbusChannelElementsDto mbusChannelElementsDto, final Short channel,
+            final List<ChannelElementValuesDto> channelElements) {
         this.mbusChannelElementsDto = mbusChannelElementsDto;
         this.channel = channel;
-        this.channelElements = channelElements;
+        this.retrievedChannelElements = channelElements;
     }
 
     public boolean isChannelFound() {
         return this.channel != null;
     }
 
-    public Integer getChannel() {
+    public Short getChannel() {
         return this.channel;
     }
 
-    public List<ChannelElementValues> getChannelElements() {
-        return new ArrayList<>(this.channelElements);
+    public List<ChannelElementValuesDto> getRetrievedChannelElements() {
+        return new ArrayList<>(this.retrievedChannelElements);
     }
 
     public MbusChannelElementsDto getMbusChannelElementsDto() {

@@ -12,9 +12,8 @@ import java.io.Serializable;
 /**
  * This Dto is used to transfer information from the core to the protocol
  * adapter. The values are populated with corresponding fields from the gasmeter
- * in the smart_meter table.
- *
- *
+ * in the smart_meter table. In the protocol adapter these values can then be
+ * compared with the correspondong field that are read from the device.
  */
 public class MbusChannelElementsDto implements Serializable {
 
@@ -26,18 +25,17 @@ public class MbusChannelElementsDto implements Serializable {
     private final String mbusDeviceIdentification;
 
     /**
-     * these are the properties that belong to this mbus-device in the core dbs
-     * (smartmeter table)
+     * These are the properties that belong to this mbus-device in the core dbs
+     * (smartmeter table).
      */
-    private final String mbusIdentificationNumber;
+    private final Long mbusIdentificationNumber;
     private final String mbusManufacturerIdentification;
-    private final String mbusVersion;
-    private final String mbusDeviceTypeIdentification;
+    private final Short mbusVersion;
+    private final Short mbusDeviceTypeIdentification;
 
-    public MbusChannelElementsDto(final String mbusDeviceIdentification, final String mbusIdentificationNumber,
-            final String mbusManufacturerIdentification, final String mbusVersion,
-            final String mbusDeviceTypeIdentification) {
-        super();
+    public MbusChannelElementsDto(final String mbusDeviceIdentification, final Long mbusIdentificationNumber,
+            final String mbusManufacturerIdentification, final Short mbusVersion,
+            final Short mbusDeviceTypeIdentification) {
         this.mbusDeviceIdentification = mbusDeviceIdentification;
         this.mbusIdentificationNumber = mbusIdentificationNumber;
         this.mbusManufacturerIdentification = mbusManufacturerIdentification;
@@ -49,7 +47,7 @@ public class MbusChannelElementsDto implements Serializable {
         return this.mbusDeviceIdentification;
     }
 
-    public String getMbusIdentificationNumber() {
+    public Long getMbusIdentificationNumber() {
         return this.mbusIdentificationNumber;
     }
 
@@ -57,11 +55,11 @@ public class MbusChannelElementsDto implements Serializable {
         return this.mbusManufacturerIdentification;
     }
 
-    public String getMbusVersion() {
+    public Short getMbusVersion() {
         return this.mbusVersion;
     }
 
-    public String getMbusDeviceTypeIdentification() {
+    public Short getMbusDeviceTypeIdentification() {
         return this.mbusDeviceTypeIdentification;
     }
 

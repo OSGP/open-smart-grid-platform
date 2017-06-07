@@ -18,15 +18,15 @@ public class MbusChannelElementsResponseDtoBuilder implements Serializable {
     /**
      * This contains the channel on which the mbus-device is connected. It is
      * null if NO channel is found that matches the original values from the
-     * request dto see also isChannelFound()
+     * request dto see also isChannelFound().
      */
-    private Integer channel;
+    private Short channel;
 
     /**
      * this contains the values read from the e-meter until a match is found. if
      * no channel is found, it will contain 4 entries
      */
-    private List<ChannelElementValues> channelElements = new ArrayList<>();
+    private List<ChannelElementValuesDto> channelElements = new ArrayList<>();
 
     /**
      * the original values from the request dto, which are retrieved from
@@ -35,14 +35,7 @@ public class MbusChannelElementsResponseDtoBuilder implements Serializable {
     private MbusChannelElementsDto mbusChannelElementsDto;
 
     public MbusChannelElementsResponseDtoBuilder() {
-        // empty ctor.
-    }
-
-    public MbusChannelElementsResponseDtoBuilder(final MbusChannelElementsResponseDto sourceDto) {
-        super();
-        this.mbusChannelElementsDto = sourceDto.getMbusChannelElementsDto();
-        this.channel = sourceDto.getChannel();
-        this.channelElements = sourceDto.getChannelElements();
+        // empty constructor.
     }
 
     public MbusChannelElementsResponseDtoBuilder withMbusChannelElementsDto(
@@ -51,12 +44,12 @@ public class MbusChannelElementsResponseDtoBuilder implements Serializable {
         return this;
     }
 
-    public MbusChannelElementsResponseDtoBuilder withChannel(final Integer channel) {
+    public MbusChannelElementsResponseDtoBuilder withChannel(final Short channel) {
         this.channel = channel;
         return this;
     }
 
-    public MbusChannelElementsResponseDtoBuilder withAddChannelValues(final ChannelElementValues channelElements) {
+    public MbusChannelElementsResponseDtoBuilder withAddChannelValues(final ChannelElementValuesDto channelElements) {
         this.channelElements.add(channelElements);
         return this;
     }

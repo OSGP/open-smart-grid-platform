@@ -13,16 +13,15 @@ import java.io.Serializable;
  * This Dto is used to transfer information from the the protocol adapter back
  * to the core. It contains the original request values, plus the values it
  * found on the e-meter in the smart_meter table.
- *
- *
  */
-public class ChannelElementValues implements Serializable {
+public class ChannelElementValuesDto implements Serializable {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
-    private final int channel;
+    private final short channel;
     /**
-     * these values correspond with attr 5..9 that are read from the meter
+     * These values correspond with attributes 5..9 that are read from the meter
+     * with classid 72 and obiscode 1-X:24.0.1.255.
      */
     private final short primaryAddress;
     private final int identificationNumber;
@@ -30,9 +29,8 @@ public class ChannelElementValues implements Serializable {
     private final short version;
     private final short deviceTypeIdentification;
 
-    public ChannelElementValues(final int channel, final short primaryAddress, final int identificationNumber,
+    public ChannelElementValuesDto(final short channel, final short primaryAddress, final int identificationNumber,
             final int manufacturerIdentification, final short version, final short deviceTypeIdentification) {
-        super();
         this.channel = channel;
         this.primaryAddress = primaryAddress;
         this.identificationNumber = identificationNumber;
