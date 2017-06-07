@@ -11,7 +11,7 @@ package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.messageproc
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.services.MBusGatewayService;
+import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
@@ -26,7 +26,7 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 public class CoupleMbusDeviceRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired
-    private MBusGatewayService mBusGatewayService;
+    private InstallationService installationService;
 
     protected CoupleMbusDeviceRequestMessageProcessor() {
         super(DeviceFunction.COUPLE_MBUS_DEVICE);
@@ -43,7 +43,7 @@ public class CoupleMbusDeviceRequestMessageProcessor extends WebServiceRequestMe
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
         final CoupleMbusDeviceRequestData requestData = (CoupleMbusDeviceRequestData) dataObject;
-        this.mBusGatewayService.coupleMbusDevice(deviceMessageMetadata, requestData);
+        this.installationService.coupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
 }

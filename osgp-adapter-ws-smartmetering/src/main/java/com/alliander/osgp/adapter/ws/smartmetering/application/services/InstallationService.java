@@ -74,8 +74,6 @@ public class InstallationService {
      *            the identification of the master device
      * @param mbusDeviceIdentification
      *            the identifation of the m-bus device
-     * @param channel
-     *            the channel the m-bus device should be coupled onto
      * @param messagePriority
      *            the priority of the message
      * @param scheduleTime
@@ -91,7 +89,7 @@ public class InstallationService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.COUPLE_MBUS_DEVICE);
 
-        LOGGER.debug("enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {} ",
+        LOGGER.debug("enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
                 organisationIdentification, deviceIdentification, mbusDeviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,

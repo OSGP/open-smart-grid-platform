@@ -27,6 +27,7 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
@@ -71,6 +72,9 @@ public class InstallationService {
 
     @Autowired
     private DomainHelperService domainHelperService;
+
+    @Autowired
+    private MBusGatewayService mBusGatewayService;
 
     public InstallationService() {
         // Parameterless constructor required for transactions...
@@ -149,6 +153,11 @@ public class InstallationService {
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         this.handleResponse("handleDefaultDeviceResponse", deviceMessageMetadata, deviceResult, exception);
+    }
+
+    public void coupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
+            final CoupleMbusDeviceRequestData requestData) throws FunctionalException {
+        this.mBusGatewayService.coupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
     /**

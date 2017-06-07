@@ -75,7 +75,6 @@ public class EventNotificationMessageService {
         }
     }
 
-
     public void handleEvent(final String deviceIdentification, final EventNotificationDto event)
             throws UnknownEntityException {
 
@@ -90,6 +89,9 @@ public class EventNotificationMessageService {
     @Transactional(value = "transactionManager")
     public void handleEvents(final String deviceIdentification, final List<EventNotificationDto> eventNotifications)
             throws UnknownEntityException {
+
+        LOGGER.info("handleEvents() called for device: {} with eventNotifications.size(): {}", deviceIdentification,
+                eventNotifications.size());
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         if (device == null) {
@@ -110,10 +112,12 @@ public class EventNotificationMessageService {
             final EventType eventType = EventType.valueOf(eventNotification.getEventType().name());
             final Event event = new Event(device, eventTime != null ? eventTime.toDate() : DateTime.now().toDate(),
                     eventType, eventNotification.getDescription(), eventNotification.getIndex());
+
+            LOGGER.info("Saving event with eventType: {} eventTime: {} description: {} index: {}", eventType.name(),
+                    eventTime, eventNotification.getDescription(), eventNotification.getIndex());
             this.eventRepository.save(event);
 
-            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON)
-                    || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
+            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
                 lightSwitchingEvents.add(event);
             } else if (eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
                     || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
@@ -127,40 +131,64 @@ public class EventNotificationMessageService {
 
     private void handleLightSwitchingEvents(final Device device, final List<Event> lightSwitchingEvents) {
 
+        LOGGER.info("handleLightSwitchingEvents() called for device: {} with lightSwitchingEvents.size(): {}",
+                device.getDeviceIdentification(), lightSwitchingEvents.size());
+
         if (lightSwitchingEvents.isEmpty()) {
             return;
         }
 
-        final Map<Integer, RelayStatus> lastRelayStatusPerIndex = new TreeMap<>();
-        final Set<Integer> indexesLightRelays = new TreeSet<>();
+        // Determine light relays for SSLD.
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
+        final Set<Integer> indexesLightRelays = new TreeSet<>();
         for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
             if (deviceOutputSetting.getOutputType().equals(RelayType.LIGHT)) {
                 indexesLightRelays.add(deviceOutputSetting.getExternalId());
             }
         }
 
+        for (final int index : indexesLightRelays) {
+            LOGGER.info("  indexesLightRelays: {}", index);
+        }
+
+        final Map<Integer, RelayStatus> lastRelayStatusPerIndex = new TreeMap<>();
         for (final Event lightSwitchingEvent : lightSwitchingEvents) {
-            final Date switchingTime = lightSwitchingEvent.getDateTime();
             final Integer index = lightSwitchingEvent.getIndex();
-            final Set<Integer> switchIndexes = new TreeSet<>();
             if (index == 0) {
-                switchIndexes.addAll(indexesLightRelays);
+                this.handleLightSwitchingEventForIndex0(indexesLightRelays, device, lightSwitchingEvent,
+                        lastRelayStatusPerIndex);
             } else {
-                switchIndexes.add(index);
-            }
-            for (final Integer relayIndex : switchIndexes) {
-                final boolean lightsOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(lightSwitchingEvent.getEventType());
-                if (lastRelayStatusPerIndex.get(index) == null
-                        || switchingTime.after(lastRelayStatusPerIndex.get(index).getLastKnowSwitchingTime())) {
-                    lastRelayStatusPerIndex.put(index, new RelayStatus(device, relayIndex, lightsOn, switchingTime));
-                }
+                this.createRelayStatus(device, lightSwitchingEvent, index, lastRelayStatusPerIndex);
             }
         }
 
         if (!lastRelayStatusPerIndex.isEmpty()) {
+            LOGGER.info("calling ssld.updateRelayStatuses() for device: {} with lastRelayStatusPerIndex.size(): {}",
+                    ssld.getDeviceIdentification(), lastRelayStatusPerIndex.size());
+
             ssld.updateRelayStatusses(lastRelayStatusPerIndex);
             this.deviceRepository.save(device);
+        }
+    }
+
+    private void handleLightSwitchingEventForIndex0(final Set<Integer> indexesLightRelays, final Device device,
+            final Event event, final Map<Integer, RelayStatus> lastRelayStatusPerIndexMap) {
+        for (final Integer relayIndex : indexesLightRelays) {
+            this.createRelayStatus(device, event, relayIndex, lastRelayStatusPerIndexMap);
+        }
+    }
+
+    private void createRelayStatus(final Device device, final Event switchingEvent, final Integer relayIndex,
+            final Map<Integer, RelayStatus> lastRelayStatusPerIndex) {
+
+        final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(switchingEvent.getEventType())
+                || EventType.TARIFF_EVENTS_TARIFF_ON.equals(switchingEvent.getEventType());
+
+        if (lastRelayStatusPerIndex.get(relayIndex) == null
+                || switchingEvent.getDateTime().after(
+                        lastRelayStatusPerIndex.get(relayIndex).getLastKnowSwitchingTime())) {
+            lastRelayStatusPerIndex.put(relayIndex,
+                    new RelayStatus(device, relayIndex, isRelayOn, switchingEvent.getDateTime()));
         }
     }
 
@@ -170,29 +198,18 @@ public class EventNotificationMessageService {
             return;
         }
 
-        final Map<Integer, RelayStatus> lastRelayStatusPerIndex = new TreeMap<>();
-        final Set<Integer> indexesTariffRelays = new TreeSet<>();
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
-
+        final Set<Integer> indexesTariffRelays = new TreeSet<>();
         for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
             if (deviceOutputSetting.getOutputType().equals(RelayType.TARIFF)) {
                 indexesTariffRelays.add(deviceOutputSetting.getExternalId());
             }
         }
 
+        final Map<Integer, RelayStatus> lastRelayStatusPerIndex = new TreeMap<>();
         for (final Event tariffSwitchingEvent : tariffSwitchingEvents) {
-            final Date switchingTime = tariffSwitchingEvent.getDateTime();
-            final Set<Integer> switchIndexes = new TreeSet<>();
-            switchIndexes.add(tariffSwitchingEvent.getIndex());
-
-            for (final Integer relayIndex : switchIndexes) {
-                final boolean tariffOn = EventType.TARIFF_EVENTS_TARIFF_ON.equals(tariffSwitchingEvent.getEventType());
-                if (lastRelayStatusPerIndex.get(tariffSwitchingEvent.getIndex()) == null || switchingTime.after(
-                        lastRelayStatusPerIndex.get(tariffSwitchingEvent.getIndex()).getLastKnowSwitchingTime())) {
-                    lastRelayStatusPerIndex.put(tariffSwitchingEvent.getIndex(),
-                            new RelayStatus(device, relayIndex, tariffOn, switchingTime));
-                }
-            }
+            this.createRelayStatus(device, tariffSwitchingEvent, tariffSwitchingEvent.getIndex(),
+                    lastRelayStatusPerIndex);
         }
 
         if (!lastRelayStatusPerIndex.isEmpty()) {
@@ -220,8 +237,7 @@ public class EventNotificationMessageService {
         this.deviceRepository.save(device);
     }
 
-    private void updateRelayStatus(final int index, final Device device, final Date dateTime,
-            final EventType eventType) {
+    private void updateRelayStatus(final int index, final Device device, final Date dateTime, final EventType eventType) {
 
         final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);

@@ -165,10 +165,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(deviceIdentification);
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-
-            LOGGER.error("Exception: {} while coupling devices: {} and {} for organisation {}.", new Object[] {
-                    e.getMessage(), deviceIdentification, mbusDeviceIdentification, organisationIdentification }, e);
-
+            LOGGER.error("Exception while coupling devices: {} and {} for organisation {}.", deviceIdentification,
+                    mbusDeviceIdentification, organisationIdentification, e);
             this.handleException(e);
         }
         return response;
