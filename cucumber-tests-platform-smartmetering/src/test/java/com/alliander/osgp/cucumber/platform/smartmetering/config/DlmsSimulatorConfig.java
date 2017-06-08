@@ -18,10 +18,10 @@ public class DlmsSimulatorConfig extends AbstractConfig {
     public DlmsSimulatorConfig() {
     }
 
-    @Value("${dynamic.properties.base.url}")
+    @Value("${dynamic.properties.base.url:null}")
     private String dynamicPropertiesBaseUrl;
 
-    public String getDynamicPropertiesBaseurl() {
+    public String getDynamicPropertiesBaseUrl() {
         return this.dynamicPropertiesBaseUrl;
     }
 

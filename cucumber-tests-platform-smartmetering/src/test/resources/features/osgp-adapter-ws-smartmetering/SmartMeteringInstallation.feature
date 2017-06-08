@@ -66,7 +66,9 @@ Feature: SmartMetering Installation
       | Result               | NOT_OK            |
     And the dlms device with identification "TEST1024000000001" does not exist
 
-	# remove tag when slim-975 is deployed
+  # remove tag when slim-975 is deployed
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   @Skip
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on first channel
     Given a dlms device
@@ -76,11 +78,11 @@ Feature: SmartMetering Installation
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification |               LGB |
+      | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 |         9 | 
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
+      | 5 |         9 |
       | 6 | 302343985 |
       | 7 |     12514 |
       | 8 |        66 |
@@ -89,8 +91,10 @@ Feature: SmartMetering Installation
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
-	# remove tag when slim-975 is deployed  
-	@Skip
+  # remove tag when slim-975 is deployed
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
+  @Skip
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on second channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -99,16 +103,16 @@ Feature: SmartMetering Installation
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification |               LGB |
+      | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |
       | 8 | 0 |
       | 9 | 0 |
-    And device simulate with classid 72 obiscode "0-2:24.1.0" and attributes
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302343985 |
       | 7 |     12514 |
@@ -118,9 +122,11 @@ Feature: SmartMetering Installation
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 2
 
-	# remove tag when slim-975 is deployed  
-	@Skip
-  Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000002" while G-meter is already coupled.  
+  # remove tag when slim-975 is deployed
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
+  @Skip
+  Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000002" while G-meter is already coupled.
     Given a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
@@ -133,15 +139,14 @@ Feature: SmartMetering Installation
       | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification |               LGB |
+      | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000002"
     Then the Couple response is "NOT_OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
-
-	# remove tag when slim-975 is deployed
+  # remove tag when slim-975 is deployed
   @Skip
   Scenario: Couple G-meter "TESTG102400000002" to E-meter "TEST1024000000001" on second channel with already coupled channel 1
     Given a dlms device
@@ -153,23 +158,23 @@ Feature: SmartMetering Installation
       | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056700 |
-      | MbusManufacturerIdentification |               NVT |
+      | MbusManufacturerIdentification | NVT               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And a dlms device
       | DeviceIdentification           | TESTG102400000002 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification |               LGB |
+      | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
+    And device simulation of "TEST1024000000002" with classid 72 obiscode "0-1:24.1.0" and attributes
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |
       | 8 | 0 |
       | 9 | 0 |
-    And device simulate with classid 72 obiscode "0-2:24.1.0" and attributes
+    And device simulation of "TEST1024000000002" with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302343985 |
       | 7 |     12514 |
@@ -180,6 +185,8 @@ Feature: SmartMetering Installation
     And the mbus device "TESTG102400000002" is coupled to device "TEST1024000000001" on MBUS channel 2
 
   # remove tag when slim-975 is deployed
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   @Skip
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" which is already coupled on channel 1
     Given a dlms device
@@ -188,13 +195,13 @@ Feature: SmartMetering Installation
     And a dlms device
       | DeviceIdentification           | TESTG102400000001 |
       | DeviceType                     | SMART_METER_G     |
-      | GatewayDeviceIdentification 	 | TEST1024000000001 |
+      | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusManufacturerIdentification |               LGB |
+      | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulate with classid 72 obiscode "0-1:24.1.0" and attributes
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302343985 |
       | 7 |     12514 |
@@ -204,7 +211,9 @@ Feature: SmartMetering Installation
     Then the Couple response is "NOT_OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
-	# remove tag when slim-975 is deployed
+  # remove tag when slim-975 is deployed
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   @Skip
   Scenario: Couple G-meter to an E-meter that is already coupled with other G-meter on channel 2
     Given a dlms device
@@ -216,17 +225,27 @@ Feature: SmartMetering Installation
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 2 |
     And a dlms device
-      | DeviceIdentification | TESTG102400000002 |
-      | DeviceType           | SMART_METER_G     |
-   And device simulate with classid 72 obiscode "0-2:24.1.0" and attributes
+      | DeviceIdentification           | TESTG102400000002 |
+      | DeviceType                     | SMART_METER_G     |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
+    And device simulation of "TEST1024000000002" with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
-      When the Couple G-meter "TESTG102400000002" request is received
+      | 6 | 302343985 |
+      | 7 |     12514 |
+      | 8 |        66 |
+      | 9 |         3 |
+    When the Couple G-meter "TESTG102400000002" request is received
     Then the Couple response is "NOT_OK" and contains
       | There is already a device coupled on Mbus channel 2 |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 2
     And the mbus device "TESTG102400000002" is not coupled to the device "TEST1024000000001"
 
-	# remove tag when slim-975 is deployed
+  # remove tag when slim-975 is deployed
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   @Skip
   Scenario: Couple another G-meter to an E-meter
     Given a dlms device
@@ -240,15 +259,22 @@ Feature: SmartMetering Installation
     And a dlms device
       | DeviceIdentification | TESTG102400000002 |
       | DeviceType           | SMART_METER_G     |
-   And device simulate with classid 72 obiscode "0-2:24.1.0" and attributes
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
+    And device simulation of "TEST1024000000002" with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
-      When the Couple G-meter "TESTG102400000002" request is received
+      | 6 | 302343985 |
+      | 7 |     12514 |
+      | 8 |        66 |
+      | 9 |         3 |
+    When the Couple G-meter "TESTG102400000002" request is received
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
     And the mbus device "TESTG102400000002" is coupled to device "TEST1024000000001" on MBUS channel 2
 
-
-	# remove tag when slim-975 is deployed
+  # remove tag when slim-975 is deployed
   @Skip
   Scenario: Couple unknown G-meter to an E-meter
     Given a dlms device
@@ -258,7 +284,7 @@ Feature: SmartMetering Installation
     Then the Couple response is "NOT_OK" and contains
       | SmartMeter with id "TESTG10240unknown" could not be found |
 
-	# remove tag when slim-975 is deployed
+  # remove tag when slim-975 is deployed
   @Skip
   Scenario: Couple G-meter to an unknown E-meter
     Given a dlms device
@@ -268,7 +294,7 @@ Feature: SmartMetering Installation
     Then a SOAP fault should have been returned
       | Message | UNKNOWN_DEVICE |
 
-	# remove tag when slim-975 is deployed
+  # remove tag when slim-975 is deployed
   @Skip
   Scenario: Couple inactive G-meter to an E-meter
     Given a dlms device
@@ -282,7 +308,7 @@ Feature: SmartMetering Installation
     Then the Couple response is "NOT_OK" and contains
       | Device TESTG102400000001 is not active in the platform |
 
-	# remove tag when slim-975 is deployed
+  # remove tag when slim-975 is deployed
   @Skip
   Scenario: Couple G-meter to an inactive E-meter
     Given a dlms device

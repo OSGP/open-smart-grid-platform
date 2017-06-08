@@ -39,7 +39,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     @When("^the Couple G-meter \"([^\"]*)\" request is received$")
     public void theCoupleGMeterRequestIsReceived(final String gasMeter) throws WebServiceSecurityException {
 
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDeviceAndChannel(gasMeter);
+        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDevice(gasMeter);
         final CoupleMbusDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient
                 .coupleMbusDevice(request);
 
@@ -50,7 +50,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     public void theCoupleGMeterRequestIsReceivedForEMeter(final String gasMeter, final String eMeter)
             throws WebServiceSecurityException {
 
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDeviceAndChannel(eMeter,
+        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter,
                 gasMeter);
         final CoupleMbusDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient
                 .coupleMbusDevice(request);
@@ -62,7 +62,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     public void theCoupleGMeterToEMeterRequestOnChannelIsReceivedForAnUnknownGateway(final String gasMeter,
             final String eMeter) throws WebServiceSecurityException {
 
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDeviceAndChannel(eMeter,
+        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter,
                 gasMeter);
 
         try {
@@ -77,7 +77,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     public void theCoupleGMeterRequestOnChannelIsReceivedForAnInactiveDevice(final String gasMeter)
             throws WebServiceSecurityException {
 
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDeviceAndChannel(gasMeter);
+        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDevice(gasMeter);
 
         try {
             this.smartMeteringInstallationClient.coupleMbusDevice(request);
