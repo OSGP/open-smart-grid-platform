@@ -25,8 +25,8 @@ public class FindMatchingChannelHelper {
      * ChannelElementValuesDto matches the corresponding values from the given
      * the MbusChannelElementsDto. The rule is that the primaryAddress must
      * greater than 0, otherwise a score of 0 is returned. A matching
-     * identificationNumber will result in a higher score than an empty
-     * identificationNumber or (for example) a matching vesion.
+     * identificationNumber will result in a higher score than a matching
+     * version.
      *
      * @param channelElementValuesDto
      * @param mbusChannelElementsDto
@@ -71,12 +71,9 @@ public class FindMatchingChannelHelper {
             final long hexValue = mbusId == null ? -1 : Long.parseLong(mbusId.toString(), INT16);
             if (channelValues.getIdentificationNumber() == hexValue) {
                 return 5;
-            } else {
-                return 0;
             }
-        } else {
-            return 1;
         }
+        return 0;
     }
 
     private static short matchManufacturerId(final ChannelElementValuesDto channelValues,
@@ -84,13 +81,10 @@ public class FindMatchingChannelHelper {
         if (channelValues.hasManufacturerIdentification()) {
             final int manufacturerId = calcManufacturerId(requestData.getMbusManufacturerIdentification());
             if (channelValues.getManufacturerIdentification() == manufacturerId) {
-                return 2;
-            } else {
-                return 0;
+                return 1;
             }
-        } else {
-            return 1;
         }
+        return 0;
     }
 
     private static short matchDeviceType(final ChannelElementValuesDto channelValues,
@@ -98,13 +92,10 @@ public class FindMatchingChannelHelper {
         if (channelValues.hasDeviceTypeIdentification()) {
             final Short dbsDeviceType = requestData.getMbusDeviceTypeIdentification();
             if (dbsDeviceType != null && channelValues.getDeviceTypeIdentification() == dbsDeviceType) {
-                return 2;
-            } else {
-                return 0;
+                return 1;
             }
-        } else {
-            return 1;
         }
+        return 0;
     }
 
     private static short matchVersion(final ChannelElementValuesDto channelValues,
@@ -112,13 +103,10 @@ public class FindMatchingChannelHelper {
         if (channelValues.hasVersion()) {
             final Short dbsVersion = requestData.getMbusVersion();
             if (dbsVersion != null && channelValues.getVersion() == dbsVersion) {
-                return 2;
-            } else {
-                return 0;
+                return 1;
             }
-        } else {
-            return 1;
         }
+        return 0;
     }
 
     /**

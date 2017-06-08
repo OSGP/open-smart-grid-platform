@@ -27,7 +27,7 @@ public class FindMatchingChannelHelperTest {
                 (short) 3);
 
         final int score = FindMatchingChannelHelper.getMbusDeviceMatchesScore(channelValues, requestData);
-        Assert.assertEquals("mbus channel should match with score 12", 12, score);
+        Assert.assertEquals("mbus channel should match with score 9", 9, score);
     }
 
     /**
@@ -70,7 +70,7 @@ public class FindMatchingChannelHelperTest {
                 (short) 3);
 
         final int score = FindMatchingChannelHelper.getMbusDeviceMatchesScore(channelValues, requestData);
-        Assert.assertEquals("mbus channel should match with score 5", 5, score);
+        Assert.assertEquals("mbus channel should match with score 1", 1, score);
     }
 
     /**
@@ -92,7 +92,7 @@ public class FindMatchingChannelHelperTest {
                 (short) 3);
 
         final int score = FindMatchingChannelHelper.getMbusDeviceMatchesScore(channelValues, requestData);
-        Assert.assertEquals("mbus channel should match with score 9", 9, score);
+        Assert.assertEquals("mbus channel should match with score 9", 6, score);
     }
 
     /**

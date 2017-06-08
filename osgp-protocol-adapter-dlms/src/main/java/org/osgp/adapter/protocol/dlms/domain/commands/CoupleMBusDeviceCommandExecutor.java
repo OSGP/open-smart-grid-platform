@@ -72,7 +72,7 @@ public class CoupleMBusDeviceCommandExecutor
             final List<GetResult> resultList = this.getResultList(conn, device, channel);
             final ChannelElementValuesDto channelValues = this.makeChannelElementValues(channel, resultList);
             builder.withAddChannelValues(channelValues);
-            mbusChannelMatchScores[channel - 1] = this.mbusChannelMatchScore(channelValues, requestDto);
+            mbusChannelMatchScores[channel] = this.mbusChannelMatchScore(channelValues, requestDto);
         }
 
         final short bestChannel = this.getBestChannelScore(mbusChannelMatchScores);
@@ -83,13 +83,15 @@ public class CoupleMBusDeviceCommandExecutor
     }
 
     private short getBestChannelScore(final short[] mbusChannelMatchScores) {
-        short bestChannelScore = 0;
+        short bestScore = 0;
+        short bestChannel = 0;
         for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
-            if (mbusChannelMatchScores[channel] > bestChannelScore) {
-                bestChannelScore = mbusChannelMatchScores[channel];
+            if (mbusChannelMatchScores[channel] > bestScore) {
+                bestScore = mbusChannelMatchScores[channel];
+                bestChannel = channel;
             }
         }
-        return bestChannelScore;
+        return bestChannel;
     }
 
     private List<GetResult> getResultList(final DlmsConnectionHolder conn, final DlmsDevice device, final short channel)
