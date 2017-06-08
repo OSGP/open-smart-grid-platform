@@ -289,8 +289,18 @@ public class MockOslpServer {
             final LinkType preferredLinkType, final MeterType meterType, final Integer shortInterval,
             final Integer longInterval, final LongTermIntervalType intervalType) {
 
-        final String[] dcMapArray = dcMap.split(";");
-        final String[] rcMapArray = rcMap.split(";");
+        final String[] dcMapArray;
+        final String[] rcMapArray;
+        if (dcMap != null) {
+            dcMapArray = dcMap.split(";");
+        } else {
+            dcMapArray = null;
+        }
+        if (dcMap != null) {
+            rcMapArray = rcMap.split(";");
+        } else {
+            rcMapArray = null;
+        }
 
         final GetConfigurationResponse.Builder builder = GetConfigurationResponse.newBuilder();
 
@@ -301,7 +311,7 @@ public class MockOslpServer {
 
         if (rcType != RelayType.RT_NOT_SET) {
             final ByteString bsDcLights = ByteString.copyFromUtf8(dcLights);
-            if (!rcMapArray[0].isEmpty()) {
+            if (rcMapArray != null && !rcMapArray[0].isEmpty()) {
 
                 final DaliConfiguration.Builder dcBuilder = DaliConfiguration.newBuilder();
 
@@ -321,9 +331,6 @@ public class MockOslpServer {
                 if (!dcLights.isEmpty() && dcBuilder.getAddressMapCount() != Integer.parseInt(dcLights)) {
                     builder.setDaliConfiguration(dcBuilder.build());
                 }
-            }
-
-            if (!rcMapArray[0].isEmpty()) {
 
                 final RelayConfiguration.Builder rcBuilder = RelayConfiguration.newBuilder();
 
