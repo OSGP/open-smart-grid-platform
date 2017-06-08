@@ -279,7 +279,7 @@ public class Iec61850RtuDeviceReportingService {
         LOGGER.info("Allowing device {} to send events", deviceIdentification);
         try {
             final NodeContainer reportingNode = deviceConnection.getFcModelNode(logicalDevice, logicalDeviceIndex,
-                    LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.BR);
+                    LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.RP);
             reportingNode.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         } catch (final NullPointerException e) {
             LOGGER.debug("NullPointerException", e);
