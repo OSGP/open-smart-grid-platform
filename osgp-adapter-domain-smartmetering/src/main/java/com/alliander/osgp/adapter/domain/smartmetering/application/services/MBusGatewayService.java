@@ -212,7 +212,7 @@ public class MBusGatewayService {
             final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) {
 
         final Short channel = mbusChannelElementsResponseDto.getChannel();
-        return channel != null && channel == coupledDevice.getChannel();
+        return channel != null && channel.equals(coupledDevice.getChannel());
     }
 
     private void checkAndHandleInactiveMbusDevice(final SmartMeter mbusDevice) throws FunctionalException {
