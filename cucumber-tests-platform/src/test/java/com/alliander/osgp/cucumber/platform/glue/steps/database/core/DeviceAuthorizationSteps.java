@@ -77,12 +77,15 @@ public class DeviceAuthorizationSteps extends GlueBase {
      *            The expected settings.
      * @throws Throwable
      */
-    @Then("^the entity device authorizations exist$")
-    public void thenTheEntityDeviceAuthorizationsExist(final Map<String, String> expectedEntity) throws Throwable {
+    @Then("^the entity device authorization exists$")
+    public void thenTheEntityDeviceAuthorizationExists(final Map<String, String> expectedEntity) throws Throwable {
 
         Wait.until(() -> {
             final Device device = this.deviceRepository
                     .findByDeviceIdentification(expectedEntity.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+            if (device == null) {
+                Assert.assertFalse(true);
+            }
             final List<DeviceAuthorization> deviceAuthorizations = this.deviceAuthorizationRepository
                     .findByDevice(device);
             final DeviceFunctionGroup expectedFunctionGroup = getEnum(expectedEntity,
