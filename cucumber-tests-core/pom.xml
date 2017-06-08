@@ -60,6 +60,10 @@
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-security</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+    </dependency>
 
     <!-- OSGP -->
     <dependency>

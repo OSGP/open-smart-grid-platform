@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform;
 
 import org.joda.time.DateTime;
 
+import com.alliander.osgp.domain.core.valueobjects.LongTermIntervalType;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
 /**
@@ -132,7 +133,8 @@ public class PlatformDefaults {
     public static final Boolean EVENTS_NODELIST_EXPECTED = false;
     public static final String EXPECTED_RESULT_OK = "OK";
     public static final DateTime EXPIRYDATECONTRACT = DateTime.now().plusWeeks(1);
-    public static final Integer LONG_INTERVAL = 0;
+    public static final LongTermIntervalType INTERVAL_TYPE = LongTermIntervalType.DAYS;
+    public static final Integer LONG_INTERVAL = 1;
     public static final String MANUFACTURER_CODE = "Test";
     public static final String MANUFACTURER_NAME = "Test";
     public static final Boolean MANUFACTURER_USE_PREFIX = false;
