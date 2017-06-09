@@ -93,7 +93,7 @@ public class ConfigurationService {
     }
 
     /**
-     * Checks if the organization (identified by the oranisationIdentification)
+     * Checks if the organization (identified by the organisationIdentification)
      * is allowed to execute this function. Creates a correlation id, sends the
      * get firmware request from the ws-adapter to the domain-adapter and
      * returns the correlation id.
@@ -114,7 +114,7 @@ public class ConfigurationService {
      */
     public String enqueueGetFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+                    throws FunctionalException {
         LOGGER.debug("Queue get firmware request");
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -172,14 +172,14 @@ public class ConfigurationService {
 
     public String requestGetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+                    throws FunctionalException {
         return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime);
     }
 
     private String enqueueGetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -486,6 +486,54 @@ public class ConfigurationService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    /**
+     * Checks if the organization (identified by the organisationIdentification)
+     * is allowed to execute this function. Creates a correlation id, sends the
+     * generate and replace request from the ws-adapter to the domain-adapter and
+     * returns the correlation id.
+     *
+     * @param organisationIdentification
+     *            {@link String} containing the organization identification
+     * @param deviceIdentification
+     *            {@link String} containing the device identification
+     * @param messagePriority
+     *            contains the message priority
+     * @param scheduleTime
+     *            contains the time when the message is scheduled to be executed
+     * @return the correlation id belonging to the request
+     * @throws FunctionalException
+     *             is thrown when either the device or organization cannot be
+     *             found or the organization is not allowed to execute the
+     *             function
+     */
+    public String enqueueGenerateAndReplaceKeysRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+                    throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GENERATE_AND_REPLACE_KEYS);
+
+        LOGGER.debug("Enqueue generate and replace keys request called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.GENERATE_AND_REPLACE_KEYS.toString(), messagePriority, scheduleTime);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
