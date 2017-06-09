@@ -140,3 +140,12 @@ Feature: SmartMetering Configuration
     Then the bundle response contains a get configuration object response
       | GprsOperationMode    | ALWAYS_ON |
       | DISCOVER_ON_POWER_ON | true      |
+
+  @ResetKeys @Skip
+  Scenario: Replace keys with generated ones on a device
+    When the generate and replace keys request is received
+      | DeviceIdentification | TEST1024000000001 |
+    Then the generate and replace keys response should be returned
+      | DeviceIdentification | TEST1024000000001 |
+      | Result               | OK                |
+    And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table

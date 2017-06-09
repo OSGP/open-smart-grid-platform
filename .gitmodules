@@ -13,7 +13,7 @@
 [submodule "Protocol-Adapter-DLMS"]
 	path = Protocol-Adapter-DLMS
 	url = https://github.com/OSGP/Protocol-Adapter-DLMS.git
-	branch = development 
+	branch = development
 [submodule "Protocol-Adapter-IEC61850"]
 	path = Protocol-Adapter-IEC61850
 	url = https://github.com/OSGP/Protocol-Adapter-IEC61850.git
