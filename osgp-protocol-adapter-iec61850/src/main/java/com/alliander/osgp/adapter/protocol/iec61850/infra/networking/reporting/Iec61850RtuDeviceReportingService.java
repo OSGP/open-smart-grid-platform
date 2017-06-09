@@ -51,7 +51,6 @@ public class Iec61850RtuDeviceReportingService {
     }
 
     private void enableRtuReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
-
         final ServerModel serverModel = connection.getConnection().getServerModel();
         final String rtuPrefix = LogicalDevice.RTU.getDescription();
         int i = 1;
@@ -60,6 +59,8 @@ public class Iec61850RtuDeviceReportingService {
         while (rtuNode != null) {
             this.enableStatusReportingOnDevice(connection, deviceIdentification, LogicalDevice.RTU, i,
                     DataAttribute.REPORT_STATUS_ONE);
+            this.enableHeartbeatReportingOnDevice(connection, deviceIdentification, LogicalDevice.RTU, i,
+                    DataAttribute.REPORT_HEARTBEAT_ONE);
             i += 1;
             logicalDeviceName = rtuPrefix + i;
             rtuNode = serverModel.getChild(this.serverName + logicalDeviceName);
@@ -259,6 +260,26 @@ public class Iec61850RtuDeviceReportingService {
         try {
             final NodeContainer reportingNode = deviceConnection.getFcModelNode(logicalDevice, logicalDeviceIndex,
                     LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.BR);
+            reportingNode.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
+        } catch (final NullPointerException e) {
+            LOGGER.debug("NullPointerException", e);
+            LOGGER.warn("Skip enable reporting for device {}{}, report {}.", logicalDevice, logicalDeviceIndex,
+                    reportName.getDescription());
+        } catch (final NodeWriteException e) {
+            LOGGER.debug("NodeWriteException", e);
+            LOGGER.error("Enable reporting for device {}{}, report {}, failed with exception: {}", logicalDevice,
+                    logicalDeviceIndex, reportName.getDescription(), e.getMessage());
+        }
+    }
+
+    private void enableHeartbeatReportingOnDevice(final DeviceConnection deviceConnection,
+            final String deviceIdentification, final LogicalDevice logicalDevice, final int logicalDeviceIndex,
+            final DataAttribute reportName) {
+
+        LOGGER.info("Allowing device {} to send events", deviceIdentification);
+        try {
+            final NodeContainer reportingNode = deviceConnection.getFcModelNode(logicalDevice, logicalDeviceIndex,
+                    LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.RP);
             reportingNode.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         } catch (final NullPointerException e) {
             LOGGER.debug("NullPointerException", e);

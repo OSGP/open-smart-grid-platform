@@ -167,6 +167,11 @@ public enum DataAttribute {
      */
     REPORT_MEASUREMENTS_ONE("ReportMeasurements01"),
     /**
+     * Property of LLN0 Node, ReportHeartbeat01, contains the reporting
+     * information.
+     */
+    REPORT_HEARTBEAT_ONE("ReportHeartbeat01"),
+    /**
      * Alarm 1
      */
     ALARM_ONE("Alm1"),
