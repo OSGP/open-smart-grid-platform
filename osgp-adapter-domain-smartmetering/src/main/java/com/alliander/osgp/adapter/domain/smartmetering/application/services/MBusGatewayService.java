@@ -154,15 +154,11 @@ public class MBusGatewayService {
      */
     private void checkAndHandleIfChannelNotFound(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto)
             throws FunctionalException {
-        if (!this.isChannelFound(mbusChannelElementsResponseDto)) {
+        if (!mbusChannelElementsResponseDto.isChannelFound()) {
             throw new FunctionalException(FunctionalExceptionType.NO_MBUS_DEVICE_CHANNEL_FOUND,
                     ComponentType.DOMAIN_SMART_METERING,
                     new MBusChannelNotFoundException(this.buildErrorMessage(mbusChannelElementsResponseDto)));
         }
-    }
-
-    private boolean isChannelFound(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) {
-        return mbusChannelElementsResponseDto.getChannel() != null;
     }
 
     /**
