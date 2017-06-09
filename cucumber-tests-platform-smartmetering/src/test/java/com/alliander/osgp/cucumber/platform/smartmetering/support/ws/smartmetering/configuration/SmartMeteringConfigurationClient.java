@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
@@ -43,7 +47,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     public GetAdministrativeStatusResponse retrieveGetAdministrativeStatusResponse(
             final GetAdministrativeStatusAsyncRequest asyncRequest)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
@@ -66,6 +70,21 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         return (ReplaceKeysResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
     }
 
+    public GenerateAndReplaceKeysAsyncResponse generateAndReplaceKeys(final GenerateAndReplaceKeysRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        return (GenerateAndReplaceKeysAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+    }
+
+    public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(final GenerateAndReplaceKeysAsyncRequest asyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = asyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (GenerateAndReplaceKeysResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+    }
+
     public SetClockConfigurationAsyncResponse setClockConfiguration(final SetClockConfigurationRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         return (SetClockConfigurationAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
@@ -73,7 +92,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     public SetClockConfigurationResponse getSetClockConfigurationResponse(
             final SetClockConfigurationAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = request.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
