@@ -35,15 +35,12 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     private static final String ADD_PROPS_REQUEST = "http://%s/AddProperties/%s/%s";
 
     public void removeAllTemporaryPropertiesFiles() {
-        if (this.isBaseUrlEnabled()) {
-            try {
-                final CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-                final String request = String.format(CLEANUP_PROPS_REQUEST, this.getBaseUrl());
-                final HttpGet httpGetRequest = new HttpGet(request);
-                httpClient.execute(httpGetRequest);
-            } catch (final IOException e) {
-                LOGGER.error("error while calling CleanupProperties request", e);
-            }
+        try (final CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
+            final String request = String.format(CLEANUP_PROPS_REQUEST, this.getBaseUrl());
+            final HttpGet httpGetRequest = new HttpGet(request);
+            httpClient.execute(httpGetRequest);
+        } catch (final IOException e) {
+            LOGGER.error("error while calling CleanupProperties request", e);
         }
     }
 
@@ -66,23 +63,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     public void deviceSimulateWithClassidObiscodeAndAttributes(final String deviceIdentification, final int classId,
             final String obisCode, final Map<String, String> settings) throws Throwable {
 
-        if (this.isBaseUrlEnabled()) {
-            this.makeSetRemotePropertiesRequestUri(classId, obisCode, settings);
-        }
-    }
-
-    /**
-     * This method is added, so that all PR builds, still work, although the
-     * module that should handle this trigger is not deployed. Once slim-975 is
-     * deployed, this check can be removed. Note that in thar case the property
-     * dynamic.properties.base.url should be enabled, in the properties file,
-     * and a corresponding -D tag is added to the Jenkins jobs which run the
-     * dlms cucumber tests.
-     * 
-     * @return
-     */
-    private boolean isBaseUrlEnabled() {
-        return this.getBaseUrl() != null;
+        this.makeSetRemotePropertiesRequestUri(classId, obisCode, settings);
     }
 
     private void makeSetRemotePropertiesRequestUri(final int classId, final String obisCode,
