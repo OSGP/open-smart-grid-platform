@@ -141,7 +141,7 @@ Feature: SmartMetering Configuration
       | GprsOperationMode    | ALWAYS_ON |
       | DISCOVER_ON_POWER_ON | true      |
 
-  @ResetKeys @Skip
+  @ResetKeys
   Scenario: Replace keys with generated ones on a device
     When the generate and replace keys request is received
       | DeviceIdentification | TEST1024000000001 |
