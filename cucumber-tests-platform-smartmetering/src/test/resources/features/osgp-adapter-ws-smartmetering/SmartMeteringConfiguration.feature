@@ -99,9 +99,11 @@ Feature: SmartMetering Configuration
     Then the firmware version result should be returned
       | DeviceIdentification | TEST1024000000001 |
 
+  
+#  @bjorn
   @Skip
   Scenario: successful upgrade of firmware
-    Given a firmware
+    Given a dlms firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
@@ -141,7 +143,7 @@ Feature: SmartMetering Configuration
       | GprsOperationMode    | ALWAYS_ON |
       | DISCOVER_ON_POWER_ON | true      |
 
-  @ResetKeys @Skip
+  @ResetKeys @bjorn
   Scenario: Replace keys with generated ones on a device
     When the generate and replace keys request is received
       | DeviceIdentification | TEST1024000000001 |
