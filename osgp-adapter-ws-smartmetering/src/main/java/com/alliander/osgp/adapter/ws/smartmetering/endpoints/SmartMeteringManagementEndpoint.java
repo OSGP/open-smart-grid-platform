@@ -233,6 +233,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.meterResponseDataService
                     .dequeue(request.getCorrelationUid());
 
+            this.throwExceptionIfResultNotOk(meterResponseData, "Enable Debugging");
+
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
@@ -294,6 +296,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             final MeterResponseData meterResponseData = this.meterResponseDataService
                     .dequeue(request.getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "Disable Debugging");
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
