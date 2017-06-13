@@ -46,8 +46,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 @Validated
 public class AdHocManagementService {
 
-    // TODO refactor
-
     private static final int PAGE_SIZE = 30;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
@@ -147,7 +145,7 @@ public class AdHocManagementService {
 
     public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Valid final ResumeScheduleData resumeScheduleData)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
