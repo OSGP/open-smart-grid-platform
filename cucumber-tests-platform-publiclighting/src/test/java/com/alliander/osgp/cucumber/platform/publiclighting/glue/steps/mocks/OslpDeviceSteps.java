@@ -71,6 +71,7 @@ import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.oslp.Oslp.TriggerType;
+import com.alliander.osgp.oslp.Oslp.UpdateFirmwareRequest;
 import com.alliander.osgp.oslp.Oslp.Weekday;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.OslpUtils;
@@ -1205,5 +1206,31 @@ public class OslpDeviceSteps {
         }
 
         return this.oslpMockServer.send(address, request, deviceIdentification);
+    }
+
+    /**
+     * Setup method to set the update firmware which should be returned by the
+     * mock.
+     *
+     * @param result
+     */
+    @Given("^the device returns a update firmware \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsAUpdateFirmwareOverOSLP(final String result, final String protocol) {
+        this.oslpMockServer.mockUpdateFirmwareResponse(Enum.valueOf(Status.class, result));
+    }
+
+    @Then("^an update firmware \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void anUpdateFirmwareOSLPMessageIsSentToTheDevice(final String protocol, final String deviceIdentification,
+            final Map<String, String> expectedParameters) {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasUpdateFirmwareRequest());
+
+        final UpdateFirmwareRequest request = message.getUpdateFirmwareRequest();
+
+        Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.FIRMWARE_DOMAIN,
+                PlatformPubliclightingDefaults.FIRMARE_DOMAIN), request.getFirmwareDomain());
+        Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.FIRMWARE_URL,
+                PlatformPubliclightingDefaults.FIRMWARE_URL), request.getFirmwareUrl());
     }
 }

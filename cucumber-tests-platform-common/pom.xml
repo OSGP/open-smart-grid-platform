@@ -100,7 +100,7 @@
       <artifactId>cucumber-tests-platform</artifactId>
       <type>test-jar</type>
     </dependency>
-    
+
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-adapter-ws-admin</artifactId>
@@ -111,7 +111,7 @@
       <artifactId>osgp-adapter-ws-core</artifactId>
       <classifier>classes</classifier>
     </dependency>
-    
+
   </dependencies>
 
   <build>

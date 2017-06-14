@@ -1,4 +1,4 @@
-@PublicLighting @Platform @AdminDeviceManagement
+@Common @Platform @AdminDeviceManagement
 Feature: AdminDeviceManagement Set Owner
   As a ...
   I want to be able to perform DeviceManagement operations on a device
