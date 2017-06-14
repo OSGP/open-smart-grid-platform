@@ -16,6 +16,7 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
+import org.osgp.adapter.protocol.dlms.application.services.ReEncryptionService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -64,6 +65,9 @@ public class ReplaceKeyCommandExecutor
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
 
+    @Autowired
+    ReEncryptionService reEncryptionService;
+
     static class KeyWrapper {
         private final byte[] bytes;
         private final KeyId keyId;
@@ -104,15 +108,31 @@ public class ReplaceKeyCommandExecutor
 
         LOGGER.info("Keys set on device :{}", device.getDeviceIdentification());
 
+        SetKeysRequestDto setKeysRequestDto = (SetKeysRequestDto) actionRequestDto;
+        if (!setKeysRequestDto.isGeneratedKeys()) {
+            final SetKeysRequestDto encryptedKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
+            setKeysRequestDto = encryptedKeysRequestDto;
+        }
+
         DlmsDevice devicePostSave = this.execute(conn, device,
-                ReplaceKeyCommandExecutor.wrap(((SetKeysRequestDto) actionRequestDto).getAuthenticationKey(),
-                        KeyId.AUTHENTICATION_KEY, SecurityKeyType.E_METER_AUTHENTICATION));
+                ReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
+                        SecurityKeyType.E_METER_AUTHENTICATION));
 
         devicePostSave = this.execute(conn, devicePostSave,
-                ReplaceKeyCommandExecutor.wrap(((SetKeysRequestDto) actionRequestDto).getEncryptionKey(),
+                ReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getEncryptionKey(),
                         KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY, SecurityKeyType.E_METER_ENCRYPTION));
 
         return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
+    }
+
+    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
+
+        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
+                .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
+        final byte[] reEncryptedEncryptionKey = this.reEncryptionService
+                .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
+
+        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
     }
 
     @Override

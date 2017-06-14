@@ -27,8 +27,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
 @Component
-public class GenerateAndReplaceKeyCommandExecutor
-extends AbstractCommandExecutor<ActionRequestDto, ActionResponseDto> {
+public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecutor<ActionRequestDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateAndReplaceKeyCommandExecutor.class);
 
@@ -53,11 +52,10 @@ extends AbstractCommandExecutor<ActionRequestDto, ActionResponseDto> {
 
     @Override
     public ActionResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ActionRequestDto actionRequestDto)
-                    throws ProtocolAdapterException, FunctionalException {
+            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
         LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
         final SetKeysRequestDto setKeysRequestDto = this.generateAndEncryptKeys();
-
+        setKeysRequestDto.setGeneratedKeys(true);
         return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequestDto);
     }
 
