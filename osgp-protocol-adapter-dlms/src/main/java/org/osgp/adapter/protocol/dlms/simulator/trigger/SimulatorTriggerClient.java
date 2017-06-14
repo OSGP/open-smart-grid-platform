@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.Response;
@@ -35,10 +36,11 @@ public class SimulatorTriggerClient extends AbstractClient {
 
     private static final String CONSTRUCTION_FAILED = "SimulatorTriggerClient construction failed";
     private static final String TRIGGERPATH = "/trigger";
+    private static final String DYNAMIC_ATTRIBUTES_PATH = "/dynamic";
 
     /**
      * Construct a SimulatorTriggerClient instance.
-     * 
+     *
      * @param truststoreLocation
      *            The location of the trust store
      * @param truststorePassword
@@ -70,7 +72,7 @@ public class SimulatorTriggerClient extends AbstractClient {
             tmf.init(truststore);
 
             // Create Apache CXF WebClient with JSON provider.
-            final List<Object> providers = new ArrayList<Object>();
+            final List<Object> providers = new ArrayList<>();
             providers.add(new JacksonJaxbJsonProvider());
 
             this.webClient = WebClient.create(baseAddress, providers);
@@ -114,6 +116,46 @@ public class SimulatorTriggerClient extends AbstractClient {
             throw new SimulatorTriggerClientException("sendTrigger response exception", e);
         }
 
+    }
+
+    public void clearDlmsAttributeValues() throws SimulatorTriggerClientException {
+
+        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).delete();
+
+        try {
+            this.checkResponseStatus(response);
+        } catch (final ResponseException e) {
+            throw new SimulatorTriggerClientException("clearDlmsAttributeValues response exception", e);
+        }
+    }
+
+    public void setDlmsAttributeValues(final int classId, final String obisCode, final Map<String, String> settings)
+            throws SimulatorTriggerClientException {
+
+        final String key = this.buildKeyPathSegment(classId, obisCode);
+        final String properties = this.buildPropertiesPathSegment(settings);
+
+        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(key).path(properties)
+                .put(null);
+
+        try {
+            this.checkResponseStatus(response);
+        } catch (final ResponseException e) {
+            throw new SimulatorTriggerClientException("setDlmsAttributeValues response exception", e);
+        }
+    }
+
+    private String buildKeyPathSegment(final int classId, final String obisCode) {
+        return String.format("%d_%s", classId, obisCode);
+    }
+
+    private String buildPropertiesPathSegment(final Map<String, String> settings) {
+        final StringBuilder sb = new StringBuilder();
+        for (final Map.Entry<String, String> setting : settings.entrySet()) {
+            sb.append(setting.getKey()).append('=').append(setting.getValue()).append(',');
+        }
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
     }
 
     private void checkResponseStatus(final Response response) throws ResponseException {

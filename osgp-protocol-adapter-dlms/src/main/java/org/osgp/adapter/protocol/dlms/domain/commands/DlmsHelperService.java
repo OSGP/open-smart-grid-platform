@@ -106,7 +106,7 @@ public class DlmsHelperService {
             }
 
             final String errorMessage = String.format(
-                    "Retrieving attribute value for { %d, %s, %d }. Result: resultCode(" + "%d), with data: %s",
+                    "Retrieving attribute value for { %d, %s, %d }. Result: resultCode(%d), with data: %s",
                     attributeAddress.getClassId(), attributeAddress.getInstanceId().toObisCode(),
                     attributeAddress.getId(), resultCode.getCode(), this.getDebugInfo(getResult.getResultData()));
 
@@ -269,16 +269,12 @@ public class DlmsHelperService {
         return this.readLong(getResult.getResultData(), description);
     }
 
-    public Integer readInt(final GetResult getResult, final String description) throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        final Long value = this.readLong(getResult.getResultData(), description);
-        return (value == null) ? null : value.intValue();
-    }
-
-    public Short readShort(final GetResult getResult, final String description) throws ProtocolAdapterException {
-        this.checkResultCode(getResult, description);
-        final Long value = this.readLong(getResult.getResultData(), description);
-        return (value == null) ? null : value.shortValue();
+    public Long readLong(final DataObject resultData, final String description) throws ProtocolAdapterException {
+        final Number number = this.readNumber(resultData, description);
+        if (number == null) {
+            return null;
+        }
+        return number.longValue();
     }
 
     public Long readLongNotNull(final GetResult getResult, final String description) throws ProtocolAdapterException {
@@ -294,18 +290,22 @@ public class DlmsHelperService {
         return result;
     }
 
+    public Integer readInteger(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        final Long value = this.readLong(getResult.getResultData(), description);
+        return (value == null) ? null : value.intValue();
+    }
+
+    public Short readShort(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        final Long value = this.readLong(getResult.getResultData(), description);
+        return (value == null) ? null : value.shortValue();
+    }
+
     public DataObject readDataObject(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
         return getResult.getResultData();
-    }
-
-    public Long readLong(final DataObject resultData, final String description) throws ProtocolAdapterException {
-        final Number number = this.readNumber(resultData, description);
-        if (number == null) {
-            return null;
-        }
-        return number.longValue();
     }
 
     public String readString(final DataObject resultData, final String description) throws ProtocolAdapterException {
