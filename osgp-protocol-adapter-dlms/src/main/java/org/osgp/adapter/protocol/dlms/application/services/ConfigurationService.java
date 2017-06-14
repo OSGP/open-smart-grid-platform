@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
+import org.osgp.adapter.protocol.dlms.domain.commands.GenerateAndReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
@@ -104,6 +105,14 @@ public class ConfigurationService {
 
     @Autowired
     private GetConfigurationObjectCommandExecutor getConfigurationObjectCommandExecutor;
+
+    @Autowired
+    private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
+
+    @Autowired
+    private ReEncryptionService reEncryptionService;
+
+    public static final int AES_GMC_128_KEY_SIZE = 128;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -255,6 +264,17 @@ public class ConfigurationService {
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
     }
 
+    public void generateAndEncrypt(final DlmsConnectionHolder conn, final DlmsDevice device)
+            throws ProtocolAdapterException, FunctionalException {
+        try {
+
+            this.generateAndReplaceKeyCommandExecutor.executeBundleAction(conn, device, null);
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Unexpected exception during replaceKeys.", e);
+            throw e;
+        }
+    }
+
     public void replaceKeys(final DlmsConnectionHolder conn, final DlmsDevice device, final SetKeysRequestDto keySet)
             throws ProtocolAdapterException, FunctionalException {
 
@@ -264,7 +284,9 @@ public class ConfigurationService {
              * SetKeysRequestDto containing authentication and encryption key,
              * while execute deals with a single key only.
              */
-            this.replaceKeyCommandExecutor.executeBundleAction(conn, device, keySet);
+            final SetKeysRequestDto setKeysRequestDto = this.reEncryptKeys(keySet);
+            this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequestDto);
+
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw e;
@@ -294,6 +316,15 @@ public class ConfigurationService {
 
         return new GetConfigurationObjectResponseDto(
                 this.getConfigurationObjectCommandExecutor.execute(conn, device, null));
+    }
+
+    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
+        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
+                .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
+        final byte[] reEncryptedEncryptionKey = this.reEncryptionService
+                .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
+
+        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
     }
 
 }
