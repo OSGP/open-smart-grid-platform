@@ -1,4 +1,4 @@
-@PublicLighting @Platform @CoreDeviceManagement
+@Common @Platform @CoreDeviceManagement
 Feature: CoreDeviceManagement Find Devices
   As a ...
   I want to be able to perform DeviceManagement operations on a device

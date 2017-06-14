@@ -9,4 +9,6 @@ package com.alliander.osgp.cucumber.platform.common;
 
 public class PlatformCommonKeys extends com.alliander.osgp.cucumber.platform.PlatformKeys {
 
+    public static final String SCHEDULED_TIME = "ScheduledTime";
+
 }
