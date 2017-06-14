@@ -17,6 +17,8 @@ public class SetKeysRequestDto implements ActionRequestDto {
 
     private byte[] encryptionKey;
 
+    private boolean generatedKeys;
+
     public SetKeysRequestDto(final byte[] authenticationKey, final byte[] encryptionKey) {
         this.authenticationKey = authenticationKey;
         this.encryptionKey = encryptionKey;
@@ -28,6 +30,14 @@ public class SetKeysRequestDto implements ActionRequestDto {
 
     public byte[] getEncryptionKey() {
         return this.encryptionKey;
+    }
+
+    public boolean isGeneratedKeys() {
+        return this.generatedKeys;
+    }
+
+    public void setGeneratedKeys(final boolean generatedKeys) {
+        this.generatedKeys = generatedKeys;
     }
 
     @Override
