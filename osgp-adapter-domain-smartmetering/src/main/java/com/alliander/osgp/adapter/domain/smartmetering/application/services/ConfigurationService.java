@@ -93,7 +93,7 @@ public class ConfigurationService {
 
     public void setSpecialDays(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("setSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -114,7 +114,7 @@ public class ConfigurationService {
 
     public void setConfigurationObject(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest setConfigurationObjectRequestValueObject)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -136,7 +136,7 @@ public class ConfigurationService {
 
     public void setPushSetupAlarm(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("setPushSetupAlarm for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -157,7 +157,7 @@ public class ConfigurationService {
 
     public void setPushSetupSms(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSms)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("setPushSetupSms for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -480,6 +480,40 @@ public class ConfigurationService {
                 deviceMessageMetadata.getMessageType());
     }
 
+    public void generateAndReplaceKeys(final DeviceMessageMetadata deviceMessageMetadata)
+            throws FunctionalException {
+        LOGGER.info("Generate and replace keys for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(),
+                        smartMeteringDevice.getIpAddress(), null),
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                deviceMessageMetadata.getScheduleTime());
+    }
+
+    public void handleGenerateAndReplaceKeysResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("Handle generate and replace keys response for MessageType: {}", deviceMessageMetadata.getMessageType());
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Generate and replace keys response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, null, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+    }
+
     /**
      * Delegates the requests of the retrieval of the firmware version(s) from
      * the protocol adapter layer to the core layer
@@ -493,7 +527,7 @@ public class ConfigurationService {
      */
     public void requestFirmwareVersion(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersion getFirmwareVersion)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("requestFirmwareVersion for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());

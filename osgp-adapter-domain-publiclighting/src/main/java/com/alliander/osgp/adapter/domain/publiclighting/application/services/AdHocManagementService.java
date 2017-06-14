@@ -17,15 +17,14 @@ import javax.validation.constraints.NotNull;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
 import com.alliander.osgp.domain.core.valueobjects.DomainType;
@@ -52,9 +51,6 @@ public class AdHocManagementService extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
 
-    @Autowired
-    private DeviceRepository deviceRepository;
-
     /**
      * Constructor
      */
@@ -74,8 +70,8 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.LightValueDto> lightValuesDto = this.domainCoreMapper.mapAsList(
-                lightValues, com.alliander.osgp.dto.valueobjects.LightValueDto.class);
+        final List<com.alliander.osgp.dto.valueobjects.LightValueDto> lightValuesDto = this.domainCoreMapper
+                .mapAsList(lightValues, com.alliander.osgp.dto.valueobjects.LightValueDto.class);
         final LightValueMessageDataContainerDto lightValueMessageDataContainer = new LightValueMessageDataContainerDto(
                 lightValuesDto);
 
@@ -107,8 +103,8 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper.map(
-                allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
+        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper
+                .map(allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), messageType, device.getIpAddress());
@@ -125,31 +121,34 @@ public class AdHocManagementService extends AbstractService {
         OsgpException osgpException = exception;
         DeviceStatusMapped deviceStatusMapped = null;
 
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-            } else {
-                final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
+        if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+            LOGGER.error("Device Response not ok.", osgpException);
+        } else {
+            final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
 
-                final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+            final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
 
-                final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
+            final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
 
-                final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
-                for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                    dosMap.put(dos.getExternalId(), dos);
-                }
-
-                if (status != null) {
-                    deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                            allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
-                            status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
-                            status.getEventNotificationsMask());
-                } else {
-                    result = ResponseMessageResultType.NOT_OK;
-                    osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
-                            "Device was not able to report status", new NoDeviceResponseException());
-                }
+            final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
+            for (final DeviceOutputSetting dos : deviceOutputSettings) {
+                dosMap.put(dos.getExternalId(), dos);
             }
+
+            if (status != null) {
+                deviceStatusMapped = new DeviceStatusMapped(
+                        filterTariffValues(status.getLightValues(), dosMap, allowedDomainType),
+                        filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
+                        status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                        status.getEventNotificationsMask());
+
+                this.updateDeviceRelayOverview(device, deviceStatusMapped);
+            } else {
+                result = ResponseMessageResultType.NOT_OK;
+                osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
+                        "Device was not able to report status", new NoDeviceResponseException());
+            }
+        }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, osgpException, deviceStatusMapped));
@@ -167,8 +166,8 @@ public class AdHocManagementService extends AbstractService {
 
         if (!ssld.getHasSchedule()) {
             throw new FunctionalException(FunctionalExceptionType.UNSCHEDULED_DEVICE,
-                    ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(String.format(
-                            "Device %1$s does not have a schedule.", deviceIdentification)));
+                    ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(
+                            String.format("Device %1$s does not have a schedule.", deviceIdentification)));
         }
 
         final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainerDto = new ResumeScheduleMessageDataContainerDto(
@@ -275,5 +274,37 @@ public class AdHocManagementService extends AbstractService {
         }
 
         return filteredValues;
+    }
+
+    /**
+     * Updates the relay overview from a device based on the given device
+     * status.
+     *
+     * @param deviceIdentification
+     *            The device to update.
+     * @param deviceStatus
+     *            The device status to update the relay overview with.
+     */
+    private void updateDeviceRelayOverview(final Ssld device, final DeviceStatusMapped deviceStatusMapped) {
+        final List<RelayStatus> relayStatuses = device.getRelayStatusses();
+
+        for (final LightValue lightValue : deviceStatusMapped.getLightValues()) {
+            boolean updated = false;
+            for (final RelayStatus relayStatus : relayStatuses) {
+                if (relayStatus.getIndex() == lightValue.getIndex()) {
+                    relayStatus.setLastKnownState(lightValue.isOn());
+                    relayStatus.setLastKnowSwitchingTime(DateTime.now().toDate());
+                    updated = true;
+                    break;
+                }
+            }
+            if (!updated) {
+                final RelayStatus newRelayStatus = new RelayStatus(device, lightValue.getIndex(), lightValue.isOn(),
+                        DateTime.now().toDate());
+                relayStatuses.add(newRelayStatus);
+            }
+        }
+
+        this.ssldRepository.save(device);
     }
 }

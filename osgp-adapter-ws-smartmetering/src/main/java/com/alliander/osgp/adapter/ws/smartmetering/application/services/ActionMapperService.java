@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GenerateAndReplaceKeysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAdministrativeStatusRequest;
@@ -55,6 +56,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterRead
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GenerateAndReplaceKeysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequestData;
@@ -200,6 +202,7 @@ public class ActionMapperService {
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetProfileGenericDataRequest.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GenerateAndReplaceKeysRequest.class, this.configurationMapper);
     }
 
     /**
@@ -295,6 +298,7 @@ public class ActionMapperService {
         CLASS_MAP.put(GetConfigurationObjectRequest.class, GetConfigurationObjectRequestData.class);
         CLASS_MAP.put(GetProfileGenericDataRequest.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData.class);
+        CLASS_MAP.put(GenerateAndReplaceKeysRequest.class, GenerateAndReplaceKeysRequestData.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {
