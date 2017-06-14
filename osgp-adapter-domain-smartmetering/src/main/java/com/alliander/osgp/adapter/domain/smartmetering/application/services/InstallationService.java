@@ -30,6 +30,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -158,6 +159,15 @@ public class InstallationService {
     public void coupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
             final CoupleMbusDeviceRequestData requestData) throws FunctionalException {
         this.mBusGatewayService.coupleMbusDevice(deviceMessageMetadata, requestData);
+    }
+
+    public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType result, final OsgpException exception,
+            final MbusChannelElementsResponseDto dataObject) throws FunctionalException {
+        if (exception == null) {
+            this.mBusGatewayService.handleCoupleMbusDeviceResponse(deviceMessageMetadata, dataObject);
+        }
+        this.handleResponse("coupleMbusDevice", deviceMessageMetadata, result, exception);
     }
 
     /**
