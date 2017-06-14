@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.core;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -17,6 +18,9 @@ import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+import com.luckycatlabs.sunrisesunset.dto.Location;
 
 public class Helpers {
 
@@ -167,7 +171,7 @@ public class Helpers {
             throw new Exception("Incorrect dateString [" + dateString
                     + "], expected the string to begin with tomorrow, yesterday or now or today");
         }
-        
+
         // Normalize the seconds and milliseconds to zero
         retval = retval.withSecondOfMinute(0);
         retval = retval.withMillisOfSecond(0);
@@ -251,6 +255,42 @@ public class Helpers {
             return defaultStartDate;
         }
         return dateTime;
+    }
+
+    /**
+     * Get time of sunrise/sunset
+     *
+     * @param date
+     * @param actionTimeType
+     * @return
+     * @throws Exception
+     */
+    public static DateTime getSunriseSunsetTime(final String actionTimeType, final DateTime date) throws Exception {
+        final Location location = new Location(52.132633, 5.291266);
+        final SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(location, "UTC");
+
+        long officialTime = 0;
+
+        final Calendar calender = Calendar.getInstance();
+        calender.setTime(date.toDate());
+
+        if (actionTimeType.toUpperCase().equals("SUNSET")) {
+            final Calendar officialSunset = calculator.getOfficialSunsetCalendarForDate(calender);
+            if (officialSunset != null) {
+                officialTime = officialSunset.getTimeInMillis();
+            }
+        } else if (actionTimeType.toUpperCase().equals("SUNRISE")) {
+            calender.setTime(date.plusDays(1).toDate());
+            final Calendar officialSunrise = calculator.getOfficialSunriseCalendarForDate(calender);
+            if (officialSunrise != null) {
+                officialTime = officialSunrise.getTimeInMillis();
+            }
+        }
+
+        if (officialTime == 0) {
+            return null;
+        }
+        return new DateTime(officialTime);
     }
 
     public static <E extends Enum<E>> E getEnum(final Map<String, String> settings, final String key,
