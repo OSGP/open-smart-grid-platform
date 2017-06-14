@@ -1,10 +1,10 @@
-@PublicLighting @Platform @FirmwareManagement
-Feature: FirmwareManagement update firmware
+@Common @Platform @FirmwareManagement
+Feature: FirmwareManagement change firmware
   As OSGP 
-  I want to manage the firmware of a device
+  I want to change the firmware of a device
   In order to ...
 
-  Scenario: Update firmware
+  Scenario: Change firmware
     Given a device
       | DeviceIdentification | TEST1024000000001 |
     And a firmware
@@ -14,16 +14,16 @@ Feature: FirmwareManagement update firmware
       | Manufacturer             | Test              |
       | ModelCode                | TestModel         |
       | Description              |                   |
-    When receiving an update firmware request
+    When receiving an change firmware request
       | FirmwareFilename         | NewFirmware          |
       | FirmwarePushToNewDevices | false                |
       | Manufacturer             | Test                 |
       | ModelCode                | TestModel            |
       | FirmwareDescription      | Firmware is changed! |
-    Then the update firmware response contains
+    Then the change firmware response contains
       | Result | OK |
 
-  Scenario Outline: Update firmware with an unknown or empty devicemodel
+  Scenario Outline: Change firmware with an unknown or empty devicemodel
     Given a device
       | DeviceIdentification | TEST1024000000001 |
     And a firmware
@@ -33,9 +33,9 @@ Feature: FirmwareManagement update firmware
       | Manufacturer             | Test              |
       | ModelCode                | TestModel         |
       | Description              |                   |
-    When receiving an update firmware request
+    When receiving an change firmware request
       | ModelCode | unknown |
-    Then the update firmware response contains soap fault
+    Then the change firmware response contains soap fault
       | FaultCode    | SOAP-ENV:Server                                   |
       | FaultString  | UNKNOWN_DEVICEMODEL                               |
       | InnerMessage | DeviceModel with id "unknown" could not be found. |
@@ -45,9 +45,9 @@ Feature: FirmwareManagement update firmware
       | unknown   |
       |           |
 
-  Scenario: Update the firmware for an unknown firmware
-    When receiving an update firmware request
+  Scenario: Change the firmware for an unknown firmware
+    When receiving an change firmware request
       | FirmwareFilename | Firmware |
-    Then the update firmware response contains soap fault
+    Then the change firmware response contains soap fault
       | FaultCode | SOAP-ENV:Server  |
       | Message   | UNKNOWN_FIRMWARE |

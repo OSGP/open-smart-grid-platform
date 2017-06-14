@@ -14,7 +14,7 @@ import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import cucumber.api.java.en.Given;
 
 public class TimeoutSteps extends GlueBase {
-    
+
     @Given("^a timeout of \"([^\"]*)\" seconds$")
     public void aTimeoutOfSeconds(final String seconds) {
         ScenarioContext.current().put(PlatformKeys.TIMEOUT, seconds);

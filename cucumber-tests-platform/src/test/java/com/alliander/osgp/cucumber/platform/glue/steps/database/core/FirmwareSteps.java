@@ -33,61 +33,70 @@ import cucumber.api.java.en.Then;
  */
 public class FirmwareSteps {
 
-	@Autowired
-	private DeviceModelRepository deviceModelRepo;
+    @Autowired
+    private DeviceModelRepository deviceModelRepo;
 
-	@Autowired
-	private FirmwareRepository firmwareRepo;
+    @Autowired
+    private FirmwareRepository firmwareRepo;
 
-	@Autowired
-	private DeviceModelSteps deviceModelSteps;
+    @Autowired
+    private DeviceModelSteps deviceModelSteps;
 
-	/**
-	 * Generic method which adds a firmware using the settings.
-	 *
-	 * @param settings
-	 *            The settings for the firmware to be used.
-	 * @throws Throwable
-	 */
-	@Given("^a firmware")
-	public void aFirmware(final Map<String, String> settings) {
+    /**
+     * Generic method which adds a firmware using the settings.
+     *
+     * @param settings
+     *            The settings for the firmware to be used.
+     * @throws Throwable
+     */
+    @Given("^a firmware")
+    public void aFirmware(final Map<String, String> settings) {
 
-		DeviceModel deviceModel = this.deviceModelRepo.findByModelCode(getString(settings, PlatformKeys.DEVICEMODEL_MODELCODE));
-		if (deviceModel == null) {
-			deviceModel = this.deviceModelSteps.aDeviceModel(settings);
-		}
+        DeviceModel deviceModel = this.deviceModelRepo
+                .findByModelCode(getString(settings, PlatformKeys.DEVICEMODEL_MODELCODE));
+        if (deviceModel == null) {
+            deviceModel = this.deviceModelSteps.aDeviceModel(settings);
+        }
 
-		final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(
-				getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM),
-				getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC),
-				getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA, PlatformDefaults.FIRMWARE_MODULE_VERSION_MA),
-				getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS, PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS),
-				getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC, PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC));
+        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(
+                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
+                        PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM),
+                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
+                        PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC),
+                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
+                        PlatformDefaults.FIRMWARE_MODULE_VERSION_MA),
+                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
+                        PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS),
+                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
+                        PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC));
 
-		final Firmware entity = new Firmware(deviceModel, getString(settings, PlatformKeys.FIRMWARE_FILENAME, ""),
-				getString(settings, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION),
-				getBoolean(settings, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES, PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE),
-				firmwareModuleData);
+        final Firmware entity = new Firmware(deviceModel, getString(settings, PlatformKeys.FIRMWARE_FILENAME, ""),
+                getString(settings, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION),
+                getBoolean(settings, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
+                        PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE),
+                firmwareModuleData);
 
-		this.firmwareRepo.save(entity);
-	}
+        this.firmwareRepo.save(entity);
+    }
 
-	/**
-	 * Verify whether the entity is created as expected.
-	 *
-	 * @param expectedEntity
-	 * @throws Throwable
-	 */
-	@Then("^the entity firmware exists$")
-	public void theEntityFirmwareExists(final Map<String, String> expectedEntity) {
-		Wait.until(() -> {
-			final Firmware entity = this.firmwareRepo.findByFilename(getString(expectedEntity, PlatformKeys.FIRMWARE_FILENAME));
-			final Manufacturer manufacturer = entity.getDeviceModel().getManufacturerId();
-			
-			Assert.assertEquals(getString(expectedEntity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID),
-					manufacturer);
-			Assert.assertEquals(getBoolean(expectedEntity, PlatformKeys.USE_PREFIX, PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX),
-					manufacturer.isUsePrefix());
-		});
-	}
+    /**
+     * Verify whether the entity is created as expected.
+     *
+     * @param expectedEntity
+     * @throws Throwable
+     */
+    @Then("^the entity firmware exists$")
+    public void theEntityFirmwareExists(final Map<String, String> expectedEntity) {
+        Wait.until(() -> {
+            final Firmware entity = this.firmwareRepo
+                    .findByFilename(getString(expectedEntity, PlatformKeys.FIRMWARE_FILENAME));
+            final Manufacturer manufacturer = entity.getDeviceModel().getManufacturerId();
+
+            Assert.assertEquals(
+                    getString(expectedEntity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID),
+                    manufacturer);
+            Assert.assertEquals(getBoolean(expectedEntity, PlatformKeys.USE_PREFIX,
+                    PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX), manufacturer.isUsePrefix());
+        });
+    }
 }

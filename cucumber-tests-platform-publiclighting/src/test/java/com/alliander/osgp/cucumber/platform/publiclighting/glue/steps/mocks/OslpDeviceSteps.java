@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
@@ -41,6 +43,7 @@ import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.ActionTime;
+import com.alliander.osgp.oslp.Oslp.DaliConfiguration;
 import com.alliander.osgp.oslp.Oslp.DeviceType;
 import com.alliander.osgp.oslp.Oslp.Event;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
@@ -48,6 +51,7 @@ import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryRequest;
 import com.alliander.osgp.oslp.Oslp.HistoryTermType;
+import com.alliander.osgp.oslp.Oslp.IndexAddressMap;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
@@ -55,15 +59,19 @@ import com.alliander.osgp.oslp.Oslp.LongTermIntervalType;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.MeterType;
 import com.alliander.osgp.oslp.Oslp.RegisterDeviceResponse;
+import com.alliander.osgp.oslp.Oslp.RelayConfiguration;
 import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
+import com.alliander.osgp.oslp.Oslp.SetConfigurationRequest;
+import com.alliander.osgp.oslp.Oslp.SetConfigurationResponse;
 import com.alliander.osgp.oslp.Oslp.SetRebootRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.oslp.Oslp.TriggerType;
+import com.alliander.osgp.oslp.Oslp.UpdateFirmwareRequest;
 import com.alliander.osgp.oslp.Oslp.Weekday;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.OslpUtils;
@@ -233,10 +241,126 @@ public class OslpDeviceSteps {
      *            device.
      */
     @Then("^a set configuration \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
-    public void aSetConfigurationOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
+    public void aSetConfigurationOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
+            final Map<String, String> expectedResponseData) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_CONFIGURATION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetConfigurationRequest());
+
+        final SetConfigurationRequest configuration = message.getSetConfigurationRequest();
+
+        if (expectedResponseData.containsKey(PlatformKeys.KEY_LIGHTTYPE)
+                && !expectedResponseData.get(PlatformKeys.KEY_LIGHTTYPE).isEmpty()
+                && configuration.getLightType() != null) {
+            final LightType expectedLightType = getEnum(expectedResponseData, PlatformKeys.KEY_LIGHTTYPE,
+                    LightType.class);
+            Assert.assertEquals(expectedLightType, configuration.getLightType());
+
+            switch (expectedLightType) {
+            case DALI:
+                final DaliConfiguration daliConfiguration = configuration.getDaliConfiguration();
+                if (daliConfiguration != null) {
+                    if (expectedResponseData.containsKey(PlatformKeys.DC_LIGHTS)
+                            && !expectedResponseData.get(PlatformKeys.DC_LIGHTS).isEmpty()) {
+                        Assert.assertEquals(getInteger(expectedResponseData, PlatformKeys.DC_LIGHTS),
+                                OslpUtils.byteStringToInteger(daliConfiguration.getNumberOfLights()));
+                    }
+
+                    if (expectedResponseData.containsKey(PlatformKeys.DC_MAP)
+                            && !expectedResponseData.get(PlatformKeys.DC_MAP).isEmpty()) {
+                        Assert.assertNotNull(daliConfiguration.getAddressMapList());
+
+                        final String[] dcMapArray = getString(expectedResponseData, PlatformKeys.DC_MAP).split(";");
+                        Assert.assertEquals(dcMapArray.length, daliConfiguration.getAddressMapList().size());
+
+                        final List<IndexAddressMap> indexAddressMapList = daliConfiguration.getAddressMapList();
+                        for (int i = 0; i < dcMapArray.length; i++) {
+                            final String[] dcMapArrayElements = dcMapArray[i].split(",");
+                            Assert.assertEquals((Integer) Integer.parseInt(dcMapArrayElements[0]),
+                                    OslpUtils.byteStringToInteger(indexAddressMapList.get(i).getIndex()));
+                            Assert.assertEquals((Integer) Integer.parseInt(dcMapArrayElements[1]),
+                                    OslpUtils.byteStringToInteger(indexAddressMapList.get(i).getAddress()));
+                        }
+                    }
+                }
+                break;
+
+            case RELAY:
+                final RelayConfiguration relayConfiguration = configuration.getRelayConfiguration();
+                if (relayConfiguration != null) {
+
+                    if (expectedResponseData.containsKey(PlatformKeys.RC_MAP)
+                            && !expectedResponseData.get(PlatformKeys.RC_MAP).isEmpty()
+                            && relayConfiguration.getAddressMapList() != null) {
+                        final List<IndexAddressMap> relayMapList = relayConfiguration.getAddressMapList();
+                        final String[] rcMapArray = getString(expectedResponseData, PlatformKeys.RC_MAP).split(";");
+                        for (int i = 0; i < rcMapArray.length; i++) {
+                            final String[] rcMapArrayElements = rcMapArray[i].split(",");
+                            if (rcMapArrayElements.length > 0 && relayMapList.size() > 0) {
+                                Assert.assertEquals((Integer) Integer.parseInt(rcMapArrayElements[0]),
+                                        OslpUtils.byteStringToInteger(relayMapList.get(i).getIndex()));
+                                Assert.assertEquals((Integer) Integer.parseInt(rcMapArrayElements[1]),
+                                        OslpUtils.byteStringToInteger(relayMapList.get(i).getAddress()));
+
+                                if (expectedResponseData.containsKey(PlatformKeys.KEY_RELAY_TYPE)
+                                        && !expectedResponseData.get(PlatformKeys.KEY_RELAY_TYPE).isEmpty()
+                                        && relayMapList.get(i).getRelayType() != null) {
+                                    Assert.assertEquals(
+                                            getEnum(expectedResponseData, PlatformKeys.KEY_RELAY_TYPE, RelayType.class),
+                                            relayMapList.get(i).getRelayType());
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case ONE_TO_TEN_VOLT:
+            case ONE_TO_TEN_VOLT_REVERSE:
+            case LT_NOT_SET:
+            default:
+                Assert.assertEquals(0, configuration.getDaliConfiguration().getAddressMapList().size());
+                Assert.assertEquals(0, configuration.getRelayConfiguration().getAddressMapList().size());
+            }
+        }
+
+        if (expectedResponseData.containsKey(PlatformKeys.KEY_PREFERRED_LINKTYPE)
+                && !expectedResponseData.get(PlatformKeys.KEY_PREFERRED_LINKTYPE).isEmpty()
+                && configuration.getPreferredLinkType() != null) {
+            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class),
+                    configuration.getPreferredLinkType());
+        }
+
+        if (expectedResponseData.containsKey(PlatformKeys.METER_TYPE)
+                && !expectedResponseData.get(PlatformKeys.METER_TYPE).isEmpty()
+                && configuration.getMeterType() != null) {
+            MeterType meterType = null;
+            meterType = getEnum(expectedResponseData, PlatformKeys.METER_TYPE, MeterType.class);
+            Assert.assertEquals(meterType, configuration.getMeterType());
+        }
+
+        if (expectedResponseData.containsKey(PlatformKeys.SHORT_INTERVAL)
+                && !expectedResponseData.get(PlatformKeys.SHORT_INTERVAL).isEmpty()
+                && configuration.getShortTermHistoryIntervalMinutes() != 0) {
+            Assert.assertEquals(
+                    (int) getInteger(expectedResponseData, PlatformKeys.SHORT_INTERVAL,
+                            PlatformDefaults.DEFAULT_SHORT_INTERVAL),
+                    configuration.getShortTermHistoryIntervalMinutes());
+        }
+
+        if (expectedResponseData.containsKey(PlatformKeys.LONG_INTERVAL)
+                && !expectedResponseData.get(PlatformKeys.LONG_INTERVAL).isEmpty()
+                && configuration.getLongTermHistoryInterval() != 0) {
+            Assert.assertEquals((int) getInteger(expectedResponseData, PlatformKeys.LONG_INTERVAL,
+                    PlatformDefaults.DEFAULT_LONG_INTERVAL), configuration.getLongTermHistoryInterval());
+        }
+
+        if (expectedResponseData.containsKey(PlatformKeys.INTERVAL_TYPE)
+                && !expectedResponseData.get(PlatformKeys.INTERVAL_TYPE).isEmpty()
+                && configuration.getLongTermHistoryIntervalType() != null) {
+            Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class),
+                    configuration.getLongTermHistoryIntervalType());
+        }
     }
 
     /**
@@ -885,15 +1009,6 @@ public class OslpDeviceSteps {
     public void theDeviceSendsARegisterDeviceRequestToThePlatform(final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
 
-        LOGGER.info("IpAddress from feature: [{}]",
-                getString(settings, PlatformPubliclightingKeys.IP_ADDRESS, PlatformPubliclightingDefaults.LOCALHOST));
-        final InetAddress address = InetAddress.getByName(
-                getString(settings, PlatformPubliclightingKeys.IP_ADDRESS, PlatformPubliclightingDefaults.LOCALHOST));
-        final byte[] ba = address.getAddress();
-        LOGGER.info("getAddress() from inetAddress: [{}.{}.{}.{}]", ba[0], ba[1], ba[2], ba[3]);
-        LOGGER.info("getHostAddress() from inetAddress: [{}]", address.getHostAddress());
-        LOGGER.info("getHostName() from inetAddress: [{}]", address.getHostName());
-
         try {
             final OslpEnvelope request = this
                     .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
@@ -1005,6 +1120,23 @@ public class OslpDeviceSteps {
                 response.getStatus().name());
     }
 
+    /**
+     * Verify that we have received a response over OSLP/OSLP ELSTER
+     *
+     * @param expectedResponse
+     * @throws DeviceSimulatorException
+     * @throws IOException
+     */
+    @Then("^the set configuration response contains$")
+    public void theSetConfigurationResponseContains(final Map<String, String> expectedResponse) {
+        final Message responseMessage = this.oslpMockServer.waitForResponse();
+
+        final SetConfigurationResponse response = responseMessage.getSetConfigurationResponse();
+
+        Assert.assertEquals(getString(expectedResponse, PlatformPubliclightingKeys.KEY_STATUS),
+                response.getStatus().name());
+    }
+
     @Given("^the device sends an event notification request with sequencenumber \"([^\"]*)\" to the platform over \"([^\"]*)\"$")
     public void theDeviceSendsAStartDeviceResponseOver(final Integer sequenceNumber, final String protocol,
             final Map<String, String> settings) throws IOException, DeviceSimulatorException {
@@ -1074,5 +1206,31 @@ public class OslpDeviceSteps {
         }
 
         return this.oslpMockServer.send(address, request, deviceIdentification);
+    }
+
+    /**
+     * Setup method to set the update firmware which should be returned by the
+     * mock.
+     *
+     * @param result
+     */
+    @Given("^the device returns a update firmware \"([^\"]*)\" over \"([^\"]*)\"$")
+    public void theDeviceReturnsAUpdateFirmwareOverOSLP(final String result, final String protocol) {
+        this.oslpMockServer.mockUpdateFirmwareResponse(Enum.valueOf(Status.class, result));
+    }
+
+    @Then("^an update firmware \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
+    public void anUpdateFirmwareOSLPMessageIsSentToTheDevice(final String protocol, final String deviceIdentification,
+            final Map<String, String> expectedParameters) {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasUpdateFirmwareRequest());
+
+        final UpdateFirmwareRequest request = message.getUpdateFirmwareRequest();
+
+        Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.FIRMWARE_DOMAIN,
+                PlatformPubliclightingDefaults.FIRMARE_DOMAIN), request.getFirmwareDomain());
+        Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.FIRMWARE_URL,
+                PlatformPubliclightingDefaults.FIRMWARE_URL), request.getFirmwareUrl());
     }
 }

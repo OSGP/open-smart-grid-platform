@@ -14,6 +14,7 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationU
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,10 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.PlatformCommonDefaults;
+import com.alliander.osgp.cucumber.platform.common.PlatformCommonKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreConfigurationManagementClient;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
+import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -56,64 +59,62 @@ public class SetConfigurationSteps {
     private CoreConfigurationManagementClient client;
 
     private void addFilledDaliConfigurationToConfiguration(final Map<String, String> requestParameters,
-            final Configuration config) {
+            final Configuration config) throws ArgumentNullOrEmptyException {
+        final DaliConfiguration daliConfiguration = new DaliConfiguration();
+
+        if (!StringUtils.isEmpty(getString(requestParameters, PlatformKeys.DC_LIGHTS))) {
+            daliConfiguration.setNumberOfLights(getInteger(requestParameters, PlatformKeys.DC_LIGHTS));
+        }
+
         final String dcMap = getString(requestParameters, PlatformKeys.DC_MAP);
         if (dcMap != null) {
-            final DaliConfiguration daliConfiguration = new DaliConfiguration();
             final String[] daliMapArray = dcMap.split(";");
             for (final String daliMapElement : daliMapArray) {
-                final String[] subDaliMapElement = daliMapElement.split(",");
                 final IndexAddressMap indexAddressMap = new IndexAddressMap();
-                if (!subDaliMapElement[0].isEmpty() && !subDaliMapElement[0].equals("0")) {
+
+                final String[] subDaliMapElement = daliMapElement.split(",");
+                if (!StringUtils.isEmpty(subDaliMapElement[0])) {
                     indexAddressMap.setIndex(Integer.parseInt(subDaliMapElement[0]));
-                    if (subDaliMapElement[1] != null && !subDaliMapElement[1].isEmpty()
-                            && !subDaliMapElement[0].equals("0")) {
-                        indexAddressMap.setAddress(Integer.parseInt(subDaliMapElement[1]));
-                    }
                 }
-                if (indexAddressMap.getIndex() != 0 || indexAddressMap.getAddress() != 0) {
-                    daliConfiguration.getIndexAddressMap().add(indexAddressMap);
+
+                if (subDaliMapElement.length == 2 && !StringUtils.isEmpty(subDaliMapElement[1])) {
+                    indexAddressMap.setAddress(Integer.parseInt(subDaliMapElement[1]));
                 }
-            }
 
-            Object dcLights = null;
-            if (!getString(requestParameters, PlatformKeys.DC_LIGHTS).isEmpty()) {
-                dcLights = getInteger(requestParameters, PlatformKeys.DC_LIGHTS);
-                daliConfiguration.setNumberOfLights((int) dcLights);
-            }
-
-            if (dcLights != null && daliConfiguration.getIndexAddressMap().size() == (int) dcLights) {
-                config.setDaliConfiguration(daliConfiguration);
+                daliConfiguration.getIndexAddressMap().add(indexAddressMap);
             }
         }
+
+        config.setDaliConfiguration(daliConfiguration);
     }
 
     private void addFilledRelayConfigurationToConfiguration(final Map<String, String> requestParameters,
-            final Configuration config) {
+            final Configuration config) throws ArgumentNullOrEmptyException {
         final String rcMap = getString(requestParameters, PlatformKeys.RC_MAP);
         if (rcMap != null) {
             final RelayConfiguration relayConfiguration = new RelayConfiguration();
-            final RelayMap relayMap = new RelayMap();
             final String[] relayMapArray = rcMap.split(";");
             for (final String relayMapElement : relayMapArray) {
+                final RelayMap relayMap = new RelayMap();
+
                 final String[] subRelayMapElement = relayMapElement.split(",");
-                if (!subRelayMapElement[0].isEmpty()) {
+
+                if (!StringUtils.isEmpty(subRelayMapElement[0])) {
                     relayMap.setIndex(Integer.parseInt(subRelayMapElement[0]));
-                    if (subRelayMapElement[1] != null && !subRelayMapElement[1].isEmpty()) {
-                        relayMap.setAddress(Integer.parseInt(subRelayMapElement[1]));
-                    }
                 }
+                if (subRelayMapElement.length == 2 && !StringUtils.isEmpty(subRelayMapElement[1])) {
+                    relayMap.setAddress(Integer.parseInt(subRelayMapElement[1]));
+                }
+
                 if (requestParameters.containsKey(PlatformKeys.RC_TYPE)
                         && !requestParameters.get(PlatformKeys.RC_TYPE).isEmpty()) {
                     relayMap.setRelayType(getEnum(requestParameters, PlatformKeys.RC_TYPE, RelayType.class));
                 }
-                if (relayMap.getIndex() != 0 || relayMap.getAddress() != 0 || relayMap.getRelayType() != null) {
-                    relayConfiguration.getRelayMap().add(relayMap);
-                }
+
+                relayConfiguration.getRelayMap().add(relayMap);
             }
-            if (relayConfiguration.getRelayMap().size() > 0) {
-                config.setRelayConfiguration(relayConfiguration);
-            }
+
+            config.setRelayConfiguration(relayConfiguration);
         }
     }
 
@@ -133,11 +134,20 @@ public class SetConfigurationSteps {
 
         final Configuration config = new Configuration();
 
-        final LightType lightType = getEnum(requestParameters, PlatformKeys.KEY_LIGHTTYPE, LightType.class);
-        config.setLightType(lightType);
+        if (StringUtils.isNotEmpty(requestParameters.get(PlatformCommonKeys.KEY_LIGHTTYPE))) {
+            final LightType lightType = getEnum(requestParameters, PlatformKeys.KEY_LIGHTTYPE, LightType.class);
+            config.setLightType(lightType);
+        }
 
-        this.addFilledDaliConfigurationToConfiguration(requestParameters, config);
-        this.addFilledRelayConfigurationToConfiguration(requestParameters, config);
+        if (StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.DC_LIGHTS))
+                || StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.DC_MAP))) {
+            this.addFilledDaliConfigurationToConfiguration(requestParameters, config);
+        }
+
+        if (StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.RC_TYPE))
+                || StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.RC_MAP))) {
+            this.addFilledRelayConfigurationToConfiguration(requestParameters, config);
+        }
 
         final LinkType preferredLinkType = getEnum(requestParameters, PlatformKeys.KEY_PREFERRED_LINKTYPE,
                 LinkType.class);

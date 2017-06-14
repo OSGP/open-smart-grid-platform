@@ -1,4 +1,4 @@
-@PublicLighting @Platform @AdminOrganizationManagement
+@Common @Platform @AdminOrganizationManagement
 Feature: AdminOrganizationManagement Organization Updating
   As a ...
   I want to manage the Organizations in the platform

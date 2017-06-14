@@ -1,4 +1,4 @@
-@PublicLighting @Platform @CoreDeviceInstallation
+@Common @Platform @CoreDeviceInstallation
 Feature: CoreDeviceInstallation Device Creating
   As a ...
   I want to be able to perform DeviceInstallation operations on a device

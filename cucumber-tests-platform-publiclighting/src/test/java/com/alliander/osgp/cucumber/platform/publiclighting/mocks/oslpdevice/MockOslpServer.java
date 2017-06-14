@@ -76,6 +76,7 @@ import com.alliander.osgp.oslp.OslpEncoder;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.OslpUtils;
 import com.alliander.osgp.shared.security.CertificateHelper;
+import com.google.common.base.Strings;
 import com.google.protobuf.ByteString;
 
 public class MockOslpServer {
@@ -289,8 +290,18 @@ public class MockOslpServer {
             final LinkType preferredLinkType, final MeterType meterType, final Integer shortInterval,
             final Integer longInterval, final LongTermIntervalType intervalType) {
 
-        final String[] dcMapArray = dcMap.split(";");
-        final String[] rcMapArray = rcMap.split(";");
+        final String[] dcMapArray;
+        final String[] rcMapArray;
+        if (dcMap != null) {
+            dcMapArray = dcMap.split(";");
+        } else {
+            dcMapArray = null;
+        }
+        if (dcMap != null) {
+            rcMapArray = rcMap.split(";");
+        } else {
+            rcMapArray = null;
+        }
 
         final GetConfigurationResponse.Builder builder = GetConfigurationResponse.newBuilder();
 
@@ -301,7 +312,7 @@ public class MockOslpServer {
 
         if (rcType != RelayType.RT_NOT_SET) {
             final ByteString bsDcLights = ByteString.copyFromUtf8(dcLights);
-            if (!rcMapArray[0].isEmpty()) {
+            if (rcMapArray != null && !rcMapArray[0].isEmpty()) {
 
                 final DaliConfiguration.Builder dcBuilder = DaliConfiguration.newBuilder();
 
@@ -321,9 +332,6 @@ public class MockOslpServer {
                 if (!dcLights.isEmpty() && dcBuilder.getAddressMapCount() != Integer.parseInt(dcLights)) {
                     builder.setDaliConfiguration(dcBuilder.build());
                 }
-            }
-
-            if (!rcMapArray[0].isEmpty()) {
 
                 final RelayConfiguration.Builder rcBuilder = RelayConfiguration.newBuilder();
 
@@ -556,6 +564,11 @@ public class MockOslpServer {
                     averagePowerFactor3 = Integer
                             .parseInt(requestMap.get(PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR3)[i]);
 
+            if (powerUsageData.hasMeterType() && powerUsageData.getMeterType() != null
+                    && Strings.isNullOrEmpty(powerUsageData.getMeterType().toString())) {
+                return;
+            }
+
             builder.addPowerUsageData(powerUsageData.setActualConsumedPower(actualConsumedPower)
                     .setTotalConsumedEnergy(totalConsumedEnergy)
                     .setSsldData(ssldData.setActualCurrent1(actualCurrent1).setActualCurrent2(actualCurrent2)
@@ -569,22 +582,28 @@ public class MockOslpServer {
 
     private void addDataToPowerUsageData(final com.alliander.osgp.oslp.Oslp.PowerUsageData.Builder powerUsageData,
             final Map<String, String[]> requestMap, final Integer currentItem) {
-        final MeterType meterType = MeterType
-                .valueOf(requestMap.get(PlatformPubliclightingKeys.METER_TYPE)[currentItem]);
-        if (meterType != null) {
+        final String[] meterTypeArray = requestMap.get(PlatformPubliclightingKeys.METER_TYPE);
+        if (meterTypeArray != null && meterTypeArray.length > 0
+                && !Strings.isNullOrEmpty(meterTypeArray[currentItem])) {
+            final MeterType meterType = MeterType.valueOf(meterTypeArray[currentItem]);
             powerUsageData.setMeterType(meterType);
         }
 
-        final Integer totalLightingHours = Integer
-                .parseInt(requestMap.get(PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS)[currentItem]);
-        if (totalLightingHours != null) {
+        final String[] totalLightingHoursArray = requestMap.get(PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS);
+        if (totalLightingHoursArray != null && totalLightingHoursArray.length > 0
+                && !Strings.isNullOrEmpty(totalLightingHoursArray[currentItem])) {
+            final Integer totalLightingHours = Integer.parseInt(totalLightingHoursArray[currentItem]);
             powerUsageData.setPsldData(PsldData.newBuilder().setTotalLightingHours(totalLightingHours).build());
         }
 
-        final String recordTime = DateTime.parse(requestMap.get(PlatformPubliclightingKeys.RECORD_TIME)[currentItem])
-                .toDateTime(DateTimeZone.UTC).toString("yyyyMMddHHmmss");
-        if (!recordTime.isEmpty()) {
-            powerUsageData.setRecordTime(recordTime);
+        final String[] recordTimeArray = requestMap.get(PlatformPubliclightingKeys.RECORD_TIME);
+        if (recordTimeArray != null && recordTimeArray.length > 0
+                && !Strings.isNullOrEmpty(recordTimeArray[currentItem])) {
+            final String recordTime = DateTime.parse(recordTimeArray[currentItem]).toDateTime(DateTimeZone.UTC)
+                    .toString("yyyyMMddHHmmss");
+            if ((!recordTime.isEmpty())) {
+                powerUsageData.setRecordTime(recordTime);
+            }
         }
     }
 

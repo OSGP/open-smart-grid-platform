@@ -7,11 +7,13 @@
  */
 package com.alliander.osgp.cucumber.platform;
 
+import com.alliander.osgp.cucumber.core.Keys;
+
 /**
  * This class contains a number of static String variables that are used to
  * put/get values from ScenarioContext or step settings.
  */
-public class PlatformKeys {
+public class PlatformKeys extends Keys {
 
     public static final String CODE = "Code";
     public static final String SCHEDULE_CODE = "LightSchedule";
@@ -250,7 +252,6 @@ public class PlatformKeys {
     public static final String SHORT_INTERVAL = "ShortInterval";
     public static final String START_TIME = "StartTime";
     public static final String SUPPLIER = "Supplier";
-    public static final String TIMEOUT = "Timeout";
     public static final String TOTAL_CONSUMED_ENERGY = "TotalConsumedEnergy";
     public static final String TOTAL_LIGHTING_HOURS = "TotalLightingHours";
     public static final String UNTIL_DATE = "UntilDate";

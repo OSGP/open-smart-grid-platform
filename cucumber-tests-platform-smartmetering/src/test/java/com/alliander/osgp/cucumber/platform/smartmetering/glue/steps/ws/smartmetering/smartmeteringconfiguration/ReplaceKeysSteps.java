@@ -14,6 +14,10 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
@@ -22,6 +26,7 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GenerateAndReplaceKeysRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.ReplaceKeysRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
@@ -49,7 +54,6 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
 
     @Then("^the replace keys response should be returned$")
     public void theReplaceKeysResponseShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
-
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
                 PlatformKeys.KEY_CORRELATION_UID, correlationUid);
@@ -59,6 +63,32 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
 
         final ReplaceKeysResponse response = this.smartMeteringConfigurationClient
                 .getReplaceKeysResponse(replaceKeysAsyncRequest);
+
+        final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
+        assertNotNull("Result", response.getResult());
+        assertEquals("Result", expectedResult, response.getResult().name());
+    }
+
+    @When("^the generate and replace keys request is received$")
+    public void theGenerateAndReplaceKeysRequestIsReceived(final Map<String, String> settings) throws Throwable {
+        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        final GenerateAndReplaceKeysRequest request = GenerateAndReplaceKeysRequestFactory.fromParameterMap(settings);
+        final GenerateAndReplaceKeysAsyncResponse asyncResponse = this.smartMeteringConfigurationClient.generateAndReplaceKeys(request);
+
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+    }
+
+    @Then("^the generate and replace keys response should be returned$")
+    public void theGenerateAndReplaceKeysResponseShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
+        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+        final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
+                PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+
+        final GenerateAndReplaceKeysAsyncRequest generateAndReplaceKeysAsyncRequest = GenerateAndReplaceKeysRequestFactory
+                .fromParameterMapAsync(extendedParameters);
+
+        final GenerateAndReplaceKeysResponse response = this.smartMeteringConfigurationClient
+                .getGenerateAndReplaceKeysResponse(generateAndReplaceKeysAsyncRequest);
 
         final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
         assertNotNull("Result", response.getResult());
