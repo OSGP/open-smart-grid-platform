@@ -12,38 +12,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This Dto is used to transfer information from the protocol adapter back to
- * the core. It contains the original request values, plus the values it found
- * on the e-meter in the smart_meter table.
+ * DTO with a list of {@link ChannelElementValuesDto}s determined from a lookup
+ * based on {@link MbusChannelElementsDto}.
  */
 public class MbusChannelElementsResponseDto implements Serializable {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
     /**
-     * This contains the channel on which the mbus-device is connected. It is
-     * null if NO channel is found that matches the original values from the
-     * request dto @see MbusChannelElementsDto.
+     * Channel from one of the {@link #retrievedChannelElements} if it is a
+     * match for the device from {@link #mbusChannelElementsDto}. Possibly
+     * {@code null} if not {@link #isChannelFound()}.
      */
     private final Short channel;
 
-    /**
-     * This contains the values read from the e-meter until a match is found. if
-     * no channel is found, it will contain 4 entries.
-     */
     private final List<ChannelElementValuesDto> retrievedChannelElements;
 
     /**
-     * the original values from the request dto, which are retrieved from
-     * smartmeter database table.
+     * DTO on which the contents of {@link #retrievedChannelElements} are based.
      */
     private final MbusChannelElementsDto mbusChannelElementsDto;
 
-    MbusChannelElementsResponseDto(final MbusChannelElementsDto mbusChannelElementsDto, final Short channel,
+    public MbusChannelElementsResponseDto(final MbusChannelElementsDto mbusChannelElementsDto, final Short channel,
             final List<ChannelElementValuesDto> channelElements) {
         this.mbusChannelElementsDto = mbusChannelElementsDto;
         this.channel = channel;
-        this.retrievedChannelElements = channelElements;
+        this.retrievedChannelElements = new ArrayList<>(channelElements);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("MbusChannelElementsResponseDto[channel: %s, input: %s, retrieved: %s]", this.channel,
+                this.mbusChannelElementsDto, this.retrievedChannelElements);
     }
 
     public boolean isChannelFound() {

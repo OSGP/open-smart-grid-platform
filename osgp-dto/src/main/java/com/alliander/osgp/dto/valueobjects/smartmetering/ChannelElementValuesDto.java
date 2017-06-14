@@ -10,27 +10,22 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 
 /**
- * This Dto is used to transfer information from the the protocol adapter back
- * to the core. It contains the original request values, plus the values it
- * found on the e-meter in the smart_meter table.
+ * This DTO contains attributes describing a device configured on an M-Bus
+ * channel of another device.
  */
 public class ChannelElementValuesDto implements Serializable {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
     private final short channel;
-    /**
-     * These values correspond with attributes 5..9 that are read from the meter
-     * with classid 72 and obiscode 1-X:24.0.1.255.
-     */
     private final short primaryAddress;
-    private final int identificationNumber;
-    private final int manufacturerIdentification;
+    private final String identificationNumber;
+    private final String manufacturerIdentification;
     private final short version;
     private final short deviceTypeIdentification;
 
-    public ChannelElementValuesDto(final short channel, final short primaryAddress, final int identificationNumber,
-            final int manufacturerIdentification, final short version, final short deviceTypeIdentification) {
+    public ChannelElementValuesDto(final short channel, final short primaryAddress, final String identificationNumber,
+            final String manufacturerIdentification, final short version, final short deviceTypeIdentification) {
         this.channel = channel;
         this.primaryAddress = primaryAddress;
         this.identificationNumber = identificationNumber;
@@ -39,19 +34,37 @@ public class ChannelElementValuesDto implements Serializable {
         this.deviceTypeIdentification = deviceTypeIdentification;
     }
 
-    public int getChannel() {
+    /**
+     * Indicates if this has values for a configured M-Bus slave device.
+     * <p>
+     * If a slave is de-installed the primary address is set to {@code 0}. A
+     * non-zero value for the primary address means the other attributes can be
+     * used to match an M-Bus device to the indicated channel.
+     *
+     * @return {@code true} if this can be used to couple an M-Bus device;
+     *         otherwise {@code false}
+     */
+    public boolean isMbusSlaveDeviceConfigured() {
+        return this.primaryAddress > 0;
+    }
+
+    public short getChannel() {
         return this.channel;
+    }
+
+    public boolean hasChannel() {
+        return this.channel > 0;
     }
 
     public short getPrimaryAddress() {
         return this.primaryAddress;
     }
 
-    public int getIdentificationNumber() {
+    public String getIdentificationNumber() {
         return this.identificationNumber;
     }
 
-    public int getManufacturerIdentification() {
+    public String getManufacturerIdentification() {
         return this.manufacturerIdentification;
     }
 
@@ -59,20 +72,20 @@ public class ChannelElementValuesDto implements Serializable {
         return this.version;
     }
 
+    public boolean hasVersion() {
+        return this.version > 0;
+    }
+
     public short getDeviceTypeIdentification() {
         return this.deviceTypeIdentification;
     }
 
     public boolean hasIdentificationNumber() {
-        return this.identificationNumber > 0;
+        return this.identificationNumber != null;
     }
 
     public boolean hasManufacturerIdentification() {
-        return this.manufacturerIdentification > 0;
-    }
-
-    public boolean hasVersion() {
-        return this.version > 0;
+        return this.manufacturerIdentification != null;
     }
 
     public boolean hasDeviceTypeIdentification() {
@@ -81,7 +94,7 @@ public class ChannelElementValuesDto implements Serializable {
 
     @Override
     public String toString() {
-        return "ChannelElementValues [channel=" + this.channel + ", primaryAddress=" + this.primaryAddress
+        return "ChannelElementValues[channel=" + this.channel + ", primaryAddress=" + this.primaryAddress
                 + ", identificationNumber=" + this.identificationNumber + ", manufacturerIdentification="
                 + this.manufacturerIdentification + ", version=" + this.version + ", deviceTypeIdentification="
                 + this.deviceTypeIdentification + "]";

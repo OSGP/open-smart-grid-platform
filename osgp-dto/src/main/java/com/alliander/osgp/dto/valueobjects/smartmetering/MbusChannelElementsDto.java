@@ -7,33 +7,22 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.io.Serializable;
-
 /**
- * This Dto is used to transfer information from the core to the protocol
- * adapter. The values are populated with corresponding fields from the gasmeter
- * in the smart_meter table. In the protocol adapter these values can then be
- * compared with the correspondong field that are read from the device.
+ * This DTO contains a number of attributes that may contain input that is
+ * usable looking for actual values that could be described as
+ * {@link ChannelElementValuesDto}.
  */
-public class MbusChannelElementsDto implements Serializable {
+public class MbusChannelElementsDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
-    /**
-     * this is the name of the mbus-device that is given in the request
-     */
     private final String mbusDeviceIdentification;
-
-    /**
-     * These are the properties that belong to this mbus-device in the core dbs
-     * (smartmeter table).
-     */
-    private final Long mbusIdentificationNumber;
+    private final String mbusIdentificationNumber;
     private final String mbusManufacturerIdentification;
     private final Short mbusVersion;
     private final Short mbusDeviceTypeIdentification;
 
-    public MbusChannelElementsDto(final String mbusDeviceIdentification, final Long mbusIdentificationNumber,
+    public MbusChannelElementsDto(final String mbusDeviceIdentification, final String mbusIdentificationNumber,
             final String mbusManufacturerIdentification, final Short mbusVersion,
             final Short mbusDeviceTypeIdentification) {
         this.mbusDeviceIdentification = mbusDeviceIdentification;
@@ -43,24 +32,47 @@ public class MbusChannelElementsDto implements Serializable {
         this.mbusDeviceTypeIdentification = mbusDeviceTypeIdentification;
     }
 
+    @Override
+    public String toString() {
+        return String.format(
+                "MbusChannelElementsDto[device=%s, identification=%s, manufacturer=%s, version=%s, type=%s]",
+                this.mbusDeviceIdentification, this.mbusIdentificationNumber, this.mbusManufacturerIdentification,
+                this.mbusVersion, this.mbusDeviceTypeIdentification);
+    }
+
     public String getMbusDeviceIdentification() {
         return this.mbusDeviceIdentification;
     }
 
-    public Long getMbusIdentificationNumber() {
+    public String getMbusIdentificationNumber() {
         return this.mbusIdentificationNumber;
+    }
+
+    public boolean hasMbusIdentificationNumber() {
+        return this.mbusIdentificationNumber != null;
     }
 
     public String getMbusManufacturerIdentification() {
         return this.mbusManufacturerIdentification;
     }
 
+    public boolean hasMbusManufacturerIdentification() {
+        return this.mbusManufacturerIdentification != null;
+    }
+
     public Short getMbusVersion() {
         return this.mbusVersion;
+    }
+
+    public boolean hasMbusVersion() {
+        return this.mbusVersion != null;
     }
 
     public Short getMbusDeviceTypeIdentification() {
         return this.mbusDeviceTypeIdentification;
     }
 
+    public boolean hasMbusDeviceTypeIdentification() {
+        return this.mbusDeviceTypeIdentification != null;
+    }
 }
