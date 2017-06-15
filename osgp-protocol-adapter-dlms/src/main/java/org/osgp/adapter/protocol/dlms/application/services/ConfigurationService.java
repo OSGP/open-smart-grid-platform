@@ -109,9 +109,6 @@ public class ConfigurationService {
     @Autowired
     private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
 
-    @Autowired
-    private ReEncryptionService reEncryptionService;
-
     public static final int AES_GMC_128_KEY_SIZE = 128;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
@@ -225,7 +222,7 @@ public class ConfigurationService {
         this.setActivityCalendarCommandExecutor.execute(conn, device, activityCalendar);
 
         return "Set Activity Calendar Result is OK for device id: " + device.getDeviceIdentification()
-        + " calendar name: " + activityCalendar.getCalendarName();
+                + " calendar name: " + activityCalendar.getCalendarName();
 
     }
 
@@ -284,8 +281,8 @@ public class ConfigurationService {
              * SetKeysRequestDto containing authentication and encryption key,
              * while execute deals with a single key only.
              */
-            final SetKeysRequestDto setKeysRequestDto = this.reEncryptKeys(keySet);
-            this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequestDto);
+            keySet.setGeneratedKeys(false);
+            this.replaceKeyCommandExecutor.executeBundleAction(conn, device, keySet);
 
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
@@ -317,14 +314,4 @@ public class ConfigurationService {
         return new GetConfigurationObjectResponseDto(
                 this.getConfigurationObjectCommandExecutor.execute(conn, device, null));
     }
-
-    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
-        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
-                .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
-        final byte[] reEncryptedEncryptionKey = this.reEncryptionService
-                .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
-
-        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
-    }
-
 }
