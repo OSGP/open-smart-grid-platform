@@ -43,6 +43,8 @@ public class DeviceAuthorizationSteps extends GlueBase {
     @Autowired
     private OrganisationRepository organizationRepository;
 
+    public boolean hasAuthorization;
+
     /**
      * Generic method which adds a device authorization using the settings.
      *
@@ -77,70 +79,62 @@ public class DeviceAuthorizationSteps extends GlueBase {
      *            The expected settings.
      * @throws Throwable
      */
-    @Then("^the entity device authorization exists$")
-    public void thenTheEntityDeviceAuthorizationExists(final Map<String, String> expectedEntity) throws Throwable {
-
+    public boolean entityDeviceHasAuthorization(final Map<String, String> expectedEntity) throws Throwable {
         Wait.until(() -> {
             final Device device = this.deviceRepository
                     .findByDeviceIdentification(expectedEntity.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-            if (device == null) {
-                Assert.assertFalse(true);
-            }
-            final List<DeviceAuthorization> deviceAuthorizations = this.deviceAuthorizationRepository
-                    .findByDevice(device);
-            final DeviceFunctionGroup expectedFunctionGroup = getEnum(expectedEntity,
-                    PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
-                    com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.class,
-                    PlatformDefaults.DEVICE_FUNCTION_GROUP);
-            final String expectedOrganizationIdentification = getString(expectedEntity,
-                    PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-            boolean testPassed = false;
-            for (final DeviceAuthorization deviceAuthorization : deviceAuthorizations) {
-                if (expectedOrganizationIdentification
-                        .equals(deviceAuthorization.getOrganisation().getOrganisationIdentification())
-                        && expectedFunctionGroup == deviceAuthorization.getFunctionGroup()) {
-                    testPassed = true;
+            if (device != null) {
+                final List<DeviceAuthorization> deviceAuthorizations = this.deviceAuthorizationRepository
+                        .findByDevice(device);
+                final DeviceFunctionGroup expectedFunctionGroup = getEnum(expectedEntity,
+                        PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
+                        com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.class,
+                        PlatformDefaults.DEVICE_FUNCTION_GROUP);
+                final String expectedOrganizationIdentification = getString(expectedEntity,
+                        PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+
+                for (final DeviceAuthorization deviceAuthorization : deviceAuthorizations) {
+                    if (expectedOrganizationIdentification
+                            .equals(deviceAuthorization.getOrganisation().getOrganisationIdentification())
+                            && expectedFunctionGroup == deviceAuthorization.getFunctionGroup()) {
+                        this.hasAuthorization = true;
+                        break;
+                    } else {
+                        this.hasAuthorization = false;
+                    }
                 }
+            } else {
+                this.hasAuthorization = false;
             }
-            Assert.assertTrue(testPassed);
         });
+        return this.hasAuthorization;
     }
 
     /**
-     * Generic method to check if the device authorizations are NOT created as
-     * expected in the database.
+     * The test passes if the device authorizations are created as expected in
+     * the database.
      *
      * @param expectedEntity
+     *            The expected settings.
+     * @throws Throwable
+     */
+    @Then("^the entity device authorization exists$")
+    public void thenTheEntityDeviceAuthorizationExists(final Map<String, String> expectedEntity) throws Throwable {
+        Assert.assertTrue(this.entityDeviceHasAuthorization(expectedEntity));
+    }
+
+    /**
+     * The test passes if the device authorizations are NOT created as expected
+     * in the database.
+     *
+     * @param expectedEntityl
      *            The expected settings.
      * @throws Throwable
      */
     @Then("^the entity device authorization does not exist$")
     public void thenTheEntityDeviceAuthorizationDoesNotExist(final Map<String, String> expectedEntity)
             throws Throwable {
-
-        Wait.until(() -> {
-            final Device device = this.deviceRepository
-                    .findByDeviceIdentification(expectedEntity.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-            if (device == null) {
-                Assert.assertFalse(true);
-            }
-            final List<DeviceAuthorization> deviceAuthorizations = this.deviceAuthorizationRepository
-                    .findByDevice(device);
-            final DeviceFunctionGroup expectedFunctionGroup = getEnum(expectedEntity,
-                    PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
-                    com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.class,
-                    PlatformDefaults.DEVICE_FUNCTION_GROUP);
-            final String expectedOrganizationIdentification = getString(expectedEntity,
-                    PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-            boolean testPassed = true;
-            for (final DeviceAuthorization deviceAuthorization : deviceAuthorizations) {
-                if (expectedOrganizationIdentification
-                        .equals(deviceAuthorization.getOrganisation().getOrganisationIdentification())
-                        && expectedFunctionGroup == deviceAuthorization.getFunctionGroup()) {
-                    testPassed = false;
-                }
-            }
-            Assert.assertTrue(testPassed);
-        });
+        Assert.assertFalse(this.entityDeviceHasAuthorization(expectedEntity));
     }
 }
