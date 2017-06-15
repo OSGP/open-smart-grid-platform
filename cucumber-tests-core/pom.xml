@@ -18,7 +18,7 @@
   </parent>
 
   <dependencies>
-   
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -70,7 +70,14 @@
       <groupId>com.alliander.osgp</groupId>
       <artifactId>shared</artifactId>
     </dependency>
-    
+
+    <!-- Java library to compute the local sunrise and sunset -->
+    <dependency>
+      <groupId>com.luckycatlabs</groupId>
+      <artifactId>SunriseSunsetCalculator</artifactId>
+      <version>${SunriseSunsetCalculator.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
