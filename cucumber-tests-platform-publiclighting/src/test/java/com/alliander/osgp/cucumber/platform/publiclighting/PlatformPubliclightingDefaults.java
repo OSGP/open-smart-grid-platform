@@ -25,4 +25,6 @@ public class PlatformPubliclightingDefaults extends com.alliander.osgp.cucumber.
     public static final OsgpResultType DEFAULT_PUBLICLIGHTING_STATUS = OsgpResultType.OK;
     public static final LinkType DEFAULT_PREFERRED_LINKTYPE = LinkType.LINK_NOT_SET;
     public static final LightType DEFAULT_LIGHTTYPE = LightType.LT_NOT_SET;
+    public static final String FIRMARE_DOMAIN = "localhost";
+    public static final String FIRMWARE_URL = "firmware/" + FIRMWARE_IDENTIFICATION;
 }
