@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -26,6 +27,7 @@ import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.CoupleMbusDeviceRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
@@ -103,4 +105,22 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
         assertTrue("Description should contain all of " + resultList,
                 this.checkDescription(response.getDescription(), resultList));
     }
+
+    @Then("^no couple mbus device response and a FunctionalException are received$")
+    public void noCoupleMbusDeviceResponseAndAFunctionalExceptionAreReceived(final Map<String, String> settings)
+            throws Throwable {
+        final CoupleMbusDeviceAsyncRequest coupleMbusDeviceAsyncRequest = CoupleMbusDeviceRequestFactory
+                .fromScenarioContext();
+        try {
+            this.smartMeteringInstallationClient.getCoupleMbusDeviceResponse(coupleMbusDeviceAsyncRequest);
+        } catch (final Exception e) {
+            if (e instanceof FunctionalException) {
+                assertEquals(settings.get("Message"), e.getMessage());
+            }
+            return;
+        }
+
+        throw new AssertionError("Expected a FunctionalException");
+    }
+
 }

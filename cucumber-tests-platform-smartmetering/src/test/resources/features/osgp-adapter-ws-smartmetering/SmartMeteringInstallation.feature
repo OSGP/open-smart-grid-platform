@@ -46,6 +46,8 @@ Feature: SmartMetering Installation
     And a request to the device can be performed after activation
     And the stored keys are not equal to the received keys
 
+#Remove skip tag as soon as work for SLIM-1010 is merged and deployed.
+@Skip
   Scenario: Add a new device with incorrectly encrypted keys
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001 |
@@ -61,9 +63,9 @@ Feature: SmartMetering Installation
       | Master_key            | abcdef0123456789  |
       | Authentication_key    | def0123456789abc  |
       | Encryption_key        | abc0123456789def  |
-    Then the get add device response should be returned
-      | DeviceIdentification | TEST1024000000001 |
-      | Result               | NOT_OK            |
+    Then no add device response and a TechnicalException are received
+      | DeviceIdentification | TEST1024000000001                   |
+      | Message              | Error processing E_METER_MASTER key |
     And the dlms device with identification "TEST1024000000001" does not exist
 
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on free MBUS channel 1
@@ -77,6 +79,8 @@ Feature: SmartMetering Installation
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
+#Remove skip tag as soon as work for SLIM-1010 is merged and deployed.
+@Skip
   Scenario: Couple G-meter to an E-meter on occupied MBUS channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -90,18 +94,22 @@ Feature: SmartMetering Installation
       | DeviceIdentification | TESTG102400000002 |
       | DeviceType           | SMART_METER_G     |
     When the Couple G-meter "TESTG102400000002" request on channel 1 is received
-    Then the Couple response is "NOT_OK" and contains
-      | There is already a device coupled on Mbus channel 1 |
+    Then no couple mbus device response and a FunctionalException are received
+      | DeviceIdentification | TEST1024000000001                                      |
+      | Message               | There is already a device coupled on Mbus channel 1 |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
     And the mbus device "TESTG102400000002" is not coupled to the device "TEST1024000000001"
 
+#Remove skip tag as soon as work for SLIM-1010 is merged and deployed.
+@Skip
   Scenario: Couple unknown G-meter to an E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     When the Couple G-meter "TESTG10240unknown" request on channel 1 is received
-    Then the Couple response is "NOT_OK" and contains
-      | SmartMeter with id "TESTG10240unknown" could not be found |
+    Then no couple mbus device response and a FunctionalException are received
+    | DeviceIdentification | TEST1024000000001                                      |
+      | Message              | SmartMeter with id "TESTG10240unknown" could not be found |
 
   Scenario: Couple G-meter to an unknown E-meter
     Given a dlms device
@@ -111,6 +119,8 @@ Feature: SmartMetering Installation
     Then a SOAP fault should have been returned
       | Message | UNKNOWN_DEVICE |
 
+#Remove skip tag as soon as work for SLIM-1010 is merged and deployed.
+@Skip
   Scenario: Couple inactive G-meter to an E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -120,8 +130,9 @@ Feature: SmartMetering Installation
       | DeviceType           | SMART_METER_G     |
       | Active               | False             |
     When the Couple G-meter "TESTG102400000001" request on channel 1 is received
-    Then the Couple response is "NOT_OK" and contains
-      | Device TESTG102400000001 is not active in the platform |
+    Then no couple mbus device response and a FunctionalException are received
+    | DeviceIdentification | TEST1024000000001                                      |
+      | Message              | Device TESTG102400000001 is not active in the platform |
 
   Scenario: Couple G-meter to an inactive E-meter
     Given a dlms device
@@ -149,13 +160,16 @@ Feature: SmartMetering Installation
     And the G-meter "TESTG102400000001" is DeCoupled from device "TEST1024000000001"
     And the channel of device "TESTG102400000001" is cleared
 
+#Remove skip tag as soon as work for SLIM-1010 is merged and deployed.
+@Skip
   Scenario: DeCouple unknown G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     When the DeCouple G-meter "TESTunknownDevice" request is received
-    Then the Couple response is "NOT_OK" and contains
-      | SmartMeter with id "TESTunknownDevice" could not be found |
+    Then no decouple device response and a FunctionalException are received
+      | DeviceIdentification | TEST1024000000001                                         |
+      | Message              | SmartMeter with id "TESTunknownDevice" could not be found |
 
   @Skip
   Scenario: DeCouple G-meter from unknown E-meter
@@ -166,6 +180,8 @@ Feature: SmartMetering Installation
     Then a SOAP fault should have been returned
       | Message | UNKNOWN_DEVICE |
 
+#Remove skip tag as soon as work for SLIM-1010 is merged and deployed.
+@Skip
   Scenario: DeCouple inactive G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -177,8 +193,9 @@ Feature: SmartMetering Installation
       | Channel                     |                 1 |
       | Active                      | False             |
     When the DeCouple G-meter "TESTG102400000001" request is received
-    Then the DeCouple response is "NOT_OK" and contains
-      | Device TESTG102400000001 is not active in the platform |
+    Then no decouple device response and a FunctionalException are received
+      | DeviceIdentification | TEST1024000000001                                      |
+      | Message              | Device TESTG102400000001 is not active in the platform |
 
   @Skip
   Scenario: DeCouple G-meter from an inactive E-meter

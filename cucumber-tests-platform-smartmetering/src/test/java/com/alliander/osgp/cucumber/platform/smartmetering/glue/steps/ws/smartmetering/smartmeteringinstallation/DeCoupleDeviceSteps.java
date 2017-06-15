@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -27,6 +28,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmet
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.DeCoupleMbusDeviceRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
@@ -103,5 +105,24 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
         assertEquals("Result", status, response.getResult().name());
         assertTrue("Description should contain all of " + resultList,
                 this.checkDescription(response.getDescription(), resultList));
+    }
+
+    @Then("^no decouple device response and a FunctionalException are received$")
+    public void noDecoupleDeviceResponseAndAFunctionalExceptionAreReceived(final Map<String, String> settings)
+            throws Throwable {
+        final DeCoupleMbusDeviceAsyncRequest deCoupleMbusDeviceAsyncRequest = DeCoupleMbusDeviceRequestFactory
+                .fromScenarioContext();
+
+        try {
+            this.smartMeteringInstallationClient.getDeCoupleMbusDeviceResponse(deCoupleMbusDeviceAsyncRequest);
+        } catch (final Exception e) {
+            if (e instanceof FunctionalException) {
+                assertEquals(settings.get("Message"), e.getMessage());
+            }
+            return;
+        }
+
+        throw new AssertionError("Expected a FunctionalException");
+
     }
 }
