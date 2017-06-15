@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
 import com.alliander.osgp.domain.core.valueobjects.DomainType;
@@ -44,7 +46,7 @@ public class AdHocManagementService extends AbstractService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
 
     @Autowired
-    private DeviceRepository deviceRepository;
+    private SsldRepository ssldRepository;
 
     /**
      * Constructor
@@ -77,8 +79,8 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper.map(
-                allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
+        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper
+                .map(allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), messageType, device.getIpAddress());
@@ -108,10 +110,13 @@ public class AdHocManagementService extends AbstractService {
             }
 
             if (status != null) {
-                deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                        allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
+                deviceStatusMapped = new DeviceStatusMapped(
+                        filterTariffValues(status.getLightValues(), dosMap, allowedDomainType),
+                        filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
                         status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
                         status.getEventNotificationsMask());
+
+                this.updateDeviceRelayOverview(ssld, deviceStatusMapped);
             } else {
                 result = ResponseMessageResultType.NOT_OK;
                 osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING,
@@ -200,5 +205,39 @@ public class AdHocManagementService extends AbstractService {
         }
 
         return filteredValues;
+    }
+
+    /**
+     * Updates the relay overview from a device based on the given device
+     * status.
+     *
+     * @param deviceIdentification
+     *            The device to update.
+     * @param deviceStatus
+     *            The device status to update the relay overview with.
+     * @throws TechnicalException
+     *             Thrown when an invalid device identification is given.
+     */
+    private void updateDeviceRelayOverview(final Ssld device, final DeviceStatusMapped deviceStatusMapped) {
+        final List<RelayStatus> relayStatuses = device.getRelayStatusses();
+
+        for (final TariffValue tariffValue : deviceStatusMapped.getTariffValues()) {
+            boolean updated = false;
+            for (final RelayStatus relayStatus : relayStatuses) {
+                if (relayStatus.getIndex() == tariffValue.getIndex()) {
+                    relayStatus.setLastKnownState(tariffValue.isHigh());
+                    relayStatus.setLastKnowSwitchingTime(DateTime.now().toDate());
+                    updated = true;
+                    break;
+                }
+            }
+            if (!updated) {
+                final RelayStatus newRelayStatus = new RelayStatus(device, tariffValue.getIndex(), tariffValue.isHigh(),
+                        DateTime.now().toDate());
+                relayStatuses.add(newRelayStatus);
+            }
+        }
+
+        this.ssldRepository.save(device);
     }
 }

@@ -55,7 +55,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         final Ssld ssld = this.ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
 
         if (ssld != null) {
-            final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
+            final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<>();
             for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                 final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
 
@@ -71,7 +71,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
             destination.setPublicKeyPresent(ssld.isPublicKeyPresent());
             destination.setHasSchedule(ssld.getHasSchedule());
 
-            final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
+            final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<>();
             for (final com.alliander.osgp.domain.core.entities.Ean ean : ssld.getEans()) {
                 final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean newEan = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean();
                 newEan.setCode(ean.getCode());
@@ -96,7 +96,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
         final Ssld destination = this.helper.initEntity(source);
 
-        final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
+        final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<>();
 
         for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting deviceOutputSetting : source
                 .getOutputSettings()) {
