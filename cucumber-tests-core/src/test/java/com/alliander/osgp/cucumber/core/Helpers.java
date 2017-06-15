@@ -265,32 +265,33 @@ public class Helpers {
      * @return
      * @throws Exception
      */
-    public static DateTime getSunriseSunsetTime(final String actionTimeType, final DateTime date) {
-        final Location location = new Location(52.132633, 5.291266);
+    public static DateTime getSunriseSunsetTime(final String actionTimeType, final DateTime date,
+            final Location location) {
         final SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(location, "UTC");
 
         long officialTime = 0;
 
         final Calendar calender = Calendar.getInstance();
-        calender.setTime(date.toDate());
+        Calendar officialTransition = null;
 
-        if (actionTimeType.toUpperCase().equals("SUNSET")) {
-            final Calendar officialSunset = calculator.getOfficialSunsetCalendarForDate(calender);
-            if (officialSunset != null) {
-                officialTime = officialSunset.getTimeInMillis();
-            }
-        } else if (actionTimeType.toUpperCase().equals("SUNRISE")) {
+        if (actionTimeType.equalsIgnoreCase("SUNSET")) {
+            calender.setTime(date.toDate());
+            officialTransition = calculator.getOfficialSunsetCalendarForDate(calender);
+        } else if (actionTimeType.equalsIgnoreCase("SUNRISE")) {
             calender.setTime(date.plusDays(1).toDate());
-            final Calendar officialSunrise = calculator.getOfficialSunriseCalendarForDate(calender);
-            if (officialSunrise != null) {
-                officialTime = officialSunrise.getTimeInMillis();
-            }
+            officialTransition = calculator.getOfficialSunriseCalendarForDate(calender);
         }
 
-        if (officialTime == 0) {
+        if (officialTransition == null) {
             return null;
         }
+
+        officialTime = officialTransition.getTimeInMillis();
         return new DateTime(officialTime);
+    }
+
+    public static Location getCurrentLocationByLatitudeAndLongitude(final double latitude, final double longitude) {
+        return new Location(latitude, longitude);
     }
 
     public static <E extends Enum<E>> E getEnum(final Map<String, String> settings, final String key,
