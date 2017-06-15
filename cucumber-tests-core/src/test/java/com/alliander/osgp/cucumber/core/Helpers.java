@@ -265,7 +265,7 @@ public class Helpers {
      * @return
      * @throws Exception
      */
-    public static DateTime getSunriseSunsetTime(final String actionTimeType, final DateTime date) throws Exception {
+    public static DateTime getSunriseSunsetTime(final String actionTimeType, final DateTime date) {
         final Location location = new Location(52.132633, 5.291266);
         final SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(location, "UTC");
 
