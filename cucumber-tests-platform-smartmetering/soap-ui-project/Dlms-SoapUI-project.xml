@@ -13381,8 +13381,8 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <!--1 or more repetitions:-->
          <ns1:FindEventsRequestData>
             <ns1:EventLogCategory>STANDARD_EVENT_LOG</ns1:EventLogCategory>
-            <ns1:From>2016-06-15T00:00:00.000Z</ns1:From>
-            <ns1:Until>${=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date())}</ns1:Until>
+            <ns1:From>${=testCase.getPropertyValue( "BeginDate" )}</ns1:From>
+            <ns1:Until>${=testCase.getPropertyValue( "EndDate" )}</ns1:Until>
          </ns1:FindEventsRequestData>
       </ns1:FindEventsRequest>
    </soapenv:Body>
@@ -13417,8 +13417,8 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <!--1 or more repetitions:-->
          <ns1:FindEventsRequestData>
             <ns1:EventLogCategory>FRAUD_DETECTION_LOG</ns1:EventLogCategory>
-            <ns1:From>2016-06-15T00:00:00.000Z</ns1:From>
-            <ns1:Until>${=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date())}</ns1:Until>
+            <ns1:From>${=testCase.getPropertyValue( "BeginDate" )}</ns1:From>
+            <ns1:Until>${=testCase.getPropertyValue( "EndDate" )}</ns1:Until>
          </ns1:FindEventsRequestData>
       </ns1:FindEventsRequest>
    </soapenv:Body>
@@ -13453,8 +13453,8 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <!--1 or more repetitions:-->
          <ns1:FindEventsRequestData>
             <ns1:EventLogCategory>COMMUNICATION_SESSION_LOG</ns1:EventLogCategory>
-            <ns1:From>2016-06-15T00:00:00.000Z</ns1:From>
-            <ns1:Until>${=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date())}</ns1:Until>
+            <ns1:From>${=testCase.getPropertyValue( "BeginDate" )}</ns1:From>
+            <ns1:Until>${=testCase.getPropertyValue( "EndDate" )}</ns1:Until>
          </ns1:FindEventsRequestData>
       </ns1:FindEventsRequest>
    </soapenv:Body>
@@ -13489,8 +13489,8 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <!--1 or more repetitions:-->
          <ns1:FindEventsRequestData>
             <ns1:EventLogCategory>M_BUS_EVENT_LOG</ns1:EventLogCategory>
-            <ns1:From>2015-06-15T00:00:00.000Z</ns1:From>
-            <ns1:Until>${=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date())}</ns1:Until>
+            <ns1:From>${=testCase.getPropertyValue( "BeginDate" )}</ns1:From>
+            <ns1:Until>${=testCase.getPropertyValue( "EndDate" )}</ns1:Until>
          </ns1:FindEventsRequestData>
       </ns1:FindEventsRequest>
    </soapenv:Body>
