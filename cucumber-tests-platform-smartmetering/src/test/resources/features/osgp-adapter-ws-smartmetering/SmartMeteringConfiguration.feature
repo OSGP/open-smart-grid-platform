@@ -69,8 +69,7 @@ Feature: SmartMetering Configuration
       | DeviceIdentification | TEST1024000000001 |
     Then the administrative status should be set on the device
       | DeviceIdentification | TEST1024000000001 |
-  
-  @Skip
+
   Scenario: Replace keys on a device
     When the replace keys request is received
       | DeviceIdentification | TEST1024000000001                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
@@ -83,7 +82,6 @@ Feature: SmartMetering Configuration
     And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
     And the stored keys are not equal to the received keys
 
-  @Skip
   Scenario: Replace keys on a device with incorrectly encrypted keys
     When the replace keys request is received
       | DeviceIdentification | TEST1024000000001 |
@@ -143,7 +141,7 @@ Feature: SmartMetering Configuration
       | GprsOperationMode    | ALWAYS_ON |
       | DISCOVER_ON_POWER_ON | true      |
 
-  @ResetKeysOnDevice @Skip
+  @ResetKeysOnDevice
   Scenario: Replace keys with generated ones on a device
     When the generate and replace keys request is received
       | DeviceIdentification | TEST1024000000001 |
