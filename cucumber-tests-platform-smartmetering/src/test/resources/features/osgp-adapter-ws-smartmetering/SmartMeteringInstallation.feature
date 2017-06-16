@@ -63,7 +63,7 @@ Feature: SmartMetering Installation
       | Master_key            | abcdef0123456789  |
       | Authentication_key    | def0123456789abc  |
       | Encryption_key        | abc0123456789def  |
-    Then no add device response and a TechnicalException are received
+    Then no AddDevice response is received and a TechnicalException is thrown
       | DeviceIdentification | TEST1024000000001                   |
       | Message              | Error processing E_METER_MASTER key |
     And the dlms device with identification "TEST1024000000001" does not exist
@@ -94,7 +94,7 @@ Feature: SmartMetering Installation
       | DeviceIdentification | TESTG102400000002 |
       | DeviceType           | SMART_METER_G     |
     When the Couple G-meter "TESTG102400000002" request on channel 1 is received
-    Then no couple mbus device response and a FunctionalException are received
+    Then no CoupleMbusDevice response is received and a FunctionalException is thrown
       | DeviceIdentification | TEST1024000000001                                      |
       | Message               | There is already a device coupled on Mbus channel 1 |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
@@ -107,7 +107,7 @@ Feature: SmartMetering Installation
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     When the Couple G-meter "TESTG10240unknown" request on channel 1 is received
-    Then no couple mbus device response and a FunctionalException are received
+    Then no CoupleMbusDevice response is received and a FunctionalException is thrown
     | DeviceIdentification | TEST1024000000001                                      |
       | Message              | SmartMeter with id "TESTG10240unknown" could not be found |
 
@@ -130,7 +130,7 @@ Feature: SmartMetering Installation
       | DeviceType           | SMART_METER_G     |
       | Active               | False             |
     When the Couple G-meter "TESTG102400000001" request on channel 1 is received
-    Then no couple mbus device response and a FunctionalException are received
+    Then no CoupleMbusDevice response is received and a FunctionalException is thrown
     | DeviceIdentification | TEST1024000000001                                      |
       | Message              | Device TESTG102400000001 is not active in the platform |
 
@@ -167,7 +167,7 @@ Feature: SmartMetering Installation
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     When the DeCouple G-meter "TESTunknownDevice" request is received
-    Then no decouple device response and a FunctionalException are received
+    Then no DecoupleMbusDevice response is received and a FunctionalException is thrown
       | DeviceIdentification | TEST1024000000001                                         |
       | Message              | SmartMeter with id "TESTunknownDevice" could not be found |
 
@@ -193,7 +193,7 @@ Feature: SmartMetering Installation
       | Channel                     |                 1 |
       | Active                      | False             |
     When the DeCouple G-meter "TESTG102400000001" request is received
-    Then no decouple device response and a FunctionalException are received
+    Then no DecoupleMbusDevice response is received and a FunctionalException is thrown
       | DeviceIdentification | TEST1024000000001                                      |
       | Message              | Device TESTG102400000001 is not active in the platform |
 

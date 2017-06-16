@@ -91,8 +91,8 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
         assertEquals("Result", expectedResult, response.getResult().name());
     }
 
-    @Then("^no add device response and a TechnicalException are received$")
-    public void noAddDeviceResponseAndATechnicalExceptionAreReceived(final Map<String, String> settings)
+    @Then("^no AddDevice response is received and a TechnicalException is thrown$")
+    public void noAddDeviceResponseIsReceivedAndATechnicalExceptionIsThrown(final Map<String, String> settings)
             throws Throwable {
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(settings,

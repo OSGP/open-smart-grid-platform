@@ -107,9 +107,9 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
                 this.checkDescription(response.getDescription(), resultList));
     }
 
-    @Then("^no decouple device response and a FunctionalException are received$")
-    public void noDecoupleDeviceResponseAndAFunctionalExceptionAreReceived(final Map<String, String> settings)
-            throws Throwable {
+    @Then("^no DecoupleMbusDevice response is received and a FunctionalException is thrown$")
+    public void noDecoupleMbusDeviceResponseIsReceivedAndAFunctionalExceptionIsThrown(
+            final Map<String, String> settings) throws Throwable {
         final DeCoupleMbusDeviceAsyncRequest deCoupleMbusDeviceAsyncRequest = DeCoupleMbusDeviceRequestFactory
                 .fromScenarioContext();
 

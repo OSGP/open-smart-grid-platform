@@ -106,8 +106,8 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
                 this.checkDescription(response.getDescription(), resultList));
     }
 
-    @Then("^no couple mbus device response and a FunctionalException are received$")
-    public void noCoupleMbusDeviceResponseAndAFunctionalExceptionAreReceived(final Map<String, String> settings)
+    @Then("^no CoupleMbusDevice response is received and a FunctionalException is thrown$")
+    public void noCoupleMbusDeviceResponseIsReceivedAndAFunctionalExceptionIsThrown(final Map<String, String> settings)
             throws Throwable {
         final CoupleMbusDeviceAsyncRequest coupleMbusDeviceAsyncRequest = CoupleMbusDeviceRequestFactory
                 .fromScenarioContext();
