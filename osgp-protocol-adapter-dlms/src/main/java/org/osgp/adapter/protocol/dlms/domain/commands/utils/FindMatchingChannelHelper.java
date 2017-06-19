@@ -33,26 +33,43 @@ public class FindMatchingChannelHelper {
      */
     public static boolean matches(final MbusChannelElementsDto mbusChannelElements,
             final ChannelElementValuesDto channelElementValues) {
+
         if (!channelElementValues.isMbusSlaveDeviceConfigured()) {
             return false;
         }
-        if (mbusChannelElements.hasMbusIdentificationNumber() && !mbusChannelElements.getMbusIdentificationNumber()
-                .equals(channelElementValues.getIdentificationNumber())) {
+
+        if (failMatchOnMbusIdentificationNumber(mbusChannelElements, channelElementValues)
+                || failMatchOnMbusManufacturerIdentification(mbusChannelElements, channelElementValues)
+                || failMatchOnMbusVersion(mbusChannelElements, channelElementValues)
+                || failMatchOnMbusDeviceTypeIdentification(mbusChannelElements, channelElementValues)) {
             return false;
         }
-        if (mbusChannelElements.hasMbusManufacturerIdentification() && !mbusChannelElements
-                .getMbusManufacturerIdentification().equals(channelElementValues.getManufacturerIdentification())) {
-            return false;
-        }
-        if (mbusChannelElements.hasMbusVersion()
-                && !mbusChannelElements.getMbusVersion().equals(channelElementValues.getVersion())) {
-            return false;
-        }
-        if (mbusChannelElements.hasMbusDeviceTypeIdentification() && !mbusChannelElements
-                .getMbusDeviceTypeIdentification().equals(channelElementValues.getDeviceTypeIdentification())) {
-            return false;
-        }
+
         return true;
+    }
+
+    private static boolean failMatchOnMbusIdentificationNumber(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        return mbusChannelElements.hasMbusIdentificationNumber() && !mbusChannelElements.getMbusIdentificationNumber()
+                .equals(channelElementValues.getIdentificationNumber());
+    }
+
+    private static boolean failMatchOnMbusManufacturerIdentification(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        return mbusChannelElements.hasMbusManufacturerIdentification() && !mbusChannelElements
+                .getMbusManufacturerIdentification().equals(channelElementValues.getManufacturerIdentification());
+    }
+
+    private static boolean failMatchOnMbusVersion(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        return mbusChannelElements.hasMbusVersion()
+                && !mbusChannelElements.getMbusVersion().equals(channelElementValues.getVersion());
+    }
+
+    private static boolean failMatchOnMbusDeviceTypeIdentification(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        return mbusChannelElements.hasMbusDeviceTypeIdentification() && !mbusChannelElements
+                .getMbusDeviceTypeIdentification().equals(channelElementValues.getDeviceTypeIdentification());
     }
 
     /**
@@ -73,30 +90,47 @@ public class FindMatchingChannelHelper {
      */
     public static boolean matchesPartially(final MbusChannelElementsDto mbusChannelElements,
             final ChannelElementValuesDto channelElementValues) {
+
         if (!channelElementValues.isMbusSlaveDeviceConfigured()) {
             return false;
         }
-        if (mbusChannelElements.hasMbusIdentificationNumber() && channelElementValues.hasIdentificationNumber()
-                && !mbusChannelElements.getMbusIdentificationNumber()
-                        .equals(channelElementValues.getIdentificationNumber())) {
+
+        if (failPartialMatchOnMbusIdentificationNumber(mbusChannelElements, channelElementValues)
+                || failPartialMatchOnMbusManufacturerIdentification(mbusChannelElements, channelElementValues)
+                || failPartialMatchOnMbusVersion(mbusChannelElements, channelElementValues)
+                || failPartialMatchOnMbusDeviceTypeIdentification(mbusChannelElements, channelElementValues)) {
             return false;
         }
-        if (mbusChannelElements.hasMbusManufacturerIdentification()
+
+        return true;
+    }
+
+    private static boolean failPartialMatchOnMbusIdentificationNumber(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        return mbusChannelElements.hasMbusIdentificationNumber() && channelElementValues.hasIdentificationNumber()
+                && !mbusChannelElements.getMbusIdentificationNumber()
+                        .equals(channelElementValues.getIdentificationNumber());
+    }
+
+    private static boolean failPartialMatchOnMbusManufacturerIdentification(
+            final MbusChannelElementsDto mbusChannelElements, final ChannelElementValuesDto channelElementValues) {
+        return mbusChannelElements.hasMbusManufacturerIdentification()
                 && channelElementValues.hasManufacturerIdentification()
                 && !mbusChannelElements.getMbusManufacturerIdentification()
-                        .equals(channelElementValues.getManufacturerIdentification())) {
-            return false;
-        }
-        if (mbusChannelElements.hasMbusVersion() && channelElementValues.hasVersion()
-                && !mbusChannelElements.getMbusVersion().equals(channelElementValues.getVersion())) {
-            return false;
-        }
-        if (mbusChannelElements.hasMbusDeviceTypeIdentification() && channelElementValues.hasDeviceTypeIdentification()
-                && !mbusChannelElements.getMbusDeviceTypeIdentification()
-                        .equals(channelElementValues.getDeviceTypeIdentification())) {
-            return false;
-        }
-        return true;
+                        .equals(channelElementValues.getManufacturerIdentification());
+    }
+
+    private static boolean failPartialMatchOnMbusVersion(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        return mbusChannelElements.hasMbusVersion() && channelElementValues.hasVersion()
+                && !mbusChannelElements.getMbusVersion().equals(channelElementValues.getVersion());
+    }
+
+    private static boolean failPartialMatchOnMbusDeviceTypeIdentification(
+            final MbusChannelElementsDto mbusChannelElements, final ChannelElementValuesDto channelElementValues) {
+        return mbusChannelElements.hasMbusDeviceTypeIdentification()
+                && channelElementValues.hasDeviceTypeIdentification() && !mbusChannelElements
+                        .getMbusDeviceTypeIdentification().equals(channelElementValues.getDeviceTypeIdentification());
     }
 
     public static ChannelElementValuesDto bestMatch(final MbusChannelElementsDto mbusChannelElements,
@@ -124,37 +158,80 @@ public class FindMatchingChannelHelper {
 
     private static int score(final MbusChannelElementsDto mbusChannelElements,
             final ChannelElementValuesDto channelElementValues) {
+
         if (!matchesPartially(mbusChannelElements, channelElementValues)) {
             return -1;
         }
+
         int score = 0;
+
         /*
-         * Because matchesPartially(mbusChannelElements, channelElementValues)
-         * is true at this point, any attributes that have a value in
-         * mbusChannelElements as well as in channelElementValues should be
-         * equal, so there is no need to repeat the checks for equality when
-         * calculating the score.
+         * Give a higher value for the matching of an identification number than
+         * in the other attribute scores, since it is the least likely of all
+         * attributes to give a false positive match for different devices.
          */
+        score += scoreForMbusIdentificationNumber(mbusChannelElements, channelElementValues, 5);
+        score += scoreForMbusManufacturerIdentification(mbusChannelElements, channelElementValues, 1);
+        score += scoreForMbusVersion(mbusChannelElements, channelElementValues, 1);
+        score += scoreForMbusDeviceTypeIdentification(mbusChannelElements, channelElementValues, 1);
+
+        return score;
+    }
+
+    private static int scoreForMbusIdentificationNumber(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues, final int attributeScore) {
+        int score = 0;
         if (mbusChannelElements.hasMbusIdentificationNumber() && channelElementValues.hasIdentificationNumber()) {
-            /*
-             * Give a higher value to a matching identification number, since it
-             * is the least likely of all attributes to give a false positive
-             * match for different devices.
-             */
-            score += 5;
-        }
-        if (mbusChannelElements.hasMbusManufacturerIdentification()
-                && channelElementValues.hasManufacturerIdentification()) {
-            score += 1;
-        }
-        if (mbusChannelElements.hasMbusVersion() && channelElementValues.hasVersion()) {
-            score += 1;
-        }
-        if (mbusChannelElements.hasMbusDeviceTypeIdentification()
-                && channelElementValues.hasDeviceTypeIdentification()) {
-            score += 1;
+            if (mbusChannelElements.getMbusDeviceIdentification()
+                    .equals(channelElementValues.getIdentificationNumber())) {
+                score = attributeScore;
+            } else {
+                score = -attributeScore;
+            }
         }
         return score;
     }
 
+    private static int scoreForMbusManufacturerIdentification(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues, final int attributeScore) {
+        int score = 0;
+        if (mbusChannelElements.hasMbusManufacturerIdentification()
+                && channelElementValues.hasManufacturerIdentification()) {
+            if (mbusChannelElements.getMbusManufacturerIdentification()
+                    .equals(channelElementValues.getManufacturerIdentification())) {
+                score = attributeScore;
+            } else {
+                score = -attributeScore;
+            }
+        }
+        return score;
+    }
+
+    private static int scoreForMbusDeviceTypeIdentification(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues, final int attributeScore) {
+        int score = 0;
+        if (mbusChannelElements.hasMbusDeviceTypeIdentification()
+                && channelElementValues.hasDeviceTypeIdentification()) {
+            if (mbusChannelElements.getMbusDeviceTypeIdentification()
+                    .equals(channelElementValues.getDeviceTypeIdentification())) {
+                score = attributeScore;
+            } else {
+                score = -attributeScore;
+            }
+        }
+        return score;
+    }
+
+    private static int scoreForMbusVersion(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues, final int attributeScore) {
+        int score = 0;
+        if (mbusChannelElements.hasMbusVersion() && channelElementValues.hasVersion()) {
+            if (mbusChannelElements.getMbusVersion().equals(channelElementValues.getVersion())) {
+                score = attributeScore;
+            } else {
+                score = -attributeScore;
+            }
+        }
+        return score;
+    }
 }
