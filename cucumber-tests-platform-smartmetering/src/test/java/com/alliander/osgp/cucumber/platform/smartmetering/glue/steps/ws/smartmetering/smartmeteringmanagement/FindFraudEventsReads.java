@@ -35,14 +35,25 @@ public class FindFraudEventsReads extends AbstractFindEventsReads {
 
     @When("^receiving a find fraud events request$")
     @Override
-    public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
-        super.receivingAFindStandardEventsRequest(requestData);
+    public void receivingAFindEventsRequest(final Map<String, String> requestData) throws Throwable {
+        super.receivingAFindEventsRequest(requestData);
     }
 
     @Then("^fraud events should be returned$")
     @Override
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
         super.eventsShouldBeReturned(settings);
+    }
+
+    @Then("^fraud events for all types should be returned$")
+    public void fraudEventsForAllTypesShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        super.eventsForAllTypesShouldBeReturned(settings);
+    }
+
+    @Then("^(\\d++) fraud events should be returned$")
+    public void numberOfEventsShouldBeReturned(final int numberOfEvents, final Map<String, String> settings)
+            throws Throwable {
+        super.eventsShouldBeReturned(numberOfEvents, settings);
     }
 
     @Override
