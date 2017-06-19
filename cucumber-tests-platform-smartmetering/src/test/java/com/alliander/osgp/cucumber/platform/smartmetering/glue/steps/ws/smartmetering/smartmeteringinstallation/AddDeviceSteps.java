@@ -34,6 +34,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -56,10 +57,12 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
     public void receivingASmartmeteringAddDeviceRequest(final Map<String, String> settings) throws Throwable {
         final String deviceIdentification = settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_MASTERKEY, settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY));
+        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_MASTERKEY,
+                settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY));
         ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
                 settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
+        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY,
+                settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
 
         final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
         final AddDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient.addDevice(request);
@@ -86,6 +89,28 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
         final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());
+    }
+
+    @Then("^no AddDevice response is received and a TechnicalException is thrown$")
+    public void noAddDeviceResponseIsReceivedAndATechnicalExceptionIsThrown(final Map<String, String> settings)
+            throws Throwable {
+        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+        final Map<String, String> extendedParameters = SettingsHelper.addDefault(settings,
+                PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+
+        final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestFactory
+                .fromParameterMapAsync(extendedParameters);
+
+        try {
+            this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
+        } catch (final Exception e) {
+            if (e instanceof TechnicalException) {
+                assertEquals("Comparing exception message: ", settings.get("Message"), e.getMessage());
+            }
+            return;
+        }
+
+        throw new AssertionError("Expected an exception to be thrown");
     }
 
     @Then("^a request to the device can be performed after activation$")
