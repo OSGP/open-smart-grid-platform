@@ -36,7 +36,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the firmware requests steps
  */
-public class UpdateFirmwareSteps {
+public class ChangeFirmwareSteps {
 
     @Autowired
     private CoreFirmwareManagementClient client;
@@ -45,15 +45,15 @@ public class UpdateFirmwareSteps {
     private FirmwareRepository firmwareRepo;
 
     /**
-     * Sends a Update Firmware request to the platform for a given device
+     * Sends a Change Firmware request to the platform for a given device
      * identification.
      *
      * @param requestParameters
      *            The table with the request parameters.
      * @throws Throwable
      */
-    @When("^receiving an update firmware request$")
-    public void receivingAnUpdateFirmwareRequest(final Map<String, String> requestParameters) throws Throwable {
+    @When("^receiving an change firmware request$")
+    public void receivingAnChangeFirmwareRequest(final Map<String, String> requestParameters) throws Throwable {
 
         final ChangeFirmwareRequest request = new ChangeFirmwareRequest();
 
@@ -89,8 +89,8 @@ public class UpdateFirmwareSteps {
         return firmware;
     }
 
-    @Then("^the update firmware response contains$")
-    public void theUpdateFirmwareResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    @Then("^the change firmware response contains$")
+    public void theChangeFirmwareResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         final ChangeFirmwareResponse response = (ChangeFirmwareResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
 
@@ -98,8 +98,8 @@ public class UpdateFirmwareSteps {
                 response.getResult());
     }
 
-    @Then("^the update firmware response contains soap fault$")
-    public void theUpdateFirmwareResponseContainsSoapFault(final Map<String, String> expectedResponseData)
+    @Then("^the change firmware response contains soap fault$")
+    public void theChangeFirmwareResponseContainsSoapFault(final Map<String, String> expectedResponseData)
             throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResponseData);
     }

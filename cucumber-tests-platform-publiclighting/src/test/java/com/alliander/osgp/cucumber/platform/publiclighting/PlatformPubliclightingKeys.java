@@ -9,4 +9,7 @@ package com.alliander.osgp.cucumber.platform.publiclighting;
 
 public class PlatformPubliclightingKeys extends com.alliander.osgp.cucumber.platform.PlatformKeys {
 
+    public static final String FIRMWARE_DOMAIN = "FirmwareDomain";
+    public static final String FIRMWARE_URL = "FirmwareUrl";
+
 }

@@ -1,4 +1,4 @@
-@PublicLighting @Platform @CoreOrganizationManagement
+@Common @Platform @CoreOrganizationManagement
 Feature: CoreOrganizationManagement Finding Organizations
   As a ...  
   I want to ...  
@@ -17,13 +17,13 @@ Feature: CoreOrganizationManagement Finding Organizations
       | Prefix                     | Tes                  |
     When receiving a get all organizations request
       | OrganizationIdentification | LianderNetManagement |
-    Then the get all organizations response contains "2" organization
-    And the get all organizations response contains at index "1"
+    Then the get all organizations response contains 2 organizations
+    And the get all organizations response contains
       | OrganizationIdentification | test-org                                |
       | Name                       | Test Organization                       |
       | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
       | Prefix                     | MAA                                     |
-    And the get all organizations response contains at index "2"
+    And the get all organizations response contains
       | OrganizationIdentification | LianderNetManagement |
       | Name                       | An Organization      |
       | Domains                    | COMMON               |
@@ -42,8 +42,8 @@ Feature: CoreOrganizationManagement Finding Organizations
       | Prefix                     | Tes              |
     When receiving a get all organizations request
       | OrganizationIdentification | test-org |
-    Then the get all organizations response contains "1" organization
-    And the get all organizations response contains at index "1"
+    Then the get all organizations response contains 1 organization
+    And the get all organizations response contains
       | OrganizationIdentification | test-org                                |
       | Name                       | Test Organization                       |
       | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |

@@ -61,9 +61,9 @@ Feature: SmartMetering Installation
       | Master_key            | abcdef0123456789  |
       | Authentication_key    | def0123456789abc  |
       | Encryption_key        | abc0123456789def  |
-    Then the get add device response should be returned
-      | DeviceIdentification | TEST1024000000001 |
-      | Result               | NOT_OK            |
+    Then no AddDevice response is received and a TechnicalException is thrown
+      | DeviceIdentification | TEST1024000000001                   |
+      | Message              | Error processing E_METER_MASTER key |
     And the dlms device with identification "TEST1024000000001" does not exist
 
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on free MBUS channel 1
@@ -90,8 +90,9 @@ Feature: SmartMetering Installation
       | DeviceIdentification | TESTG102400000002 |
       | DeviceType           | SMART_METER_G     |
     When the Couple G-meter "TESTG102400000002" request on channel 1 is received
-    Then the Couple response is "NOT_OK" and contains
-      | There is already a device coupled on Mbus channel 1 |
+    Then no CoupleMbusDevice response is received and a FunctionalException is thrown
+      | DeviceIdentification | TEST1024000000001                                      |
+      | Message               | There is already a device coupled on Mbus channel 1 |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
     And the mbus device "TESTG102400000002" is not coupled to the device "TEST1024000000001"
 
@@ -100,8 +101,9 @@ Feature: SmartMetering Installation
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     When the Couple G-meter "TESTG10240unknown" request on channel 1 is received
-    Then the Couple response is "NOT_OK" and contains
-      | SmartMeter with id "TESTG10240unknown" could not be found |
+    Then no CoupleMbusDevice response is received and a FunctionalException is thrown
+    | DeviceIdentification | TEST1024000000001                                      |
+      | Message              | SmartMeter with id "TESTG10240unknown" could not be found |
 
   Scenario: Couple G-meter to an unknown E-meter
     Given a dlms device
@@ -120,8 +122,9 @@ Feature: SmartMetering Installation
       | DeviceType           | SMART_METER_G     |
       | Active               | False             |
     When the Couple G-meter "TESTG102400000001" request on channel 1 is received
-    Then the Couple response is "NOT_OK" and contains
-      | Device TESTG102400000001 is not active in the platform |
+    Then no CoupleMbusDevice response is received and a FunctionalException is thrown
+    | DeviceIdentification | TEST1024000000001                                      |
+      | Message              | Device TESTG102400000001 is not active in the platform |
 
   Scenario: Couple G-meter to an inactive E-meter
     Given a dlms device
@@ -154,8 +157,9 @@ Feature: SmartMetering Installation
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     When the DeCouple G-meter "TESTunknownDevice" request is received
-    Then the Couple response is "NOT_OK" and contains
-      | SmartMeter with id "TESTunknownDevice" could not be found |
+    Then no DecoupleMbusDevice response is received and a FunctionalException is thrown
+      | DeviceIdentification | TEST1024000000001                                         |
+      | Message              | SmartMeter with id "TESTunknownDevice" could not be found |
 
   @Skip
   Scenario: DeCouple G-meter from unknown E-meter
@@ -177,8 +181,9 @@ Feature: SmartMetering Installation
       | Channel                     |                 1 |
       | Active                      | False             |
     When the DeCouple G-meter "TESTG102400000001" request is received
-    Then the DeCouple response is "NOT_OK" and contains
-      | Device TESTG102400000001 is not active in the platform |
+    Then no DecoupleMbusDevice response is received and a FunctionalException is thrown
+      | DeviceIdentification | TEST1024000000001                                      |
+      | Message              | Device TESTG102400000001 is not active in the platform |
 
   @Skip
   Scenario: DeCouple G-meter from an inactive E-meter

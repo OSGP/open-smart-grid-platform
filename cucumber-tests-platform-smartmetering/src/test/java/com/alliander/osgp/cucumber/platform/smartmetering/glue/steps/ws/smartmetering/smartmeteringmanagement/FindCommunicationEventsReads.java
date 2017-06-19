@@ -33,7 +33,7 @@ public class FindCommunicationEventsReads extends AbstractFindEventsReads {
 
     @When("^receiving a find communication events request$")
     @Override
-    public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
+    public void receivingAFindEventsRequest(final Map<String, String> requestData) throws Throwable {
         LOGGER.warn("{} disabled, because it genrates a soap-fault with OBJECT_UNDEFINED",
                 FindCommunicationEventsReads.class.getSimpleName());
     }
@@ -41,6 +41,17 @@ public class FindCommunicationEventsReads extends AbstractFindEventsReads {
     @Then("^communication events should be returned$")
     @Override
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
+    }
+
+    @Then("^communication events for all types should be returned$")
+    public void communicationEventsForAllTypesShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        super.eventsForAllTypesShouldBeReturned(settings);
+    }
+
+    @Then("^(\\d++) communication events should be returned$")
+    public void numberOfEventsShouldBeReturned(final int numberOfEvents, final Map<String, String> settings)
+            throws Throwable {
+        super.eventsShouldBeReturned(numberOfEvents, settings);
     }
 
     @Override
