@@ -182,7 +182,7 @@ public class FindMatchingChannelHelper {
             final ChannelElementValuesDto channelElementValues, final int attributeScore) {
         int score = 0;
         if (mbusChannelElements.hasMbusIdentificationNumber() && channelElementValues.hasIdentificationNumber()) {
-            if (mbusChannelElements.getMbusDeviceIdentification()
+            if (mbusChannelElements.getMbusIdentificationNumber()
                     .equals(channelElementValues.getIdentificationNumber())) {
                 score = attributeScore;
             } else {
