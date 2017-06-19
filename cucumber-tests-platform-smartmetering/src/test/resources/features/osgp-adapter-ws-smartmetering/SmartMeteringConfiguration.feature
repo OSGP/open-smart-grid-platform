@@ -100,8 +100,6 @@ Feature: SmartMetering Configuration
       | DeviceIdentification | TEST1024000000001 |
 
   
-#  @bjorn
-  @Skip
   Scenario: successful upgrade of firmware
     Given a dlms firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
