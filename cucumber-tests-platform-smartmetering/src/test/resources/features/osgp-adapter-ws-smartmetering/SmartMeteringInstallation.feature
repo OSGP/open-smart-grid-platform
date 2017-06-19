@@ -46,8 +46,6 @@ Feature: SmartMetering Installation
     And a request to the device can be performed after activation
     And the stored keys are not equal to the received keys
 
-#Remove skip tag as soon as work for SLIM-1010 is merged and deployed.
-@Skip
   Scenario: Add a new device with incorrectly encrypted keys
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001 |
@@ -341,8 +339,6 @@ Feature: SmartMetering Installation
     And the G-meter "TESTG102400000001" is DeCoupled from device "TEST1024000000001"
     And the channel of device "TESTG102400000001" is cleared
 
-#Remove skip tag as soon as work for SLIM-1010 is merged and deployed.
-@Skip
   Scenario: DeCouple unknown G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -361,8 +357,6 @@ Feature: SmartMetering Installation
     Then a SOAP fault should have been returned
       | Message | UNKNOWN_DEVICE |
 
-#Remove skip tag as soon as work for SLIM-1010 is merged and deployed.
-@Skip
   Scenario: DeCouple inactive G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
