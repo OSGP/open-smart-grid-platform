@@ -7,9 +7,6 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationUidInScenarioContext;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +14,6 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -26,12 +21,14 @@ import cucumber.api.java.en.When;
 public class FindStandardEventsReads extends AbstractFindEventsReads {
 
     private static final List<EventType> allowed = Collections.unmodifiableList(Arrays.asList(new EventType[] {
-            EventType.EVENTLOG_CLEARED, EventType.POWER_FAILURE, EventType.POWER_RETURNED,
+            EventType.EVENTLOG_CLEARED, EventType.POWER_FAILURE, EventType.POWER_RETURNED, EventType.CLOCK_UPDATE,
             EventType.CLOCK_ADJUSTED_OLD_TIME, EventType.CLOCK_ADJUSTED_NEW_TIME, EventType.CLOCK_INVALID,
             EventType.REPLACE_BATTERY, EventType.BATTERY_VOLTAGE_LOW, EventType.TARIFF_ACTIVATED,
-            EventType.PASSIVE_TARIFF_UPDATED, EventType.ERROR_REGISTER_CLEARED, EventType.ALARM_REGISTER_CLEARED,
-            EventType.WATCHDOG_ERROR, EventType.FIRMWARE_READY_FOR_ACTIVATION, EventType.FIRMWARE_ACTIVATED,
-            EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE, EventType.CLOCK_UPDATE }));
+            EventType.ERROR_REGISTER_CLEARED, EventType.ALARM_REGISTER_CLEARED, EventType.HARDWARE_ERROR_PROGRAM_MEMORY,
+            EventType.HARDWARE_ERROR_RAM, EventType.HARDWARE_ERROR_NV_MEMORY, EventType.WATCHDOG_ERROR,
+            EventType.HARDWARE_ERROR_MEASUREMENT_SYSTEM, EventType.FIRMWARE_READY_FOR_ACTIVATION,
+            EventType.FIRMWARE_ACTIVATED, EventType.PASSIVE_TARIFF_UPDATED,
+            EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE }));
 
     @Override
     protected String getEventLogCategory() {
@@ -41,20 +38,25 @@ public class FindStandardEventsReads extends AbstractFindEventsReads {
 
     @When("^receiving a find standard events request$")
     @Override
-    public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
-        super.receivingAFindStandardEventsRequest(requestData);
-
-        // Save the returned CorrelationUid in the Scenario related context for
-        // further use.
-        saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(PROPERTIES_MAP, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    public void receivingAFindEventsRequest(final Map<String, String> requestData) throws Throwable {
+        super.receivingAFindEventsRequest(requestData);
     }
 
     @Then("^standard events should be returned$")
     @Override
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
         super.eventsShouldBeReturned(settings);
+    }
+
+    @Then("^standard events for all types should be returned$")
+    public void standardEventsForAllTypesShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        super.eventsForAllTypesShouldBeReturned(settings);
+    }
+
+    @Then("^(\\d++) standard events should be returned$")
+    public void numberOfEventsShouldBeReturned(final int numberOfEvents, final Map<String, String> settings)
+            throws Throwable {
+        super.eventsShouldBeReturned(numberOfEvents, settings);
     }
 
     @Override

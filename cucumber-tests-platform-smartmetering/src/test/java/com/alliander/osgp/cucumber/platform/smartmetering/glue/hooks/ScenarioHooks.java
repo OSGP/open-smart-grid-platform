@@ -81,7 +81,7 @@ public class ScenarioHooks extends GlueBase {
         ScenarioContext.context = null;
     }
 
-    @After("@ResetKeys")
+    @After("@ResetKeysOnDevice")
     public void resetKeysScenario() throws Throwable {
         final Map<String, String> settings = this.initSettings();
         final Map<String, String> responseParameters = this.initResponseParameters();
