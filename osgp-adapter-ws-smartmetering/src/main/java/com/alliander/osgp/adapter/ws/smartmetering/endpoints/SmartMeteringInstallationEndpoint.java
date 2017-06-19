@@ -115,6 +115,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.meterResponseDataService
                     .dequeue(request.getCorrelationUid());
 
+            this.throwExceptionIfResultNotOk(meterResponseData, "Add Device");
+
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
@@ -189,6 +191,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response = new CoupleMbusDeviceResponse();
             final MeterResponseData meterResponseData = this.meterResponseDataService
                     .dequeue(request.getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "Couple Mbus Device");
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -266,6 +270,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response = new DeCoupleMbusDeviceResponse();
             final MeterResponseData meterResponseData = this.meterResponseDataService
                     .dequeue(request.getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "DeCouple Mbus Device");
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
