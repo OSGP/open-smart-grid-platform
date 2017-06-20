@@ -35,4 +35,13 @@ public class AddDeviceRequestFactory {
         addDeviceAsyncRequest.setDeviceIdentification(deviceIdentification);
         return addDeviceAsyncRequest;
     }
+
+    public static AddDeviceAsyncRequest fromScenarioContext() {
+        final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
+        final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromScenarioContext();
+        final AddDeviceAsyncRequest addDeviceAsyncRequest = new AddDeviceAsyncRequest();
+        addDeviceAsyncRequest.setCorrelationUid(correlationUid);
+        addDeviceAsyncRequest.setDeviceIdentification(deviceIdentification);
+        return addDeviceAsyncRequest;
+    }
 }
