@@ -9,12 +9,14 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
@@ -34,7 +36,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -91,26 +93,17 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
         assertEquals("Result", expectedResult, response.getResult().name());
     }
 
-    @Then("^no AddDevice response is received and a TechnicalException is thrown$")
-    public void noAddDeviceResponseIsReceivedAndATechnicalExceptionIsThrown(final Map<String, String> settings)
-            throws Throwable {
-        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-        final Map<String, String> extendedParameters = SettingsHelper.addDefault(settings,
-                PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+    @Then("^retrieving the AddDevice response results in an exception$")
+    public void retrievingTheAddDeviceResponseResultsInAnException() throws WebServiceSecurityException {
 
-        final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestFactory
-                .fromParameterMapAsync(extendedParameters);
+        final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestFactory.fromScenarioContext();
 
         try {
             this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
-        } catch (final Exception e) {
-            if (e instanceof TechnicalException) {
-                assertEquals("Comparing exception message: ", settings.get("Message"), e.getMessage());
-            }
-            return;
+            fail("A SoapFaultClientException should be thrown");
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
-
-        throw new AssertionError("Expected an exception to be thrown");
     }
 
     @Then("^a request to the device can be performed after activation$")

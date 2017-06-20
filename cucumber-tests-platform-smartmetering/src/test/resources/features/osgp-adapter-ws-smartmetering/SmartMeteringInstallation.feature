@@ -61,9 +61,10 @@ Feature: SmartMetering Installation
       | Master_key            | abcdef0123456789  |
       | Authentication_key    | def0123456789abc  |
       | Encryption_key        | abc0123456789def  |
-    Then no AddDevice response is received and a TechnicalException is thrown
-      | DeviceIdentification | TEST1024000000001                   |
-      | Message              | Error processing E_METER_MASTER key |
+    Then retrieving the AddDevice response results in an exception
+    And a SOAP fault should have been returned
+      | Message      | Unexpected exception while handling protocol request/response message |
+      | InnerMessage | Error processing E_METER_MASTER key                                   |
     And the dlms device with identification "TEST1024000000001" does not exist
 
   # remove tag when slim-975 is deployed
@@ -87,7 +88,7 @@ Feature: SmartMetering Installation
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-    When the Couple G-meter "TESTG102400000001" request is received
+    When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
@@ -118,7 +119,7 @@ Feature: SmartMetering Installation
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-    When the Couple G-meter "TESTG102400000001" request is received
+    When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 2
 
@@ -143,7 +144,10 @@ Feature: SmartMetering Installation
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000002"
-    Then the Couple response is "NOT_OK"
+    Then retrieving the Couple response results in an exception
+    And a SOAP fault should have been returned
+      | Code    |                               216 |
+      | Message | GIVEN_MBUS_DEVICE_ALREADY_COUPLED |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
   # remove tag when slim-975 is deployed
@@ -168,19 +172,19 @@ Feature: SmartMetering Installation
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulation of "TEST1024000000002" with classid 72 obiscode "0-1:24.1.0" and attributes
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |
       | 8 | 0 |
       | 9 | 0 |
-    And device simulation of "TEST1024000000002" with classid 72 obiscode "0-2:24.1.0" and attributes
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302343985 |
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-    When the Couple G-meter "TESTG102400000002" request is received
+    When the Couple G-meter "TESTG102400000002" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000002" is coupled to device "TEST1024000000001" on MBUS channel 2
 
@@ -207,8 +211,11 @@ Feature: SmartMetering Installation
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-    When the Couple G-meter "TESTG102400000001" request is received
-    Then the Couple response is "NOT_OK"
+    When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
+    Then retrieving the Couple response results in an exception
+    And a SOAP fault should have been returned
+      | Code    |                               216 |
+      | Message | GIVEN_MBUS_DEVICE_ALREADY_COUPLED |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
   # remove tag when slim-975 is deployed
@@ -231,16 +238,17 @@ Feature: SmartMetering Installation
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulation of "TEST1024000000002" with classid 72 obiscode "0-2:24.1.0" and attributes
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302343985 |
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-    When the Couple G-meter "TESTG102400000002" request is received
-    Then no CoupleMbusDevice response is received and a FunctionalException is thrown
-      | DeviceIdentification | TEST1024000000001                                   |
-      | Message              | There is already a device coupled on Mbus channel 1 |
+    When the Couple G-meter "TESTG102400000002" request is received for E-meter "TEST1024000000001"
+    Then retrieving the Couple response results in an exception
+    And a SOAP fault should have been returned
+      | Code    |                               209 |
+      | Message | CHANNEL_ON_DEVICE_ALREADY_COUPLED |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 2
     And the mbus device "TESTG102400000002" is not coupled to the device "TEST1024000000001"
 
@@ -258,19 +266,19 @@ Feature: SmartMetering Installation
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
     And a dlms device
-      | DeviceIdentification | TESTG102400000002 |
-      | DeviceType           | SMART_METER_G     |
+      | DeviceIdentification           | TESTG102400000002 |
+      | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulation of "TEST1024000000002" with classid 72 obiscode "0-2:24.1.0" and attributes
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302343985 |
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-    When the Couple G-meter "TESTG102400000002" request is received
+    When the Couple G-meter "TESTG102400000002" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
     And the mbus device "TESTG102400000002" is coupled to device "TEST1024000000001" on MBUS channel 2
@@ -281,10 +289,11 @@ Feature: SmartMetering Installation
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    When the Couple G-meter "TESTG10240unknown" request is received
-    Then no CoupleMbusDevice response is received and a FunctionalException is thrown
-      | DeviceIdentification | TEST1024000000001                                         |
-      | Message              | SmartMeter with id "TESTG10240unknown" could not be found |
+    When the Couple G-meter "TESTG10240unknown" request is received for E-meter "TEST1024000000001"
+    Then retrieving the Couple response results in an exception
+    And a SOAP fault should have been returned
+      | Code    |            201 |
+      | Message | UNKNOWN_DEVICE |
 
   # remove tag when slim-975 is deployed
   @Skip
@@ -294,6 +303,7 @@ Feature: SmartMetering Installation
       | DeviceType           | SMART_METER_G     |
     When the Couple G-meter "TESTG102400000001" to E-meter "TEST102400unknown" request is received for an unknown gateway
     Then a SOAP fault should have been returned
+      | Code    |            201 |
       | Message | UNKNOWN_DEVICE |
 
   # remove tag when slim-975 is deployed
@@ -306,10 +316,11 @@ Feature: SmartMetering Installation
       | DeviceIdentification | TESTG102400000001 |
       | DeviceType           | SMART_METER_G     |
       | Active               | False             |
-    When the Couple G-meter "TESTG102400000001" request is received
-    Then no CoupleMbusDevice response is received and a FunctionalException is thrown
-      | DeviceIdentification | TEST1024000000001                                      |
-      | Message              | Device TESTG102400000001 is not active in the platform |
+    When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
+    Then retrieving the Couple response results in an exception
+    And a SOAP fault should have been returned
+      | Code    |             207 |
+      | Message | INACTIVE_DEVICE |
 
   # remove tag when slim-975 is deployed
   @Skip
@@ -321,8 +332,9 @@ Feature: SmartMetering Installation
     And a dlms device
       | DeviceIdentification | TESTG102400000001 |
       | DeviceType           | SMART_METER_G     |
-    When the Couple G-meter "TESTG102400000001" request is received for an inactive device
+    When the Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" request is received for an inactive device
     Then a SOAP fault should have been returned
+      | Code    |             207 |
       | Message | INACTIVE_DEVICE |
 
   Scenario: DeCouple G-meter from E-meter
@@ -334,7 +346,7 @@ Feature: SmartMetering Installation
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
-    When the DeCouple G-meter "TESTG102400000001" request is received
+    When the DeCouple G-meter "TESTG102400000001" from E-meter "TEST1024000000001" request is received
     Then the DeCouple response is "OK"
     And the G-meter "TESTG102400000001" is DeCoupled from device "TEST1024000000001"
     And the channel of device "TESTG102400000001" is cleared
@@ -343,18 +355,19 @@ Feature: SmartMetering Installation
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    When the DeCouple G-meter "TESTunknownDevice" request is received
-    Then no DecoupleMbusDevice response is received and a FunctionalException is thrown
-      | DeviceIdentification | TEST1024000000001                                         |
-      | Message              | SmartMeter with id "TESTunknownDevice" could not be found |
+    When the DeCouple G-meter "TESTunknownDevice" from E-meter "TEST1024000000001" request is received
+    Then retrieving the DeCouple response results in an exception
+    And a SOAP fault should have been returned
+      | Code    |            201 |
+      | Message | UNKNOWN_DEVICE |
 
-  @Skip
   Scenario: DeCouple G-meter from unknown E-meter
     Given a dlms device
       | DeviceIdentification | TESTG102400000001 |
       | DeviceType           | SMART_METER_G     |
     When the DeCouple G-meter "TESTG102400000001" from E-meter "TEST102400unknown" request is received for an unknown gateway
     Then a SOAP fault should have been returned
+      | Code    |            201 |
       | Message | UNKNOWN_DEVICE |
 
   Scenario: DeCouple inactive G-meter from E-meter
@@ -367,12 +380,12 @@ Feature: SmartMetering Installation
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
       | Active                      | False             |
-    When the DeCouple G-meter "TESTG102400000001" request is received
-    Then no DecoupleMbusDevice response is received and a FunctionalException is thrown
-      | DeviceIdentification | TEST1024000000001                                      |
-      | Message              | Device TESTG102400000001 is not active in the platform |
+    When the DeCouple G-meter "TESTG102400000001" from E-meter "TEST1024000000001" request is received
+    Then retrieving the DeCouple response results in an exception
+    And a SOAP fault should have been returned
+      | Code    |             207 |
+      | Message | INACTIVE_DEVICE |
 
-  @Skip
   Scenario: DeCouple G-meter from an inactive E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -385,4 +398,5 @@ Feature: SmartMetering Installation
       | Channel                     |                 1 |
     When the DeCouple G-meter "TESTG102400000001" from E-meter "TEST1024000000001" request is received for an inactive gateway
     Then a SOAP fault should have been returned
+      | Code    |             207 |
       | Message | INACTIVE_DEVICE |

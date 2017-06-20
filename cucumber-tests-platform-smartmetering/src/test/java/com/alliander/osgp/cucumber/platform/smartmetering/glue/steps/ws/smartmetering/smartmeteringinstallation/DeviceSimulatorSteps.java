@@ -28,7 +28,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSimulatorSteps.class);
 
-    public void removeAllTemporaryPropertiesFiles() {
+    public void clearDlmsAttributeValues() {
         try {
             this.simulatorTriggerClient.clearDlmsAttributeValues();
         } catch (final SimulatorTriggerClientException stce) {

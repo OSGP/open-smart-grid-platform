@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -27,7 +26,6 @@ import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.CoupleMbusDeviceRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
@@ -38,22 +36,11 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
-    @When("^the Couple G-meter \"([^\"]*)\" request is received$")
-    public void theCoupleGMeterRequestIsReceived(final String gasMeter) throws WebServiceSecurityException {
-
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDevice(gasMeter);
-        final CoupleMbusDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient
-                .coupleMbusDevice(request);
-
-        this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
-    }
-
     @When("^the Couple G-meter \"([^\"]*)\" request is received for E-meter \"([^\"]*)\"$")
     public void theCoupleGMeterRequestIsReceivedForEMeter(final String gasMeter, final String eMeter)
             throws WebServiceSecurityException {
 
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter,
-                gasMeter);
+        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter, gasMeter);
         final CoupleMbusDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient
                 .coupleMbusDevice(request);
 
@@ -64,8 +51,7 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
     public void theCoupleGMeterToEMeterRequestOnChannelIsReceivedForAnUnknownGateway(final String gasMeter,
             final String eMeter) throws WebServiceSecurityException {
 
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter,
-                gasMeter);
+        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter, gasMeter);
 
         try {
             this.smartMeteringInstallationClient.coupleMbusDevice(request);
@@ -75,11 +61,11 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
         }
     }
 
-    @When("^the Couple G-meter \"([^\"]*)\" request is received for an inactive device$")
-    public void theCoupleGMeterRequestOnChannelIsReceivedForAnInactiveDevice(final String gasMeter)
+    @When("^the Couple G-meter \"([^\"]*)\" to E-meter \"([^\"]*)\" request is received for an inactive device$")
+    public void theCoupleGMeterRequestOnChannelIsReceivedForAnInactiveDevice(final String gasMeter, final String eMeter)
             throws WebServiceSecurityException {
 
-        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forMbusDevice(gasMeter);
+        final CoupleMbusDeviceRequest request = CoupleMbusDeviceRequestFactory.forGatewayMbusDevice(eMeter, gasMeter);
 
         try {
             this.smartMeteringInstallationClient.coupleMbusDevice(request);
@@ -115,21 +101,16 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
                 this.checkDescription(response.getDescription(), resultList));
     }
 
-    @Then("^no CoupleMbusDevice response is received and a FunctionalException is thrown$")
-    public void noCoupleMbusDeviceResponseIsReceivedAndAFunctionalExceptionIsThrown(final Map<String, String> settings)
-            throws Throwable {
-        final CoupleMbusDeviceAsyncRequest coupleMbusDeviceAsyncRequest = CoupleMbusDeviceRequestFactory
-                .fromScenarioContext();
+    @Then("^retrieving the Couple response results in an exception$")
+    public void retrievingTheCoupleResponseResultsInAnException() throws WebServiceSecurityException {
+
+        final CoupleMbusDeviceAsyncRequest asyncRequest = CoupleMbusDeviceRequestFactory.fromScenarioContext();
+
         try {
-            this.smartMeteringInstallationClient.getCoupleMbusDeviceResponse(coupleMbusDeviceAsyncRequest);
-        } catch (final Exception e) {
-            if (e instanceof FunctionalException) {
-                assertEquals(settings.get("Message"), e.getMessage());
-            }
-            return;
+            this.smartMeteringInstallationClient.getCoupleMbusDeviceResponse(asyncRequest);
+            fail("A SoapFaultClientException should be thrown");
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
-
-        throw new AssertionError("Expected a FunctionalException");
     }
-
 }
