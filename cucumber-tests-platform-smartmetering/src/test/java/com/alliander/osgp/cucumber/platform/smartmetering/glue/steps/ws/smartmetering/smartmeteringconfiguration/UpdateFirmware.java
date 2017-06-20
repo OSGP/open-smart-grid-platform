@@ -68,8 +68,8 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Autowired
     private DeviceModelSteps deviceModelSteps;
 
-    @Given("a dlms firmware$")
-    public void aDlmsFirmware(final Map<String, String> settings) {
+    @Given("a smart meter firmware$")
+    public void aSmartMeterFirmware(final Map<String, String> settings) {
         this.insertCoreFirmware(settings);
     }
 
