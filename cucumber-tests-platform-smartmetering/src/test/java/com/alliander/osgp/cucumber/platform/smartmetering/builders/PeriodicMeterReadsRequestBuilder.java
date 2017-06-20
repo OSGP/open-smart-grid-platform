@@ -31,7 +31,7 @@ public class PeriodicMeterReadsRequestBuilder {
     Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
     public PeriodicMeterReadsRequestBuilder() {
-        this.marshaller.setContextPath(PeriodicMeterReadsGasRequest.class.getPackage().getName());
+        this.marshaller.setContextPath(PeriodicMeterReadsRequest.class.getPackage().getName());
     }
 
     public PeriodicMeterReadsRequestBuilder withDeviceIdentification(final String deviceIdentification) {
