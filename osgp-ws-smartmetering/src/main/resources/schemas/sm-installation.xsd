@@ -49,14 +49,6 @@
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
         <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="Channel">
-          <xsd:simpleType>
-            <xsd:restriction base="xsd:short">
-              <xsd:minInclusive value="1" />
-              <xsd:maxInclusive value="4" />
-            </xsd:restriction>
-          </xsd:simpleType>
-        </xsd:element>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
