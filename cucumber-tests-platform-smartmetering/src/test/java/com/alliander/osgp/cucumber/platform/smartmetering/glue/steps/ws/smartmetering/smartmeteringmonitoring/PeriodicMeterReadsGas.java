@@ -62,7 +62,6 @@ public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
         final PeriodicMeterReadsGasAsyncResponse asyncResponse = this.requestClient.doRequest(request);
         assertNotNull(asyncResponse);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
-
     }
 
     @Then("^the \"([^\"]*)\" meter reads gas result should be returned$")

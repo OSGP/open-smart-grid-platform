@@ -41,7 +41,7 @@ Feature: SmartMetering Monitoring
       | INTERVAL   | 2015-09-01 | 2015-10-01 |
       | MONTHLY    | 2016-01-01 | 2016-09-01 |
 
-  Scenario Outline: Get the meter reads from a a gas device
+  Scenario Outline: Get the meter reads from a gas device
     When the get "<PeriodType>" meter reads gas request is received
       | DeviceIdentification | TESTG102400000001 |
       | PeriodType           | <PeriodType>      |
