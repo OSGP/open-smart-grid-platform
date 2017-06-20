@@ -67,10 +67,8 @@ Feature: SmartMetering Installation
       | InnerMessage | Error processing E_METER_MASTER key                                   |
     And the dlms device with identification "TEST1024000000001" does not exist
 
-  # remove tag when slim-975 is deployed
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @Skip
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on first channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -92,10 +90,8 @@ Feature: SmartMetering Installation
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
-  # remove tag when slim-975 is deployed
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @Skip
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on second channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -123,10 +119,8 @@ Feature: SmartMetering Installation
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 2
 
-  # remove tag when slim-975 is deployed
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @Skip
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000002" while G-meter is already coupled.
     Given a dlms device
       | DeviceIdentification | TEST1024000000002 |
@@ -150,8 +144,6 @@ Feature: SmartMetering Installation
       | Message | GIVEN_MBUS_DEVICE_ALREADY_COUPLED |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
-  # remove tag when slim-975 is deployed
-  @Skip
   Scenario: Couple G-meter "TESTG102400000002" to E-meter "TEST1024000000001" on second channel with already coupled channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -188,10 +180,8 @@ Feature: SmartMetering Installation
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000002" is coupled to device "TEST1024000000001" on MBUS channel 2
 
-  # remove tag when slim-975 is deployed
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @Skip
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" which is already coupled on channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -218,10 +208,8 @@ Feature: SmartMetering Installation
       | Message | GIVEN_MBUS_DEVICE_ALREADY_COUPLED |
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
-  # remove tag when slim-975 is deployed
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @Skip
   Scenario: Couple G-meter to an E-meter that is already coupled with other G-meter on channel 2
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -252,10 +240,8 @@ Feature: SmartMetering Installation
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 2
     And the mbus device "TESTG102400000002" is not coupled to the device "TEST1024000000001"
 
-  # remove tag when slim-975 is deployed
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @Skip
   Scenario: Couple another G-meter to an E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -283,8 +269,6 @@ Feature: SmartMetering Installation
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
     And the mbus device "TESTG102400000002" is coupled to device "TEST1024000000001" on MBUS channel 2
 
-  # remove tag when slim-975 is deployed
-  @Skip
   Scenario: Couple unknown G-meter to an E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -295,8 +279,6 @@ Feature: SmartMetering Installation
       | Code    |            201 |
       | Message | UNKNOWN_DEVICE |
 
-  # remove tag when slim-975 is deployed
-  @Skip
   Scenario: Couple G-meter to an unknown E-meter
     Given a dlms device
       | DeviceIdentification | TESTG102400000001 |
@@ -306,8 +288,6 @@ Feature: SmartMetering Installation
       | Code    |            201 |
       | Message | UNKNOWN_DEVICE |
 
-  # remove tag when slim-975 is deployed
-  @Skip
   Scenario: Couple inactive G-meter to an E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -322,8 +302,6 @@ Feature: SmartMetering Installation
       | Code    |             207 |
       | Message | INACTIVE_DEVICE |
 
-  # remove tag when slim-975 is deployed
-  @Skip
   Scenario: Couple G-meter to an inactive E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
