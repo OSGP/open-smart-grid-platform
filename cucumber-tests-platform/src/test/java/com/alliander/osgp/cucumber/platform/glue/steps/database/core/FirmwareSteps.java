@@ -20,7 +20,6 @@ import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Firmware;
-import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleData;
@@ -90,13 +89,45 @@ public class FirmwareSteps {
         Wait.until(() -> {
             final Firmware entity = this.firmwareRepo
                     .findByFilename(getString(expectedEntity, PlatformKeys.FIRMWARE_FILENAME));
-            final Manufacturer manufacturer = entity.getDeviceModel().getManufacturerId();
+            final DeviceModel deviceModel = entity.getDeviceModel();
 
             Assert.assertEquals(
-                    getString(expectedEntity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID),
-                    manufacturer);
-            Assert.assertEquals(getBoolean(expectedEntity, PlatformKeys.USE_PREFIX,
-                    PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX), manufacturer.isUsePrefix());
+                    getString(expectedEntity, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION),
+                    entity.getDescription());
+            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
+                    PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM), entity.getModuleVersionComm());
+            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
+                    PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC), entity.getModuleVersionFunc());
+            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
+                    PlatformDefaults.FIRMWARE_MODULE_VERSION_MA), entity.getModuleVersionMa());
+            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
+                    PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS), entity.getModuleVersionMbus());
+            Assert.assertEquals(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
+                    PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC), entity.getModuleVersionSec());
+
+            Assert.assertEquals(getString(expectedEntity, PlatformKeys.DEVICEMODEL_MODELCODE,
+                    PlatformDefaults.DEVICE_MODEL_MODEL_CODE), deviceModel.getModelCode());
+        });
+    }
+
+    /**
+     * Verify whether the entity is NOT created as expected.
+     *
+     * @param expectedEntity
+     * @throws Throwable
+     */
+    @Then("^the entity firmware does not exist$")
+    public void theEntityFirmwareDoesNotExist(final Map<String, String> expectedEntity) {
+        Wait.until(() -> {
+            final Firmware entity = this.firmwareRepo
+                    .findByFilename(getString(expectedEntity, PlatformKeys.FIRMWARE_FILENAME));
+            if (entity == null) {
+                Assert.assertTrue(true);
+            } else {
+                final DeviceModel deviceModel = entity.getDeviceModel();
+                Assert.assertNotEquals(getString(expectedEntity, PlatformKeys.DEVICEMODEL_MODELCODE,
+                        PlatformDefaults.DEVICE_MODEL_MODEL_CODE), deviceModel.getModelCode());
+            }
         });
     }
 }
