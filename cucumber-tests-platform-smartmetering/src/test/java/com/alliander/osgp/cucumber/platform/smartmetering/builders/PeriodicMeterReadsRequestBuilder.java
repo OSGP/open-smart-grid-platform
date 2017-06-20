@@ -17,7 +17,6 @@ import org.joda.time.DateTime;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData;
 
