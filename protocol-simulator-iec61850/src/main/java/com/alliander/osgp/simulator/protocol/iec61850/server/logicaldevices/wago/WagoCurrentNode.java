@@ -18,6 +18,6 @@ public class WagoCurrentNode extends WagoNode {
         final double minValue = 0.5f * baseValue;
         final double maxValue = 1.5f * baseValue;
         final Random rand = new Random();
-        return (rand.nextDouble() * (maxValue - minValue) + minValue);
+        return rand.nextDouble() * (maxValue - minValue) + minValue;
     }
 }

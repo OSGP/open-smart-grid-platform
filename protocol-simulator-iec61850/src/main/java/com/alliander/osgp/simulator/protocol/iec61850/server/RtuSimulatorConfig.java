@@ -42,7 +42,7 @@ public class RtuSimulatorConfig {
         LOGGER.info("Start simulator with icdFilename={}, port={}, serverName={}, stopGeneratingValues={}, updateValuesDelay={}, updateValuesPeriod={}",
                 icdFilename, port, serverName, stopGeneratingValues, updateValuesDelay, updateValuesPeriod);
         final InputStream icdFile = this.resourceLoader.getResource("classpath:"+icdFilename).getInputStream();
-        LOGGER.info("Simulator icdFile is {} on the classpath", (icdFile!=null?"found":"not found"));
+        LOGGER.info("Simulator icdFile is {} on the classpath", icdFile!=null?"found":"not found");
 
         try {
             final RtuSimulator rtuSimulator = new RtuSimulator(port, icdFile, serverName, this.serverSapEventProducer, updateValuesDelay, updateValuesPeriod);

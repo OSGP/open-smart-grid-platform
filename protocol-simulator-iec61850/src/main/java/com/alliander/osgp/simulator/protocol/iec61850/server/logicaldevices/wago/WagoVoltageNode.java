@@ -18,6 +18,6 @@ public class WagoVoltageNode extends WagoNode {
         final double minValue = 0.9f * baseValue;
         final double maxValue = 1.1f * baseValue;
         final Random rand = new Random();
-        return (rand.nextDouble() * (maxValue - minValue) + minValue);
+        return rand.nextDouble() * (maxValue - minValue) + minValue;
     }
 }

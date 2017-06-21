@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Random;
 
 public class WagoServerHelper {
+    private WagoServerHelper() {
+        // Only static utility methods
+    }
     /*
         For a Wago Device we assume the Voltage for field 0 is 10kV en for field 1 it is 230V
         The current for L1 is 50A, for L2 it is 100A and for L3 it is 150A
@@ -31,41 +34,39 @@ public class WagoServerHelper {
 
     public static List<WagoNode> initializeServerNodesForField(final ServerModel serverModel, final WagoField wagoField) {
         final WagoServerField wagoServerField = new WagoServerField(serverModel, wagoField);
-        final WagoCurrentNode AL1 = new WagoCurrentNode(wagoServerField, "A.phsA", 50d);
-        final WagoCurrentNode AL2 = new WagoCurrentNode(wagoServerField, "A.phsB", 100d);
-        final WagoCurrentNode AL3 = new WagoCurrentNode(wagoServerField, "A.phsC", 150d);
-        final WagoVoltageNode PPV1 = new WagoVoltageNode(wagoServerField, "PPV.phsAB", ((WagoField.FIELD0 == wagoField) ? 10d : 0.230d));
-        final WagoVoltageNode PPV2 = new WagoVoltageNode(wagoServerField, "PPV.phsBC", ((WagoField.FIELD0 == wagoField) ? 10d : 0.230d));
-        final WagoVoltageNode PPV3 = new WagoVoltageNode(wagoServerField, "PPV.phsCA", ((WagoField.FIELD0 == wagoField) ? 10d : 0.230d));
+        final WagoCurrentNode al1 = new WagoCurrentNode(wagoServerField, "A.phsA", 50d);
+        final WagoCurrentNode al2 = new WagoCurrentNode(wagoServerField, "A.phsB", 100d);
+        final WagoCurrentNode al3 = new WagoCurrentNode(wagoServerField, "A.phsC", 150d);
+        final WagoVoltageNode ppv1 = new WagoVoltageNode(wagoServerField, "PPV.phsAB", (WagoField.FIELD0 == wagoField) ? 10d : 0.230d);
+        final WagoVoltageNode ppv2 = new WagoVoltageNode(wagoServerField, "PPV.phsBC", (WagoField.FIELD0 == wagoField) ? 10d : 0.230d);
+        final WagoVoltageNode ppv3 = new WagoVoltageNode(wagoServerField, "PPV.phsCA", (WagoField.FIELD0 == wagoField) ? 10d : 0.230d);
         final double phi1 = generatePhi();
         final double phi2 = generatePhi();
         final double phi3 = generatePhi();
-        final WagoNode W1 = new WagoPowerNode(wagoServerField, "W.phsA", AL1, PPV1, phi1);
-        final WagoNode W2 = new WagoPowerNode(wagoServerField, "W.phsB", AL2, PPV2, phi2);
-        final WagoNode W3 = new WagoPowerNode(wagoServerField, "W.phsC", AL3, PPV3, phi3);
-        final WagoNode VAR1 = new WagoReactivePowerNode(wagoServerField, "VAr.phsA", AL1, PPV1, phi1);
-        final WagoNode VAR2 = new WagoReactivePowerNode(wagoServerField, "VAr.phsB", AL2, PPV2, phi2);
-        final WagoNode VAR3 = new WagoReactivePowerNode(wagoServerField, "VAr.phsC", AL3, PPV3, phi3);
-        final WagoNode TOTW = new WagoTotalNode(wagoServerField, "TotW", W1, W2, W3);
-        final WagoNode TOTVAR = new WagoTotalNode(wagoServerField, "TotVAr", VAR1, VAR2, VAR3);
-        return new ArrayList<WagoNode>() {
-            {
-                add(AL1);
-                add(AL2);
-                add(AL3);
-                add(PPV1);
-                add(PPV2);
-                add(PPV3);
-                add(W1);
-                add(W2);
-                add(W3);
-                add(VAR1);
-                add(VAR2);
-                add(VAR3);
-                add(TOTW);
-                add(TOTVAR);
-            }
-        };
+        final WagoNode w1 = new WagoPowerNode(wagoServerField, "W.phsA", al1, ppv1, phi1);
+        final WagoNode w2 = new WagoPowerNode(wagoServerField, "W.phsB", al2, ppv2, phi2);
+        final WagoNode w3 = new WagoPowerNode(wagoServerField, "W.phsC", al3, ppv3, phi3);
+        final WagoNode var1 = new WagoReactivePowerNode(wagoServerField, "VAr.phsA", al1, ppv1, phi1);
+        final WagoNode var2 = new WagoReactivePowerNode(wagoServerField, "VAr.phsB", al2, ppv2, phi2);
+        final WagoNode var3 = new WagoReactivePowerNode(wagoServerField, "VAr.phsC", al3, ppv3, phi3);
+        final WagoNode totW = new WagoTotalNode(wagoServerField, "TotW", w1, w2, w3);
+        final WagoNode totVar = new WagoTotalNode(wagoServerField, "TotVAr", var1, var2, var3);
+        final List<WagoNode> wagoNodes = new ArrayList<>();
+        wagoNodes.add(al1);
+        wagoNodes.add(al2);
+        wagoNodes.add(al3);
+        wagoNodes.add(ppv1);
+        wagoNodes.add(ppv2);
+        wagoNodes.add(ppv3);
+        wagoNodes.add(w1);
+        wagoNodes.add(w2);
+        wagoNodes.add(w3);
+        wagoNodes.add(var1);
+        wagoNodes.add(var2);
+        wagoNodes.add(var3);
+        wagoNodes.add(totW);
+        wagoNodes.add(totVar);
+        return wagoNodes;
     }
 
     public static List<BasicDataAttribute> getAllChangedAttributes(final List<WagoNode> wagoNodes) {
@@ -87,6 +88,6 @@ public class WagoServerHelper {
         final double minValue = 0.24d;
         final double maxValue = 0.38d;
         final Random rand = new Random();
-        return (rand.nextDouble() * (maxValue - minValue) + minValue);
+        return rand.nextDouble() * (maxValue - minValue) + minValue;
     }
 }
