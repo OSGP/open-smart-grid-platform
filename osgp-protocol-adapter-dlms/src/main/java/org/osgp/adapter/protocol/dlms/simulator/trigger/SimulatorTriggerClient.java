@@ -11,11 +11,15 @@ package org.osgp.adapter.protocol.dlms.simulator.trigger;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -102,6 +106,59 @@ public class SimulatorTriggerClient extends AbstractClient {
         if (!isClosed) {
             throw new SimulatorTriggerClientException(CONSTRUCTION_FAILED, exception);
         }
+    }
+
+    /**
+     * Creates a SimulatorTriggerClient that does not use a trust store and will
+     * trust any server it communicates with over HTTPS.
+     *
+     * @param baseAddress
+     */
+    public SimulatorTriggerClient(final String baseAddress) {
+        this.webClient = this.configureInsecureWebClient(baseAddress);
+    }
+
+    private WebClient configureInsecureWebClient(final String baseAddress) {
+
+        final List<Object> providers = new ArrayList<>();
+        providers.add(new JacksonJaxbJsonProvider());
+
+        final WebClient client = WebClient.create(baseAddress, providers);
+
+        final ClientConfiguration config = WebClient.getConfig(client);
+        final HTTPConduit conduit = config.getHttpConduit();
+
+        conduit.setTlsClientParameters(new TLSClientParameters());
+        /*
+         * Client for simulator in use with test code only! For now don't check
+         * or verify any certificates here.
+         */
+        conduit.getTlsClientParameters().setTrustManagers(new TrustManager[] { new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+
+            @Override
+            public void checkServerTrusted(final X509Certificate[] chain, final String authType)
+                    throws CertificateException {
+                /*
+                 * Implicitly trust the certificate chain by not throwing a
+                 * CertificateException.
+                 */
+            }
+
+            @Override
+            public void checkClientTrusted(final X509Certificate[] chain, final String authType)
+                    throws CertificateException {
+                /*
+                 * Implicitly trust the certificate chain by not throwing a
+                 * CertificateException.
+                 */
+            }
+        } });
+
+        return client;
     }
 
     public void sendTrigger(final DlmsDevice simulatedDlmsDevice) throws SimulatorTriggerClientException {
