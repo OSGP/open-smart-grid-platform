@@ -25,7 +25,7 @@ import java.util.List;
 public class UpdatePqValuesEventListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdatePqValuesEventListener.class);
 
-    @Value("${rtu.enableEventListener:false}")
+    @Value("${rtu.enableUpdatePqValuesEventListener:false}")
     private boolean enabled;
 
     @EventListener
