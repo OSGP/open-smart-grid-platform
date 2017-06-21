@@ -9,12 +9,14 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
@@ -34,6 +36,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -56,10 +59,12 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
     public void receivingASmartmeteringAddDeviceRequest(final Map<String, String> settings) throws Throwable {
         final String deviceIdentification = settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_MASTERKEY, settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY));
+        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_MASTERKEY,
+                settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY));
         ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
                 settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
+        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY,
+                settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
 
         final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
         final AddDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient.addDevice(request);
@@ -86,6 +91,19 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
         final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());
+    }
+
+    @Then("^retrieving the AddDevice response results in an exception$")
+    public void retrievingTheAddDeviceResponseResultsInAnException() throws WebServiceSecurityException {
+
+        final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestFactory.fromScenarioContext();
+
+        try {
+            this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
+            fail("A SoapFaultClientException should be thrown");
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
+        }
     }
 
     @Then("^a request to the device can be performed after activation$")

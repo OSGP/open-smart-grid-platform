@@ -11,7 +11,10 @@ import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.PlatformDomain;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
@@ -44,7 +48,6 @@ public class FindOrganizationsSteps {
      * @throws IOException
      * @throws GeneralSecurityException
      * @throws WebServiceSecurityException
-     * @throws Throwable
      */
     @When("^receiving a get all organizations request$")
     public void receivingGetAllOrganizationsRequest(final Map<String, String> settings)
@@ -64,7 +67,6 @@ public class FindOrganizationsSteps {
      * @throws IOException
      * @throws GeneralSecurityException
      * @throws WebServiceSecurityException
-     * @throws Throwable
      */
     @When("^receiving an own unknown organization request$")
     public void receivingAnOwnUnknownOrganizationRequest(final Map<String, String> settings)
@@ -79,11 +81,7 @@ public class FindOrganizationsSteps {
         }
     }
 
-    /**
-     *
-     * @throws Throwable
-     */
-    @Then("^the get all organizations response contains \"([^\"]*)\" organizations?$")
+    @Then("^the get all organizations response contains (\\d++) organizations?$")
     public void theGetAllOrganizationsResponseContainsOrganization(final Integer expectedCount) {
         final FindAllOrganisationsResponse response = (FindAllOrganisationsResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
@@ -91,36 +89,55 @@ public class FindOrganizationsSteps {
         Assert.assertEquals((int) expectedCount, response.getOrganisations().size());
     }
 
-    /**
-     *
-     * @throws Throwable
-     */
     @Then("^the get own unknown organization response contains soap fault$")
     public void theGetOwnUnknownOrganizationResponseContainsSoapFault(final Map<String, String> expectedResult) {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
-    /**
-     *
-     * @throws Throwable
-     */
-    @Then("^the get all organizations response contains at index \"([^\"]*)\"$")
-    public void theGetAllOrganizationsResponseContainsAtIndex(final Integer expectedIndex,
-            final Map<String, String> expectedResult) {
+    @Then("^the get all organizations response contains$")
+    public void theGetAllOrganizationsResponseContains(final Map<String, String> expectedResult) {
         final FindAllOrganisationsResponse response = (FindAllOrganisationsResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
 
-        final Organisation organisation = response.getOrganisations().get(expectedIndex - 1);
-        Assert.assertEquals(
-                getString(expectedResult, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION),
-                organisation.getOrganisationIdentification());
-        Assert.assertEquals(
-                getString(expectedResult, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_ORGANIZATION_NAME),
-                organisation.getName());
-        final String domains = getString(expectedResult, PlatformKeys.KEY_DOMAINS, PlatformDefaults.DEFAULT_DOMAINS);
-        Assert.assertEquals("[" + domains.replaceAll(";", ", ") + "]", organisation.getDomains().toString());
-        Assert.assertEquals(getString(expectedResult, PlatformKeys.KEY_PREFIX, PlatformDefaults.DEFAULT_PREFIX),
-                organisation.getPrefix());
+        final List<Organisation> organisations = response.getOrganisations();
+
+        final Organisation expected = this.createOrganisation(expectedResult);
+
+        for (final Organisation organisation : organisations) {
+            if (this.organisationMatches(expected, organisation)) {
+                return;
+            }
+        }
+
+        Assert.fail("Expected organization \"" + expected.getOrganisationIdentification()
+                + "\" was not found as one of the " + organisations.size() + " organizations in the response");
+
+    }
+
+    private Organisation createOrganisation(final Map<String, String> expectedResult) {
+        final Organisation expected = new Organisation();
+        expected.setOrganisationIdentification(getString(expectedResult, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        expected.setName(getString(expectedResult, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_ORGANIZATION_NAME));
+        expected.getDomains().addAll(this.createDomains(expectedResult));
+        expected.setPrefix(getString(expectedResult, PlatformKeys.KEY_PREFIX, PlatformDefaults.DEFAULT_PREFIX));
+        return expected;
+    }
+
+    private List<PlatformDomain> createDomains(final Map<String, String> expectedResult) {
+        return Arrays.stream(
+                getString(expectedResult, PlatformKeys.KEY_DOMAINS, PlatformDefaults.DEFAULT_DOMAINS).split(";"))
+                .map(PlatformDomain::valueOf).collect(Collectors.toList());
+    }
+
+    private boolean organisationMatches(final Organisation expected, final Organisation actual) {
+        return expected.getOrganisationIdentification().equals(actual.getOrganisationIdentification())
+                && expected.getName().equals(actual.getName())
+                && this.domainsMatch(expected.getDomains(), actual.getDomains())
+                && expected.getPrefix().equals(actual.getPrefix());
+    }
+
+    private boolean domainsMatch(final List<PlatformDomain> expected, final List<PlatformDomain> actual) {
+        return expected.size() == actual.size() && actual.containsAll(expected);
     }
 }

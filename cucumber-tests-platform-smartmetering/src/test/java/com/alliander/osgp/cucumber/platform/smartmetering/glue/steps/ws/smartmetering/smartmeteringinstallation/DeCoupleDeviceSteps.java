@@ -24,7 +24,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleM
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
-import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.DeCoupleMbusDeviceRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
@@ -67,11 +66,12 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
         }
     }
 
-    @When("^the DeCouple G-meter \"([^\"]*)\" request is received$")
-    public void theDeCoupleGMeterRequestIsReceived(final String gasMeter) throws WebServiceSecurityException {
+    @When("^the DeCouple G-meter \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received$")
+    public void theDeCoupleGMeterRequestIsReceived(final String gasMeter, final String eMeter)
+            throws WebServiceSecurityException {
 
-        final DeCoupleMbusDeviceRequest request = DeCoupleMbusDeviceRequestFactory
-                .forGatewayAndMbusDevice(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext(), gasMeter);
+        final DeCoupleMbusDeviceRequest request = DeCoupleMbusDeviceRequestFactory.forGatewayAndMbusDevice(eMeter,
+                gasMeter);
         final DeCoupleMbusDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient
                 .deCoupleMbusDevice(request);
 
@@ -103,5 +103,18 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
         assertEquals("Result", status, response.getResult().name());
         assertTrue("Description should contain all of " + resultList,
                 this.checkDescription(response.getDescription(), resultList));
+    }
+
+    @Then("^retrieving the DeCouple response results in an exception$")
+    public void retrievingTheDeCoupleResponseResultsInAnException() throws WebServiceSecurityException {
+
+        final DeCoupleMbusDeviceAsyncRequest asyncRequest = DeCoupleMbusDeviceRequestFactory.fromScenarioContext();
+
+        try {
+            this.smartMeteringInstallationClient.getDeCoupleMbusDeviceResponse(asyncRequest);
+            fail("A SoapFaultClientException should be thrown");
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
+        }
     }
 }

@@ -20,6 +20,7 @@ import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.database.DlmsDatabase;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.ReplaceKeysSteps;
+import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation.DeviceSimulatorSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ServiceEndpoint;
 
 import cucumber.api.java.After;
@@ -43,6 +44,9 @@ public class ScenarioHooks extends GlueBase {
     private ReplaceKeysSteps replaceKeysSteps;
 
     @Autowired
+    private DeviceSimulatorSteps deviceSimulatorSteps;
+
+    @Autowired
     private ServiceEndpoint serviceEndpoint;
 
     @Value("${service.endpoint.host}")
@@ -60,6 +64,7 @@ public class ScenarioHooks extends GlueBase {
      */
     @Before(order = 1000)
     public void beforeScenario() {
+        this.deviceSimulatorSteps.clearDlmsAttributeValues();
         this.dlmsDatabaseSteps.prepareDatabaseForScenario();
         this.prepareServiceEndpoint();
     }
@@ -76,7 +81,7 @@ public class ScenarioHooks extends GlueBase {
         ScenarioContext.context = null;
     }
 
-    @After("@ResetKeys")
+    @After("@ResetKeysOnDevice")
     public void resetKeysScenario() throws Throwable {
         final Map<String, String> settings = this.initSettings();
         final Map<String, String> responseParameters = this.initResponseParameters();

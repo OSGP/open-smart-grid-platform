@@ -34,21 +34,21 @@ public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
     private static final String TEST_CASE_XML = "Retrieve periodic meter reads gas";
     private static final String TEST_CASE_NAME_REQUEST = "GetPeriodicMeterReadsGas - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetPeriodicMeterReadsGasResponse - Request 1";
-    private static final String PERIOD_TYPE_LABEL = "periodType";
-    private static final String BEGIN_DATE_LABEL = "beginDate";
-    private static final String END_DATE_LABEL = "endDate";
 
     @When("^the get \"([^\"]*)\" meter reads gas request is received$")
     public void theGetMeterReadsRequestIsReceived(final String periodtype, final Map<String, String> settings)
             throws Throwable {
 
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, getString(settings,
+                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
                 PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        PROPERTIES_MAP.put(PERIOD_TYPE_LABEL, getString(settings, PlatformKeys.KEY_PERIOD_TYPE, PlatformDefaults.DEFAULT_PERIOD_TYPE));
-        PROPERTIES_MAP.put(BEGIN_DATE_LABEL, getString(settings, PlatformKeys.KEY_BEGIN_DATE, PlatformDefaults.DEFAULT_BEGIN_DATE));
-        PROPERTIES_MAP.put(END_DATE_LABEL, getString(settings, PlatformKeys.KEY_END_DATE, PlatformDefaults.DEFAULT_END_DATE));
+        PROPERTIES_MAP.put(PlatformKeys.KEY_PERIOD_TYPE,
+                getString(settings, PlatformKeys.KEY_PERIOD_TYPE, PlatformDefaults.DEFAULT_PERIOD_TYPE));
+        PROPERTIES_MAP.put(PlatformKeys.KEY_BEGIN_DATE,
+                getString(settings, PlatformKeys.KEY_BEGIN_DATE, PlatformDefaults.DEFAULT_BEGIN_DATE));
+        PROPERTIES_MAP.put(PlatformKeys.KEY_END_DATE,
+                getString(settings, PlatformKeys.KEY_END_DATE, PlatformDefaults.DEFAULT_END_DATE));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
@@ -56,8 +56,8 @@ public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
     @Then("^the \"([^\"]*)\" meter reads gas result should be returned$")
     public void theMeterReadsResultShouldBeReturned(final String periodType, final Map<String, String> settings)
             throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, getString(settings,
+                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
                 ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
 
