@@ -73,9 +73,7 @@ public class InstallationService {
      * @param deviceIdentification
      *            the identification of the master device
      * @param mbusDeviceIdentification
-     *            the identifation of the m-bus device
-     * @param channel
-     *            the channel the m-bus device should be coupled onto
+     *            the identification of the m-bus device
      * @param messagePriority
      *            the priority of the message
      * @param scheduleTime
@@ -84,16 +82,15 @@ public class InstallationService {
      */
     public String enqueueCoupleMbusDeviceRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String mbusDeviceIdentification,
-            final short channel, final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.COUPLE_MBUS_DEVICE);
 
-        LOGGER.debug(
-                "enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {} on channel {}",
-                organisationIdentification, deviceIdentification, mbusDeviceIdentification, channel);
+        LOGGER.debug("enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
+                organisationIdentification, deviceIdentification, mbusDeviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
@@ -104,10 +101,10 @@ public class InstallationService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
-                .request(new CoupleMbusDeviceRequestData(mbusDeviceIdentification, channel)).build();
+                .request(new CoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
 
         final CoupleMbusDeviceRequestData coupleMbusDeviceRequestData = new CoupleMbusDeviceRequestData(
-                mbusDeviceIdentification, channel);
+                mbusDeviceIdentification);
         coupleMbusDeviceRequestData.validate();
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -121,7 +118,7 @@ public class InstallationService {
      * @param deviceIdentification
      *            the identification of the master device
      * @param mbusDeviceIdentification
-     *            the identifation of the m-bus device
+     *            the identification of the m-bus device
      * @param messagePriority
      *            the priority of the message
      * @param scheduleTime
@@ -130,7 +127,12 @@ public class InstallationService {
      */
     public String enqueueDeCoupleMbusDeviceRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String mbusDeviceIdentification,
-            final int messagePriority, final Long scheduleTime) {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.DE_COUPLE_MBUS_DEVICE);
 
         LOGGER.debug("enqueueDeCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
                 organisationIdentification, deviceIdentification, mbusDeviceIdentification);

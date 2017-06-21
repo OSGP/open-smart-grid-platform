@@ -11,9 +11,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 /**
  * this class holds the information needed beside the metadata of a request to
@@ -21,13 +19,9 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
  */
 public class CoupleMbusDeviceRequestData implements Serializable, ActionRequest {
 
-    private static final long serialVersionUID = 8993111326494612489L;
+    private static final long serialVersionUID = 8993111326494612480L;
 
     private final String mbusDeviceIdentification;
-    private static final short MIN_CHANNEL = 1;
-    private static final short MAX_CHANNEL = 4;
-
-    private final short channel;
 
     /**
      * @param mbusDeviceIdentification
@@ -36,34 +30,17 @@ public class CoupleMbusDeviceRequestData implements Serializable, ActionRequest 
      * @param channel
      *            the channel on which the mbus device needs to be coupled
      */
-    public CoupleMbusDeviceRequestData(final String mbusDeviceIdentification, final short channel) {
+    public CoupleMbusDeviceRequestData(final String mbusDeviceIdentification) {
         this.mbusDeviceIdentification = mbusDeviceIdentification;
-        this.channel = channel;
     }
 
     public String getMbusDeviceIdentification() {
         return this.mbusDeviceIdentification;
     }
 
-    public short getChannel() {
-        return this.channel;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest#
-     * validate()
-     */
     @Override
     public void validate() throws FunctionalException {
-        if ((this.channel < MIN_CHANNEL) || (this.channel > MAX_CHANNEL)) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                    ComponentType.DOMAIN_SMART_METERING, new IllegalArgumentException("channel not in range [1,4]: "
-                            + this.channel));
-        }
-
+        // nothing to validate
     }
 
     @Override
