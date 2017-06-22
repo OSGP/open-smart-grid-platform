@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
@@ -19,9 +18,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRe
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ReadAlarmRegisterRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 
@@ -39,14 +38,7 @@ public class ReadAlarmRegister extends SmartMeteringStepsBase {
     @When("^the get read alarm register request is received$")
     public void theGetReadAlarmRegisterRequestIsReceived(final Map<String, String> settings) throws Throwable {
 
-        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
-
-        final ReadAlarmRegisterRequest request = new ReadAlarmRegisterRequest();
-        request.setDeviceIdentification(deviceIdentification);
-
+        final ReadAlarmRegisterRequest request = ReadAlarmRegisterRequestFactory.forDevice();
         final ReadAlarmRegisterAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertNotNull("asyncResponse should not be null", asyncResponse);
@@ -57,14 +49,9 @@ public class ReadAlarmRegister extends SmartMeteringStepsBase {
     @Then("^the alarm register should be returned$")
     public void theAlarmRegisterShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
-        final String deviceIdentification = (String) ScenarioContext.current()
-                .get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
 
-        final ReadAlarmRegisterAsyncRequest asyncRequest = new ReadAlarmRegisterAsyncRequest();
-        asyncRequest.setDeviceIdentification(deviceIdentification);
-        asyncRequest.setCorrelationUid(correlationUid);
-
+        final ReadAlarmRegisterAsyncRequest asyncRequest = ReadAlarmRegisterRequestFactory.fromScenarioContext();
         final ReadAlarmRegisterResponse response = this.responseClient.getResponse(asyncRequest, correlationUid);
 
         assertNotNull("AlarmTypes should not be null", response.getAlarmTypes());

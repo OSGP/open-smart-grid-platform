@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -21,9 +20,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeter
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ActualMeterReadsRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 
@@ -41,14 +40,7 @@ public class ActualMeterReads extends SmartMeteringStepsBase {
     @When("^the get actual meter reads request is received$")
     public void theGetActualMeterReadsRequestIsReceived(final Map<String, String> settings) throws Throwable {
 
-        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
-
-        final ActualMeterReadsRequest request = new ActualMeterReadsRequest();
-        request.setDeviceIdentification(deviceIdentification);
-
+        final ActualMeterReadsRequest request = ActualMeterReadsRequestFactory.forDevice();
         final ActualMeterReadsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertNotNull("asyncRespone should not be null", asyncResponse);
@@ -58,14 +50,9 @@ public class ActualMeterReads extends SmartMeteringStepsBase {
     @Then("^the actual meter reads result should be returned$")
     public void theActualMeterReadsResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
-        final String deviceIdentification = (String) ScenarioContext.current()
-                .get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
 
-        final ActualMeterReadsAsyncRequest asyncRequest = new ActualMeterReadsAsyncRequest();
-        asyncRequest.setCorrelationUid(correlationUid);
-        asyncRequest.setDeviceIdentification(deviceIdentification);
-
+        final ActualMeterReadsAsyncRequest asyncRequest = ActualMeterReadsRequestFactory.fromScenarioContext();
         final ActualMeterReadsResponse response = this.responseClient.getResponse(asyncRequest, correlationUid);
 
         assertNotNull("ActualMeterReadsResponse should not be null", response);
@@ -82,13 +69,7 @@ public class ActualMeterReads extends SmartMeteringStepsBase {
     public void sendingTheActualMeterReadsRequestResultsInAnException(final Map<String, String> settings)
             throws Throwable {
 
-        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
-
-        final ActualMeterReadsRequest request = new ActualMeterReadsRequest();
-        request.setDeviceIdentification(deviceIdentification);
+        final ActualMeterReadsRequest request = ActualMeterReadsRequestFactory.forDevice();
 
         try {
             this.requestClient.doRequest(request);

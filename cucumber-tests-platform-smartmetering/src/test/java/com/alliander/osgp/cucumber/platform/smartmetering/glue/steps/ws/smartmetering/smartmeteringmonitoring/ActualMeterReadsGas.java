@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
@@ -19,9 +18,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeter
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ActualMeterReadsGasRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 
@@ -39,14 +38,7 @@ public class ActualMeterReadsGas extends SmartMeteringStepsBase {
     @When("^the get actual meter reads gas request is received$")
     public void theGetActualMeterReadsRequestIsReceived(final Map<String, String> settings) throws Throwable {
 
-        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
-
-        final ActualMeterReadsGasRequest request = new ActualMeterReadsGasRequest();
-        request.setDeviceIdentification(deviceIdentification);
-
+        final ActualMeterReadsGasRequest request = ActualMeterReadsGasRequestFactory.forDevice(settings);
         final ActualMeterReadsGasAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertNotNull("asyncRespone should not be null", asyncResponse);
@@ -56,14 +48,9 @@ public class ActualMeterReadsGas extends SmartMeteringStepsBase {
     @Then("^the actual meter reads gas result should be returned$")
     public void theActualMeterReadsResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
-        final String deviceIdentification = (String) ScenarioContext.current()
-                .get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
 
-        final ActualMeterReadsGasAsyncRequest asyncRequest = new ActualMeterReadsGasAsyncRequest();
-        asyncRequest.setCorrelationUid(correlationUid);
-        asyncRequest.setDeviceIdentification(deviceIdentification);
-
+        final ActualMeterReadsGasAsyncRequest asyncRequest = ActualMeterReadsGasRequestFactory.fromScenarioContext();
         final ActualMeterReadsGasResponse response = this.responseClient.getResponse(asyncRequest, correlationUid);
 
         assertNotNull("ActualMeterReadsGasResponse should not be null", response);
