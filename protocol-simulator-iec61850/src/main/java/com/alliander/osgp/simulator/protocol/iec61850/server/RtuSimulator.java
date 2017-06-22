@@ -63,6 +63,10 @@ public class RtuSimulator implements ServerEventListener {
 
     private final AtomicBoolean stopGeneratingValues = new AtomicBoolean(false);
 
+    public RtuSimulator(final int port, final InputStream sclFile, final String serverName) throws SclParseException {
+        this(port, sclFile, serverName, null, null, null);
+    }
+
     public RtuSimulator(final int port, final InputStream sclFile, final String serverName, final ServerSapEventProducer serverSapEventProducer,
                         final Long updateValuesDelay, final Long updateValuesPeriod) throws SclParseException {
         final List<ServerSap> serverSaps = ServerSap.getSapsFromSclFile(sclFile);
@@ -228,7 +232,9 @@ public class RtuSimulator implements ServerEventListener {
         }
 
         this.server.startListening(this);
-        this.serverSapEventProducer.scheduleAtFixedRate(this.server, this.updateValuesDelay, this.updateValuesPeriod);
+        if (this.serverSapEventProducer !=null) {
+            this.serverSapEventProducer.scheduleAtFixedRate(this.server, this.updateValuesDelay, this.updateValuesPeriod);
+        }
         this.isStarted = true;
     }
 
