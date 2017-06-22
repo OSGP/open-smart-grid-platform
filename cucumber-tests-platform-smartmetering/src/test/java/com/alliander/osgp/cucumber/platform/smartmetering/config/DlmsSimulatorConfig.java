@@ -21,21 +21,12 @@ public class DlmsSimulatorConfig extends AbstractConfig {
     public DlmsSimulatorConfig() {
     }
 
-    @Value("${web.service.truststore.location}")
-    private String truststoreLocation;
-
-    @Value("${web.service.truststore.password}")
-    private String truststorePassword;
-
-    @Value("${web.service.truststore.type}")
-    private String truststoreType;
-
     @Value("${dynamic.properties.base.url}")
     private String dynamicPropertiesBaseUrl;
 
     @Bean
     public SimulatorTriggerClient simulatorTriggerClient() throws SimulatorTriggerClientException {
-        return new SimulatorTriggerClient(this.truststoreLocation, this.truststorePassword, this.truststoreType,
-                this.dynamicPropertiesBaseUrl);
+
+        return new SimulatorTriggerClient(this.dynamicPropertiesBaseUrl);
     }
 }

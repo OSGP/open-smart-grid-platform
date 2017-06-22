@@ -260,19 +260,19 @@ public class Helpers {
     /**
      * Get time of sunrise/sunset
      *
-     * @param date
      * @param actionTimeType
-     * @return
+     * @param date
+     * @param location
+     * @return DateTime
      * @throws Exception
      */
     public static DateTime getSunriseSunsetTime(final String actionTimeType, final DateTime date,
             final Location location) {
         final SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(location, "UTC");
 
-        long officialTime = 0;
+        Calendar officialTransition = null;
 
         final Calendar calender = Calendar.getInstance();
-        Calendar officialTransition = null;
 
         if (actionTimeType.equalsIgnoreCase("SUNSET")) {
             calender.setTime(date.toDate());
@@ -286,8 +286,7 @@ public class Helpers {
             return null;
         }
 
-        officialTime = officialTransition.getTimeInMillis();
-        return new DateTime(officialTime);
+        return new DateTime(officialTransition.getTimeInMillis());
     }
 
     public static Location getCurrentLocationByLatitudeAndLongitude(final double latitude, final double longitude) {
