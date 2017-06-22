@@ -68,8 +68,8 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Autowired
     private DeviceModelSteps deviceModelSteps;
 
-    @Given("a firmware$")
-    public void aFirmware(final Map<String, String> settings) {
+    @Given("a smart meter firmware$")
+    public void aSmartMeterFirmware(final Map<String, String> settings) {
         this.insertCoreFirmware(settings);
     }
 
@@ -89,7 +89,8 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
         final String organisationIdentification = obj == null ? PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION
                 : obj.toString();
         PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION_E_LABEL, organisationIdentification);
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }

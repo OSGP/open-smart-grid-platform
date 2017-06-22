@@ -101,7 +101,7 @@ Feature: SmartMetering Configuration
 
   @Skip
   Scenario: successful upgrade of firmware
-    Given a firmware
+    Given a smart meter firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
