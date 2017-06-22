@@ -33,7 +33,7 @@ Feature: SmartMetering Monitoring
     Then the periodic meter reads result should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario Outline: Get the meter reads from a a gas device
+  Scenario Outline: Get the meter reads from a gas device
     When the get "<PeriodType>" meter reads gas request is received
       | DeviceIdentification | TESTG102400000001 |
       | PeriodType           | <PeriodType>      |

@@ -47,14 +47,25 @@ public class FindMbusEventsReads extends AbstractFindEventsReads {
 
     @When("^receiving a find mbus events request$")
     @Override
-    public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
-        super.receivingAFindStandardEventsRequest(requestData);
+    public void receivingAFindEventsRequest(final Map<String, String> requestData) throws Throwable {
+        super.receivingAFindEventsRequest(requestData);
     }
 
     @Then("^mbus events should be returned$")
     @Override
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
         super.eventsShouldBeReturned(Helpers.addSetting(settings, PlatformKeys.KEY_EVENTS_NODELIST_EXPECTED, "true"));
+    }
+
+    @Then("^mbus events for all types should be returned$")
+    public void mbusEventsForAllTypesShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        super.eventsForAllTypesShouldBeReturned(settings);
+    }
+
+    @Then("^(\\d++) mbus events should be returned$")
+    public void numberOfEventsShouldBeReturned(final int numberOfEvents, final Map<String, String> settings)
+            throws Throwable {
+        super.eventsShouldBeReturned(numberOfEvents, settings);
     }
 
     @Override

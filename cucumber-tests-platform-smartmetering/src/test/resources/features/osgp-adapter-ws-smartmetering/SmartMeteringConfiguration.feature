@@ -101,7 +101,7 @@ Feature: SmartMetering Configuration
 
   @Skip
   Scenario: successful upgrade of firmware
-    Given a firmware
+    Given a smart meter firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
@@ -141,7 +141,7 @@ Feature: SmartMetering Configuration
       | GprsOperationMode    | ALWAYS_ON |
       | DISCOVER_ON_POWER_ON | true      |
 
-  @ResetKeys
+  @ResetKeysOnDevice
   Scenario: Replace keys with generated ones on a device
     When the generate and replace keys request is received
       | DeviceIdentification | TEST1024000000001 |
