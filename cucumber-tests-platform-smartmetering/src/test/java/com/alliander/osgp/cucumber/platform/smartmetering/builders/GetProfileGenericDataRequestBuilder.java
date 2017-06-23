@@ -11,6 +11,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObjectDe
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.cucumber.platform.helpers.DateConverter;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ObisCodeValuesFactory;
 
 public class GetProfileGenericDataRequestBuilder {
 
@@ -26,15 +27,11 @@ public class GetProfileGenericDataRequestBuilder {
 
         final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 
-        this.beginDate = DateConverter.createXMLGregorianCalendar(sdf.parse(parameterMap.get(PlatformSmartmeteringKeys.KEY_BEGIN_DATE)));
-        this.endDate = DateConverter.createXMLGregorianCalendar(sdf.parse(parameterMap.get(PlatformSmartmeteringKeys.KEY_END_DATE)));
-        this.obisCodeValues = new ObisCodeValuesBuilder()
-                .withObisCodeA(Short.parseShort(parameterMap.get(PlatformSmartmeteringKeys.OBIS_CODE_A)))
-                .withObisCodeB(Short.parseShort(parameterMap.get(PlatformSmartmeteringKeys.OBIS_CODE_B)))
-                .withObisCodeC(Short.parseShort(parameterMap.get(PlatformSmartmeteringKeys.OBIS_CODE_C)))
-                .withObisCodeD(Short.parseShort(parameterMap.get(PlatformSmartmeteringKeys.OBIS_CODE_D)))
-                .withObisCodeE(Short.parseShort(parameterMap.get(PlatformSmartmeteringKeys.OBIS_CODE_E)))
-                .withObisCodeF(Short.parseShort(parameterMap.get(PlatformSmartmeteringKeys.OBIS_CODE_F))).build();
+        this.beginDate = DateConverter
+                .createXMLGregorianCalendar(sdf.parse(parameterMap.get(PlatformSmartmeteringKeys.KEY_BEGIN_DATE)));
+        this.endDate = DateConverter
+                .createXMLGregorianCalendar(sdf.parse(parameterMap.get(PlatformSmartmeteringKeys.KEY_END_DATE)));
+        this.obisCodeValues = ObisCodeValuesFactory.fromParameterMap(parameterMap);
 
         return this;
     }
