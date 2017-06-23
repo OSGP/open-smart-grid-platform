@@ -155,6 +155,7 @@ public class PlatformDefaults {
     public static final String DEFAULT_SCHEDULE_NAME = "Schedule1";
     public static final String DEFAULT_SCHEDULE_DESCRIPTION = "This is the description for Schedule 1";
     public static final String DEFAULT_SCHEDULE_COLOR = "Green";
+    public static final String DEFAULT_SCHEDULE_HEX_COLOR = "#6FF005";
     public static final Boolean DEFAULT_SCHEDULE_DEFAULT = false;
     public static final Boolean DEFAULT_SCHEDULE_SUCCESS = false;
     public static final Boolean DEFAULT_SCHEDULE_TEMPLATE = false;
