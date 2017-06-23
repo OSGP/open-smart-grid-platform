@@ -66,7 +66,7 @@ Feature: SmartMetering Monitoring
       | DeviceIdentification | E9998000014123414 |
       | DeviceType           | SMART_METER_E     |
       | Active               | False             |
-    When sending the ActualMeterReads request results in an exception
+    When the actual meter reads request is received for an inactive device
       | DeviceIdentification | E9998000014123414 |
     Then a SOAP fault should have been returned
       | Code           |                                                               207 |

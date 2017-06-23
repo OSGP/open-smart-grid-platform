@@ -40,7 +40,7 @@ public class ActualMeterReads extends SmartMeteringStepsBase {
     @When("^the get actual meter reads request is received$")
     public void theGetActualMeterReadsRequestIsReceived(final Map<String, String> settings) throws Throwable {
 
-        final ActualMeterReadsRequest request = ActualMeterReadsRequestFactory.forDevice();
+        final ActualMeterReadsRequest request = ActualMeterReadsRequestFactory.fromParameterMap(settings);
         final ActualMeterReadsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertNotNull("asyncRespone should not be null", asyncResponse);
@@ -65,11 +65,11 @@ public class ActualMeterReads extends SmartMeteringStepsBase {
         assertNotNull("LogTime should not be null", response.getLogTime());
     }
 
-    @When("^sending the ActualMeterReads request results in an exception$")
-    public void sendingTheActualMeterReadsRequestResultsInAnException(final Map<String, String> settings)
+    @When("^the actual meter reads request is received for an inactive device$")
+    public void theActualMeterReadsRequestIsReceivedForAnInactiveDevice(final Map<String, String> settings)
             throws Throwable {
 
-        final ActualMeterReadsRequest request = ActualMeterReadsRequestFactory.forDevice();
+        final ActualMeterReadsRequest request = ActualMeterReadsRequestFactory.fromParameterMap(settings);
 
         try {
             this.requestClient.doRequest(request);

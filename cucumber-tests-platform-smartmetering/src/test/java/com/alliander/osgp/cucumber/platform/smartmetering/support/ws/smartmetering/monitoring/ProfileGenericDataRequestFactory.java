@@ -35,7 +35,7 @@ public class ProfileGenericDataRequestFactory {
         final CaptureObjectDefinitions captureObjecDefinitions = CaptureObjectDefinitionsFactory
                 .fromParameterMap(requestParameters);
 
-        request.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        request.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         request.setBeginDate(DateConverter.createXMLGregorianCalendar(beginDate.toDate()));
         request.setEndDate(DateConverter.createXMLGregorianCalendar(endDate.toDate()));
         request.setObisCode(obisCodeValues);

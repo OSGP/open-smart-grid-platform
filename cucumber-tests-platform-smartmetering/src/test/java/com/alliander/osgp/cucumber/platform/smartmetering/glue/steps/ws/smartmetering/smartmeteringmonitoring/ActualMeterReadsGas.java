@@ -38,7 +38,7 @@ public class ActualMeterReadsGas extends SmartMeteringStepsBase {
     @When("^the get actual meter reads gas request is received$")
     public void theGetActualMeterReadsRequestIsReceived(final Map<String, String> settings) throws Throwable {
 
-        final ActualMeterReadsGasRequest request = ActualMeterReadsGasRequestFactory.forDevice(settings);
+        final ActualMeterReadsGasRequest request = ActualMeterReadsGasRequestFactory.fromParameterMap(settings);
         final ActualMeterReadsGasAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertNotNull("asyncRespone should not be null", asyncResponse);

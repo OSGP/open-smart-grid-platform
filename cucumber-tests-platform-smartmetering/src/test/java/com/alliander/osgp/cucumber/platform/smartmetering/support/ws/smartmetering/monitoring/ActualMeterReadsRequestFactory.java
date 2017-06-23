@@ -7,8 +7,11 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
 
+import java.util.Map;
+
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsRequest;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
 public class ActualMeterReadsRequestFactory {
@@ -17,9 +20,9 @@ public class ActualMeterReadsRequestFactory {
         // Private constructor for utility class
     }
 
-    public static ActualMeterReadsRequest forDevice() {
+    public static ActualMeterReadsRequest fromParameterMap(final Map<String, String> requestParameters) {
         final ActualMeterReadsRequest request = new ActualMeterReadsRequest();
-        request.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        request.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         return request;
     }
 

@@ -13,6 +13,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeter
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasRequest;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
 public class ActualMeterReadsGasRequestFactory {
@@ -21,10 +22,10 @@ public class ActualMeterReadsGasRequestFactory {
         // Private constructor for utility class
     }
 
-    public static ActualMeterReadsGasRequest forDevice(final Map<String, String> settings) {
+    public static ActualMeterReadsGasRequest fromParameterMap(final Map<String, String> settings) {
         final ActualMeterReadsGasRequest request = new ActualMeterReadsGasRequest();
-        request.setDeviceIdentification(
-                Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, "TESTG102400000001"));
+        request.setDeviceIdentification(Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformSmartmeteringDefaults.DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION));
         return request;
     }
 

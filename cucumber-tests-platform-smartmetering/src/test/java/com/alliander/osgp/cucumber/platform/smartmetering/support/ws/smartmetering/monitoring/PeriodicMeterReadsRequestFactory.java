@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
 public class PeriodicMeterReadsRequestFactory {
@@ -19,7 +20,7 @@ public class PeriodicMeterReadsRequestFactory {
 
         final PeriodicMeterReadsRequest request = new PeriodicMeterReadsRequest();
 
-        request.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        request.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         request.setPeriodicReadsRequestData(PeriodicReadsRequestDataFactory.fromParameterMap(requestParameters));
 
         return request;

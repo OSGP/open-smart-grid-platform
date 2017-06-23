@@ -38,7 +38,7 @@ public class ReadAlarmRegister extends SmartMeteringStepsBase {
     @When("^the get read alarm register request is received$")
     public void theGetReadAlarmRegisterRequestIsReceived(final Map<String, String> settings) throws Throwable {
 
-        final ReadAlarmRegisterRequest request = ReadAlarmRegisterRequestFactory.forDevice();
+        final ReadAlarmRegisterRequest request = ReadAlarmRegisterRequestFactory.fromParameterMap(settings);
         final ReadAlarmRegisterAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertNotNull("asyncResponse should not be null", asyncResponse);
