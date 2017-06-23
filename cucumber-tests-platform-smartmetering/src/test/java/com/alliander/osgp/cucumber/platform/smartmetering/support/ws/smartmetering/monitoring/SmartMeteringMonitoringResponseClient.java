@@ -28,15 +28,15 @@ public class SmartMeteringMonitoringResponseClient<T, V> extends SmartMeteringBa
         return this.smartMeteringMonitoringWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
     }
 
-    /**
-     * This method could be a little better, if V could extend AsyncRequest. But
-     * ReadAlarmRegisterAsyncRequest is not an AsyncRequest, so this extension
-     * is impossible. Therefore, the correlationUid is a needed argument in this
-     * method.
-     */
     public T getResponse(final V request, final String correlationUid)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
+        /*
+         * This method could be a little better, if V could extend AsyncRequest.
+         * But ReadAlarmRegisterAsyncRequest is not an AsyncRequest, so this
+         * extension is impossible. Therefore, the correlationUid is a needed
+         * argument in this method.
+         */
         this.waitForDlmsResponseData(correlationUid);
         return (T) this.getTemplate().marshalSendAndReceive(request);
     }
