@@ -304,7 +304,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ReadAlarmRegisterAsyncResponse response = null;
         try {
-            response = new ReadAlarmRegisterAsyncResponse();
+
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest requestValueObject = this.monitoringMapper
                     .map(request,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
@@ -314,10 +314,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
+            response = new ReadAlarmRegisterAsyncResponse();
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while requesting read alarm register for device: {} for organisation {}.",
