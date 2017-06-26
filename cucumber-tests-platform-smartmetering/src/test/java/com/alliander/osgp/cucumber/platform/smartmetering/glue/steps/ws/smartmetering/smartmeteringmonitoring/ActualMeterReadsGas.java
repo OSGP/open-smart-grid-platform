@@ -48,10 +48,8 @@ public class ActualMeterReadsGas extends SmartMeteringStepsBase {
     @Then("^the actual meter reads gas result should be returned$")
     public void theActualMeterReadsResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-
         final ActualMeterReadsGasAsyncRequest asyncRequest = ActualMeterReadsGasRequestFactory.fromScenarioContext();
-        final ActualMeterReadsGasResponse response = this.responseClient.getResponse(asyncRequest, correlationUid);
+        final ActualMeterReadsGasResponse response = this.responseClient.getResponse(asyncRequest);
 
         assertNotNull("ActualMeterReadsGasResponse should not be null", response);
         assertNotNull("Consumption should not be null", response.getConsumption());

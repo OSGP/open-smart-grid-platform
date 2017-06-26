@@ -14,12 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncRequest;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
-public class SmartMeteringMonitoringResponseClient<T, V> extends SmartMeteringBaseClient {
+public class SmartMeteringMonitoringResponseClient<T, V extends AsyncRequest> extends SmartMeteringBaseClient {
 
     @Autowired
     private DefaultWebServiceTemplateFactory smartMeteringMonitoringWstf;
@@ -28,16 +29,9 @@ public class SmartMeteringMonitoringResponseClient<T, V> extends SmartMeteringBa
         return this.smartMeteringMonitoringWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
     }
 
-    public T getResponse(final V request, final String correlationUid)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public T getResponse(final V request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        /*
-         * This method could be a little better, if V could extend AsyncRequest.
-         * But ReadAlarmRegisterAsyncRequest is not an AsyncRequest, so this
-         * extension is impossible. Therefore, the correlationUid is a needed
-         * argument in this method.
-         */
-        this.waitForDlmsResponseData(correlationUid);
+        this.waitForDlmsResponseData(request.getCorrelationUid());
         return (T) this.getTemplate().marshalSendAndReceive(request);
     }
 
