@@ -42,17 +42,14 @@ public class ReadAlarmRegister extends SmartMeteringStepsBase {
         final ReadAlarmRegisterAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertNotNull("asyncResponse should not be null", asyncResponse);
-        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID,
-                asyncResponse.getAsyncResponse().getCorrelationUid());
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
     @Then("^the alarm register should be returned$")
     public void theAlarmRegisterShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-
         final ReadAlarmRegisterAsyncRequest asyncRequest = ReadAlarmRegisterRequestFactory.fromScenarioContext();
-        final ReadAlarmRegisterResponse response = this.responseClient.getResponse(asyncRequest, correlationUid);
+        final ReadAlarmRegisterResponse response = this.responseClient.getResponse(asyncRequest);
 
         assertNotNull("AlarmTypes should not be null", response.getAlarmTypes());
         assertNotNull("AlarmType should not be null", response.getAlarmTypes().get(0));
