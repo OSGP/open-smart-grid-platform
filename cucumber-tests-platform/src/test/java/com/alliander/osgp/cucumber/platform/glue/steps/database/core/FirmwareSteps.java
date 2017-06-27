@@ -57,17 +57,23 @@ public class FirmwareSteps {
             deviceModel = this.deviceModelSteps.aDeviceModel(settings);
         }
 
-        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(
-                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
-                        PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM),
-                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
-                        PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC),
-                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
-                        PlatformDefaults.FIRMWARE_MODULE_VERSION_MA),
-                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
-                        PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS),
-                getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
-                        PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC));
+        String comm = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
+                PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM);
+        comm = (comm.equals("")) ? null : comm;
+        String func = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
+                PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC);
+        func = (func.equals("")) ? null : func;
+        String ma = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
+                PlatformDefaults.FIRMWARE_MODULE_VERSION_MA);
+        ma = (ma.equals("")) ? null : ma;
+        String mbus = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
+                PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS);
+        mbus = (mbus.equals("")) ? null : mbus;
+        String sec = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
+                PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC);
+        sec = (sec.equals("")) ? null : sec;
+
+        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec);
 
         final Firmware entity = new Firmware(deviceModel, getString(settings, PlatformKeys.FIRMWARE_FILENAME, ""),
                 getString(settings, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION),
