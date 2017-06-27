@@ -7,7 +7,7 @@
 	url = https://github.com/OSGP/Protocol-Adapter-OSLP.git
 	branch = development
 [submodule "Platform"]
-	path = Platform
+	path = FLEX-3209_Automate_regression_test_C154
 	url = https://github.com/OSGP/Platform.git
 	branch = development
 [submodule "Protocol-Adapter-DLMS"]
