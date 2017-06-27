@@ -7,66 +7,58 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.PeriodicMeterReadsGasRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT_PERIODTYPE = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodType/text()";
-    private static final String PATH_RESULT_LOGTIME = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodicMeterReadsGas/LogTime/text()";
-    private static final String PATH_RESULT_CONSUMPTION = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodicMeterReadsGas/Consumption/text()";
-    private static final String PATH_RESULT_CAPTURETIME = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodicMeterReadsGas/CaptureTime/text()";
 
-    private static final String XPATH_MATCHER_RESULT_LOGTIME = "\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}\\.\\d{3}Z";
-    private static final String XPATH_MATCHER_RESULT = "\\d+\\.\\d+";
+    @Autowired
+    private SmartMeteringMonitoringRequestClient<PeriodicMeterReadsGasAsyncResponse, PeriodicMeterReadsGasRequest> requestClient;
 
-    private static final String TEST_SUITE_XML = "SmartmeterMonitoring";
-    private static final String TEST_CASE_XML = "Retrieve periodic meter reads gas";
-    private static final String TEST_CASE_NAME_REQUEST = "GetPeriodicMeterReadsGas - Request 1";
-    private static final String TEST_CASE_NAME_RESPONSE = "GetPeriodicMeterReadsGasResponse - Request 1";
+    @Autowired
+    private SmartMeteringMonitoringResponseClient<PeriodicMeterReadsGasResponse, PeriodicMeterReadsGasAsyncRequest> responseClient;
 
     @When("^the get \"([^\"]*)\" meter reads gas request is received$")
-    public void theGetMeterReadsRequestIsReceived(final String periodtype, final Map<String, String> settings)
+    public void theGetMeterReadsGasRequestIsReceived(final String periodType, final Map<String, String> settings)
             throws Throwable {
 
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_PERIOD_TYPE,
-                getString(settings, PlatformKeys.KEY_PERIOD_TYPE, PlatformDefaults.DEFAULT_PERIOD_TYPE));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_BEGIN_DATE,
-                getString(settings, PlatformKeys.KEY_BEGIN_DATE, PlatformDefaults.DEFAULT_BEGIN_DATE));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_END_DATE,
-                getString(settings, PlatformKeys.KEY_END_DATE, PlatformDefaults.DEFAULT_END_DATE));
+        final PeriodicMeterReadsGasRequest request = PeriodicMeterReadsGasRequestFactory.fromParameterMap(settings);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final PeriodicMeterReadsGasAsyncResponse asyncResponse = this.requestClient.doRequest(request);
+        assertNotNull(asyncResponse);
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
     @Then("^the \"([^\"]*)\" meter reads gas result should be returned$")
-    public void theMeterReadsResultShouldBeReturned(final String periodType, final Map<String, String> settings)
+    public void theMeterReadsGasResultShouldBeReturned(final String periodType, final Map<String, String> settings)
             throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
+        final PeriodicMeterReadsGasAsyncRequest asyncRequest = PeriodicMeterReadsGasRequestFactory
+                .fromScenarioContext();
+        final PeriodicMeterReadsGasResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_PERIODTYPE, periodType));
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_LOGTIME, XPATH_MATCHER_RESULT_LOGTIME));
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CONSUMPTION, XPATH_MATCHER_RESULT));
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CAPTURETIME, XPATH_MATCHER_RESULT));
+        assertNotNull("PeriodicMeterReadsGasResponse should not be null", response);
+        assertEquals("PeriodType should match", PeriodType.fromValue(periodType), response.getPeriodType());
+        assertNotNull("Expected periodic meter reads gas", response.getPeriodicMeterReadsGas());
     }
 
 }

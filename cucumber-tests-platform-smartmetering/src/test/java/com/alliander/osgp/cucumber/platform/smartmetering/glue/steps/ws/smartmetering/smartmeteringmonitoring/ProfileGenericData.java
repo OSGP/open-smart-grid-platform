@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getDate;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -16,25 +14,22 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObjectDefinitions;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
+import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
-import com.alliander.osgp.cucumber.platform.smartmetering.builders.CaptureObjectDefinitionsBuilder;
-import com.alliander.osgp.cucumber.platform.smartmetering.builders.ObisCodeValuesBuilder;
-import com.alliander.osgp.cucumber.platform.smartmetering.builders.ProfileGenericDataAsyncRequestBuilder;
-import com.alliander.osgp.cucumber.platform.smartmetering.builders.ProfileGenericDataRequestBuilder;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ProfileGenericDataRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -42,27 +37,27 @@ import cucumber.api.java.en.When;
 public class ProfileGenericData extends SmartMeteringStepsBase {
 
     @Autowired
-    private SmartMeteringMonitoringClient client;
+    private SmartMeteringMonitoringRequestClient<ProfileGenericDataAsyncResponse, ProfileGenericDataRequest> requestClient;
+
+    @Autowired
+    private SmartMeteringMonitoringResponseClient<ProfileGenericDataResponse, ProfileGenericDataAsyncRequest> responseClient;
 
     @When("^the get profile generic data request is received$")
     public void theGetProfileGenericDataRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        final ProfileGenericDataRequest request = new ProfileGenericDataRequestBuilder()
-                .withDeviceidentification(getString(settings, "DeviceIdentification", "TEST1024000000001"))
-                .withObisCode(this.fillObisCode(settings)).withBeginDate(this.fillDate(settings, "BeginDate"))
-                .withEndDate(this.fillDate(settings, "EndDate")).withSelectedValues(this.fillSelectedValues(settings))
-                .build();
 
-        final ProfileGenericDataAsyncResponse asyncResponse = this.client.requestProfileGenericData(request);
-        assertNotNull(asyncResponse);
-        Helpers.saveAsyncResponse(asyncResponse);
+        final ProfileGenericDataRequest request = ProfileGenericDataRequestFactory.fromParameterMap(settings);
+        final ProfileGenericDataAsyncResponse asyncResponse = this.requestClient.doRequest(request);
+
+        assertNotNull("asyncResponse should not be null", asyncResponse);
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
     @Then("^the profile generic data result should be returned$")
     public void theProfileGenericDataResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        final ProfileGenericDataAsyncRequest request = new ProfileGenericDataAsyncRequestBuilder().fromContext()
-                .build();
 
-        final ProfileGenericDataResponse response = this.client.getProfileGenericDataResponse(request);
+        final ProfileGenericDataAsyncRequest asyncRequest = ProfileGenericDataRequestFactory.fromScenarioContext();
+
+        final ProfileGenericDataResponse response = this.responseClient.getResponse(asyncRequest);
         assertNotNull("ProfileGenericDataResponse should not be null", response);
 
         final int expectedNumberOfCaptureObjects = Helpers.getInteger(settings, "NumberOfCaptureObjects", 0);
@@ -113,15 +108,4 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
         assertEquals("Unit of CaptureObject " + index, expectedUnit, actualCaptureObject.getUnit().value());
     }
 
-    private ObisCodeValues fillObisCode(final Map<String, String> settings) {
-        return new ObisCodeValuesBuilder().fromSettings(settings).build();
-    }
-
-    private CaptureObjectDefinitions fillSelectedValues(final Map<String, String> settings) {
-        return new CaptureObjectDefinitionsBuilder().fromSettings(settings).build();
-    }
-
-    private DateTime fillDate(final Map<String, String> settings, final String key) {
-        return getDate(settings, key, new DateTime());
-    }
 }

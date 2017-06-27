@@ -7,56 +7,52 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ReadAlarmRegisterRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class ReadAlarmRegister extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT_ALARMTYPES = "/Envelope/Body/ReadAlarmRegisterResponse/AlarmTypes/text()";
 
-    private static final String XPATH_MATCHER_RESULT_ALARMTYPES = "\\w[A-Z]";
+    @Autowired
+    private SmartMeteringMonitoringRequestClient<ReadAlarmRegisterAsyncResponse, ReadAlarmRegisterRequest> requestClient;
 
-    private static final String TEST_SUITE_XML = "SmartmeterMonitoring";
-    private static final String TEST_CASE_XML = "192 Read alarm register";
-    private static final String TEST_CASE_NAME_REQUEST = "ReadAlarmRegister - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetReadAlarmRegisterResponse - Request 1";
+    @Autowired
+    private SmartMeteringMonitoringResponseClient<ReadAlarmRegisterResponse, ReadAlarmRegisterAsyncRequest> responseClient;
 
     @When("^the get read alarm register request is received$")
-    public void theGetActualMeterReadsRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    public void theGetReadAlarmRegisterRequestIsReceived(final Map<String, String> settings) throws Throwable {
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final ReadAlarmRegisterRequest request = ReadAlarmRegisterRequestFactory.fromParameterMap(settings);
+        final ReadAlarmRegisterAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        Helpers.saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(PROPERTIES_MAP, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        assertNotNull("asyncResponse should not be null", asyncResponse);
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
     @Then("^the alarm register should be returned$")
-    public void theActualMeterReadsResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
+    public void theAlarmRegisterShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        final ReadAlarmRegisterAsyncRequest asyncRequest = ReadAlarmRegisterRequestFactory.fromScenarioContext();
+        final ReadAlarmRegisterResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ALARMTYPES,
-                XPATH_MATCHER_RESULT_ALARMTYPES));
+        assertNotNull("AlarmTypes should not be null", response.getAlarmTypes());
+        assertNotNull("AlarmType should not be null", response.getAlarmTypes().get(0));
+
     }
 }

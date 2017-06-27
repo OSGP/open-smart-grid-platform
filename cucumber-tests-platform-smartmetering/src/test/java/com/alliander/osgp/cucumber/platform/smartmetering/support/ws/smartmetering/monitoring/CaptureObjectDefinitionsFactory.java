@@ -5,9 +5,8 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.cucumber.platform.smartmetering.builders;
+package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +16,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 
-public class CaptureObjectDefinitionsBuilder {
+public class CaptureObjectDefinitionsFactory {
 
     private final static String NUMBER_OF_SELECTED_VALUES = "NumberOfSelectedValues";
     private final static String CLASS_ID = "SelectedValue_ClassId";
@@ -25,29 +24,27 @@ public class CaptureObjectDefinitionsBuilder {
     private final static String ATTRIBUTE_INDEX = "SelectedValue_AttributeIndex";
     private final static String DATA_INDEX = "SelectedValue_DataIndex";
 
-    final List<CaptureObjectDefinition> selectedValues = new ArrayList<>();
+    public static CaptureObjectDefinitions fromParameterMap(final Map<String, String> requestParameters) {
 
-    public CaptureObjectDefinitionsBuilder withNextSelectedValue(
-            final CaptureObjectDefinition captureObjectDefinition) {
-        this.selectedValues.add(captureObjectDefinition);
-        return this;
-    }
+        final CaptureObjectDefinitions captureObjectDefinitions = new CaptureObjectDefinitions();
+        final List<CaptureObjectDefinition> selectedValues = captureObjectDefinitions.getCaptureObject();
 
-    public CaptureObjectDefinitionsBuilder fromSettings(final Map<String, String> settings) {
-        final int numberOfSelectedValues = Helpers.getInteger(settings, NUMBER_OF_SELECTED_VALUES, 0);
+        final int numberOfSelectedValues = Helpers.getInteger(requestParameters, NUMBER_OF_SELECTED_VALUES, 0);
         for (int i = 1; i <= numberOfSelectedValues; i++) {
             final CaptureObjectDefinition captureObjectDefinition = new CaptureObjectDefinition();
-            captureObjectDefinition.setClassId(SettingsHelper.getIntegerValue(settings, CLASS_ID, i));
-            captureObjectDefinition.setLogicalName(this.logicalNameFromSettings(settings, i));
-            captureObjectDefinition.setAttributeIndex(SettingsHelper.getByteValue(settings, ATTRIBUTE_INDEX, i));
-            captureObjectDefinition.setDataIndex(SettingsHelper.getIntegerValue(settings, DATA_INDEX, i));
-            this.withNextSelectedValue(captureObjectDefinition);
+            captureObjectDefinition.setClassId(SettingsHelper.getIntegerValue(requestParameters, CLASS_ID, i));
+            captureObjectDefinition.setLogicalName(logicalNameFromParemeterMap(requestParameters, i));
+            captureObjectDefinition
+                    .setAttributeIndex(SettingsHelper.getByteValue(requestParameters, ATTRIBUTE_INDEX, i));
+            captureObjectDefinition.setDataIndex(SettingsHelper.getIntegerValue(requestParameters, DATA_INDEX, i));
+            selectedValues.add(captureObjectDefinition);
         }
-        return this;
+        return captureObjectDefinitions;
     }
 
-    private ObisCodeValues logicalNameFromSettings(final Map<String, String> settings, final int i) {
-        final String logicalName = SettingsHelper.getStringValue(settings, LOGICAL_NAME, i);
+    private static ObisCodeValues logicalNameFromParemeterMap(final Map<String, String> requestParameters,
+            final int i) {
+        final String logicalName = SettingsHelper.getStringValue(requestParameters, LOGICAL_NAME, i);
         final String[] obisBytes = logicalName.split("\\.");
         final ObisCodeValues obisCodeValues = new ObisCodeValues();
         obisCodeValues.setA(Short.parseShort(obisBytes[0]));
@@ -59,14 +56,4 @@ public class CaptureObjectDefinitionsBuilder {
         return obisCodeValues;
     }
 
-    public CaptureObjectDefinitions build() {
-
-        if (this.selectedValues.isEmpty()) {
-            return null;
-        }
-
-        final CaptureObjectDefinitions result = new CaptureObjectDefinitions();
-        result.getCaptureObject().addAll(this.selectedValues);
-        return result;
-    }
 }
