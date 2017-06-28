@@ -27,11 +27,19 @@ Feature: SmartMetering Monitoring
     Then the actual meter reads gas result should be returned
       | DeviceIdentification | TESTG102400000001 |
 
-  Scenario: Get the periodic meter reads from a device
-    When the get periodic meter reads request is received
+  Scenario Outline: Get the periodic meter reads from a device
+    When the get "<PeriodType>" meter reads request is received
       | DeviceIdentification | TEST1024000000001 |
-    Then the periodic meter reads result should be returned
+      | PeriodType           | <PeriodType>      |
+      | BeginDate            | <BeginDate>       |
+      | EndDate              | <EndDate>         |
+    Then the "<PeriodType>" meter reads result should be returned
       | DeviceIdentification | TEST1024000000001 |
+
+    Examples: 
+      | PeriodType | BeginDate  | EndDate    |
+      | INTERVAL   | 2015-09-01 | 2015-10-01 |
+      | MONTHLY    | 2016-01-01 | 2016-09-01 |
 
   Scenario Outline: Get the meter reads from a gas device
     When the get "<PeriodType>" meter reads gas request is received
@@ -58,9 +66,14 @@ Feature: SmartMetering Monitoring
       | DeviceIdentification | E9998000014123414 |
       | DeviceType           | SMART_METER_E     |
       | Active               | False             |
-    When the get actual meter reads request on an inactive device is received
+    When the actual meter reads request is received for an inactive device
       | DeviceIdentification | E9998000014123414 |
-    Then the response "Device E9998000014123414 is not active in the platform" will be returned
+    Then a SOAP fault should have been returned
+      | Code           |                                                               207 |
+      | Component      | WS_SMART_METERING                                                 |
+      | Message        | INACTIVE_DEVICE                                                   |
+      | InnerException | com.alliander.osgp.domain.core.exceptions.InactiveDeviceException |
+      | InnerMessage   | Device E9998000014123414 is not active in the platform            |
 
   Scenario: Get the profile generic data from a device
     When the get profile generic data request is received
