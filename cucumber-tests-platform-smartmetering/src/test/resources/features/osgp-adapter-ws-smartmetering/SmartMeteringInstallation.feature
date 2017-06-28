@@ -315,6 +315,7 @@ Feature: SmartMetering Installation
       | Code    |             207 |
       | Message | INACTIVE_DEVICE |
 
+  #obsolete
   Scenario: DeCouple G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -329,6 +330,7 @@ Feature: SmartMetering Installation
     And the G-meter "TESTG102400000001" is DeCoupled from device "TEST1024000000001"
     And the channel of device "TESTG102400000001" is cleared
 
+  #obsolete
   Scenario: DeCouple unknown G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -339,6 +341,7 @@ Feature: SmartMetering Installation
       | Code    |            201 |
       | Message | UNKNOWN_DEVICE |
 
+  #obsolete
   Scenario: DeCouple G-meter from unknown E-meter
     Given a dlms device
       | DeviceIdentification | TESTG102400000001 |
@@ -348,6 +351,7 @@ Feature: SmartMetering Installation
       | Code    |            201 |
       | Message | UNKNOWN_DEVICE |
 
+  #obsolete
   Scenario: DeCouple inactive G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -364,6 +368,7 @@ Feature: SmartMetering Installation
       | Code    |             207 |
       | Message | INACTIVE_DEVICE |
 
+  #obsolete
   Scenario: DeCouple G-meter from an inactive E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -378,3 +383,62 @@ Feature: SmartMetering Installation
     Then a SOAP fault should have been returned
       | Code    |             207 |
       | Message | INACTIVE_DEVICE |
+
+  Scenario: Decouple coupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And a dlms device
+      | DeviceIdentification           | TESTG101205673117 |
+      | DeviceType                     | SMART_METER_G     |
+      | GatewayDeviceIdentification    | TEST1024000000001 |
+      | Channel                        |                 1 |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusPrimaryAdress              |                 9 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" and attributes
+      | 5 |         3 |
+      | 6 | 302343985 |
+      | 7 |     12514 |
+      | 8 |        66 |
+      | 9 |         3 |
+    When the DeCouple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
+    Then the DeCouple response is "OK"
+    And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.255" and attributes
+      | 5 | 0 |
+      | 6 | 0 |
+      | 7 | 0 |
+      | 8 | 0 |
+      | 9 | 0 |
+
+  @decouple
+  Scenario: Decouple decoupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And a dlms device
+      | DeviceIdentification           | TESTG101205673117 |
+      | DeviceType                     | SMART_METER_G     |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusPrimaryAdress              |                 9 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" and attributes
+      | 5 | 0 |
+      | 6 | 0 |
+      | 7 | 0 |
+      | 8 | 0 |
+      | 9 | 0 |
+    When the DeCouple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
+    Then the DeCouple response is "OK"
+    And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.255" and attributes
+      | 5 | 0 |
+      | 6 | 0 |
+      | 7 | 0 |
+      | 8 | 0 |
+      | 9 | 0 |
