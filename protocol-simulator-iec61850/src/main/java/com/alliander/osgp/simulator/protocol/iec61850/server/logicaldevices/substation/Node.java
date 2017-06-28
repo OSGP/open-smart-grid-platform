@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.wago;
+package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.substation;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.BdaFloat32;
@@ -17,23 +17,19 @@ import org.openmuc.openiec61850.ServerModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WagoNode {
+public class Node {
     private static final String MAGNITUDE_NODE = ".cVal.mag.f";
     private static final String TIMESTAMP_NODE = ".t";
     private static final Fc FC_MEASURANDS_VALUES = Fc.MX;
 
-    private final WagoServerField wagoServerField;
+    private final LogicalNodeNode logicalNodeNode;
     private final String nodeId;
     private final double value;
 
-    public WagoNode(final WagoServerField wagoServerField, final String nodeId, final double value) {
-        this.wagoServerField = wagoServerField;
+    public Node(final LogicalNodeNode logicalNodeNode, final String nodeId, final double value) {
+        this.logicalNodeNode = logicalNodeNode;
         this.nodeId = nodeId;
         this.value = value;
-    }
-
-    protected double getValue() {
-        return this.value;
     }
 
     public List<BasicDataAttribute> getChangedAttributes() {
@@ -47,6 +43,30 @@ public class WagoNode {
             changedAttributes.add(changedTimestampAttribute);
         }
         return changedAttributes;
+    }
+
+    protected String getMagnitudeNodeName() {
+        return this.getServerName() + "/" + this.getLogicalNodeId() + "." + this.nodeId + MAGNITUDE_NODE;
+    }
+
+    protected String getNodeId() {
+        return this.nodeId;
+    }
+
+    protected String getServerName() {
+        return this.logicalNodeNode.getLogicalDeviceNode().getServerName();
+    }
+
+    protected String getLogicalNodeId() {
+        return this.logicalNodeNode.getLogicalNodeType().getId();
+    }
+
+    protected double getValue() {
+        return this.value;
+    }
+
+    private ServerModel getServerModel() {
+        return this.logicalNodeNode.getLogicalDeviceNode().getServerModel();
     }
 
     private BasicDataAttribute getChangedMagnitudeAttribute() {
@@ -71,10 +91,6 @@ public class WagoNode {
         return bda;
     }
 
-    protected String getMagnitudeNodeName() {
-        return this.getServerName() + "/" + this.getFieldId() + "." + this.nodeId + MAGNITUDE_NODE;
-    }
-
     private BasicDataAttribute getChangedTimestampAttribute() {
         final ModelNode node = getTimestampNode();
         if (node!=null) {
@@ -92,28 +108,12 @@ public class WagoNode {
     }
 
     private String getTimestampNodeName() {
-        return this.getServerName() + "/" + this.getFieldId() + "." + this.nodeId + TIMESTAMP_NODE;
+        return this.getServerName() + "/" + this.getLogicalNodeId() + "." + this.nodeId + TIMESTAMP_NODE;
     }
 
     private BasicDataAttribute getChangedTimestampAttributeForNode(final ModelNode node) {
         final BdaTimestamp bda = (BdaTimestamp) node;
         bda.setCurrentTime();
         return bda;
-    }
-
-    protected String getNodeId() {
-        return this.nodeId;
-    }
-
-    private ServerModel getServerModel() {
-        return this.wagoServerField.getServerModel();
-    }
-
-    protected String getServerName() {
-        return this.wagoServerField.getServerName();
-    }
-
-    protected String getFieldId() {
-        return this.wagoServerField.getWagoField().getId();
     }
 }

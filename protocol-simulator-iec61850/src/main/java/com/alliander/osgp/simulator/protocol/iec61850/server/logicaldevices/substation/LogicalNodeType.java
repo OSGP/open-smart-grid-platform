@@ -5,15 +5,15 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.wago;
+package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.substation;
 
-public enum WagoField {
-    FIELD0("MMXU1"),
-    FIELD1("MMXU2");
+public enum LogicalNodeType {
+    MMXU1("MMXU1"),
+    MMXU2("MMXU2");
 
     private final String id;
 
-    WagoField(final String id) {
+    LogicalNodeType(final String id) {
         this.id = id;
     }
 

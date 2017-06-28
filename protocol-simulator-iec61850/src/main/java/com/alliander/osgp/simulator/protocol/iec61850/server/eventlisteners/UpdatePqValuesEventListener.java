@@ -8,8 +8,8 @@
 package com.alliander.osgp.simulator.protocol.iec61850.server.eventlisteners;
 
 import com.alliander.osgp.simulator.protocol.iec61850.server.events.ServerSapEvent;
-import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.wago.WagoNode;
-import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.wago.WagoServerHelper;
+import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.substation.Iec61850ServerHelper;
+import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.substation.Node;
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.ServerModel;
 import org.openmuc.openiec61850.ServerSap;
@@ -37,8 +37,8 @@ public class UpdatePqValuesEventListener {
     private void updateServerValue(final ServerSap serverSap) {
         LOGGER.debug("updateServerValue");
         final ServerModel serverModel = serverSap.getModelCopy();
-        final List<WagoNode> wagoNodes = WagoServerHelper.initializeServerNodes(serverModel);
-        final List<BasicDataAttribute> changedAttributes = WagoServerHelper.getAllChangedAttributes(wagoNodes);
+        final List<Node> nodes = Iec61850ServerHelper.initializeServerNodes(serverModel);
+        final List<BasicDataAttribute> changedAttributes = Iec61850ServerHelper.getAllChangedAttributes(nodes);
         serverSap.setValues(changedAttributes);
     }
 }

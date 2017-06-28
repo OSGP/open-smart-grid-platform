@@ -5,27 +5,21 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.wago;
+package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.substation;
 
 import org.openmuc.openiec61850.ServerModel;
 
-public class WagoServerField {
+public class LogicalDeviceNode {
     private final ServerModel serverModel;
-    private final WagoField wagoField;
     private final String serverName;
 
-    public WagoServerField(final ServerModel serverModel, final WagoField wagoField) {
+    public LogicalDeviceNode(final ServerModel serverModel) {
         this.serverModel = serverModel;
         this.serverName = serverModel.getChildren().stream().findFirst().get().getName();
-        this.wagoField = wagoField;
     }
 
     public ServerModel getServerModel() {
         return this.serverModel;
-    }
-
-    public WagoField getWagoField() {
-        return this.wagoField;
     }
 
     public String getServerName() {

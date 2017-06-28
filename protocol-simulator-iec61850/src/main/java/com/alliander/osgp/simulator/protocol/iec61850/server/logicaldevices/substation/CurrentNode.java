@@ -5,13 +5,13 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.wago;
+package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.substation;
 
 import java.util.Random;
 
-public class WagoCurrentNode extends WagoNode {
-    public WagoCurrentNode(final WagoServerField wagoServerField, final String nodeId, final double value) {
-        super(wagoServerField, nodeId, generateRandomCurrentValue(value));
+public class CurrentNode extends Node {
+    public CurrentNode(final LogicalNodeNode logicalNodeNode, final String nodeId, final double value) {
+        super(logicalNodeNode, nodeId, generateRandomCurrentValue(value));
     }
 
     private static double generateRandomCurrentValue(final double baseValue) {
