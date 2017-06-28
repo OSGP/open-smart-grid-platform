@@ -407,14 +407,13 @@ Feature: SmartMetering Installation
     When the DeCouple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
     Then the DeCouple response is "OK"
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.255" and attributes
+    And device simulation of 'TEST1024000000001' with classid 72 obiscode "0-2:24.1.255" retrieves the attributes
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |
       | 8 | 0 |
       | 9 | 0 |
 
-  @decouple
   Scenario: Decouple decoupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -436,7 +435,7 @@ Feature: SmartMetering Installation
     When the DeCouple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
     Then the DeCouple response is "OK"
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.255" and attributes
+    And device simulation of 'TEST1024000000001' with classid 72 obiscode "0-2:24.1.255" retrieves the attributes
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
@@ -58,5 +59,17 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
                     + " and settings: " + settings + " with SimulatorTriggerClient", stce);
             fail("Error setting DLMS attribute values for simulator");
         }
+    }
+
+    @Then("^device simulation of 'TEST(\\d+)' with classid (\\d+) obiscode \"([^\"]*)\" retrieves the attributes$")
+    public void deviceSimulationOfTESTWithClassidObiscodeRetrievesTheAttributes(final String deviceIdentification,
+            final int classId, final String obisCode, final Map<String, String> settings) throws Throwable {
+        // TODO try {
+        // this.simulatorTriggerClient.getDlmsAttributeValues(classId,
+        // obisCode, settings);
+        // } catch (final SimulatorTriggerClientException stce) {
+        // LOGGER.error("Error while getting DLMS attribute values");
+        // fail("Error setting DLMS attribute values for simulator");
+        // }
     }
 }
