@@ -198,16 +198,13 @@ public class InstallationService {
             final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository
                     .getMbusDevicesForGateway(gateway.getId());
 
-            if (alreadyCoupled.isEmpty()) {
-                throw new FunctionalException(FunctionalExceptionType.DEVICES_NOT_COUPLED,
-                        ComponentType.DOMAIN_SMART_METERING);
-            }
-
-            for (final SmartMeter coupledDevice : alreadyCoupled) {
-                if (coupledDevice.getDeviceIdentification().equals(mbusDevice.getDeviceIdentification())) {
-                    coupledDevice.setChannel(null);
-                    coupledDevice.updateGatewayDevice(null);
-                    this.smartMeteringDeviceRepository.save(coupledDevice);
+            if (!alreadyCoupled.isEmpty()) {
+                for (final SmartMeter coupledDevice : alreadyCoupled) {
+                    if (coupledDevice.getDeviceIdentification().equals(mbusDevice.getDeviceIdentification())) {
+                        coupledDevice.setChannel(null);
+                        coupledDevice.updateGatewayDevice(null);
+                        this.smartMeteringDeviceRepository.save(coupledDevice);
+                    }
                 }
             }
         } catch (final FunctionalException functionalException) {
