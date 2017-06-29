@@ -202,6 +202,22 @@ public class SimulatorTriggerClient extends AbstractClient {
         }
     }
 
+    public String getDlmsAttributeValues(final int classId, final String obisCode)
+            throws SimulatorTriggerClientException {
+
+        final String key = this.buildKeyPathSegment(classId, obisCode);
+
+        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(key).get();
+
+        try {
+            this.checkResponseStatus(response);
+        } catch (final ResponseException e) {
+            throw new SimulatorTriggerClientException("getDlmsAttributeValues response exception", e);
+        }
+
+        return response.readEntity(String.class);
+    }
+
     private String buildKeyPathSegment(final int classId, final String obisCode) {
         return String.format("%d_%s", classId, obisCode);
     }
