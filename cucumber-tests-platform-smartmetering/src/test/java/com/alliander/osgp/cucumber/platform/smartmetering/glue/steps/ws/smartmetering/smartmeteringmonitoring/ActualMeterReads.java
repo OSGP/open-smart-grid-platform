@@ -50,10 +50,8 @@ public class ActualMeterReads extends SmartMeteringStepsBase {
     @Then("^the actual meter reads result should be returned$")
     public void theActualMeterReadsResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-
         final ActualMeterReadsAsyncRequest asyncRequest = ActualMeterReadsRequestFactory.fromScenarioContext();
-        final ActualMeterReadsResponse response = this.responseClient.getResponse(asyncRequest, correlationUid);
+        final ActualMeterReadsResponse response = this.responseClient.getResponse(asyncRequest);
 
         assertNotNull("ActualMeterReadsResponse should not be null", response);
         assertNotNull("ActiveEnergyExport should not be null", response.getActiveEnergyExport());

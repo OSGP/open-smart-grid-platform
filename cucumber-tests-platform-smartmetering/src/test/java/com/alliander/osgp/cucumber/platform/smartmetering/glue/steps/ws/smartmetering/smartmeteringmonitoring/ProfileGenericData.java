@@ -55,11 +55,9 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
     @Then("^the profile generic data result should be returned$")
     public void theProfileGenericDataResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-
         final ProfileGenericDataAsyncRequest asyncRequest = ProfileGenericDataRequestFactory.fromScenarioContext();
 
-        final ProfileGenericDataResponse response = this.responseClient.getResponse(asyncRequest, correlationUid);
+        final ProfileGenericDataResponse response = this.responseClient.getResponse(asyncRequest);
         assertNotNull("ProfileGenericDataResponse should not be null", response);
 
         final int expectedNumberOfCaptureObjects = Helpers.getInteger(settings, "NumberOfCaptureObjects", 0);

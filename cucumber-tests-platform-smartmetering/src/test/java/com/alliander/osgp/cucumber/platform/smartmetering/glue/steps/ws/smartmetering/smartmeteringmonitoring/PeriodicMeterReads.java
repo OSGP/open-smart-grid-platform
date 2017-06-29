@@ -52,10 +52,8 @@ public class PeriodicMeterReads extends SmartMeteringStepsBase {
     public void theMeterReadsResultShouldBeReturned(final String periodType, final Map<String, String> settings)
             throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-
         final PeriodicMeterReadsAsyncRequest asyncRequest = PeriodicMeterReadsRequestFactory.fromScenarioContext();
-        final PeriodicMeterReadsResponse response = this.responseClient.getResponse(asyncRequest, correlationUid);
+        final PeriodicMeterReadsResponse response = this.responseClient.getResponse(asyncRequest);
 
         assertNotNull("PeriodicMeterReadsGasResponse should not be null", response);
         assertEquals("PeriodType should match", PeriodType.fromValue(periodType), response.getPeriodType());
