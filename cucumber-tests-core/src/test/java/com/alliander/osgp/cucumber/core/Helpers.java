@@ -482,4 +482,8 @@ public class Helpers {
         final Byte value = Byte.parseByte(settings.get(key));
         return value;
     }
+
+    public static String replaceEmptyStringByNull(final String value) {
+        return (value.equals("")) ? null : value;
+    }
 }

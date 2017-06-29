@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
 import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.Helpers.replaceEmptyStringByNull;
 
 import java.util.Map;
 
@@ -59,19 +60,19 @@ public class FirmwareSteps {
 
         String comm = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM);
-        comm = (comm.equals("")) ? null : comm;
+        comm = replaceEmptyStringByNull(comm);
         String func = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC);
-        func = (func.equals("")) ? null : func;
+        func = replaceEmptyStringByNull(func);
         String ma = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_MA);
-        ma = (ma.equals("")) ? null : ma;
+        ma = replaceEmptyStringByNull(ma);
         String mbus = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS);
-        mbus = (mbus.equals("")) ? null : mbus;
+        mbus = replaceEmptyStringByNull(mbus);
         String sec = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC);
-        sec = (sec.equals("")) ? null : sec;
+        sec = replaceEmptyStringByNull(sec);
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec);
 
