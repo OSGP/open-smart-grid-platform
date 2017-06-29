@@ -122,15 +122,6 @@ public class SetConfigurationObjectCommandExecutor
         final List<DataObject> linkedList = new LinkedList<>();
         if (configurationObject.getGprsOperationMode() != null) {
             linkedList.add(DataObject.newEnumerateData(configurationObject.getGprsOperationMode().getValue()));
-            // }
-            // if
-            // (GprsOperationModeTypeDto.ALWAYS_ON.equals(configurationObject.getGprsOperationMode()))
-            // {
-            // linkedList.add(DataObject.newEnumerateData(1));
-            // } else if
-            // (GprsOperationModeTypeDto.TRIGGERED.equals(configurationObject.getGprsOperationMode()))
-            // {
-            // linkedList.add(DataObject.newEnumerateData(0));
         } else {
             // copy from meter if there is a set gprsoperationmode
             if (configurationObjectOnDevice.getGprsOperationMode() != null) {
