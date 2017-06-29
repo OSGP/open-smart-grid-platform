@@ -7,9 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClient;
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClientException;
@@ -28,6 +31,8 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     private SimulatorTriggerClient simulatorTriggerClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSimulatorSteps.class);
+
+    private static final String XPATH_MATCHER_RESULT_DECODED_MESSAGE = "\\d";
 
     public void clearDlmsAttributeValues() {
         try {
@@ -64,13 +69,19 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     @Then("^device simulation of 'TEST(\\d+)' with classid (\\d+) obiscode \"([^\"]*)\" retrieves the attributes$")
     public void deviceSimulationOfTESTWithClassidObiscodeRetrievesTheAttributes(final String deviceIdentification,
             final int classId, final String obisCode, final Map<String, String> settings) throws Throwable {
+        String attribute = null;
         try {
-            final String attribute = this.simulatorTriggerClient.getDlmsAttributeValues(classId, obisCode);
+            attribute = this.simulatorTriggerClient.getDlmsAttributeValues(classId, obisCode);
 
-            // TODO validate attribute with setting
         } catch (final SimulatorTriggerClientException stce) {
             LOGGER.error("Error while getting DLMS attribute values");
             fail("Error setting DLMS attribute values for simulator");
+        }
+
+        for (final Map.Entry<String, String> setting : settings.entrySet()) {
+            final Pattern pattern = Pattern.compile("(" + setting.getKey() + "=" + setting.getValue() + ")");
+            final Matcher matcher = pattern.matcher(attribute);
+            assertTrue("Pattern not found", matcher.find());
         }
     }
 }
