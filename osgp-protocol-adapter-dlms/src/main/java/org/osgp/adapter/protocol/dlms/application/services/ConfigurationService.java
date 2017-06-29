@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
+import org.osgp.adapter.protocol.dlms.domain.commands.GenerateAndReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
@@ -104,6 +105,11 @@ public class ConfigurationService {
 
     @Autowired
     private GetConfigurationObjectCommandExecutor getConfigurationObjectCommandExecutor;
+
+    @Autowired
+    private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
+
+    public static final int AES_GMC_128_KEY_SIZE = 128;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -216,7 +222,7 @@ public class ConfigurationService {
         this.setActivityCalendarCommandExecutor.execute(conn, device, activityCalendar);
 
         return "Set Activity Calendar Result is OK for device id: " + device.getDeviceIdentification()
-        + " calendar name: " + activityCalendar.getCalendarName();
+                + " calendar name: " + activityCalendar.getCalendarName();
 
     }
 
@@ -255,6 +261,17 @@ public class ConfigurationService {
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
     }
 
+    public void generateAndEncrypt(final DlmsConnectionHolder conn, final DlmsDevice device)
+            throws ProtocolAdapterException, FunctionalException {
+        try {
+
+            this.generateAndReplaceKeyCommandExecutor.executeBundleAction(conn, device, null);
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Unexpected exception during replaceKeys.", e);
+            throw e;
+        }
+    }
+
     public void replaceKeys(final DlmsConnectionHolder conn, final DlmsDevice device, final SetKeysRequestDto keySet)
             throws ProtocolAdapterException, FunctionalException {
 
@@ -264,7 +281,9 @@ public class ConfigurationService {
              * SetKeysRequestDto containing authentication and encryption key,
              * while execute deals with a single key only.
              */
+            keySet.setGeneratedKeys(false);
             this.replaceKeyCommandExecutor.executeBundleAction(conn, device, keySet);
+
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw e;
@@ -295,5 +314,4 @@ public class ConfigurationService {
         return new GetConfigurationObjectResponseDto(
                 this.getConfigurationObjectCommandExecutor.execute(conn, device, null));
     }
-
 }

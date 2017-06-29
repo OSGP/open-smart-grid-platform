@@ -63,10 +63,10 @@ public class ReplaceKeyCommandExecutor
     private EncryptionService encryptionService;
 
     @Autowired
-    private ReEncryptionService reEncryptionService;
+    private DlmsDeviceRepository dlmsDeviceRepository;
 
     @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
+    ReEncryptionService reEncryptionService;
 
     static class KeyWrapper {
         private final byte[] bytes;
@@ -105,9 +105,14 @@ public class ReplaceKeyCommandExecutor
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
 
         this.checkActionRequestType(actionRequestDto);
-        final SetKeysRequestDto setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
 
-        LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), setKeysRequestDto);
+        LOGGER.info("Keys set on device :{}", device.getDeviceIdentification());
+
+        SetKeysRequestDto setKeysRequestDto = (SetKeysRequestDto) actionRequestDto;
+        if (!setKeysRequestDto.isGeneratedKeys()) {
+            final SetKeysRequestDto encryptedKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
+            setKeysRequestDto = encryptedKeysRequestDto;
+        }
 
         DlmsDevice devicePostSave = this.execute(conn, device,
                 ReplaceKeyCommandExecutor.wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
