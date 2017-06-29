@@ -49,14 +49,6 @@
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
         <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="Channel">
-          <xsd:simpleType>
-            <xsd:restriction base="xsd:short">
-              <xsd:minInclusive value="1" />
-              <xsd:maxInclusive value="4" />
-            </xsd:restriction>
-          </xsd:simpleType>
-        </xsd:element>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -198,8 +190,8 @@
       <xsd:element name="Mbus_identification_number"
         minOccurs="0">
         <xsd:simpleType>
-          <xsd:restriction base="xsd:string">
-            <xsd:maxLength value="8" />
+          <xsd:restriction base="xsd:unsignedInt">
+            <xsd:maxInclusive value="99999999" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
@@ -208,28 +200,16 @@
         minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
-            <xsd:maxLength value="3" />
+            <xsd:pattern value="[A-Z]{3}"></xsd:pattern>
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
 
       <xsd:element name="Mbus_version"
-        minOccurs="0">
-        <xsd:simpleType>
-          <xsd:restriction base="xsd:string">
-            <xsd:maxLength value="3" />
-          </xsd:restriction>
-        </xsd:simpleType>
-      </xsd:element>
+        minOccurs="0" type="xsd:unsignedByte" />
 
       <xsd:element name="Mbus_device_type_identification"
-        minOccurs="0">
-        <xsd:simpleType>
-          <xsd:restriction base="xsd:string">
-            <xsd:maxLength value="3" />
-          </xsd:restriction>
-        </xsd:simpleType>
-      </xsd:element>
+        minOccurs="0" type="xsd:unsignedByte" />
 
     </xsd:sequence>
   </xsd:complexType>
