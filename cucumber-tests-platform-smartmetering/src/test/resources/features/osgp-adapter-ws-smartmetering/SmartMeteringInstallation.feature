@@ -435,7 +435,7 @@ Feature: SmartMetering Installation
     When the DeCouple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
     Then the DeCouple response is "OK"
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
-    And device simulation of 'TEST1024000000001' with classid 72 obiscode "0-2:24.1.255" retrieves the attributes
+    And device simulation of 'TEST1024000000001' with classid 72 obiscode "0-1:24.1.255" retrieves the attributes
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |

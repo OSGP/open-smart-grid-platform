@@ -64,12 +64,13 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     @Then("^device simulation of 'TEST(\\d+)' with classid (\\d+) obiscode \"([^\"]*)\" retrieves the attributes$")
     public void deviceSimulationOfTESTWithClassidObiscodeRetrievesTheAttributes(final String deviceIdentification,
             final int classId, final String obisCode, final Map<String, String> settings) throws Throwable {
-        // TODO try {
-        // this.simulatorTriggerClient.getDlmsAttributeValues(classId,
-        // obisCode, settings);
-        // } catch (final SimulatorTriggerClientException stce) {
-        // LOGGER.error("Error while getting DLMS attribute values");
-        // fail("Error setting DLMS attribute values for simulator");
-        // }
+        try {
+            final String attribute = this.simulatorTriggerClient.getDlmsAttributeValues(classId, obisCode);
+
+            // TODO validate attribute with setting
+        } catch (final SimulatorTriggerClientException stce) {
+            LOGGER.error("Error while getting DLMS attribute values");
+            fail("Error setting DLMS attribute values for simulator");
+        }
     }
 }
