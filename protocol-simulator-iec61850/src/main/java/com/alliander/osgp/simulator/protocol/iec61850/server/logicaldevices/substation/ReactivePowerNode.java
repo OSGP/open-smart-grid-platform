@@ -8,11 +8,11 @@
 package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.substation;
 
 public class ReactivePowerNode extends Node {
-    public ReactivePowerNode(final LogicalNodeNode logicalNodeNode, final String nodeId, final CurrentNode currentNode, final VoltageNode wagoVoltageNode, final double phi) {
-        super(logicalNodeNode, nodeId, generateReactivePowerValue(currentNode, wagoVoltageNode, phi));
+    public ReactivePowerNode(final LogicalNodeNode logicalNodeNode, final String nodeId, final CurrentNode currentNode, final VoltageNode voltageNode, final double phi) {
+        super(logicalNodeNode, nodeId, generateReactivePowerValue(currentNode, voltageNode, phi));
     }
 
-    private static double generateReactivePowerValue(final CurrentNode currentNode, final VoltageNode wagoVoltageNode, final double phi) {
-        return currentNode.getValue() * wagoVoltageNode.getValue() * Math.sin(phi);
+    private static double generateReactivePowerValue(final CurrentNode currentNode, final VoltageNode voltageNode, final double phi) {
+        return currentNode.getValue() * voltageNode.getValue() * Math.sin(phi);
     }
 }
