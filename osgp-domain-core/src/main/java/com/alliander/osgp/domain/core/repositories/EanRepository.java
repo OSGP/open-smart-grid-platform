@@ -17,8 +17,10 @@ import org.springframework.stereotype.Repository;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Ean;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@Transactional
 public interface EanRepository extends JpaRepository<Ean, Long>, JpaSpecificationExecutor<Ean> {
 
     List<Ean> findByDevice(Device device);
