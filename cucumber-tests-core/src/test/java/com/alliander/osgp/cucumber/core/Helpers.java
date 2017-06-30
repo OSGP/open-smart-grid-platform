@@ -482,4 +482,10 @@ public class Helpers {
         final Byte value = Byte.parseByte(settings.get(key));
         return value;
     }
+
+    public static String getNullOrNonEmptyString(final Map<String, String> settings, final String key,
+            final String defaultValue) {
+        final String value = getString(settings, key, defaultValue);
+        return ("".equals(value) ? null : value);
+    }
 }
