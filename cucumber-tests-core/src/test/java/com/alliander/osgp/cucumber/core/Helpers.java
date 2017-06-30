@@ -483,7 +483,9 @@ public class Helpers {
         return value;
     }
 
-    public static String replaceEmptyStringByNull(final String value) {
-        return (value.equals("")) ? null : value;
+    public static String getNullOrNonEmptyString(final Map<String, String> settings, final String key,
+            final String defaultValue) {
+        final String value = getString(settings, key, defaultValue);
+        return ("".equals(value) ? null : value);
     }
 }

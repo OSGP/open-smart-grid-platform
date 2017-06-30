@@ -8,8 +8,8 @@
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
 import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.core.Helpers.getNullOrNonEmptyString;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.cucumber.core.Helpers.replaceEmptyStringByNull;
 
 import java.util.Map;
 
@@ -58,21 +58,16 @@ public class FirmwareSteps {
             deviceModel = this.deviceModelSteps.aDeviceModel(settings);
         }
 
-        String comm = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
+        final String comm = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM);
-        comm = replaceEmptyStringByNull(comm);
-        String func = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
+        final String func = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC);
-        func = replaceEmptyStringByNull(func);
-        String ma = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
+        final String ma = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_MA);
-        ma = replaceEmptyStringByNull(ma);
-        String mbus = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
+        final String mbus = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS);
-        mbus = replaceEmptyStringByNull(mbus);
-        String sec = getString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
+        final String sec = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
                 PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC);
-        sec = replaceEmptyStringByNull(sec);
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec);
 
