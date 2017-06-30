@@ -7,27 +7,7 @@
  */
 package com.alliander.osgp.simulator.protocol.iec61850.server;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.annotation.PreDestroy;
-
-import org.openmuc.openiec61850.BasicDataAttribute;
-import org.openmuc.openiec61850.ModelNode;
-import org.openmuc.openiec61850.SclParseException;
-import org.openmuc.openiec61850.ServerEventListener;
-import org.openmuc.openiec61850.ServerModel;
-import org.openmuc.openiec61850.ServerSap;
-import org.openmuc.openiec61850.ServiceError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-
+import com.alliander.osgp.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Battery;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Boiler;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Chp;
@@ -39,6 +19,25 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Load
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LogicalDevice;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Pv;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Rtu;
+import org.openmuc.openiec61850.BasicDataAttribute;
+import org.openmuc.openiec61850.ModelNode;
+import org.openmuc.openiec61850.SclParseException;
+import org.openmuc.openiec61850.ServerEventListener;
+import org.openmuc.openiec61850.ServerModel;
+import org.openmuc.openiec61850.ServerSap;
+import org.openmuc.openiec61850.ServiceError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import javax.annotation.PreDestroy;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RtuSimulator implements ServerEventListener {
 
@@ -54,15 +53,29 @@ public class RtuSimulator implements ServerEventListener {
 
     private final String serverName;
 
+    private final ServerSapEventProducer serverSapEventProducer;
+
+    private final Long updateValuesDelay;
+
+    private final Long updateValuesPeriod;
+
     private boolean isStarted = false;
 
     private final AtomicBoolean stopGeneratingValues = new AtomicBoolean(false);
 
     public RtuSimulator(final int port, final InputStream sclFile, final String serverName) throws SclParseException {
+        this(port, sclFile, serverName, null, null, null);
+    }
+
+    public RtuSimulator(final int port, final InputStream sclFile, final String serverName, final ServerSapEventProducer serverSapEventProducer,
+                        final Long updateValuesDelay, final Long updateValuesPeriod) throws SclParseException {
         final List<ServerSap> serverSaps = ServerSap.getSapsFromSclFile(sclFile);
         this.server = serverSaps.get(0);
         this.server.setPort(port);
         this.serverName = serverName;
+        this.serverSapEventProducer = serverSapEventProducer;
+        this.updateValuesDelay = updateValuesDelay;
+        this.updateValuesPeriod = updateValuesPeriod;
 
         this.serverModel = this.server.getModelCopy();
 
@@ -219,6 +232,9 @@ public class RtuSimulator implements ServerEventListener {
         }
 
         this.server.startListening(this);
+        if (this.serverSapEventProducer !=null) {
+            this.serverSapEventProducer.scheduleAtFixedRate(this.server, this.updateValuesDelay, this.updateValuesPeriod);
+        }
         this.isStarted = true;
     }
 

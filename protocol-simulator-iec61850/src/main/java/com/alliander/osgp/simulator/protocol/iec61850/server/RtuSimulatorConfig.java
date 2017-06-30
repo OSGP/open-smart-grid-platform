@@ -7,9 +7,7 @@
  */
 package com.alliander.osgp.simulator.protocol.iec61850.server;
 
-import java.io.IOException;
-import java.io.InputStream;
-
+import com.alliander.osgp.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import org.openmuc.openiec61850.SclParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +17,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 @Configuration
 public class RtuSimulatorConfig {
 
@@ -27,15 +28,24 @@ public class RtuSimulatorConfig {
     @Autowired
     private ResourceLoader resourceLoader;
 
+    @Autowired
+    private ServerSapEventProducer serverSapEventProducer;
+
     @Bean
     public RtuSimulator rtuSimulator(@Value("${rtu.icd:Pampus_v0.4.5.icd}") final String icdFilename,
             @Value("${rtu.port:60102}") final Integer port,
             @Value("${rtu.serverName:WAGO61850Server}") final String serverName,
-            @Value("${rtu.stopGeneratingValues:false}") final Boolean stopGeneratingValues) throws IOException {
-        final InputStream icdFile = resourceLoader.getResource("classpath:"+icdFilename).getInputStream();
+            @Value("${rtu.stopGeneratingValues:false}") final Boolean stopGeneratingValues,
+            @Value("${rtu.updateValuesDelay:2000}") final Long updateValuesDelay,
+            @Value("${rtu.updateValuesPeriod:10000}") final Long updateValuesPeriod
+    ) throws IOException {
+        LOGGER.info("Start simulator with icdFilename={}, port={}, serverName={}, stopGeneratingValues={}, updateValuesDelay={}, updateValuesPeriod={}",
+                icdFilename, port, serverName, stopGeneratingValues, updateValuesDelay, updateValuesPeriod);
+        final InputStream icdFile = this.resourceLoader.getResource("classpath:"+icdFilename).getInputStream();
+        LOGGER.info("Simulator icdFile is {} on the classpath", icdFile!=null?"found":"not found");
 
         try {
-            final RtuSimulator rtuSimulator = new RtuSimulator(port, icdFile, serverName);
+            final RtuSimulator rtuSimulator = new RtuSimulator(port, icdFile, serverName, this.serverSapEventProducer, updateValuesDelay, updateValuesPeriod);
             if (stopGeneratingValues) {
                 rtuSimulator.ensurePeriodicDataGenerationIsStopped();
             }
