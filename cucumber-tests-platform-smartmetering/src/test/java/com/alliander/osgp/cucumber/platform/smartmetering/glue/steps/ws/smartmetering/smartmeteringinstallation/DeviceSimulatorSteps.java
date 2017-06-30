@@ -75,13 +75,13 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
         } catch (final SimulatorTriggerClientException stce) {
             LOGGER.error("Error while getting DLMS attribute values");
-            fail("Error setting DLMS attribute values for simulator");
+            fail("Error getting DLMS attribute values for simulator");
         }
 
         for (final Map.Entry<String, String> setting : settings.entrySet()) {
             final Pattern pattern = Pattern.compile("(" + setting.getKey() + "=" + setting.getValue() + ")");
             final Matcher matcher = pattern.matcher(attribute);
-            assertTrue("Pattern not found", matcher.find());
+            assertTrue(pattern.toString() + " DLMS attribute and value not found on simulator", matcher.find());
         }
     }
 }
