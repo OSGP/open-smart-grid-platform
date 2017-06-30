@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import org.osgp.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.osgp.adapter.protocol.dlms.domain.commands.CoupleMBusDeviceCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.DeCoupleMBusDeviceCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -35,6 +36,9 @@ public class InstallationService {
 
     @Autowired
     private CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
+
+    @Autowired
+    private DeCoupleMBusDeviceCommandExecutor deCoupleMBusDeviceCommandExecutor;
 
     // === ADD METER ===
     public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
@@ -73,6 +77,11 @@ public class InstallationService {
             final MbusChannelElementsDto mbusChannelElements) throws ProtocolAdapterException {
 
         return this.coupleMBusDeviceCommandExecutor.execute(conn, device, mbusChannelElements);
+    }
 
+    public MbusChannelElementsResponseDto deCoupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final MbusChannelElementsDto mbusChannelElements) throws ProtocolAdapterException {
+
+        return this.deCoupleMBusDeviceCommandExecutor.execute(conn, device, mbusChannelElements);
     }
 }
