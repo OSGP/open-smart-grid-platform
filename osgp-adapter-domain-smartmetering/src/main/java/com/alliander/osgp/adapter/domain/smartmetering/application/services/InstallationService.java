@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
@@ -30,6 +31,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -47,6 +49,8 @@ import ma.glasnost.orika.MapperFactory;
 @Transactional(value = "transactionManager")
 public class InstallationService {
 
+    private static final String SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG = "Sending request message to core.";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
 
     @Autowired
@@ -58,6 +62,9 @@ public class InstallationService {
 
     @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
+
+    @Autowired
+    private ConfigurationMapper configurationMapper;
 
     @Autowired
     private MapperFactory mapperFactory;
@@ -161,6 +168,14 @@ public class InstallationService {
         this.mBusGatewayService.coupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
+    // public void deCoupleMbusDevice(final DeviceMessageMetadata
+    // deviceMessageMetadata,
+    // final DeCoupleMbusDeviceRequestData requestData) throws
+    // FunctionalException {
+    // this.mBusGatewayService.deCoupleMbusDevice(deviceMessageMetadata,
+    // requestData);
+    // }
+
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType result, final OsgpException exception,
             final MbusChannelElementsResponseDto dataObject) throws FunctionalException {
@@ -168,6 +183,35 @@ public class InstallationService {
             this.mBusGatewayService.handleCoupleMbusDeviceResponse(deviceMessageMetadata, dataObject);
         }
         this.handleResponse("coupleMbusDevice", deviceMessageMetadata, result, exception);
+    }
+
+    public void handleDeCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType result, final OsgpException exception,
+            final MbusChannelElementsResponseDto dataObject) throws FunctionalException {
+        if (exception == null) {
+            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata, dataObject);
+        }
+        this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
+    }
+
+    public void handleDeCoupleMbusDeviceRequest(final DeviceMessageMetadata deviceMessageMetadata,
+            final DeCoupleMbusDeviceRequestData requestData) throws FunctionalException {
+        LOGGER.info("getConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
+
+        final GetConfigurationObjectRequestDto getConfigurationObjectRequestDto = this.configurationMapper
+                .map(requestData, GetConfigurationObjectRequestDto.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), getConfigurationObjectRequestDto),
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                deviceMessageMetadata.getScheduleTime());
     }
 
     /**
@@ -181,7 +225,7 @@ public class InstallationService {
      */
     public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
             final DeCoupleMbusDeviceRequestData requestData) {
-
+        // call from OSGP core response instead of request
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
         LOGGER.debug("deCoupleMbusDevice for organisationIdentification: {} for gateway: {}, m-bus device {}",
