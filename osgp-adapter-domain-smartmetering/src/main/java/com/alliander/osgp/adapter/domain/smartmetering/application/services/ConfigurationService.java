@@ -10,6 +10,7 @@
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Confi
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
@@ -29,12 +31,14 @@ import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareModuleType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
@@ -583,7 +587,7 @@ public class ConfigurationService {
     }
 
     public void requestUpdateFirmware(final DeviceMessageMetadata deviceMessageMetadata,
-            final String firewareIdentifier) throws FunctionalException {
+            final UpdateFirmwareRequestData updateFirmwareRequestData) throws FunctionalException {
 
         LOGGER.info("requestUpdateFirmware for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -593,10 +597,46 @@ public class ConfigurationService {
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
+        final DeviceModel deviceModel = this.determineDeviceModel(deviceMessageMetadata.getDeviceIdentification());
+        final String firmwareIdentifier = this.determineFirmwareIdentifier(deviceModel,
+                updateFirmwareRequestData.getVersionByModuleType());
+
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), firewareIdentifier), deviceMessageMetadata.getMessageType(),
+                smartMeteringDevice.getIpAddress(), firmwareIdentifier), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    }
+
+    private DeviceModel determineDeviceModel(final String deviceIdentification) throws FunctionalException {
+        final SmartMeter smartMeter = this.smartMeterRepository.findByDeviceIdentification(deviceIdentification);
+        final DeviceModel deviceModel = smartMeter.getDeviceModel();
+        if (deviceModel == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL,
+                    ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                            "No deviceModel for SmartMeter " + deviceIdentification));
+        }
+        return deviceModel;
+    }
+
+    private String determineFirmwareIdentifier(final DeviceModel deviceModel,
+            final Map<FirmwareModuleType, String> firmwareVersionByModuleType) throws FunctionalException {
+
+        final String moduleVersionComm = firmwareVersionByModuleType.get(FirmwareModuleType.COMMUNICATION);
+        final String moduleVersionMa = firmwareVersionByModuleType.get(FirmwareModuleType.MODULE_ACTIVE);
+        final String moduleVersionFunc = firmwareVersionByModuleType.get(FirmwareModuleType.ACTIVE_FIRMWARE);
+
+        final Firmware firmware = this.firmwareRepository
+                .findByDeviceModelAndModuleVersionCommAndModuleVersionMaAndModuleVersionFunc(deviceModel,
+                        moduleVersionComm, moduleVersionMa, moduleVersionFunc);
+
+        if (firmware == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.DOMAIN_SMART_METERING,
+                    new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                            "No firmware for DeviceModel " + deviceModel.getModelCode() + ", manufacturer "
+                                    + deviceModel.getManufacturerId().getManufacturerId() + " and firmware versions "
+                                    + firmwareVersionByModuleType));
+        }
+        return firmware.getFilename();
     }
 
     public void handleUpdateFirmwareResponse(final DeviceMessageMetadata deviceMessageMetadata,

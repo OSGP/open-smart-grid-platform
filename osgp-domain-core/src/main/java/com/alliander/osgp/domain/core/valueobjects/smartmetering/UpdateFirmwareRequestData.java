@@ -9,27 +9,49 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class UpdateFirmwareRequestData implements ActionRequest {
 
-    private static final long serialVersionUID = 5044944004218551417L;
+    private static final long serialVersionUID = 1537858643381805500L;
 
-    private String firmwareIdentification;
+    private final List<FirmwareVersion> firmwareVersions;
 
-    public UpdateFirmwareRequestData(final String firmwareIdentification) {
-        this.firmwareIdentification = firmwareIdentification;
+    public UpdateFirmwareRequestData(final List<FirmwareVersion> firmwareVersions) {
+        this.firmwareVersions = new ArrayList<>(firmwareVersions);
     }
 
     @Override
     public void validate() throws FunctionalException {
         // No validation needed
-
     }
 
-    public String getFirmwareIdentification() {
-        return this.firmwareIdentification;
+    public List<FirmwareVersion> getFirmwareVersions() {
+        return new ArrayList<>(this.firmwareVersions);
+    }
+
+    /**
+     * Returns a map of version information by firmware module type.
+     * <p>
+     * If the list of firmware versions as returned by
+     * {@link #getFirmwareVersions()} contains multiple versions for the same
+     * module type, the last version will be reflected in the value from this
+     * map.
+     *
+     * @return a map of version by module type
+     */
+    public Map<FirmwareModuleType, String> getVersionByModuleType() {
+        final Map<FirmwareModuleType, String> versionByModuleType = new EnumMap<>(FirmwareModuleType.class);
+        for (final FirmwareVersion firmwareVersion : this.firmwareVersions) {
+            versionByModuleType.put(firmwareVersion.getType(), firmwareVersion.getVersion());
+        }
+        return versionByModuleType;
     }
 
     @Override

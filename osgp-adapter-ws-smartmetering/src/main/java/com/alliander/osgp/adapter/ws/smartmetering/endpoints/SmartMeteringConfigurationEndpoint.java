@@ -99,6 +99,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalenda
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
@@ -228,8 +229,11 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final UpdateFirmwareAsyncResponse response = new UpdateFirmwareAsyncResponse();
 
         try {
+            final UpdateFirmwareRequestData updateFirmwareRequestData = this.configurationMapper.map(request,
+                    UpdateFirmwareRequestData.class);
+
             final String correlationUid = this.configurationService.enqueueUpdateFirmwareRequest(
-                    organisationIdentification, request.getDeviceIdentification(), request.getFirmwareIdentification(),
+                    organisationIdentification, request.getDeviceIdentification(), updateFirmwareRequestData,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.configurationMapper.map(scheduleTime, Long.class));
 
