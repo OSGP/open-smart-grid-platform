@@ -275,8 +275,6 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  #Remove the Skip tag and this line of comment after merging and deploying the code for SLIM-1030 in Shared/Platform/Protocol-Adapter-DLMS
-  @Skip
   Scenario: Couple a connected and bound G-meter "TESTG100261510717" to E-meter "TEST1024000000001" after an alarm on channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
