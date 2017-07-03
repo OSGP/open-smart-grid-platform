@@ -23,6 +23,8 @@ import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.MBusChannelNotFoundException;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -88,6 +90,36 @@ public class MBusGatewayService {
     }
 
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
+
+        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+        final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        this.checkAndHandleIfChannelNotFound(mbusChannelElementsResponseDto);
+        this.checkAndHandleChannelOnGateway(gatewayDevice, mbusChannelElementsResponseDto);
+        this.doCoupleMBusDevice(gatewayDevice, mbusChannelElementsResponseDto);
+    }
+
+    public void getMBusDeviceOnChannel(final DeviceMessageMetadata deviceMessageMetadata,
+            final GetMBusDeviceOnChannelRequestData requestData) throws FunctionalException {
+
+        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+
+        LOGGER.debug("getMBusDeviceOnChannel for organizationIdentification: {} for gateway: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification);
+
+        final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+        final GetMBusDeviceOnChannelRequestDataDto requestDataDto = new GetMBusDeviceOnChannelRequestDataDto(
+                requestData.getGatewayDeviceIdentification(), requestData.getChannel());
+        final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                gatewayDevice.getIpAddress(), requestDataDto);
+        this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+
+    }
+
+    public void handleGetMBusDeviceOnChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
 
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
