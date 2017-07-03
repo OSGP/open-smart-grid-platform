@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.core.builders.ManufacturerBuilder;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 
@@ -42,10 +42,7 @@ public class ManufacturerSteps extends GlueBase {
     @Given("^a manufacturer")
     public void aManufacturer(final Map<String, String> settings) throws Throwable {
 
-        final Manufacturer entity = new Manufacturer(
-                getString(settings, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID),
-                getString(settings, PlatformKeys.KEY_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME),
-                getBoolean(settings, PlatformKeys.USE_PREFIX, PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX));
+        final Manufacturer entity = new ManufacturerBuilder().withSettings(settings).build();
 
         this.repo.save(entity);
     }

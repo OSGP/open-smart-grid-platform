@@ -8,7 +8,6 @@
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
 import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getLong;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.util.List;
@@ -20,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.core.builders.DeviceModelBuilder;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
@@ -31,10 +31,10 @@ import cucumber.api.java.en.Then;
 public class DeviceModelSteps extends GlueBase {
 
     @Autowired
-    private DeviceModelRepository repo;
+    private DeviceModelRepository deviceModelRepository;
 
     @Autowired
-    private ManufacturerRepository manufacturerRepo;
+    private ManufacturerRepository manufacturerRepository;
 
     /**
      * Generic method which adds a device model using the settings.
@@ -66,9 +66,9 @@ public class DeviceModelSteps extends GlueBase {
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED);
 
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer
-                .setManufacturerId(getString(expectedEntity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID));
-        final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
+        manufacturer.setManufacturerId(
+                getString(expectedEntity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID));
+        final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturerId(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
             if (deviceModel.getModelCode().equals(modelCode)) {
@@ -94,8 +94,9 @@ public class DeviceModelSteps extends GlueBase {
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
 
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setManufacturerId(getString(entity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID));
-        final List<DeviceModel> entityList = this.repo.findByManufacturerId(manufacturer);
+        manufacturer.setManufacturerId(
+                getString(entity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID));
+        final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturerId(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
             Assert.assertNotEquals(deviceModel.getModelCode(), modelCode);
@@ -109,23 +110,11 @@ public class DeviceModelSteps extends GlueBase {
      * @return
      */
     public DeviceModel insertDeviceModel(final Map<String, String> settings) {
-        // Get the given manufacturer (or the default).
-        final Manufacturer manufacturer = this.manufacturerRepo
-                .findByName(getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
 
-        final String description = getString(settings, PlatformKeys.KEY_DESCRIPTION, PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
-
-        // Create the new device model.
-        final DeviceModel entity = new DeviceModel(manufacturer,
-                getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
-                description, getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_FILESTORAGE, PlatformDefaults.DEFAULT_FILESTORAGE));
-
-        entity.updateData(description,
-                getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_METERED, PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED));
-        entity.setVersion(getLong(settings, "Version"));
-
-        this.repo.save(entity);
-
-        return entity;
+        final Manufacturer manufacturer = this.manufacturerRepository
+                .findByName(getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.MANUFACTURER_NAME));
+        final DeviceModel deviceModel = new DeviceModelBuilder().withSettings(settings).withManufacturer(manufacturer)
+                .build();
+        return this.deviceModelRepository.save(deviceModel);
     }
 }
