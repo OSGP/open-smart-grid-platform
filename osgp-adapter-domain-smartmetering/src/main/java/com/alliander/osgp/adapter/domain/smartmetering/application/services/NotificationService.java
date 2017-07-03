@@ -122,10 +122,10 @@ public class NotificationService {
 
     private boolean isNewMBusDeviceDiscoveredAlarm(final AlarmType alarmType) {
 
-        return (alarmType.equals(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1)
+        return alarmType.equals(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1)
                 || alarmType.equals(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2)
                 || alarmType.equals(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3)
-                || alarmType.equals(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4));
+                || alarmType.equals(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4);
     }
 
     public void handleGetMBusDeviceOnChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
