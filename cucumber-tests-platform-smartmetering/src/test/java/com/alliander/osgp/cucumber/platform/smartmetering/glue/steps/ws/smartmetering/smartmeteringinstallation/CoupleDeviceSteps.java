@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
@@ -24,6 +25,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbu
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
+import com.alliander.osgp.cucumber.platform.smartmetering.hooks.SimulatePushedAlarmsHooks;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ServiceEndpoint;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.CoupleMbusDeviceRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
@@ -35,6 +38,9 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
+
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
 
     @When("^the Couple G-meter \"([^\"]*)\" request is received for E-meter \"([^\"]*)\"$")
     public void theCoupleGMeterRequestIsReceivedForEMeter(final String gasMeter, final String eMeter)
@@ -72,6 +78,16 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
             fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
+        }
+    }
+
+    @When("^the \"([^\"]*)\" alarm is received from \"([^\"]*)\"$")
+    public void theAlarmIsReceivedFrom(final String alarm, final String deviceIdentification) throws Throwable {
+        try {
+            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x01, 0x00, 0x00, 0x00 },
+                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
+        } catch (final Exception e) {
+            Assert.fail("Failed to simulate a '" + alarm + "'alarm: " + e.getMessage());
         }
     }
 

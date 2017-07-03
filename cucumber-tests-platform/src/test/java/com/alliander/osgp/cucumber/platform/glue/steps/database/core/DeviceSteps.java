@@ -132,7 +132,8 @@ public class DeviceSteps extends BaseDeviceSteps {
             Assert.assertNull("Device with identification [" + deviceIdentification + "] should be removed", entity);
 
             final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(entity);
-            Assert.assertTrue("DeviceAuthorizations for device with identification [" + deviceIdentification + "] should be removed", devAuths.isEmpty());
+            Assert.assertTrue("DeviceAuthorizations for device with identification [" + deviceIdentification
+                    + "] should be removed", devAuths.isEmpty());
         });
     }
 
@@ -220,6 +221,8 @@ public class DeviceSteps extends BaseDeviceSteps {
 
             Assert.assertEquals(gSmartmeter.getGatewayDevice(), eDevice);
             Assert.assertEquals(gSmartmeter.getChannel(), channel);
+
+            Assert.assertNotNull(gSmartmeter.getMbusPrimaryAddress());
         });
     }
 
