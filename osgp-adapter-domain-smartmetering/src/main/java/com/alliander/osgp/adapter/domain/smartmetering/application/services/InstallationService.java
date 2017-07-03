@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
@@ -168,13 +167,10 @@ public class InstallationService {
         this.mBusGatewayService.coupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
-    // public void deCoupleMbusDevice(final DeviceMessageMetadata
-    // deviceMessageMetadata,
-    // final DeCoupleMbusDeviceRequestData requestData) throws
-    // FunctionalException {
-    // this.mBusGatewayService.deCoupleMbusDevice(deviceMessageMetadata,
-    // requestData);
-    // }
+    public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
+            final DeCoupleMbusDeviceRequestData requestData) throws FunctionalException {
+        this.mBusGatewayService.deCoupleMbusDevice(deviceMessageMetadata, requestData);
+    }
 
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType result, final OsgpException exception,
@@ -187,11 +183,12 @@ public class InstallationService {
 
     public void handleDeCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType result, final OsgpException exception,
-            final MbusChannelElementsResponseDto dataObject) throws FunctionalException {
+            final DecoupleMbusDto decoupleMbusResponseDto) throws FunctionalException {
         if (exception == null) {
-            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata, dataObject);
+            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata, decoupleMbusResponseDto);
         }
-        this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
+        this.handleResponse("decoupleMbusDevice", deviceMessageMetadata, result, exception);
+
     }
 
     public void handleDeCoupleMbusDeviceRequest(final DeviceMessageMetadata deviceMessageMetadata,
@@ -212,51 +209,6 @@ public class InstallationService {
                 smartMeteringDevice.getIpAddress(), getConfigurationObjectRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
-    }
-
-    /**
-     * @param deviceMessageMetadata
-     *            the metadata of the message, including the correlationUid, the
-     *            deviceIdentification and the organization
-     * @param requestData
-     *            the requestData of the message, including the identification
-     *            of the m-bus device and the channel
-     * @throws FunctionalException
-     */
-    public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
-            final DeCoupleMbusDeviceRequestData requestData) {
-        // call from OSGP core response instead of request
-        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-        final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
-        LOGGER.debug("deCoupleMbusDevice for organisationIdentification: {} for gateway: {}, m-bus device {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, mbusDeviceIdentification);
-
-        OsgpException exception = null;
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-
-        try {
-            final SmartMeter gateway = this.domainHelperService.findActiveSmartMeter(deviceIdentification);
-
-            final SmartMeter mbusDevice = this.domainHelperService.findActiveSmartMeter(mbusDeviceIdentification);
-
-            final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository
-                    .getMbusDevicesForGateway(gateway.getId());
-
-            if (!alreadyCoupled.isEmpty()) {
-                for (final SmartMeter coupledDevice : alreadyCoupled) {
-                    if (coupledDevice.getDeviceIdentification().equals(mbusDevice.getDeviceIdentification())) {
-                        coupledDevice.setChannel(null);
-                        coupledDevice.updateGatewayDevice(null);
-                        this.smartMeteringDeviceRepository.save(coupledDevice);
-                    }
-                }
-            }
-        } catch (final FunctionalException functionalException) {
-            exception = functionalException;
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
     }
 
     private void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,

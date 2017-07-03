@@ -24,6 +24,7 @@ import com.alliander.osgp.domain.core.exceptions.MBusChannelNotFoundException;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -101,13 +102,12 @@ public class MBusGatewayService {
             final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
             final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
+            final DecoupleMbusDto decoupleMbusDto = new DecoupleMbusDto(mbusDeviceIdentification,
+                    mbusDevice.getChannel());
             this.checkAndHandleInactiveMbusDevice(mbusDevice);
-            // this.checkAndHandleIfGivenMBusAlreadyCoupled(mbusDevice);
-            final MbusChannelElementsDto mbusChannelElementsDto = this.makeMbusChannelElementsDto(mbusDevice);
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
-                    deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
-                    mbusChannelElementsDto);
+                    deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(), decoupleMbusDto);
             this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                     deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         } catch (final FunctionalException ex) {
@@ -127,14 +127,15 @@ public class MBusGatewayService {
     }
 
     public void handleDeCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
+            final DecoupleMbusDto decoupleMbusResponseDto) throws FunctionalException {
 
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        this.checkAndHandleIfChannelNotFound(mbusChannelElementsResponseDto);
-        this.checkAndHandleChannelOnGateway(gatewayDevice, mbusChannelElementsResponseDto);
-        this.doDeCoupleMBusDevice(gatewayDevice, mbusChannelElementsResponseDto);
+        // this.checkAndHandleIfChannelNotFound(mbusChannelElementsResponseDto);
+        // this.checkAndHandleChannelOnGateway(gatewayDevice,
+        // mbusChannelElementsResponseDto);
+        this.doDeCoupleMBusDevice(gatewayDevice, decoupleMbusResponseDto);
     }
 
     /**
@@ -172,14 +173,13 @@ public class MBusGatewayService {
      * attributes related to the coupling with the given {@code gatewayDevice}.
      *
      * @param gatewayDevice
-     * @param mbusChannelElementsResponseDto
+     * @param decoupleMbusResponseDto
      * @throws FunctionalException
      */
-    private void doDeCoupleMBusDevice(final SmartMeter gatewayDevice,
-            final MbusChannelElementsResponseDto mbusChannelElementsResponseDto) throws FunctionalException {
+    private void doDeCoupleMBusDevice(final SmartMeter gatewayDevice, final DecoupleMbusDto decoupleMbusResponseDto)
+            throws FunctionalException {
 
-        final String mbusDeviceIdentification = mbusChannelElementsResponseDto.getMbusChannelElementsDto()
-                .getMbusDeviceIdentification();
+        final String mbusDeviceIdentification = decoupleMbusResponseDto.getmBusDeviceIdentification();
         final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
         /*
@@ -188,11 +188,10 @@ public class MBusGatewayService {
          * safe with regards to NullPointerExceptions.
          */
         // TODO: implement setting channel to null
-        final short channel = mbusChannelElementsResponseDto.getChannel();
-        mbusDevice.setChannel(channel);
-        mbusDevice.setMbusPrimaryAddress(this.getPrimaryAddress(mbusChannelElementsResponseDto, channel));
 
-        mbusDevice.updateGatewayDevice(gatewayDevice);
+        mbusDevice.setChannel(null);
+        mbusDevice.setMbusPrimaryAddress(null);
+        mbusDevice.updateGatewayDevice(null);
         this.smartMeteringDeviceRepository.save(mbusDevice);
     }
 

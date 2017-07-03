@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -33,7 +33,8 @@ public class DeCoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponse
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof MbusChannelElementsResponseDto;
+        // Only the result is used, no need to check the dataObject.
+        return true;
     }
 
     @Override
@@ -41,6 +42,6 @@ public class DeCoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponse
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
         this.installationService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata, responseMessage.getResult(),
-                responseMessage.getOsgpException(), (MbusChannelElementsResponseDto) responseMessage.getDataObject());
+                responseMessage.getOsgpException(), (DecoupleMbusDto) responseMessage.getDataObject());
     }
 }
