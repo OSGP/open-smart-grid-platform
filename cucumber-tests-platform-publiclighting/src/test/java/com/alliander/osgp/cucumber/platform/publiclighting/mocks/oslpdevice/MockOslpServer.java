@@ -297,7 +297,7 @@ public class MockOslpServer {
         } else {
             dcMapArray = null;
         }
-        if (dcMap != null) {
+        if (rcMap != null) {
             rcMapArray = rcMap.split(";");
         } else {
             rcMapArray = null;
@@ -310,18 +310,17 @@ public class MockOslpServer {
             builder.setLightType(lightType);
         }
 
-        if (rcType != RelayType.RT_NOT_SET) {
+        if (rcType != null && rcType != RelayType.RT_NOT_SET) {
             final ByteString bsDcLights = ByteString.copyFromUtf8(dcLights);
-            if (rcMapArray != null && !rcMapArray[0].isEmpty()) {
-
+            if (dcMapArray != null && !dcMapArray[0].isEmpty()) {
                 final DaliConfiguration.Builder dcBuilder = DaliConfiguration.newBuilder();
 
                 for (int i = 0; i < dcMapArray.length; i++) {
                     final String[] dcSubMapArray = dcMapArray[i].split(",");
                     if (dcSubMapArray[i] != null && !dcSubMapArray[i].isEmpty()) {
                         dcBuilder.addAddressMap(
-                                IndexAddressMap.newBuilder().setIndex(ByteString.copyFromUtf8(dcSubMapArray[0]))
-                                        .setAddress(ByteString.copyFromUtf8(dcSubMapArray[1])).setRelayType(rcType));
+                                IndexAddressMap.newBuilder().setIndex(OslpUtils.integerToByteString(Integer.parseInt(dcSubMapArray[0])))
+                                        .setAddress(OslpUtils.integerToByteString(Integer.parseInt(dcSubMapArray[1]))).setRelayType(rcType));
                     }
                 }
 
@@ -332,15 +331,17 @@ public class MockOslpServer {
                 if (!dcLights.isEmpty() && dcBuilder.getAddressMapCount() != Integer.parseInt(dcLights)) {
                     builder.setDaliConfiguration(dcBuilder.build());
                 }
-
+            }
+            
+            if (rcMapArray != null && !rcMapArray[0].isEmpty()) {
                 final RelayConfiguration.Builder rcBuilder = RelayConfiguration.newBuilder();
 
                 for (int i = 0; i < rcMapArray.length; i++) {
                     final String[] rcSubMapArray = rcMapArray[i].split(",");
                     if (rcSubMapArray[i] != null && !rcSubMapArray[i].isEmpty()) {
                         rcBuilder.addAddressMap(
-                                IndexAddressMap.newBuilder().setIndex(ByteString.copyFromUtf8(rcSubMapArray[0]))
-                                        .setAddress(ByteString.copyFromUtf8(rcSubMapArray[1])).setRelayType(rcType));
+                                IndexAddressMap.newBuilder().setIndex(OslpUtils.integerToByteString(Integer.parseInt(rcSubMapArray[0])))
+                                        .setAddress(OslpUtils.integerToByteString(Integer.parseInt(rcSubMapArray[1]))).setRelayType(rcType));
                     }
                 }
 
