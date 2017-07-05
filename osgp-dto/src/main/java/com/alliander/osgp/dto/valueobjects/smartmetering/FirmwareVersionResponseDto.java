@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
@@ -15,19 +16,14 @@ public class FirmwareVersionResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = 4779593744529504287L;
 
-    private List<FirmwareVersionDto> firmwareVersions;
-
-    public FirmwareVersionResponseDto() {
-        // Default constructor
-    }
+    private final List<FirmwareVersionDto> firmwareVersions;
 
     public FirmwareVersionResponseDto(final List<FirmwareVersionDto> firmwareVersions) {
-        super();
-        this.firmwareVersions = firmwareVersions;
+        this.firmwareVersions = new ArrayList<>(firmwareVersions);
     }
 
     public List<FirmwareVersionDto> getFirmwareVersions() {
-        return this.firmwareVersions;
+        return new ArrayList<>(this.firmwareVersions);
     }
 
 }
