@@ -137,6 +137,7 @@ Feature: SmartMetering Installation
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
+      | MbusPrimaryAddress             |                 3 |
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000002"
     Then retrieving the Couple response results in an exception
     And a SOAP fault should have been returned
@@ -195,6 +196,7 @@ Feature: SmartMetering Installation
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
+      | MbusPrimaryAddress             |                 3 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
       | 5 |         9 |
       | 6 | 302343985 |
@@ -219,6 +221,7 @@ Feature: SmartMetering Installation
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 2 |
+      | MbusPrimaryAddress          |                 3 |
     And a dlms device
       | DeviceIdentification           | TESTG102400000002 |
       | DeviceType                     | SMART_METER_G     |
@@ -251,6 +254,7 @@ Feature: SmartMetering Installation
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
+      | MbusPrimaryAddress          |                 3 |
     And a dlms device
       | DeviceIdentification           | TESTG102400000002 |
       | DeviceType                     | SMART_METER_G     |
@@ -268,6 +272,29 @@ Feature: SmartMetering Installation
     Then the Couple response is "OK"
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
     And the mbus device "TESTG102400000002" is coupled to device "TEST1024000000001" on MBUS channel 2
+
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
+  Scenario: Couple a connected and bound G-meter "TESTG100261510717" to E-meter "TEST1024000000001" after an alarm on channel 1
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
+      | 5 |         3 |
+      | 6 | 302343985 |
+      | 7 |     12514 |
+      | 8 |        66 |
+      | 9 |         3 |
+    And a dlms device
+      | DeviceIdentification           | TESTG101205673117 |
+      | DeviceType                     | SMART_METER_G     |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusPrimaryAdress              |                 9 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
+    When the "New M-Bus device discovered on channel 1" alarm is received from "TEST1024000000001"
+    Then the mbus device "TESTG101205673117" is coupled to device "TEST1024000000001" on MBUS channel 1
 
   Scenario: Couple unknown G-meter to an E-meter
     Given a dlms device

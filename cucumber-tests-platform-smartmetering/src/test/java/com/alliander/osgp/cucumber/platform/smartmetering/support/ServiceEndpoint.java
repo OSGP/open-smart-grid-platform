@@ -9,7 +9,6 @@ package com.alliander.osgp.cucumber.platform.smartmetering.support;
 
 import org.springframework.stereotype.Component;
 
-@Deprecated
 @Component
 public class ServiceEndpoint {
     private String serviceEndpoint;
