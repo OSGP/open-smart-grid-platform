@@ -171,7 +171,7 @@ public class GetConfigurationSteps {
 
         final RelayConfiguration relayConfiguration = configuration.getRelayConfiguration();
         if (relayConfiguration != null) {
-
+            
             if (expectedResponseData.containsKey(PlatformKeys.RC_MAP)
                     && !expectedResponseData.get(PlatformKeys.RC_MAP).isEmpty()
                     && relayConfiguration.getRelayMap() != null) {

@@ -56,7 +56,7 @@ public class PlatformDefaults {
     public static final String DEFAULT_SCHEDULE_CODE = "ScheduleCode";
     public static final String CODE = "Code";
 
-    public static final String DEFAULT_DEVICE_TYPE = "OSLP";
+    public static final String DEFAULT_DEVICE_TYPE = "SSLD";
 
     public static final Integer DEFAULT_DIMVALUE = 100;
     public static final String DEFAULT_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
