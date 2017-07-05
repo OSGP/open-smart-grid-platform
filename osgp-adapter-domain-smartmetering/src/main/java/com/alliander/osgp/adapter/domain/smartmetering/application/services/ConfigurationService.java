@@ -54,6 +54,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -636,12 +637,12 @@ public class ConfigurationService {
                                     + deviceModel.getManufacturerId().getManufacturerId() + " and firmware versions "
                                     + firmwareVersionByModuleType));
         }
-        return firmware.getFilename();
+        return firmware.getIdentification();
     }
 
     public void handleUpdateFirmwareResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final List<FirmwareVersionDto> firmwareVersionList) throws FunctionalException {
+            final UpdateFirmwareResponseDto updateFirmwareResponseDto) throws FunctionalException {
 
         LOGGER.info("handleUpdateFirmwareResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
@@ -651,12 +652,12 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final List<FirmwareVersion> firmwareVersions = this.configurationMapper.mapAsList(firmwareVersionList,
-                FirmwareVersion.class);
+        final List<FirmwareVersion> firmwareVersions = this.configurationMapper
+                .mapAsList(updateFirmwareResponseDto.getFirmwareVersions(), FirmwareVersion.class);
         final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        this.storeFirmware(smartMeteringDevice, firmwareVersions,
+        this.storeFirmware(smartMeteringDevice, updateFirmwareResponseDto.getFirmwareIdentification(), firmwareVersions,
                 deviceMessageMetadata.getOrganisationIdentification());
 
         final UpdateFirmwareResponse updateFirmwareResponse = new UpdateFirmwareResponse(firmwareVersions);
@@ -665,6 +666,69 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 result, exception, updateFirmwareResponse, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
+    }
+
+    private void storeFirmware(final SmartMeter smartMeteringDevice, final String firmwareIdentification,
+            final List<FirmwareVersion> firmwareVersions, final String organisationIdentification)
+            throws FunctionalException {
+
+        String comm = "", ma = "", func = "";
+        for (final FirmwareVersion firmwareVersion : firmwareVersions) {
+            switch (firmwareVersion.getType()) {
+            case COMMUNICATION:
+                comm = firmwareVersion.getVersion();
+                break;
+            case MODULE_ACTIVE:
+                ma = firmwareVersion.getVersion();
+                break;
+            case ACTIVE_FIRMWARE:
+                func = firmwareVersion.getVersion();
+                break;
+            default:
+                LOGGER.error("Cannot handle firmware version type: {}", firmwareVersion.getType().name());
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE,
+                        ComponentType.DOMAIN_SMART_METERING);
+            }
+        }
+
+        final Firmware firmware = this.firmwareRepository.findByIdentification(firmwareIdentification);
+
+        final String moduleVersionComm = firmware.getModuleVersionComm();
+        if (moduleVersionComm != null && !moduleVersionComm.equals(comm)) {
+            LOGGER.error(
+                    "Communication firmware version \"{}\" not installed on device {}, "
+                            + "which reported \"{}\" (all versions returned: {})",
+                    moduleVersionComm, smartMeteringDevice.getDeviceIdentification(), comm, firmwareVersions);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
+                    new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                            "Expected communication module firmware version \"" + moduleVersionComm
+                                    + "\", device has \"" + comm + "\""));
+        }
+
+        final String moduleVersionMa = firmware.getModuleVersionMa();
+        if (moduleVersionMa != null && !moduleVersionMa.equals(ma)) {
+            LOGGER.error(
+                    "Module active firmware version \"{}\" not installed on device {}, "
+                            + "which reported \"{}\" (all versions returned: {})",
+                    moduleVersionMa, smartMeteringDevice.getDeviceIdentification(), ma, firmwareVersions);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
+                    new OsgpException(ComponentType.DOMAIN_SMART_METERING, "Expected module active firmware version \""
+                            + moduleVersionMa + "\", device has \"" + ma + "\""));
+        }
+
+        final String moduleVersionFunc = firmware.getModuleVersionFunc();
+        if (moduleVersionFunc != null && !moduleVersionFunc.equals(func)) {
+            LOGGER.error(
+                    "Active firmware version \"{}\" not installed on device {}, "
+                            + "which reported \"{}\" (all versions returned: {})",
+                    moduleVersionFunc, smartMeteringDevice.getDeviceIdentification(), func, firmwareVersions);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
+                    new OsgpException(ComponentType.DOMAIN_SMART_METERING, "Expected active firmware version \""
+                            + moduleVersionFunc + "\", device has \"" + func + "\""));
+        }
+
+        smartMeteringDevice.setFirmware(firmware, organisationIdentification);
+        this.smartMeterRepository.save(smartMeteringDevice);
     }
 
     public void setClockConfiguration(final DeviceMessageMetadata deviceMessageMetadata,
@@ -701,49 +765,6 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 result, exception, null, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
-    }
-
-    private void storeFirmware(final SmartMeter smartMeteringDevice, final List<FirmwareVersion> firmwareVersions,
-            final String organisationIdentification) throws FunctionalException {
-        if (firmwareVersions.size() != 3) {
-            LOGGER.error(
-                    "Firmware can not be determined because 3 module firmware versions are expected, but {} were returned.",
-                    firmwareVersions.size());
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE,
-                    ComponentType.DOMAIN_SMART_METERING);
-        }
-
-        String comm = "", ma = "", func = "";
-        for (final FirmwareVersion firmwareVersion : firmwareVersions) {
-            switch (firmwareVersion.getType()) {
-            case COMMUNICATION:
-                comm = firmwareVersion.getVersion();
-                break;
-            case MODULE_ACTIVE:
-                ma = firmwareVersion.getVersion();
-                break;
-            case ACTIVE_FIRMWARE:
-                func = firmwareVersion.getVersion();
-                break;
-            default:
-                LOGGER.error("Cannot handle firmware version type: {}", firmwareVersion.getType().name());
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE,
-                        ComponentType.DOMAIN_SMART_METERING);
-            }
-        }
-
-        final List<Firmware> firmwares = this.firmwareRepository
-                .findByModuleVersionCommAndModuleVersionMaAndModuleVersionFunc(comm, ma, func);
-        if (firmwares.size() != 1) {
-            LOGGER.error(
-                    "Non registered combination of firmware modules returned by device: Communication Module Active - {}, Module Active - {}, Active - {}.",
-                    comm, ma, func);
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE,
-                    ComponentType.DOMAIN_SMART_METERING);
-        }
-
-        smartMeteringDevice.setFirmware(firmwares.get(0), organisationIdentification);
-        this.smartMeterRepository.save(smartMeteringDevice);
     }
 
     public void getConfigurationObject(final DeviceMessageMetadata deviceMessageMetadata,

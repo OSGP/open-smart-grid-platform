@@ -26,4 +26,6 @@ public interface FirmwareRepository extends JpaRepository<Firmware, Long> {
             final String moduleVersionFunc);
 
     public Firmware findByFilename(final String filename);
+
+    public Firmware findByIdentification(final String identification);
 }
