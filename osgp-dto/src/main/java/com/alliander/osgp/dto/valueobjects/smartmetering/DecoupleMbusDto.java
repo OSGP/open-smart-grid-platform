@@ -1,0 +1,44 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package com.alliander.osgp.dto.valueobjects.smartmetering;
+
+import java.io.Serializable;
+
+public class DecoupleMbusDto implements Serializable {
+
+    private static final long serialVersionUID = 5377631203726277889L;
+
+    /**
+     * Channel from one of the {@link #retrievedChannelElements} if it is a
+     * match for the device from {@link #mbusChannelElementsDto}. Possibly
+     * {@code null} if not {@link #isChannelFound()}.
+     */
+    private final Short channel;
+    private final String mBusDeviceIdentification;
+
+    public DecoupleMbusDto(final String mBusDeviceIdentification, final Short channel) {
+        super();
+        this.mBusDeviceIdentification = mBusDeviceIdentification;
+        this.channel = channel;
+    }
+
+    @Override
+    public String toString() {
+        return "DecoupleMbusResponseDto [channel=" + this.channel + ", mBusDeviceIdentification="
+                + this.mBusDeviceIdentification + "]";
+    }
+
+    public Short getChannel() {
+        return this.channel;
+    }
+
+    public String getmBusDeviceIdentification() {
+        return this.mBusDeviceIdentification;
+    }
+
+}
