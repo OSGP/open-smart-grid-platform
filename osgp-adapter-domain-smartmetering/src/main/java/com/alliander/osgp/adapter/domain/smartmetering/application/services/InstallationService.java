@@ -169,7 +169,9 @@ public class InstallationService {
 
     public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
             final DeCoupleMbusDeviceRequestData requestData) throws FunctionalException {
-        this.mBusGatewayService.deCoupleMbusDevice(deviceMessageMetadata, requestData);
+        if (!this.mBusGatewayService.deCoupleMbusDevice(deviceMessageMetadata, requestData)) {
+            this.handleResponse("decoupleMbusDevice", deviceMessageMetadata, ResponseMessageResultType.OK, null);
+        }
     }
 
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,

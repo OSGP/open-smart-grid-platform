@@ -89,7 +89,7 @@ public class MBusGatewayService {
         }
     }
 
-    public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
+    public boolean deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
             final DeCoupleMbusDeviceRequestData requestData) throws FunctionalException {
 
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
@@ -102,15 +102,20 @@ public class MBusGatewayService {
             final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
             final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
-            final DecoupleMbusDto decoupleMbusDto = new DecoupleMbusDto(mbusDeviceIdentification,
-                    mbusDevice.getChannel());
             this.checkAndHandleInactiveMbusDevice(mbusDevice);
-            // TODO handle if channel is null and device is allready decoupled
-            final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                    deviceMessageMetadata.getOrganisationIdentification(),
-                    deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(), decoupleMbusDto);
-            this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+
+            if (mbusDevice.getChannel() == null) {
+                return false;
+            } else {
+                final DecoupleMbusDto decoupleMbusDto = new DecoupleMbusDto(mbusDeviceIdentification,
+                        mbusDevice.getChannel());
+                final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(), decoupleMbusDto);
+                this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
+                        deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                return true;
+            }
         } catch (final FunctionalException ex) {
             throw ex;
         }
