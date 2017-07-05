@@ -99,8 +99,8 @@ Feature: SmartMetering Configuration
     Then the firmware version result should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-# Remove @Skip when SLIM-747 is deployed
-@Skip
+  # Remove @Skip when SLIM-747 is deployed
+  @Skip
   Scenario: successful upgrade of firmware
     Given a manufacturer
       | ManufacturerId   | KAIF  |
@@ -134,8 +134,39 @@ Feature: SmartMetering Configuration
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
 
-# Remove @Skip when SLIM-747 is deployed
-@Skip
+  # Remove @Skip when SLIM-747 is deployed
+  @Skip
+  Scenario: successful upgrade of a single firmware module
+    Given a manufacturer
+      | ManufacturerId   | KAIF  |
+      | ManufacturerName | Kaifa |
+    And a device model
+      | ManufacturerName | Kaifa |
+      | ModelCode        | MA105 |
+    And a dlms device
+      | DeviceIdentification | TEST1024000000002 |
+      | DeviceType           | SMART_METER_E     |
+      | DeviceModel          | MA105             |
+    And a firmware
+      | FirmwareModuleVersionComm |                |
+      | FirmwareModuleVersionMa   |                |
+      | FirmwareModuleVersionFunc | M57 4836       |
+      | FirmwareFilename          | KFPP_V060100FF |
+      | ModelCode                 | MA105          |
+    When the request for a firmware upgrade is received
+      | DeviceIdentification      | TEST1024000000002 |
+      | FirmwareModuleVersionFunc | M57 4836          |
+    Then the update firmware result should be returned
+      | DeviceIdentification      | TEST1024000000002      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+    And the database should be updated with the new device firmware
+      | DeviceIdentification      | TEST1024000000002 |
+      | FirmwareModuleVersionFunc | M57 4836          |
+
+  # Remove @Skip when SLIM-747 is deployed
+  @Skip
   Scenario: upgrade of firmware, installation file not available
     Given a manufacturer
       | ManufacturerId   | KAIF  |
@@ -170,8 +201,8 @@ Feature: SmartMetering Configuration
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
 
-# Remove @Skip when SLIM-747 is deployed
-@Skip
+  # Remove @Skip when SLIM-747 is deployed
+  @Skip
   Scenario: upgrade of firmware, corrupt installation file
     Given a manufacturer
       | ManufacturerId   | KAIF  |
