@@ -69,7 +69,6 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-@couple
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on first channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -274,29 +273,6 @@ Feature: SmartMetering Installation
     And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
     And the mbus device "TESTG102400000002" is coupled to device "TEST1024000000001" on MBUS channel 2
 
-  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
-  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  Scenario: Couple a connected and bound G-meter "TESTG100261510717" to E-meter "TEST1024000000001" after an alarm on channel 1
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 |         3 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
-    And a dlms device
-      | DeviceIdentification           | TESTG101205673117 |
-      | DeviceType                     | SMART_METER_G     |
-      | MbusIdentificationNumber       |          12056731 |
-      | MbusPrimaryAdress              |                 9 |
-      | MbusManufacturerIdentification | LGB               |
-      | MbusVersion                    |                66 |
-      | MbusDeviceTypeIdentification   |                 3 |
-    When the "New M-Bus device discovered on channel 1" alarm is received from "TEST1024000000001"
-    Then the mbus device "TESTG101205673117" is coupled to device "TEST1024000000001" on MBUS channel 1
-
   Scenario: Couple unknown G-meter to an E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -412,7 +388,7 @@ Feature: SmartMetering Installation
       | Code    |             207 |
       | Message | INACTIVE_DEVICE |
 
-@decouple
+@Skip
   Scenario: Decouple coupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -443,7 +419,7 @@ Feature: SmartMetering Installation
       | 8 | 0 |
       | 9 | 0 |
 
-@decouple
+@Skip
   Scenario: Decouple decoupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
