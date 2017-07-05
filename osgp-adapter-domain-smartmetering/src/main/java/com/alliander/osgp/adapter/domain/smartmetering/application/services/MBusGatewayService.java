@@ -105,6 +105,7 @@ public class MBusGatewayService {
             final DecoupleMbusDto decoupleMbusDto = new DecoupleMbusDto(mbusDeviceIdentification,
                     mbusDevice.getChannel());
             this.checkAndHandleInactiveMbusDevice(mbusDevice);
+            // TODO handle if channel is null and device is allready decoupled
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(), decoupleMbusDto);
@@ -132,9 +133,6 @@ public class MBusGatewayService {
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        // this.checkAndHandleIfChannelNotFound(mbusChannelElementsResponseDto);
-        // this.checkAndHandleChannelOnGateway(gatewayDevice,
-        // mbusChannelElementsResponseDto);
         this.doDeCoupleMBusDevice(gatewayDevice, decoupleMbusResponseDto);
     }
 
@@ -187,7 +185,6 @@ public class MBusGatewayService {
          * has already been confirmed not be null, so the following should be
          * safe with regards to NullPointerExceptions.
          */
-        // TODO: implement setting channel to null
 
         mbusDevice.setChannel(null);
         mbusDevice.setMbusPrimaryAddress(null);
