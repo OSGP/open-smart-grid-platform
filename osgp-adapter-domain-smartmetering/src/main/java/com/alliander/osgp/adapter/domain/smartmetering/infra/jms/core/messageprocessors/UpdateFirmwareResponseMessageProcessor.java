@@ -41,7 +41,6 @@ public class UpdateFirmwareResponseMessageProcessor extends OsgpCoreResponseMess
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
         if (responseMessage.getDataObject() instanceof UpdateFirmwareResponseDto) {
-            @SuppressWarnings("unchecked")
             final UpdateFirmwareResponseDto updateFirmwareResponse = (UpdateFirmwareResponseDto) responseMessage
                     .getDataObject();
 
