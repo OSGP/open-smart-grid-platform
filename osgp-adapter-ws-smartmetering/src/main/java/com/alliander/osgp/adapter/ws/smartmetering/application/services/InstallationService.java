@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -71,7 +72,7 @@ public class InstallationService {
      * @param organisationIdentification
      *            the organisation requesting the coupling of devices
      * @param deviceIdentification
-     *            the identification of the master device
+     *            the identification of the gateway device
      * @param mbusDeviceIdentification
      *            the identification of the m-bus device
      * @param messagePriority
@@ -116,7 +117,7 @@ public class InstallationService {
      * @param organisationIdentification
      *            the organisation requesting the decoupling of devices
      * @param deviceIdentification
-     *            the identification of the master device
+     *            the identification of the gateway device
      * @param mbusDeviceIdentification
      *            the identification of the m-bus device
      * @param messagePriority
@@ -147,6 +148,49 @@ public class InstallationService {
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
                 .request(new DeCoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    /**
+     * @param organisationIdentification
+     *            the organisation requesting the coupling of devices
+     * @param deviceIdentification
+     *            the identification of the gateway device
+     * @param messagePriority
+     *            the priority of the message
+     * @param scheduleTime
+     *            the time the request should be carried out
+     * @return the correlationUid identifying the operation
+     */
+    public String enqueueGetMBusDeviceOnChannelRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_M_BUS_DEVICE_ON_CHANNEL);
+
+        LOGGER.debug("enqueueGetMBusDeviceOnChannelRequest called with organisation {}, gateway {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.GET_M_BUS_DEVICE_ON_CHANNEL.toString(), messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new GetMBusDeviceOnChannelRequestData(deviceIdentification, (short) 1)).build();
+
+        final GetMBusDeviceOnChannelRequestData getMBusDeviceOnChannelRequestData = new GetMBusDeviceOnChannelRequestData(
+                deviceIdentification, (short) 1);
+        getMBusDeviceOnChannelRequestData.validate();
 
         this.smartMeteringRequestMessageSender.send(message);
 
