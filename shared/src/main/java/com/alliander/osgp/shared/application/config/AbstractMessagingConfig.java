@@ -8,6 +8,7 @@
 package com.alliander.osgp.shared.application.config;
 
 import org.apache.activemq.ActiveMQPrefetchPolicy;
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
@@ -22,21 +23,17 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Value("${jms.activemq.broker.url:tcp://localhost:61616}")
-    protected String activeMqBroker;
+    private String activeMqBroker;
 
     @Value("${jms.activemq.connection.pool.size:10}")
-    protected int connectionPoolSize;
+    private int connectionPoolSize;
 
     @Value("${jms.activemq.connection.pool.max.active.sessions:500}")
-    protected int maximumActiveSessionPerConnection;
+    private int maximumActiveSessionPerConnection;
 
     @Value("${jms.activemq.connection.queue.prefetch:1000}")
-    protected int queuePrefetch;
+    private int queuePrefetch;
 
-    /*
-     * Override the getters below, if you dont want the use the default setting
-     * from the properties file that start with: 'jms.activemq'
-     */
     protected String getActiveMQBroker() {
         return this.activeMqBroker;
     }
@@ -82,7 +79,13 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Bean
     protected RedeliveryPolicyMap redeliveryPolicyMap() {
-        return new RedeliveryPolicyMap();
+        final RedeliveryPolicyMap redeliveryPolicyMap = new RedeliveryPolicyMap();
+        redeliveryPolicyMap.setDefaultEntry(this.defaultRedeliveryPolicy());
+        return redeliveryPolicyMap;
     }
 
+    @Bean
+    public RedeliveryPolicy defaultRedeliveryPolicy() {
+        return new RedeliveryPolicy();
+    }
 }
