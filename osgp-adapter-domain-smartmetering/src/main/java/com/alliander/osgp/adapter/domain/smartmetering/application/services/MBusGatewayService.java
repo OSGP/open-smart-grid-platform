@@ -134,8 +134,8 @@ public class MBusGatewayService {
         this.doCoupleMBusDevice(gatewayDevice, mbusChannelElementsResponseDto);
     }
 
-    public void handleDeCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final DecoupleMbusDto decoupleMbusResponseDto) throws FunctionalException {
+    public void handleDeCoupleMbusDeviceResponse(final DecoupleMbusDto decoupleMbusResponseDto)
+            throws FunctionalException {
 
         this.doDeCoupleMBusDevice(decoupleMbusResponseDto);
     }

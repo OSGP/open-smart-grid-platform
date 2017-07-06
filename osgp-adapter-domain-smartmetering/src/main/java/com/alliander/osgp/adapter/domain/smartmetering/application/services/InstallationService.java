@@ -187,7 +187,7 @@ public class InstallationService {
             final ResponseMessageResultType result, final OsgpException exception,
             final DecoupleMbusDto decoupleMbusResponseDto) throws FunctionalException {
         if (exception == null) {
-            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata, decoupleMbusResponseDto);
+            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(decoupleMbusResponseDto);
         }
         this.handleResponse("decoupleMbusDevice", deviceMessageMetadata, result, exception);
 
