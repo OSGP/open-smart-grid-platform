@@ -102,13 +102,11 @@ public class SetConfigurationSteps {
                 if (!StringUtils.isEmpty(subRelayMapElement[0])) {
                     relayMap.setIndex(Integer.parseInt(subRelayMapElement[0]));
                 }
-                if (subRelayMapElement.length == 2 && !StringUtils.isEmpty(subRelayMapElement[1])) {
+                if (subRelayMapElement.length >= 2 && !StringUtils.isEmpty(subRelayMapElement[1])) {
                     relayMap.setAddress(Integer.parseInt(subRelayMapElement[1]));
                 }
-
-                if (requestParameters.containsKey(PlatformKeys.RC_TYPE)
-                        && !requestParameters.get(PlatformKeys.RC_TYPE).isEmpty()) {
-                    relayMap.setRelayType(getEnum(requestParameters, PlatformKeys.RC_TYPE, RelayType.class));
+                if (subRelayMapElement.length >= 3 && !StringUtils.isEmpty(subRelayMapElement[2])) {
+                    relayMap.setRelayType(RelayType.valueOf(subRelayMapElement[2]));
                 }
 
                 relayConfiguration.getRelayMap().add(relayMap);

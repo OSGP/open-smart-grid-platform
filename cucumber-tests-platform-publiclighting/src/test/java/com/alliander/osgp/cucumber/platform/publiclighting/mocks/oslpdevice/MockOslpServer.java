@@ -317,11 +317,10 @@ public class MockOslpServer {
             for (int i = 0; i < dcMapArray.length; i++) {
                 final String[] dcSubMapArray = dcMapArray[i].split(",");
                 if (dcSubMapArray[i] != null && !dcSubMapArray[i].isEmpty()) {
-                    final RelayType dcRelayType = RelayType.valueOf(dcSubMapArray[2]);
                     dcBuilder.addAddressMap(IndexAddressMap.newBuilder()
                             .setIndex(OslpUtils.integerToByteString(Integer.parseInt(dcSubMapArray[0])))
                             .setAddress(OslpUtils.integerToByteString(Integer.parseInt(dcSubMapArray[1])))
-                            .setRelayType(dcRelayType));
+                            .setRelayType(RelayType.RT_NOT_SET));
                 }
             }
 
