@@ -10,11 +10,8 @@ package com.alliander.osgp.adapter.protocol.oslp.application.config;
 import javax.jms.MessageListener;
 
 import org.apache.activemq.RedeliveryPolicy;
-import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.apache.activemq.pool.PooledConnectionFactory;
-import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
@@ -30,31 +27,28 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.ErrorHandler;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpResponseMessageListener;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpLogItemRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerRequestMessageSender;
-import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
+import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true),
-})
-public class MessagingConfig extends AbstractConfig{
+@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true), })
+public class MessagingConfig extends AbstractMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
-
-    // JMS Settings
-    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
 
     private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.default.initial.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES = "jms.default.maximum.redeliveries";
@@ -63,105 +57,16 @@ public class MessagingConfig extends AbstractConfig{
     private static final String PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER = "jms.default.back.off.multiplier";
     private static final String PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF = "jms.default.use.exponential.back.off";
 
-    // JMS Settings: Oslp requests
-    private static final String PROPERTY_NAME_JMS_OSLP_REQUESTS_QUEUE = "jms.oslp.requests.queue";
-
-    private static final String PROPERTY_NAME_JMS_OSLP_REQUESTS_CONCURRENT_CONSUMERS = "jms.oslp.requests.concurrent.consumers";
-    private static final String PROPERTY_NAME_JMS_OSLP_REQUESTS_MAX_CONCURRENT_CONSUMERS = "jms.oslp.requests.max.concurrent.consumers";
-    private static final String PROPERTY_NAME_JMS_OSLP_REQUESTS_INITIAL_REDELIVERY_DELAY = "jms.oslp.requests.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSLP_REQUESTS_MAXIMUM_REDELIVERIES = "jms.oslp.requests.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_OSLP_REQUESTS_MAXIMUM_REDELIVERY_DELAY = "jms.oslp.requests.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSLP_REQUESTS_REDELIVERY_DELAY = "jms.oslp.requests.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSLP_REQUESTS_BACK_OFF_MULTIPLIER = "jms.oslp.requests.back.off.multiplier";
-    private static final String PROPERTY_NAME_JMS_OSLP_REQUESTS_USE_EXPONENTIAL_BACK_OFF = "jms.oslp.requests.use.exponential.back.off";
-
-    // JMS Settings: Oslp responses
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_QUEUE = "jms.oslp.responses.queue";
-
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_EXPLICIT_QOS_ENABLED = "jms.oslp.responses.explicit.qos.enabled";
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_DELIVERY_PERSISTENT = "jms.oslp.responses.delivery.persistent";
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_TIME_TO_LIVE = "jms.oslp.responses.time.to.live";
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_RECEIVE_TIMEOUT = "jms.oslp.responses.receive.timeout";
-
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_INITIAL_REDELIVERY_DELAY = "jms.oslp.responses.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_MAXIMUM_REDELIVERIES = "jms.oslp.responses.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_MAXIMUM_REDELIVERY_DELAY = "jms.oslp.responses.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_REDELIVERY_DELAY = "jms.oslp.responses.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_BACK_OFF_MULTIPLIER = "jms.oslp.responses.back.off.multiplier";
-    private static final String PROPERTY_NAME_JMS_OSLP_RESPONSES_USE_EXPONENTIAL_BACK_OFF = "jms.oslp.responses.use.exponential.back.off";
-
-    // JMS Settings: Oslp log item requests
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_QUEUE = "jms.oslp.log.item.requests.queue";
-
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_EXPLICIT_QOS_ENABLED = "jms.oslp.log.item.requests.explicit.qos.enabled";
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_DELIVERY_PERSISTENT = "jms.oslp.log.item.requests.delivery.persistent";
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_TIME_TO_LIVE = "jms.oslp.log.item.requests.time.to.live";
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_RECEIVE_TIMEOUT = "jms.oslp.log.item.requests.receive.timeout";
-
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_INITIAL_REDELIVERY_DELAY = "jms.oslp.log.item.requests.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_MAXIMUM_REDELIVERIES = "jms.oslp.log.item.requests.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_MAXIMUM_REDELIVERY_DELAY = "jms.oslp.log.item.requests.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_REDELIVERY_DELAY = "jms.oslp.log.item.requests.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_BACK_OFF_MULTIPLIER = "jms.oslp.log.item.requests.back.off.multiplier";
-    private static final String PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_USE_EXPONENTIAL_BACK_OFF = "jms.oslp.log.item.requests.use.exponential.back.off";
-
-    // JMS Settings: OSGP requests
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_QUEUE = "jms.osgp.requests.queue";
-
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_EXPLICIT_QOS_ENABLED = "jms.osgp.requests.explicit.qos.enabled";
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_DELIVERY_PERSISTENT = "jms.osgp.requests.delivery.persistent";
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_TIME_TO_LIVE = "jms.osgp.requests.time.to.live";
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_RECEIVE_TIMEOUT = "jms.osgp.requests.receive.timeout";
-
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_INITIAL_REDELIVERY_DELAY = "jms.osgp.requests.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_MAXIMUM_REDELIVERIES = "jms.osgp.requests.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_MAXIMUM_REDELIVERY_DELAY = "jms.osgp.requests.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_REDELIVERY_DELAY = "jms.osgp.requests.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_BACK_OFF_MULTIPLIER = "jms.osgp.requests.back.off.multiplier";
-    private static final String PROPERTY_NAME_JMS_OSGP_REQUESTS_USE_EXPONENTIAL_BACK_OFF = "jms.osgp.requests.use.exponential.back.off";
-
-    // JSM Settings: OSGP responses
-    private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_QUEUE = "jms.osgp.responses.queue";
-
-    private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_CONCURRENT_CONSUMERS = "jms.osgp.responses.concurrent.consumers";
-    private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_MAX_CONCURRENT_CONSUMERS = "jms.osgp.responses.max.concurrent.consumers";
-    private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_INITIAL_REDELIVERY_DELAY = "jms.osgp.responses.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_MAXIMUM_REDELIVERIES = "jms.osgp.responses.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_MAXIMUM_REDELIVERY_DELAY = "jms.osgp.responses.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_REDELIVERY_DELAY = "jms.osgp.responses.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_BACK_OFF_MULTIPLIER = "jms.osgp.responses.back.off.multiplier";
-    private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_USE_EXPONENTIAL_BACK_OFF = "jms.osgp.responses.use.exponential.back.off";
-
-    // JMS Settings: outgoing signing server requests
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_QUEUE = "jms.signing.server.requests.queue";
-
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_EXPLICIT_QOS_ENABLED = "jms.signing.server.requests.explicit.qos.enabled";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_DELIVERY_PERSISTENT = "jms.signing.server.requests.delivery.persistent";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_TIME_TO_LIVE = "jms.signing.server.requests.time.to.live";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_RECEIVE_TIMEOUT = "jms.signing.server.requests.receive.timeout";
-
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_INITIAL_REDELIVERY_DELAY = "jms.signing.server.requests.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERIES = "jms.signing.server.requests.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERY_DELAY = "jms.signing.server.requests.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_REDELIVERY_DELAY = "jms.signing.server.requests.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_BACK_OFF_MULTIPLIER = "jms.signing.server.requests.back.off.multiplier";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_USE_EXPONENTIAL_BACK_OFF = "jms.signing.server.requests.use.exponential.back.off";
-
     // JMS Settings: incoming signing server responses
     private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE = "jms.signing.server.responses.queue";
-
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_CONCURRENT_CONSUMERS = "jms.signing.server.responses.concurrent.consumers";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAX_CONCURRENT_CONSUMERS = "jms.signing.server.responses.max.concurrent.consumers";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_INITIAL_REDELIVERY_DELAY = "jms.signing.server.responses.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERIES = "jms.signing.server.responses.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERY_DELAY = "jms.signing.server.responses.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_REDELIVERY_DELAY = "jms.signing.server.responses.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_BACK_OFF_MULTIPLIER = "jms.signing.server.responses.back.off.multiplier";
-    private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_USE_EXPONENTIAL_BACK_OFF = "jms.signing.server.responses.use.exponential.back.off";
 
     @Autowired
     @Qualifier("oslpRequestsMessageListener")
     private MessageListener oslpRequestsMessageListener;
+
+    @Autowired
+    @Qualifier("signingServerResponsesMessageListener")
+    private MessageListener signingServerResponsesMessageListener;
 
     public MessagingConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
@@ -169,39 +74,7 @@ public class MessagingConfig extends AbstractConfig{
 
     // === JMS SETTINGS ===
 
-    @Bean(destroyMethod = "stop")
-    public PooledConnectionFactory pooledConnectionFactory() {
-        final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
-        pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
-        return pooledConnectionFactory;
-    }
-
-    @Bean
-    public ActiveMQConnectionFactory connectionFactory() {
-        final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
-        activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
-        activeMQConnectionFactory.setBrokerURL(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
-
-        activeMQConnectionFactory.setNonBlockingRedelivery(true);
-
-        return activeMQConnectionFactory;
-    }
-
-    @Bean
-    public RedeliveryPolicyMap redeliveryPolicyMap() {
-        final RedeliveryPolicyMap redeliveryPolicyMap = new RedeliveryPolicyMap();
-        redeliveryPolicyMap.setDefaultEntry(this.defaultRedeliveryPolicy());
-        redeliveryPolicyMap.put(this.oslpRequestsQueue(), this.oslpRequestsRedeliveryPolicy());
-        redeliveryPolicyMap.put(this.oslpResponsesQueue(), this.oslpResponsesRedeliveryPolicy());
-        redeliveryPolicyMap.put(this.osgpRequestsQueue(), this.osgpRequestsRedeliveryPolicy());
-        redeliveryPolicyMap.put(this.osgpResponsesQueue(), this.osgpResponsesRedeliveryPolicy());
-        redeliveryPolicyMap.put(this.oslpLogItemRequestsQueue(), this.oslpLogItemRequestsRedeliveryPolicy());
-        redeliveryPolicyMap.put(this.signingServerRequestsQueue(), this.signingServerRequestsRedeliveryPolicy());
-        redeliveryPolicyMap.put(this.replyToQueue(), this.signingServerResponsesRedeliveryPolicy());
-        return redeliveryPolicyMap;
-    }
-
+    @Override
     @Bean
     public RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
@@ -224,84 +97,38 @@ public class MessagingConfig extends AbstractConfig{
     // === JMS SETTINGS OSLP REQUESTS ===
 
     @Bean
-    public ActiveMQDestination oslpRequestsQueue() {
-        return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_QUEUE));
+    public JmsConfiguration oslpRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.oslp.requests",
+                this.oslpRequestsMessageListener);
     }
 
     @Bean
-    public RedeliveryPolicy oslpRequestsRedeliveryPolicy() {
-        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_REDELIVERY_DELAY)));
-        redeliveryPolicy.setDestination(this.oslpRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
-        return redeliveryPolicy;
-    }
-
-    @Bean
-    public DefaultMessageListenerContainer oslpRequestsMessageListenerContainer() {
-        final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
-        messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
-        messageListenerContainer.setDestination(this.oslpRequestsQueue());
-        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_MAX_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMessageListener(this.oslpRequestsMessageListener);
-        messageListenerContainer.setSessionTransacted(true);
+    public DefaultMessageListenerContainer oslpRequestsMessageListenerContainer(
+            final JmsConfiguration oslpRequestJmsConfiguration) {
+        final DefaultMessageListenerContainer messageListenerContainer = oslpRequestJmsConfiguration
+                .getMessageListenerContainer();
+        messageListenerContainer.setErrorHandler(new ErrorHandler() {
+            @Override
+            public void handleError(final Throwable t) {
+                // Implementing ErrorHandler to prevent logging at WARN level
+                // when JMSException is thrown: Execution of JMS message
+                // listener failed, and no ErrorHandler has been set.
+                LOGGER.debug("oslpRequestsMessageListenerContainer.ErrorHandler.handleError()", t);
+            }
+        });
         return messageListenerContainer;
     }
 
     // === JMS SETTINGS: OSLP RESPONSES ===
 
     @Bean
-    public JmsTemplate oslpResponsesJmsTemplate() {
-        final JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestination(this.oslpResponsesQueue());
-        // Enable the use of deliveryMode, priority, and timeToLive
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_DELIVERY_PERSISTENT)));
-        jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_RECEIVE_TIMEOUT)));
-        return jmsTemplate;
+    public JmsConfiguration oslpResponseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.oslp.responses");
     }
 
     @Bean
-    public ActiveMQDestination oslpResponsesQueue() {
-        return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_QUEUE));
-    }
-
-    @Bean
-    public RedeliveryPolicy oslpResponsesRedeliveryPolicy() {
-        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_REDELIVERY_DELAY)));
-        redeliveryPolicy.setDestination(this.oslpResponsesQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_USE_EXPONENTIAL_BACK_OFF)));
-        return redeliveryPolicy;
+    public JmsTemplate oslpResponsesJmsTemplate(final JmsConfiguration oslpResponseJmsConfiguration) {
+        return oslpResponseJmsConfiguration.getJmsTemplate();
     }
 
     @Bean
@@ -313,44 +140,13 @@ public class MessagingConfig extends AbstractConfig{
     // === JMS SETTINGS: OSLP LOG ITEM REQUESTS ===
 
     @Bean
-    public JmsTemplate oslpLogItemRequestsJmsTemplate() {
-        final JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestination(this.oslpLogItemRequestsQueue());
-        // Enable the use of deliveryMode, priority, and timeToLive
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_DELIVERY_PERSISTENT)));
-        jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_RECEIVE_TIMEOUT)));
-        return jmsTemplate;
+    public JmsConfiguration oslpLogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.oslp.log.item.requests");
     }
 
     @Bean
-    public ActiveMQDestination oslpLogItemRequestsQueue() {
-        return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_QUEUE));
-    }
-
-    @Bean
-    public RedeliveryPolicy oslpLogItemRequestsRedeliveryPolicy() {
-        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_REDELIVERY_DELAY)));
-        redeliveryPolicy.setDestination(this.oslpLogItemRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
-        return redeliveryPolicy;
+    public JmsTemplate oslpLogItemRequestsJmsTemplate(final JmsConfiguration oslpLogItemRequestJmsConfiguration) {
+        return oslpLogItemRequestJmsConfiguration.getJmsTemplate();
     }
 
     @Bean
@@ -361,44 +157,13 @@ public class MessagingConfig extends AbstractConfig{
     // === OSGP REQUESTS ===
 
     @Bean
-    public JmsTemplate osgpRequestsJmsTemplate() {
-        final JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestination(this.osgpRequestsQueue());
-        // Enable the use of deliveryMode, priority, and timeToLive
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_DELIVERY_PERSISTENT)));
-        jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_RECEIVE_TIMEOUT)));
-        return jmsTemplate;
+    public JmsConfiguration osgpRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.osgp.requests");
     }
 
     @Bean
-    public ActiveMQDestination osgpRequestsQueue() {
-        return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_QUEUE));
-    }
-
-    @Bean
-    public RedeliveryPolicy osgpRequestsRedeliveryPolicy() {
-        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_REDELIVERY_DELAY)));
-        redeliveryPolicy.setDestination(this.osgpRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
-        return redeliveryPolicy;
+    public JmsTemplate osgpRequestsJmsTemplate(final JmsConfiguration osgpRequestJmsConfiguration) {
+        return osgpRequestJmsConfiguration.getJmsTemplate();
     }
 
     @Bean
@@ -409,89 +174,32 @@ public class MessagingConfig extends AbstractConfig{
     // === OSGP RESPONSES ===
 
     @Bean
-    public ActiveMQDestination osgpResponsesQueue() {
-        return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_QUEUE));
-    }
-
-    @Bean
-    public RedeliveryPolicy osgpResponsesRedeliveryPolicy() {
-        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_REDELIVERY_DELAY)));
-        redeliveryPolicy.setDestination(this.oslpRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_USE_EXPONENTIAL_BACK_OFF)));
-        return redeliveryPolicy;
-    }
-
-    @Bean
-    public DefaultMessageListenerContainer osgpResponsesMessageListenerContainer() {
-        final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
-        messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
-        messageListenerContainer.setDestination(this.osgpResponsesQueue());
-        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMessageListener(this.osgpResponseMessageListener());
-        messageListenerContainer.setSessionTransacted(true);
-        return messageListenerContainer;
-    }
-
-    @Bean
     public OsgpResponseMessageListener osgpResponseMessageListener() {
         return new OsgpResponseMessageListener();
+    }
+
+    @Bean
+    public JmsConfiguration osgpResponseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.osgp.responses",
+                this.osgpResponseMessageListener());
+    }
+
+    @Bean
+    public DefaultMessageListenerContainer osgpResponsesMessageListenerContainer(
+            final JmsConfiguration osgpResponseJmsConfiguration) {
+        return osgpResponseJmsConfiguration.getMessageListenerContainer();
     }
 
     // === JMS SETTINGS: SIGNING SERVER REQUESTS ===
 
     @Bean
-    public JmsTemplate signingServerRequestsJmsTemplate() {
-        final JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestination(this.signingServerRequestsQueue());
-        // Enable the use of deliveryMode, priority, and timeToLive
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_DELIVERY_PERSISTENT)));
-        jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_RECEIVE_TIMEOUT)));
-        return jmsTemplate;
+    public JmsConfiguration signingServerRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.signing.server.requests");
     }
 
     @Bean
-    public ActiveMQDestination signingServerRequestsQueue() {
-        return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_QUEUE));
-    }
-
-    @Bean
-    public RedeliveryPolicy signingServerRequestsRedeliveryPolicy() {
-        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_REDELIVERY_DELAY)));
-        redeliveryPolicy.setDestination(this.signingServerRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
-        return redeliveryPolicy;
+    public JmsTemplate signingServerRequestsJmsTemplate(final JmsConfiguration signingServerRequestJmsConfiguration) {
+        return signingServerRequestJmsConfiguration.getJmsTemplate();
     }
 
     @Bean
@@ -500,10 +208,6 @@ public class MessagingConfig extends AbstractConfig{
     }
 
     // === JMS SETTINGS SIGNING SERVER RESPONSES ===
-
-    @Autowired
-    @Qualifier("signingServerResponsesMessageListener")
-    private MessageListener signingServerResponsesMessageListener;
 
     /**
      * Instead of a fixed name for the responses queue, the signing-server uses
@@ -520,41 +224,20 @@ public class MessagingConfig extends AbstractConfig{
         final String randomPostFix = RandomStringUtils.random(10, false, true);
         final String queueName = prefix.concat("-").concat(randomPostFix);
 
-        LOGGER.info("------> replyToQueue: {}", queueName);
+        LOGGER.debug("------> replyToQueue: {}", queueName);
 
         return new ActiveMQQueue(queueName);
     }
 
     @Bean
-    public RedeliveryPolicy signingServerResponsesRedeliveryPolicy() {
-        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_REDELIVERY_DELAY)));
-        redeliveryPolicy.setDestination(this.replyToQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_USE_EXPONENTIAL_BACK_OFF)));
-        return redeliveryPolicy;
+    public JmsConfiguration signingServerResponsesJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.signing.server.responses",
+                this.signingServerResponsesMessageListener, this.replyToQueue());
     }
 
-    @Bean
-    public DefaultMessageListenerContainer signingResponsesMessageListenerContainer() {
-        final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
-        messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
-        messageListenerContainer.setDestination(this.replyToQueue());
-        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMessageListener(this.signingServerResponsesMessageListener);
-        messageListenerContainer.setSessionTransacted(true);
-        return messageListenerContainer;
+    @Bean(name = "signingResponsesMessageListenerContainer")
+    public DefaultMessageListenerContainer signingResponsesMessageListenerContainer(
+            final JmsConfiguration signingServerResponsesJmsConfiguration) {
+        return signingServerResponsesJmsConfiguration.getMessageListenerContainer();
     }
 }

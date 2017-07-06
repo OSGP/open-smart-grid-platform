@@ -15,13 +15,11 @@ import org.joda.time.DateTimeZone;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.oslp.device.FirmwareLocation;
-import com.alliander.osgp.core.db.api.application.config.OsgpCoreDbApiPersistenceConfig;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 
@@ -31,12 +29,9 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.protocol.oslp", "com.alliander.osgp.core.db.api" })
 @EnableTransactionManagement()
-@Import({ MessagingConfig.class, OslpConfig.class, OslpPersistenceConfig.class, OsgpCoreDbApiPersistenceConfig.class })
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";
@@ -58,9 +53,9 @@ public class ApplicationContext extends AbstractConfig {
      */
     @Bean(name = "oslpPagingSettings")
     public PagingSettings pagingSettings() {
-        return new PagingSettings(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)), Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
+        return new PagingSettings(
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)),
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
     }
 
     /**

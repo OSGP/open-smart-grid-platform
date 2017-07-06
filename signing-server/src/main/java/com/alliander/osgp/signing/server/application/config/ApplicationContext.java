@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
@@ -32,12 +31,9 @@ import com.alliander.osgp.signing.server.domain.exceptions.SigningServerExceptio
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.signing.server" })
-@Import({ MessagingConfig.class })
-@PropertySources({
-	@PropertySource("classpath:signing-server.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/SigningServer/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:signing-server.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/SigningServer/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
