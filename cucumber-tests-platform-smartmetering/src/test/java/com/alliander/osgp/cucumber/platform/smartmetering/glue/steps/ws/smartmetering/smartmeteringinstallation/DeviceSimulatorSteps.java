@@ -32,8 +32,6 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSimulatorSteps.class);
 
-    private static final String XPATH_MATCHER_RESULT_DECODED_MESSAGE = "\\d";
-
     public void clearDlmsAttributeValues() {
         try {
             this.simulatorTriggerClient.clearDlmsAttributeValues();

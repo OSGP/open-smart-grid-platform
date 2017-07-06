@@ -128,6 +128,5 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
                 .deCoupleMbusDevice(request);
 
         this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
-
     }
 }
