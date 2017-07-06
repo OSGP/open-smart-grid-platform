@@ -38,7 +38,7 @@ public class DeCoupleMbusDeviceRequestMessageProcessor extends DeviceRequestMess
 
         this.assertRequestObjectType(DecoupleMbusDto.class, requestObject);
 
-        final DecoupleMbusDto DecoupleMbusDto = (DecoupleMbusDto) requestObject;
-        return this.installationService.deCoupleMbusDevice(conn, device, DecoupleMbusDto);
+        final DecoupleMbusDto deCoupleMbusDto = (DecoupleMbusDto) requestObject;
+        return this.installationService.deCoupleMbusDevice(conn, device, deCoupleMbusDto);
     }
 }
