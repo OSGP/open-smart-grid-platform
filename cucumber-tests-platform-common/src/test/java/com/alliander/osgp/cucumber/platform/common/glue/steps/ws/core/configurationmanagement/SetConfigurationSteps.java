@@ -90,7 +90,7 @@ public class SetConfigurationSteps {
 
     private void addFilledRelayConfigurationToConfiguration(final Map<String, String> requestParameters,
             final Configuration config) throws ArgumentNullOrEmptyException {
-        final String rcMap = getString(requestParameters, PlatformKeys.RC_MAP);
+        final String rcMap = getString(requestParameters, PlatformKeys.RELAY_CONF);
         if (rcMap != null) {
             final RelayConfiguration relayConfiguration = new RelayConfiguration();
             final String[] relayMapArray = rcMap.split(";");
@@ -145,7 +145,7 @@ public class SetConfigurationSteps {
         }
 
         if (StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.RC_TYPE))
-                || StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.RC_MAP))) {
+                || StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.RELAY_CONF))) {
             this.addFilledRelayConfigurationToConfiguration(requestParameters, config);
         }
 
