@@ -137,10 +137,7 @@ public class MBusGatewayService {
     public void handleDeCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final DecoupleMbusDto decoupleMbusResponseDto) throws FunctionalException {
 
-        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-        final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
-
-        this.doDeCoupleMBusDevice(gatewayDevice, decoupleMbusResponseDto);
+        this.doDeCoupleMBusDevice(decoupleMbusResponseDto);
     }
 
     public void getMBusDeviceOnChannel(final DeviceMessageMetadata deviceMessageMetadata,
@@ -207,12 +204,10 @@ public class MBusGatewayService {
      * {@code mbusChannelElementsResponseDto} with respect to persisted
      * attributes related to the coupling with the given {@code gatewayDevice}.
      *
-     * @param gatewayDevice
      * @param decoupleMbusResponseDto
      * @throws FunctionalException
      */
-    private void doDeCoupleMBusDevice(final SmartMeter gatewayDevice, final DecoupleMbusDto decoupleMbusResponseDto)
-            throws FunctionalException {
+    private void doDeCoupleMBusDevice(final DecoupleMbusDto decoupleMbusResponseDto) throws FunctionalException {
 
         final String mbusDeviceIdentification = decoupleMbusResponseDto.getmBusDeviceIdentification();
         final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
