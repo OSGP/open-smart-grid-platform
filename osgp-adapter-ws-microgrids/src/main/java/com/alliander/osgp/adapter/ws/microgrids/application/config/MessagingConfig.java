@@ -21,11 +21,12 @@ import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMess
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
@@ -35,7 +36,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration requestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.microgrids.requests");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_MICROGRIDS_REQUESTS);
     }
 
     @Bean(name = "wsMicrogridsOutgoingRequestsJmsTemplate")
@@ -52,7 +53,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.microgrids.responses",
+        return jmsConfigurationFactory.initializeReceiveConfiguration(JmsConfigurationNames.JMS_MICROGRIDS_RESPONSES,
                 this.microgridsResponseMessageListener);
     }
 
@@ -72,7 +73,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration loggingJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.microgrids.logging");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_MICROGRIDS_LOGGING);
     }
 
     @Bean
