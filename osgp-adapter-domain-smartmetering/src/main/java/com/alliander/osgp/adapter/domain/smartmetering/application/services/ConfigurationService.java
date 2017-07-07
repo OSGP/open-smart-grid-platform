@@ -10,7 +10,6 @@
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +22,10 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Confi
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
-import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
-import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareModuleType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
@@ -68,7 +62,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Transactional(value = "transactionManager")
 public class ConfigurationService {
 
-    private static final String SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG = "Sending request message to core.";
     private static final String DEVICE_RESPONSE_NOT_OK_LOG_MSG = "Device Response not ok. Unexpected Exception";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
@@ -87,10 +80,7 @@ public class ConfigurationService {
     private DomainHelperService domainHelperService;
 
     @Autowired
-    private FirmwareRepository firmwareRepository;
-
-    @Autowired
-    private SmartMeterRepository smartMeterRepository;
+    private FirmwareService firmwareService;
 
     public ConfigurationService() {
         // Parameterless constructor required for transactions...
@@ -105,8 +95,6 @@ public class ConfigurationService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
                 SpecialDaysRequestDto.class);
@@ -126,8 +114,6 @@ public class ConfigurationService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
         final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper
                 .map(setConfigurationObjectRequestValueObject, SetConfigurationObjectRequestDto.class);
@@ -149,8 +135,6 @@ public class ConfigurationService {
         final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
-
         final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm,
                 PushSetupAlarmDto.class);
 
@@ -169,8 +153,6 @@ public class ConfigurationService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
         final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
 
@@ -265,7 +247,6 @@ public class ConfigurationService {
         final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(),
@@ -540,8 +521,6 @@ public class ConfigurationService {
         final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
-
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), new GetFirmwareVersionRequestDto()),
@@ -557,7 +536,7 @@ public class ConfigurationService {
      * @param deviceMessageMetadata
      *            contains the message meta data
      * @param result
-     *            indicates whether the execution was succesfull
+     *            indicates whether the execution was successful
      * @param exception
      *            contains the exception if one was thrown
      * @param firmwareVersionList
@@ -593,51 +572,18 @@ public class ConfigurationService {
         LOGGER.info("requestUpdateFirmware for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
+        final SmartMeter smartMeter = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
-
-        final DeviceModel deviceModel = this.determineDeviceModel(deviceMessageMetadata.getDeviceIdentification());
-        final String firmwareIdentifier = this.determineFirmwareIdentifier(deviceModel,
+        final String firmwareIdentifier = this.firmwareService.determineFirmwareIdentifier(smartMeter,
                 updateFirmwareRequestData.getVersionByModuleType());
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), firmwareIdentifier), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
-    }
-
-    private DeviceModel determineDeviceModel(final String deviceIdentification) throws FunctionalException {
-        final SmartMeter smartMeter = this.smartMeterRepository.findByDeviceIdentification(deviceIdentification);
-        final DeviceModel deviceModel = smartMeter.getDeviceModel();
-        if (deviceModel == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL,
-                    ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "No deviceModel for SmartMeter " + deviceIdentification));
-        }
-        return deviceModel;
-    }
-
-    private String determineFirmwareIdentifier(final DeviceModel deviceModel,
-            final Map<FirmwareModuleType, String> firmwareVersionByModuleType) throws FunctionalException {
-
-        final String moduleVersionComm = firmwareVersionByModuleType.get(FirmwareModuleType.COMMUNICATION);
-        final String moduleVersionMa = firmwareVersionByModuleType.get(FirmwareModuleType.MODULE_ACTIVE);
-        final String moduleVersionFunc = firmwareVersionByModuleType.get(FirmwareModuleType.ACTIVE_FIRMWARE);
-
-        final Firmware firmware = this.firmwareRepository
-                .findByDeviceModelAndModuleVersionCommAndModuleVersionMaAndModuleVersionFunc(deviceModel,
-                        moduleVersionComm, moduleVersionMa, moduleVersionFunc);
-
-        if (firmware == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.DOMAIN_SMART_METERING,
-                    new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "No firmware for DeviceModel " + deviceModel.getModelCode() + ", manufacturer "
-                                    + deviceModel.getManufacturerId().getManufacturerId() + " and firmware versions "
-                                    + firmwareVersionByModuleType));
-        }
-        return firmware.getIdentification();
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(), smartMeter.getIpAddress(), firmwareIdentifier),
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleUpdateFirmwareResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -654,11 +600,11 @@ public class ConfigurationService {
 
         final List<FirmwareVersion> firmwareVersions = this.configurationMapper
                 .mapAsList(updateFirmwareResponseDto.getFirmwareVersions(), FirmwareVersion.class);
-        final SmartMeter smartMeteringDevice = this.domainHelperService
+        final SmartMeter smartMeter = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        this.storeFirmware(smartMeteringDevice, updateFirmwareResponseDto.getFirmwareIdentification(), firmwareVersions,
-                deviceMessageMetadata.getOrganisationIdentification());
+        this.firmwareService.storeFirmware(smartMeter, updateFirmwareResponseDto.getFirmwareIdentification(),
+                firmwareVersions, deviceMessageMetadata.getOrganisationIdentification());
 
         final UpdateFirmwareResponse updateFirmwareResponse = new UpdateFirmwareResponse(firmwareVersions);
 
@@ -666,69 +612,6 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 result, exception, updateFirmwareResponse, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
-    }
-
-    private void storeFirmware(final SmartMeter smartMeteringDevice, final String firmwareIdentification,
-            final List<FirmwareVersion> firmwareVersions, final String organisationIdentification)
-            throws FunctionalException {
-
-        String comm = "", ma = "", func = "";
-        for (final FirmwareVersion firmwareVersion : firmwareVersions) {
-            switch (firmwareVersion.getType()) {
-            case COMMUNICATION:
-                comm = firmwareVersion.getVersion();
-                break;
-            case MODULE_ACTIVE:
-                ma = firmwareVersion.getVersion();
-                break;
-            case ACTIVE_FIRMWARE:
-                func = firmwareVersion.getVersion();
-                break;
-            default:
-                LOGGER.error("Cannot handle firmware version type: {}", firmwareVersion.getType().name());
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE,
-                        ComponentType.DOMAIN_SMART_METERING);
-            }
-        }
-
-        final Firmware firmware = this.firmwareRepository.findByIdentification(firmwareIdentification);
-
-        final String moduleVersionComm = firmware.getModuleVersionComm();
-        if (moduleVersionComm != null && !moduleVersionComm.equals(comm)) {
-            LOGGER.error(
-                    "Communication firmware version \"{}\" not installed on device {}, "
-                            + "which reported \"{}\" (all versions returned: {})",
-                    moduleVersionComm, smartMeteringDevice.getDeviceIdentification(), comm, firmwareVersions);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
-                    new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "Expected communication module firmware version \"" + moduleVersionComm
-                                    + "\", device has \"" + comm + "\""));
-        }
-
-        final String moduleVersionMa = firmware.getModuleVersionMa();
-        if (moduleVersionMa != null && !moduleVersionMa.equals(ma)) {
-            LOGGER.error(
-                    "Module active firmware version \"{}\" not installed on device {}, "
-                            + "which reported \"{}\" (all versions returned: {})",
-                    moduleVersionMa, smartMeteringDevice.getDeviceIdentification(), ma, firmwareVersions);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
-                    new OsgpException(ComponentType.DOMAIN_SMART_METERING, "Expected module active firmware version \""
-                            + moduleVersionMa + "\", device has \"" + ma + "\""));
-        }
-
-        final String moduleVersionFunc = firmware.getModuleVersionFunc();
-        if (moduleVersionFunc != null && !moduleVersionFunc.equals(func)) {
-            LOGGER.error(
-                    "Active firmware version \"{}\" not installed on device {}, "
-                            + "which reported \"{}\" (all versions returned: {})",
-                    moduleVersionFunc, smartMeteringDevice.getDeviceIdentification(), func, firmwareVersions);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
-                    new OsgpException(ComponentType.DOMAIN_SMART_METERING, "Expected active firmware version \""
-                            + moduleVersionFunc + "\", device has \"" + func + "\""));
-        }
-
-        smartMeteringDevice.setFirmware(firmware, organisationIdentification);
-        this.smartMeterRepository.save(smartMeteringDevice);
     }
 
     public void setClockConfiguration(final DeviceMessageMetadata deviceMessageMetadata,
@@ -775,8 +658,6 @@ public class ConfigurationService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
         final GetConfigurationObjectRequestDto getConfigurationObjectRequestDto = this.configurationMapper
                 .map(getConfigurationObjectRequest, GetConfigurationObjectRequestDto.class);

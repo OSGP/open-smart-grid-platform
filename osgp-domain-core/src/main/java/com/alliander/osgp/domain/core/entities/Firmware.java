@@ -61,7 +61,7 @@ public class Firmware extends AbstractEntity {
 
     @Lob
     @Column()
-    private byte file[];
+    private byte[] file;
 
     @Column()
     private String hash;
