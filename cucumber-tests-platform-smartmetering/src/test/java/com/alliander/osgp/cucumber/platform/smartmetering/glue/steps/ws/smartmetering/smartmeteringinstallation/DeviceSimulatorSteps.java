@@ -7,12 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Properties;
 
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClient;
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClientException;
@@ -64,12 +64,12 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
         }
     }
 
-    @Then("^device simulation of 'TEST(\\d+)' with classid (\\d+) obiscode \"([^\"]*)\" retrieves the attributes$")
+    @Then("^device simulation of \"([^\"]*)\" with classid (\\d+) obiscode \"([^\"]*)\" retrieves the attributes$")
     public void deviceSimulationOfTESTWithClassidObiscodeRetrievesTheAttributes(final String deviceIdentification,
             final int classId, final String obisCode, final Map<String, String> settings) throws Throwable {
-        String attribute = null;
+        Properties properties = null;
         try {
-            attribute = this.simulatorTriggerClient.getDlmsAttributeValues(classId, obisCode);
+            properties = this.simulatorTriggerClient.getDlmsAttributeValues(classId, obisCode);
 
         } catch (final SimulatorTriggerClientException stce) {
             LOGGER.error("Error while getting DLMS attribute values");
@@ -77,9 +77,8 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
         }
 
         for (final Map.Entry<String, String> setting : settings.entrySet()) {
-            final Pattern pattern = Pattern.compile("(" + setting.getKey() + "=" + setting.getValue() + ")");
-            final Matcher matcher = pattern.matcher(attribute);
-            assertTrue(pattern.toString() + " DLMS attribute and value not found on simulator", matcher.find());
+            assertNotNull("propertie can not be null", properties.getProperty(setting.getKey()));
+            assertEquals(" match ", setting.getValue(), properties.getProperty(setting.getKey()));
         }
     }
 }

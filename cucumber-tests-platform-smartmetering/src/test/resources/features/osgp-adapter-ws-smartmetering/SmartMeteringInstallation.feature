@@ -408,7 +408,6 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @Skip
   Scenario: Decouple coupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -429,10 +428,10 @@ Feature: SmartMetering Installation
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-    When the DeCouple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
+    When the DeCouple G-meter "TESTG101205673117" from E-meter "TEST1024000000001" request is received
     Then the DeCouple response is "OK"
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
-    And device simulation of 'TEST1024000000001' with classid 72 obiscode "0-1:24.1.255" retrieves the attributes
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" retrieves the attributes
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |
@@ -441,7 +440,6 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @Skip
   Scenario: Decouple decoupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -460,10 +458,10 @@ Feature: SmartMetering Installation
       | 7 | 0 |
       | 8 | 0 |
       | 9 | 0 |
-    When the DeCouple G-meter "TESTG101205673117" request is received for E-meter "TEST1024000000001"
+    When the DeCouple G-meter "TESTG101205673117" from E-meter "TEST1024000000001" request is received
     Then the DeCouple response is "OK"
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
-    And device simulation of 'TEST1024000000001' with classid 72 obiscode "0-1:24.1.255" retrieves the attributes
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" retrieves the attributes
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |

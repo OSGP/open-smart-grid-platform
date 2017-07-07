@@ -117,16 +117,4 @@ public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
     }
-
-    @When("^the DeCouple G-meter \"([^\"]*)\" request is received for E-meter \"([^\"]*)\"$")
-    public void theDeCoupleGMeterRequestIsReceivedForEMeter(final String gasMeter, final String eMeter)
-            throws WebServiceSecurityException {
-
-        final DeCoupleMbusDeviceRequest request = DeCoupleMbusDeviceRequestFactory.forGatewayAndMbusDevice(eMeter,
-                gasMeter);
-        final DeCoupleMbusDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient
-                .deCoupleMbusDevice(request);
-
-        this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
-    }
 }
