@@ -30,6 +30,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClock
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -39,6 +43,21 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     @Autowired
     private DefaultWebServiceTemplateFactory smartMeteringConfigurationWstf;
+
+    public UpdateFirmwareAsyncResponse updateFirmware(final UpdateFirmwareRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        return (UpdateFirmwareAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+    }
+
+    public UpdateFirmwareResponse getUpdateFirmwareResponse(final UpdateFirmwareAsyncRequest asyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = asyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (UpdateFirmwareResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+    }
 
     public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(final GetAdministrativeStatusRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {

@@ -99,38 +99,143 @@ Feature: SmartMetering Configuration
     Then the firmware version result should be returned
       | DeviceIdentification | TEST1024000000001 |
 
+  # Remove @Skip when SLIM-747 is deployed
   @Skip
   Scenario: successful upgrade of firmware
-    Given a smart meter firmware
+    Given a manufacturer
+      | ManufacturerId   | KAIF  |
+      | ManufacturerName | Kaifa |
+    And a device model
+      | ManufacturerName | Kaifa |
+      | ModelCode        | MA105 |
+    And a dlms device
+      | DeviceIdentification | TEST1024000000002 |
+      | DeviceType           | SMART_METER_E     |
+      | DeviceModel          | MA105             |
+    And a firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareFilename          | KFPP_V060100FF         |
-    And a request for a firmware upgrade for device "TEST1024000000001" from a client
-    And the installation file of version "KFPP_V060100FF" is available
+      | ModelCode                 | MA105                  |
     When the request for a firmware upgrade is received
-    Then firmware should be updated
-    And the database should be updated so it indicates that device "TEST1024000000001" is using firmware version "KFPP_V060100FF"
+      | DeviceIdentification      | TEST1024000000002      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+    Then the update firmware result should be returned
+      | DeviceIdentification      | TEST1024000000002      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+    And the database should be updated with the new device firmware
+      | DeviceIdentification      | TEST1024000000002      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
 
+  # Remove @Skip when SLIM-747 is deployed
+  @Skip
+  Scenario: successful upgrade of a single firmware module
+    Given a manufacturer
+      | ManufacturerId   | KAIF  |
+      | ManufacturerName | Kaifa |
+    And a device model
+      | ManufacturerName | Kaifa |
+      | ModelCode        | MA105 |
+    And a dlms device
+      | DeviceIdentification | TEST1024000000002 |
+      | DeviceType           | SMART_METER_E     |
+      | DeviceModel          | MA105             |
+    And a firmware
+      | FirmwareModuleVersionComm |                |
+      | FirmwareModuleVersionMa   |                |
+      | FirmwareModuleVersionFunc | M57 4836       |
+      | FirmwareFilename          | KFPP_V060100FF |
+      | ModelCode                 | MA105          |
+    When the request for a firmware upgrade is received
+      | DeviceIdentification      | TEST1024000000002 |
+      | FirmwareModuleVersionFunc | M57 4836          |
+    Then the update firmware result should be returned
+      | DeviceIdentification      | TEST1024000000002      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+    And the database should be updated with the new device firmware
+      | DeviceIdentification      | TEST1024000000002 |
+      | FirmwareModuleVersionFunc | M57 4836          |
+
+  # Remove @Skip when SLIM-747 is deployed
+  @Skip
   Scenario: upgrade of firmware, installation file not available
-    Given a request for a firmware upgrade for device "TEST1024000000001" from a client
-    And the installation file of version "KFPP_V060100FA" is not available
+    Given a manufacturer
+      | ManufacturerId   | KAIF  |
+      | ManufacturerName | Kaifa |
+    And a device model
+      | ManufacturerName | Kaifa |
+      | ModelCode        | MA105 |
+    And a dlms device
+      | DeviceIdentification | TEST1024000000002 |
+      | DeviceType           | SMART_METER_E     |
+      | DeviceModel          | MA105             |
+    And a firmware
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareFilename          | KFPP_V060100FA         |
+      | ModelCode                 | MA105                  |
     When the request for a firmware upgrade is received
-    Then the message "Installation file is not available" should be given
+      | DeviceIdentification      | TEST1024000000002      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+    Then retrieving the update firmware response results in an exception
+    And a SOAP fault should have been returned
+      | Component      | PROTOCOL_DLMS                                                         |
+      | Message        | Unexpected exception while handling protocol request/response message |
+      | InnerException | com.alliander.osgp.shared.exceptionhandling.OsgpException             |
+      | InnerMessage   | Installation file is not available.                                   |
+    And the database should not be updated with the new device firmware
+      | DeviceIdentification      | TEST1024000000002      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
 
+  # Remove @Skip when SLIM-747 is deployed
+  @Skip
   Scenario: upgrade of firmware, corrupt installation file
-    Given a request for a firmware upgrade for device "TEST1024000000001" from a client
-    And the installation file of version "KFPP_V060100FF.corrupt" is available
-    And the installation file is corrupt
+    Given a manufacturer
+      | ManufacturerId   | KAIF  |
+      | ManufacturerName | Kaifa |
+    And a device model
+      | ManufacturerName | Kaifa |
+      | ModelCode        | MA105 |
+    And a dlms device
+      | DeviceIdentification | TEST1024000000002 |
+      | DeviceType           | SMART_METER_E     |
+      | DeviceModel          | MA105             |
+    And a firmware
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareFilename          | KFPP_V060100FF.corrupt |
+      | ModelCode                 | MA105                  |
     When the request for a firmware upgrade is received
-    Then the message "Upgrade of firmware did not succeed" should be given
-
-  Scenario: unsuccessful upgrade of firmware
-    Given a request for a firmware upgrade for device "TEST1024000000001" from a client
-    And the installation file of version "KFPP_V060100FF.corrupt" is available
-    When the request for a firmware upgrade is received
-    And the upgrade of firmware did not succeed
-    Then the message "Upgrade of firmware did not succeed" should be given
+      | DeviceIdentification      | TEST1024000000002      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+    Then retrieving the update firmware response results in an exception
+    And a SOAP fault should have been returned
+      | Component      | PROTOCOL_DLMS                                                         |
+      | Message        | Unexpected exception while handling protocol request/response message |
+      | InnerException | com.alliander.osgp.shared.exceptionhandling.OsgpException             |
+      | InnerMessage   | Upgrade of firmware did not succeed.                                  |
+    And the database should not be updated with the new device firmware
+      | DeviceIdentification      | TEST1024000000002      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
 
   Scenario: Get configuration object on a device
     Given a bundle request

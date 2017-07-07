@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform.core.builders;
 
 import java.util.Map;
 
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Firmware;
@@ -17,13 +18,13 @@ public class FirmwareBuilder implements CucumberBuilder<Firmware> {
 
     private DeviceModel deviceModel;
     private String filename;
-    private String description;
-    private boolean pushToNewDevices;
-    private String moduleVersionComm;
-    private String moduleVersionFunc;
-    private String moduleVersionMa;
-    private String moduleVersionMbus;
-    private String moduleVersionSec;
+    private String description = PlatformDefaults.FIRMWARE_DESCRIPTION;
+    private boolean pushToNewDevices = PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE;
+    private String moduleVersionComm = PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM;
+    private String moduleVersionFunc = PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC;
+    private String moduleVersionMa = PlatformDefaults.FIRMWARE_MODULE_VERSION_MA;
+    private String moduleVersionMbus = PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS;
+    private String moduleVersionSec = PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC;
     private byte file[];
     private String hash;
 
