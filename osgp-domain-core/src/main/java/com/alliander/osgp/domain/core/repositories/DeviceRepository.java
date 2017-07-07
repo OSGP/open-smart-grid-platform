@@ -22,8 +22,10 @@ import org.springframework.stereotype.Repository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@Transactional
 public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecificationExecutor<Device> {
 
     Device findByDeviceIdentification(String deviceIdentification);

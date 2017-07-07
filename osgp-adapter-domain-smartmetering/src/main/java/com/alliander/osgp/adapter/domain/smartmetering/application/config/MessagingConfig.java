@@ -23,14 +23,15 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationNames;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-domain-smartmetering.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterDomainSmartMetering/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterDomainSmartMetering/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
@@ -47,7 +48,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration incomingWebServiceJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.incoming.ws.requests",
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_INCOMING_WS_REQUESTS,
                 this.incomingWebServiceRequestMessageListener);
     }
 
@@ -60,12 +61,11 @@ public class MessagingConfig extends AbstractMessagingConfig {
     // JMS SETTINGS: OUTGOING WEB SERVICE RESPONSES
     @Bean
     public JmsConfiguration outgoingWebServiceJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.ws.responses");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_OUTGOING_WS_RESPONSES);
     }
 
     @Bean(name = "domainSmartMeteringOutgoingWebServiceResponsesJmsTemplate")
-    public JmsTemplate outgoingWebServiceResponsesJmsTemplate(
-            final JmsConfiguration outgoingWebServiceJmsConfiguration) {
+    public JmsTemplate outgoingWebServiceResponsesJmsTemplate(final JmsConfiguration outgoingWebServiceJmsConfiguration) {
         return outgoingWebServiceJmsConfiguration.getJmsTemplate();
     }
 
@@ -74,11 +74,11 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return new WebServiceResponseMessageSender();
     }
 
-    // JMS SETTINGS: OUTGOING OSGP CORE REQUESTS (Sending requests to osgp core)
+    // JMS SETTINGS: OUTGOING OSGP CORE REQUESTS (Sending requests to OSGP core)
     @Bean
     public JmsConfiguration outgoingOsgpCoreRequestsJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.osgp.core.requests");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_OUTGOING_OSGP_CORE_REQUESTS);
     }
 
     @Bean(name = "domainSmartMeteringOutgoingOsgpCoreRequestsJmsTemplate")
@@ -87,13 +87,13 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return outgoingOsgpCoreRequestsJmsConfiguration.getJmsTemplate();
     }
 
-    // JMS SETTINGS: INCOMING OSGP CORE RESPONSES (receiving responses from osgp
+    // JMS SETTINGS: INCOMING OSGP CORE RESPONSES (receiving responses from OSGP
     // core)
 
     @Bean
     public JmsConfiguration incomingOsgpCoreResponsesJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.incoming.osgp.core.responses",
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_RESPONSES,
                 this.incomingOsgpCoreResponseMessageListener);
     }
 
@@ -103,13 +103,13 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return incomingOsgpCoreResponsesJmsConfiguration.getMessageListenerContainer();
     }
 
-    // JMS SETTINGS: INCOMING OSGP CORE REQUESTS (receiving requests from osgp
+    // JMS SETTINGS: INCOMING OSGP CORE REQUESTS (receiving requests from OSGP
     // core)
 
     @Bean
     public JmsConfiguration incomingOsgpCoreRequestsJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.incoming.osgp.core.requests",
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_REQUESTS,
                 this.incomingOsgpCoreRequestMessageListener);
     }
 
@@ -119,13 +119,13 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return incomingOsgpCoreRequestsJmsConfiguration.getMessageListenerContainer();
     }
 
-    // JMS SETTINGS: OUTGOING OSGP CORE RESPONSES (sending responses to osgp
+    // JMS SETTINGS: OUTGOING OSGP CORE RESPONSES (sending responses to OSGP
     // core)
 
     @Bean
     public JmsConfiguration outgoingOsgpCoreResponsesJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.osgp.core.responses");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_OUTGOING_OSGP_CORE_RESPONSES);
     }
 
     @Bean(name = "domainSmartMeteringOutgoingOsgpCoreResponsesJmsTemplate")

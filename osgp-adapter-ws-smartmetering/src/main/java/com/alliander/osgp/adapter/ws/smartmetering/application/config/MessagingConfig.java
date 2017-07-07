@@ -21,11 +21,12 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRespon
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationNames;
 
 @Configuration
 @PropertySources({ @PropertySource(value = "classpath:osgp-adapter-ws-smartmetering.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
@@ -33,19 +34,19 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration requestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.smartmetering.requests");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_SMARTMETERING_REQUESTS);
     }
 
     @Bean
     public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory,
             final SmartMeteringResponseMessageListener smartMeteringResponseMessageListener) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.smartmetering.responses",
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_SMARTMETERING_RESPONSES,
                 smartMeteringResponseMessageListener);
     }
 
     @Bean
     public JmsConfiguration loggingJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.smartmetering.logging");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_SMARTMETERING_LOGGING);
     }
 
     @Bean
