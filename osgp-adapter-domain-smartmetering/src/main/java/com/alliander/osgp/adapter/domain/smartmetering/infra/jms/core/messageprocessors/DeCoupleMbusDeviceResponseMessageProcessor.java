@@ -33,8 +33,7 @@ public class DeCoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponse
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        // Only the result is used, no need to check the dataObject.
-        return true;
+        return responseMessage.getDataObject() instanceof DecoupleMbusDto;
     }
 
     @Override

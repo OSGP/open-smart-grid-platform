@@ -30,7 +30,6 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDevic
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -169,9 +168,7 @@ public class InstallationService {
 
     public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
             final DeCoupleMbusDeviceRequestData requestData) throws FunctionalException {
-        if (!this.mBusGatewayService.deCoupleMbusDevice(deviceMessageMetadata, requestData)) {
-            this.handleResponse("decoupleMbusDevice", deviceMessageMetadata, ResponseMessageResultType.OK, null);
-        }
+        this.mBusGatewayService.deCoupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -187,33 +184,12 @@ public class InstallationService {
             final ResponseMessageResultType result, final OsgpException exception,
             final DecoupleMbusDto decoupleMbusResponseDto) throws FunctionalException {
         if (exception == null) {
-            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(decoupleMbusResponseDto);
+            this.mBusGatewayService.doDeCoupleMBusDevice(decoupleMbusResponseDto);
         }
-        this.handleResponse("decoupleMbusDevice", deviceMessageMetadata, result, exception);
-
+        this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
     }
 
-    public void handleDeCoupleMbusDeviceRequest(final DeviceMessageMetadata deviceMessageMetadata,
-            final DeCoupleMbusDeviceRequestData requestData) throws FunctionalException {
-        LOGGER.info("getConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
-
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
-
-        final GetConfigurationObjectRequestDto getConfigurationObjectRequestDto = this.configurationMapper
-                .map(requestData, GetConfigurationObjectRequestDto.class);
-
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), getConfigurationObjectRequestDto),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
-    }
-
-    private void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
+    public void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
         LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
 
