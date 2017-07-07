@@ -228,6 +228,7 @@ public class JmsConfigurationFactory {
             jmsTemplate.setExplicitQosEnabled(this.property(PROPERTY_EXPLICIT_QOS_ENABLED, boolean.class));
             jmsTemplate.setTimeToLive(this.property(PROPERTY_TIME_TO_LIVE, long.class));
             jmsTemplate.setDeliveryPersistent(this.property(PROPERTY_DELIVERY_PERSISTENT, boolean.class));
+            jmsTemplate.setReceiveTimeout(JmsTemplate.RECEIVE_TIMEOUT_NO_WAIT);
             jmsTemplate.setConnectionFactory(JmsConfigurationFactory.this.pooledConnectionFactory);
             return jmsTemplate;
         }
