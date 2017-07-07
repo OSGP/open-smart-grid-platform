@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.UUID;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,7 +26,10 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 @Entity
 public class Firmware extends AbstractEntity {
 
-    private static final long serialVersionUID = 3479817855083883103L;
+    private static final long serialVersionUID = 6996358385968307111L;
+
+    @Column(unique = true, nullable = false, updatable = false)
+    private String identification = newRandomIdentification();
 
     @ManyToOne()
     @JoinColumn(name = "device_model_id")
@@ -56,7 +61,7 @@ public class Firmware extends AbstractEntity {
 
     @Lob
     @Column()
-    private byte file[];
+    private byte[] file;
 
     @Column()
     private String hash;
@@ -65,13 +70,19 @@ public class Firmware extends AbstractEntity {
         // Default constructor
     }
 
-    public Firmware(final DeviceModel deviceModel, final String filename, final String description,
-            final boolean pushToNewDevices, final FirmwareModuleData firmwareModuleData) {
+    public Firmware(final String identification, final DeviceModel deviceModel, final String filename,
+            final String description, final boolean pushToNewDevices, final FirmwareModuleData firmwareModuleData) {
+        this.identification = identification;
         this.deviceModel = deviceModel;
         this.filename = filename;
         this.description = description;
         this.pushToNewDevices = pushToNewDevices;
         this.updateFirmwareModuleData(firmwareModuleData);
+    }
+
+    public Firmware(final DeviceModel deviceModel, final String filename, final String description,
+            final boolean pushToNewDevices, final FirmwareModuleData firmwareModuleData) {
+        this(newRandomIdentification(), deviceModel, filename, description, pushToNewDevices, firmwareModuleData);
     }
 
     public Firmware(final DeviceModel deviceModel, final String filename, final String description,
@@ -82,12 +93,20 @@ public class Firmware extends AbstractEntity {
         this.hash = hash;
     }
 
+    private static String newRandomIdentification() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
     public void updateFirmwareModuleData(final FirmwareModuleData firmwareModuleData) {
         this.moduleVersionComm = firmwareModuleData.getModuleVersionComm();
         this.moduleVersionFunc = firmwareModuleData.getModuleVersionFunc();
         this.moduleVersionMa = firmwareModuleData.getModuleVersionMa();
         this.moduleVersionMbus = firmwareModuleData.getModuleVersionMbus();
         this.moduleVersionSec = firmwareModuleData.getModuleVersionSec();
+    }
+
+    public String getIdentification() {
+        return this.identification;
     }
 
     public DeviceModel getDeviceModel() {
