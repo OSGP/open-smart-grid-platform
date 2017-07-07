@@ -20,6 +20,8 @@ import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
 
@@ -29,6 +31,9 @@ import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class Ssld extends Device {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Ssld.class);
+
     /**
      * Serial Version UID.
      */
@@ -93,6 +98,7 @@ public class Ssld extends Device {
         final List<DeviceOutputSetting> defaultConfiguration = new ArrayList<>();
 
         if (this.deviceType == null) {
+            LOGGER.warn("DeviceType is null, using empty list of DeviceOutputSetting");
             return defaultConfiguration;
         }
 
@@ -100,12 +106,15 @@ public class Ssld extends Device {
             defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.TARIFF, ""));
             defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, ""));
             defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.LIGHT, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(4, 4, RelayType.LIGHT, ""));
 
+            LOGGER.warn("DeviceType is SSLD, returning default list of DeviceOutputSetting: 1 TARIFF, 2 & 3 & 4 LIGHT");
             return defaultConfiguration;
         }
 
         if (this.deviceType.equalsIgnoreCase(PSLD_TYPE)) {
             defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, ""));
+            LOGGER.warn("DeviceType is PSLD, returning default list of DeviceOutputSetting: 1 LIGHT");
             return defaultConfiguration;
         }
 
