@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 
 @Component
 public class DeCoupleMBusDeviceCommandExecutor extends AbstractCommandExecutor<DecoupleMbusDto, DecoupleMbusDto> {
@@ -39,42 +38,41 @@ public class DeCoupleMBusDeviceCommandExecutor extends AbstractCommandExecutor<D
     private static final DataObject UINT_32_ZERO = DataObject.newUInteger32Data(0L);
 
     public DeCoupleMBusDeviceCommandExecutor() {
-        super(MbusChannelElementsDto.class);
+        super(DecoupleMbusDto.class);
     }
 
     @Override
     public DecoupleMbusDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final DecoupleMbusDto decoupleMbusDto) throws ProtocolAdapterException {
 
-        LOGGER.debug("Decouple mbus device from gateway device");
+        LOGGER.debug("DeCouple mbus device from gateway device");
 
         return this.writeUpdatedMbus(conn, decoupleMbusDto);
     }
 
-    private DecoupleMbusDto writeUpdatedMbus(final DlmsConnectionHolder conn, final DecoupleMbusDto decoupleMbusDto)
+    private DecoupleMbusDto writeUpdatedMbus(final DlmsConnectionHolder conn, final DecoupleMbusDto deCoupleMbusDto)
             throws ProtocolAdapterException {
-        LOGGER.debug("DeCoupleMbusCommandExecutor.execute {} called", decoupleMbusDto.getChannel());
 
         final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("DeCoupleMBusDevice")
-                .addExecutor(this.getMbusAttributeExecutor(decoupleMbusDto,
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto,
                         MbusClientAttribute.PRIMARY_ADDRESS.attributeId(), UINT_8_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(decoupleMbusDto,
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto,
                         MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId(), UINT_32_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(decoupleMbusDto,
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto,
                         MbusClientAttribute.MANUFACTURER_ID.attributeId(), UINT_16_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(decoupleMbusDto, MbusClientAttribute.VERSION.attributeId(),
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto, MbusClientAttribute.VERSION.attributeId(),
                         UINT_8_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(decoupleMbusDto,
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto,
                         MbusClientAttribute.DEVICE_TYPE.attributeId(), UINT_8_ZERO));
 
-        conn.getDlmsMessageListener().setDescription("SetActivityCalendar for calendar " + decoupleMbusDto.getChannel()
+        conn.getDlmsMessageListener().setDescription("Write updated MBus attributes to channel " + deCoupleMbusDto.getChannel()
                 + ", set attributes: " + dataObjectExecutors.describeAttributes());
 
         dataObjectExecutors.execute(conn);
 
         LOGGER.info("Finished setting decoupling the mbus device from the gateway device");
 
-        return decoupleMbusDto;
+        return deCoupleMbusDto;
     }
 
     private DataObjectAttrExecutor getMbusAttributeExecutor(final DecoupleMbusDto decoupleMbusDto,
@@ -82,6 +80,6 @@ public class DeCoupleMBusDeviceCommandExecutor extends AbstractCommandExecutor<D
         final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, decoupleMbusDto.getChannel()));
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode, attributeId);
 
-        return new DataObjectAttrExecutor("DECOUPLE", attributeAddress, value, CLASS_ID, obiscode, attributeId);
+        return new DataObjectAttrExecutor(attributeAddress.toString(), attributeAddress, value, CLASS_ID, obiscode, attributeId);
     }
 }

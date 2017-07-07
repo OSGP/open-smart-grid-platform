@@ -16,6 +16,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -202,10 +203,11 @@ public class SimulatorTriggerClient extends AbstractClient {
         }
     }
 
-    public String getDlmsAttributeValues(final int classId, final String obisCode)
+    public final Properties getDlmsAttributeValues(final int classId, final String obisCode)
             throws SimulatorTriggerClientException {
 
         final String key = this.buildKeyPathSegment(classId, obisCode);
+        // final Map<String, String> settings = new HashMap<String, String>();
 
         final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(key).get();
 
@@ -214,8 +216,10 @@ public class SimulatorTriggerClient extends AbstractClient {
         } catch (final ResponseException e) {
             throw new SimulatorTriggerClientException("getDlmsAttributeValues response exception", e);
         }
+        return response.readEntity(Properties.class);
 
-        return response.readEntity(String.class);
+        // settings.put(key, );
+        // return settings;
     }
 
     private String buildKeyPathSegment(final int classId, final String obisCode) {
