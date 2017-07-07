@@ -55,7 +55,7 @@
         </site>
     </distributionManagement>
 
-	<build>
+    <build>
 	<plugins>
 	    <plugin>
 		<groupId>external.atlassian.jgitflow</groupId>
