@@ -28,7 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareRequestDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 
 @Component
-public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<String, List<FirmwareVersionDto>> {
+public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<String, UpdateFirmwareResponseDto> {
 
     private static final String EXCEPTION_MSG_UPDATE_FAILED = "Upgrade of firmware did not succeed.";
 
@@ -71,16 +71,17 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     @Override
-    public List<FirmwareVersionDto> execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public UpdateFirmwareResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final String firmwareIdentification) throws ProtocolAdapterException {
-        final ImageTransfer transfer = new ImageTransfer(conn, imageTransferProperties, firmwareIdentification,
+        final ImageTransfer transfer = new ImageTransfer(conn, this.imageTransferProperties, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
 
         try {
             this.prepare(transfer);
             this.transfer(transfer);
             this.verify(transfer);
-            return this.activate(conn, device, transfer);
+            final List<FirmwareVersionDto> firmwareVersions = this.activate(conn, device, transfer);
+            return new UpdateFirmwareResponseDto(firmwareIdentification, firmwareVersions);
         } catch (ImageTransferException | ProtocolAdapterException e) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_UPDATE_FAILED, e);
         } finally {
@@ -115,7 +116,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
             final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
         if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
             transfer.activateImage();
-            return getFirmwareVersionsCommandExecutor.execute(conn, device, null);
+            return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
         } else {
             // Image data is not correct.
             throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
@@ -125,7 +126,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     private byte[] getImageData(final String firmwareIdentification) throws ProtocolAdapterException {
         try {
             return this.firmwareImageFactory.getFirmwareImage(firmwareIdentification);
-        } catch (FirmwareImageFactoryException e) {
+        } catch (final FirmwareImageFactoryException e) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE, e);
         }
     }
@@ -136,9 +137,9 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     @Override
-    public ActionResponseDto asBundleResponse(final List<FirmwareVersionDto> executionResult)
+    public ActionResponseDto asBundleResponse(final UpdateFirmwareResponseDto executionResult)
             throws ProtocolAdapterException {
 
-        return new UpdateFirmwareResponseDto(executionResult);
+        return executionResult;
     }
 }
