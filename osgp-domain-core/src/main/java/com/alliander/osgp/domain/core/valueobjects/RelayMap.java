@@ -13,7 +13,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-public class RelayMap implements Serializable {
+public class RelayMap implements Serializable, Comparable<RelayMap> {
 
     /**
      * Serial Version UID.
@@ -61,4 +61,35 @@ public class RelayMap implements Serializable {
     public void changeRelayType(final RelayType relayType) {
         this.relayType = relayType;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || !(o instanceof RelayMap)) {
+            return false;
+        }
+
+        return this.compareTo((RelayMap) o) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
+    @Override
+    public int compareTo(final RelayMap that) {
+        if (that == null) {
+            throw new NullPointerException();
+        }
+
+        return this.toString().compareTo(that.toString());
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        return sb.append(this.index).append('-').append(this.address).append('-').append(this.relayType).append('-')
+                .append(this.alias).toString();
+    }
+
 }
