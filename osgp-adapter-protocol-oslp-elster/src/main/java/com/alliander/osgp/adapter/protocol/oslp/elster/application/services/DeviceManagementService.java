@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -77,8 +78,7 @@ public class DeviceManagementService {
      *            null.
      */
     private EventNotificationDto createEventNotificationDto(final String deviceIdentification, final String deviceUid,
-            final String eventType, final String description,
-            final Integer index, final String timestamp) {
+            final String eventType, final String description, final Integer index, final String timestamp) {
         Assert.notNull(eventType);
         Assert.notNull(description);
         Assert.notNull(index);
@@ -97,8 +97,7 @@ public class DeviceManagementService {
             LOGGER.info("parsed timestamp from string: {} to DateTime: {}", timestamp, dateTime);
         }
 
-        return new EventNotificationDto(deviceUid, dateTime,
-                EventTypeDto.valueOf(eventType), description, index);
+        return new EventNotificationDto(deviceUid, dateTime, EventTypeDto.valueOf(eventType), description, index);
     }
 
     /**
@@ -122,9 +121,17 @@ public class DeviceManagementService {
             final String eventType = eventNotification.getEvent().name();
             final String description = eventNotification.getDescription();
             final int index = eventNotification.getIndex().isEmpty() ? 0 : (int) eventNotification.getIndex().byteAt(0);
-            final String timestamp = eventNotification.getTimestamp();
-            final EventNotificationDto dto = this.createEventNotificationDto(deviceIdentification, deviceUid, eventType,
-                    description, index, timestamp);
+            String timestamp = eventNotification.getTimestamp();
+            LOGGER.debug("-->> timestamp: {}", timestamp);
+            // Hack for faulty firmware version. RTC_NOT_SET event can contains
+            // illegal timestamp value of 20000000xxxxxx.
+            if (!StringUtils.isEmpty(timestamp) && timestamp.startsWith("20000000")) {
+                final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+                timestamp = DateTime.now().withZone(DateTimeZone.UTC).toString(dateTimeFormatter);
+                LOGGER.info("Using DateTime.now() instead of '20000000xxxxxx', value is: {}", timestamp);
+            }
+            final EventNotificationDto dto = this.createEventNotificationDto(deviceIdentification, deviceUid,
+                    eventType, description, index, timestamp);
             eventNotificationDtos.add(dto);
         }
 
@@ -140,8 +147,8 @@ public class DeviceManagementService {
             final String correlationUid, final DeviceResponseMessageSender responseMessageSender, final String domain,
             final String domainVersion, final String messageType, final String publicKey) {
 
-        LOGGER.info("updateKey called for device: {} for organisation: {} with new publicKey: {}", deviceIdentification,
-                organisationIdentification, publicKey);
+        LOGGER.info("updateKey called for device: {} for organisation: {} with new publicKey: {}",
+                deviceIdentification, organisationIdentification, publicKey);
 
         try {
             OslpDevice oslpDevice = this.oslpDeviceSettingsService
