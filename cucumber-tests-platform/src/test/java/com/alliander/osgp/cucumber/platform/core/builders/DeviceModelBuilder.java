@@ -7,19 +7,25 @@
  */
 package com.alliander.osgp.cucumber.platform.core.builders;
 
+import java.util.Collections;
 import java.util.Map;
 
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 
 public class DeviceModelBuilder implements CucumberBuilder<DeviceModel> {
 
-    private Manufacturer manufacturer;
-    private String modelCode;
-    private String description;
-    private boolean fileStorage;
-    private boolean metered;
+    /*
+     * Build the default manufacturer with an empty map of settings as input, so
+     * the default manufacturer properties will be applied.
+     */
+    private Manufacturer manufacturer = new ManufacturerBuilder().withSettings(Collections.emptyMap()).build();
+    private String modelCode = PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE;
+    private String description = PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION;
+    private boolean fileStorage = PlatformDefaults.DEFAULT_FILESTORAGE;
+    private boolean metered = PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED;
 
     public DeviceModelBuilder withManufacturer(final Manufacturer manufacturer) {
         this.manufacturer = manufacturer;
