@@ -511,9 +511,7 @@ public class ConfigurationService {
      * @throws FunctionalException
      *             is thrown when the device cannot be found in the database
      */
-    public void requestFirmwareVersion(final DeviceMessageMetadata deviceMessageMetadata,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersion getFirmwareVersion)
-                    throws FunctionalException {
+    public void requestFirmwareVersion(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
 
         LOGGER.info("requestFirmwareVersion for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());

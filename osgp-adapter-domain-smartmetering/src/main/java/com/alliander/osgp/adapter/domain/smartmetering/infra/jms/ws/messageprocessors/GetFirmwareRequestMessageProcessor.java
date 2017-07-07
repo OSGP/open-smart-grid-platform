@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,8 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 @Component
 public class GetFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareRequestMessageProcessor.class);
+
     @Autowired
     @Qualifier("domainSmartMeteringConfigurationService")
     private ConfigurationService configurationService;
@@ -36,9 +40,17 @@ public class GetFirmwareRequestMessageProcessor extends WebServiceRequestMessage
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final GetFirmwareVersion getFirmwareVersion = (GetFirmwareVersion) dataObject;
+        /*
+         * Ignore the dataObject, which should be a GetFirmwareVersion, since it
+         * contains nothing useful for the ConfigurationService to handle the
+         * request.
+         */
+        if (dataObject != null && !(dataObject instanceof GetFirmwareVersion)) {
+            LOGGER.warn("dataObject was ignored because GetFirmwareVersion does not hold interesting data"
+                    + " for further processing, however dataObject was a " + dataObject.getClass().getName());
+        }
 
-        this.configurationService.requestFirmwareVersion(deviceMessageMetadata, getFirmwareVersion);
+        this.configurationService.requestFirmwareVersion(deviceMessageMetadata);
     }
 
 }
