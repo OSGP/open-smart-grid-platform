@@ -77,8 +77,8 @@ public class RelayMapConverter {
      */
     private static RelayMap convertStringsToRelayMap(final String relayMapString) {
         final String[] fields = relayMapString.split(",");
-        final RelayType relayType = RelayType.valueOf(fields[2]);
 
-        return new RelayMap(Integer.parseInt(fields[0]), Integer.parseInt(fields[1]), relayType, null);
+        return new RelayMap(Integer.parseInt(fields[0]), Integer.parseInt(fields[1]), RelayType.valueOf(fields[2]),
+                null);
     }
 }
