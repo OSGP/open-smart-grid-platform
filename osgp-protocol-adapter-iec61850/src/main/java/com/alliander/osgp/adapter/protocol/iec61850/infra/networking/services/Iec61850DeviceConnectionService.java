@@ -79,21 +79,21 @@ public class Iec61850DeviceConnectionService {
 
     public DeviceConnection connectWithoutConnectionCaching(final String ipAddress, final String deviceIdentification,
             final String organisationIdentification, final IED ied, final String serverName, final String logicalDevice)
-                    throws ConnectionFailureException {
-        return this.connect(ipAddress, deviceIdentification, organisationIdentification, ied, serverName,
-                logicalDevice, false);
+            throws ConnectionFailureException {
+        return this.connect(ipAddress, deviceIdentification, organisationIdentification, ied, serverName, logicalDevice,
+                false);
     }
 
     public DeviceConnection connect(final String ipAddress, final String deviceIdentification,
             final String organisationIdentification, final IED ied, final String serverName, final String logicalDevice)
-                    throws ConnectionFailureException {
-        return this.connect(ipAddress, deviceIdentification, organisationIdentification, ied, serverName,
-                logicalDevice, true);
+            throws ConnectionFailureException {
+        return this.connect(ipAddress, deviceIdentification, organisationIdentification, ied, serverName, logicalDevice,
+                true);
     }
 
-    public synchronized DeviceConnection connect(final String ipAddress, final String deviceIdentification,
-            final String organisationIdentification, final IED ied, final String serverName,
-            final String logicalDevice, final boolean cacheConnection) throws ConnectionFailureException {
+    public DeviceConnection connect(final String ipAddress, final String deviceIdentification,
+            final String organisationIdentification, final IED ied, final String serverName, final String logicalDevice,
+            final boolean cacheConnection) throws ConnectionFailureException {
         // When connection-caching is used, check if a connection is available
         // an usable for the given deviceIdentification.
         try {
@@ -120,8 +120,8 @@ public class Iec61850DeviceConnectionService {
         // Create instance of appropriate event listener.
         Iec61850ClientBaseEventListener eventListener = null;
         try {
-            eventListener = Iec61850ClientEventListenerFactory.getInstance().getEventListener(ied,
-                    deviceIdentification, this.deviceManagementService);
+            eventListener = Iec61850ClientEventListenerFactory.getInstance().getEventListener(ied, deviceIdentification,
+                    this.deviceManagementService);
         } catch (final ProtocolAdapterException e) {
             this.logProtocolAdapterException(deviceIdentification, e);
         }
@@ -165,7 +165,8 @@ public class Iec61850DeviceConnectionService {
     private void logProtocolAdapterException(final String deviceIdentification, final ProtocolAdapterException e) {
         LOGGER.error(
                 "ProtocolAdapterException: no Iec61850ClientBaseEventListener instance could be contructed, continue without event listener for deviceIdentification: "
-                        + deviceIdentification, e);
+                        + deviceIdentification,
+                e);
     }
 
     private int determinePortForIec61850Device(final IED ied, final Iec61850Device iec61850Device) {
@@ -208,8 +209,7 @@ public class Iec61850DeviceConnectionService {
                 } else {
                     // Read all data values, which is much slower, but requires
                     // no manual reads of remote data.
-                    LOGGER.info(
-                            "Testing if connection is alive using readAllDataValues() for deviceIdentification: {}",
+                    LOGGER.info("Testing if connection is alive using readAllDataValues() for deviceIdentification: {}",
                             deviceIdentification);
                     this.iec61850Client.readAllDataValues(iec61850Connection.getClientAssociation());
                 }
@@ -313,7 +313,7 @@ public class Iec61850DeviceConnectionService {
      * Closes the {@link ClientAssociation}, send a disconnect request and close
      * the socket.
      */
-    public synchronized void disconnect(final String deviceIdentification) {
+    public void disconnect(final String deviceIdentification) {
         LOGGER.info("Trying to disconnect from deviceIdentification: {}", deviceIdentification);
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
         if (iec61850Connection != null) {
@@ -326,7 +326,7 @@ public class Iec61850DeviceConnectionService {
         }
     }
 
-    public synchronized void disconnect(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest) {
+    public void disconnect(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest) {
         try {
             deviceConnection.getConnection().getIec61850ClientAssociation().getClientAssociation().disconnect();
             this.logDuration(deviceConnection, deviceRequest);
@@ -345,8 +345,8 @@ public class Iec61850DeviceConnectionService {
         final DateTime endTime = DateTime.now();
         final DateTime startTime = deviceConnection.getConnection().getConnectionStartTime();
         LOGGER.info("Device: {}, messageType: {}, Start time: {}, end time: {}, total time in milliseconds: {}",
-                deviceConnection.getDeviceIdentification(), deviceRequest.getMessageType(), startTime, endTime, endTime
-                .minus(startTime.getMillis()).getMillis());
+                deviceConnection.getDeviceIdentification(), deviceRequest.getMessageType(), startTime, endTime,
+                endTime.minus(startTime.getMillis()).getMillis());
     }
 
     public Iec61850ClientAssociation getIec61850ClientAssociation(final String deviceIdentification) {
@@ -400,11 +400,12 @@ public class Iec61850DeviceConnectionService {
         return this.iec61850Client.sendCommandWithRetry(function, deviceIdentification);
     }
 
-    private void cacheIec61850Connection(final String deviceIdentification, final Iec61850Connection iec61850Connection) {
+    private void cacheIec61850Connection(final String deviceIdentification,
+            final Iec61850Connection iec61850Connection) {
         cache.put(deviceIdentification, iec61850Connection);
     }
 
-    private synchronized Iec61850Connection fetchIec61850Connection(final String deviceIdentification) {
+    private Iec61850Connection fetchIec61850Connection(final String deviceIdentification) {
         final Iec61850Connection iec61850Connection = cache.get(deviceIdentification);
         if (iec61850Connection == null) {
             LOGGER.info("No connection found for device: {}", deviceIdentification);
