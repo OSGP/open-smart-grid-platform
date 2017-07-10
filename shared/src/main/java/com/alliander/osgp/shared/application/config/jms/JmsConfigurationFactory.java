@@ -141,6 +141,7 @@ public class JmsConfigurationFactory {
         private static final String PROPERTY_REDELIVERY_DELAY = "redelivery.delay";
         private static final String PROPERTY_DELIVERY_PERSISTENT = "delivery.persistent";
         private static final String PROPERTY_TIME_TO_LIVE = "time.to.live";
+        private static final String PROPERTY_RECEIVE_TIMEOUT = "receive.timeout";
         private static final String PROPERTY_EXPLICIT_QOS_ENABLED = "explicit.qos.enabled";
         private static final String PROPERTY_QUEUE = "queue";
 
@@ -228,7 +229,7 @@ public class JmsConfigurationFactory {
             jmsTemplate.setExplicitQosEnabled(this.property(PROPERTY_EXPLICIT_QOS_ENABLED, boolean.class));
             jmsTemplate.setTimeToLive(this.property(PROPERTY_TIME_TO_LIVE, long.class));
             jmsTemplate.setDeliveryPersistent(this.property(PROPERTY_DELIVERY_PERSISTENT, boolean.class));
-            jmsTemplate.setReceiveTimeout(JmsTemplate.RECEIVE_TIMEOUT_NO_WAIT);
+            jmsTemplate.setReceiveTimeout(this.property(PROPERTY_RECEIVE_TIMEOUT, long.class));
             jmsTemplate.setConnectionFactory(JmsConfigurationFactory.this.pooledConnectionFactory);
             return jmsTemplate;
         }
