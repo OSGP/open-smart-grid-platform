@@ -25,9 +25,11 @@ import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-admin.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
+
+    public static final String PROPERTY_NAME_JMS_RECEIVE_TIMEOUT = "jms.admin.responses.receive.timeout";
 
     // === JMS SETTINGS ===
 
@@ -75,7 +77,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean(name = "wsAdminIncomingResponsesJmsTemplate")
     public JmsTemplate wsAdminIncomingResponsesJmsTemplate(
             final JmsConfiguration wsAdminIncomingResponsesJmsConfiguration) {
-        return wsAdminIncomingResponsesJmsConfiguration.getJmsTemplate();
+        final Long receiveTimeout = Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_RECEIVE_TIMEOUT));
+
+        final JmsTemplate jmsTemplate = wsAdminIncomingResponsesJmsConfiguration.getJmsTemplate();
+        jmsTemplate.setReceiveTimeout(receiveTimeout);
+        return jmsTemplate;
     }
 
     @Bean

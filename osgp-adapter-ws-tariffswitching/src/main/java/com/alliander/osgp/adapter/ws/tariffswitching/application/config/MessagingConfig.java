@@ -28,9 +28,11 @@ import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
+
+    public static final String PROPERTY_NAME_JMS_RECEIVE_TIMEOUT = "jms.tariffswitching.responses.receive.timeout";
 
     @Resource
     private Environment environment;
@@ -82,7 +84,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean(name = "wsTariffSwitchingIncomingResponsesJmsTemplate")
     public JmsTemplate tariffSwitchingResponsesJmsTemplate(
             final JmsConfiguration tariffSwitchingResponsesJmsConfiguration) {
-        return tariffSwitchingResponsesJmsConfiguration.getJmsTemplate();
+        final Long receiveTimeout = Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_RECEIVE_TIMEOUT));
+
+        final JmsTemplate jmsTemplate = tariffSwitchingResponsesJmsConfiguration.getJmsTemplate();
+        jmsTemplate.setReceiveTimeout(receiveTimeout);
+        return jmsTemplate;
     }
 
     @Bean(name = "wsTariffSwitchingIncomingResponsesMessageFinder")
