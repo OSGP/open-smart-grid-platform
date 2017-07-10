@@ -13,8 +13,7 @@ import javax.annotation.PostConstruct;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.domain.factories.FirwareImageFactory;
-import org.osgp.adapter.protocol.dlms.exceptions.FirmwareImageFactoryException;
+import org.osgp.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     private static final String EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE = "Installation file is not available.";
 
     @Autowired
-    private FirwareImageFactory firmwareImageFactory;
+    private FirmwareFileCachingRepository firmwareFileCachingRepository;
 
     @Autowired
     private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
@@ -73,7 +72,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     @Override
     public List<FirmwareVersionDto> execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final String firmwareIdentification) throws ProtocolAdapterException {
-        final ImageTransfer transfer = new ImageTransfer(conn, imageTransferProperties, firmwareIdentification,
+        final ImageTransfer transfer = new ImageTransfer(conn, this.imageTransferProperties, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
 
         try {
@@ -115,7 +114,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
             final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
         if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
             transfer.activateImage();
-            return getFirmwareVersionsCommandExecutor.execute(conn, device, null);
+            return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
         } else {
             // Image data is not correct.
             throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
@@ -123,11 +122,13 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     private byte[] getImageData(final String firmwareIdentification) throws ProtocolAdapterException {
-        try {
-            return this.firmwareImageFactory.getFirmwareImage(firmwareIdentification);
-        } catch (FirmwareImageFactoryException e) {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE, e);
+        final byte[] firmwareFile = this.firmwareFileCachingRepository.retrieve(firmwareIdentification);
+
+        if (firmwareFile == null) {
+            throw new ProtocolAdapterException(EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE);
         }
+
+        return firmwareFile;
     }
 
     @Override

@@ -8,7 +8,7 @@
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
 import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import javax.jms.Message;
 
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -41,12 +41,12 @@ public class DlmsDeviceMessageMetadata {
     }
 
     /**
-     * By using the ObjectMessage, the attributes of the data container are set
+     * By using the Message, the attributes of the data container are set
      *
      * @param message
      * @throws JMSException
      */
-    public void handleMessage(final ObjectMessage message) throws JMSException {
+    public void handleMessage(final Message message) throws JMSException {
         this.correlationUid = message.getJMSCorrelationID();
         this.domain = message.getStringProperty(Constants.DOMAIN);
         this.domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);

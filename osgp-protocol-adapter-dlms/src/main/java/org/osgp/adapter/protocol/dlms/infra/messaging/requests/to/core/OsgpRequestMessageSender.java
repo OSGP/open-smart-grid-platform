@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgp.adapter.protocol.dlms.infra.messaging;
+package org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
