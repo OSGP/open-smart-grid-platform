@@ -24,7 +24,6 @@ public class SynchronizeTimeRequestFactory {
         final SynchronizeTimeRequest request = new SynchronizeTimeRequest();
         request.setDeviceIdentification(parameters.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
         request.setSynchronizeTimeRequestData(SynchronizeTimeRequestDataFactory.fromParameterMap(parameters));
-        ;
         return request;
     }
 

@@ -55,7 +55,6 @@ public class AllAttributeValues {
         final GetAllAttributeValuesAsyncRequest asyncRequest = AllAttributeValuesRequestFactory.fromScenarioContext();
         final GetAllAttributeValuesResponse response = this.responseClient.getResponse(asyncRequest);
 
-        // TODO: Use expected result from settings
         assertEquals("Result is not as expected", OsgpResultType.fromValue(settings.get(PlatformKeys.KEY_RESULT)),
                 response.getResult());
         assertTrue("Response should contain Output", StringUtils.isNotBlank(response.getOutput()));

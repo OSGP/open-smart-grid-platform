@@ -65,6 +65,8 @@ public class AssociationLnObjects extends SmartMeteringStepsBase {
         assertNotNull("ClassId should be present", element.getClassId());
         assertNotNull("LogicalName should be present", element.getLogicalName());
         assertNotNull("Version should be present", element.getVersion());
+        assertNotNull("AttributeId should be present",
+                element.getAccessRights().getAttributeAccess().getAttributeAccessItem().get(0).getAttributeId());
 
     }
 }
