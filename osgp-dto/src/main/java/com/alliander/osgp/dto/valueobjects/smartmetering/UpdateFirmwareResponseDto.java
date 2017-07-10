@@ -13,9 +13,17 @@ import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 
 public class UpdateFirmwareResponseDto extends FirmwareVersionResponseDto {
 
-    private static final long serialVersionUID = 8099066390924573498L;
+    private static final long serialVersionUID = -9159077783233215317L;
 
-    public UpdateFirmwareResponseDto(final List<FirmwareVersionDto> firmwareVersions) {
+    private final String firmwareIdentification;
+
+    public UpdateFirmwareResponseDto(final String firmwareIdentification,
+            final List<FirmwareVersionDto> firmwareVersions) {
         super(firmwareVersions);
+        this.firmwareIdentification = firmwareIdentification;
+    }
+
+    public String getFirmwareIdentification() {
+        return this.firmwareIdentification;
     }
 }

@@ -20,19 +20,16 @@ public class FirmwareVersionDto implements Serializable {
         this.version = version;
     }
 
+    @Override
+    public String toString() {
+        return String.format("FirmwareVersionDto[%s => %s]", this.firmwareModuleType, this.version);
+    }
+
     public FirmwareModuleType getFirmwareModuleType() {
         return this.firmwareModuleType;
     }
 
-    public void setFirmwareModuleType(final FirmwareModuleType firmwareModuleType) {
-        this.firmwareModuleType = firmwareModuleType;
-    }
-
     public String getVersion() {
         return this.version;
-    }
-
-    public void setVersion(final String version) {
-        this.version = version;
     }
 }
