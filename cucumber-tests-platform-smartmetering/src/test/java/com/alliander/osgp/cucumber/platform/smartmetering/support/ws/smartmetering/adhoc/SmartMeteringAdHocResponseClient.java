@@ -23,10 +23,11 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 public class SmartMeteringAdHocResponseClient<T, V extends AsyncRequest> extends SmartMeteringBaseClient {
 
     @Autowired
-    private DefaultWebServiceTemplateFactory smartMeteringAdHocWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringAdHocWebServiceTemplateFactory;
 
     private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        return this.smartMeteringAdHocWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return this.smartMeteringAdHocWebServiceTemplateFactory.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
     }
 
     public T getResponse(final V request) throws WebServiceSecurityException, GeneralSecurityException, IOException {

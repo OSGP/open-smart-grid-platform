@@ -24,7 +24,7 @@ public class SmartMeteringBundleWebServiceConfig extends BaseWebServiceConfig {
     private ApplicationConfiguration configuration;
 
     @Bean
-    public DefaultWebServiceTemplateFactory smartMeteringBundleWstf() {
+    public DefaultWebServiceTemplateFactory smartMeteringBundleWebServiceTemplateFactory() {
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringBundleMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringBundle))

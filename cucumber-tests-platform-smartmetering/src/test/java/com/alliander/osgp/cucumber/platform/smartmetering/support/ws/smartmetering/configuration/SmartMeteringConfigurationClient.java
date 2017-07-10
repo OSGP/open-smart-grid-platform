@@ -38,7 +38,7 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     @Autowired
-    private DefaultWebServiceTemplateFactory smartMeteringConfigurationWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringConfigurationWebServiceTemplateFactory;
 
     public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(final GetAdministrativeStatusRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
@@ -47,7 +47,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     public GetAdministrativeStatusResponse retrieveGetAdministrativeStatusResponse(
             final GetAdministrativeStatusAsyncRequest asyncRequest)
-                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
@@ -76,7 +76,8 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         return (GenerateAndReplaceKeysAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
     }
 
-    public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(final GenerateAndReplaceKeysAsyncRequest asyncRequest)
+    public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(
+            final GenerateAndReplaceKeysAsyncRequest asyncRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
@@ -92,7 +93,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     public SetClockConfigurationResponse getSetClockConfigurationResponse(
             final SetClockConfigurationAsyncRequest request)
-                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = request.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
@@ -101,7 +102,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        return this.smartMeteringConfigurationWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
+        return this.smartMeteringConfigurationWebServiceTemplateFactory
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
     }
 }
