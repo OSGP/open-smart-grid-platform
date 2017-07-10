@@ -7,32 +7,47 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareModuleType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion;
 
-import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 public class FirmwareVersionConverter extends
-        CustomConverter<FirmwareVersion, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion> {
+        BidirectionalConverter<FirmwareVersion, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion> {
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion convert(
+    public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion convertTo(
             final FirmwareVersion source,
-            final Type<? extends com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion> destinationType,
-            final MappingContext context) {
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion> destinationType,
+            final MappingContext mappingContext) {
 
-        if (source != null) {
-
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion firmwareVersion = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion();
-            firmwareVersion.setFirmwareModuleType(
-                    com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareModuleType
-                            .valueOf(source.getType().getDescription()));
-            firmwareVersion.setVersion(source.getVersion());
-
-            return firmwareVersion;
+        if (source == null) {
+            return null;
         }
 
-        return null;
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion firmwareVersion = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion();
+        firmwareVersion.setFirmwareModuleType(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareModuleType
+                        .valueOf(source.getType().getDescription()));
+        firmwareVersion.setVersion(source.getVersion());
+
+        return firmwareVersion;
+    }
+
+    @Override
+    public FirmwareVersion convertFrom(
+            final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion source,
+            final Type<FirmwareVersion> destinationType, final MappingContext mappingContext) {
+
+        if (source == null) {
+            return null;
+        }
+
+        final FirmwareModuleType type = FirmwareModuleType.forDescription(source.getFirmwareModuleType().name());
+        final String version = source.getVersion();
+
+        return new FirmwareVersion(type, version);
     }
 }

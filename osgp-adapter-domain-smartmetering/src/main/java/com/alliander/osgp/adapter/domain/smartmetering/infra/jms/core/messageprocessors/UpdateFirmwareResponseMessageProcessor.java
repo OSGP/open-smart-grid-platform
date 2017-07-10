@@ -7,15 +7,13 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -42,17 +40,16 @@ public class UpdateFirmwareResponseMessageProcessor extends OsgpCoreResponseMess
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
-        if (responseMessage.getDataObject() instanceof List) {
-            @SuppressWarnings("unchecked")
-            final List<FirmwareVersionDto> firmwareVersionList = (List<FirmwareVersionDto>) responseMessage
+        if (responseMessage.getDataObject() instanceof UpdateFirmwareResponseDto) {
+            final UpdateFirmwareResponseDto updateFirmwareResponse = (UpdateFirmwareResponseDto) responseMessage
                     .getDataObject();
 
             this.configurationService.handleUpdateFirmwareResponse(deviceMessageMetadata, responseMessage.getResult(),
-                    osgpException, firmwareVersionList);
+                    osgpException, updateFirmwareResponse);
         } else {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                    ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "DataObject for response message should be of type ArrayList"));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
+                    new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                            "DataObject for response message should be of type UpdateFirmwareResponseDto"));
         }
     }
 }
