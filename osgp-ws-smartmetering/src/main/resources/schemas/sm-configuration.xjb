@@ -13,11 +13,11 @@
     <jxb:bindings node="//xs:complexType[@name='CaptureObjects']//xs:element[@name='CaptureObject']">
       <jxb:property name="captureObjects" />
     </jxb:bindings>
-    
+
     <jxb:bindings node="//xs:complexType[@name='ProfileEntries']//xs:element[@name='ProfileEntry']">
       <jxb:property name="profileEntries" />
     </jxb:bindings>
-        
+
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="sm-configuration.xsd">
@@ -25,6 +25,15 @@
       <jxb:package
         name="com.alliander.osgp.adapter.ws.schema.smartmetering.configuration"></jxb:package>
     </jxb:schemaBindings>
+
+    <jxb:bindings node="//xs:complexType[@name='UpdateFirmwareRequestData']//xs:element[@name='FirmwareVersion']">
+      <jxb:property name="firmwareVersions" />
+    </jxb:bindings>
+
+    <jxb:bindings node="//xs:element[@name='UpdateFirmwareRequest']//xs:element[@name='FirmwareVersion']">
+      <jxb:property name="firmwareVersions" />
+    </jxb:bindings>
+
   </jxb:bindings>
 
 </jxb:bindings>
