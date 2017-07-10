@@ -207,7 +207,6 @@ public class SimulatorTriggerClient extends AbstractClient {
             throws SimulatorTriggerClientException {
 
         final String key = this.buildKeyPathSegment(classId, obisCode);
-        // final Map<String, String> settings = new HashMap<String, String>();
 
         final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(key).get();
 
@@ -217,9 +216,6 @@ public class SimulatorTriggerClient extends AbstractClient {
             throw new SimulatorTriggerClientException("getDlmsAttributeValues response exception", e);
         }
         return response.readEntity(Properties.class);
-
-        // settings.put(key, );
-        // return settings;
     }
 
     private String buildKeyPathSegment(final int classId, final String obisCode) {
