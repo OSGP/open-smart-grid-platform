@@ -132,7 +132,7 @@
       <artifactId>cucumber-tests-core</artifactId>
       <type>test-jar</type>
     </dependency>
-    
+
   </dependencies>
 
   <build>

@@ -129,6 +129,10 @@
     </dependency>
     <dependency>
       <groupId>com.alliander</groupId>
+      <artifactId>cucumber-tests-execution</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander</groupId>
       <artifactId>cucumber-tests-platform</artifactId>
       <type>test-jar</type>
     </dependency>
@@ -149,6 +153,28 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/main/assembly/test-jar-with-dependencies.xml</descriptor>
+              </descriptors>
+              <archive>
+                <manifest>
+                  <mainClass>com.alliander.osgp.cucumber.platform.smartmetering.App</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>com.smartbear.soapui</groupId>

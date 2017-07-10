@@ -19,14 +19,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.cucumber.platform.config.ApplicationPersistenceConfiguration;
+import com.alliander.osgp.cucumber.platform.config.CorePersistenceConfig;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 
 @Configuration
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCoreMicrogrids", transactionManagerRef = "txMgrCoreMicrogrids", basePackageClasses = {
         DeviceRepository.class, RtuDeviceRepository.class })
-public class CoreMicrogridsPersistenceConfig extends ApplicationPersistenceConfiguration {
+public class CoreMicrogridsPersistenceConfig extends CorePersistenceConfig {
 
     @Value("${db.name.osgp_core}")
     private String databaseName;
@@ -42,6 +42,7 @@ public class CoreMicrogridsPersistenceConfig extends ApplicationPersistenceConfi
      *
      * @return DataSource
      */
+    @Override
     @Primary
     @Bean(name = "dsCoreMicrogrids")
     public DataSource dataSource() {

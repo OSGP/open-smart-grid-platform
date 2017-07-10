@@ -109,6 +109,10 @@
     </dependency>
     <dependency>
       <groupId>com.alliander</groupId>
+      <artifactId>cucumber-tests-execution</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander</groupId>
       <artifactId>cucumber-tests-platform</artifactId>
       <type>test-jar</type>
     </dependency>
@@ -133,18 +137,40 @@
       <artifactId>osgp-adapter-ws-tariffswitching</artifactId>
       <classifier>classes</classifier>
     </dependency>
-    
+
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/main/assembly/test-jar-with-dependencies.xml</descriptor>
+              </descriptors>
+              <archive>
+                <manifest>
+                  <mainClass>com.alliander.osgp.cucumber.platform.publiclighting.App</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
