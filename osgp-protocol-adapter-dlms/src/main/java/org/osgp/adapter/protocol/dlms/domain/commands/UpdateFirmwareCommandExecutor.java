@@ -27,7 +27,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareRequestDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 
 @Component
-public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<String, List<FirmwareVersionDto>> {
+public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<String, UpdateFirmwareResponseDto> {
 
     private static final String EXCEPTION_MSG_UPDATE_FAILED = "Upgrade of firmware did not succeed.";
 
@@ -70,7 +70,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     @Override
-    public List<FirmwareVersionDto> execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public UpdateFirmwareResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final String firmwareIdentification) throws ProtocolAdapterException {
         final ImageTransfer transfer = new ImageTransfer(conn, this.imageTransferProperties, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
@@ -79,7 +79,8 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
             this.prepare(transfer);
             this.transfer(transfer);
             this.verify(transfer);
-            return this.activate(conn, device, transfer);
+            final List<FirmwareVersionDto> firmwareVersions = this.activate(conn, device, transfer);
+            return new UpdateFirmwareResponseDto(firmwareIdentification, firmwareVersions);
         } catch (ImageTransferException | ProtocolAdapterException e) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_UPDATE_FAILED, e);
         } finally {
@@ -137,9 +138,9 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     @Override
-    public ActionResponseDto asBundleResponse(final List<FirmwareVersionDto> executionResult)
+    public ActionResponseDto asBundleResponse(final UpdateFirmwareResponseDto executionResult)
             throws ProtocolAdapterException {
 
-        return new UpdateFirmwareResponseDto(executionResult);
+        return executionResult;
     }
 }

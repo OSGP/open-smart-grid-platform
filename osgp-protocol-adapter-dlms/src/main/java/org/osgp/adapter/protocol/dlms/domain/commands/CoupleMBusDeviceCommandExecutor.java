@@ -92,7 +92,7 @@ public class CoupleMBusDeviceCommandExecutor
                 channelElements);
     }
 
-    private List<GetResult> getMBusClientAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device,
+    protected List<GetResult> getMBusClientAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device,
             final short channel) throws ProtocolAdapterException {
         final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
         conn.getDlmsMessageListener().setDescription("CoupleMBusDevice, retrieve M-Bus client setup attributes: "
@@ -116,7 +116,7 @@ public class CoupleMBusDeviceCommandExecutor
         return attrAddresses;
     }
 
-    private ChannelElementValuesDto makeChannelElementValues(final short channel, final List<GetResult> resultList)
+    protected ChannelElementValuesDto makeChannelElementValues(final short channel, final List<GetResult> resultList)
             throws ProtocolAdapterException {
         final short primaryAddress = this.readShort(resultList, INDEX_PRIMARY_ADDRESS, "primaryAddress");
         final String identificationNumber = this.readIdentificationNumber(resultList, INDEX_IDENTIFICATION_NUMBER,
