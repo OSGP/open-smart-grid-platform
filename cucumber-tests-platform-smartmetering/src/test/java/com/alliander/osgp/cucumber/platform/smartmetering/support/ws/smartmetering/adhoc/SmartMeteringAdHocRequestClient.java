@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
+package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -20,18 +20,17 @@ import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
-public class SmartMeteringMonitoringRequestClient<T extends AsyncResponse, V> extends SmartMeteringBaseClient {
+public class SmartMeteringAdHocRequestClient<T extends AsyncResponse, V> extends SmartMeteringBaseClient {
 
     @Autowired
-    private DefaultWebServiceTemplateFactory smartMeteringMonitoringWebServiceTemplateFactory;
+    private DefaultWebServiceTemplateFactory smartMeteringAdHocWebServiceTemplateFactory;
 
     private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        return this.smartMeteringMonitoringWebServiceTemplateFactory.getTemplate(this.getOrganizationIdentification(),
+        return this.smartMeteringAdHocWebServiceTemplateFactory.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
     }
 
     public T doRequest(final V request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         return (T) this.getTemplate().marshalSendAndReceive(request);
     }
-
 }

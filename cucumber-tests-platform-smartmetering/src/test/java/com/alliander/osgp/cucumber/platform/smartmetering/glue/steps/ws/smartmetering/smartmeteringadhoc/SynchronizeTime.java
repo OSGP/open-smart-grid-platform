@@ -7,77 +7,52 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringadhoc;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
-import org.joda.time.DateTimeZone;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SynchronizeTimeRequestFactory;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class SynchronizeTime extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT = "/Envelope/Body/SynchronizeTimeResponse/Result/text()";
 
-    private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
-    private static final String TEST_CASE_XML = "213 Retrieve SynchronizeTime result";
-    private static final String TEST_CASE_NAME_REQUEST = "SynchronizeTime - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetSynchronizeTimeResponse - Request 1";
+    @Autowired
+    private SmartMeteringAdHocRequestClient<SynchronizeTimeAsyncResponse, SynchronizeTimeRequest> requestClient;
 
-    private static final String DEVIATION_LABEL = "Deviation";
-    private static final String DST_LABEL = "DST";
-
-    private static final DateTimeZone DTZ_EUROPE_AMSTERDAM = DateTimeZone.forID("Europe/Amsterdam");
+    @Autowired
+    private SmartMeteringAdHocResponseClient<SynchronizeTimeResponse, SynchronizeTimeAsyncRequest> responseClient;
 
     @When("^receiving a get synchronize time request$")
     public void receivingAGetSynchronizeTimeRequest(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        /*
-         * Setup of deviation and DST information, that will make
-         * SynchronizeTime configure a meter for time zone Europe/Amsterdam.
-         *
-         * This assumes the server time that will be synchronized is about the
-         * same as the system time where this test code is executed and
-         * configures deviation and DST according to the proper values for
-         * Europe/Amsterdam at the time of execution.
-         */
-        final String deviation;
-        final String dst;
-        if (DTZ_EUROPE_AMSTERDAM.isStandardOffset(System.currentTimeMillis())) {
-            // normal time / winter time, GMT+1
-            deviation = "-60";
-            dst = "false";
-        } else {
-            // summer time (DST), daylight savings active, GMT+2
-            deviation = "-120";
-            dst = "true";
-        }
+        final SynchronizeTimeRequest request = SynchronizeTimeRequestFactory.fromParameterMap(settings);
+        final SynchronizeTimeAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        PROPERTIES_MAP.put(DEVIATION_LABEL, deviation);
-        PROPERTIES_MAP.put(DST_LABEL, dst);
-
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        assertNotNull("asyncRespone should not be null", asyncResponse);
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
     @Then("^the date and time is synchronized on the device$")
     public void theDateAndTimeIsSynchronizedOnTheDevice(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        final SynchronizeTimeAsyncRequest asyncRequest = SynchronizeTimeRequestFactory.fromScenarioContext();
+        final SynchronizeTimeResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, PlatformDefaults.EXPECTED_RESULT_OK));
+        assertEquals("Results was not as expected", OsgpResultType.OK, response.getResult());
     }
 }
