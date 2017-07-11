@@ -19,12 +19,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 
 @Component
-public class DeCoupleMBusDeviceCommandExecutor extends AbstractCommandExecutor<DecoupleMbusDto, DecoupleMbusDto> {
+public class DeCoupleMBusDeviceCommandExecutor
+        extends AbstractCommandExecutor<DecoupleMbusDeviceResponseDto, DecoupleMbusDeviceResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CoupleMBusDeviceCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeCoupleMBusDeviceCommandExecutor.class);
 
     private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
     /**
@@ -38,48 +39,52 @@ public class DeCoupleMBusDeviceCommandExecutor extends AbstractCommandExecutor<D
     private static final DataObject UINT_32_ZERO = DataObject.newUInteger32Data(0L);
 
     public DeCoupleMBusDeviceCommandExecutor() {
-        super(DecoupleMbusDto.class);
+        super(DecoupleMbusDeviceResponseDto.class);
     }
 
     @Override
-    public DecoupleMbusDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final DecoupleMbusDto decoupleMbusDto) throws ProtocolAdapterException {
+    public DecoupleMbusDeviceResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final DecoupleMbusDeviceResponseDto decoupleMbusDto) throws ProtocolAdapterException {
 
         LOGGER.debug("DeCouple mbus device from gateway device");
 
         return this.writeUpdatedMbus(conn, decoupleMbusDto);
     }
 
-    private DecoupleMbusDto writeUpdatedMbus(final DlmsConnectionHolder conn, final DecoupleMbusDto deCoupleMbusDto)
-            throws ProtocolAdapterException {
+    private DecoupleMbusDeviceResponseDto writeUpdatedMbus(final DlmsConnectionHolder conn,
+            final DecoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws ProtocolAdapterException {
 
         final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("DeCoupleMBusDevice")
-                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto,
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceResponseDto,
                         MbusClientAttribute.PRIMARY_ADDRESS.attributeId(), UINT_8_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto,
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceResponseDto,
                         MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId(), UINT_32_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto,
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceResponseDto,
                         MbusClientAttribute.MANUFACTURER_ID.attributeId(), UINT_16_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto, MbusClientAttribute.VERSION.attributeId(),
-                        UINT_8_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDto,
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceResponseDto,
+                        MbusClientAttribute.VERSION.attributeId(), UINT_8_ZERO))
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceResponseDto,
                         MbusClientAttribute.DEVICE_TYPE.attributeId(), UINT_8_ZERO));
 
-        conn.getDlmsMessageListener().setDescription("Write updated MBus attributes to channel " + deCoupleMbusDto.getChannel()
-                + ", set attributes: " + dataObjectExecutors.describeAttributes());
+        conn.getDlmsMessageListener()
+                .setDescription("Write updated MBus attributes to channel " + deCoupleMbusDeviceResponseDto.getChannel()
+                        + ", set attributes: " + dataObjectExecutors.describeAttributes());
 
         dataObjectExecutors.execute(conn);
 
-        LOGGER.info("Finished setting decoupling the mbus device from the gateway device");
+        LOGGER.info("Finished decoupling the mbus device from the gateway device");
 
-        return deCoupleMbusDto;
+        return deCoupleMbusDeviceResponseDto;
     }
 
-    private DataObjectAttrExecutor getMbusAttributeExecutor(final DecoupleMbusDto decoupleMbusDto,
-            final int attributeId, final DataObject value) {
-        final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, decoupleMbusDto.getChannel()));
+    private DataObjectAttrExecutor getMbusAttributeExecutor(
+            final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto, final int attributeId,
+            final DataObject value) {
+        final ObisCode obiscode = new ObisCode(
+                String.format(OBIS_CODE_TEMPLATE, decoupleMbusDeviceResponseDto.getChannel()));
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode, attributeId);
 
-        return new DataObjectAttrExecutor(attributeAddress.toString(), attributeAddress, value, CLASS_ID, obiscode, attributeId);
+        return new DataObjectAttrExecutor(attributeAddress.toString(), attributeAddress, value, CLASS_ID, obiscode,
+                attributeId);
     }
 }

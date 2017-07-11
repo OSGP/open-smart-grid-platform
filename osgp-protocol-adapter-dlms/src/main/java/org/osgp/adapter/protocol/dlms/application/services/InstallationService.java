@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
@@ -90,8 +90,8 @@ public class InstallationService {
         return this.getMBusDeviceOnChannelCommandExecutor.execute(conn, device, requestDataDto);
     }
 
-    public DecoupleMbusDto deCoupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final DecoupleMbusDto decoupleMbusDto) throws ProtocolAdapterException {
+    public DecoupleMbusDeviceResponseDto deCoupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final DecoupleMbusDeviceResponseDto decoupleMbusDto) throws ProtocolAdapterException {
         return this.deCoupleMBusDeviceCommandExecutor.execute(conn, device, decoupleMbusDto);
     }
 }
