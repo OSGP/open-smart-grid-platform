@@ -99,6 +99,7 @@ Feature: SmartMetering Configuration
     Then the firmware version result should be returned
       | DeviceIdentification | TEST1024000000001 |
 
+  @TEST
   Scenario: successful upgrade of firmware
     Given a manufacturer
       | ManufacturerId   | KAIF  |
@@ -114,7 +115,7 @@ Feature: SmartMetering Configuration
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
-      | FirmwareFilename          | KFPP_V060100FF         |
+      | FirmwareFilename          | KFPP_V060100FF.bin     |
       | ModelCode                 | MA105                  |
     When the request for a firmware upgrade is received
       | DeviceIdentification      | TEST1024000000002      |
@@ -132,6 +133,7 @@ Feature: SmartMetering Configuration
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
 
+  @TEST
   Scenario: successful upgrade of a single firmware module
     Given a manufacturer
       | ManufacturerId   | KAIF  |
@@ -144,11 +146,11 @@ Feature: SmartMetering Configuration
       | DeviceType           | SMART_METER_E     |
       | DeviceModel          | MA105             |
     And a firmware
-      | FirmwareModuleVersionComm |                |
-      | FirmwareModuleVersionMa   |                |
-      | FirmwareModuleVersionFunc | M57 4836       |
-      | FirmwareFilename          | KFPP_V060100FF |
-      | ModelCode                 | MA105          |
+      | FirmwareModuleVersionComm |                    |
+      | FirmwareModuleVersionMa   |                    |
+      | FirmwareModuleVersionFunc | M57 4836           |
+      | FirmwareFilename          | KFPP_V060100FF.bin |
+      | ModelCode                 | MA105              |
     When the request for a firmware upgrade is received
       | DeviceIdentification      | TEST1024000000002 |
       | FirmwareModuleVersionFunc | M57 4836          |
