@@ -67,6 +67,7 @@
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification"
           minOccurs="1" />
+        <xsd:element name="BatchLogId" type="xsd:long" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
