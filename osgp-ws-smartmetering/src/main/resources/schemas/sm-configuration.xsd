@@ -68,15 +68,8 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification" />
-        <xsd:element name="FirmwareIdentification">
-          <xsd:simpleType>
-            <xsd:restriction base="xsd:normalizedString">
-              <xsd:minLength value="1" />
-              <xsd:maxLength value="255" />
-              <xsd:pattern value="[^ ]{0,255}" />
-            </xsd:restriction>
-          </xsd:simpleType>
-        </xsd:element>
+        <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion"
+          minOccurs="1" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -133,15 +126,8 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="FirmwareIdentification">
-            <xsd:simpleType>
-              <xsd:restriction base="xsd:normalizedString">
-                <xsd:minLength value="1" />
-                <xsd:maxLength value="255" />
-                <xsd:pattern value="[^ ]{0,255}" />
-              </xsd:restriction>
-            </xsd:simpleType>
-          </xsd:element>
+          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion"
+            minOccurs="1" maxOccurs="unbounded" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
