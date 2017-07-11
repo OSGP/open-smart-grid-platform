@@ -65,7 +65,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
     }
 
     @Then("^device simulation of \"([^\"]*)\" with classid (\\d+) obiscode \"([^\"]*)\" retrieves the attributes$")
-    public void deviceSimulationOfTESTWithClassidObiscodeRetrievesTheAttributes(final String deviceIdentification,
+    public void deviceSimulationOfWithClassidObiscodeRetrievesTheAttributes(final String deviceIdentification,
             final int classId, final String obisCode, final Map<String, String> settings) throws Throwable {
         Properties properties = null;
         try {
