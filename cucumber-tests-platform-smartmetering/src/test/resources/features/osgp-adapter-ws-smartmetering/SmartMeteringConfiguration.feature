@@ -99,7 +99,6 @@ Feature: SmartMetering Configuration
     Then the firmware version result should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-  @TEST
   Scenario: successful upgrade of firmware
     Given a manufacturer
       | ManufacturerId   | KAIF  |
@@ -133,7 +132,6 @@ Feature: SmartMetering Configuration
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
 
-  @TEST
   Scenario: successful upgrade of a single firmware module
     Given a manufacturer
       | ManufacturerId   | KAIF  |
