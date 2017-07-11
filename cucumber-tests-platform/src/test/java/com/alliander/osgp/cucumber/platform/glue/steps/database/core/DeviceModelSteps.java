@@ -112,7 +112,7 @@ public class DeviceModelSteps extends GlueBase {
     public DeviceModel insertDeviceModel(final Map<String, String> settings) {
 
         final Manufacturer manufacturer = this.manufacturerRepository
-                .findByName(getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.MANUFACTURER_NAME));
+                .findByName(getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
         final DeviceModel deviceModel = new DeviceModelBuilder().withSettings(settings).withManufacturer(manufacturer)
                 .build();
         return this.deviceModelRepository.save(deviceModel);
