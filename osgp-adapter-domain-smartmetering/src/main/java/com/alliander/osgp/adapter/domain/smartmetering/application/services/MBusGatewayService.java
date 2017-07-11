@@ -25,7 +25,7 @@ import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestData;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
@@ -111,8 +111,8 @@ public class MBusGatewayService {
             this.installationService.handleResponse("deCoupleMbusDevice", deviceMessageMetadata,
                     ResponseMessageResultType.OK, null);
         } else {
-            final DecoupleMbusDto decoupleMbusDto = new DecoupleMbusDto(mbusDeviceIdentification,
-                    mbusDevice.getChannel());
+            final DecoupleMbusDeviceResponseDto decoupleMbusDto = new DecoupleMbusDeviceResponseDto(
+                    mbusDeviceIdentification, mbusDevice.getChannel());
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(), decoupleMbusDto);
@@ -121,13 +121,16 @@ public class MBusGatewayService {
         }
     }
 
+    /**
+     * Check if a MbusDevice is coupled. If it is already decoupled,
+     * handleResponse is called and handles the decouple request. If it is not
+     * decoupled, the decouple request message is sent to core so the
+     * GatewayDevice MBus registers will get updated.
+     *
+     * @param mbusDevice
+     */
     private boolean isMbusDeviceCoupled(final SmartMeter mbusDevice) {
-        if (mbusDevice.getChannel() == null) {
-            return false;
-        } else {
-            return true;
-        }
-
+        return (mbusDevice.getChannel() == null);
     }
 
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -204,12 +207,13 @@ public class MBusGatewayService {
      * Updates the M-Bus device identified in the input part of the
      * {@code deCoupleMbusResponseDto}.
      *
-     * @param deCoupleMbusDto
+     * @param deCoupleMbusDeviceResponseDto
      * @throws FunctionalException
      */
-    public void doDeCoupleMBusDevice(final DecoupleMbusDto deCoupleMbusDto) throws FunctionalException {
+    public void handleDeCoupleMbusDeviceResponse(final DecoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto)
+            throws FunctionalException {
 
-        final String mbusDeviceIdentification = deCoupleMbusDto.getmBusDeviceIdentification();
+        final String mbusDeviceIdentification = deCoupleMbusDeviceResponseDto.getmBusDeviceIdentification();
         final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
         mbusDevice.setChannel(null);
