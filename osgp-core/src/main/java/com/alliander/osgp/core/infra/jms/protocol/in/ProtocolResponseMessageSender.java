@@ -48,29 +48,23 @@ public class ProtocolResponseMessageSender implements ProtocolResponseService {
         LOGGER.info("Sending response message to protocol responses incoming queue");
 
         jmsTemplate.send(new MessageCreator() {
-
             @Override
             public Message createMessage(final Session session) throws JMSException {
-
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
-
                 objectMessage.setJMSCorrelationID(messageMetadata.getCorrelationUid());
                 objectMessage.setJMSType(messageType);
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         messageMetadata.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         messageMetadata.getDeviceIdentification());
-
                 objectMessage.setStringProperty(Constants.DOMAIN, messageMetadata.getDomain());
                 objectMessage.setStringProperty(Constants.DOMAIN_VERSION, messageMetadata.getDomainVersion());
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, messageMetadata.getIpAddress());
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, messageMetadata.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, messageMetadata.getRetryCount());
                 objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, messageMetadata.isBypassRetry());
-
                 return objectMessage;
             }
-
         });
     }
 
