@@ -31,7 +31,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
 
     private static final String EXCEPTION_MSG_UPDATE_FAILED = "Upgrade of firmware did not succeed.";
 
-    private static final String EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE = "Installation file is not available.";
+    private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE = "Firmware file is not available.";
 
     @Autowired
     private FirmwareFileCachingRepository firmwareFileCachingRepository;
@@ -126,7 +126,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         final byte[] firmwareFile = this.firmwareFileCachingRepository.retrieve(firmwareIdentification);
 
         if (firmwareFile == null) {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE);
+            throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
         }
 
         return firmwareFile;

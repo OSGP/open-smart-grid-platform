@@ -27,8 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
@@ -36,11 +36,10 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.infra.jms.RetryHeader;
 
 /**
- * Base class for MessageProcessor implementations. Each MessageProcessor
- * implementation should be annotated with @Component. Further the MessageType
- * the MessageProcessor implementation can process should be passed in at
- * construction. The Singleton instance is added to the HashMap of
- * MessageProcessors after dependency injection has completed.
+ * Base class for MessageProcessor implementations. Each MessageProcessor implementation should be annotated
+ * with @Component. Further the MessageType the MessageProcessor implementation can process should be passed in at
+ * construction. The Singleton instance is added to the HashMap of MessageProcessors after dependency injection has
+ * completed.
  */
 public abstract class DeviceRequestMessageProcessor implements MessageProcessor {
 
@@ -74,18 +73,15 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * Each MessageProcessor should register it's MessageType at construction.
      *
      * @param deviceRequestMessageType
-     *            The MessageType the MessageProcessor implementation can
-     *            process.
+     *            The MessageType the MessageProcessor implementation can process.
      */
     protected DeviceRequestMessageProcessor(final DeviceRequestMessageType deviceRequestMessageType) {
         this.deviceRequestMessageType = deviceRequestMessageType;
     }
 
     /**
-     * Initialization function executed after dependency injection has finished.
-     * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * Initialization function executed after dependency injection has finished. The MessageProcessor Singleton is added
+     * to the HashMap of MessageProcessors. The key for the HashMap is the integer value of the enumeration member.
      */
     @PostConstruct
     public void init() {
@@ -102,7 +98,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      *            a DlmsDeviceMessageMetadata containing debug info to be logged
      */
     protected void logJmsException(final Logger logger, final JMSException exception,
-            final DlmsDeviceMessageMetadata messageMetadata) {
+            final MessageMetadata messageMetadata) {
         logger.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
         logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
         logger.debug("domain: {}", messageMetadata.getDomain());
@@ -124,22 +120,18 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.deviceRequestMessageType.name());
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
+        MessageMetadata messageMetadata = null;
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
 
-        final boolean isScheduled = this.getBooleanPropertyValue(message, Constants.IS_SCHEDULED);
-
         try {
-            messageMetadata.handleMessage(message);
+            messageMetadata = MessageMetadata.fromMessage(message);
 
             /**
-             * The happy flow for addMeter requires that the dlmsDevice does not
-             * exist. Because the findDlmsDevice below throws a runtime
-             * exception, we skip this call in the addMeter flow. The
-             * AddMeterRequestMessageProcessor will throw the appropriate
-             * 'dlmsDevice already exists' error if the dlmsDevice does exists!
+             * The happy flow for addMeter requires that the dlmsDevice does not exist. Because the findDlmsDevice below
+             * throws a runtime exception, we skip this call in the addMeter flow. The AddMeterRequestMessageProcessor
+             * will throw the appropriate 'dlmsDevice already exists' error if the dlmsDevice does exists!
              */
             if (!DeviceRequestMessageType.ADD_METER.name().equals(messageMetadata.getMessageType())) {
                 device = this.domainHelperService.findDlmsDevice(messageMetadata);
@@ -167,7 +159,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
             // Send response
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
-                    response, isScheduled);
+                    response);
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
@@ -175,7 +167,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-                    this.responseMessageSender, message.getObject(), isScheduled);
+                    this.responseMessageSender, message.getObject());
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
@@ -195,10 +187,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     }
 
     /**
-     * Implementation of this method should call a service that can handle the
-     * requestObject and return a response object to be put on the response
-     * queue. This response object can also be null for methods that don't
-     * provide result data.
+     * Implementation of this method should call a service that can handle the requestObject and return a response
+     * object to be put on the response queue. This response object can also be null for methods that don't provide
+     * result data.
      *
      * @param DlmsConnection
      *            the connection to the device.
@@ -223,12 +214,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }
 
-    protected void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
-            final ResponseMessageResultType result, final Exception exception,
-            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject,
-            final boolean isScheduled) {
+    protected void sendResponseMessage(final MessageMetadata messageMetadata, final ResponseMessageResultType result,
+            final Exception exception, final DeviceResponseMessageSender responseMessageSender,
+            final Serializable responseObject) {
 
-        final DeviceMessageMetadata deviceMessageMetadata = dlmsDeviceMessageMetadata.asDeviceMessageMetadata();
         OsgpException osgpException = null;
         if (exception != null) {
             osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
@@ -236,23 +225,23 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         RetryHeader retryHeader;
         if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof RetryableException)) {
-            retryHeader = this.retryHeaderFactory.createRetryHeader(dlmsDeviceMessageMetadata.getRetryCount());
+            retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
         } else {
             retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
-                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
-                .dataObject(responseObject).retryCount(dlmsDeviceMessageMetadata.getRetryCount())
-                .retryHeader(retryHeader).scheduled(isScheduled).build();
+                .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata)).domain(messageMetadata.getDomain())
+                .domainVersion(messageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
+                .dataObject(responseObject).retryCount(messageMetadata.getRetryCount()).retryHeader(retryHeader)
+                .scheduled(messageMetadata.isScheduled()).build();
 
         responseMessageSender.send(responseMessage);
     }
 
     /**
-     * Used to determine if the handleMessage needs a device connection or not.
-     * Default value is true, override to alter behaviour of subclasses.
+     * Used to determine if the handleMessage needs a device connection or not. Default value is true, override to alter
+     * behaviour of subclasses.
      *
      * @return Use device connection in handleMessage.
      */

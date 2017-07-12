@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -34,15 +33,15 @@ import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
-import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ObjectMessageBuilder;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -91,16 +90,16 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
         final ObjectMessage message = new ObjectMessageBuilder().withObject(responseMessage).build();
-        final List<FirmwareVersionDto> firmwareVersionDtoList = new LinkedList<>();
+        final UpdateFirmwareResponseDto updateFirmwareResponseDto = new UpdateFirmwareResponseDto(
+                firmwareFileDto.getFirmwareIdentification(), new LinkedList<>());
 
         final ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor = ArgumentCaptor
                 .forClass(ResponseMessage.class);
 
-        when(this.domainHelperService.findDlmsDevice(any(DlmsDeviceMessageMetadata.class)))
-                .thenReturn(this.dlmsDeviceMock);
+        when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDeviceMock);
         when(this.dlmsDeviceMock.isInDebugMode()).thenReturn(false);
         when(this.firmwareService.updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock, firmwareFileDto))
-                .thenReturn(firmwareVersionDtoList);
+                .thenReturn(updateFirmwareResponseDto);
 
         // act
         this.getFirmwareFileResponseMessageProcessor.processMessage(message);
@@ -108,7 +107,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         // assert
         verify(this.responseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture());
 
-        assertThat(responseMessageArgumentCaptor.getValue().getDataObject(), is(firmwareVersionDtoList));
+        assertThat(responseMessageArgumentCaptor.getValue().getDataObject(), is(updateFirmwareResponseDto));
         assertThat(responseMessageArgumentCaptor.getValue().getResult(), is(ResponseMessageResultType.OK));
     }
 

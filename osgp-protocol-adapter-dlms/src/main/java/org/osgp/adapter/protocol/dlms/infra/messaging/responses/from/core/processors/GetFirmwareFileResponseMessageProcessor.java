@@ -16,7 +16,6 @@ import org.osgp.adapter.protocol.dlms.application.services.FirmwareService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
@@ -27,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
@@ -45,16 +44,16 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing {} request message", this.osgpRequestMessageType.name());
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
+        LOGGER.debug("Processing {} response message", this.osgpRequestMessageType.name());
+        MessageMetadata messageMetadata = null;
 
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
 
-        final boolean isScheduled = this.getBooleanPropertyValue(message, Constants.IS_SCHEDULED);
-
         try {
-            messageMetadata.handleMessage(message);
+            // Get metadata from message and update message type to update firmware
+            messageMetadata = new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
+                    .withMessageType(DeviceFunctionDto.UPDATE_FIRMWARE.name()).build();
 
             device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
@@ -74,10 +73,9 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             conn = this.dlmsConnectionFactory.getConnection(device, dlmsMessageListener);
             response = this.handleMessage(conn, device, message.getObject());
 
-            messageMetadata.setMessageType(DeviceFunctionDto.UPDATE_FIRMWARE.name());
             // Send response
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
-                    response, isScheduled);
+                    response);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
@@ -86,7 +84,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             LOGGER.error("Unexpected exception during {}", this.osgpRequestMessageType.name(), exception);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-                    this.responseMessageSender, message.getObject(), isScheduled);
+                    this.responseMessageSender, message.getObject());
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
@@ -112,7 +110,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
 
         if (ResponseMessageResultType.OK.equals(responseMessage.getResult())) {
             final FirmwareFileDto firmwareFileDto = (FirmwareFileDto) responseMessage.getDataObject();
-            return (Serializable) this.firmwareService.updateFirmware(conn, device, firmwareFileDto);
+            return this.firmwareService.updateFirmware(conn, device, firmwareFileDto);
         } else {
             throw new ProtocolAdapterException("Get Firmware File failed.", responseMessage.getOsgpException());
         }

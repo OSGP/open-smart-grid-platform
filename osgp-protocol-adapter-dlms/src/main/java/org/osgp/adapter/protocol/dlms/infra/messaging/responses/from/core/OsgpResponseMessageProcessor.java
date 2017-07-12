@@ -22,7 +22,6 @@ import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
 import org.osgp.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
@@ -34,8 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
@@ -105,7 +104,7 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
      *            a DlmsDeviceMessageMetadata containing debug info to be logged
      */
     protected void logJmsException(final Logger logger, final JMSException exception,
-            final DlmsDeviceMessageMetadata messageMetadata) {
+            final MessageMetadata messageMetadata) {
         logger.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
         logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
         logger.debug("domain: {}", messageMetadata.getDomain());
@@ -127,15 +126,12 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.osgpRequestMessageType.name());
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-
+        MessageMetadata messageMetadata = null;
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
 
-        final boolean isScheduled = this.getBooleanPropertyValue(message, Constants.IS_SCHEDULED);
-
         try {
-            messageMetadata.handleMessage(message);
+            messageMetadata = MessageMetadata.fromMessage(message);
 
             device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
@@ -211,12 +207,10 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }
 
-    protected void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
-            final ResponseMessageResultType result, final Exception exception,
-            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject,
-            final boolean isScheduled) {
+    protected void sendResponseMessage(final MessageMetadata messageMetadata, final ResponseMessageResultType result,
+            final Exception exception, final DeviceResponseMessageSender responseMessageSender,
+            final Serializable responseObject) {
 
-        final DeviceMessageMetadata deviceMessageMetadata = dlmsDeviceMessageMetadata.asDeviceMessageMetadata();
         OsgpException osgpException = null;
         if (exception != null) {
             osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
@@ -224,16 +218,16 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
 
         RetryHeader retryHeader;
         if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof RetryableException)) {
-            retryHeader = this.retryHeaderFactory.createRetryHeader(dlmsDeviceMessageMetadata.getRetryCount());
+            retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
         } else {
             retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
-                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
-                .dataObject(responseObject).retryCount(dlmsDeviceMessageMetadata.getRetryCount())
-                .retryHeader(retryHeader).scheduled(isScheduled).build();
+                .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata)).domain(messageMetadata.getDomain())
+                .domainVersion(messageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
+                .dataObject(responseObject).retryCount(messageMetadata.getRetryCount()).retryHeader(retryHeader)
+                .scheduled(messageMetadata.isScheduled()).build();
 
         responseMessageSender.send(responseMessage);
     }

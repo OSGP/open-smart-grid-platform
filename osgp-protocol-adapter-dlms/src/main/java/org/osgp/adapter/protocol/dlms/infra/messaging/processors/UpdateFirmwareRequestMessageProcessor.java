@@ -18,9 +18,7 @@ import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
-import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessage;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
@@ -30,7 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
+import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component
@@ -51,12 +50,10 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.deviceRequestMessageType);
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-
-        final boolean isScheduled = this.getBooleanPropertyValue(message, Constants.IS_SCHEDULED);
+        MessageMetadata messageMetadata = null;
 
         try {
-            messageMetadata.handleMessage(message);
+            messageMetadata = MessageMetadata.fromMessage(message);
 
             LOGGER.info("{} called for device: {} for organisation: {}", messageMetadata.getMessageType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
@@ -67,7 +64,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
                 LOGGER.info("[{}] - Firmware file [{}] available. Updating firmware on device [{}]",
                         messageMetadata.getCorrelationUid(), firmwareIdentification,
                         messageMetadata.getDeviceIdentification());
-                this.processUpdateFirmwareRequest(messageMetadata, firmwareIdentification, isScheduled);
+                this.processUpdateFirmwareRequest(messageMetadata, firmwareIdentification);
             } else {
                 LOGGER.info("[{}] - Firmware file [{}] not available. Sending GetFirmwareFile request to core.",
                         messageMetadata.getCorrelationUid(), firmwareIdentification);
@@ -85,11 +82,11 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
         this.assertRequestObjectType(String.class, requestObject);
 
         final String firmwareIdentification = (String) requestObject;
-        return (Serializable) this.firmwareService.updateFirmware(conn, device, firmwareIdentification);
+        return this.firmwareService.updateFirmware(conn, device, firmwareIdentification);
     }
 
-    private void processUpdateFirmwareRequest(final DlmsDeviceMessageMetadata messageMetadata,
-            final String firmwareIdentification, final boolean isScheduled) {
+    private void processUpdateFirmwareRequest(final MessageMetadata messageMetadata,
+            final String firmwareIdentification) {
 
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
@@ -112,13 +109,13 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
 
             // Send response
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
-                    response, isScheduled);
+                    response);
         } catch (final Exception exception) {
             // Return original request + exception
             LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-                    this.responseMessageSender, firmwareIdentification, isScheduled);
+                    this.responseMessageSender, firmwareIdentification);
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
@@ -132,11 +129,16 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
         }
     }
 
-    private void sendGetFirmwareFileRequest(final DlmsDeviceMessageMetadata messageMetaData,
+    private void sendGetFirmwareFileRequest(final MessageMetadata messageMetadata,
             final String firmwareIdentification) {
-        final OsgpRequestMessage message = new OsgpRequestMessage(OsgpRequestMessageType.GET_FIRMWARE_FILE,
-                messageMetaData, firmwareIdentification);
-        this.osgpRequestMessageSender.send(message, OsgpRequestMessageType.GET_FIRMWARE_FILE.name());
+        final RequestMessage message = this.createRequestMessage(messageMetadata, firmwareIdentification);
+        this.osgpRequestMessageSender.send(message, OsgpRequestMessageType.GET_FIRMWARE_FILE.name(), messageMetadata);
     }
 
+    private RequestMessage createRequestMessage(final MessageMetadata messageMetadata, final Serializable messageData) {
+
+        return new RequestMessage(messageMetadata.getCorrelationUid(), messageMetadata.getOrganisationIdentification(),
+                messageMetadata.getDeviceIdentification(), messageData);
+
+    }
 }

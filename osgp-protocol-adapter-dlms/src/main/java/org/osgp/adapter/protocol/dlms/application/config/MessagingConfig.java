@@ -42,22 +42,30 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Qualifier("dlmsRequestsMessageListener")
     private MessageListener dlmsRequestsMessageListener;
 
+    @Autowired
+    @Qualifier("osgpResponsesMessageListener")
+    private MessageListener osgpResponsesMessageListener;
+
     public MessagingConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
 
     // === JMS SETTINGS ===
+
+    // Configuration beans for incoming dlms requests
     @Bean
     public JmsConfiguration dlmsRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.dlms.requests", this.dlmsRequestsMessageListener);
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.dlms.requests",
+                this.dlmsRequestsMessageListener);
     }
 
     @Bean
     public DefaultMessageListenerContainer dlmsRequestsMessageListenerContainer(
-            JmsConfiguration dlmsRequestJmsConfiguration) {
+            final JmsConfiguration dlmsRequestJmsConfiguration) {
         return dlmsRequestJmsConfiguration.getMessageListenerContainer();
     }
 
+    // Configuration beans for outgoing dlms responses
     @Bean
     public JmsConfiguration dlmsResponseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeConfiguration("jms.dlms.responses");
@@ -73,6 +81,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return new DeviceResponseMessageSender();
     }
 
+    // Configuration beans for outgoing dlms log items requests
     @Bean
     public JmsConfiguration dlmsLogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeConfiguration("jms.dlms.log.item.requests");
@@ -88,9 +97,11 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return new DlmsLogItemRequestMessageSender();
     }
 
+    // Configuration beans for incoming osgp responses
     @Bean
     public JmsConfiguration osgpResponseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.osgp.responses");
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.osgp.responses",
+                this.osgpResponsesMessageListener);
     }
 
     @Bean
@@ -99,6 +110,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return osgpResponseJmsConfiguration.getMessageListenerContainer();
     }
 
+    // Configuration beans for outgoing osgp requests
     @Bean
     public JmsConfiguration osgpRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeConfiguration("jms.osgp.requests");

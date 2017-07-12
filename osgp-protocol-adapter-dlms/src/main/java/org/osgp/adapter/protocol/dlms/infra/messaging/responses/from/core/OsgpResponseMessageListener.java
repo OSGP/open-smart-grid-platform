@@ -16,11 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 
+@Component(value = "osgpResponsesMessageListener")
 public class OsgpResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponseMessageListener.class);
@@ -34,7 +36,7 @@ public class OsgpResponseMessageListener implements MessageListener {
         try {
             LOGGER.info("[{}] - Received message of type: {}", message.getJMSCorrelationID(), message.getJMSType());
 
-            final DeviceMessageMetadata metadata = new DeviceMessageMetadata(message);
+            final MessageMetadata metadata = MessageMetadata.fromMessage(message);
 
             final ObjectMessage objectMessage = (ObjectMessage) message;
             final MessageProcessor messageProcessor = this.osgpResponseMessageProcessorMap

@@ -22,11 +22,14 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 
 @Service(value = "dlmsFirmwareService")
 public class FirmwareService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareService.class);
+
+    private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE = "Firmware file is not available.";
 
     @Autowired
     private FirmwareFileCachingRepository firmwareRepository;
@@ -43,7 +46,7 @@ public class FirmwareService {
         return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
     }
 
-    public List<FirmwareVersionDto> updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
             final String firmwareIdentification) throws ProtocolAdapterException {
         LOGGER.info("Updating firmware of device {} to firmware with identification {}", device,
                 firmwareIdentification);
@@ -51,11 +54,14 @@ public class FirmwareService {
         return this.executeFirmwareUpdate(conn, device, firmwareIdentification);
     }
 
-    public List<FirmwareVersionDto> updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
             final FirmwareFileDto firmwareFileDto) throws ProtocolAdapterException {
         LOGGER.info("Updating firmware of device {} to firmware with identification {} using included firmware file",
                 device, firmwareFileDto.getFirmwareIdentification());
 
+        if (firmwareFileDto.getFirmwareFile() == null) {
+            throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
+        }
         this.firmwareRepository.store(firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getFirmwareFile());
 
         return this.executeFirmwareUpdate(conn, device, firmwareFileDto.getFirmwareIdentification());
@@ -65,7 +71,7 @@ public class FirmwareService {
         return this.firmwareRepository.isAvailable(firmwareIdentification);
     }
 
-    private List<FirmwareVersionDto> executeFirmwareUpdate(final DlmsConnectionHolder conn, final DlmsDevice device,
+    private UpdateFirmwareResponseDto executeFirmwareUpdate(final DlmsConnectionHolder conn, final DlmsDevice device,
             final String firmwareIdentification) throws ProtocolAdapterException {
         if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
             return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentification);

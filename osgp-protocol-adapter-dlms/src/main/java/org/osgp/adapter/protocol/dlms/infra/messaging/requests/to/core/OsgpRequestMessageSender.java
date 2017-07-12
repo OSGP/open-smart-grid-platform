@@ -20,6 +20,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 public class OsgpRequestMessageSender {
@@ -30,7 +31,8 @@ public class OsgpRequestMessageSender {
     @Qualifier("osgpRequestsJmsTemplate")
     private JmsTemplate osgpRequestsJmsTemplate;
 
-    public void send(final RequestMessage requestMessage, final String messageType) {
+    public void send(final RequestMessage requestMessage, final String messageType,
+            final MessageMetadata messageMetadata) {
         LOGGER.info("Sending request message to OSGP.");
 
         this.osgpRequestsJmsTemplate.send(new MessageCreator() {
@@ -45,6 +47,14 @@ public class OsgpRequestMessageSender {
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
 
+                if (messageMetadata != null) {
+                    objectMessage.setStringProperty(Constants.DOMAIN, messageMetadata.getDomain());
+                    objectMessage.setStringProperty(Constants.DOMAIN_VERSION, messageMetadata.getDomainVersion());
+                    objectMessage.setStringProperty(Constants.IP_ADDRESS, messageMetadata.getIpAddress());
+                    objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, messageMetadata.isScheduled());
+                    objectMessage.setIntProperty(Constants.RETRY_COUNT, messageMetadata.getRetryCount());
+                    objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, messageMetadata.isBypassRetry());
+                }
                 return objectMessage;
             }
 

@@ -73,7 +73,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
                 ipAddress, pushNotificationAlarm);
 
         LOGGER.info("Sending push notification alarm to OSGP with correlation ID: " + correlationId);
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_ALARM.name());
+        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_ALARM.name(), null);
     }
 
     private void processPushedSms(final DlmsPushNotification message, final String correlationId,
@@ -86,7 +86,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
                 ipAddress, pushNotificationSms);
 
         LOGGER.info("Sending push notification sms wakeup to OSGP with correlation ID: " + correlationId);
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_SMS.name());
+        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_SMS.name(), null);
     }
 
     private String retrieveIpAddress(final ChannelHandlerContext ctx, final String deviceIdentification) {

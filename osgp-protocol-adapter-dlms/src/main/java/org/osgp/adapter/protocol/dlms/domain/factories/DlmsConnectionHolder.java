@@ -12,11 +12,11 @@ import java.io.IOException;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.RawMessageData;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 public class DlmsConnectionHolder implements AutoCloseable {
 
@@ -28,7 +28,7 @@ public class DlmsConnectionHolder implements AutoCloseable {
         }
 
         @Override
-        public void setMessageMetadata(final DlmsDeviceMessageMetadata messageMetadata) {
+        public void setMessageMetadata(final MessageMetadata messageMetadata) {
             // Do nothing.
         }
 
@@ -60,8 +60,7 @@ public class DlmsConnectionHolder implements AutoCloseable {
     }
 
     /**
-     * Returns the current connection, obtained by calling {@link #connect()
-     * connect}.
+     * Returns the current connection, obtained by calling {@link #connect() connect}.
      *
      * @throws IllegalStateException
      *             when there is no connection available.
@@ -83,8 +82,7 @@ public class DlmsConnectionHolder implements AutoCloseable {
     }
 
     /**
-     * Disconnects from the device, and releases the internal connection
-     * reference.
+     * Disconnects from the device, and releases the internal connection reference.
      *
      * @throws IOException
      *             When an exception occurs while disconnecting.
@@ -101,8 +99,8 @@ public class DlmsConnectionHolder implements AutoCloseable {
     }
 
     /**
-     * Obtains a new connection with a device. A connection should be obtained
-     * before {@link #getConnection() getConnection} is called.
+     * Obtains a new connection with a device. A connection should be obtained before {@link #getConnection()
+     * getConnection} is called.
      *
      * @Throws IllegalStateException When there is already a connection set.
      * @throws TechnicalException
@@ -118,9 +116,8 @@ public class DlmsConnectionHolder implements AutoCloseable {
     }
 
     /**
-     * Closes the connection with the device and releases the internal
-     * connection reference. The connection will be closed, but no disconnection
-     * message will be sent to the device.
+     * Closes the connection with the device and releases the internal connection reference. The connection will be
+     * closed, but no disconnection message will be sent to the device.
      */
     @Override
     public void close() throws Exception {
