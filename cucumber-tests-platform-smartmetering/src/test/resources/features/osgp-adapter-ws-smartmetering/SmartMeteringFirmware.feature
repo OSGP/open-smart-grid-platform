@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @SmartMeteringFirmware
 Feature: SmartMetering Firmware
   As a grid operator
   I want to be able to perform SmartMeteringFirmware operations on a device
@@ -37,7 +37,7 @@ Feature: SmartMetering Firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
-      | FirmwareFilename          | KFPP_V060100FF         |
+      | FirmwareFilename          | KFPP_V060100FF.bin     |
       | ModelCode                 | MA105                  |
     When the request for a firmware upgrade is received
       | DeviceIdentification      | TEST1024000000002      |
@@ -69,11 +69,11 @@ Feature: SmartMetering Firmware
       | DeviceType           | SMART_METER_E     |
       | DeviceModel          | MA105             |
     And a firmware
-      | FirmwareModuleVersionComm |                |
-      | FirmwareModuleVersionMa   |                |
-      | FirmwareModuleVersionFunc | M57 4836       |
-      | FirmwareFilename          | KFPP_V060100FF |
-      | ModelCode                 | MA105          |
+      | FirmwareModuleVersionComm |                    |
+      | FirmwareModuleVersionMa   |                    |
+      | FirmwareModuleVersionFunc | M57 4836           |
+      | FirmwareFilename          | KFPP_V060100FF.bin |
+      | ModelCode                 | MA105              |
     When the request for a firmware upgrade is received
       | DeviceIdentification      | TEST1024000000002 |
       | FirmwareModuleVersionFunc | M57 4836          |
