@@ -31,6 +31,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigu
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -143,8 +144,9 @@ public class ConfigurationService {
     }
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String firmwareIdentification,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            @Identification final String deviceIdentification,
+            final UpdateFirmwareRequestData updateFirmwareRequestData, final int messagePriority,
+            final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -162,7 +164,7 @@ public class ConfigurationService {
                 messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(firmwareIdentification).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(updateFirmwareRequestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

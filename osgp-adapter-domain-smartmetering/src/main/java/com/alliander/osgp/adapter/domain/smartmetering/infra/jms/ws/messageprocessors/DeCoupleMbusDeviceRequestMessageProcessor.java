@@ -28,7 +28,6 @@ public class DeCoupleMbusDeviceRequestMessageProcessor extends WebServiceRequest
 
     @Autowired
     @Qualifier("domainSmartMeteringInstallationService")
-
     private InstallationService installationService;
 
     protected DeCoupleMbusDeviceRequestMessageProcessor() {

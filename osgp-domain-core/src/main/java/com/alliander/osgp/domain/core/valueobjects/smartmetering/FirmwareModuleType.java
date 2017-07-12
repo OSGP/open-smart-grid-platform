@@ -18,8 +18,18 @@ public enum FirmwareModuleType {
 
     private final String description;
 
-    private FirmwareModuleType(final String description) {
+    FirmwareModuleType(final String description) {
         this.description = description;
+    }
+
+    public static FirmwareModuleType forDescription(final String description) {
+        for (final FirmwareModuleType firmwareModuleType : values()) {
+            if (description.equals(firmwareModuleType.getDescription())) {
+                return firmwareModuleType;
+            }
+        }
+        throw new IllegalArgumentException(
+                "description does not occur in a FirmwareModuleType value: \"" + description + "\"");
     }
 
     public String getDescription() {

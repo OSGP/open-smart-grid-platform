@@ -28,9 +28,11 @@ import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
+
+    public static final String PROPERTY_NAME_JMS_RECEIVE_TIMEOUT = "jms.publiclighting.responses.receive.timeout";
 
     @Resource
     private Environment environment;
@@ -80,7 +82,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean(name = "wsPublicLightingIncomingResponsesJmsTemplate")
     public JmsTemplate publicLightingResponsesJmsTemplate(final JmsConfiguration publicLightingResponsesJmsConfiguration) {
-        return publicLightingResponsesJmsConfiguration.getJmsTemplate();
+        final Long receiveTimeout = Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_RECEIVE_TIMEOUT));
+
+        final JmsTemplate jmsTemplate = publicLightingResponsesJmsConfiguration.getJmsTemplate();
+        jmsTemplate.setReceiveTimeout(receiveTimeout);
+        return jmsTemplate;
     }
 
     @Bean(name = "wsPublicLightingIncomingResponsesMessageFinder")
