@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.UpdateFirmwareCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -59,7 +60,7 @@ public class FirmwareService {
         LOGGER.info("Updating firmware of device {} to firmware with identification {} using included firmware file",
                 device, firmwareFileDto.getFirmwareIdentification());
 
-        if (firmwareFileDto.getFirmwareFile() == null) {
+        if (ArrayUtils.isEmpty(firmwareFileDto.getFirmwareFile())) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
         }
         this.firmwareRepository.store(firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getFirmwareFile());
