@@ -26,6 +26,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDevic
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
@@ -211,13 +212,13 @@ public class MBusGatewayService {
      * Updates the M-Bus device identified in the input part of the
      * {@code deCoupleMbusResponseDto}.
      *
-     * @param deCoupleMbusDeviceDto
+     * @param deCoupleMbusDeviceResponseDto
      * @throws FunctionalException
      */
-    public void handleDeCoupleMbusDeviceResponse(final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto)
+    public void handleDeCoupleMbusDeviceResponse(final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto)
             throws FunctionalException {
 
-        final String mbusDeviceIdentification = deCoupleMbusDeviceDto.getmBusDeviceIdentification();
+        final String mbusDeviceIdentification = deCoupleMbusDeviceResponseDto.getmBusDeviceIdentification();
         final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
         mbusDevice.setChannel(null);
