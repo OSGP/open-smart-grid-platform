@@ -64,9 +64,9 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
         }
     }
 
-    @Then("^device simulation of \"([^\"]*)\" with classid (\\d+) obiscode \"([^\"]*)\" retrieves the attributes$")
-    public void deviceSimulationOfWithClassidObiscodeRetrievesTheAttributes(final String deviceIdentification,
-            final int classId, final String obisCode, final Map<String, String> settings) throws Throwable {
+    @Then("^the values for classid (\\d+) obiscode \"([^\"]*)\" on device simulator \"([^\"]*)\" are$")
+    public void theValuesForClassidObiscodeOnDeviceSimulatorAre(final int classId, final String obisCode,
+            final String deviceIdentification, final Map<String, String> settings) throws Throwable {
         Properties properties = null;
         try {
             properties = this.simulatorTriggerClient.getDlmsAttributeValues(classId, obisCode);

@@ -408,6 +408,7 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
+  #Skip can be removed if SLIM-1029 is merged and deployed
   @Skip
   Scenario: Decouple coupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
@@ -432,7 +433,7 @@ Feature: SmartMetering Installation
     When the DeCouple G-meter "TESTG101205673117" from E-meter "TEST1024000000001" request is received
     Then the DeCouple response is "OK"
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" retrieves the attributes
+    And the values for classid 72 obiscode "0-1:24.1.255" on device simulator "TEST1024000000001" are
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |
@@ -441,6 +442,7 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
+  #Skip can be removed if SLIM-1029 is merged and deployed
   @Skip
   Scenario: Decouple decoupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
@@ -463,7 +465,7 @@ Feature: SmartMetering Installation
     When the DeCouple G-meter "TESTG101205673117" from E-meter "TEST1024000000001" request is received
     Then the DeCouple response is "OK"
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" retrieves the attributes
+    And the values for classid 72 obiscode "0-1:24.1.255" on device simulator "TEST1024000000001" are
       | 5 | 0 |
       | 6 | 0 |
       | 7 | 0 |
