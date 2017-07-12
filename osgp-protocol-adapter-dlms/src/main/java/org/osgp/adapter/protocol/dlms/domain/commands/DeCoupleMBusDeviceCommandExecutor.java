@@ -78,12 +78,12 @@ public class DeCoupleMBusDeviceCommandExecutor
     }
 
     private DataObjectAttrExecutor getMbusAttributeExecutor(final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto,
-            final MbusClientAttribute primaryAddress, final DataObject value) {
+            final MbusClientAttribute attribute, final DataObject value) {
         final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, deCoupleMbusDeviceDto.getChannel()));
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode,
-                primaryAddress.attributeId());
+                attribute.attributeId());
 
-        return new DataObjectAttrExecutor(primaryAddress.attributeName(), attributeAddress, value, CLASS_ID, obiscode,
-                primaryAddress.attributeId());
+        return new DataObjectAttrExecutor(attribute.attributeName(), attributeAddress, value, CLASS_ID, obiscode,
+                attribute.attributeId());
     }
 }
