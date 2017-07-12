@@ -36,17 +36,13 @@ public class OsgpRequestMessageSender {
         LOGGER.info("Sending request message to OSGP.");
 
         this.osgpRequestsJmsTemplate.send(new MessageCreator() {
-
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setJMSType(messageType);
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        requestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        requestMessage.getDeviceIdentification());
-
+                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION, requestMessage.getOrganisationIdentification());
+                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, requestMessage.getDeviceIdentification());
                 if (messageMetadata != null) {
                     objectMessage.setStringProperty(Constants.DOMAIN, messageMetadata.getDomain());
                     objectMessage.setStringProperty(Constants.DOMAIN_VERSION, messageMetadata.getDomainVersion());
@@ -57,7 +53,6 @@ public class OsgpRequestMessageSender {
                 }
                 return objectMessage;
             }
-
         });
     }
 

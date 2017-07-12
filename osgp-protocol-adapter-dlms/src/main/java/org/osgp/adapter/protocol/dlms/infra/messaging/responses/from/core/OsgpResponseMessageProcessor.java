@@ -160,8 +160,8 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
             // Return original request + exception
             LOGGER.error("Unexpected exception during {}", this.osgpRequestMessageType.name(), exception);
 
-            // this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-            // this.responseMessageSender, message.getObject(), isScheduled);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
+                    this.responseMessageSender, message.getObject());
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
