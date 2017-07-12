@@ -25,8 +25,9 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ObjectMessageBuilder;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 
 public class GetFirmwareFileMessageProcessorTest {
 
@@ -76,8 +77,8 @@ public class GetFirmwareFileMessageProcessorTest {
         final byte[] expectedFile = firmwareFile;
         final String expectedMessageType = DeviceFunction.GET_FIRMWARE_FILE.name();
 
-        final ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor = ArgumentCaptor
-                .forClass(ResponseMessage.class);
+        final ArgumentCaptor<ProtocolResponseMessage> responseMessageArgumentCaptor = ArgumentCaptor
+                .forClass(ProtocolResponseMessage.class);
         final ArgumentCaptor<String> messageTypeCaptor = ArgumentCaptor.forClass(String.class);
 
         // act
@@ -85,7 +86,7 @@ public class GetFirmwareFileMessageProcessorTest {
 
         // assert
         verify(this.protocolResponseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture(),
-                messageTypeCaptor.capture(), any(ProtocolInfo.class));
+                messageTypeCaptor.capture(), any(ProtocolInfo.class), any(MessageMetadata.class));
 
         final byte[] actualFile = ((FirmwareFileDto) responseMessageArgumentCaptor.getValue().getDataObject())
                 .getFirmwareFile();

@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.core.domain.model.protocol.ProtocolResponseService;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
-import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
@@ -28,7 +28,9 @@ import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
+import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
+import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component("getFirmwareFileMessageProcessor")
@@ -37,7 +39,7 @@ public class GetFirmwareFileMessageProcessor extends ProtocolRequestMessageProce
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareFileMessageProcessor.class);
 
     @Autowired
-    private ProtocolResponseMessageSender protocolResponseMessageSender;
+    private ProtocolResponseService protocolResponseMessageSender;
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -52,56 +54,60 @@ public class GetFirmwareFileMessageProcessor extends ProtocolRequestMessageProce
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
 
-        final DeviceMessageMetadata metadata = new DeviceMessageMetadata(message);
-
-        LOGGER.info(
-                "[{}] - Received message of messageType: {}, organisationIdentification: {}, deviceIdentification: {}",
-                metadata.getCorrelationUid(), metadata.getMessageType(), metadata.getOrganisationIdentification(),
-                metadata.getDeviceIdentification());
-
-        final Device device = this.deviceRepository.findByDeviceIdentification(metadata.getDeviceIdentification());
-
+        MessageMetadata metadata = null;
+        Device device = null;
         String firmwareIdentification = StringUtils.EMPTY;
 
         try {
-            firmwareIdentification = (String) message.getObject();
+            metadata = MessageMetadata.fromMessage(message);
+            LOGGER.info(
+                    "[{}] - Received message of messageType: {}, organisationIdentification: {}, deviceIdentification: {}",
+                    metadata.getCorrelationUid(), metadata.getMessageType(), metadata.getOrganisationIdentification(),
+                    metadata.getDeviceIdentification());
 
-            // TODO - SLIM-748 - Replace by findByIdentification once implemented and merged
-            final Firmware firmware = this.firmwareRepository.findByFilename(firmwareIdentification);
+            device = this.deviceRepository.findByDeviceIdentification(metadata.getDeviceIdentification());
+
+            final RequestMessage requestMessage = (RequestMessage) message.getObject();
+            firmwareIdentification = (String) requestMessage.getRequest();
+
+            final Firmware firmware = this.firmwareRepository.findByIdentification(firmwareIdentification);
 
             final FirmwareFileDto firmwareFileDto = new FirmwareFileDto(firmware.getFilename(), firmware.getFile());
 
             this.sendSuccesResponse(metadata, device.getProtocolInfo(), firmwareFileDto);
 
         } catch (final Exception e) {
-            LOGGER.error("[{}] - Exception while retrieving firmware file: {}", metadata.getCorrelationUid(),
-                    firmwareIdentification);
+            LOGGER.error("Exception while retrieving firmware file: {}", firmwareIdentification);
             final OsgpException osgpException = new OsgpException(ComponentType.OSGP_CORE,
                     "Exception while retrieving firmware file.", e);
             this.sendFailureResponse(metadata, device.getProtocolInfo(), osgpException);
         }
     }
 
-    private void sendSuccesResponse(final DeviceMessageMetadata metadata, final ProtocolInfo protocolInfo,
+    private void sendSuccesResponse(final MessageMetadata metadata, final ProtocolInfo protocolInfo,
             final FirmwareFileDto firmwareFileDto) {
 
-        final ResponseMessage responseMessage = new ResponseMessage(metadata.getCorrelationUid(),
-                metadata.getOrganisationIdentification(), metadata.getDeviceIdentification(),
-                ResponseMessageResultType.OK, null, firmwareFileDto, metadata.getMessagePriority(),
-                metadata.bypassRetry());
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .deviceMessageMetadata(new DeviceMessageMetadata(metadata)).domain(metadata.getDomain())
+                .domainVersion(metadata.getDomainVersion()).result(ResponseMessageResultType.OK).osgpException(null)
+                .dataObject(firmwareFileDto).retryCount(metadata.getRetryCount()).scheduled(metadata.isScheduled())
+                .build();
 
-        this.protocolResponseMessageSender.send(responseMessage, DeviceFunction.GET_FIRMWARE_FILE.name(), protocolInfo);
+        this.protocolResponseMessageSender.send(responseMessage, DeviceFunction.GET_FIRMWARE_FILE.name(), protocolInfo,
+                metadata);
     }
 
-    private void sendFailureResponse(final DeviceMessageMetadata metadata, final ProtocolInfo protocolInfo,
+    private void sendFailureResponse(final MessageMetadata metadata, final ProtocolInfo protocolInfo,
             final OsgpException exception) {
 
-        final ResponseMessage responseMessage = new ResponseMessage(metadata.getCorrelationUid(),
-                metadata.getOrganisationIdentification(), metadata.getDeviceIdentification(),
-                ResponseMessageResultType.NOT_OK, exception, null, metadata.getMessagePriority(),
-                metadata.bypassRetry());
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .deviceMessageMetadata(new DeviceMessageMetadata(metadata)).domain(metadata.getDomain())
+                .domainVersion(metadata.getDomainVersion()).result(ResponseMessageResultType.NOT_OK)
+                .osgpException(exception).dataObject(null).retryCount(metadata.getRetryCount())
+                .scheduled(metadata.isScheduled()).build();
 
-        this.protocolResponseMessageSender.send(responseMessage, DeviceFunction.GET_FIRMWARE_FILE.name(), protocolInfo);
+        this.protocolResponseMessageSender.send(responseMessage, DeviceFunction.GET_FIRMWARE_FILE.name(), protocolInfo,
+                metadata);
     }
 
 }
