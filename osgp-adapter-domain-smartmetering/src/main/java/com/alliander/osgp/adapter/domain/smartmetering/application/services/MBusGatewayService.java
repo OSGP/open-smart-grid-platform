@@ -126,16 +126,8 @@ public class MBusGatewayService {
         }
     }
 
-    /**
-     * Check if a MbusDevice is coupled. If it is already decoupled,
-     * handleResponse is called and handles the decouple request. If it is not
-     * decoupled, the decouple request message is sent to core so the
-     * GatewayDevice MBus registers will get updated.
-     *
-     * @param mbusDevice
-     */
     private boolean isMbusDeviceCoupled(final SmartMeter mbusDevice) {
-        return (mbusDevice.getChannel() == null);
+        return mbusDevice.getChannel() == null;
     }
 
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
