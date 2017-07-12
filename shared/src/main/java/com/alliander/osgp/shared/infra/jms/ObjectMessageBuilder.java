@@ -20,7 +20,7 @@ public class ObjectMessageBuilder {
     private String deviceIdentification = "test-dvc";
     private String domain = "domain";
     private String domainVersion = "domain-version";
-    private String ipAddress = "127.0.0.1";
+    private String ipAddress = "localhost";
     private String organisationIdentification = "test-org";
     private String messageType;
     private Serializable object = null;
@@ -46,6 +46,16 @@ public class ObjectMessageBuilder {
 
     public ObjectMessageBuilder withObject(final Serializable object) {
         this.object = object;
+        return this;
+    }
+
+    public ObjectMessageBuilder withMessageType(final String messageType) {
+        this.messageType = messageType;
+        return this;
+    }
+
+    public ObjectMessageBuilder withIpAddress(final String ipAddress) {
+        this.ipAddress = ipAddress;
         return this;
     }
 
