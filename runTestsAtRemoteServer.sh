@@ -2,23 +2,19 @@
 
 if [ "$#" -eq 0 ]
 then
-  echo "Usage: $0 <stream> <environment> <buildnumber> <project> <user> [<ssh key file>] [<additional java parameters>]"
+  echo "Usage: $0 <server> <project> <user> [<ssh key file>] [<additional java parameters>]"
   echo ""
   exit 1
 fi
 
-STREAM=$1
-ENVIRONMENT=$2
-BUILDNUMBER=$3
-PROJECT=$4
-USER=$5
-SSH_KEY_FILE=$6
-ADDITIONAL_PARAMETERS=$7
-
-SERVER=${STREAM}-${ENVIRONMENT}-${BUILDNUMBER}-instance.dev.osgp.cloud
+SERVER=$1
+PROJECT=$2
+USER=$3
+SSH_KEY_FILE=$4
+ADDITIONAL_PARAMETERS=$5
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
-[ "${SSH_KEY_FILE}"!="" ] && [ -f "${HOME}/.ssh/$6" ] && [ "${SSH_KEY_FILE}"=~" " ] && ln -sf "${HOME}.ssh/$6" "${HOME}.ssh/${6/ /}"
+[ "${SSH_KEY_FILE}"!="" ] && [ -f "${HOME}/.ssh/$6" ] && [ "${SSH_KEY_FILE}"=~" " ] && ln -sf "${HOME}.ssh/$6" "${HOME}/.ssh/${6/ /}"
 
 # Now determine if a -i parameter should be generated
 [ "${SSH_KEY_FILE}"!="" ] && [ -f "${HOME}/.ssh/$6" ] && SSH_KEY_FILE="-i ${HOME}.ssh/${6/ /}"
