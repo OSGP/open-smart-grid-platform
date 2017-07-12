@@ -37,6 +37,7 @@
   <modules>
     <!-- Shared -->
     <module>parent-integration-tests</module>
+    <module>Shared/parent-shared</module>
     <module>Shared/shared</module>
     <module>Shared/osgp-dto</module>
     <module>Shared/osgp-ws-core</module>
@@ -47,12 +48,14 @@
     <module>Shared/osgp-ws-smartmetering</module>
 
     <!-- Protocol-Adapter-IEC61850 -->
+    <module>Protocol-Adapter-IEC61850/parent-pa-iec61850</module>
     <module>Protocol-Adapter-IEC61850/osgp-iec61850</module>
     <module>Protocol-Adapter-IEC61850/osgp-protocol-adapter-iec61850</module>
     <module>Protocol-Adapter-IEC61850/protocol-simulator-iec61850</module>
     <module>Protocol-Adapter-IEC61850/osgp-core-db-api-iec61850</module>
 
     <!-- Protocol-Adapter-OSLP -->
+    <module>Protocol-Adapter-OSLP/parent-pa-oslp</module>
     <module>Protocol-Adapter-OSLP/oslp</module>
     <module>Protocol-Adapter-OSLP/web-device-simulator</module>
     <module>Protocol-Adapter-OSLP/osgp-core-db-api</module>
@@ -61,11 +64,13 @@
     <module>Protocol-Adapter-OSLP/signing-server</module>
 
     <!-- Protocol-Adapter-DLMS -->
+    <module>Protocol-Adapter-DLMS/parent-pa-dlms</module>
     <module>Protocol-Adapter-DLMS/osgp-dlms</module>
     <module>Protocol-Adapter-DLMS/osgp-protocol-adapter-dlms</module>
     <module>Protocol-Adapter-DLMS/osgp-jasper-interface</module>
 
     <!-- Platform -->
+    <module>Platform/parent-platform</module>
     <module>Platform/osgp-domain-core</module>
     <module>Platform/osgp-domain-logging</module>
     <module>Platform/osgp-domain-microgrids</module>
@@ -94,6 +99,7 @@
 
     <!-- Automatic tests project -->
     <module>cucumber-tests-core</module>
+    <module>cucumber-tests-execution</module>
     <module>cucumber-tests-platform</module>
     <module>cucumber-tests-platform-common</module>
     <module>cucumber-tests-platform-publiclighting</module>

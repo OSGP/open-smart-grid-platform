@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.remoting.support.SimpleHttpServerFactoryBean;
 import org.springframework.ws.config.annotation.EnableWs;
@@ -37,6 +38,7 @@ import com.alliander.osgp.cucumber.platform.microgrids.config.PlatformMicrogrids
 import com.sun.net.httpserver.HttpHandler;
 
 @EnableWs
+@Configuration
 public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter {
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";

@@ -57,7 +57,7 @@
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
     <hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
     <hikari.version>2.6.0</hikari.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.12</junit.version>
     <joda.version>2.4</joda.version>
     <bonecp.version>0.8.0.RELEASE</bonecp.version>
     <slf4j.version>1.7.7</slf4j.version>
@@ -86,16 +86,19 @@
     <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
-    <cucumber.version>1.2.4</cucumber.version>
+    <cucumber.version>1.2.5</cucumber.version>
     <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
     <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
     <soapui.maven.plugin.version>5.2.1</soapui.maven.plugin.version>
     <jgoodies.version>1.0.5</jgoodies.version>
+    <jacoco.version>0.7.9</jacoco.version>
     <selenium.java.version>3.4.0</selenium.java.version>
-    <jacoco.version>0.7.8</jacoco.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <maven.javadoc.version>2.10.4</maven.javadoc.version>
+    <ant.junit.version>1.10.1</ant.junit.version>
+    <args4j.version>2.33</args4j.version>
+    <maven.assembly.plugin.version>3.0.0</maven.assembly.plugin.version>
 
     <!-- Default always skip integration tests, to ensure all developer data 
       is retained -->
@@ -140,7 +143,7 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Alliander -->
+      <!-- OSGP -->
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>oslp</artifactId>
@@ -326,6 +329,11 @@
       </dependency>
       <dependency>
         <groupId>com.alliander</groupId>
+        <artifactId>cucumber-tests-execution</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander</groupId>
         <artifactId>cucumber-tests-platform</artifactId>
         <version>${osgp.version}</version>
         <type>test-jar</type>
@@ -483,6 +491,13 @@
         <version>${joda.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>args4j</groupId>
+        <artifactId>args4j</artifactId>
+        <version>${args4j.version}</version>
+      </dependency>
+
+
       <!-- PostgreSQL -->
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -631,7 +646,11 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
-        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant-junit</artifactId>
+        <version>${ant.junit.version}</version>
       </dependency>
 
       <dependency>
@@ -847,6 +866,11 @@
               <include>**/cucumber/**/AcceptanceTests.java</include>
             </includes>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>${maven.assembly.plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

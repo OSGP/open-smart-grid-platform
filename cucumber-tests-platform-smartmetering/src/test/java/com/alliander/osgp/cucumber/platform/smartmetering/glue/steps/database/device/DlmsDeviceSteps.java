@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.DeviceSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
@@ -35,10 +36,12 @@ import com.alliander.osgp.cucumber.platform.smartmetering.builders.entities.Dlms
 import com.alliander.osgp.cucumber.platform.smartmetering.builders.entities.SmartMeterBuilder;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
@@ -62,6 +65,9 @@ public class DlmsDeviceSteps {
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
+
+    @Autowired
+    private DeviceModelRepository deviceModelRepository;
 
     @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
@@ -257,15 +263,18 @@ public class DlmsDeviceSteps {
     }
 
     private Device createDeviceInCoreDatabase(final Map<String, String> inputSettings) {
+
         Device device;
+        final ProtocolInfo protocolInfo = this.getProtocolInfo(inputSettings);
+        final DeviceModel deviceModel = this.getDeviceModel(inputSettings);
         if (this.isSmartMeter(inputSettings)) {
             final SmartMeter smartMeter = new SmartMeterBuilder().withSettings(inputSettings)
-                    .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
+                    .setProtocolInfo(protocolInfo).setDeviceModel(deviceModel).build();
             device = this.smartMeterRepository.save(smartMeter);
 
         } else {
-            device = new DeviceBuilder(this.deviceRepository).withSettings(inputSettings)
-                    .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
+            device = new DeviceBuilder(this.deviceRepository).withSettings(inputSettings).setProtocolInfo(protocolInfo)
+                    .setDeviceModel(deviceModel).build();
             this.deviceRepository.save(device);
         }
 
@@ -337,5 +346,12 @@ public class DlmsDeviceSteps {
             return this.protocolInfoRepository.findByProtocolAndProtocolVersion(PlatformSmartmeteringDefaults.PROTOCOL,
                     PlatformSmartmeteringDefaults.PROTOCOL_VERSION);
         }
+    }
+
+    private DeviceModel getDeviceModel(final Map<String, String> inputSettings) {
+        if (inputSettings.containsKey(PlatformKeys.KEY_DEVICE_MODEL)) {
+            return this.deviceModelRepository.findByModelCode(inputSettings.get(PlatformKeys.KEY_DEVICE_MODEL));
+        }
+        return null;
     }
 }

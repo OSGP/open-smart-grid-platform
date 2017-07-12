@@ -24,7 +24,7 @@ public class SmartMeteringAdHocWebServiceConfig extends BaseWebServiceConfig {
     private ApplicationConfiguration configuration;
 
     @Bean
-    public DefaultWebServiceTemplateFactory smartMeteringAdHocWstf() {
+    public DefaultWebServiceTemplateFactory smartMeteringAdHocWebServiceTemplateFactory() {
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringAdHocMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringAdHoc))
