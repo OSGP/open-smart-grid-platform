@@ -77,7 +77,7 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
         }
 
         for (final Map.Entry<String, String> setting : settings.entrySet()) {
-            assertNotNull("propertie can not be null", properties.getProperty(setting.getKey()));
+            assertNotNull("property can not be null", properties.getProperty(setting.getKey()));
             assertEquals(" match ", setting.getValue(), properties.getProperty(setting.getKey()));
         }
     }
