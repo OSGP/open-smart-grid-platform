@@ -14,7 +14,7 @@ SSH_KEY_FILE=$4
 ADDITIONAL_PARAMETERS=$5
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
-[ "${SSH_KEY_FILE}"!="" ] && [ -f "${HOME}/.ssh/$6" ] && [ "${SSH_KEY_FILE}"=~" " ] && ln -sf "${HOME}.ssh/$6" "${HOME}/.ssh/${6/ /}"
+[ "${SSH_KEY_FILE}"!="" ] && [ -f "${HOME}/.ssh/$6" ] && [ "${SSH_KEY_FILE}"=~" " ] && ln -sf "${HOME}/.ssh/$6" "${HOME}/.ssh/${6/ /}"
 
 # Now determine if a -i parameter should be generated
 [ "${SSH_KEY_FILE}"!="" ] && [ -f "${HOME}/.ssh/$6" ] && SSH_KEY_FILE="-i ${HOME}.ssh/${6/ /}"
