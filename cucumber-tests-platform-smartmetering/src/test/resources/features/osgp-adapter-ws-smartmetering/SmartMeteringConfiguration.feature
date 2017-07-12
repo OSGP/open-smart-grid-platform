@@ -1,10 +1,10 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @SmartMeteringConfiguration
 Feature: SmartMetering Configuration
   As a grid operator
   I want to be able to perform SmartMeteringConfiguration operations on a device
   In order to ...
 
-  Background: 
+  Background:
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |

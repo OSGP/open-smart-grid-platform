@@ -317,7 +317,7 @@ public class AuthorizePlatformFunctionsSteps {
         request.setId(PlatformCommonDefaults.FIRMWARE_ID);
         final Firmware firmware = new Firmware();
         firmware.setDescription(PlatformCommonDefaults.FIRMWARE_DESCRIPTION);
-        firmware.setManufacturer(PlatformCommonDefaults.MANUFACTURER_CODE);
+        firmware.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
         firmware.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         firmware.setPushToNewDevices(PlatformCommonDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE);
         request.setFirmware(firmware);
@@ -329,7 +329,7 @@ public class AuthorizePlatformFunctionsSteps {
         final AddFirmwareRequest request = new AddFirmwareRequest();
         final Firmware firmware = new Firmware();
         firmware.setDescription(PlatformCommonDefaults.FIRMWARE_DESCRIPTION);
-        firmware.setManufacturer(PlatformCommonDefaults.MANUFACTURER_CODE);
+        firmware.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
         firmware.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         firmware.setPushToNewDevices(PlatformCommonDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE);
         request.setFirmware(firmware);
@@ -346,7 +346,7 @@ public class AuthorizePlatformFunctionsSteps {
         final ChangeDeviceModelRequest request = new ChangeDeviceModelRequest();
         final DeviceModel deviceModel = new DeviceModel();
         deviceModel.setDescription(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
-        deviceModel.setManufacturer(PlatformCommonDefaults.MANUFACTURER_CODE);
+        deviceModel.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
         deviceModel.setMetered(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED);
         deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         request.setDeviceModel(deviceModel);
@@ -366,7 +366,7 @@ public class AuthorizePlatformFunctionsSteps {
         final AddDeviceModelRequest request = new AddDeviceModelRequest();
         final DeviceModel deviceModel = new DeviceModel();
         deviceModel.setDescription(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
-        deviceModel.setManufacturer(PlatformCommonDefaults.MANUFACTURER_CODE);
+        deviceModel.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
         deviceModel.setMetered(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED);
         deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         request.setDeviceModel(deviceModel);
@@ -411,9 +411,9 @@ public class AuthorizePlatformFunctionsSteps {
     private void changeManufacturer(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final ChangeManufacturerRequest request = new ChangeManufacturerRequest();
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setManufacturerId(PlatformCommonDefaults.MANUFACTURER_CODE);
-        manufacturer.setName(PlatformCommonDefaults.MANUFACTURER_NAME);
-        manufacturer.setUsePrefix(PlatformCommonDefaults.MANUFACTURER_USE_PREFIX);
+        manufacturer.setManufacturerId(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
+        manufacturer.setName(PlatformCommonDefaults.DEFAULT_MANUFACTURER_NAME);
+        manufacturer.setUsePrefix(PlatformCommonDefaults.DEFAULT_MANUFACTURER_USE_PREFIX);
         request.setManufacturer(manufacturer);
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
                 this.adminDeviceManagementClient.changeManufacturer(request));
@@ -421,7 +421,7 @@ public class AuthorizePlatformFunctionsSteps {
 
     private void removeManufacturer(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final RemoveManufacturerRequest request = new RemoveManufacturerRequest();
-        request.setManufacturerId(PlatformCommonDefaults.MANUFACTURER_CODE);
+        request.setManufacturerId(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
                 this.adminDeviceManagementClient.removeManufacturer(request));
     }
@@ -429,9 +429,9 @@ public class AuthorizePlatformFunctionsSteps {
     private void createManufacturer(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final AddManufacturerRequest request = new AddManufacturerRequest();
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setManufacturerId(PlatformCommonDefaults.MANUFACTURER_CODE);
-        manufacturer.setName(PlatformCommonDefaults.MANUFACTURER_NAME);
-        manufacturer.setUsePrefix(PlatformCommonDefaults.MANUFACTURER_USE_PREFIX);
+        manufacturer.setManufacturerId(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
+        manufacturer.setName(PlatformCommonDefaults.DEFAULT_MANUFACTURER_NAME);
+        manufacturer.setUsePrefix(PlatformCommonDefaults.DEFAULT_MANUFACTURER_USE_PREFIX);
         request.setManufacturer(manufacturer);
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
                 this.adminDeviceManagementClient.addManufacturer(request));

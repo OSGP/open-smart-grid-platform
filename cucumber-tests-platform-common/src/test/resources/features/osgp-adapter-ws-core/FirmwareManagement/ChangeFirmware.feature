@@ -11,13 +11,13 @@ Feature: FirmwareManagement change firmware
       | DeviceIdentification     | TEST1024000000001 |
       | FirmwareFilename         | OldFirmware       |
       | FirmwarePushToNewDevices | true              |
-      | Manufacturer             | Test              |
+      | ManufacturerName         | Test              |
       | ModelCode                | TestModel         |
       | Description              |                   |
     When receiving an change firmware request
       | FirmwareFilename         | NewFirmware          |
       | FirmwarePushToNewDevices | false                |
-      | Manufacturer             | Test                 |
+      | ManufacturerName         | Test                 |
       | ModelCode                | TestModel            |
       | FirmwareDescription      | Firmware is changed! |
     Then the change firmware response contains
@@ -30,7 +30,7 @@ Feature: FirmwareManagement change firmware
       | DeviceIdentification     | TEST1024000000001 |
       | FirmwareFilename         | Firmware          |
       | FirmwarePushToNewDevices | true              |
-      | Manufacturer             | Test              |
+      | ManufacturerName         | Test              |
       | ModelCode                | TestModel         |
       | Description              |                   |
     When receiving an change firmware request

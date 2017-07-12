@@ -17,5 +17,5 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 public class SmartMeteringManagementClient extends BaseClient {
 
     @Autowired
-    private DefaultWebServiceTemplateFactory smartMeteringManagementWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringManagementWebServiceTemplateFactory;
 }
