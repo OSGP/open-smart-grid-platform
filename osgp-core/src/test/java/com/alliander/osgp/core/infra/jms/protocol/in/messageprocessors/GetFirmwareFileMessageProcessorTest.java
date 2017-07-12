@@ -28,6 +28,7 @@ import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ObjectMessageBuilder;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
+import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 public class GetFirmwareFileMessageProcessorTest {
 
@@ -58,21 +59,24 @@ public class GetFirmwareFileMessageProcessorTest {
     public void processMessageShouldSendFirmwareFile() throws JMSException {
         // arrange
         final String correlationUid = "corr-uid-1";
-
+        final String organisationIdentification = "test-org";
         final String deviceIdentification = "dvc-1";
 
         final String firmwareIdentification = "fw";
         final byte[] firmwareFile = firmwareIdentification.getBytes();
 
+        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, firmwareIdentification);
         final ObjectMessage message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
-                .withDeviceIdentification(deviceIdentification).withObject(firmwareIdentification).build();
+                .withMessageType(DeviceFunction.GET_FIRMWARE_FILE.name()).withDeviceIdentification(deviceIdentification)
+                .withObject(requestMessage).build();
 
         when(this.deviceMock.getDeviceIdentification()).thenReturn(deviceIdentification);
         when(this.deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(this.deviceMock);
 
         when(this.firmwareMock.getFilename()).thenReturn(firmwareIdentification);
         when(this.firmwareMock.getFile()).thenReturn(firmwareFile);
-        when(this.firmwareRepository.findByFilename(firmwareIdentification)).thenReturn(this.firmwareMock);
+        when(this.firmwareRepository.findByIdentification(firmwareIdentification)).thenReturn(this.firmwareMock);
 
         final byte[] expectedFile = firmwareFile;
         final String expectedMessageType = DeviceFunction.GET_FIRMWARE_FILE.name();
