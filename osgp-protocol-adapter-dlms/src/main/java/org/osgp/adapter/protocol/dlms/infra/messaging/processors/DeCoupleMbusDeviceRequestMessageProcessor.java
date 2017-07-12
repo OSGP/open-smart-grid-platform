@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProvi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
@@ -36,9 +36,9 @@ public class DeCoupleMbusDeviceRequestMessageProcessor extends DeviceRequestMess
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-        this.assertRequestObjectType(DecoupleMbusDeviceResponseDto.class, requestObject);
+        this.assertRequestObjectType(DeCoupleMbusDeviceDto.class, requestObject);
 
-        final DecoupleMbusDeviceResponseDto deCoupleMbusDto = (DecoupleMbusDeviceResponseDto) requestObject;
-        return this.installationService.deCoupleMbusDevice(conn, device, deCoupleMbusDto);
+        final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto = (DeCoupleMbusDeviceDto) requestObject;
+        return this.installationService.deCoupleMbusDevice(conn, device, deCoupleMbusDeviceDto);
     }
 }
