@@ -30,7 +30,7 @@ public class FirmwareFileDto implements Serializable {
 
     public byte[] getFirmwareFile() {
         if (this.firmwareFile == null) {
-            return null;
+            return new byte[] {};
         }
         return this.firmwareFile.clone();
     }

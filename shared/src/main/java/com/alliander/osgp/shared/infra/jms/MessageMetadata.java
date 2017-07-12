@@ -35,6 +35,25 @@ public class MessageMetadata implements Serializable {
     private boolean bypassRetry;
     private int retryCount;
 
+    private MessageMetadata() {
+
+    }
+
+    private MessageMetadata(final Builder builder) {
+        this.deviceIdentification = builder.deviceIdentification;
+        this.organisationIdentification = builder.organisationIdentification;
+        this.correlationUid = builder.correlationUid;
+        this.messageType = builder.messageType;
+        this.domain = builder.domain;
+        this.domainVersion = builder.domainVersion;
+        this.ipAddress = builder.ipAddress;
+        this.messagePriority = builder.messagePriority;
+        this.scheduled = builder.scheduled;
+        this.scheduleTime = builder.scheduleTime;
+        this.bypassRetry = builder.bypassRetry;
+        this.retryCount = builder.retryCount;
+    }
+
     public static final MessageMetadata fromMessage(final Message message) throws JMSException {
 
         final MessageMetadata metadata = new MessageMetadata();
@@ -59,25 +78,6 @@ public class MessageMetadata implements Serializable {
         metadata.bypassRetry = metadata.getBooleanProperty(message, Constants.BYPASS_RETRY, false);
 
         return metadata;
-    }
-
-    private MessageMetadata() {
-
-    }
-
-    private MessageMetadata(final Builder builder) {
-        this.deviceIdentification = builder.deviceIdentification;
-        this.organisationIdentification = builder.organisationIdentification;
-        this.correlationUid = builder.correlationUid;
-        this.messageType = builder.messageType;
-        this.domain = builder.domain;
-        this.domainVersion = builder.domainVersion;
-        this.ipAddress = builder.ipAddress;
-        this.messagePriority = builder.messagePriority;
-        this.scheduled = builder.scheduled;
-        this.scheduleTime = builder.scheduleTime;
-        this.bypassRetry = builder.bypassRetry;
-        this.retryCount = builder.retryCount;
     }
 
     public String getDeviceIdentification() {
