@@ -107,14 +107,14 @@ public class MBusGatewayService {
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
         final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
+        this.checkAndHandleInactiveMbusDevice(mbusDevice);
+
         // If Mbus device is already decoupled, return response OK, otherwise,
         // decouple it.
         if (this.isMbusDeviceCoupled(mbusDevice)) {
             this.installationService.handleResponse("deCoupleMbusDevice", deviceMessageMetadata,
                     ResponseMessageResultType.OK, null);
-        } else
-
-        {
+        } else {
             final DeCoupleMbusDeviceDto decoupleMbusDto = new DeCoupleMbusDeviceDto(mbusDeviceIdentification,
                     mbusDevice.getChannel());
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
