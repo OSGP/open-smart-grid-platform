@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
@@ -90,7 +91,7 @@ public class InstallationService {
         return this.getMBusDeviceOnChannelCommandExecutor.execute(conn, device, requestDataDto);
     }
 
-    public DeCoupleMbusDeviceDto deCoupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public DeCoupleMbusDeviceResponseDto deCoupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
             final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto) throws ProtocolAdapterException {
         return this.deCoupleMBusDeviceCommandExecutor.execute(conn, device, deCoupleMbusDeviceDto);
     }
