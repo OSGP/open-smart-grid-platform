@@ -497,12 +497,7 @@ public class FirmwareManagementService {
 
         if (pushToNewDevices) {
             final List<Firmware> firmwares = this.firmwareRepository.findByDeviceModel(databaseDeviceModel);
-            for (final Firmware dbFirmware : firmwares) {
-                if (dbFirmware.getPushToNewDevices()) {
-                    dbFirmware.setPushToNewDevices(false);
-                }
-            }
-            this.firmwareRepository.save(firmwares);
+            this.setPushToNewDevicesToFalse(firmwares);
         }
         this.firmwareRepository.save(savedFirmware);
     }
@@ -551,7 +546,7 @@ public class FirmwareManagementService {
                     new UnknownEntityException(DeviceModel.class, modelCode));
         }
 
-        final Firmware changedFirmware = this.firmwareRepository.findOne(Long.valueOf(id));
+        Firmware changedFirmware = this.firmwareRepository.findOne(Long.valueOf(id));
 
         if (changedFirmware == null) {
             LOGGER.info("Firmware not found.");
@@ -565,15 +560,14 @@ public class FirmwareManagementService {
         changedFirmware.updateFirmwareModuleData(firmwareModuleData);
         changedFirmware.setPushToNewDevices(pushToNewDevices);
 
-        // set all devicefirmwares.pushToNewDevices on false
+        // Save the changed firmware entity
+        changedFirmware = this.firmwareRepository.save(changedFirmware);
+
+        // Set all devicefirmwares.pushToNewDevices on false
         if (pushToNewDevices) {
             final List<Firmware> firmwares = this.firmwareRepository.findByDeviceModel(databaseDeviceModel);
-            for (final Firmware firmware : firmwares) {
-                if (firmware.getPushToNewDevices() && (firmware.getId() != Long.valueOf(id))) {
-                    firmware.setPushToNewDevices(false);
-                }
-            }
-            this.firmwareRepository.save(firmwares);
+            firmwares.remove(changedFirmware);
+            this.setPushToNewDevicesToFalse(firmwares);
         }
 
         this.firmwareRepository.save(changedFirmware);
@@ -750,4 +744,12 @@ public class FirmwareManagementService {
                 .concat(File.separator).concat(fileName));
     }
 
+    private void setPushToNewDevicesToFalse(final List<Firmware> firmwares) {
+        for (final Firmware firmware : firmwares) {
+            if (firmware.getPushToNewDevices()) {
+                firmware.setPushToNewDevices(false);
+            }
+        }
+        this.firmwareRepository.save(firmwares);
+    }
 }

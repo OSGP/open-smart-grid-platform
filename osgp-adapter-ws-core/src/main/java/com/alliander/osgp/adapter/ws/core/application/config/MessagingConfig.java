@@ -28,9 +28,11 @@ import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-core.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
+
+    public static final String PROPERTY_NAME_JMS_RECEIVE_TIMEOUT = "jms.common.responses.receive.timeout";
 
     @Resource
     private Environment environment;
@@ -79,7 +81,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean(name = "wsCoreIncomingResponsesJmsTemplate")
     public JmsTemplate commonResponsesJmsTemplate(final JmsConfiguration commonResponsesJmsConfiguration) {
-        return commonResponsesJmsConfiguration.getJmsTemplate();
+        final Long receiveTimeout = Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_RECEIVE_TIMEOUT));
+
+        final JmsTemplate jmsTemplate = commonResponsesJmsConfiguration.getJmsTemplate();
+        jmsTemplate.setReceiveTimeout(receiveTimeout);
+        return jmsTemplate;
     }
 
     @Bean(name = "wsCoreIncomingResponsesMessageFinder")
