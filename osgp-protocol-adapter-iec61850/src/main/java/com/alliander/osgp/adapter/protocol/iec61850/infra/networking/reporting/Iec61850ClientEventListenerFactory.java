@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
 import org.slf4j.Logger;
@@ -29,6 +36,8 @@ public class Iec61850ClientEventListenerFactory {
             return new Iec61850ClientSSLDEventListener(deviceIdentification, deviceManagementService);
         case ZOWN_RTU:
             return new Iec61850ClientRTUEventListener(deviceIdentification, deviceManagementService);
+        case DA_RTU:
+            return new Iec61850ClientDaRTUEventListener(deviceIdentification, deviceManagementService);
         default:
             LOGGER.warn("Unknown IED {}, could not create event listener for device {}", ied, deviceIdentification);
             return null;

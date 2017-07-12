@@ -99,7 +99,7 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
             throws ProtocolAdapterException {
 
         this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getOrganisationIdentification(), IED.ZOWN_RTU,
+                deviceRequest.getDeviceIdentification(), deviceRequest.getOrganisationIdentification(), IED.DA_RTU,
                 serverName, LogicalDevice.RTU.getDescription() + 1);
         return this.iec61850DeviceConnectionService.getServerModel(deviceRequest.getDeviceIdentification());
     }
@@ -120,7 +120,7 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
         if (iec61850Device != null && iec61850Device.getServerName() != null) {
             return iec61850Device.getServerName();
         } else {
-            return IED.ZOWN_RTU.getDescription();
+            return IED.DA_RTU.getDescription();
         }
     }
 }

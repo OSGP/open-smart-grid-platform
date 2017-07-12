@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,17 +7,25 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Report;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850ReportGroup;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
+import org.openmuc.openiec61850.Rcb;
 import org.openmuc.openiec61850.ServerModel;
+import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +63,9 @@ public class Iec61850DeviceConnectionService {
 
     @Autowired
     private Iec61850DeviceRepository iec61850DeviceRepository;
+
+    @Autowired
+    private Iec61850DeviceReportGroupRepository iec61850DeviceReportRepository;
 
     @Autowired
     private Iec61850Client iec61850Client;
@@ -147,6 +158,8 @@ public class Iec61850DeviceConnectionService {
             throw new ConnectionFailureException(e.getMessage(), e);
         }
 
+        this.enableReportsForDevice(serverName, deviceIdentification, serverModel, clientAssociation);
+
         // Cache the connection.
         final Iec61850Connection iec61850Connection = new Iec61850Connection(iec61850ClientAssociation, serverModel,
                 startTime);
@@ -160,6 +173,54 @@ public class Iec61850DeviceConnectionService {
                 deviceIdentification, startTime, endTime, endTime.minus(startTime.getMillis()).getMillis());
 
         return new DeviceConnection(iec61850Connection, deviceIdentification, organisationIdentification, serverName);
+    }
+
+    private void enableReportsForDevice(final String serverName, final String deviceIdentification, final ServerModel serverModel, final ClientAssociation clientAssociation) {
+        final List<Iec61850DeviceReportGroup> deviceReportGroups = this.iec61850DeviceReportRepository
+                .findByDeviceIdentificationAndEnabled(deviceIdentification, true);
+        for (Iec61850DeviceReportGroup deviceReportGroup : deviceReportGroups) {
+            this.enableReportGroup(serverName, deviceIdentification, deviceReportGroup.getIec61850ReportGroup(), serverModel, clientAssociation);
+        }
+    }
+
+    private void enableReportGroup(final String serverName, final String deviceIdentification, final Iec61850ReportGroup reportGroup, final ServerModel serverModel, final ClientAssociation clientAssociation) {
+        for (Iec61850Report iec61850Report : reportGroup.getIec61850Reports()) {
+            this.enableReport(serverName, deviceIdentification, iec61850Report, serverModel, clientAssociation);
+        }
+    }
+
+    private void enableReport(final String serverName, final String deviceIdentification, final Iec61850Report iec61850Report, final ServerModel serverModel, final ClientAssociation clientAssociation) {
+        int i = 1;
+        Rcb rcb = this.getRcb(serverModel, getReportNode(serverName, iec61850Report.getLogicalDevice(), i, iec61850Report.getLogicalNode()));
+        while (rcb != null) {
+            this.enableRcb(deviceIdentification, clientAssociation, rcb);
+            i += 1;
+            rcb = this.getRcb(serverModel, getReportNode(serverName, iec61850Report.getLogicalDevice(), i, iec61850Report.getLogicalNode()));
+        }
+    }
+
+    private String getReportNode(final String serverName, final String logicalDevice, final int index, final String reportNode) {
+        return serverName + logicalDevice + index + "/" + reportNode;
+    }
+
+    private Rcb getRcb(final ServerModel serverModel, final String node) {
+        Rcb rcb = serverModel.getBrcb(node);
+        if (rcb == null) {
+            rcb = serverModel.getUrcb(node);
+        }
+        return rcb;
+    }
+
+    private void enableRcb(final String deviceIdentification, final ClientAssociation clientAssociation, final Rcb rcb) {
+        try {
+            clientAssociation.enableReporting(rcb);
+        } catch (final IOException e) {
+            LOGGER.error("IOException: unable to enable reporting for deviceIdentification "
+                    + deviceIdentification, e);
+        } catch (final ServiceError e) {
+            LOGGER.error("ServiceError: unable to enable reporting for deviceIdentification "
+                    + deviceIdentification, e);
+        }
     }
 
     private void logProtocolAdapterException(final String deviceIdentification, final ProtocolAdapterException e) {
@@ -181,6 +242,8 @@ public class Iec61850DeviceConnectionService {
         } else if (IED.FLEX_OVL.equals(ied)) {
             port = this.iec61850SsldPortServer;
         } else if (IED.ZOWN_RTU.equals(ied)) {
+            port = this.iec61850RtuPortServer;
+        } else if (IED.DA_RTU.equals(ied)) {
             port = this.iec61850RtuPortServer;
         } else {
             port = IEC61850_DEFAULT_PORT;

@@ -57,6 +57,7 @@ public class DistributionAutomationGetPQValuesRequestMessageProcessor extends Da
             final DeviceConnection connection, final DaDeviceRequest deviceRequest) {
         return (final DeviceMessageLog deviceMessageLog) -> {
             final ServerModel serverModel = connection.getConnection().getServerModel();
+            client.readAllDataValues(connection.getConnection().getClientAssociation());
             return new GetPQValuesResponseDto(this.processPQValuesLogicalDevice(serverModel));
         };
     }

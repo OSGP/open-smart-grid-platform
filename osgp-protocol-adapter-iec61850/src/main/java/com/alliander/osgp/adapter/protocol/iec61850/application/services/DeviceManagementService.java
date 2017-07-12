@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -10,6 +10,9 @@ package com.alliander.osgp.adapter.protocol.iec61850.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
+import org.osgpfoundation.osgp.dto.da.GetPQValuesResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,9 @@ public class DeviceManagementService {
 
     @Autowired
     private SsldDataRepository ssldDataRepository;
+
+    @Autowired
+    private Iec61850DeviceReportGroupRepository deviceReportGroupRepository;
 
     @Autowired
     private OsgpRequestMessageSender osgpRequestMessageSender;
@@ -83,7 +89,7 @@ public class DeviceManagementService {
      * @param deviceIdentification
      *            The device identification.
      *
-     * @return The {@link DeviceOutputSettings} for the device.
+     * @return The {@link DeviceOutputSetting} for the device.
      *
      * @throws ProtocolAdapterException
      *             In case the device can not be found in the database.
@@ -111,6 +117,18 @@ public class DeviceManagementService {
                         new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
                                 DeviceFunctionDto.GET_DATA.name(), 0)).result(ResponseMessageResultType.OK)
                 .domain("MICROGRIDS").domainVersion("1.0").build();
+        this.responseSender.send(responseMessage);
+    }
+
+    public void sendPqValues(final String deviceIdentification, final String reportDataSet, final GetPQValuesResponseDto response)
+            throws ProtocolAdapterException {
+        Iec61850DeviceReportGroup deviceReportGroup = this.deviceReportGroupRepository.findByDeviceIdentificationAndReportDataSet(deviceIdentification, reportDataSet);
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .dataObject(response)
+                .deviceMessageMetadata(
+                        new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
+                                DeviceFunctionDto.GET_POWER_QUALITY_VALUES.name(), 0)).result(ResponseMessageResultType.OK)
+                .domain(deviceReportGroup.getDomain()).domainVersion(deviceReportGroup.getDomainVersion()).build();
         this.responseSender.send(responseMessage);
     }
 }
