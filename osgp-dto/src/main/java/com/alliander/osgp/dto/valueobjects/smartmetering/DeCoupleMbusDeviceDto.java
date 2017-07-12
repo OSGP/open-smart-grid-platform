@@ -9,21 +9,21 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class DecoupleMbusDeviceResponseDto implements Serializable, ActionRequestDto {
+public class DeCoupleMbusDeviceDto implements Serializable, ActionRequestDto {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
     private final Short channel;
     private final String mBusDeviceIdentification;
 
-    public DecoupleMbusDeviceResponseDto(final String mBusDeviceIdentification, final Short channel) {
+    public DeCoupleMbusDeviceDto(final String mBusDeviceIdentification, final Short channel) {
         this.mBusDeviceIdentification = mBusDeviceIdentification;
         this.channel = channel;
     }
 
     @Override
     public String toString() {
-        return "DeCoupleMbusDeviceResponseDto [channel=" + this.channel + ", mBusDeviceIdentification="
+        return "DeCoupleMbusDeviceDto [channel=" + this.channel + ", mBusDeviceIdentification="
                 + this.mBusDeviceIdentification + "]";
     }
 
