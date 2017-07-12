@@ -11,11 +11,15 @@ import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.cucumber.core.Helpers.getNullOrNonEmptyString;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
@@ -25,6 +29,7 @@ import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleData;
+import com.google.common.io.Files;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -40,6 +45,9 @@ public class FirmwareSteps {
     @Autowired
     private FirmwareRepository firmwareRepo;
 
+    @Value("${firmware.file.path}")
+    private String firmwareFilePath;
+
     @Autowired
     private DeviceModelSteps deviceModelSteps;
 
@@ -48,6 +56,7 @@ public class FirmwareSteps {
      *
      * @param settings
      *            The settings for the firmware to be used.
+     * @throws IOException
      * @throws Throwable
      */
     @Given("^a firmware")
@@ -73,13 +82,10 @@ public class FirmwareSteps {
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec);
 
         /*
-         * Using the filename as firmware identification is necessary as long as
-         * the DLMS protocol adapter expects the filename to identify a
-         * firmware. As soon as the protocol adapter accepts the newer
-         * identification, it is no longer necessary to do this and the default
-         * random identification should do fine for the tests. (The
-         * identification then no longer needs to be added to the constructor
-         * used to create the firmware.)
+         * Using the filename as firmware identification is necessary as long as the DLMS protocol adapter expects the
+         * filename to identify a firmware. As soon as the protocol adapter accepts the newer identification, it is no
+         * longer necessary to do this and the default random identification should do fine for the tests. (The
+         * identification then no longer needs to be added to the constructor used to create the firmware.)
          */
         final String identification = getString(settings, PlatformKeys.FIRMWARE_FILENAME,
                 UUID.randomUUID().toString().replace("-", ""));
@@ -89,6 +95,13 @@ public class FirmwareSteps {
                 getBoolean(settings, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
                         PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE),
                 firmwareModuleData);
+
+        try {
+            final byte[] file = this.getFirmwareFile(entity.getFilename());
+            entity.setFile(file);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
 
         this.firmwareRepo.save(entity);
     }
@@ -145,4 +158,26 @@ public class FirmwareSteps {
             }
         });
     }
+
+    private byte[] getFirmwareFile(final String filename) throws IOException {
+        final String path = this.getFirmwareFilepath(filename);
+        try {
+            final File file = new File(path);
+            final byte[] bytes = Files.toByteArray(file);
+            return bytes;
+        } catch (final IOException e) {
+            throw e;
+        }
+    }
+
+    private String getFirmwareFilepath(final String filename) {
+        String path = this.firmwareFilePath;
+        if (StringUtils.endsWith(this.firmwareFilePath, "/")) {
+            path = this.firmwareFilePath + filename;
+        } else {
+            path = this.firmwareFilePath + "/" + filename;
+        }
+        return path;
+    }
+
 }
