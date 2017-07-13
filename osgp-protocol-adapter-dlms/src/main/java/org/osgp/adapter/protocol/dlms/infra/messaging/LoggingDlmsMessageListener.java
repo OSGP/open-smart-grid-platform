@@ -18,6 +18,8 @@ import org.openmuc.jdlms.RawMessageData.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
+
 public class LoggingDlmsMessageListener implements DlmsMessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingDlmsMessageListener.class);
@@ -25,7 +27,7 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
     private final String deviceIdentification;
     private final DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
 
-    private DlmsDeviceMessageMetadata messageMetadata;
+    private MessageMetadata messageMetadata;
     private String description;
 
     private AtomicInteger numberOfCapturedMessages = new AtomicInteger(0);
@@ -67,9 +69,8 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
     private byte[] determineEncodedMessage(final Apdu apdu) {
         if (apdu == null) {
             /*
-             * Not returning an empty array, because that would look like an
-             * empty message, while there is no message to be returned at all
-             * here.
+             * Not returning an empty array, because that would look like an empty message, while there is no message to
+             * be returned at all here.
              */
             return null;
         }
@@ -85,9 +86,8 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
     private byte[] determineEncodedMessage(final CosemPdu cosemPdu) {
         if (cosemPdu == null) {
             /*
-             * Not returning an empty array, because that would look like an
-             * empty message, while there is no message to be returned at all
-             * here.
+             * Not returning an empty array, because that would look like an empty message, while there is no message to
+             * be returned at all here.
              */
             return null;
         }
@@ -140,7 +140,7 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
     }
 
     @Override
-    public void setMessageMetadata(final DlmsDeviceMessageMetadata messageMetadata) {
+    public void setMessageMetadata(final MessageMetadata messageMetadata) {
         this.messageMetadata = messageMetadata;
     }
 
