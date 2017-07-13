@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import org.osgp.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.osgp.adapter.protocol.dlms.domain.commands.CoupleMBusDeviceCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.DeCoupleMBusDeviceCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetMBusDeviceOnChannelCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -19,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
@@ -38,6 +41,9 @@ public class InstallationService {
 
     @Autowired
     private CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
+
+    @Autowired
+    private DeCoupleMBusDeviceCommandExecutor deCoupleMBusDeviceCommandExecutor;
 
     @Autowired
     private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
@@ -83,5 +89,10 @@ public class InstallationService {
     public ChannelElementValuesDto getMBusDeviceOnChannel(final DlmsConnectionHolder conn, final DlmsDevice device,
             final GetMBusDeviceOnChannelRequestDataDto requestDataDto) throws ProtocolAdapterException {
         return this.getMBusDeviceOnChannelCommandExecutor.execute(conn, device, requestDataDto);
+    }
+
+    public DeCoupleMbusDeviceResponseDto deCoupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto) throws ProtocolAdapterException {
+        return this.deCoupleMBusDeviceCommandExecutor.execute(conn, device, deCoupleMbusDeviceDto);
     }
 }
