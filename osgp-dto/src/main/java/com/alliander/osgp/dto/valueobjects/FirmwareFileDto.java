@@ -11,9 +11,6 @@ import java.io.Serializable;
 
 public class FirmwareFileDto implements Serializable {
 
-    /**
-     * Generated serial version UID
-     */
     private static final long serialVersionUID = -4794626243032507358L;
 
     private String firmwareIdentification;
