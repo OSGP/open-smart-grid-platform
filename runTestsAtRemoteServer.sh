@@ -14,10 +14,18 @@ SSH_KEY_FILE=$4
 ADDITIONAL_PARAMETERS=$5
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
+#[ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${4/ /} => ${HOME}/.ssh/${4} ..." && ln -sf "${HOME}/.ssh/${4}" "${HOME}/.ssh/${4/ /}"
+
+# Now determine if a -i parameter should be generated
+#[ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE="-i \"${HOME}/.ssh/${4/ /}\"" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
+
+# If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
 [ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${4/ /} => ${HOME}/.ssh/${4} ..." && ln -sf "${HOME}/.ssh/${4}" "${HOME}/.ssh/${4/ /}"
 
 # Now determine if a -i parameter should be generated
-[ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE="-i \"${HOME}/.ssh/${4/ /}\"" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
+[ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE="-oIdentityFile=\"${HOME}/.ssh/${4/ /}\"" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
+#[ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE=${HOME}/.ssh/${4} && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
+#[ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE=-oIdentityFile=\"${SSH_KEY_FILE}\" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
 
 echo "Going to run the cucumber project ${PROJECT} on ${SERVER} ..."
 echo "- Create directory structure ..."
