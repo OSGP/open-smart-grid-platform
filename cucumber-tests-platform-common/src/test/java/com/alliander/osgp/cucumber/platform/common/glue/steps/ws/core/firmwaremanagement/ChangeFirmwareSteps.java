@@ -83,7 +83,7 @@ public class ChangeFirmwareSteps {
                 PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
         firmware.setFirmwareModuleData(new FirmwareModuleData());
         firmware.setManufacturer(
-                getString(requestParameters, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.MANUFACTURER_NAME));
+                getString(requestParameters, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
         firmware.setModelCode(getString(requestParameters, PlatformKeys.DEVICEMODEL_MODELCODE,
                 PlatformDefaults.DEVICE_MODEL_MODEL_CODE));
         return firmware;

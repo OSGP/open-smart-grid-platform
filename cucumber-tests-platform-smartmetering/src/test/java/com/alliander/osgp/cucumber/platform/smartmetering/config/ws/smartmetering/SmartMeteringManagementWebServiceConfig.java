@@ -24,7 +24,7 @@ public class SmartMeteringManagementWebServiceConfig extends BaseWebServiceConfi
     private ApplicationConfiguration configuration;
 
     @Bean
-    public DefaultWebServiceTemplateFactory smartMeteringManagementWstf() {
+    public DefaultWebServiceTemplateFactory smartMeteringManagementWebServiceTemplateFactory() {
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(
