@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
-import com.alliander.osgp.cucumber.platform.config.AbstractPlatformApplicationConfiguration;
+import com.alliander.osgp.cucumber.platform.config.PlatformApplicationConfiguration;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:cucumber-tests-platform-publiclighting.properties"),
         @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
         @PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-publiclighting.properties", ignoreResourceNotFound = true), })
-public class PublicLightingConfiguration extends AbstractPlatformApplicationConfiguration {
+public class PublicLightingConfiguration extends PlatformApplicationConfiguration {
 
 }
