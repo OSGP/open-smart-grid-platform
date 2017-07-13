@@ -21,38 +21,36 @@ ADDITIONAL_PARAMETERS=$5
 
 echo "Going to run the cucumber project ${PROJECT} on ${SERVER} ..."
 echo "- Create directory structure ..."
-CMD="sudo ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo mkdir -p /data/software/${PROJECT}/target/output\"\""
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo mkdir -p /data/software/${PROJECT}/target/output\"\""
 echo "  [${CMD}]"
 ${CMD}
-CMD="sudo ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo mkdir -p /data/software/certificates\"\""
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo mkdir -p /data/software/certificates\"\""
 echo "  [${CMD}]"
 ${CMD}
-CMD="sudo ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo chown -R ${USER}:${USER} /data/software\"\""
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo chown -R ${USER}:${USER} /data/software\"\""
 echo "  [${CMD}]"
 ${CMD}
 
 echo "- Copy over nesseccary files to ${SERVER} ..."
-CMD="sudo scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} certificates/* ${USER}@${SERVER}:/data/software/certificates"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} certificates/* ${USER}@${SERVER}:/data/software/certificates"
 echo "  [${CMD}]"
 ${CMD}
 
 echo "- Copy over cucumber project ${PROJECT} to ${SERVER} ..."
-CMD="sudo scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${PROJECT}/target/cucumber-*test-jar-with-dependencies.jar ${USER}@${SERVER}:/data/software/${PROJECT}"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${PROJECT}/target/cucumber-*test-jar-with-dependencies.jar ${USER}@${SERVER}:/data/software/${PROJECT}"
 echo "  [${CMD}]"
 ${CMD}
 
 echo "- Executing cucumber project ${PROJECT} remote on ${SERVER} ..."
 CMD="sudo java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/coverage-reports/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -DskipITs=false -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output"
 echo "  [${CMD}]"
-CMD="sudo ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
 
 echo "- Collecting output from cucumber project ${PROJECT} on ${SERVER} ..."
 mkdir -p ${PROJECT}/target
-CMD="sudo scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}/target/* ${PROJECT}/target"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}/target/* ${PROJECT}/target"
 echo "  [${CMD}]"
 ${CMD}
-
-sudo chown -R ${USER}:${USER} "${PROJECT}/target"
 
 echo "Done."
