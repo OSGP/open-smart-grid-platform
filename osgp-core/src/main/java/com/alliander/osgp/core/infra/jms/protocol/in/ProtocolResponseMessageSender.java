@@ -21,6 +21,7 @@ import org.springframework.jms.core.MessageCreator;
 import com.alliander.osgp.core.domain.model.protocol.ProtocolResponseService;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 // This class sends response messages to the protocol incoming responses queue.
@@ -32,32 +33,39 @@ public class ProtocolResponseMessageSender implements ProtocolResponseService {
     private ProtocolResponseMessageJmsTemplateFactory factory;
 
     @Override
-    public void send(final ResponseMessage responseMessage, final String messageType, final ProtocolInfo protocolInfo) {
+    public void send(final ResponseMessage responseMessage, final String messageType, final ProtocolInfo protocolInfo,
+            final MessageMetadata messageMetadata) {
 
         final String key = protocolInfo.getKey();
 
         final JmsTemplate jmsTemplate = this.factory.getJmsTemplate(key);
 
-        this.send(responseMessage, messageType, jmsTemplate);
+        this.send(responseMessage, messageType, jmsTemplate, messageMetadata);
     }
 
-    public void send(final ResponseMessage responseMessage, final String messageType, final JmsTemplate jmsTemplate) {
+    public void send(final ResponseMessage responseMessage, final String messageType, final JmsTemplate jmsTemplate,
+            final MessageMetadata messageMetadata) {
         LOGGER.info("Sending response message to protocol responses incoming queue");
 
         jmsTemplate.send(new MessageCreator() {
-
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
-                objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
+                objectMessage.setJMSCorrelationID(messageMetadata.getCorrelationUid());
                 objectMessage.setJMSType(messageType);
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        responseMessage.getOrganisationIdentification());
+                        messageMetadata.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        responseMessage.getDeviceIdentification());
+                        messageMetadata.getDeviceIdentification());
+                objectMessage.setStringProperty(Constants.DOMAIN, messageMetadata.getDomain());
+                objectMessage.setStringProperty(Constants.DOMAIN_VERSION, messageMetadata.getDomainVersion());
+                objectMessage.setStringProperty(Constants.IP_ADDRESS, messageMetadata.getIpAddress());
+                objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, messageMetadata.isScheduled());
+                objectMessage.setIntProperty(Constants.RETRY_COUNT, messageMetadata.getRetryCount());
+                objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, messageMetadata.isBypassRetry());
                 return objectMessage;
             }
-
         });
     }
+
 }

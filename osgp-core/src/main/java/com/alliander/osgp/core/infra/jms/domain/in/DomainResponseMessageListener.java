@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.core.domain.model.protocol.ProtocolResponseService;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.exceptions.OsgpCoreException;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 // This class should fetch incoming response messages from a responses queue.
@@ -64,7 +65,8 @@ public class DomainResponseMessageListener implements MessageListener {
 
             if ("REGISTER_DEVICE".equals(messageType)) {
                 final ResponseMessage responseMessage = (ResponseMessage) dataObject;
-                this.protocolResponseService.send(responseMessage, messageType, protocolInfo);
+                this.protocolResponseService.send(responseMessage, messageType, protocolInfo,
+                        MessageMetadata.fromMessage(message));
             } else {
                 throw new OsgpCoreException("Unknown JMSType: " + messageType);
             }

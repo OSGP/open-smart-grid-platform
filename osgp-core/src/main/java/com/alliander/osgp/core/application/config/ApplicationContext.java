@@ -29,8 +29,7 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class. The usage of Java configuration requires Spring Framework 3.0
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.core" })
@@ -46,6 +45,12 @@ public class ApplicationContext {
     }
 
     @Bean
+    ProtocolResponseService protocolResponseMessageSender() {
+        LOGGER.debug("Creating bean: protocolResponseMessageSender");
+        return new ProtocolResponseMessageSender();
+    }
+
+    @Bean
     ProtocolRequestService protocolRequestMessageSender() {
         LOGGER.debug("Creating bean: protocolRequestMessageSender");
         return new ProtocolRequestMessageSender();
@@ -55,12 +60,6 @@ public class ApplicationContext {
     DomainResponseService domainResponseMessageSender() {
         LOGGER.debug("Creating bean: domainResponseMessageSender");
         return new DomainResponseMessageSender();
-    }
-
-    @Bean
-    ProtocolResponseService protocolResponseMessageSender() {
-        LOGGER.debug("Creating bean: protocolResponseMessageSender");
-        return new ProtocolResponseMessageSender();
     }
 
     @Bean
