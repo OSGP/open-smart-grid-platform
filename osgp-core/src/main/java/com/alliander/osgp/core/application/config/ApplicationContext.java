@@ -44,7 +44,7 @@ public class ApplicationContext {
         // empty constructor
     }
 
-    @Bean(name = "protocolResponseMessageSender")
+    @Bean
     ProtocolResponseService protocolResponseMessageSender() {
         LOGGER.debug("Creating bean: protocolResponseMessageSender");
         return new ProtocolResponseMessageSender();
