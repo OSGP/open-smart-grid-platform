@@ -55,9 +55,20 @@ echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
 
+echo '- Create zip file from files from server ...'
+CMD="sudo tar zcvf /tmp/${SERVERNAME}.tgz /etc/osgp /etc/httpd/conf.d /usr/share/tomcat/conf /var/log/tomcat /var/log/osgp"
+echo "  [${CMD}]"
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
+${CMD}
+
 echo "- Collecting output from cucumber project ${PROJECT} on ${SERVER} ..."
 mkdir -p ${PROJECT}/target
 CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/data/software/${PROJECT}/target/* ${PROJECT}/target"
+echo "  [${CMD}]"
+${CMD}
+
+echo "- Collecting server files from ${SERVER} ..."
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/tmp/${SERVERNAME}.tgz ${PROJECT}/target"
 echo "  [${CMD}]"
 ${CMD}
 
