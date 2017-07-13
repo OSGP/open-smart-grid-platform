@@ -90,7 +90,7 @@ public class SetConfigurationSteps {
 
     private void addFilledRelayConfigurationToConfiguration(final Map<String, String> requestParameters,
             final Configuration config) throws ArgumentNullOrEmptyException {
-        final String rcMap = getString(requestParameters, PlatformKeys.RC_MAP);
+        final String rcMap = getString(requestParameters, PlatformKeys.RELAY_CONF);
         if (rcMap != null) {
             final RelayConfiguration relayConfiguration = new RelayConfiguration();
             final String[] relayMapArray = rcMap.split(";");
@@ -102,13 +102,11 @@ public class SetConfigurationSteps {
                 if (!StringUtils.isEmpty(subRelayMapElement[0])) {
                     relayMap.setIndex(Integer.parseInt(subRelayMapElement[0]));
                 }
-                if (subRelayMapElement.length == 2 && !StringUtils.isEmpty(subRelayMapElement[1])) {
+                if (subRelayMapElement.length >= 2 && !StringUtils.isEmpty(subRelayMapElement[1])) {
                     relayMap.setAddress(Integer.parseInt(subRelayMapElement[1]));
                 }
-
-                if (requestParameters.containsKey(PlatformKeys.RC_TYPE)
-                        && !requestParameters.get(PlatformKeys.RC_TYPE).isEmpty()) {
-                    relayMap.setRelayType(getEnum(requestParameters, PlatformKeys.RC_TYPE, RelayType.class));
+                if (subRelayMapElement.length >= 3 && !StringUtils.isEmpty(subRelayMapElement[2])) {
+                    relayMap.setRelayType(RelayType.valueOf(subRelayMapElement[2]));
                 }
 
                 relayConfiguration.getRelayMap().add(relayMap);
@@ -145,7 +143,7 @@ public class SetConfigurationSteps {
         }
 
         if (StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.RC_TYPE))
-                || StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.RC_MAP))) {
+                || StringUtils.isNotEmpty(getString(requestParameters, PlatformCommonKeys.RELAY_CONF))) {
             this.addFilledRelayConfigurationToConfiguration(requestParameters, config);
         }
 

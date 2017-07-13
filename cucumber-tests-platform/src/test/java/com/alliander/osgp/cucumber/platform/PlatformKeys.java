@@ -223,7 +223,7 @@ public class PlatformKeys extends Keys {
     public static final String ORGANIZATION_NAME = "Name";
     public static final String PHONE_NUMBER = "PhoneNumber";
     public static final String PLATFORM_DOMAINS = "PlatformDomains";
-    public static final String RC_MAP = "RcMap";
+    public static final String RELAY_CONF = "RelayConf";
     public static final String RC_TYPE = "RcType";
     public static final String RECORD_TIME = "RecordTime";
     public static final String RELAY_DATA = "RelayData";
