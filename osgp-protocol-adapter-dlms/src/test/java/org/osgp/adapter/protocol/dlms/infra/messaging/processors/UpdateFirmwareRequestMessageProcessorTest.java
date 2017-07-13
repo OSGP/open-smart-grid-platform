@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -113,7 +114,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.osgpRequestMessageSender, times(0)).send(any(RequestMessage.class), any(String.class),
+        verify(this.osgpRequestMessageSender, never()).send(any(RequestMessage.class), any(String.class),
                 any(MessageMetadata.class));
     }
 

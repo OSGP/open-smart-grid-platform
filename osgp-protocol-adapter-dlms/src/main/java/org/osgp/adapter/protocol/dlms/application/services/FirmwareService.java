@@ -77,7 +77,7 @@ public class FirmwareService {
         if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
             return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentification);
         } else {
-            throw new ProtocolAdapterException("Firmware Unavailable");
+            throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
         }
     }
 }

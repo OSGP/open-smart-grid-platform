@@ -138,7 +138,6 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
-            Serializable response = null;
             if (this.usesDeviceConnection()) {
                 final LoggingDlmsMessageListener dlmsMessageListener;
                 if (device.isInDebugMode()) {
@@ -150,9 +149,9 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
                     dlmsMessageListener = null;
                 }
                 conn = this.dlmsConnectionFactory.getConnection(device, dlmsMessageListener);
-                response = this.handleMessage(conn, device, message.getObject());
+                this.handleMessage(conn, device, message.getObject());
             } else {
-                response = this.handleMessage(device, message);
+                this.handleMessage(device, message);
             }
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
