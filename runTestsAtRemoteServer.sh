@@ -56,7 +56,7 @@ CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /da
 ${CMD}
 
 echo '- Create zip file from files from server ...'
-CMD="sudo tar zhcvf /tmp/${SERVER}.tgz /etc/osgp /etc/httpd/conf.d /usr/share/tomcat/conf /var/log/tomcat /var/log/osgp && sudo chown $USER:$USER /tmp/${SERVER}.tgz"
+CMD="sudo tar zhcvf /tmp/${SERVER}-${PROJECT}.tgz /etc/osgp /etc/httpd/conf.d /usr/share/tomcat/conf /var/log/tomcat /var/log/osgp && sudo chown $USER:$USER /tmp/${SERVER}-${PROJECT}.tgz"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
@@ -68,7 +68,12 @@ echo "  [${CMD}]"
 ${CMD}
 
 echo "- Collecting server files from ${SERVER} ..."
-CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/tmp/${SERVERNAME}.tgz ${PROJECT}/target"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/tmp/${SERVER}-${PROJECT}.tgz ${PROJECT}/target"
+echo "  [${CMD}]"
+${CMD}
+
+echo "- Clean logging for next tests on ${SERVER} ..."
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo rm -rf /var/log/tomcat/* && sudo rm -rf /var/log/osgp/logs/*\"\""
 echo "  [${CMD}]"
 ${CMD}
 
