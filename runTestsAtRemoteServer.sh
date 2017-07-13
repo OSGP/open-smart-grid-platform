@@ -50,7 +50,7 @@ echo "  [${CMD}]"
 ${CMD}
 
 echo "- Executing cucumber project ${PROJECT} remote on ${SERVER} ..."
-CMD="sudo java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/coverage-reports/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -DskipITs=false -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output"
+CMD="sudo java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/coverage-reports/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -DskipITs=false -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*”"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
