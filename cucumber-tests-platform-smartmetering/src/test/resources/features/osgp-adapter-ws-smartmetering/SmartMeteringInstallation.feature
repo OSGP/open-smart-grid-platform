@@ -408,8 +408,6 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  #Skip can be removed if SLIM-1029 is merged and deployed
-  @Skip
   Scenario: Decouple coupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -442,8 +440,6 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  #Skip can be removed if SLIM-1029 is merged and deployed
-  @Skip
   Scenario: Decouple decoupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
