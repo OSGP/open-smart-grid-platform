@@ -13,8 +13,7 @@ import javax.annotation.PostConstruct;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.domain.factories.FirwareImageFactory;
-import org.osgp.adapter.protocol.dlms.exceptions.FirmwareImageFactoryException;
+import org.osgp.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +31,10 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
 
     private static final String EXCEPTION_MSG_UPDATE_FAILED = "Upgrade of firmware did not succeed.";
 
-    private static final String EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE = "Installation file is not available.";
+    private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE = "Firmware file is not available.";
 
     @Autowired
-    private FirwareImageFactory firmwareImageFactory;
+    private FirmwareFileCachingRepository firmwareFileCachingRepository;
 
     @Autowired
     private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
@@ -124,11 +123,13 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     private byte[] getImageData(final String firmwareIdentification) throws ProtocolAdapterException {
-        try {
-            return this.firmwareImageFactory.getFirmwareImage(firmwareIdentification);
-        } catch (final FirmwareImageFactoryException e) {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE, e);
+        final byte[] firmwareFile = this.firmwareFileCachingRepository.retrieve(firmwareIdentification);
+
+        if (firmwareFile == null) {
+            throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
         }
+
+        return firmwareFile;
     }
 
     @Override

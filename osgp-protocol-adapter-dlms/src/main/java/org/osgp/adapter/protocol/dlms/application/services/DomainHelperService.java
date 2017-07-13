@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProviderService;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
@@ -47,9 +47,8 @@ public class DomainHelperService {
     private int jasperGetSessionSleepBetweenRetries;
 
     /**
-     * This method can be used to find an mBusDevice. For other devices, use
-     * {@link #findDlmsDevice(DlmsDeviceMessageMetadata)} instead, as this will
-     * also set the IP address.
+     * This method can be used to find an mBusDevice. For other devices, use {@link #findDlmsDevice(MessageMetadata)}
+     * instead, as this will also set the IP address.
      */
     public DlmsDevice findDlmsDevice(final String deviceIdentification) throws FunctionalException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -60,7 +59,7 @@ public class DomainHelperService {
         return dlmsDevice;
     }
 
-    public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata)
+    public DlmsDevice findDlmsDevice(final MessageMetadata messageMetadata)
             throws ProtocolAdapterException, FunctionalException {
         return this.findDlmsDevice(messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
     }
@@ -69,7 +68,8 @@ public class DomainHelperService {
             throws ProtocolAdapterException, FunctionalException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
-            final String errorMessage = String.format("Unable to communicate with unknown device: %s", deviceIdentification);
+            final String errorMessage = String.format("Unable to communicate with unknown device: %s",
+                    deviceIdentification);
             LOGGER.error(errorMessage);
 
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS);
@@ -107,8 +107,8 @@ public class DomainHelperService {
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
             throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
-            + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
-            + "and iccId: " + dlmsDevice.getIccId());
+                    + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
+                    + "and iccId: " + dlmsDevice.getIccId());
 
         }
         return deviceIpAddress;
