@@ -132,7 +132,6 @@ public class InstallationService {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
-
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.DE_COUPLE_MBUS_DEVICE);
 
         LOGGER.debug("enqueueDeCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
