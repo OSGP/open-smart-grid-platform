@@ -7,9 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClient;
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClientException;
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
 
@@ -57,6 +61,24 @@ public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
             LOGGER.error("Error while setting DLMS attribute values for classId: " + classId + ", obisCode: " + obisCode
                     + " and settings: " + settings + " with SimulatorTriggerClient", stce);
             fail("Error setting DLMS attribute values for simulator");
+        }
+    }
+
+    @Then("^the values for classid (\\d+) obiscode \"([^\"]*)\" on device simulator \"([^\"]*)\" are$")
+    public void theValuesForClassidObiscodeOnDeviceSimulatorAre(final int classId, final String obisCode,
+            final String deviceIdentification, final Map<String, String> settings) throws Throwable {
+        Properties properties = null;
+        try {
+            properties = this.simulatorTriggerClient.getDlmsAttributeValues(classId, obisCode);
+
+        } catch (final SimulatorTriggerClientException stce) {
+            LOGGER.error("Error while getting DLMS attribute values");
+            fail("Error getting DLMS attribute values for simulator");
+        }
+
+        for (final Map.Entry<String, String> setting : settings.entrySet()) {
+            assertNotNull("property can not be null", properties.getProperty(setting.getKey()));
+            assertEquals(" match ", setting.getValue(), properties.getProperty(setting.getKey()));
         }
     }
 }
