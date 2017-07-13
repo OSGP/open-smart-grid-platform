@@ -171,12 +171,12 @@ public class GetConfigurationSteps {
 
         final RelayConfiguration relayConfiguration = configuration.getRelayConfiguration();
         if (relayConfiguration != null) {
-            
-            if (expectedResponseData.containsKey(PlatformKeys.RC_MAP)
-                    && !expectedResponseData.get(PlatformKeys.RC_MAP).isEmpty()
+
+            if (expectedResponseData.containsKey(PlatformKeys.RELAY_CONF)
+                    && !expectedResponseData.get(PlatformKeys.RELAY_CONF).isEmpty()
                     && relayConfiguration.getRelayMap() != null) {
                 final List<RelayMap> relayMapList = relayConfiguration.getRelayMap();
-                final String[] rcMapArray = getString(expectedResponseData, PlatformKeys.RC_MAP).split(";");
+                final String[] rcMapArray = getString(expectedResponseData, PlatformKeys.RELAY_CONF).split(";");
                 for (int i = 0; i < rcMapArray.length; i++) {
                     final String[] rcMapArrayElements = rcMapArray[i].split(",");
                     if (rcMapArrayElements.length > 0 && relayMapList.size() > 0) {
