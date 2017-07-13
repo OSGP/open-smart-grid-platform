@@ -11,12 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.platform.config.PlatformApplicationConfiguration;
 import com.alliander.osgp.cucumber.platform.publiclighting.mocks.oslpdevice.MockOslpServer;
 
 @Configuration
-public class OslpMockServerConfig {
+@PropertySources({ @PropertySource("classpath:cucumber-tests-platform-publiclighting.properties"),
+        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/osp/test/cucumber-tests-platform-publiclighting.properties", ignoreResourceNotFound = true), })
+public class OslpMockServerConfig extends PlatformApplicationConfiguration {
 
     @Autowired
     private CoreDeviceConfiguration configuration;
