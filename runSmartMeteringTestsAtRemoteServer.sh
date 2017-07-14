@@ -28,4 +28,4 @@ ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVERNAME} "sudo chown
 echo "- Copy over nesseccary files to ${SERVERNAME} ..."
 scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${PROJECT}/soap-ui-project/* ${USER}@${SERVERNAME}:/data/software/${PROJECT}/soap-ui-project/
 
-./runTestsAtRemoteServer.sh ${SERVERNAME} ${PROJECT} ${USER} "$4"
+./runTestsAtRemoteServer.sh ${SERVERNAME} ${PROJECT} ${USER} "$4" "-Ddynamic.properties.base.url=https://${SERVERNAME/-instance/}/osgp-simulator-dlms-triggered/wakeup $5"
