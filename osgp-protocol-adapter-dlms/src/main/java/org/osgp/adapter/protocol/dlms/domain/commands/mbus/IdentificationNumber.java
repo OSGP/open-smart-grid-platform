@@ -33,7 +33,7 @@ public class IdentificationNumber {
 
     private final String last8Digits;
 
-    private IdentificationNumber(final String last8Digits) {
+    public IdentificationNumber(final String last8Digits) {
         validateLast8Digits(last8Digits);
         if (StringUtils.isBlank(last8Digits)) {
             this.last8Digits = null;

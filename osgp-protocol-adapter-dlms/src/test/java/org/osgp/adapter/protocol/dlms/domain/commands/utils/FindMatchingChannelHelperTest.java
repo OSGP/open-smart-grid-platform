@@ -41,8 +41,8 @@ public class FindMatchingChannelHelperTest {
          * matching.
          */
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.deviceIdentification,
-                this.identificationNumber, this.manufacturerIdentification, this.version,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+                this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
         final ChannelElementValuesDto channelValues = new ChannelElementValuesDto(this.channel, this.primaryAddress,
@@ -56,8 +56,8 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testAllAttributesInRequestNoneInRetrievedValues() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.deviceIdentification,
-                this.identificationNumber, this.manufacturerIdentification, this.version,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+                this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
         final ChannelElementValuesDto channelValues = new ChannelElementValuesDto(this.channel, this.noPrimaryAddress,
@@ -74,8 +74,8 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testAllAttributesInRequestOnlyPrimaryAddressInRetrievedValues() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.deviceIdentification,
-                this.identificationNumber, this.manufacturerIdentification, this.version,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+                this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
         final ChannelElementValuesDto channelValues = new ChannelElementValuesDto(this.channel, this.primaryAddress,
@@ -97,8 +97,8 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testAllAttributesInRequestOnlySomeInRetrievedValues() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.deviceIdentification,
-                this.identificationNumber, this.manufacturerIdentification, this.version,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+                this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
         final ChannelElementValuesDto channelValues = new ChannelElementValuesDto(this.channel, this.primaryAddress,
@@ -120,8 +120,8 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testNoAttributesInRequestAllInRetrievedValues() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.deviceIdentification,
-                this.noIdentificationNumber, this.noManufacturerIdentification, null, null);
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+                this.deviceIdentification, this.noIdentificationNumber, this.noManufacturerIdentification, null, null);
 
         final ChannelElementValuesDto channelValues = new ChannelElementValuesDto(this.channel, this.primaryAddress,
                 this.identificationNumber, this.manufacturerIdentification, this.version,
@@ -142,8 +142,8 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testValuesBestMatchingToRequestShouldBePicked() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.deviceIdentification,
-                this.identificationNumber, this.manufacturerIdentification, this.version,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+                this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
         final ChannelElementValuesDto channelValues = new ChannelElementValuesDto(this.channel, this.primaryAddress,
