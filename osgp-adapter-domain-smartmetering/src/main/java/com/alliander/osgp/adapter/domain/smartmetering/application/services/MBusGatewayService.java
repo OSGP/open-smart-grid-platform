@@ -116,11 +116,12 @@ public class MBusGatewayService {
             this.installationService.handleResponse("deCoupleMbusDevice", deviceMessageMetadata,
                     ResponseMessageResultType.OK, null);
         } else {
-            final DeCoupleMbusDeviceDto decoupleMbusDto = new DeCoupleMbusDeviceDto(mbusDeviceIdentification,
+            final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto = new DeCoupleMbusDeviceDto(mbusDeviceIdentification,
                     mbusDevice.getChannel());
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
-                    deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(), decoupleMbusDto);
+                    deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
+                    deCoupleMbusDeviceDto);
             this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                     deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         }
@@ -231,8 +232,18 @@ public class MBusGatewayService {
         final String mbusManufacturerIdentification = mbusDevice.getMbusManufacturerIdentification();
         final Short mbusVersion = mbusDevice.getMbusVersion();
         final Short mbusDeviceTypeIdentification = mbusDevice.getMbusDeviceTypeIdentification();
+        Short channel = mbusDevice.getChannel();
+        Short primaryAddress = mbusDevice.getMbusPrimaryAddress();
 
-        return new MbusChannelElementsDto(mbusDeviceIdentification, mbusIdentificationNumber,
+        if (channel == null) { // TODO remove
+            channel = 1;
+        }
+
+        if (primaryAddress == null) { // TODO remove
+            primaryAddress = 3;
+        }
+
+        return new MbusChannelElementsDto(channel, primaryAddress, mbusDeviceIdentification, mbusIdentificationNumber,
                 mbusManufacturerIdentification, mbusVersion, mbusDeviceTypeIdentification);
     }
 
