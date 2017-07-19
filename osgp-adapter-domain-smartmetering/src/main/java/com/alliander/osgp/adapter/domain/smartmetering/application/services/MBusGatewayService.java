@@ -84,7 +84,8 @@ public class MBusGatewayService {
 
             this.checkAndHandleInactiveMbusDevice(mbusDevice);
             this.checkAndHandleIfGivenMBusAlreadyCoupled(mbusDevice);
-            final MbusChannelElementsDto mbusChannelElementsDto = this.makeMbusChannelElementsDto(mbusDevice);
+            final MbusChannelElementsDto mbusChannelElementsDto = this.makeMbusChannelElementsDto(mbusDevice); // send
+                                                                                                               // primaryadress
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
@@ -232,15 +233,11 @@ public class MBusGatewayService {
         final String mbusManufacturerIdentification = mbusDevice.getMbusManufacturerIdentification();
         final Short mbusVersion = mbusDevice.getMbusVersion();
         final Short mbusDeviceTypeIdentification = mbusDevice.getMbusDeviceTypeIdentification();
-        Short channel = mbusDevice.getChannel();
-        Short primaryAddress = mbusDevice.getMbusPrimaryAddress();
+        final Short channel = mbusDevice.getChannel();
+        Short primaryAddress = null;
 
-        if (channel == null) { // TODO remove
-            channel = 1;
-        }
-
-        if (primaryAddress == null) { // TODO remove
-            primaryAddress = 3;
+        if (mbusDevice.getMbusPrimaryAddress() != null) {
+            primaryAddress = mbusDevice.getMbusPrimaryAddress();
         }
 
         return new MbusChannelElementsDto(channel, primaryAddress, mbusDeviceIdentification, mbusIdentificationNumber,
