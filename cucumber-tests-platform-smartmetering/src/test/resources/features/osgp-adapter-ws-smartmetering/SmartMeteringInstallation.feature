@@ -69,7 +69,6 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @couple
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on first channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -290,7 +289,7 @@ Feature: SmartMetering Installation
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusPrimaryAdress              |                 9 |
+      | MbusPrimaryAddress             |                 9 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
@@ -409,7 +408,6 @@ Feature: SmartMetering Installation
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
- @decouple
   Scenario: Decouple coupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -420,7 +418,7 @@ Feature: SmartMetering Installation
       | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusPrimaryAdress              |                 9 |
+      | MbusPrimaryAddress             |                 9 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
@@ -450,7 +448,7 @@ Feature: SmartMetering Installation
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
-      | MbusPrimaryAdress              |                 9 |
+      | MbusPrimaryAddress             |                 9 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
@@ -470,7 +468,6 @@ Feature: SmartMetering Installation
       | 8 | 0 |
       | 9 | 0 |
 
-  @coupleunbound
   Scenario: Couple unbound G-meter "TESTG101205673101" to E-meter "TEST1024000000001" on a channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -484,7 +481,7 @@ Feature: SmartMetering Installation
     And a dlms device
       | DeviceIdentification           | TESTG101205673101 |
       | DeviceType                     | SMART_METER_G     |
-      | MbusPrimaryAdress              |                 3 |
+      | MbusPrimaryAddress             |                 3 |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
@@ -500,14 +497,13 @@ Feature: SmartMetering Installation
       | 8 |        66 |
       | 9 |         3 |
 
-  @couple
   Scenario: Couple unbound G-meter "TESTG101205673101" to E-meter "TEST1024000000001" on a channel 2
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" and attributes
       | 5 |       241 |
-      | 6 | 398743985 |
+      | 6 | 302343974 |
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
@@ -520,7 +516,7 @@ Feature: SmartMetering Installation
     And a dlms device
       | DeviceIdentification           | TESTG101205673101 |
       | DeviceType                     | SMART_METER_G     |
-      | MbusPrimaryAdress              |                 3 |
+      | MbusPrimaryAddress             |                 3 |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
@@ -531,7 +527,7 @@ Feature: SmartMetering Installation
     And the mbus device "TESTG101205673101" is coupled to device "TEST1024000000001" on MBUS channel 2
     And the values for classid 72 obiscode "0-1:24.1.255" on device simulator "TEST1024000000001" are
       | 5 |       241 |
-      | 6 | 398743985 |
+      | 6 | 302343974 |
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
