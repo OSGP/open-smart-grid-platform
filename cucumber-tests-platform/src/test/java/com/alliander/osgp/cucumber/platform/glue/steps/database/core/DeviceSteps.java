@@ -209,9 +209,9 @@ public class DeviceSteps extends BaseDeviceSteps {
         });
     }
 
-    @Then("^the mbus device \"([^\"]*)\" is coupled to device \"([^\"]*)\" on MBUS channel (\\d+)$")
-    public void theMbusDeviceIsCoupledToDeviceOnMBUSChannel(final String gmeter, final String emeter,
-            final Short channel) {
+    @Then("^the M-Bus device \"([^\"]*)\" is coupled to device \"([^\"]*)\" on M-Bus channel \"([^\"]*)\" with PrimaryAddress \"([^\"]*)\"$")
+    public void theMBusDeviceIsCoupledToDeviceOnMBusChannelWithPrimaryAddress(final String gmeter, final String emeter,
+            final Short channel, final Short primaryAddress) throws Throwable {
         Wait.until(() -> {
             final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
             final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
@@ -221,8 +221,7 @@ public class DeviceSteps extends BaseDeviceSteps {
 
             Assert.assertEquals(gSmartmeter.getGatewayDevice(), eDevice);
             Assert.assertEquals(gSmartmeter.getChannel(), channel);
-
-            Assert.assertNotNull(gSmartmeter.getMbusPrimaryAddress());
+            Assert.assertEquals(gSmartmeter.getMbusPrimaryAddress(), primaryAddress);
         });
     }
 
