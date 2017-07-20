@@ -88,62 +88,59 @@ public class CoupleMBusDeviceCommandExecutor
              * attribute values.
              */
             bestMatch = FindMatchingChannelHelper.bestMatch(requestDto, channelElements);
-            if (bestMatch == null && requestDto.getPrimaryAddress() != null) {
-                /*
-                 * A partial match for all attributes from the request has also
-                 * not been found. Select the first available free Mbus channel
-                 * to couple the unbound Mbus device.
-                 */
-
-                for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
-                    final List<GetResult> resultList = this.getMBusClientAttributeValues(conn, device, channel);
-                    if ((long) resultList.get(INDEX_IDENTIFICATION_NUMBER).getResultData().getValue() == 0L) {
-                        bestMatch = new ChannelElementValuesDto(channel, requestDto.getPrimaryAddress(),
-                                requestDto.getMbusIdentificationNumber(),
-                                requestDto.getMbusManufacturerIdentification(), requestDto.getMbusVersion(),
-                                requestDto.getMbusDeviceTypeIdentification());
-                        break;
-                    }
-                }
-
-                this.writeUpdatedMbus(conn, bestMatch, requestDto);
-            }
         }
+        if (bestMatch == null && requestDto.getPrimaryAddress() != null) {
+            /*
+             * A partial match for all attributes from the request has also not
+             * been found. Select the first available free Mbus channel to
+             * couple the unbound Mbus device.
+             */
+
+            for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
+                final List<GetResult> resultList = this.getMBusClientAttributeValues(conn, device, channel);
+                if ((long) resultList.get(INDEX_IDENTIFICATION_NUMBER).getResultData().getValue() == 0L) {
+                    bestMatch = new ChannelElementValuesDto(channel, requestDto.getPrimaryAddress(),
+                            requestDto.getMbusIdentificationNumber(), requestDto.getMbusManufacturerIdentification(),
+                            requestDto.getMbusVersion(), requestDto.getMbusDeviceTypeIdentification());
+                    break;
+                }
+            }
+            channelElements.set(bestMatch.getChannel() - 1, this.writeUpdatedMbus(conn, bestMatch, requestDto));
+        }
+
         return new MbusChannelElementsResponseDto(requestDto, bestMatch == null ? null : bestMatch.getChannel(),
                 channelElements);
     }
 
-    private MbusChannelElementsDto writeUpdatedMbus(final DlmsConnectionHolder conn,
-            final ChannelElementValuesDto mbusChannelElementsDto, final MbusChannelElementsDto request)
+    private ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,
+            final ChannelElementValuesDto channelElementsValuesDto, final MbusChannelElementsDto request)
             throws ProtocolAdapterException {
 
         final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("CoupleMBusDevice")
-                .addExecutor(this.getMbusAttributeExecutor(mbusChannelElementsDto, MbusClientAttribute.PRIMARY_ADDRESS,
-                        DataObject.newUInteger8Data(mbusChannelElementsDto.getPrimaryAddress())))
                 .addExecutor(
-                        this.getMbusAttributeExecutor(mbusChannelElementsDto, MbusClientAttribute.IDENTIFICATION_NUMBER,
-                                new IdentificationNumber(mbusChannelElementsDto.getIdentificationNumber())
+                        this.getMbusAttributeExecutor(channelElementsValuesDto, MbusClientAttribute.PRIMARY_ADDRESS,
+                                DataObject.newUInteger8Data(channelElementsValuesDto.getPrimaryAddress())))
+                .addExecutor(this.getMbusAttributeExecutor(channelElementsValuesDto,
+                        MbusClientAttribute.IDENTIFICATION_NUMBER,
+                        new IdentificationNumber(channelElementsValuesDto.getIdentificationNumber()).asDataObject()))
+                .addExecutor(
+                        this.getMbusAttributeExecutor(channelElementsValuesDto, MbusClientAttribute.MANUFACTURER_ID,
+                                new ManufacturerId(channelElementsValuesDto.getManufacturerIdentification())
                                         .asDataObject()))
-                .addExecutor(this.getMbusAttributeExecutor(mbusChannelElementsDto, MbusClientAttribute.MANUFACTURER_ID,
-                        new ManufacturerId(mbusChannelElementsDto.getManufacturerIdentification()).asDataObject()))
-                .addExecutor(this.getMbusAttributeExecutor(mbusChannelElementsDto, MbusClientAttribute.VERSION,
-                        DataObject.newUInteger8Data(mbusChannelElementsDto.getVersion())))
-                .addExecutor(this.getMbusAttributeExecutor(mbusChannelElementsDto, MbusClientAttribute.DEVICE_TYPE,
-                        DataObject.newUInteger8Data(mbusChannelElementsDto.getDeviceTypeIdentification())));
+                .addExecutor(this.getMbusAttributeExecutor(channelElementsValuesDto, MbusClientAttribute.VERSION,
+                        DataObject.newUInteger8Data(channelElementsValuesDto.getVersion())))
+                .addExecutor(this.getMbusAttributeExecutor(channelElementsValuesDto, MbusClientAttribute.DEVICE_TYPE,
+                        DataObject.newUInteger8Data(channelElementsValuesDto.getDeviceTypeIdentification())));
 
         conn.getDlmsMessageListener()
-                .setDescription("Write updated MBus attributes to channel " + mbusChannelElementsDto.getChannel()
+                .setDescription("Write updated MBus attributes to channel " + channelElementsValuesDto.getChannel()
                         + ", set attributes: " + dataObjectExecutors.describeAttributes());
 
         dataObjectExecutors.execute(conn);
 
         LOGGER.info("Finished coupling the mbus device to the gateway device");
 
-        return new MbusChannelElementsDto(mbusChannelElementsDto.getChannel(),
-                mbusChannelElementsDto.getPrimaryAddress(), request.getMbusDeviceIdentification(),
-                mbusChannelElementsDto.getIdentificationNumber(),
-                mbusChannelElementsDto.getManufacturerIdentification(), mbusChannelElementsDto.getVersion(),
-                mbusChannelElementsDto.getDeviceTypeIdentification());
+        return channelElementsValuesDto;
     }
 
     private DataObjectAttrExecutor getMbusAttributeExecutor(final ChannelElementValuesDto mbusChannelElementsDto,
