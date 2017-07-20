@@ -1,9 +1,10 @@
-@MicroGrids @Platform
-@Iec61850MockServerMarkerWadden
+@MicroGrids @Platform @Iec61850MockServerMarkerWadden
 Feature: MicroGrids Set Data Service
   As scrum team I want to have cucumber tests for Set Data Services
   so that I am able to guarantee the quality of Microgrid Platform.
 
+  # After code changes for ZS-243 in PA-IEC61850 are merged and deployed to the OSGP_NightlyBuildEnvironment, 
+  # remove the hashtags on lines 77-80
   Scenario Outline: SetData Service
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-MARKER-WADDEN |
@@ -73,3 +74,7 @@ Feature: MicroGrids Set Data Service
       | BATTERY      | BATTERY1      |      4 |
       | HEAT_PUMP    | HEAT_PUMP1    |      4 |
       | BOILER       | BOILER1       |      4 |
+      #| ENGINE       | ENGINE1       |      1 |
+      #| ENGINE       | ENGINE1       |      2 |
+      #| ENGINE       | ENGINE1       |      3 |
+      #| ENGINE       | ENGINE1       |      4 |

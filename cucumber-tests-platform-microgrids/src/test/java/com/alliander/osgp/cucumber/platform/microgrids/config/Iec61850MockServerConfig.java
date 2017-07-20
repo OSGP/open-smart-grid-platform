@@ -31,7 +31,8 @@ public class Iec61850MockServerConfig {
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public Iec61850MockServer iec61850MockServerMarkerWadden() {
-        return new Iec61850MockServer("MARKER WADDEN", "MarkerWadden_0_1_1.icd", 62103, "WAGO61850Server");
+        return new Iec61850MockServer("MARKER WADDEN", "MarkerWadden_0_1_1_including_engine_control_logic.icd", 62103,
+                "WAGO61850Server");
     }
 
     @Bean(destroyMethod = "stop", initMethod = "start")
