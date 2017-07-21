@@ -41,7 +41,7 @@ public class ManufacturerId {
 
     private final String identification;
 
-    public ManufacturerId(final String identification) {
+    private ManufacturerId(final String identification) {
         validateIdentification(identification);
         this.identification = identification;
     }

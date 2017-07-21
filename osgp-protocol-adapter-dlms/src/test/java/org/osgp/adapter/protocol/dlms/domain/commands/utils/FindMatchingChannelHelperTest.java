@@ -41,7 +41,7 @@ public class FindMatchingChannelHelperTest {
          * matching.
          */
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.primaryAddress,
                 this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
@@ -56,7 +56,7 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testAllAttributesInRequestNoneInRetrievedValues() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.primaryAddress,
                 this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
@@ -74,7 +74,7 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testAllAttributesInRequestOnlyPrimaryAddressInRetrievedValues() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.primaryAddress,
                 this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
@@ -97,7 +97,7 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testAllAttributesInRequestOnlySomeInRetrievedValues() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.primaryAddress,
                 this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
@@ -120,7 +120,7 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testNoAttributesInRequestAllInRetrievedValues() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.primaryAddress,
                 this.deviceIdentification, this.noIdentificationNumber, this.noManufacturerIdentification, null, null);
 
         final ChannelElementValuesDto channelValues = new ChannelElementValuesDto(this.channel, this.primaryAddress,
@@ -142,7 +142,7 @@ public class FindMatchingChannelHelperTest {
     @Test
     public void testValuesBestMatchingToRequestShouldBePicked() {
 
-        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.channel, this.primaryAddress,
+        final MbusChannelElementsDto requestData = new MbusChannelElementsDto(this.primaryAddress,
                 this.deviceIdentification, this.identificationNumber, this.manufacturerIdentification, this.version,
                 this.deviceTypeIdentification);
 
