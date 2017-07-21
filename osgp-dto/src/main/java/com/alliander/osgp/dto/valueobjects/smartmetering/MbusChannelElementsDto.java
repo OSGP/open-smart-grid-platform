@@ -16,7 +16,6 @@ public class MbusChannelElementsDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
-    private final Short channel;
     private final Short primaryAddress;
     private final String mbusDeviceIdentification;
     private final String mbusIdentificationNumber;
@@ -24,11 +23,9 @@ public class MbusChannelElementsDto implements ActionRequestDto {
     private final Short mbusVersion;
     private final Short mbusDeviceTypeIdentification;
 
-    public MbusChannelElementsDto(final Short channel, final Short primaryAddress,
-            final String mbusDeviceIdentification, final String mbusIdentificationNumber,
-            final String mbusManufacturerIdentification, final Short mbusVersion,
+    public MbusChannelElementsDto(final Short primaryAddress, final String mbusDeviceIdentification,
+            final String mbusIdentificationNumber, final String mbusManufacturerIdentification, final Short mbusVersion,
             final Short mbusDeviceTypeIdentification) {
-        this.channel = channel;
         this.primaryAddress = primaryAddress;
         this.mbusDeviceIdentification = mbusDeviceIdentification;
         this.mbusIdentificationNumber = mbusIdentificationNumber;
@@ -40,9 +37,9 @@ public class MbusChannelElementsDto implements ActionRequestDto {
     @Override
     public String toString() {
         return String.format(
-                "MbusChannelElementsDto[channel=%s, mbusDeviceIdentification=%s, mbusIdentificationNumber=%s, mbusManufacturerIdentification=%s, mbusVersion=%s, mbusDeviceTypeIdentification=%s]",
-                this.channel, this.mbusDeviceIdentification, this.mbusIdentificationNumber,
-                this.mbusManufacturerIdentification, this.mbusVersion, this.mbusDeviceTypeIdentification);
+                "MbusChannelElementsDto[mbusDeviceIdentification=%s, mbusIdentificationNumber=%s, mbusManufacturerIdentification=%s, mbusVersion=%s, mbusDeviceTypeIdentification=%s]",
+                this.mbusDeviceIdentification, this.mbusIdentificationNumber, this.mbusManufacturerIdentification,
+                this.mbusVersion, this.mbusDeviceTypeIdentification);
     }
 
     public String getMbusDeviceIdentification() {
@@ -79,14 +76,6 @@ public class MbusChannelElementsDto implements ActionRequestDto {
 
     public boolean hasMbusDeviceTypeIdentification() {
         return this.mbusDeviceTypeIdentification != null;
-    }
-
-    public Short getChannel() {
-        return this.channel;
-    }
-
-    public boolean hasChannel() {
-        return this.channel != null;
     }
 
     public Short getPrimaryAddress() {

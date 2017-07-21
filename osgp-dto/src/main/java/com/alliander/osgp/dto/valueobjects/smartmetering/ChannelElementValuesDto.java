@@ -60,10 +60,6 @@ public class ChannelElementValuesDto implements Serializable {
         return this.primaryAddress;
     }
 
-    public boolean hasPrimaryAddress() {
-        return this.primaryAddress > 0;
-    }
-
     public String getIdentificationNumber() {
         return this.identificationNumber;
     }
