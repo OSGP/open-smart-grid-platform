@@ -80,11 +80,6 @@ public final class Iec61850EngineCommandFactory implements RtuReadCommandFactory
         }
     }
 
-    // @Override
-    // public RtuReadCommand<MeasurementDto> getCommand(final String node) {
-    // return this.getCommand(DataAttribute.fromString(node));
-    // }
-
     @Override
     public RtuReadCommand<MeasurementDto> getCommand(final String node) {
         final RtuReadCommand<MeasurementDto> command = RTU_COMMAND_MAP.get(node);
@@ -128,16 +123,6 @@ public final class Iec61850EngineCommandFactory implements RtuReadCommandFactory
             RTU_COMMAND_MAP.put(DataAttribute.SCHEDULE_CAT_RTU.getDescription() + i, new Iec61850ScheduleCatCommand(i));
             RTU_COMMAND_MAP.put(DataAttribute.SCHEDULE_TYPE.getDescription() + i, new Iec61850ScheduleTypeCommand(i));
         }
-    }
-
-    private RtuReadCommand<MeasurementDto> getCommand(final DataAttribute dataAttribute) {
-
-        final RtuReadCommand<MeasurementDto> command = RTU_COMMAND_MAP.get(dataAttribute);
-
-        if (command == null) {
-            LOGGER.warn("No command found for data attribute {}", dataAttribute);
-        }
-        return command;
     }
 
     private static void initializeDataAttributesUsingFilterIdList() {
