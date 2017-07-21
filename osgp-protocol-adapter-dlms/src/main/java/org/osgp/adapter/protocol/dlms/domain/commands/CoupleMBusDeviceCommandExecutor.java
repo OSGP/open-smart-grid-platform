@@ -109,32 +109,28 @@ public class CoupleMBusDeviceCommandExecutor
     }
 
     private ChannelElementValuesDto findEmptyChannel(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final MbusChannelElementsDto requestDto, ChannelElementValuesDto bestMatch)
+            final MbusChannelElementsDto requestDto, final ChannelElementValuesDto bestMatch)
             throws ProtocolAdapterException {
-        for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS && bestMatch == null; channel++) {
+        ChannelElementValuesDto availableChannel = bestMatch;
+        for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS
+                && availableChannel == null; channel++) {
             final List<GetResult> resultList = this.getMBusClientAttributeValues(conn, device, channel);
-            bestMatch = this.checkIfChannelIsEmpty(requestDto, bestMatch, channel, resultList);
+            /*
+             * Check if all mbus attributes are empty for a channel, if so,
+             * there is a match for coupling the mbus device to the gateway
+             * device to this channel.
+             */
+            if ((long) resultList.get(INDEX_IDENTIFICATION_NUMBER).getResultData().getValue() == 0L
+                    && (long) resultList.get(INDEX_MANUFACTURER_ID).getResultData().getValue() == 0L
+                    && (short) resultList.get(INDEX_VERSION).getResultData().getValue() == 0
+                    && (short) resultList.get(INDEX_DEVICE_TYPE).getResultData().getValue() == 0
+                    && (short) resultList.get(INDEX_PRIMARY_ADDRESS).getResultData().getValue() == 0) {
+                availableChannel = new ChannelElementValuesDto(channel, requestDto.getPrimaryAddress(),
+                        requestDto.getMbusIdentificationNumber(), requestDto.getMbusManufacturerIdentification(),
+                        requestDto.getMbusVersion(), requestDto.getMbusDeviceTypeIdentification());
+            }
         }
-        return bestMatch;
-    }
-
-    private ChannelElementValuesDto checkIfChannelIsEmpty(final MbusChannelElementsDto requestDto,
-            ChannelElementValuesDto bestMatch, final short channel, final List<GetResult> resultList) {
-        /*
-         * Check if all mbus attributes are empty for a channel, if so, there is
-         * a match for coupling the mbus device to the gateway device to this
-         * channel.
-         */
-        if ((long) resultList.get(INDEX_IDENTIFICATION_NUMBER).getResultData().getValue() == 0L
-                && (long) resultList.get(INDEX_MANUFACTURER_ID).getResultData().getValue() == 0L
-                && (short) resultList.get(INDEX_VERSION).getResultData().getValue() == 0
-                && (short) resultList.get(INDEX_DEVICE_TYPE).getResultData().getValue() == 0
-                && (short) resultList.get(INDEX_PRIMARY_ADDRESS).getResultData().getValue() == 0) {
-            bestMatch = new ChannelElementValuesDto(channel, requestDto.getPrimaryAddress(),
-                    requestDto.getMbusIdentificationNumber(), requestDto.getMbusManufacturerIdentification(),
-                    requestDto.getMbusVersion(), requestDto.getMbusDeviceTypeIdentification());
-        }
-        return bestMatch;
+        return availableChannel;
     }
 
     private ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,
@@ -146,7 +142,7 @@ public class CoupleMBusDeviceCommandExecutor
                                 DataObject.newUInteger8Data(channelElementsValuesDto.getPrimaryAddress())))
                 .addExecutor(this.getMbusAttributeExecutor(channelElementsValuesDto,
                         MbusClientAttribute.IDENTIFICATION_NUMBER,
-                        IdentificationNumber.fromLast8Digits((channelElementsValuesDto.getIdentificationNumber()))
+                        IdentificationNumber.fromLast8Digits(channelElementsValuesDto.getIdentificationNumber())
                                 .asDataObject()))
                 .addExecutor(this.getMbusAttributeExecutor(channelElementsValuesDto,
                         MbusClientAttribute.MANUFACTURER_ID,
