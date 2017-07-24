@@ -64,8 +64,8 @@ public class Iec61850GasFurnaceCommandFactory implements RtuReadCommandFactory<M
 
     @Override
     public RtuReadCommand<MeasurementDto> getCommand(final MeasurementFilterDto filter) {
-        final DataAttribute da = DataAttribute.fromString(filter.getNode());
-        if (this.useFilterId(da)) {
+        final DataAttribute dataAttribute = DataAttribute.fromString(filter.getNode());
+        if (this.useFilterId(dataAttribute)) {
             return this.getCommand(filter.getNode() + filter.getId());
         } else {
             return this.getCommand(filter.getNode());
@@ -83,8 +83,8 @@ public class Iec61850GasFurnaceCommandFactory implements RtuReadCommandFactory<M
         return command;
     }
 
-    private boolean useFilterId(final DataAttribute da) {
-        return DATA_ATTRIBUTE_USING_FILTER_ID_LIST.contains(da);
+    private boolean useFilterId(final DataAttribute dataAttribute) {
+        return DATA_ATTRIBUTE_USING_FILTER_ID_LIST.contains(dataAttribute);
     }
 
     private static void initializeRtuCommandMap() {

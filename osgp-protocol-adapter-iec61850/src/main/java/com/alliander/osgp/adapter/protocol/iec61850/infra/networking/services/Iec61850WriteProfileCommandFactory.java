@@ -63,7 +63,7 @@ public final class Iec61850WriteProfileCommandFactory implements RtuWriteCommand
         }
     }
 
-    private static String createMapKey(final DataAttribute da, final int index) {
-        return da.getDescription() + index;
+    private static String createMapKey(final DataAttribute dataAttribute, final int index) {
+        return dataAttribute.getDescription() + index;
     }
 }
