@@ -13,6 +13,7 @@ import java.util.List;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
 import org.osgp.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
@@ -88,8 +89,99 @@ public class CoupleMBusDeviceCommandExecutor
              */
             bestMatch = FindMatchingChannelHelper.bestMatch(requestDto, channelElements);
         }
+        if (bestMatch == null && requestDto.getPrimaryAddress() != null) {
+            /*
+             * A partial match for all attributes from the request has also not
+             * been found. If the primaryAddress is null, the Mbus device is not
+             * bound. Select the first available free Mbus channel to couple the
+             * unbound Mbus device.
+             */
+
+            bestMatch = this.findEmptyChannel(conn, device, requestDto, bestMatch);
+            if (bestMatch != null) {
+                /*
+                 * If a free channel is found, write the attribute values from
+                 * the request to this channel.
+                 */
+                final ChannelElementValuesDto updatedChannel = this.writeUpdatedMbus(conn, requestDto,
+                        bestMatch.getChannel());
+                /*
+                 * Also update the entry in the channelElements list. Because
+                 * the List is 0-based, it is needed to subtract 1 to set the
+                 * ChannelElements to the desired channel.
+                 */
+                channelElements.set(bestMatch.getChannel() - 1, updatedChannel);
+            }
+        }
+
         return new MbusChannelElementsResponseDto(requestDto, bestMatch == null ? null : bestMatch.getChannel(),
                 channelElements);
+    }
+
+    private ChannelElementValuesDto findEmptyChannel(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final MbusChannelElementsDto requestDto, final ChannelElementValuesDto bestMatch)
+            throws ProtocolAdapterException {
+        ChannelElementValuesDto availableChannel = bestMatch;
+        for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS
+                && availableChannel == null; channel++) {
+            final List<GetResult> resultList = this.getMBusClientAttributeValues(conn, device, channel);
+            /*
+             * Check if all mbus attributes are empty for a channel, if so,
+             * there is a match for coupling the mbus device to the gateway
+             * device to this channel.
+             */
+            if ((long) resultList.get(INDEX_IDENTIFICATION_NUMBER).getResultData().getValue() == 0L
+                    && (long) resultList.get(INDEX_MANUFACTURER_ID).getResultData().getValue() == 0L
+                    && (short) resultList.get(INDEX_VERSION).getResultData().getValue() == 0
+                    && (short) resultList.get(INDEX_DEVICE_TYPE).getResultData().getValue() == 0
+                    && (short) resultList.get(INDEX_PRIMARY_ADDRESS).getResultData().getValue() == 0) {
+                availableChannel = new ChannelElementValuesDto(channel, requestDto.getPrimaryAddress(),
+                        requestDto.getMbusIdentificationNumber(), requestDto.getMbusManufacturerIdentification(),
+                        requestDto.getMbusVersion(), requestDto.getMbusDeviceTypeIdentification());
+            }
+        }
+        return availableChannel;
+    }
+
+    private ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,
+            final MbusChannelElementsDto requestDto, final short channel) throws ProtocolAdapterException {
+
+        final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("CoupleMBusDevice")
+                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.PRIMARY_ADDRESS,
+                        DataObject.newUInteger8Data(requestDto.getPrimaryAddress()), channel))
+                .addExecutor(
+                        this.getMbusAttributeExecutor(MbusClientAttribute.IDENTIFICATION_NUMBER,
+                                IdentificationNumber.fromLast8Digits(requestDto.getMbusIdentificationNumber())
+                                        .asDataObject(),
+                                channel))
+                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.MANUFACTURER_ID,
+                        ManufacturerId.fromIdentification(requestDto.getMbusManufacturerIdentification())
+                                .asDataObject(),
+                        channel))
+                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.VERSION,
+                        DataObject.newUInteger8Data(requestDto.getMbusVersion()), channel))
+                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.DEVICE_TYPE,
+                        DataObject.newUInteger8Data(requestDto.getMbusDeviceTypeIdentification()), channel));
+
+        conn.getDlmsMessageListener().setDescription("Write updated MBus attributes to channel " + channel
+                + ", set attributes: " + dataObjectExecutors.describeAttributes());
+
+        dataObjectExecutors.execute(conn);
+
+        LOGGER.info("Finished coupling the mbus device to the gateway device");
+
+        return new ChannelElementValuesDto(channel, requestDto.getPrimaryAddress(),
+                requestDto.getMbusIdentificationNumber(), requestDto.getMbusManufacturerIdentification(),
+                requestDto.getMbusVersion(), requestDto.getMbusDeviceTypeIdentification());
+    }
+
+    private DataObjectAttrExecutor getMbusAttributeExecutor(final MbusClientAttribute attribute, final DataObject value,
+            final short channel) {
+        final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, channel));
+        final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode, attribute.attributeId());
+
+        return new DataObjectAttrExecutor(attribute.attributeName(), attributeAddress, value, CLASS_ID, obiscode,
+                attribute.attributeId());
     }
 
     protected List<GetResult> getMBusClientAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device,
