@@ -74,6 +74,7 @@ public class Iec61850EngineReportHandler implements Iec61850ReportHandler {
     private String getCommandName(final ReadOnlyNodeContainer member) {
         final String nodeName = member.getFcmodelNode().getName();
         if (useId(nodeName)) {
+            // Append the id
             final String refName = member.getFcmodelNode().getReference().toString();
             final int startIndex = refName.length() - nodeName.length() - 2;
             return nodeName + refName.substring(startIndex, startIndex + 1);
