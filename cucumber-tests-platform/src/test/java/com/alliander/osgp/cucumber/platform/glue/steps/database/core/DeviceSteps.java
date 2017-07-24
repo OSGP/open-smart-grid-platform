@@ -47,7 +47,7 @@ public class DeviceSteps extends BaseDeviceSteps {
     public void theChannelOfDeviceIsCleared(final String gMeter) {
         final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);
 
-        Assert.assertNotNull(mbusDevice);
+        Assert.assertNotNull("No MbusDevice found", mbusDevice);
 
         Assert.assertNull("GatewayDevice must be empty", mbusDevice.getChannel());
     }
@@ -234,7 +234,7 @@ public class DeviceSteps extends BaseDeviceSteps {
             Assert.assertNotNull("No GatewayDevice found", gatewayDevice);
             Assert.assertNotNull("No MbusDevice found", mbusDevice);
 
-            Assert.assertNotEquals("GatewayDevice must be coupled to other MbusDevice", gatewayDevice,
+            Assert.assertNotEquals("MbusDevice should not be coupled to this GatewayDevice", gatewayDevice,
                     mbusDevice.getGatewayDevice());
         });
     }
