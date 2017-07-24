@@ -468,7 +468,8 @@ Feature: SmartMetering Installation
       | 8 | 0 |
       | 9 | 0 |
 
-  @Skip
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Couple unbound G-meter "TESTG101205673101" to E-meter "TEST1024000000001" on a channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -496,8 +497,9 @@ Feature: SmartMetering Installation
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-
-  @Skip
+      
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Couple unbound G-meter "TESTG101205673101" to E-meter "TEST1024000000001" on a channel 2
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
