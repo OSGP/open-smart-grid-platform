@@ -106,9 +106,9 @@ public class CoupleMBusDeviceCommandExecutor
                 final ChannelElementValuesDto updatedChannel = this.writeUpdatedMbus(conn, requestDto,
                         bestMatch.getChannel());
                 /*
-                 * Also update the overwritten entry in the channelElements
-                 * list. Because the List is 0-based, it is needed to subtract 1
-                 * to set the ChannelElements to the desired channel.
+                 * Also update the entry in the channelElements list. Because
+                 * the List is 0-based, it is needed to subtract 1 to set the
+                 * ChannelElements to the desired channel.
                  */
                 channelElements.set(bestMatch.getChannel() - 1, updatedChannel);
             }
