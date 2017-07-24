@@ -16,15 +16,17 @@ public class MbusChannelElementsDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
+    private final Short primaryAddress;
     private final String mbusDeviceIdentification;
     private final String mbusIdentificationNumber;
     private final String mbusManufacturerIdentification;
     private final Short mbusVersion;
     private final Short mbusDeviceTypeIdentification;
 
-    public MbusChannelElementsDto(final String mbusDeviceIdentification, final String mbusIdentificationNumber,
-            final String mbusManufacturerIdentification, final Short mbusVersion,
+    public MbusChannelElementsDto(final Short primaryAddress, final String mbusDeviceIdentification,
+            final String mbusIdentificationNumber, final String mbusManufacturerIdentification, final Short mbusVersion,
             final Short mbusDeviceTypeIdentification) {
+        this.primaryAddress = primaryAddress;
         this.mbusDeviceIdentification = mbusDeviceIdentification;
         this.mbusIdentificationNumber = mbusIdentificationNumber;
         this.mbusManufacturerIdentification = mbusManufacturerIdentification;
@@ -35,7 +37,7 @@ public class MbusChannelElementsDto implements ActionRequestDto {
     @Override
     public String toString() {
         return String.format(
-                "MbusChannelElementsDto[device=%s, identification=%s, manufacturer=%s, version=%s, type=%s]",
+                "MbusChannelElementsDto[mbusDeviceIdentification=%s, mbusIdentificationNumber=%s, mbusManufacturerIdentification=%s, mbusVersion=%s, mbusDeviceTypeIdentification=%s]",
                 this.mbusDeviceIdentification, this.mbusIdentificationNumber, this.mbusManufacturerIdentification,
                 this.mbusVersion, this.mbusDeviceTypeIdentification);
     }
@@ -74,5 +76,13 @@ public class MbusChannelElementsDto implements ActionRequestDto {
 
     public boolean hasMbusDeviceTypeIdentification() {
         return this.mbusDeviceTypeIdentification != null;
+    }
+
+    public Short getPrimaryAddress() {
+        return this.primaryAddress;
+    }
+
+    public boolean hasPrimaryAddress() {
+        return this.primaryAddress != null;
     }
 }
