@@ -85,6 +85,7 @@ public class MBusGatewayService {
             this.checkAndHandleInactiveMbusDevice(mbusDevice);
             this.checkAndHandleIfGivenMBusAlreadyCoupled(mbusDevice);
             final MbusChannelElementsDto mbusChannelElementsDto = this.makeMbusChannelElementsDto(mbusDevice);
+
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
@@ -116,11 +117,12 @@ public class MBusGatewayService {
             this.installationService.handleResponse("deCoupleMbusDevice", deviceMessageMetadata,
                     ResponseMessageResultType.OK, null);
         } else {
-            final DeCoupleMbusDeviceDto decoupleMbusDto = new DeCoupleMbusDeviceDto(mbusDeviceIdentification,
+            final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto = new DeCoupleMbusDeviceDto(mbusDeviceIdentification,
                     mbusDevice.getChannel());
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
-                    deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(), decoupleMbusDto);
+                    deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
+                    deCoupleMbusDeviceDto);
             this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                     deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         }
@@ -231,8 +233,13 @@ public class MBusGatewayService {
         final String mbusManufacturerIdentification = mbusDevice.getMbusManufacturerIdentification();
         final Short mbusVersion = mbusDevice.getMbusVersion();
         final Short mbusDeviceTypeIdentification = mbusDevice.getMbusDeviceTypeIdentification();
+        Short primaryAddress = null;
 
-        return new MbusChannelElementsDto(mbusDeviceIdentification, mbusIdentificationNumber,
+        if (mbusDevice.getMbusPrimaryAddress() != null) {
+            primaryAddress = mbusDevice.getMbusPrimaryAddress();
+        }
+
+        return new MbusChannelElementsDto(primaryAddress, mbusDeviceIdentification, mbusIdentificationNumber,
                 mbusManufacturerIdentification, mbusVersion, mbusDeviceTypeIdentification);
     }
 
@@ -316,7 +323,8 @@ public class MBusGatewayService {
 
     private short getPrimaryAddress(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto,
             final short channel) {
-        // because the List is 0-based, we need to subtract 1
+        // because the List is 0-based, it is needed to subtract 1 to get the
+        // ChannelElements for the desired channel.
         return mbusChannelElementsResponseDto.getRetrievedChannelElements().get(channel - 1).getPrimaryAddress();
     }
 }
