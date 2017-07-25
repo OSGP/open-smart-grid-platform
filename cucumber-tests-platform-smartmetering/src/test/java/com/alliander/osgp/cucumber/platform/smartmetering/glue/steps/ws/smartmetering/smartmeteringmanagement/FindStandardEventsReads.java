@@ -33,7 +33,7 @@ public class FindStandardEventsReads extends AbstractFindEventsReads {
     @Override
     protected String getEventLogCategory() {
         final String category = EventLogCategory.STANDARD_EVENT_LOG.name();
-        return category.substring(0, category.lastIndexOf('_'));
+        return category;
     }
 
     @When("^receiving a find standard events request$")

@@ -30,7 +30,7 @@ public class FindFraudEventsReads extends AbstractFindEventsReads {
     @Override
     protected String getEventLogCategory() {
         final String category = EventLogCategory.FRAUD_DETECTION_LOG.name();
-        return category.substring(0, category.lastIndexOf('_'));
+        return category;
     }
 
     @When("^receiving a find fraud events request$")
