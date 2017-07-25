@@ -28,6 +28,9 @@ public abstract class BaseApplicationConfiguration extends AbstractConfig {
     @Value("${sleeptime}")
     private Integer sleeptime;
 
+    @Value("${tempdir}")
+    private String tempdir;
+
     /**
      * Gets the timeout. Either from the configuration (in war or
      * /etc/osp/test/global-cucumber.properties), or from the scenariocontext
@@ -51,5 +54,9 @@ public abstract class BaseApplicationConfiguration extends AbstractConfig {
 
     public Integer getSleepTime() {
         return this.sleeptime;
+    }
+    
+    public String getTempDir() {
+        return this.tempdir;
     }
 }
