@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMe
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -71,6 +72,9 @@ public class Iec61850SetScheduleCommand {
                 @Override
                 public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
 
+                    Iec61850SetScheduleCommand.this.disableScheduleEntries(relayType, deviceConnection, iec61850Client,
+                            deviceMessageLog, ssld, ssldDataService);
+
                     for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
                         final List<ScheduleEntry> scheduleEntries = relaySchedulesEntries.get(relayIndex);
                         final int numberOfScheduleEntries = scheduleEntries.size();
@@ -87,26 +91,6 @@ public class Iec61850SetScheduleCommand {
                                 logicalNode, DataAttribute.SCHEDULE, Fc.CF);
                         iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
                                 schedule.getFcmodelNode());
-
-                        // Clear existing schedule by disabling schedule
-                        // entries.
-                        for (int i = 0; i < MAX_NUMBER_OF_SCHEDULE_ENTRIES; i++) {
-                            final String scheduleEntryName = SubDataAttribute.SCHEDULE_ENTRY.getDescription() + (i + 1);
-                            final NodeContainer scheduleNode = schedule.getChild(scheduleEntryName);
-
-                            final boolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE)
-                                    .getValue();
-                            LOGGER.info("Checking if schedule entry {} is enabled: {}", i + 1, enabled);
-                            if (enabled) {
-                                LOGGER.info(
-                                        "Disabling schedule entry {} of {} for relay {} before setting new {} schedule",
-                                        i + 1, MAX_NUMBER_OF_SCHEDULE_ENTRIES, relayIndex, tariffOrLight);
-                                scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, false);
-
-                                deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                        scheduleEntryName, SubDataAttribute.SCHEDULE_ENABLE, Boolean.toString(false));
-                            }
-                        }
 
                         for (int i = 0; i < numberOfScheduleEntries; i++) {
 
@@ -257,6 +241,8 @@ public class Iec61850SetScheduleCommand {
 
         final RelayType relayType = RelayType.valueOf(relayTypeDto.name());
 
+        final List<DeviceOutputSetting> settings = ssldDataService.findByRelayType(ssld, relayType);
+
         for (final ScheduleDto schedule : scheduleList) {
             for (final LightValueDto lightValue : schedule.getLightValue()) {
 
@@ -273,8 +259,6 @@ public class Iec61850SetScheduleCommand {
 
                     // Index == 0, getting all light relays and adding their
                     // internal indexes to the indexes list.
-                    final List<DeviceOutputSetting> settings = ssldDataService.findByRelayType(ssld, relayType);
-
                     for (final DeviceOutputSetting deviceOutputSetting : settings) {
                         indexes.add(deviceOutputSetting.getInternalId());
                     }
@@ -420,6 +404,44 @@ public class Iec61850SetScheduleCommand {
                 LOGGER.error("Relay with internal address: {} is not configured as tariff relay", internalAddress);
                 throw new FunctionalException(FunctionalExceptionType.ACTION_NOT_ALLOWED_FOR_TARIFF_RELAY,
                         ComponentType.PROTOCOL_IEC61850);
+            }
+        }
+    }
+
+    /**
+     * Disable the schedule entries for all relays of a given
+     * {@link RelayTypeDto} using the {@link DeviceOutputSetting}s for a device.
+     */
+    private void disableScheduleEntries(final RelayTypeDto relayTypeDto, final DeviceConnection deviceConnection,
+            final Iec61850Client iec61850Client, final DeviceMessageLog deviceMessageLog, final Ssld ssld,
+            final SsldDataService ssldDataService) throws NodeException {
+
+        final List<DeviceOutputSetting> deviceOutputSettings = ssldDataService.findByRelayType(ssld,
+                RelayType.valueOf(relayTypeDto.name()));
+
+        for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettings) {
+            final int relayIndex = deviceOutputSetting.getInternalId();
+
+            final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(relayIndex);
+            final NodeContainer schedule = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING, logicalNode,
+                    DataAttribute.SCHEDULE, Fc.CF);
+            iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                    schedule.getFcmodelNode());
+
+            for (int i = 1; i <= MAX_NUMBER_OF_SCHEDULE_ENTRIES; i++) {
+                final String scheduleEntryName = SubDataAttribute.SCHEDULE_ENTRY.getDescription() + i;
+                final NodeContainer scheduleNode = schedule.getChild(scheduleEntryName);
+
+                final boolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE).getValue();
+                LOGGER.info("Checking if schedule entry {} for relay {} is enabled: {}", i, relayIndex, enabled);
+                if (enabled) {
+                    LOGGER.info("Disabling schedule entry {} of {} for relay {} before setting new {} schedule", i,
+                            MAX_NUMBER_OF_SCHEDULE_ENTRIES, relayIndex, relayTypeDto.name());
+                    scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, false);
+
+                    deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                            SubDataAttribute.SCHEDULE_ENABLE, Boolean.toString(false));
+                }
             }
         }
     }
