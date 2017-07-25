@@ -2,8 +2,10 @@ package com.alliander.osgp.cucumber.execution;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.TimeZone;
 
 import org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter;
+import org.joda.time.DateTimeZone;
 import org.junit.internal.JUnitSystem;
 import org.junit.internal.RealSystem;
 import org.junit.runner.Computer;
@@ -23,9 +25,16 @@ public abstract class AppBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppBase.class);
 
     @Option(name = "-report", metaVar = "DIR", usage = "Directory to produce test reports")
-    File reportDir;
+    private File reportDir;
+
+    @Option(name = "-skip-xml-report", metaVar = "DIR", usage = "Suppress the JUnit XML report generation (for more logging)")
+    private boolean skipXmlReport;
 
     public static int run(final AppBase app, final String[] testClasses, final String... args) throws Exception {
+        // Ensure the tests are executed in UTC time
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        DateTimeZone.setDefault(DateTimeZone.UTC);
+
         final CmdLineParser p = new CmdLineParser(app);
         try {
             p.parseArgument(args);
@@ -56,14 +65,16 @@ public abstract class AppBase {
             this.reportDir.mkdirs();
         }
 
-        junit.addListener(new JUnitResultFormatterAsRunListener(new XMLJUnitResultFormatter()) {
-            @Override
-            public void testStarted(final Description description) throws Exception {
-                this.formatter.setOutput(new FileOutputStream(
-                        new File(AppBase.this.reportDir, "TEST-" + description.getDisplayName() + ".xml")));
-                super.testStarted(description);
-            }
-        });
+        if (!this.skipXmlReport) {
+            junit.addListener(new JUnitResultFormatterAsRunListener(new XMLJUnitResultFormatter()) {
+                @Override
+                public void testStarted(final Description description) throws Exception {
+                    this.formatter.setOutput(new FileOutputStream(
+                            new File(AppBase.this.reportDir, "TEST-" + description.getDisplayName() + ".xml")));
+                    super.testStarted(description);
+                }
+            });
+        }
 
         final Result result = junit.run(jUnitCommandLineParseResult.createRequest(new Computer()));
         return result.wasSuccessful() ? 0 : 1;
