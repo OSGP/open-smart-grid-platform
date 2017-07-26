@@ -10,11 +10,11 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -24,7 +24,10 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.ProfileDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.ProfileFilterDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataSystemIdentifierDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 
 public class Iec61850EngineSystemService implements SystemService {
@@ -54,14 +57,52 @@ public class Iec61850EngineSystemService implements SystemService {
 
         }
 
-        return new GetDataSystemIdentifierDto(systemFilter.getId(), systemFilter.getSystemType(), measurements);
+        final List<ProfileDto> profiles = new ArrayList<>();
+
+        for (final ProfileFilterDto filter : systemFilter.getProfileFilters()) {
+
+            final RtuReadCommand<ProfileDto> command = Iec61850RtuReadProfileCommandFactory.getInstance()
+                    .getCommand(filter);
+            if (command == null) {
+                LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
+            } else {
+                profiles.add(command.execute(client, connection, DEVICE, logicalDeviceIndex));
+            }
+        }
+
+        return new GetDataSystemIdentifierDto(systemFilter.getId(), systemFilter.getSystemType(), measurements,
+                profiles);
     }
 
     @Override
     public void setData(final SetDataSystemIdentifierDto systemIdentifier, final Iec61850Client client,
             final DeviceConnection connection) throws NodeWriteException {
 
-        throw new NotImplementedException("Set data is not yet implemented for Engine.");
+        final int logicalDeviceIndex = systemIdentifier.getId();
 
+        LOGGER.info("Set data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);
+
+        for (final SetPointDto sp : systemIdentifier.getSetPoints()) {
+
+            final RtuWriteCommand<SetPointDto> command = Iec61850SetPointCommandFactory.getInstance()
+                    .getCommand(sp.getNode() + sp.getId());
+
+            if (command == null) {
+                LOGGER.warn("Unsupported set point [{}], skip set data for it.", sp.getNode() + sp.getId());
+            } else {
+                command.executeWrite(client, connection, DEVICE, logicalDeviceIndex, sp);
+            }
+        }
+
+        for (final ProfileDto p : systemIdentifier.getProfiles()) {
+            final RtuWriteCommand<ProfileDto> command = Iec61850WriteProfileCommandFactory.getInstance()
+                    .getCommand(p.getNode() + p.getId());
+            if (command == null) {
+                LOGGER.warn("Unsupported profile [{}], skip set data for it.", p.getNode() + p.getId());
+            } else {
+                command.executeWrite(client, connection, DEVICE, logicalDeviceIndex, p);
+            }
+        }
     }
+
 }

@@ -64,8 +64,8 @@ public final class Iec61850RtuCommandFactory implements RtuReadCommandFactory<Me
 
     @Override
     public RtuReadCommand<MeasurementDto> getCommand(final MeasurementFilterDto filter) {
-        final DataAttribute da = DataAttribute.fromString(filter.getNode());
-        if (this.useFilterId(da)) {
+        final DataAttribute dataAttribute = DataAttribute.fromString(filter.getNode());
+        if (this.useFilterId(dataAttribute)) {
             return this.getCommand(filter.getNode() + filter.getId());
         } else {
             return this.getCommand(filter.getNode());
@@ -113,8 +113,8 @@ public final class Iec61850RtuCommandFactory implements RtuReadCommandFactory<Me
         DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.SCHEDULE_TYPE);
     }
 
-    private boolean useFilterId(final DataAttribute da) {
-        return DATA_ATTRIBUTE_USING_FILTER_ID_LIST.contains(da);
+    private boolean useFilterId(final DataAttribute dataAttribute) {
+        return DATA_ATTRIBUTE_USING_FILTER_ID_LIST.contains(dataAttribute);
     }
 
 }

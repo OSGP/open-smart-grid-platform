@@ -65,7 +65,7 @@ public final class Iec61850SetPointCommandFactory implements RtuWriteCommandFact
         }
     }
 
-    private static String createMapKey(final DataAttribute da, final int index) {
-        return da.getDescription() + index;
+    private static String createMapKey(final DataAttribute dataAttribute, final int index) {
+        return dataAttribute.getDescription() + index;
     }
 }
