@@ -1,4 +1,4 @@
-@MicroGrids @Platform
+@MicroGrids @Platform @Skip
 Feature: MicroGrids Get Heat Buffer Data
   As an OSGP client
   I want to get Heat Buffer data from an RTU

@@ -1,6 +1,7 @@
 @MicroGrids @Platform
 @Iec61850MockServer
 @Iec61850MockServerPampus
+@Skip
 Feature: MicroGrids Get PhotoVoltaic System Data
   In order to be able to know data of a photovoltaic system with a remote terminal unit
   As an OSGP client

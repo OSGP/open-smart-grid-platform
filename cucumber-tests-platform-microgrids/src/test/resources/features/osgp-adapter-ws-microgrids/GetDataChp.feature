@@ -1,4 +1,4 @@
-@MicroGrids @Platform
+@MicroGrids @Platform @Skip
 Feature: Microgrids Get CHP Data
   As an OSGP client
   I want to get CHP data from an RTU
