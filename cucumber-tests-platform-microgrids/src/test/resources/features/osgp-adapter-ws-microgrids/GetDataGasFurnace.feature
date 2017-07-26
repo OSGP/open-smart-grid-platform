@@ -1,4 +1,4 @@
-@MicroGrids @Platform
+@MicroGrids @Platform @Skip
 Feature: MicroGrids Get Gas Furnace Data
   In order to be able to know data of a gas furnace with a remote terminal unit
   As an OSGP client
