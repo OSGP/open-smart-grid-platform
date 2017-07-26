@@ -12,6 +12,7 @@ PROJECT=$2
 USER=$3
 SSH_KEY_FILE=$4
 ADDITIONAL_PARAMETERS=$5
+XVFB=$6
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
 #[ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${4/ /} => ${HOME}/.ssh/${4} ..." && ln -sf "${HOME}/.ssh/${4}" "${HOME}/.ssh/${4/ /}"
@@ -50,7 +51,7 @@ echo "  [${CMD}]"
 ${CMD}
 
 echo "- Executing cucumber project ${PROJECT} remote on ${SERVER} ..."
-CMD="sudo java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -DskipITs=false -Dtimeout=30 -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*"
+CMD="sudo ${XVFB} java -javaagent:/usr/share/tomcat/lib/jacocoagent.jar=destfile=target/code-coverage/jacoco-it.exec ${ADDITIONAL_PARAMETERS} -DskipITs=false -Dtimeout=30 -DskipITCoverage=false -jar cucumber-*-test-jar-with-dependencies.jar -report target/output; sudo chown -R ${USER}:${USER} /data/software/${PROJECT}/*"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
