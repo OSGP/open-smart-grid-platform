@@ -1,4 +1,4 @@
-@MicroGrids @Platform @Skip
+@MicroGrids @Platform
 Feature: MicroGrids Get Engine Data
   As an OSGP client
   I want to get Engine data from an RTU
