@@ -27,24 +27,24 @@ Feature: SmartMetering Management
 
   Scenario: find fraud events from a device
     When receiving a find fraud events request
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1024000000001        |
       | BeginDate            | 2014-09-02T15:30:00.000Z |
-      | EndDate              | 2016-09-02T19:30:00.000Z |
-      Then 9 fraud events should be returned
+      | EndDate              | 2015-09-02T19:30:00.000Z |
+    Then 9 fraud events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: find communication events from a device
     When receiving a find communication events request
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1024000000001        |
       | BeginDate            | 2014-09-02T15:30:00.000Z |
-      | EndDate              | 2016-09-02T19:30:00.000Z |
-      Then 9 communication events should be returned
+      | EndDate              | 2015-09-02T19:30:00.000Z |
+    Then 9 communication events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: find mbus events from a device
     When receiving a find mbus events request
-      | DeviceIdentification | TEST1024000000001 |
-      | BeginDate            | 2014-09-02T15:30:00.000Z |
+      | DeviceIdentification | TEST1024000000001        |
+      | BeginDate            | 2015-07-02T15:30:00.000Z |
       | EndDate              | 2015-09-02T19:30:00.000Z |
-      Then 13 mbus events should be returned
+    Then 13 mbus events should be returned
       | DeviceIdentification | TEST1024000000001 |
