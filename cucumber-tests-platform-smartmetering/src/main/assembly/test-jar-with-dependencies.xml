@@ -14,8 +14,6 @@
       <unpackOptions>
         <excludes>
           <exclude>META-INF/cxf/bus-extensions.txt</exclude>
-          <exclude>cxf*/META-INF/spring.handlers</exclude>
-          <exclude>cxf*/META-INF/spring.schemas</exclude>
         </excludes>
       </unpackOptions>
       <!-- we're creating the test-jar as an attachement -->

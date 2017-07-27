@@ -113,33 +113,10 @@
   </properties>
 
   <repositories>
-    <!-- <repository>
-      <id>fuse-repo</id>
-      <name>Fuse Source</name>
-      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>local-maven-repo</id>
-      <name>Local Repository</name>
-      <url>${module.baseUri}/local-maven-repo</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository> -->
     <repository>
       <id>smartbear</id>
       <name>smartbear repository</name>
       <url>http://www.soapui.org/repository/maven2/</url>
-      <!-- <url>http://smartbearsoftware.com/repository/maven2</url> -->
     </repository>
   </repositories>
   
@@ -423,17 +400,6 @@
         <groupId>org.springframework.ws</groupId>
         <artifactId>spring-ws-support</artifactId>
         <version>${spring.ws.version}</version>
-      </dependency>
-      
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-wsdl</artifactId>
-        <version>${cxf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-ws-policy</artifactId>
-        <version>${cxf.version}</version>
       </dependency>
 
       <!-- Spring JMS -->
