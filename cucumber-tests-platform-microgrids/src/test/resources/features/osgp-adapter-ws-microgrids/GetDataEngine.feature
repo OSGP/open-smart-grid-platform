@@ -1,11 +1,10 @@
-@MicroGrids @Platform @Skip
+@MicroGrids @Platform
 Feature: MicroGrids Get Engine Data
   As an OSGP client
   I want to get Engine data from an RTU
   So this data can be used by other processes
 
-  #Remove the Skip tag after code changes for ZS-243 are merged and deployed.
-  @Skip @Iec61850MockServerMarkerWadden
+  @Iec61850MockServerMarkerWadden
   Scenario: Request ENGINE1
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-MARKER-WADDEN |

@@ -1,4 +1,4 @@
-@MicroGrids @Platform @Skip
+@MicroGrids @Platform
 Feature: MicroGrids Get Boiler Data
   As an OSGP client
   I want to get Boiler data from an RTU
