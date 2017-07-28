@@ -44,7 +44,7 @@ public class AssociationLnObjects extends SmartMeteringStepsBase {
         final GetAssociationLnObjectsRequest request = AssociationLnObjectsRequestFactory.fromParameterMap(settings);
         final GetAssociationLnObjectsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("asyncRespone should not be null", asyncResponse);
+        assertNotNull("AsyncRespone should not be null", asyncResponse);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 

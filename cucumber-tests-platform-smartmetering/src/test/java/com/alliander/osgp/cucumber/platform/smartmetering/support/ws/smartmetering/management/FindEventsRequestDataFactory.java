@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management;
 
 import static com.alliander.osgp.cucumber.core.Helpers.getDate;
@@ -27,24 +34,24 @@ public class FindEventsRequestDataFactory {
         final XMLGregorianCalendar endDate = createXMLGregorianCalendar(requestParameters,
                 PlatformSmartmeteringKeys.KEY_END_DATE);
 
-        final FindEventsRequestData request = new FindEventsRequestData();
+        final FindEventsRequestData findEventsRequestData = new FindEventsRequestData();
 
-        request.setEventLogCategory(eventLogCategory);
-        request.setFrom(beginDate);
-        request.setUntil(endDate);
+        findEventsRequestData.setEventLogCategory(eventLogCategory);
+        findEventsRequestData.setFrom(beginDate);
+        findEventsRequestData.setUntil(endDate);
 
-        return request;
+        return findEventsRequestData;
     }
 
     private static final XMLGregorianCalendar createXMLGregorianCalendar(final Map<String, String> settings,
             final String key) {
 
-        final DateTime date = getDate(settings, key, new DateTime());
+        final DateTime dateTime = getDate(settings, key, new DateTime());
 
         try {
-            final GregorianCalendar gregCal = new GregorianCalendar();
-            gregCal.setTime(date.toDate());
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregCal);
+            final GregorianCalendar gregorianCalendar = new GregorianCalendar();
+            gregorianCalendar.setTime(dateTime.toDate());
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
         } catch (final DatatypeConfigurationException e) {
             throw new RuntimeException(e);
         }

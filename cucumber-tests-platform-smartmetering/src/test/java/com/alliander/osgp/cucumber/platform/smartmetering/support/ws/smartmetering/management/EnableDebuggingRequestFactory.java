@@ -20,15 +20,15 @@ public class EnableDebuggingRequestFactory {
     }
 
     public static EnableDebuggingRequest fromParameterMap(final Map<String, String> requestParameters) {
-        final EnableDebuggingRequest request = new EnableDebuggingRequest();
-        request.setDeviceIdentification(requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-        return request;
+        final EnableDebuggingRequest enableDebuggingRequest = new EnableDebuggingRequest();
+        enableDebuggingRequest.setDeviceIdentification(requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
+        return enableDebuggingRequest;
     }
 
     public static EnableDebuggingAsyncRequest fromScenarioContext() {
-        final EnableDebuggingAsyncRequest asyncRequest = new EnableDebuggingAsyncRequest();
-        asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-        return asyncRequest;
+        final EnableDebuggingAsyncRequest enableDebuggingAsyncRequest = new EnableDebuggingAsyncRequest();
+        enableDebuggingAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        enableDebuggingAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        return enableDebuggingAsyncRequest;
     }
 }

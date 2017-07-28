@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management;
 
 import java.util.Map;
@@ -13,15 +20,15 @@ public class DisableDebuggingRequestFactory {
     }
 
     public static DisableDebuggingRequest fromParameterMap(final Map<String, String> requestParameters) {
-        final DisableDebuggingRequest request = new DisableDebuggingRequest();
-        request.setDeviceIdentification(requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-        return request;
+        final DisableDebuggingRequest disableDebuggingRequest = new DisableDebuggingRequest();
+        disableDebuggingRequest.setDeviceIdentification(requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
+        return disableDebuggingRequest;
     }
 
     public static DisableDebuggingAsyncRequest fromScenarioContext() {
-        final DisableDebuggingAsyncRequest asyncRequest = new DisableDebuggingAsyncRequest();
-        asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-        return asyncRequest;
+        final DisableDebuggingAsyncRequest disableDebuggingAsyncRequest = new DisableDebuggingAsyncRequest();
+        disableDebuggingAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        disableDebuggingAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        return disableDebuggingAsyncRequest;
     }
 }

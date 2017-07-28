@@ -41,34 +41,39 @@ public class GetDebugInformation extends SmartMeteringStepsBase {
     private DeviceLogItemBuilder deviceLogItemBuilder;
 
     @Autowired
-    private SmartMeteringManagementRequestClient<FindMessageLogsAsyncResponse, FindMessageLogsRequest> requestClient;
+    private SmartMeteringManagementRequestClient<FindMessageLogsAsyncResponse, FindMessageLogsRequest> smartMeteringManagementRequestClient;
 
     @Autowired
-    private SmartMeteringManagementResponseClient<FindMessageLogsResponse, FindMessageLogsAsyncRequest> responseClient;
+    private SmartMeteringManagementResponseClient<FindMessageLogsResponse, FindMessageLogsAsyncRequest> smartMeteringManagementResponseClient;
 
     @Given("^there is debug information logged for the device$")
     public void thereIsDebugInformationLoggedForTheDevice() throws Throwable {
-        final DeviceLogItem item = this.deviceLogItemBuilder.withDeviceIdentification(
+        final DeviceLogItem deviceLogItem = this.deviceLogItemBuilder.withDeviceIdentification(
                 ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION).toString()).build();
 
-        this.logItemRepository.save(item);
+        this.logItemRepository.save(deviceLogItem);
     }
 
     @When("^the get debug information request is received$")
     public void theGetDebugInformationRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final FindMessageLogsRequest request = FindMessageLogsRequestFactory.fromParameterMap(requestData);
-        final FindMessageLogsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
+        final FindMessageLogsRequest findMessageLogsRequest = FindMessageLogsRequestFactory
+                .fromParameterMap(requestData);
+        final FindMessageLogsAsyncResponse findMessageLogsAsyncResponse = this.smartMeteringManagementRequestClient
+                .doRequest(findMessageLogsRequest);
 
-        assertNotNull("asyncResponse should not be null", asyncResponse);
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+        assertNotNull("AsyncResponse should not be null", findMessageLogsAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                findMessageLogsAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the device debug information should be in the response message$")
     public void theDeviceDebugInformationShouldBeInTheResponseMessage() throws Throwable {
-        final FindMessageLogsAsyncRequest asyncRequest = FindMessageLogsRequestFactory.fromScenarioContext();
-        final FindMessageLogsResponse response = this.responseClient.getResponse(asyncRequest);
+        final FindMessageLogsAsyncRequest findMessageLogsAsyncRequest = FindMessageLogsRequestFactory
+                .fromScenarioContext();
+        final FindMessageLogsResponse findMessageLogsResponse = this.smartMeteringManagementResponseClient
+                .getResponse(findMessageLogsAsyncRequest);
 
-        assertNotNull("FindMessageLogsRequestResponse should not be null", response);
-        assertNotNull("Expected logs", response.getMessageLogPage());
+        assertNotNull("FindMessageLogsRequestResponse should not be null", findMessageLogsResponse);
+        assertNotNull("Expected logs", findMessageLogsResponse.getMessageLogPage());
     }
 }

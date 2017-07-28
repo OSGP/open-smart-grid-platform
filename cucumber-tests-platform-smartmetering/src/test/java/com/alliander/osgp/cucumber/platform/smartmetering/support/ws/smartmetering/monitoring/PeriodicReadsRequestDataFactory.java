@@ -34,23 +34,23 @@ public class PeriodicReadsRequestDataFactory {
                 PlatformKeys.KEY_BEGIN_DATE);
         final XMLGregorianCalendar endDate = createXMLGregorianCalendar(requestParameters, PlatformKeys.KEY_END_DATE);
 
-        final PeriodicReadsRequestData request = new PeriodicReadsRequestData();
-        request.setBeginDate(beginDate);
-        request.setEndDate(endDate);
-        request.setPeriodType(periodType);
+        final PeriodicReadsRequestData periodicReadsRequestData = new PeriodicReadsRequestData();
+        periodicReadsRequestData.setBeginDate(beginDate);
+        periodicReadsRequestData.setEndDate(endDate);
+        periodicReadsRequestData.setPeriodType(periodType);
 
-        return request;
+        return periodicReadsRequestData;
     }
 
     private static final XMLGregorianCalendar createXMLGregorianCalendar(final Map<String, String> settings,
             final String key) {
 
-        final DateTime date = getDate(settings, key, new DateTime());
+        final DateTime dateTime = getDate(settings, key, new DateTime());
 
         try {
-            final GregorianCalendar gregCal = new GregorianCalendar();
-            gregCal.setTime(date.toDate());
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregCal);
+            final GregorianCalendar gregorianCalendar = new GregorianCalendar();
+            gregorianCalendar.setTime(dateTime.toDate());
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
         } catch (final DatatypeConfigurationException e) {
             throw new RuntimeException(e);
         }

@@ -25,14 +25,14 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 public class UpdateFirmwareRequestFactory {
 
     public static UpdateFirmwareRequest fromParameterMap(final Map<String, String> parameters) {
-        final UpdateFirmwareRequest request = new UpdateFirmwareRequest();
+        final UpdateFirmwareRequest updateFirmwareRequest = new UpdateFirmwareRequest();
 
-        request.setDeviceIdentification(getString(parameters, PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION,
+        updateFirmwareRequest.setDeviceIdentification(getString(parameters, PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION,
                 PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
 
-        request.getFirmwareVersions().addAll(firmwareVersionsFromParameters(parameters));
+        updateFirmwareRequest.getFirmwareVersions().addAll(firmwareVersionsFromParameters(parameters));
 
-        return request;
+        return updateFirmwareRequest;
     }
 
     public static List<FirmwareVersion> firmwareVersionsFromParameters(final Map<String, String> parameters) {
@@ -64,10 +64,10 @@ public class UpdateFirmwareRequestFactory {
         final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
         final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromStepData(requestParameters);
 
-        final UpdateFirmwareAsyncRequest request = new UpdateFirmwareAsyncRequest();
-        request.setCorrelationUid(correlationUid);
-        request.setDeviceIdentification(deviceIdentification);
-        return request;
+        final UpdateFirmwareAsyncRequest updateFirmwareAsyncRequest = new UpdateFirmwareAsyncRequest();
+        updateFirmwareAsyncRequest.setCorrelationUid(correlationUid);
+        updateFirmwareAsyncRequest.setDeviceIdentification(deviceIdentification);
+        return updateFirmwareAsyncRequest;
     }
 
     public static UpdateFirmwareAsyncRequest fromScenarioContext() {

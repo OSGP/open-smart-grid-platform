@@ -36,10 +36,10 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
 
     @Autowired
-    private SmartMeteringManagementRequestClient<FindEventsAsyncResponse, FindEventsRequest> requestClient;
+    private SmartMeteringManagementRequestClient<FindEventsAsyncResponse, FindEventsRequest> smartMeteringManagementRequestClient;
 
     @Autowired
-    private SmartMeteringManagementResponseClient<FindEventsResponse, FindEventsAsyncRequest> responseClient;
+    private SmartMeteringManagementResponseClient<FindEventsResponse, FindEventsAsyncRequest> smartMeteringManagementResponseClient;
 
     private static final String EXPECTED_NUMBER_OF_EVENTS = "ExpectedNumberOfEvents";
 
@@ -55,31 +55,34 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
         settings.put(PlatformSmartmeteringKeys.KEY_END_DATE, requestData.get(PlatformSmartmeteringKeys.KEY_END_DATE));
         settings.put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
                 requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-        final FindEventsRequest request = FindEventsRequestFactory.fromParameterMap(settings);
-        final FindEventsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
+        final FindEventsRequest findEventsRequest = FindEventsRequestFactory.fromParameterMap(settings);
+        final FindEventsAsyncResponse findEventsAsyncResponse = this.smartMeteringManagementRequestClient
+                .doRequest(findEventsRequest);
 
-        assertNotNull("asyncResponse should not be null", asyncResponse);
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+        assertNotNull("AsyncResponse should not be null", findEventsAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                findEventsAsyncResponse.getCorrelationUid());
     }
 
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        final FindEventsAsyncRequest asyncRequest = FindEventsRequestFactory.fromScenarioContext();
-        final FindEventsResponse response = this.responseClient.getResponse(asyncRequest);
+        final FindEventsAsyncRequest findEventsAsyncRequest = FindEventsRequestFactory.fromScenarioContext();
+        final FindEventsResponse findEventsResponse = this.smartMeteringManagementResponseClient
+                .getResponse(findEventsAsyncRequest);
 
-        assertNotNull("FindEventsRequestResponse should not be null", response);
-        assertNotNull("Expected events", response.getEvents());
+        assertNotNull("FindEventsRequestResponse should not be null", findEventsResponse);
+        assertNotNull("Expected events", findEventsResponse.getEvents());
         assertEquals("Number of events should match", Integer.parseInt(settings.get(EXPECTED_NUMBER_OF_EVENTS)),
-                response.getEvents().size());
+                findEventsResponse.getEvents().size());
 
         /*
          * For every event in the response, check if it matches with the
          * AllowedEventTypes list. If so, the EventType is from the correct type
          * as expected.
          */
-        for (final Event event : response.getEvents()) {
+        for (final Event event : findEventsResponse.getEvents()) {
             Event eventMatch = null;
-            for (final EventType item : this.getAllowedEventTypes()) {
-                if (item.toString().equals(event.getEventType().toString())) {
+            for (final EventType eventType : this.getAllowedEventTypes()) {
+                if (eventType.equals(event.getEventType())) {
                     eventMatch = event;
                     break;
                 }
@@ -104,15 +107,4 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
      * @return
      */
     protected abstract List<EventType> getAllowedEventTypes();
-
-    /**
-     * To be called from subclasses, checks whether event types returned belong
-     * to the log category requested.
-     *
-     * @param allowed
-     * @throws XPathExpressionException
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     */
 }

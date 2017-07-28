@@ -20,19 +20,19 @@ public class PeriodicMeterReadsGasRequestFactory {
 
     public static PeriodicMeterReadsGasRequest fromParameterMap(final Map<String, String> requestParameters) {
 
-        final PeriodicMeterReadsGasRequest request = new PeriodicMeterReadsGasRequest();
+        final PeriodicMeterReadsGasRequest periodicMeterReadsGasRequest = new PeriodicMeterReadsGasRequest();
 
-        request.setDeviceIdentification(Helpers.getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+        periodicMeterReadsGasRequest.setDeviceIdentification(Helpers.getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformSmartmeteringDefaults.DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION));
-        request.setPeriodicReadsRequestData(PeriodicReadsRequestDataFactory.fromParameterMap(requestParameters));
+        periodicMeterReadsGasRequest.setPeriodicReadsRequestData(PeriodicReadsRequestDataFactory.fromParameterMap(requestParameters));
 
-        return request;
+        return periodicMeterReadsGasRequest;
     }
 
     public static PeriodicMeterReadsGasAsyncRequest fromScenarioContext() {
-        final PeriodicMeterReadsGasAsyncRequest asyncRequest = new PeriodicMeterReadsGasAsyncRequest();
-        asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-        return asyncRequest;
+        final PeriodicMeterReadsGasAsyncRequest periodicMeterReadsGasAsyncRequest = new PeriodicMeterReadsGasAsyncRequest();
+        periodicMeterReadsGasAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        periodicMeterReadsGasAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        return periodicMeterReadsGasAsyncRequest;
     }
 }

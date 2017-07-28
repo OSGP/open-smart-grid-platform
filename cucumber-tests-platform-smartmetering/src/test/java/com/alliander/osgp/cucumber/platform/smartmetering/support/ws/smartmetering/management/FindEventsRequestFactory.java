@@ -20,16 +20,16 @@ public class FindEventsRequestFactory {
     }
 
     public static FindEventsRequest fromParameterMap(final Map<String, String> requestParameters) {
-        final FindEventsRequest request = new FindEventsRequest();
-        request.setDeviceIdentification(requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-        request.getFindEventsRequestData().add(0, FindEventsRequestDataFactory.fromParameterMap(requestParameters));
-        return request;
+        final FindEventsRequest findEventsRequest = new FindEventsRequest();
+        findEventsRequest.setDeviceIdentification(requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
+        findEventsRequest.getFindEventsRequestData().add(0, FindEventsRequestDataFactory.fromParameterMap(requestParameters));
+        return findEventsRequest;
     }
 
     public static FindEventsAsyncRequest fromScenarioContext() {
-        final FindEventsAsyncRequest asyncRequest = new FindEventsAsyncRequest();
-        asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-        return asyncRequest;
+        final FindEventsAsyncRequest findEventsAsyncRequest = new FindEventsAsyncRequest();
+        findEventsAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        findEventsAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        return findEventsAsyncRequest;
     }
 }

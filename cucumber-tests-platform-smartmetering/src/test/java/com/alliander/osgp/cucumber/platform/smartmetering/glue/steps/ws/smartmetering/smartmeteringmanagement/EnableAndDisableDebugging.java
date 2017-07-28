@@ -43,25 +43,28 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
     private DlmsDeviceRepository dlmsDeviceRepository;
 
     @Autowired
-    private SmartMeteringManagementRequestClient<EnableDebuggingAsyncResponse, EnableDebuggingRequest> requestClientEnableDebugging;
+    private SmartMeteringManagementRequestClient<EnableDebuggingAsyncResponse, EnableDebuggingRequest> smartMeteringManagementRequestClientEnableDebugging;
 
     @Autowired
-    private SmartMeteringManagementResponseClient<EnableDebuggingResponse, EnableDebuggingAsyncRequest> responseClientEnableDebugging;
+    private SmartMeteringManagementResponseClient<EnableDebuggingResponse, EnableDebuggingAsyncRequest> smartMeteringManagementResponseClientEnableDebugging;
 
     @Autowired
-    private SmartMeteringManagementRequestClient<DisableDebuggingAsyncResponse, DisableDebuggingRequest> requestClientDisableDebugging;
+    private SmartMeteringManagementRequestClient<DisableDebuggingAsyncResponse, DisableDebuggingRequest> smartMeteringManagementRequestClientDisableDebugging;
 
     @Autowired
-    private SmartMeteringManagementResponseClient<DisableDebuggingResponse, DisableDebuggingAsyncRequest> responseClientDisableDebugging;
+    private SmartMeteringManagementResponseClient<DisableDebuggingResponse, DisableDebuggingAsyncRequest> smartMeteringManagementResponseClientDisableDebugging;
 
     @When("^the enable Debug request is received$")
     public void theEnableDebugRequestIsReceived(final Map<String, String> requestData) throws Throwable {
 
-        final EnableDebuggingRequest request = EnableDebuggingRequestFactory.fromParameterMap(requestData);
-        final EnableDebuggingAsyncResponse asyncResponse = this.requestClientEnableDebugging.doRequest(request);
+        final EnableDebuggingRequest enableDebuggingRequest = EnableDebuggingRequestFactory
+                .fromParameterMap(requestData);
+        final EnableDebuggingAsyncResponse enableDebuggingAsyncResponse = this.smartMeteringManagementRequestClientEnableDebugging
+                .doRequest(enableDebuggingRequest);
 
-        assertNotNull("asyncResponse should not be null", asyncResponse);
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+        assertNotNull("AsyncResponse should not be null", enableDebuggingAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                enableDebuggingAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the device debug information should be enabled$")
@@ -74,20 +77,25 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
 
     @Then("^the enable debug response should be \"([^\"]*)\"$")
     public void theEnableDebugResponseShouldBe(final String result) throws Throwable {
-        final EnableDebuggingAsyncRequest asyncRequest = EnableDebuggingRequestFactory.fromScenarioContext();
-        final EnableDebuggingResponse response = this.responseClientEnableDebugging.getResponse(asyncRequest);
+        final EnableDebuggingAsyncRequest enableDebuggingAsyncRequest = EnableDebuggingRequestFactory
+                .fromScenarioContext();
+        final EnableDebuggingResponse enableDebuggingResponse = this.smartMeteringManagementResponseClientEnableDebugging
+                .getResponse(enableDebuggingAsyncRequest);
 
-        assertNotNull("EnableDebugRequestResponse should not be null", response);
-        assertNotNull("Expected results", response.getResult());
+        assertNotNull("EnableDebugRequestResponse should not be null", enableDebuggingResponse);
+        assertNotNull("Expected results", enableDebuggingResponse.getResult());
     }
 
     @When("^the disable Debug request is received$")
     public void theDisableDebugRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final DisableDebuggingRequest request = DisableDebuggingRequestFactory.fromParameterMap(requestData);
-        final DisableDebuggingAsyncResponse asyncResponse = this.requestClientDisableDebugging.doRequest(request);
+        final DisableDebuggingRequest disableDebuggingRequest = DisableDebuggingRequestFactory
+                .fromParameterMap(requestData);
+        final DisableDebuggingAsyncResponse disableDebuggingAsyncResponse = this.smartMeteringManagementRequestClientDisableDebugging
+                .doRequest(disableDebuggingRequest);
 
-        assertNotNull("asyncResponse should not be null", asyncResponse);
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+        assertNotNull("AsyncResponse should not be null", disableDebuggingAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                disableDebuggingAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the device debug information should be disabled$")
@@ -100,10 +108,12 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
 
     @Then("^the disable debug response should be \"([^\"]*)\"$")
     public void theDisableDebugResponseShouldBe(final String result) throws Throwable {
-        final DisableDebuggingAsyncRequest asyncRequest = DisableDebuggingRequestFactory.fromScenarioContext();
-        final DisableDebuggingResponse response = this.responseClientDisableDebugging.getResponse(asyncRequest);
+        final DisableDebuggingAsyncRequest disableDebuggingAsyncRequest = DisableDebuggingRequestFactory
+                .fromScenarioContext();
+        final DisableDebuggingResponse disableDebuggingResponse = this.smartMeteringManagementResponseClientDisableDebugging
+                .getResponse(disableDebuggingAsyncRequest);
 
-        assertNotNull("DisableDebugRequestResponse should not be null", response);
-        assertNotNull("Expected result", response.getResult());
+        assertNotNull("DisableDebugRequestResponse should not be null", disableDebuggingResponse);
+        assertNotNull("Expected result", disableDebuggingResponse.getResult());
     }
 }

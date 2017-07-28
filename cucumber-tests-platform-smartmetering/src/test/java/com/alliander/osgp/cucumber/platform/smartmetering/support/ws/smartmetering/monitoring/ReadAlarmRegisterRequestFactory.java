@@ -21,15 +21,15 @@ public class ReadAlarmRegisterRequestFactory {
     }
 
     public static ReadAlarmRegisterRequest fromParameterMap(final Map<String, String> requestParameters) {
-        final ReadAlarmRegisterRequest request = new ReadAlarmRegisterRequest();
-        request.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-        return request;
+        final ReadAlarmRegisterRequest readAlarmRegisterRequest = new ReadAlarmRegisterRequest();
+        readAlarmRegisterRequest.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        return readAlarmRegisterRequest;
     }
 
     public static ReadAlarmRegisterAsyncRequest fromScenarioContext() {
-        final ReadAlarmRegisterAsyncRequest asyncRequest = new ReadAlarmRegisterAsyncRequest();
-        asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-        return asyncRequest;
+        final ReadAlarmRegisterAsyncRequest readAlarmRegisterAsyncRequest = new ReadAlarmRegisterAsyncRequest();
+        readAlarmRegisterAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        readAlarmRegisterAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        return readAlarmRegisterAsyncRequest;
     }
 }

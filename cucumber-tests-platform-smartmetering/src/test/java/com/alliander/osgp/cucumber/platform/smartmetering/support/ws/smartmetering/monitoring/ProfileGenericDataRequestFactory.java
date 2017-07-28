@@ -28,20 +28,20 @@ public class ProfileGenericDataRequestFactory {
     }
 
     public static ProfileGenericDataRequest fromParameterMap(final Map<String, String> requestParameters) {
-        final ProfileGenericDataRequest request = new ProfileGenericDataRequest();
+        final ProfileGenericDataRequest profileGenericDataRequest = new ProfileGenericDataRequest();
         final DateTime beginDate = dateFromParameterMap(requestParameters, PlatformKeys.KEY_BEGIN_DATE);
         final DateTime endDate = dateFromParameterMap(requestParameters, PlatformKeys.KEY_END_DATE);
         final ObisCodeValues obisCodeValues = ObisCodeValuesFactory.fromParameterMap(requestParameters);
         final CaptureObjectDefinitions captureObjecDefinitions = CaptureObjectDefinitionsFactory
                 .fromParameterMap(requestParameters);
 
-        request.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-        request.setBeginDate(DateConverter.createXMLGregorianCalendar(beginDate.toDate()));
-        request.setEndDate(DateConverter.createXMLGregorianCalendar(endDate.toDate()));
-        request.setObisCode(obisCodeValues);
-        request.setSelectedValues(captureObjecDefinitions);
+        profileGenericDataRequest.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        profileGenericDataRequest.setBeginDate(DateConverter.createXMLGregorianCalendar(beginDate.toDate()));
+        profileGenericDataRequest.setEndDate(DateConverter.createXMLGregorianCalendar(endDate.toDate()));
+        profileGenericDataRequest.setObisCode(obisCodeValues);
+        profileGenericDataRequest.setSelectedValues(captureObjecDefinitions);
 
-        return request;
+        return profileGenericDataRequest;
     }
 
     private static DateTime dateFromParameterMap(final Map<String, String> requestParameters, final String key) {
@@ -51,9 +51,9 @@ public class ProfileGenericDataRequestFactory {
     public static ProfileGenericDataAsyncRequest fromScenarioContext() {
         final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
         final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromScenarioContext();
-        final ProfileGenericDataAsyncRequest asyncRequest = new ProfileGenericDataAsyncRequest();
-        asyncRequest.setCorrelationUid(correlationUid);
-        asyncRequest.setDeviceIdentification(deviceIdentification);
-        return asyncRequest;
+        final ProfileGenericDataAsyncRequest profileGenericDataAsyncRequest = new ProfileGenericDataAsyncRequest();
+        profileGenericDataAsyncRequest.setCorrelationUid(correlationUid);
+        profileGenericDataAsyncRequest.setDeviceIdentification(deviceIdentification);
+        return profileGenericDataAsyncRequest;
     }
 }

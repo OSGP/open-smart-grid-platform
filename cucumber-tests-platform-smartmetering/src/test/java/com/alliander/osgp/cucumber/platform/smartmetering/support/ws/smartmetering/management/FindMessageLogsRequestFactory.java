@@ -20,15 +20,15 @@ public class FindMessageLogsRequestFactory {
     }
 
     public static FindMessageLogsRequest fromParameterMap(final Map<String, String> requestParameters) {
-        final FindMessageLogsRequest request = new FindMessageLogsRequest();
-        request.setDeviceIdentification(requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-        return request;
+        final FindMessageLogsRequest findMessageLogsRequest = new FindMessageLogsRequest();
+        findMessageLogsRequest.setDeviceIdentification(requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
+        return findMessageLogsRequest;
     }
 
     public static FindMessageLogsAsyncRequest fromScenarioContext() {
-        final FindMessageLogsAsyncRequest asyncRequest = new FindMessageLogsAsyncRequest();
-        asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-        return asyncRequest;
+        final FindMessageLogsAsyncRequest findMessageLogsAsyncRequest = new FindMessageLogsAsyncRequest();
+        findMessageLogsAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        findMessageLogsAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        return findMessageLogsAsyncRequest;
     }
 }
