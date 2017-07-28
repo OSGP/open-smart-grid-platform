@@ -41,7 +41,7 @@ public class ReadAlarmRegister extends SmartMeteringStepsBase {
         final ReadAlarmRegisterRequest request = ReadAlarmRegisterRequestFactory.fromParameterMap(settings);
         final ReadAlarmRegisterAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("asyncResponse should not be null", asyncResponse);
+        assertNotNull("AsyncResponse should not be null", asyncResponse);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 

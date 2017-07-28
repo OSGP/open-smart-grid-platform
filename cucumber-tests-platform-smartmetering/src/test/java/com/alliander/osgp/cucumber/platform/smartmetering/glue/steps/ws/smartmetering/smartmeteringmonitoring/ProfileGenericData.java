@@ -48,7 +48,7 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
         final ProfileGenericDataRequest request = ProfileGenericDataRequestFactory.fromParameterMap(settings);
         final ProfileGenericDataAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("asyncResponse should not be null", asyncResponse);
+        assertNotNull("AsyncResponse should not be null", asyncResponse);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 

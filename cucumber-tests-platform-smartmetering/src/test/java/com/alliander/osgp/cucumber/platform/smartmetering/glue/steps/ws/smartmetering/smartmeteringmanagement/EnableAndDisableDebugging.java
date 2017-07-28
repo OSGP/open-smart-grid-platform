@@ -7,8 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
@@ -17,87 +17,103 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DisableDebuggingRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DisableDebuggingResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EnableDebuggingAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EnableDebuggingAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EnableDebuggingRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EnableDebuggingResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.DisableDebuggingRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.EnableDebuggingRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementResponseClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
 
-    private static final String TEST_SUITE_XML = "SmartmeterManagement";
-    private static final String TEST_CASE_XML = "625 Enable disable debugging";
-    private static final String TEST_CASE_NAME_ENABLE_REQUEST = "EnableDebugging";
-    private static final String TEST_CASE_NAME_ENABLE_RESPONSE = "GetEnableDebuggingResponse";
-    private static final String PATH_RESULT_ENABLE = "/Envelope/Body/EnableDebuggingResponse/Result/text()";
-
-    private static final String TEST_CASE_NAME_DISABLE_REQUEST = "DisableDebugging";
-    private static final String TEST_CASE_NAME_DISABLE_RESPONSE = "GetDisableDebuggingResponse";
-    private static final String PATH_RESULT_DISABLE = "/Envelope/Body/DisableDebuggingResponse/Result/text()";
-
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
 
+    @Autowired
+    private SmartMeteringManagementRequestClient<EnableDebuggingAsyncResponse, EnableDebuggingRequest> smartMeteringManagementRequestClientEnableDebugging;
+
+    @Autowired
+    private SmartMeteringManagementResponseClient<EnableDebuggingResponse, EnableDebuggingAsyncRequest> smartMeteringManagementResponseClientEnableDebugging;
+
+    @Autowired
+    private SmartMeteringManagementRequestClient<DisableDebuggingAsyncResponse, DisableDebuggingRequest> smartMeteringManagementRequestClientDisableDebugging;
+
+    @Autowired
+    private SmartMeteringManagementResponseClient<DisableDebuggingResponse, DisableDebuggingAsyncRequest> smartMeteringManagementResponseClientDisableDebugging;
+
     @When("^the enable Debug request is received$")
     public void theEnableDebugRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(requestData, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_ENABLE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        final EnableDebuggingRequest enableDebuggingRequest = EnableDebuggingRequestFactory
+                .fromParameterMap(requestData);
+        final EnableDebuggingAsyncResponse enableDebuggingAsyncResponse = this.smartMeteringManagementRequestClientEnableDebugging
+                .doRequest(enableDebuggingRequest);
+
+        assertNotNull("AsyncResponse should not be null", enableDebuggingAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                enableDebuggingAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the device debug information should be enabled$")
     public void theDeviceDebugInformationShouldBeEnabled() throws Throwable {
-        final DlmsDevice device = this.dlmsDeviceRepository
-                .findByDeviceIdentification(ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION).toString());
+        final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(
+                ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION).toString());
 
         assertTrue("Debug mode", device.isInDebugMode());
     }
 
     @Then("^the enable debug response should be \"([^\"]*)\"$")
     public void theEnableDebugResponseShouldBe(final String result) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION).toString());
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
+        final EnableDebuggingAsyncRequest enableDebuggingAsyncRequest = EnableDebuggingRequestFactory
+                .fromScenarioContext();
+        final EnableDebuggingResponse enableDebuggingResponse = this.smartMeteringManagementResponseClientEnableDebugging
+                .getResponse(enableDebuggingAsyncRequest);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_ENABLE_RESPONSE, TEST_CASE_XML,
-                TEST_SUITE_XML);
-
-        assertTrue("Response value", this.runXpathResult.assertXpath(this.response, PATH_RESULT_ENABLE, result));
+        assertNotNull("EnableDebugRequestResponse should not be null", enableDebuggingResponse);
+        assertNotNull("Expected results", enableDebuggingResponse.getResult());
     }
 
     @When("^the disable Debug request is received$")
     public void theDisableDebugRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(requestData, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        final DisableDebuggingRequest disableDebuggingRequest = DisableDebuggingRequestFactory
+                .fromParameterMap(requestData);
+        final DisableDebuggingAsyncResponse disableDebuggingAsyncResponse = this.smartMeteringManagementRequestClientDisableDebugging
+                .doRequest(disableDebuggingRequest);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_DISABLE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        assertNotNull("AsyncResponse should not be null", disableDebuggingAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                disableDebuggingAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the device debug information should be disabled$")
     public void theDeviceDebugInformationShouldBeDisabled() throws Throwable {
-        final DlmsDevice device = this.dlmsDeviceRepository
-                .findByDeviceIdentification(ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION).toString());
+        final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(
+                ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION).toString());
 
         assertFalse("Debug mode", device.isInDebugMode());
     }
 
     @Then("^the disable debug response should be \"([^\"]*)\"$")
     public void theDisableDebugResponseShouldBe(final String result) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION).toString());
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
+        final DisableDebuggingAsyncRequest disableDebuggingAsyncRequest = DisableDebuggingRequestFactory
+                .fromScenarioContext();
+        final DisableDebuggingResponse disableDebuggingResponse = this.smartMeteringManagementResponseClientDisableDebugging
+                .getResponse(disableDebuggingAsyncRequest);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_DISABLE_RESPONSE, TEST_CASE_XML,
-                TEST_SUITE_XML);
-
-        assertTrue("Response value", this.runXpathResult.assertXpath(this.response, PATH_RESULT_DISABLE, result));
+        assertNotNull("DisableDebugRequestResponse should not be null", disableDebuggingResponse);
+        assertNotNull("Expected result", disableDebuggingResponse.getResult());
     }
 }

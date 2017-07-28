@@ -18,19 +18,19 @@ public class PeriodicMeterReadsRequestFactory {
 
     public static PeriodicMeterReadsRequest fromParameterMap(final Map<String, String> requestParameters) {
 
-        final PeriodicMeterReadsRequest request = new PeriodicMeterReadsRequest();
+        final PeriodicMeterReadsRequest periodicMeterReadsRequest = new PeriodicMeterReadsRequest();
 
-        request.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-        request.setPeriodicReadsRequestData(PeriodicReadsRequestDataFactory.fromParameterMap(requestParameters));
+        periodicMeterReadsRequest.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        periodicMeterReadsRequest.setPeriodicReadsRequestData(PeriodicReadsRequestDataFactory.fromParameterMap(requestParameters));
 
-        return request;
+        return periodicMeterReadsRequest;
     }
 
     public static PeriodicMeterReadsAsyncRequest fromScenarioContext() {
-        final PeriodicMeterReadsAsyncRequest asyncRequest = new PeriodicMeterReadsAsyncRequest();
-        asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-        return asyncRequest;
+        final PeriodicMeterReadsAsyncRequest periodicMeterReadsAsyncRequest = new PeriodicMeterReadsAsyncRequest();
+        periodicMeterReadsAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        periodicMeterReadsAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        return periodicMeterReadsAsyncRequest;
     }
 
 }

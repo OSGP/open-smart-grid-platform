@@ -19,11 +19,11 @@ import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringK
 public class SynchronizeTimeRequestDataFactory {
 
     public static SynchronizeTimeRequestData fromParameterMap(final Map<String, String> parameters) {
-        final SynchronizeTimeRequestData requestData = new SynchronizeTimeRequestData();
+        final SynchronizeTimeRequestData synchronizeTimeRequestData = new SynchronizeTimeRequestData();
 
-        requestData.setDeviation(getByte(parameters, PlatformSmartmeteringKeys.DEVIATION, PlatformSmartmeteringDefaults.DEVIATION));
-        requestData.setDst(getBoolean(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_ACTIVE, PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_ACTIVE));
+        synchronizeTimeRequestData.setDeviation(getByte(parameters, PlatformSmartmeteringKeys.DEVIATION, PlatformSmartmeteringDefaults.DEVIATION));
+        synchronizeTimeRequestData.setDst(getBoolean(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_ACTIVE, PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_ACTIVE));
 
-        return requestData;
+        return synchronizeTimeRequestData;
     }
 }

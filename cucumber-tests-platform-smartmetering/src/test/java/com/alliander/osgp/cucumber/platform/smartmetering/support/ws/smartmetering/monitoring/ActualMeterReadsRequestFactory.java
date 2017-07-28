@@ -21,16 +21,16 @@ public class ActualMeterReadsRequestFactory {
     }
 
     public static ActualMeterReadsRequest fromParameterMap(final Map<String, String> requestParameters) {
-        final ActualMeterReadsRequest request = new ActualMeterReadsRequest();
-        request.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-        return request;
+        final ActualMeterReadsRequest actualMeterReadsRequest = new ActualMeterReadsRequest();
+        actualMeterReadsRequest.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        return actualMeterReadsRequest;
     }
 
     public static ActualMeterReadsAsyncRequest fromScenarioContext() {
-        final ActualMeterReadsAsyncRequest asyncRequest = new ActualMeterReadsAsyncRequest();
-        asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-        return asyncRequest;
+        final ActualMeterReadsAsyncRequest actualMeterReadsAsyncRequest = new ActualMeterReadsAsyncRequest();
+        actualMeterReadsAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        actualMeterReadsAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        return actualMeterReadsAsyncRequest;
     }
 
 }

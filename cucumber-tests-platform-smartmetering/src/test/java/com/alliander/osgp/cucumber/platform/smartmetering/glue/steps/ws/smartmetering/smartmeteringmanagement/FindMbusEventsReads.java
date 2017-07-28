@@ -42,7 +42,7 @@ public class FindMbusEventsReads extends AbstractFindEventsReads {
     @Override
     protected String getEventLogCategory() {
         final String category = EventLogCategory.M_BUS_EVENT_LOG.name();
-        return category.substring(0, category.lastIndexOf('_'));
+        return category;
     }
 
     @When("^receiving a find mbus events request$")

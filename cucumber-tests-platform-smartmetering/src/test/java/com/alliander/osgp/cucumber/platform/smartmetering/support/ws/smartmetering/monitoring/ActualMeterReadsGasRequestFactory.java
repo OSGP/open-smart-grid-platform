@@ -23,17 +23,17 @@ public class ActualMeterReadsGasRequestFactory {
     }
 
     public static ActualMeterReadsGasRequest fromParameterMap(final Map<String, String> settings) {
-        final ActualMeterReadsGasRequest request = new ActualMeterReadsGasRequest();
-        request.setDeviceIdentification(Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+        final ActualMeterReadsGasRequest actualMeterReadsGasRequest = new ActualMeterReadsGasRequest();
+        actualMeterReadsGasRequest.setDeviceIdentification(Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformSmartmeteringDefaults.DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION));
-        return request;
+        return actualMeterReadsGasRequest;
     }
 
     public static ActualMeterReadsGasAsyncRequest fromScenarioContext() {
-        final ActualMeterReadsGasAsyncRequest asyncRequest = new ActualMeterReadsGasAsyncRequest();
-        asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
-        return asyncRequest;
+        final ActualMeterReadsGasAsyncRequest actualMeterReadsGasAsyncRequest = new ActualMeterReadsGasAsyncRequest();
+        actualMeterReadsGasAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        actualMeterReadsGasAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        return actualMeterReadsGasAsyncRequest;
     }
 
 }

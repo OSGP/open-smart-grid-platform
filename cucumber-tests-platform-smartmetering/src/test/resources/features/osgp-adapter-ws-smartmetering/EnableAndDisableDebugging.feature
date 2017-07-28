@@ -10,8 +10,8 @@ Feature: SmartMetering Enable and disable debugging
       | DeviceType           | SMART_METER_E     |
     When the enable Debug request is received
       | DeviceIdentification | TEST1024000000001 |
-    Then the device debug information should be enabled
-    And the enable debug response should be "OK"
+    Then the enable debug response should be "OK"
+    And the device debug information should be enabled
 
   Scenario: Disable debug information from a single meter
     Given a dlms device
@@ -19,5 +19,5 @@ Feature: SmartMetering Enable and disable debugging
       | DeviceType           | SMART_METER_E     |
     When the disable Debug request is received
       | DeviceIdentification | TEST1024000000001 |
-    Then the device debug information should be disabled
-    And the disable debug response should be "OK"
+    Then the disable debug response should be "OK"
+    And the device debug information should be disabled

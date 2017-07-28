@@ -23,9 +23,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttri
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SpecificAttributeValueRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SpecificAttributeValueRequestFactory;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -45,7 +45,7 @@ public class SpecificAttributeValue {
                 .fromParameterMap(settings);
         final GetSpecificAttributeValueAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("asyncRespone should not be null", asyncResponse);
+        assertNotNull("AsyncResponse should not be null", asyncResponse);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
