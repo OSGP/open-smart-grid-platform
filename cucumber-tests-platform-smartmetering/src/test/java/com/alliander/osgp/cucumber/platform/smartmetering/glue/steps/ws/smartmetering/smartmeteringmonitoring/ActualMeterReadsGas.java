@@ -41,7 +41,7 @@ public class ActualMeterReadsGas extends SmartMeteringStepsBase {
         final ActualMeterReadsGasRequest request = ActualMeterReadsGasRequestFactory.fromParameterMap(settings);
         final ActualMeterReadsGasAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("asyncRespone should not be null", asyncResponse);
+        assertNotNull("AsyncResponse should not be null", asyncResponse);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 

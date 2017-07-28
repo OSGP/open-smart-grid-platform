@@ -20,23 +20,24 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 public class SynchronizeTimeRequestFactory {
 
     public static SynchronizeTimeRequest fromParameterMap(final Map<String, String> parameters) {
-        final SynchronizeTimeRequest request = new SynchronizeTimeRequest();
+        final SynchronizeTimeRequest synchronizeTimeRequest = new SynchronizeTimeRequest();
 
-        request.setDeviceIdentification(
-                getString(parameters, PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION, PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
+        synchronizeTimeRequest.setDeviceIdentification(getString(parameters,
+                PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION, PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
 
-        request.setSynchronizeTimeRequestData(SynchronizeTimeRequestDataFactory.fromParameterMap(parameters));
+        synchronizeTimeRequest
+                .setSynchronizeTimeRequestData(SynchronizeTimeRequestDataFactory.fromParameterMap(parameters));
 
-        return request;
+        return synchronizeTimeRequest;
     }
 
     public static SynchronizeTimeAsyncRequest fromParameterMapAsync(final Map<String, String> requestParameters) {
         final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
         final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromStepData(requestParameters);
 
-        final SynchronizeTimeAsyncRequest request = new SynchronizeTimeAsyncRequest();
-        request.setCorrelationUid(correlationUid);
-        request.setDeviceIdentification(deviceIdentification);
-        return request;
+        final SynchronizeTimeAsyncRequest synchronizeTimeAsyncRequest = new SynchronizeTimeAsyncRequest();
+        synchronizeTimeAsyncRequest.setCorrelationUid(correlationUid);
+        synchronizeTimeAsyncRequest.setDeviceIdentification(deviceIdentification);
+        return synchronizeTimeAsyncRequest;
     }
 }

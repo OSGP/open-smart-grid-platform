@@ -43,7 +43,7 @@ public class SynchronizeTime extends SmartMeteringStepsBase {
         final SynchronizeTimeRequest request = SynchronizeTimeRequestFactory.fromParameterMap(settings);
         final SynchronizeTimeAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
-        assertNotNull("asyncRespone should not be null", asyncResponse);
+        assertNotNull("AsyncResponse should not be null", asyncResponse);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 

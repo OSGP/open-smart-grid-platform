@@ -20,23 +20,23 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 public class SetClockConfigurationRequestFactory {
 
     public static SetClockConfigurationRequest fromParameterMap(final Map<String, String> parameters) {
-        final SetClockConfigurationRequest request = new SetClockConfigurationRequest();
+        final SetClockConfigurationRequest setClockConfigurationRequest = new SetClockConfigurationRequest();
 
-        request.setDeviceIdentification(
+        setClockConfigurationRequest.setDeviceIdentification(
                 getString(parameters, PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION, PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
 
-        request.setSetClockConfigurationData(SetClockConfigurationRequestDataFactory.fromParameterMap(parameters));
+        setClockConfigurationRequest.setSetClockConfigurationData(SetClockConfigurationRequestDataFactory.fromParameterMap(parameters));
 
-        return request;
+        return setClockConfigurationRequest;
     }
 
     public static SetClockConfigurationAsyncRequest fromParameterMapAsync(final Map<String, String> requestParameters) {
         final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
         final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromStepData(requestParameters);
 
-        final SetClockConfigurationAsyncRequest request = new SetClockConfigurationAsyncRequest();
-        request.setCorrelationUid(correlationUid);
-        request.setDeviceIdentification(deviceIdentification);
-        return request;
+        final SetClockConfigurationAsyncRequest setClockConfigurationAsyncRequest = new SetClockConfigurationAsyncRequest();
+        setClockConfigurationAsyncRequest.setCorrelationUid(correlationUid);
+        setClockConfigurationAsyncRequest.setDeviceIdentification(deviceIdentification);
+        return setClockConfigurationAsyncRequest;
     }
 }
