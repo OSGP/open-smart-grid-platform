@@ -1,4 +1,4 @@
-@MicroGrids @Platform @Iec61850MockServer
+@MicroGrids @Platform
 Feature: MicroGrids Get Battery Data
   As an OSGP client
   I want to get Battery data from an RTU
