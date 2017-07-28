@@ -176,7 +176,7 @@ public class SetConfigurationObjectCommandExecutorTest {
         assertTrue(Arrays.equals(OBIS_CODE.bytes(), resultingObisCode.bytes()));
 
         final DataObject capturedDataObject = (DataObject) Whitebox.getInternalState(capturedSetParameter, "data");
-        assertEquals("[LONG_INTEGER Value: 10, BOOL Value: true]", capturedDataObject.getRawValue().toString());
+        assertEquals("[LONG_INTEGER Value: 10, BOOLEAN Value: true]", capturedDataObject.getRawValue().toString());
     }
 
     private DlmsDevice getDlmsDevice() {
