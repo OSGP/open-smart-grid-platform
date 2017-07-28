@@ -1,5 +1,4 @@
-@MicroGrids @Platform
-@Iec61850MockServerMarkerWadden
+@MicroGrids @Platform @Iec61850MockServerMarkerWadden
 Feature: MicroGrids Set Data Service
   As scrum team I want to have cucumber tests for Set Data Services
   so that I am able to guarantee the quality of Microgrid Platform.
@@ -73,3 +72,7 @@ Feature: MicroGrids Set Data Service
       | BATTERY      | BATTERY1      |      4 |
       | HEAT_PUMP    | HEAT_PUMP1    |      4 |
       | BOILER       | BOILER1       |      4 |
+      | ENGINE       | ENGINE1       |      1 |
+      | ENGINE       | ENGINE1       |      2 |
+      | ENGINE       | ENGINE1       |      3 |
+      | ENGINE       | ENGINE1       |      4 |
