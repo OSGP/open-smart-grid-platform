@@ -35,8 +35,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 
 @Component()
-public class SetAlarmNotificationsCommandExecutor extends
-        AbstractCommandExecutor<AlarmNotificationsDto, AccessResultCode> {
+public class SetAlarmNotificationsCommandExecutor
+        extends AbstractCommandExecutor<AlarmNotificationsDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsCommandExecutor.class);
 
@@ -96,8 +96,8 @@ public class SetAlarmNotificationsCommandExecutor extends
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         conn.getDlmsMessageListener()
-        .setDescription("SetAlarmNotifications retrieve current value, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
+                .setDescription("SetAlarmNotifications retrieve current value, retrieve attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
 
         LOGGER.info(
                 "Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute id: {}",
@@ -136,8 +136,8 @@ public class SetAlarmNotificationsCommandExecutor extends
         }
 
         if (!(alarmFilter.getValue() instanceof Number)) {
-            throw new ProtocolAdapterException("Value in DataObject is not a java.lang.Number: "
-                    + alarmFilter.getValue().getClass().getName());
+            throw new ProtocolAdapterException(
+                    "Value in DataObject is not a java.lang.Number: " + alarmFilter.getValue().getClass().getName());
         }
 
         return this.alarmNotifications(((Number) alarmFilter.getValue()).longValue());
@@ -176,8 +176,8 @@ public class SetAlarmNotificationsCommandExecutor extends
 
         final AlarmTypeDto[] alarmTypes = AlarmTypeDto.values();
         for (final AlarmTypeDto alarmType : alarmTypes) {
-            final boolean enabled = bitSet.get(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType().get(
-                    alarmType));
+            final boolean enabled = bitSet
+                    .get(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType().get(alarmType));
             notifications.add(new AlarmNotificationDto(alarmType, enabled));
         }
 
@@ -189,12 +189,15 @@ public class SetAlarmNotificationsCommandExecutor extends
         final BitSet bitSet = new BitSet(NUMBER_OF_BITS_IN_ALARM_FILTER);
         final Set<AlarmNotificationDto> notifications = alarmNotifications.getAlarmNotificationsSet();
         for (final AlarmNotificationDto alarmNotification : notifications) {
-            bitSet.set(
-                    this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType()
+            bitSet.set(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType()
                     .get(alarmNotification.getAlarmType()), alarmNotification.isEnabled());
         }
 
-        return bitSet.toLongArray()[0];
+        if (bitSet.isEmpty()) {
+            return 0l;
+        } else {
+            return bitSet.toLongArray()[0];
+        }
     }
 
 }
