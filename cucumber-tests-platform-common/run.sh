@@ -2,4 +2,4 @@
 
 java \
 	-jar target/cucumber-tests-platform-*-test-jar-with-dependencies.jar \
-        -report target/output
+        -report target/output -skip-xml-report
