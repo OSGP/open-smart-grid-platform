@@ -19,7 +19,9 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 
@@ -63,6 +65,10 @@ public class Ssld extends Device {
     @OneToMany(mappedBy = "device", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<RelayStatus> relayStatusses;
+
+    @ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "light_measurement_device_id")
+    private LightMeasurementDevice lightMeasurementDevice;
 
     public Ssld() {
         // Default constructor.
@@ -168,6 +174,14 @@ public class Ssld extends Device {
             }
         }
         return null;
+    }
+
+    public void setLightMeasurementDevice(final LightMeasurementDevice lightMeasurementDevice) {
+        this.lightMeasurementDevice = lightMeasurementDevice;
+    }
+
+    public LightMeasurementDevice getLightMeasurementDevice() {
+        return this.lightMeasurementDevice;
     }
 
     /**

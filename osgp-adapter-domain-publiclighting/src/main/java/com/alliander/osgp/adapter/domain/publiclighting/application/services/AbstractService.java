@@ -19,6 +19,7 @@ import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
+import com.alliander.osgp.domain.core.repositories.LightMeasurementDeviceRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
@@ -36,6 +37,9 @@ public class AbstractService {
 
     @Autowired
     protected SsldRepository ssldRepository;
+
+    @Autowired
+    protected LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
 
     @Autowired
     @Qualifier(value = "domainPublicLightingOutgoingOsgpCoreRequestMessageSender")
@@ -56,7 +60,8 @@ public class AbstractService {
             throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE,
                     ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
         } catch (final InactiveDeviceException e) {
-            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
+            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE,
+                    ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
         }
         return device;
     }

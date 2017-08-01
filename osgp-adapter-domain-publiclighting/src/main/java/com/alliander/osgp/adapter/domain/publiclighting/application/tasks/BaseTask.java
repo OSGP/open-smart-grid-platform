@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.core.application.tasks;
+package com.alliander.osgp.adapter.domain.publiclighting.application.tasks;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,91 +18,47 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.alliander.osgp.core.application.config.SchedulingConfig;
-import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
+import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
-import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
-import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
+import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 /**
- * Periodic task to fetch events from devices of a manufacturer in case the
- * devices have events older than X hours. This ensures all devices are
- * contacted, and are allowed to send any new events in their buffers. See
- * {@link SchedulingConfig#eventRetrievalScheduledTaskCronTrigger()} and
- * {@link SchedulingConfig#eventRetrievalScheduler()}.
+ * Base class for scheduled tasks.
  */
-@Component
-public class EventRetrievalScheduledTask implements Runnable {
+public class BaseTask {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventRetrievalScheduledTask.class);
-
-    @Autowired
-    private DeviceRequestMessageService deviceRequestMessageService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseTask.class);
 
     @Autowired
-    private DeviceRepository deviceRepository;
+    @Qualifier("domainPublicLightingOutgoingOsgpCoreRequestMessageSender")
+    protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
-    private ManufacturerRepository manufacturerRepository;
+    protected DeviceRepository deviceRepository;
 
     @Autowired
-    private DeviceModelRepository deviceModelRepository;
+    protected ManufacturerRepository manufacturerRepository;
 
     @Autowired
-    private EventRepository eventRepository;
+    protected DeviceModelRepository deviceModelRepository;
 
     @Autowired
-    private String manufacturerName;
-
-    @Autowired
-    private int maximumAllowedAge;
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Runnable#run()
-     */
-    @Override
-    public void run() {
-        final Manufacturer manufacturer = this.findManufacturer(this.manufacturerName);
-        if (manufacturer == null) {
-            return;
-        }
-
-        final List<DeviceModel> deviceModels = this.findDeviceModels(manufacturer);
-        if (deviceModels == null || deviceModels.isEmpty()) {
-            return;
-        }
-
-        final List<Device> devices = this.findDevices(deviceModels);
-        if (devices.isEmpty()) {
-            return;
-        }
-
-        final List<Device> devicesToContact = this.findDevicesToContact(devices);
-        if (devicesToContact.isEmpty()) {
-            return;
-        }
-
-        this.contactDevices(devicesToContact);
-    }
+    protected EventRepository eventRepository;
 
     /**
      * Try to find a manufacturer by name (case sensitive).
      */
-    private Manufacturer findManufacturer(final String name) {
+    protected Manufacturer findManufacturer(final String name) {
         LOGGER.info("Trying to find manufacturer for name: {}", name);
         final Manufacturer manufacturer = this.manufacturerRepository.findByName(name);
         if (manufacturer == null) {
@@ -116,7 +72,7 @@ public class EventRetrievalScheduledTask implements Runnable {
     /**
      * Try to find all device models for a manufacturer.
      */
-    private List<DeviceModel> findDeviceModels(final Manufacturer manufacturer) {
+    protected List<DeviceModel> findDeviceModels(final Manufacturer manufacturer) {
         LOGGER.info("Trying to find device models for manufacturer: {}", manufacturer.getName());
         final List<DeviceModel> deviceModels = this.deviceModelRepository.findByManufacturerId(manufacturer);
         if (deviceModels == null) {
@@ -139,18 +95,21 @@ public class EventRetrievalScheduledTask implements Runnable {
      * Try to find all devices which are not 'in maintenance' for a list of
      * device models.
      */
-    private List<Device> findDevices(final List<DeviceModel> deviceModels) {
+    protected List<Device> findDevices(final List<DeviceModel> deviceModels, final String deviceType) {
         LOGGER.info("Trying to find devices for device models for manufacturer...");
         final List<Device> devices = new ArrayList<>();
         for (final DeviceModel deviceModel : deviceModels) {
-            final List<Device> devs = this.deviceRepository.findByDeviceModelAndDeviceTypeAndInMaintenance(deviceModel,
-                    Ssld.SSLD_TYPE, false);
+            final List<Device> devs = this.deviceRepository.findByDeviceModelAndDeviceTypeAndInMaintenanceAndIsActive(
+                    deviceModel, deviceType, false, true);
             devices.addAll(devs);
         }
         if (devices.isEmpty()) {
             LOGGER.warn("No devices found for device models for manufacturer");
         } else {
             LOGGER.info("{} devices found for device models for manufacturer", devices.size());
+            for (final Device device : devices) {
+                LOGGER.info(" device: {}", device.getDeviceIdentification());
+            }
         }
         return devices;
     }
@@ -160,11 +119,11 @@ public class EventRetrievalScheduledTask implements Runnable {
      * contacted. The filtering uses the age of the latest event in comparison
      * with 'maximumAllowedAge'.
      */
-    private List<Device> findDevicesToContact(final List<Device> devices) {
+    protected List<Device> findDevicesToContact(final List<Device> devices, final int maximumAllowedAge) {
         List<Object> listOfObjectArrays = this.eventRepository.findLatestEventForEveryDevice(devices);
         LOGGER.info("listOfObjectArrays.size(): {}", listOfObjectArrays.size());
 
-        final Date maxAge = DateTime.now(DateTimeZone.UTC).minusHours(this.maximumAllowedAge).toDate();
+        final Date maxAge = DateTime.now(DateTimeZone.UTC).minusHours(maximumAllowedAge).toDate();
         LOGGER.info("maxAge: {}", maxAge);
 
         final Map<Long, Date> map = new HashMap<>();
@@ -173,7 +132,7 @@ public class EventRetrievalScheduledTask implements Runnable {
             final Long eventDeviceId = (Long) array[0];
             final Date timestamp = (Date) array[1];
             LOGGER.info("eventDeviceId: {}, timestamp: {}", eventDeviceId, timestamp);
-            if (this.isEventOlderThanMaxInterval(maxAge, timestamp)) {
+            if (this.isEventOlderThanMaxInterval(maxAge, timestamp, maximumAllowedAge)) {
                 map.put(eventDeviceId, timestamp);
             }
         }
@@ -190,7 +149,7 @@ public class EventRetrievalScheduledTask implements Runnable {
     /**
      * Determine if an event is older than X hours as indicated by maxAge.
      */
-    private boolean isEventOlderThanMaxInterval(final Date maxAge, final Date event) {
+    protected boolean isEventOlderThanMaxInterval(final Date maxAge, final Date event, final int maximumAllowedAge) {
         if (event == null) {
             // In case the event instance is null, try to contact the device.
             LOGGER.info("Event instance is null");
@@ -198,44 +157,25 @@ public class EventRetrievalScheduledTask implements Runnable {
         }
         final boolean result = event.before(maxAge);
         LOGGER.info("event date time: {}, current date time minus {} hours: {}, is event before? : {}", event,
-                this.maximumAllowedAge, maxAge, result);
+                maximumAllowedAge, maxAge, result);
         return result;
     }
 
-    /**
-     * Send a request message to protocol adapter component for each device to
-     * contact.
-     */
-    private void contactDevices(final List<Device> devicesToContact) {
+    protected void contactDevices(final List<Device> devicesToContact, final DeviceFunction deviceFunction) {
         for (final Device device : devicesToContact) {
-            final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(device);
-            if (protocolRequestMessage != null) {
-                try {
-                    LOGGER.info("Attempting to contact device: {}", device.getDeviceIdentification());
-                    this.deviceRequestMessageService.processMessage(protocolRequestMessage);
-                } catch (final FunctionalException e) {
-                    LOGGER.error("Exception during sending of protocol request message", e);
-                }
-            }
+            this.sendRequestMessageToDevice(device, deviceFunction);
         }
     }
 
-    /**
-     * Create a message to send to the protocol adapter component.
-     */
-    private ProtocolRequestMessage createProtocolRequestMessage(final Device device) {
+    protected void sendRequestMessageToDevice(final Device device, final DeviceFunction deviceFunction) {
         final String deviceIdentification = device.getDeviceIdentification();
         // Try to use the identification of the owner organization.
         final String organisation = device.getOwner() == null ? "" : device.getOwner().getOrganisationIdentification();
         // Creating message with empty CorrelationUID, in order to prevent a
-        // response from protocol adapter component.
+        // response.
         final String correlationUid = "";
-        final DeviceFunction deviceFunction = DeviceFunction.GET_STATUS;
-        final String domain = "CORE";
-        final String domainVersion = "1.0";
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisation, correlationUid, deviceFunction.toString(), 0);
+        final String deviceFunctionString = deviceFunction.name();
+        final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
 
         String ipAddress = null;
         if (device.getNetworkAddress() == null) {
@@ -243,15 +183,15 @@ public class EventRetrievalScheduledTask implements Runnable {
             // a request message.
             LOGGER.warn("Unable to create protocol request message because the IP address is empty for device: {}",
                     deviceIdentification);
-            return null;
+            return;
         } else {
             ipAddress = device.getNetworkAddress().getHostAddress();
         }
 
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisation, deviceIdentification,
-                null);
+                domain);
 
-        return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata).domain(domain)
-                .domainVersion(domainVersion).ipAddress(ipAddress).request(requestMessage).build();
+        this.osgpCoreRequestMessageSender.send(requestMessage, deviceFunctionString, ipAddress);
     }
+
 }

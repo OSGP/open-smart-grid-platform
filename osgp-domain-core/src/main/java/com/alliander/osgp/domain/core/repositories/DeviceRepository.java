@@ -18,11 +18,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
@@ -55,6 +55,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
     @Query(value = "delete from device_output_setting", nativeQuery = true)
     void deleteDeviceOutputSettings();
 
-    List<Device> findByDeviceModelAndDeviceTypeAndInMaintenance(DeviceModel deviceModel, String deviceType,
-            boolean inMantenance);
+    List<Device> findByDeviceModelAndDeviceTypeAndInMaintenanceAndIsActive(DeviceModel deviceModel, String deviceType,
+            boolean inMaintenance, boolean isActive);
 }

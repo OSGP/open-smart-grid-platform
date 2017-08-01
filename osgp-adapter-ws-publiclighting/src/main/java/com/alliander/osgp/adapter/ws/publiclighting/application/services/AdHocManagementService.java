@@ -145,7 +145,7 @@ public class AdHocManagementService {
 
     public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Valid final ResumeScheduleData resumeScheduleData)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -199,6 +199,46 @@ public class AdHocManagementService {
 
     public ResponseMessage dequeueSetTransitionResponse(final String correlationUid) throws OsgpException {
         return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
+    }
+
+    /**
+     * Send request message to domain component to couple an SSLD with a light
+     * measurement device.
+     *
+     * @param organisationIdentification
+     *            Organization issuing the request.
+     * @param deviceIdentification
+     *            The SSLD.
+     * @param lightMeasurementDeviceIdentification
+     *            The light measurement device.
+     *
+     * @return Correlation UID.
+     *
+     * @throws FunctionalException
+     *             In case the organization is not authorized or the SSLD or LMD
+     *             can not be found.
+     */
+    public String coupleLightMeasurementDeviceForSsld(final String organisationIdentification,
+            final String deviceIdentification, final String lightMeasurementDeviceIdentification)
+                    throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_LIGHT_MEASUREMENT_DEVICE);
+
+        final Device lightMeasurementDevice = this.domainHelperService.findDevice(lightMeasurementDeviceIdentification);
+        LOGGER.info("Found lightMeasurementDevice: {}", lightMeasurementDevice.getDeviceIdentification());
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
+                PublicLightingRequestMessageType.SET_LIGHT_MEASUREMENT_DEVICE, correlationUid,
+                organisationIdentification, deviceIdentification, lightMeasurementDeviceIdentification, null);
+
+        this.publicLightingRequestMessageSender.send(message);
+
+        return correlationUid;
     }
 
 }

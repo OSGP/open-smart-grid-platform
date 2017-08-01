@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -70,8 +71,8 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.LightValueDto> lightValuesDto = this.domainCoreMapper
-                .mapAsList(lightValues, com.alliander.osgp.dto.valueobjects.LightValueDto.class);
+        final List<com.alliander.osgp.dto.valueobjects.LightValueDto> lightValuesDto = this.domainCoreMapper.mapAsList(
+                lightValues, com.alliander.osgp.dto.valueobjects.LightValueDto.class);
         final LightValueMessageDataContainerDto lightValueMessageDataContainer = new LightValueMessageDataContainerDto(
                 lightValuesDto);
 
@@ -103,8 +104,8 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper
-                .map(allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
+        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper.map(
+                allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), messageType, device.getIpAddress());
@@ -136,9 +137,8 @@ public class AdHocManagementService extends AbstractService {
             }
 
             if (status != null) {
-                deviceStatusMapped = new DeviceStatusMapped(
-                        filterTariffValues(status.getLightValues(), dosMap, allowedDomainType),
-                        filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
+                deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
+                        allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
                         status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
                         status.getEventNotificationsMask());
 
@@ -166,8 +166,8 @@ public class AdHocManagementService extends AbstractService {
 
         if (!ssld.getHasSchedule()) {
             throw new FunctionalException(FunctionalExceptionType.UNSCHEDULED_DEVICE,
-                    ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(
-                            String.format("Device %1$s does not have a schedule.", deviceIdentification)));
+                    ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(String.format(
+                            "Device %1$s does not have a schedule.", deviceIdentification)));
         }
 
         final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainerDto = new ResumeScheduleMessageDataContainerDto(
@@ -195,6 +195,55 @@ public class AdHocManagementService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, transitionMessageDataContainerDto), messageType, device.getIpAddress());
+    }
+
+    // === SET LIGHT MEASUREMENT DEVICE ===
+
+    /**
+     * Couple an SSLD with a light measurement device.
+     *
+     * @param organisationIdentification
+     *            Organization issuing the request.
+     * @param deviceIdentification
+     *            The SSLD.
+     * @param correlationUid
+     *            The generated correlation UID.
+     * @param lightMeasurementDeviceIdentification
+     *            The light measurement device.
+     * @param messageType
+     *            SET_LIGHTMEASUREMENT_DEVICE
+     *
+     * @throws FunctionalException
+     *             In case the organisation can not be found.
+     */
+    public void coupleLightMeasurementDeviceForSsld(final String organisationIdentification,
+            final String deviceIdentification, final String correlationUid,
+            final String lightMeasurementDeviceIdentification, final String messageType) throws FunctionalException {
+
+        LOGGER.debug(
+                "setLightMeasurementDevice called for device {} with organisation {} and light measurement device, message type: {}, correlationUid: {}",
+                deviceIdentification, organisationIdentification, lightMeasurementDeviceIdentification, messageType,
+                correlationUid);
+
+        this.findOrganisation(organisationIdentification);
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+        if (ssld == null) {
+            LOGGER.error("Unable to find ssld: {}", deviceIdentification);
+            return;
+        }
+
+        final LightMeasurementDevice lightMeasurementDevice = this.lightMeasurementDeviceRepository
+                .findByDeviceIdentification(lightMeasurementDeviceIdentification);
+        if (lightMeasurementDevice == null) {
+            LOGGER.error("Unable to find light measurement device: {}", lightMeasurementDeviceIdentification);
+            return;
+        }
+
+        ssld.setLightMeasurementDevice(lightMeasurementDevice);
+        this.ssldRepository.save(ssld);
+
+        LOGGER.info("Set light measurement device: {} for ssld: {}", lightMeasurementDeviceIdentification,
+                deviceIdentification);
     }
 
     // === CUSTOM STATUS FILTER FUNCTIONS ===

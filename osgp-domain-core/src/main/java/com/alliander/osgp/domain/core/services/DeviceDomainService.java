@@ -44,7 +44,8 @@ public class DeviceDomainService {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         if (device == null) {
             LOGGER.error("Device with id {} could not be found", deviceIdentification);
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_CORE);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
         }
         return device;
     }

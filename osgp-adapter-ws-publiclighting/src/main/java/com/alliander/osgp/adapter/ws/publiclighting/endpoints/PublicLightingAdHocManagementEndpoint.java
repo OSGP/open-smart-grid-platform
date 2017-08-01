@@ -38,6 +38,8 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Resum
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightMeasurementDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightMeasurementDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionAsyncRequest;
@@ -352,6 +354,32 @@ public class PublicLightingAdHocManagementEndpoint {
             this.handleException(e);
         }
 
+        return response;
+    }
+
+    // === SET LIGHT MEASUREMENT DEVICE ===
+
+    @PayloadRoot(localPart = "SetLightMeasurementDeviceRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SetLightMeasurementDeviceResponse setLightMeasurementDevice(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetLightMeasurementDeviceRequest request) throws OsgpException {
+
+        LOGGER.info(
+                "Set Light Measurement Device Request received from organisation: {} for device: {} for light measurement device: {}.",
+                organisationIdentification, request.getDeviceIdentification(),
+                request.getLightMeasurementDeviceIdentification());
+
+        final SetLightMeasurementDeviceResponse response = new SetLightMeasurementDeviceResponse();
+
+        try {
+            this.adHocManagementService.coupleLightMeasurementDeviceForSsld(organisationIdentification,
+                    request.getDeviceIdentification(), request.getLightMeasurementDeviceIdentification());
+
+            response.setResult(OsgpResultType.OK);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
         return response;
     }
 
