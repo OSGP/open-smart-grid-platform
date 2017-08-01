@@ -90,7 +90,7 @@ public class SetAlarmNotificationsCommandExecutor
         }
     }
 
-    public AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionHolder conn)
+    private AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionHolder conn)
             throws IOException, TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -111,7 +111,7 @@ public class SetAlarmNotificationsCommandExecutor
         return this.alarmNotifications(getResult.getResultData());
     }
 
-    public AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnectionHolder conn,
+    private AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnectionHolder conn,
             final long alarmFilterLongValue) throws IOException, TimeoutException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -125,7 +125,7 @@ public class SetAlarmNotificationsCommandExecutor
         return conn.getConnection().set(setParameter);
     }
 
-    public AlarmNotificationsDto alarmNotifications(final DataObject alarmFilter) throws ProtocolAdapterException {
+    private AlarmNotificationsDto alarmNotifications(final DataObject alarmFilter) throws ProtocolAdapterException {
 
         if (alarmFilter == null) {
             throw new ProtocolAdapterException("DataObject expected to contain an alarm filter is null.");
@@ -144,7 +144,7 @@ public class SetAlarmNotificationsCommandExecutor
 
     }
 
-    public long calculateAlarmFilterLongValue(final AlarmNotificationsDto alarmNotificationsOnDevice,
+    private long calculateAlarmFilterLongValue(final AlarmNotificationsDto alarmNotificationsOnDevice,
             final AlarmNotificationsDto alarmNotificationsToSet) {
 
         /*
@@ -169,7 +169,7 @@ public class SetAlarmNotificationsCommandExecutor
         return this.alarmFilterLongValue(new AlarmNotificationsDto(notificationsToSet));
     }
 
-    public AlarmNotificationsDto alarmNotifications(final long alarmFilterLongValue) {
+    private AlarmNotificationsDto alarmNotifications(final long alarmFilterLongValue) {
 
         final BitSet bitSet = BitSet.valueOf(new long[] { alarmFilterLongValue });
         final Set<AlarmNotificationDto> notifications = new TreeSet<>();
@@ -184,7 +184,7 @@ public class SetAlarmNotificationsCommandExecutor
         return new AlarmNotificationsDto(notifications);
     }
 
-    public long alarmFilterLongValue(final AlarmNotificationsDto alarmNotifications) {
+    private long alarmFilterLongValue(final AlarmNotificationsDto alarmNotifications) {
 
         final BitSet bitSet = new BitSet(NUMBER_OF_BITS_IN_ALARM_FILTER);
         final Set<AlarmNotificationDto> notifications = alarmNotifications.getAlarmNotificationsSet();
@@ -193,6 +193,14 @@ public class SetAlarmNotificationsCommandExecutor
                     .get(alarmNotification.getAlarmType()), alarmNotification.isEnabled());
         }
 
+        /*
+         * If no alarmNotifications are set enabled in the request, bitSet stays
+         * empty because no alarmNotification is set. Returning the first
+         * element then results in an ArrayIndexOutOfBoundsException exception.
+         * Because this should not happen in this valid scenario, value 0 should
+         * be returned because nothing has to be enabled. Then the alarmFilter
+         * value to write to the device will be calculated with this input.
+         */
         if (bitSet.isEmpty()) {
             return 0L;
         } else {
