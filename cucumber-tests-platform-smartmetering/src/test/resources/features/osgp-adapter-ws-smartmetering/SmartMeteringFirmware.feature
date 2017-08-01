@@ -13,7 +13,7 @@ Feature: SmartMetering Firmware
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
-
+  
   Scenario: Get the firmware version from device
     When the get firmware version request is received
       | DeviceIdentification | TEST1024000000001 |

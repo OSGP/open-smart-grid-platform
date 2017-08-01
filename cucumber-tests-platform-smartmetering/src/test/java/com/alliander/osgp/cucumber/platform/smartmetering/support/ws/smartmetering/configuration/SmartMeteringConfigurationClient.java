@@ -22,10 +22,26 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequest;
@@ -59,6 +75,37 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         return (UpdateFirmwareResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
     }
 
+    public GetFirmwareVersionAsyncResponse getFirmwareVersion(final GetFirmwareVersionRequest getFirmwareVersionRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (GetFirmwareVersionAsyncResponse) this.getTemplate().marshalSendAndReceive(getFirmwareVersionRequest);
+    }
+
+    public GetFirmwareVersionResponse retrieveGetFirmwareVersionResponse(
+            final GetFirmwareVersionAsyncRequest getFirmwareVersionAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = getFirmwareVersionAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (GetFirmwareVersionResponse) this.getTemplate().marshalSendAndReceive(getFirmwareVersionAsyncRequest);
+    }
+
+    public SetActivityCalendarAsyncResponse setActivityCalendar(
+            final SetActivityCalendarRequest setActivityCalendarRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (SetActivityCalendarAsyncResponse) this.getTemplate().marshalSendAndReceive(setActivityCalendarRequest);
+    }
+
+    public SetActivityCalendarResponse getSetActivityCalendarResponse(
+            final SetActivityCalendarAsyncRequest setActivityCalendarAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = setActivityCalendarAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (SetActivityCalendarResponse) this.getTemplate().marshalSendAndReceive(setActivityCalendarAsyncRequest);
+    }
+
     public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(final GetAdministrativeStatusRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         return (GetAdministrativeStatusAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
@@ -72,6 +119,42 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         this.waitForDlmsResponseData(correlationUid);
 
         return (GetAdministrativeStatusResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+    }
+
+    public SetAdministrativeStatusAsyncResponse setAdministrativeStatus(
+            final SetAdministrativeStatusRequest setAdministrativeStatusRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (SetAdministrativeStatusAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(setAdministrativeStatusRequest);
+    }
+
+    public SetAdministrativeStatusResponse retrieveSetAdministrativeStatusResponse(
+            final SetAdministrativeStatusAsyncRequest setAdministrativeStatusAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = setAdministrativeStatusAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (SetAdministrativeStatusResponse) this.getTemplate()
+                .marshalSendAndReceive(setAdministrativeStatusAsyncRequest);
+    }
+
+    public SetAlarmNotificationsAsyncResponse setAlarmNotifications(
+            final SetAlarmNotificationsRequest setAlarmNotificationsRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (SetAlarmNotificationsAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(setAlarmNotificationsRequest);
+    }
+
+    public SetAlarmNotificationsResponse retrieveSetAlarmNotificationsResponse(
+            final SetAlarmNotificationsAsyncRequest setAlarmNotificationsAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = setAlarmNotificationsAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (SetAlarmNotificationsResponse) this.getTemplate()
+                .marshalSendAndReceive(setAlarmNotificationsAsyncRequest);
     }
 
     public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest request)

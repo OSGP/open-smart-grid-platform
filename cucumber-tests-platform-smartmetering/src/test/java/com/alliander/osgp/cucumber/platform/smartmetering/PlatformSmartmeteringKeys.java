@@ -115,4 +115,9 @@ public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platf
     public static final String MBUS_VERSION = "MbusVersion";
     public static final String MBUS_DEVICE_TYPE_IDENTIFICATION = "MbusDeviceTypeIdentification";
     public static final String MBUS_PRIMARY_ADDRESS = "MbusPrimaryAddress";
+
+    public static final String ADMINISTRATIVE_STATUS_TYPE = "AdministrativeStatusType";
+    public static final String ALARM_TYPE = "AlarmType";
+    public static final String ALARM_TYPE_ENABLED = "AlarmTypeEnabled";
+
 }
