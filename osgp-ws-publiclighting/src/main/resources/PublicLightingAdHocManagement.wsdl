@@ -156,6 +156,20 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="SetLightMeasurementDeviceHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetLightMeasurementDeviceRequest">
+    <wsdl:part element="ahman:SetLightMeasurementDeviceRequest" name="SetLightMeasurementDeviceRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetLightMeasurementDeviceResponse">
+    <wsdl:part element="ahman:SetLightMeasurementDeviceResponse" name="SetLightMeasurementDeviceResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:portType name="PublicLightingAdHocManagementPort">
     <wsdl:operation name="FindAllDevices">
       <wsdl:input message="tns:FindAllDevicesRequest" name="FindAllDevicesRequest">
@@ -220,6 +234,13 @@
         name="SetTransitionAsyncRequest">
       </wsdl:input>
       <wsdl:output message="tns:SetTransitionResponse" name="SetTransitionResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="SetLightMeasurementDevice">
+      <wsdl:input message="tns:SetLightMeasurementDeviceRequest" name="SetLightMeasurementDeviceRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetLightMeasurementDeviceResponse" name="SetLightMeasurementDeviceResponse">
       </wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
@@ -365,6 +386,22 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SetTransitionResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="SetLightMeasurementDevice">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetLightMeasurementDeviceRequest">
+        <soap:header message="tns:SetLightMeasurementDeviceHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:SetLightMeasurementDeviceHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:SetLightMeasurementDeviceHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetLightMeasurementDeviceResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

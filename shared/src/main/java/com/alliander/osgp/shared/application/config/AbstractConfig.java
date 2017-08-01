@@ -10,6 +10,9 @@ package com.alliander.osgp.shared.application.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -23,44 +26,51 @@ import org.springframework.core.env.PropertySource;
  */
 public abstract class AbstractConfig {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConfig.class);
+
     /**
      * Qualifier to detect a class path type resource
      */
     private static final String CLASS_PATH_QUALIFIER = "class path resource [";
-    
+
     /**
      * Qualifier to detect a file type resource (i.e. /etc/osp/xxx.properties)
      */
     private static final String RESOURCE_PATH_QUALIFIER = "URL [file:";
-    
+
     /**
-     * Qualifier to detect a specific global.properties file resource (i.e. /etc/osp/global.properties)
+     * Qualifier to detect a specific global.properties file resource (i.e.
+     * /etc/osp/global.properties)
      */
     private static final String RESOURCE_GLOBAL_PATH_QUALIFIER = "global.properties";
-    
+
     /**
-     * Standard spring environment (autowired with setter) 
+     * Standard spring environment (autowired with setter)
      */
     protected Environment environment;
-  
+
     /**
-     * Default implementation to resolve ${} values in annotations.  
+     * Default implementation to resolve ${} values in annotations.
+     *
      * @return static PropertySourcesPlaceholderConfigurer
      */
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
-        PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();
+        final PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();
         ppc.setIgnoreUnresolvablePlaceholders(true);
-        return ppc; 
+        return ppc;
     }
-    
+
     /**
-     * Special setter for Spring environment, which reorders the property sources in defined order (high to lowest priority):
+     * Special setter for Spring environment, which reorders the property
+     * sources in defined order (high to lowest priority): 
      * - environment config
      * - local config files
      * - global config files
      * - classpath config files
-     * @param configurableEnvironment Spring environment
+     * 
+     * @param configurableEnvironment
+     *            Spring environment
      */
     @Autowired
     public void setConfigurableEnvironment(final ConfigurableEnvironment configurableEnvironment) {
@@ -69,15 +79,15 @@ public abstract class AbstractConfig {
     }
 
     private static void reorderEnvironment(final ConfigurableEnvironment configurableEnvironment) {
-        List<PropertySource<?>> env = new ArrayList<>();  
-        List<PropertySource<?>> file = new ArrayList<>();  
-        List<PropertySource<?>> global = new ArrayList<>();
-        List<PropertySource<?>> classpath = new ArrayList<>();
-        
-        MutablePropertySources sources = configurableEnvironment.getPropertySources();
+        final List<PropertySource<?>> env = new ArrayList<>();
+        final List<PropertySource<?>> file = new ArrayList<>();
+        final List<PropertySource<?>> global = new ArrayList<>();
+        final List<PropertySource<?>> classpath = new ArrayList<>();
 
-        // Divide property sources in groups 
-        for (PropertySource<?> source : sources) {
+        final MutablePropertySources sources = configurableEnvironment.getPropertySources();
+
+        // Divide property sources in groups
+        for (final PropertySource<?> source : sources) {
             if (source.getName().contains(RESOURCE_GLOBAL_PATH_QUALIFIER)) {
                 global.add(source);
             } else if (source.getName().startsWith(RESOURCE_PATH_QUALIFIER)) {
@@ -95,12 +105,25 @@ public abstract class AbstractConfig {
         addSources(sources, global);
         addSources(sources, classpath);
     }
-    
-    private static void addSources(MutablePropertySources sources, List<PropertySource<?>> sourcesToAdd) {
+
+    private static void addSources(final MutablePropertySources sources, final List<PropertySource<?>> sourcesToAdd) {
         // Remove and add each source
-        for (PropertySource<?> source : sourcesToAdd) {
+        for (final PropertySource<?> source : sourcesToAdd) {
             sources.remove(source.getName());
             sources.addLast(source);
+        }
+    }
+
+    protected Integer getNonRequiredIntegerPropertyValue(final String propertyName, final Integer defaultValue) {
+        final String propertyValue = this.environment.getProperty(propertyName);
+        if (StringUtils.isEmpty(propertyValue)) {
+            LOGGER.info("No value found for property with name: {}, using default value: {}", propertyName,
+                    defaultValue);
+            return defaultValue;
+        } else {
+            final Integer integerValue = Integer.valueOf(propertyValue);
+            LOGGER.info("Value found for property with name: {}, value: {}", propertyName, integerValue);
+            return integerValue;
         }
     }
 }
