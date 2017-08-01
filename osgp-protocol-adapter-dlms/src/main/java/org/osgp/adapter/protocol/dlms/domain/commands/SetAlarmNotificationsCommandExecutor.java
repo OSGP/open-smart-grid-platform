@@ -194,7 +194,7 @@ public class SetAlarmNotificationsCommandExecutor
         }
 
         if (bitSet.isEmpty()) {
-            return 0l;
+            return 0L;
         } else {
             return bitSet.toLongArray()[0];
         }
