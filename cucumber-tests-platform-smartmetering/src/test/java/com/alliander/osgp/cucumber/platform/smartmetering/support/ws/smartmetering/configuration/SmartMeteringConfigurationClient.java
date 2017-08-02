@@ -46,6 +46,18 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClock
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
@@ -155,6 +167,57 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
         return (SetAlarmNotificationsResponse) this.getTemplate()
                 .marshalSendAndReceive(setAlarmNotificationsAsyncRequest);
+    }
+
+    public SetConfigurationObjectAsyncResponse setConfigurationObject(
+            final SetConfigurationObjectRequest setConfigurationObjectRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (SetConfigurationObjectAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(setConfigurationObjectRequest);
+    }
+
+    public SetConfigurationObjectResponse retrieveSetConfigurationObjectResponse(
+            final SetConfigurationObjectAsyncRequest setConfigurationObjectAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = setConfigurationObjectAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (SetConfigurationObjectResponse) this.getTemplate()
+                .marshalSendAndReceive(setConfigurationObjectAsyncRequest);
+    }
+
+    public SetSpecialDaysAsyncResponse setSpecialDays(final SetSpecialDaysRequest setSpecialDaysRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (SetSpecialDaysAsyncResponse) this.getTemplate().marshalSendAndReceive(setSpecialDaysRequest);
+    }
+
+    public SetSpecialDaysResponse retrieveSetSpecialDaysResponse(
+            final SetSpecialDaysAsyncRequest setSpecialDaysAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = setSpecialDaysAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (SetSpecialDaysResponse) this.getTemplate().marshalSendAndReceive(setSpecialDaysAsyncRequest);
+    }
+
+    public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
+            final SetEncryptionKeyExchangeOnGMeterRequest setEncryptionKeyExchangeOnGMeterRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (SetEncryptionKeyExchangeOnGMeterAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(setEncryptionKeyExchangeOnGMeterRequest);
+    }
+
+    public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
+            final SetEncryptionKeyExchangeOnGMeterAsyncRequest setEncryptionKeyExchangeOnGMeterAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = setEncryptionKeyExchangeOnGMeterAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (SetEncryptionKeyExchangeOnGMeterResponse) this.getTemplate()
+                .marshalSendAndReceive(setEncryptionKeyExchangeOnGMeterAsyncRequest);
     }
 
     public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest request)

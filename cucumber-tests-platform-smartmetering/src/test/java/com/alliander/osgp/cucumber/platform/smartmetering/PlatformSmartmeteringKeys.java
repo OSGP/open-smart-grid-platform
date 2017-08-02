@@ -120,4 +120,8 @@ public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platf
     public static final String ALARM_TYPE = "AlarmType";
     public static final String ALARM_TYPE_ENABLED = "AlarmTypeEnabled";
 
+    public static final String CONFIGURATION_FLAG_TYPE = "ConfigurationFlagType";
+    public static final String CONFIGURATION_FLAG_ENABLED = "ConfigurationFlagEnabled";
+    public static final String GPRS_OPERATION_MODE_TYPE = "GprsOperationModeType";
+
 }
