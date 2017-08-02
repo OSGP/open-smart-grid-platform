@@ -74,17 +74,45 @@ public class SetAlarmNotificationsCommandExecutor
     public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final AlarmNotificationsDto alarmNotifications) throws ProtocolAdapterException {
 
+        boolean writeToDevice = false;
         try {
             final AlarmNotificationsDto alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn);
 
             LOGGER.info("Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
-            final long alarmFilterLongValue = this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice,
-                    alarmNotifications);
+            /*
+             * Check for each alarmType on the device if isEnabled differs from
+             * the request alarmType isEnabled. If so, writeToDevice will be set
+             * to true because new settings have to be written to the device. If
+             * only matching isEnabled are existing, there is no need to write
+             * this to the device.
+             */
+            for (final AlarmNotificationDto alarmNotificationOnDevice : alarmNotificationsOnDevice
+                    .getAlarmNotificationsSet()) {
+                for (final AlarmNotificationDto alarmNotification : alarmNotifications.getAlarmNotificationsSet()) {
+                    if (alarmNotificationOnDevice.getAlarmType().equals(alarmNotification.getAlarmType())
+                            && !alarmNotification.isEnabled() == (alarmNotificationOnDevice.isEnabled())) {
+                        writeToDevice = true;
+                        break;
+                    }
+                }
+            }
 
-            LOGGER.info("Modified Alarm Filter long value for device: {}", alarmFilterLongValue);
+            /*
+             * Write alarmFilter settings to the device if they are different
+             * than the current settings on the device. Otherwise nothing has to
+             * be written and SUCCESS is returned.
+             */
+            if (writeToDevice) {
+                final long alarmFilterLongValue = this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice,
+                        alarmNotifications);
 
-            return this.writeUpdatedAlarmNotifications(conn, alarmFilterLongValue);
+                LOGGER.info("Modified Alarm Filter long value for device: {}", alarmFilterLongValue);
+
+                return this.writeUpdatedAlarmNotifications(conn, alarmFilterLongValue);
+            } else {
+                return AccessResultCode.SUCCESS;
+            }
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
         }
@@ -187,19 +215,16 @@ public class SetAlarmNotificationsCommandExecutor
     private long alarmFilterLongValue(final AlarmNotificationsDto alarmNotifications) {
 
         final BitSet bitSet = new BitSet(NUMBER_OF_BITS_IN_ALARM_FILTER);
-        final Set<AlarmNotificationDto> notifications = alarmNotifications.getAlarmNotificationsSet();
-        for (final AlarmNotificationDto alarmNotification : notifications) {
+        for (final AlarmNotificationDto alarmNotification : alarmNotifications.getAlarmNotificationsSet()) {
             bitSet.set(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType()
                     .get(alarmNotification.getAlarmType()), alarmNotification.isEnabled());
         }
 
         /*
-         * If no alarmNotifications are set enabled in the request, bitSet stays
-         * empty because no alarmNotification is set. Returning the first
-         * element then results in an ArrayIndexOutOfBoundsException exception.
-         * Because this should not happen in this valid scenario, value 0 should
-         * be returned because nothing has to be enabled. Then the alarmFilter
-         * value to write to the device will be calculated with this input.
+         * If no alarmType has isEnabled is true in the request, bitSet stays
+         * empty. Value 0 should then be returned because nothing has to be
+         * enabled. Then the alarmFilter value to write to the device will be
+         * calculated with this input.
          */
         if (bitSet.isEmpty()) {
             return 0L;
@@ -207,5 +232,4 @@ public class SetAlarmNotificationsCommandExecutor
             return bitSet.toLongArray()[0];
         }
     }
-
 }
