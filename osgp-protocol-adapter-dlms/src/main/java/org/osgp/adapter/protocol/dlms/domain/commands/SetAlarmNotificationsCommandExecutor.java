@@ -79,45 +79,20 @@ public class SetAlarmNotificationsCommandExecutor
 
             LOGGER.info("Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
-            /*
-             * Write alarmFilter settings to the device if they are different
-             * than the current settings on the device. Otherwise nothing has to
-             * be written and SUCCESS is returned.
-             */
-            if (this.alarmTypeEnabledChanged(alarmNotificationsOnDevice, alarmNotifications)) {
-                final long alarmFilterLongValue = this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice,
-                        alarmNotifications);
+            final long alarmFilterLongValueOnDevice = this.alarmFilterLongValue(alarmNotificationsOnDevice);
+            final long updatedAlarmFilterLongValue = this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice,
+                    alarmNotifications);
 
-                LOGGER.info("Modified Alarm Filter long value for device: {}", alarmFilterLongValue);
-
-                return this.writeUpdatedAlarmNotifications(conn, alarmFilterLongValue);
-            } else {
+            if (alarmFilterLongValueOnDevice == updatedAlarmFilterLongValue) {
                 return AccessResultCode.SUCCESS;
             }
+
+            LOGGER.info("Modified Alarm Filter long value for device: {}", updatedAlarmFilterLongValue);
+
+            return this.writeUpdatedAlarmNotifications(conn, updatedAlarmFilterLongValue);
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
         }
-    }
-
-    private boolean alarmTypeEnabledChanged(final AlarmNotificationsDto alarmNotificationsOnDevice,
-            final AlarmNotificationsDto alarmNotifications) {
-        /*
-         * Check for each alarmType on the device if isEnabled differs from the
-         * request alarmType isEnabled. If so, writeToDevice will be set to true
-         * because new settings have to be written to the device. If only
-         * matching isEnabled are existing, there is no need to write this to
-         * the device.
-         */
-        for (final AlarmNotificationDto alarmNotificationOnDevice : alarmNotificationsOnDevice
-                .getAlarmNotificationsSet()) {
-            for (final AlarmNotificationDto alarmNotification : alarmNotifications.getAlarmNotificationsSet()) {
-                if (alarmNotificationOnDevice.getAlarmType().equals(alarmNotification.getAlarmType())
-                        && !alarmNotification.isEnabled() == (alarmNotificationOnDevice.isEnabled())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionHolder conn)
