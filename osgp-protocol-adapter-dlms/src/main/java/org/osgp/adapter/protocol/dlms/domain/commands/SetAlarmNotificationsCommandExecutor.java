@@ -35,8 +35,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 
 @Component()
-public class SetAlarmNotificationsCommandExecutor extends
-        AbstractCommandExecutor<AlarmNotificationsDto, AccessResultCode> {
+public class SetAlarmNotificationsCommandExecutor
+        extends AbstractCommandExecutor<AlarmNotificationsDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsCommandExecutor.class);
 
@@ -79,25 +79,30 @@ public class SetAlarmNotificationsCommandExecutor extends
 
             LOGGER.info("Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
-            final long alarmFilterLongValue = this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice,
+            final long alarmFilterLongValueOnDevice = this.alarmFilterLongValue(alarmNotificationsOnDevice);
+            final long updatedAlarmFilterLongValue = this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice,
                     alarmNotifications);
 
-            LOGGER.info("Modified Alarm Filter long value for device: {}", alarmFilterLongValue);
+            if (alarmFilterLongValueOnDevice == updatedAlarmFilterLongValue) {
+                return AccessResultCode.SUCCESS;
+            }
 
-            return this.writeUpdatedAlarmNotifications(conn, alarmFilterLongValue);
+            LOGGER.info("Modified Alarm Filter long value for device: {}", updatedAlarmFilterLongValue);
+
+            return this.writeUpdatedAlarmNotifications(conn, updatedAlarmFilterLongValue);
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
         }
     }
 
-    public AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionHolder conn)
+    private AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionHolder conn)
             throws IOException, TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         conn.getDlmsMessageListener()
-        .setDescription("SetAlarmNotifications retrieve current value, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
+                .setDescription("SetAlarmNotifications retrieve current value, retrieve attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
 
         LOGGER.info(
                 "Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute id: {}",
@@ -111,7 +116,7 @@ public class SetAlarmNotificationsCommandExecutor extends
         return this.alarmNotifications(getResult.getResultData());
     }
 
-    public AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnectionHolder conn,
+    private AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnectionHolder conn,
             final long alarmFilterLongValue) throws IOException, TimeoutException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -125,7 +130,7 @@ public class SetAlarmNotificationsCommandExecutor extends
         return conn.getConnection().set(setParameter);
     }
 
-    public AlarmNotificationsDto alarmNotifications(final DataObject alarmFilter) throws ProtocolAdapterException {
+    private AlarmNotificationsDto alarmNotifications(final DataObject alarmFilter) throws ProtocolAdapterException {
 
         if (alarmFilter == null) {
             throw new ProtocolAdapterException("DataObject expected to contain an alarm filter is null.");
@@ -136,15 +141,15 @@ public class SetAlarmNotificationsCommandExecutor extends
         }
 
         if (!(alarmFilter.getValue() instanceof Number)) {
-            throw new ProtocolAdapterException("Value in DataObject is not a java.lang.Number: "
-                    + alarmFilter.getValue().getClass().getName());
+            throw new ProtocolAdapterException(
+                    "Value in DataObject is not a java.lang.Number: " + alarmFilter.getValue().getClass().getName());
         }
 
         return this.alarmNotifications(((Number) alarmFilter.getValue()).longValue());
 
     }
 
-    public long calculateAlarmFilterLongValue(final AlarmNotificationsDto alarmNotificationsOnDevice,
+    private long calculateAlarmFilterLongValue(final AlarmNotificationsDto alarmNotificationsOnDevice,
             final AlarmNotificationsDto alarmNotificationsToSet) {
 
         /*
@@ -169,32 +174,39 @@ public class SetAlarmNotificationsCommandExecutor extends
         return this.alarmFilterLongValue(new AlarmNotificationsDto(notificationsToSet));
     }
 
-    public AlarmNotificationsDto alarmNotifications(final long alarmFilterLongValue) {
+    private AlarmNotificationsDto alarmNotifications(final long alarmFilterLongValue) {
 
         final BitSet bitSet = BitSet.valueOf(new long[] { alarmFilterLongValue });
         final Set<AlarmNotificationDto> notifications = new TreeSet<>();
 
         final AlarmTypeDto[] alarmTypes = AlarmTypeDto.values();
         for (final AlarmTypeDto alarmType : alarmTypes) {
-            final boolean enabled = bitSet.get(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType().get(
-                    alarmType));
+            final boolean enabled = bitSet
+                    .get(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType().get(alarmType));
             notifications.add(new AlarmNotificationDto(alarmType, enabled));
         }
 
         return new AlarmNotificationsDto(notifications);
     }
 
-    public long alarmFilterLongValue(final AlarmNotificationsDto alarmNotifications) {
+    private long alarmFilterLongValue(final AlarmNotificationsDto alarmNotifications) {
 
         final BitSet bitSet = new BitSet(NUMBER_OF_BITS_IN_ALARM_FILTER);
-        final Set<AlarmNotificationDto> notifications = alarmNotifications.getAlarmNotificationsSet();
-        for (final AlarmNotificationDto alarmNotification : notifications) {
-            bitSet.set(
-                    this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType()
+        for (final AlarmNotificationDto alarmNotification : alarmNotifications.getAlarmNotificationsSet()) {
+            bitSet.set(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType()
                     .get(alarmNotification.getAlarmType()), alarmNotification.isEnabled());
         }
 
-        return bitSet.toLongArray()[0];
+        /*
+         * If no alarmType has isEnabled is true in the request, bitSet stays
+         * empty. Value 0 should then be returned because nothing has to be
+         * enabled. Then the alarmFilter value to write to the device will be
+         * calculated with this input.
+         */
+        if (bitSet.isEmpty()) {
+            return 0L;
+        } else {
+            return bitSet.toLongArray()[0];
+        }
     }
-
 }
