@@ -2,7 +2,7 @@
 
 if [ "$#" -eq 0 ]
 then
-  echo "Usage: $0 <servername> <project> <user> [<ssh key file>] [<additional java parameters>]"
+  echo "Usage: $0 <servername> <project> <user> [<ssh key file>] [<additional java parameters>] [<Xvfb options>] [<additional cucumber options>]"
   echo ""
   exit 1
 fi
@@ -28,4 +28,4 @@ ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVERNAME} "sudo chown
 echo "- Copy over nesseccary files to ${SERVERNAME} ..."
 scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${PROJECT}/soap-ui-project/* ${USER}@${SERVERNAME}:/data/software/${PROJECT}/soap-ui-project/
 
-./runTestsAtRemoteServer.sh ${SERVERNAME} ${PROJECT} ${USER} "$4" "-Ddynamic.properties.base.url=https://${SERVERNAME}/osgp-simulator-dlms-triggered/wakeup $5"
+./runTestsAtRemoteServer.sh ${SERVERNAME} ${PROJECT} ${USER} "$4" "-Ddynamic.properties.base.url=https://${SERVERNAME}/osgp-simulator-dlms-triggered/wakeup ${ADDITIONAL_PARAMETERS}" "$6" "$7"
