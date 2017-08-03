@@ -16,6 +16,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +28,8 @@ import com.luckycatlabs.sunrisesunset.dto.Location;
 public class Helpers {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Helpers.class);
+    private static final String TIME_FORMAT = "HH:mm";
+    private static final String CET_TIMEZONE = "Europe/Paris";
 
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
 
@@ -287,6 +292,57 @@ public class Helpers {
         }
 
         return new DateTime(officialTransition.getTimeInMillis());
+    }
+
+    /**
+     * Shifts a time to from the system's timezone to CET. It assumes the time
+     * is for the current date.
+     *
+     * @param time
+     *            Time in system's timezone, formatted as HH:mm
+     * @return Time in CET, formatted as HH:mm
+     */
+    public static String shiftSystemZoneToCET(final String time) {
+        return Helpers.shiftTimeToOtherZone(time, true);
+    }
+
+    /**
+     * Shifts a time to from CET to the system's timezone. It assumes the time
+     * is for the current date.
+     *
+     * @param time
+     *            Time in system's timezone, formatted as HH:mm
+     * @return Time in CET, formatted as HH:mm
+     */
+    public static String shiftCETToSystemZone(final String time) {
+        return Helpers.shiftTimeToOtherZone(time, false);
+    }
+
+    /**
+     * Shifts a time to another timezone. It assumes the time is for the current
+     * date.
+     *
+     * @param time
+     *            Time in original timezone, formatted as HH:mm
+     * @param positiveShift
+     *            Indicates if a positive or negative shift should be done
+     * @return Shifted time, formatted as HH:mm
+     */
+    private static String shiftTimeToOtherZone(final String time, final boolean positiveShift) {
+        // Extract hours and minutes from the time parameter
+        final DateTimeFormatter timeFormatter = DateTimeFormat.forPattern(TIME_FORMAT);
+        final DateTime parsedTime = timeFormatter.parseDateTime(time);
+
+        // Determine current CET offset in hours for the system timezone.
+        final int UTCOffsetForCET = DateTimeZone.forID(CET_TIMEZONE).getOffset(new DateTime());
+        final int UTCOffsetForSystem = DateTimeZone.getDefault().getOffset(new DateTime());
+        final int offsetHours = (UTCOffsetForCET - UTCOffsetForSystem) / (3600 * 1000) * (positiveShift ? 1 : -1);
+
+        // Add offset
+        final DateTime shiftedTime = new DateTime()
+                .withTime(parsedTime.getHourOfDay(), parsedTime.getMinuteOfHour(), 0, 0).plusHours(offsetHours);
+
+        return timeFormatter.print(shiftedTime);
     }
 
     public static Location getCurrentLocationByLatitudeAndLongitude(final double latitude, final double longitude) {

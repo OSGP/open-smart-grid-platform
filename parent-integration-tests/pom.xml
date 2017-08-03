@@ -8,7 +8,7 @@
 
   <artifactId>parent-integration-tests</artifactId>
   <groupId>com.alliander.osgp</groupId>
-  <version>4.15.0-SNAPSHOT</version>
+  <version>4.16.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-integration-tests</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -70,7 +70,7 @@
     <netty.version>3.9.4.Final</netty.version>
     <givwenzen.version>1.0.2</givwenzen.version>
     <checkstyle.version>2.12.1</checkstyle.version>
-    <pmd.version>4.3</pmd.version>
+    <pmd.version>3.8</pmd.version>
     <jxr.version>2.5</jxr.version>
     <findbug.version>3.0.0</findbug.version>
     <apache.activemq.version>5.10.0</apache.activemq.version>
@@ -90,7 +90,7 @@
     <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
     <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
-    <soapui.maven.plugin.version>5.2.1</soapui.maven.plugin.version>
+    <soapui.maven.plugin.version>5.3.0</soapui.maven.plugin.version>
     <jgoodies.version>1.0.5</jgoodies.version>
     <jacoco.version>0.7.9</jacoco.version>
     <selenium.java.version>3.4.0</selenium.java.version>
@@ -114,32 +114,18 @@
 
   <repositories>
     <repository>
-      <id>fuse-repo</id>
-      <name>Fuse Source</name>
-      <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>local-maven-repo</id>
-      <name>Local Repository</name>
-      <url>${module.baseUri}/local-maven-repo</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>smartbear-sweden-plugin-repository</id>
-      <url>http://www.soapui.org/repository/maven2</url>
+      <id>smartbear</id>
+      <name>smartbear repository</name>
+      <url>http://www.soapui.org/repository/maven2/</url>
     </repository>
   </repositories>
+  
+  <pluginRepositories>
+    <pluginRepository>
+      <id>smartbear-sweden-plugin-repository</id>
+      <url>http://www.soapui.org/repository/maven2/</url>
+    </pluginRepository>
+  </pluginRepositories>
 
   <dependencyManagement>
     <dependencies>
@@ -757,6 +743,12 @@
             <groupId>javafx</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.smartbear.soapui</groupId>
+        <artifactId>soapui</artifactId>
+        <version>${soapui.maven.plugin.version}</version>
+        <scope>test</scope>
       </dependency>
       <!-- Included because of open bug in SOAP-UI: https://sourceforge.net/p/soapui/bugs/694/ -->
       <dependency>

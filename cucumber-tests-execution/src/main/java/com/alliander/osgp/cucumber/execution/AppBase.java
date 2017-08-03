@@ -30,7 +30,7 @@ public abstract class AppBase {
     @Option(name = "-skip-xml-report", metaVar = "DIR", usage = "Suppress the JUnit XML report generation (for more logging)")
     private boolean skipXmlReport;
 
-    public static int run(final AppBase app, final String[] testClasses, final String... args) throws Exception {
+    public static int run(final AppBase app, final String[] testClasses, final String... args) {
         // Ensure the tests are executed in UTC time
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         DateTimeZone.setDefault(DateTimeZone.UTC);
@@ -44,8 +44,8 @@ public abstract class AppBase {
 
             return retval;
         } catch (final CmdLineException e) {
-            System.err.println(e.getMessage());
-            System.err.println("java -jar <...>.jar [opts] ...");
+            LOGGER.error("Incorrect usage", e);
+            LOGGER.error("java -jar <...>.jar [opts] ...");
             p.printUsage(System.err);
             return -1;
         }

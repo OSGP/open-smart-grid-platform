@@ -14,3 +14,22 @@ Feature: CoreDeviceManagement Find Devices
     Then the find devices response contains "1" devices
     And the find devices response contains at index "1"
       | DeviceIdentification | TEST1024000000001 |
+
+  Scenario: Find light measurement devices
+    Given the light measurement devices
+    When receiving a find devices request
+      | DeviceIdentification       | LMD-0*               |
+      | HasTechnicalInstallation   | true                 |
+      | PageSize                   |                    5 |
+      | Page                       |                    0 |
+      | SortDir                    | asc                  |
+      | SortedBy                   | deviceIdentification |
+    Then the find devices response contains "4" devices
+    And the find devices response contains at index "1"
+      | DeviceIdentification | LMD-01 |
+    And the find devices response contains at index "2"
+      | DeviceIdentification | LMD-02 |
+    And the find devices response contains at index "3"
+      | DeviceIdentification | LMD-03 |
+    And the find devices response contains at index "4"
+      | DeviceIdentification | LMD-04 |

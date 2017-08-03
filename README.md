@@ -11,15 +11,21 @@ This repository contains all the tests to verify the platform.
 Tests are written in cucumber.
 
 - Cucumber
-  - cucumber-tests-platform, The test project where all new platform tests are put.
-  - cucumber-tests-platform-dlms, The test project where all new dlms related platform tests are put.
-  - local-maven-repo, A local maven repository, needed for givwenzen.jar because it was removed from the maven repository.
+  - cucumber-tests-core: A project with some basic stuff, not directly related to OSGP, but needed in order to run the tests.
+  - cucumber-tests-execution: A project which contains some common classes to be used to make an executable jar, needed when we start the tests on a testsystem itself during a build.
+  - cucumber-tests-platform: The core test project with basic OSGP steps
+  - cucumber-tests-platform-common, The test project where all common related platform tests are put.
+  - cucumber-tests-platform-publiclighting, The test project where all publiclighting related platform tests are put.
+  - cucumber-tests-platform-microgrids, The test project where all microgrids related platform tests are put.
+  - cucumber-tests-platform-smartmetering, The test project where all smartmetering related platform tests are put.
 - Shared, Platform and Protocol-Adapter-*, The components under test
 
 ##### Running Cucumber integration tests
 
+First make sure that you have OSGP running. Note that you don't need to run the web-device-simulator (OSLP simulator) because it will use the same port as the mockserver used within the test projects.
+
 You can run the automatic tests by running 
-`mvn test`
+`mvn verify -DskipITs=false`
 from the commandline.
 
 ## Open smart grid platform information and news
@@ -47,8 +53,15 @@ There are a few rules on how to implement the automatic tests.
 * When writing the scenarios, keep in mind that each scenario should stand on its one. Don't ever make a scenario dependent on another.
 * When writing the scenarios, please try to write functional scenarios. A person with less technical background should be able to read those scenarios as well. Also have a look at the already created scenarios for reference.
 * When writing the scenario steps, please try to create the steps as generic and reusable as possible. e.g. use tables for parameterizing the steps.
-* Before the test run, the databases are cleared (not complete yet, but please add the necessary commands to the GlobalHooks.java) and filled with the default data like a test organization which is used for sending the automatic test requests.
-* Before each test scenario the database is cleared as well except for the default data (provisioned in the GlobalHooks.java).
+* Before the test run, the databases are cleared (not complete yet, but please add the necessary commands to the ScenarioHooks.java) and filled with the default data like a test organization which is used for sending the automatic test requests.
+* Before each test scenario the database is cleared as well except for the default data (provisioned in the ScenarioHooks.java).
 * Each time you implement new functionality or solve bugs, make sure you execute the automatic tests.
 
-Note: Scenarios which are dependent on a DLMS device simulator need to be implemented in the cucumber-tests-platform-dlms project.
+## Additional recommendations
+
+* use ```mvn tidy:pom```
+* use ```mvn versions:display-dependency-updates```
+* use ```mvn versions:display-plugin-updates```
+* use ```mvn dependency:tree -DignoreNonCompile```
+
+
