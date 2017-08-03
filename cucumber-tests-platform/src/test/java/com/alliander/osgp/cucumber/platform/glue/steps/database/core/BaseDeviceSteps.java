@@ -16,8 +16,13 @@ import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.core.GlueBase;
@@ -28,10 +33,13 @@ import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.LightMeasurementDeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
@@ -49,6 +57,9 @@ public abstract class BaseDeviceSteps extends GlueBase {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
 
     @Autowired
     private OrganisationRepository organizationRepository;
@@ -70,15 +81,16 @@ public abstract class BaseDeviceSteps extends GlueBase {
         // Now set the optional stuff
         if (settings.containsKey(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE)
                 && !settings.get(PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).isEmpty()) {
-            device.setTechnicalInstallationDate(getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
+            device.setTechnicalInstallationDate(
+                    getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
         }
 
-        final DeviceModel deviceModel = this.deviceModelRepository
-                .findByModelCode(getString(settings, PlatformKeys.KEY_DEVICE_MODEL, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        final DeviceModel deviceModel = this.deviceModelRepository.findByModelCode(
+                getString(settings, PlatformKeys.KEY_DEVICE_MODEL, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
 
         if (settings.containsKey(PlatformKeys.DEVICEMODEL_METERED)) {
-            deviceModel.updateData(PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION,
-                    getBoolean(settings, PlatformKeys.DEVICEMODEL_METERED, PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED));
+            deviceModel.updateData(PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, getBoolean(settings,
+                    PlatformKeys.DEVICEMODEL_METERED, PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED));
         }
 
         device.setDeviceModel(deviceModel);
@@ -89,8 +101,8 @@ public abstract class BaseDeviceSteps extends GlueBase {
 
         InetAddress inetAddress;
         try {
-            inetAddress = InetAddress
-                    .getByName(getString(settings, PlatformKeys.IP_ADDRESS, this.configuration.getDeviceNetworkAddress()));
+            inetAddress = InetAddress.getByName(
+                    getString(settings, PlatformKeys.IP_ADDRESS, this.configuration.getDeviceNetworkAddress()));
         } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
@@ -112,23 +124,28 @@ public abstract class BaseDeviceSteps extends GlueBase {
                 getString(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
                 getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY),
                 (settings.containsKey(PlatformKeys.KEY_LATITUDE) && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
-                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE) : null,
-                (settings.containsKey(PlatformKeys.KEY_LONGITUDE) && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
-                        ? getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformDefaults.DEFAULT_LONGITUDE) : null);
+                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE)
+                        : null,
+                (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
+                        && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
+                                ? getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformDefaults.DEFAULT_LONGITUDE)
+                                : null);
 
         device.setActivated(getBoolean(settings, PlatformKeys.KEY_IS_ACTIVATED, PlatformDefaults.DEFAULT_IS_ACTIVATED));
         device = this.deviceRepository.save(device);
 
         if (getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION) != "null") {
-            final Organisation organization = this.organizationRepository.findByOrganisationIdentification(getString(
-                    settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+            final Organisation organization = this.organizationRepository
+                    .findByOrganisationIdentification(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                            PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
             final DeviceFunctionGroup functionGroup = getEnum(settings, PlatformKeys.KEY_DEVICE_FUNCTION_GROUP,
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
             final Device savedDevice = this.deviceRepository.save(device);
             this.deviceAuthorizationRepository.save(authorization);
-            ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
+            ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                    savedDevice.getDeviceIdentification());
 
             device = savedDevice;
         }
@@ -149,5 +166,59 @@ public abstract class BaseDeviceSteps extends GlueBase {
     public Device updateDevice(final String deviceIdentification, final Map<String, String> settings) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         return this.updateDevice(device, settings);
+    }
+
+    /**
+     * Create the 4 light measurement devices and {@link DeviceAuthorization}s
+     * for the default organization.
+     */
+    public void createLightMeasurementDevices() {
+        List<LightMeasurementDevice> devices = new ArrayList<>();
+        devices.add(this.createLightMeasurementDevice("LMD-01", "N-01", "#c9eec9", (short) 1));
+        devices.add(this.createLightMeasurementDevice("LMD-02", "E-01", "#eec9c9", (short) 2));
+        devices.add(this.createLightMeasurementDevice("LMD-03", "S-01", "#c9c9ee", (short) 3));
+        devices.add(this.createLightMeasurementDevice("LMD-04", "W-01", "#eeeec9", (short) 4));
+
+        devices = this.lightMeasurementDeviceRepository.save(devices);
+
+        for (final LightMeasurementDevice device : devices) {
+            this.setDefaultDeviceAuthorizationForDevice(device);
+        }
+    }
+
+    /**
+     * Create a single light measurement device.
+     */
+    public LightMeasurementDevice createLightMeasurementDevice(final String deviceIdentification, final String code,
+            final String color, final short digitalInput) {
+        final String deviceType = "LMD";
+        final InetAddress networkAddress = InetAddress.getLoopbackAddress();
+        final Date technicalInstallationDate = DateTime.now().withZone(DateTimeZone.UTC).toDate();
+        final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion("IEC61850",
+                "1.0");
+
+        final LightMeasurementDevice lightMeasurementDevice = new LightMeasurementDevice(deviceIdentification);
+        lightMeasurementDevice.setTechnicalInstallationDate(technicalInstallationDate);
+        lightMeasurementDevice.updateRegistrationData(networkAddress, deviceType);
+        lightMeasurementDevice.updateProtocol(protocolInfo);
+        lightMeasurementDevice.updateInMaintenance(false);
+        lightMeasurementDevice.setDescription(deviceIdentification);
+        lightMeasurementDevice.setCode(code);
+        lightMeasurementDevice.setColor(color);
+        lightMeasurementDevice.setLastCommunicationTime(technicalInstallationDate);
+        lightMeasurementDevice.setDigitalInput(digitalInput);
+
+        return lightMeasurementDevice;
+    }
+
+    public DeviceAuthorization setDefaultDeviceAuthorizationForDevice(final Device device) {
+        device.addOrganisation(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+
+        final Organisation organization = this.organizationRepository
+                .findByOrganisationIdentification(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        final DeviceAuthorization deviceAuthorization = device.addAuthorization(organization,
+                DeviceFunctionGroup.OWNER);
+
+        return this.deviceAuthorizationRepository.save(deviceAuthorization);
     }
 }

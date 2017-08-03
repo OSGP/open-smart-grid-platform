@@ -67,6 +67,12 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
         return this.createAnSsldDevice(settings);
     }
 
+    @Given("^the light measurement devices$")
+    @Transactional("txMgrCore")
+    public void theLightMeasurementDevices() throws Throwable {
+        this.createLightMeasurementDevices();
+    }
+
     /**
      * Generic method which adds an SSLD device using the settings.
      *
