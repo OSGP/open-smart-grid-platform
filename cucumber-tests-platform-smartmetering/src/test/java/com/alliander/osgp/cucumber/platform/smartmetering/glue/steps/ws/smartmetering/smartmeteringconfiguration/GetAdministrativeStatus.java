@@ -48,9 +48,10 @@ public class GetAdministrativeStatus extends SmartMeteringStepsBase {
         final GetAdministrativeStatusAsyncResponse getAdministrativeStatusAsyncResponse = this.smartMeteringConfigurationClient
                 .getAdministrativeStatus(getAdministrativeStatusRequest);
 
-        LOGGER.info("GetAdministrativeStatusAsyncResponse is received {}", getAdministrativeStatusAsyncResponse);
+        LOGGER.info("Get administrative status asyncResponse is received {}", getAdministrativeStatusAsyncResponse);
 
-        assertNotNull("GetAdministrativeStatusAsyncResponse should not be null", getAdministrativeStatusAsyncResponse);
+        assertNotNull("Get administrative status asyncResponse should not be null",
+                getAdministrativeStatusAsyncResponse);
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 getAdministrativeStatusAsyncResponse.getCorrelationUid());
     }
@@ -64,7 +65,7 @@ public class GetAdministrativeStatus extends SmartMeteringStepsBase {
 
         LOGGER.info("The administrative status is: {}", getAdministrativeStatusResponse.getEnabled());
 
-        assertNotNull("AdministrativeStatusType is null", getAdministrativeStatusResponse.getEnabled());
+        assertNotNull("Administrative status type is null", getAdministrativeStatusResponse.getEnabled());
     }
 
 }

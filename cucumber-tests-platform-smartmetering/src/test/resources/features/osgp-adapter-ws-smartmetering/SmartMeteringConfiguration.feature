@@ -14,7 +14,6 @@ Feature: SmartMetering Configuration
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
 
-  @bjorn
   Scenario: Set special days on a device
     When the set special days request is received
       | DeviceIdentification | TEST1024000000001 |
@@ -44,13 +43,12 @@ Feature: SmartMetering Configuration
 
   Scenario: Set alarm notifications on a device
     When the set alarm notifications request is received
-      | DeviceIdentification | TEST1024000000001 |
-      | AlarmType            | CLOCK_INVALID     |
-      | AlarmTypeEnabled     | TRUE              |
+      | DeviceIdentification | TEST1024000000001                    |
+      | AlarmType            | CLOCK_INVALID                        |
+      | AlarmTypeEnabled     | TRUE                                 |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
-  @bjorn
   Scenario: Exchange user key on a gas device
     When the exchange user key request is received
       | DeviceIdentification | TESTG102400000001 |

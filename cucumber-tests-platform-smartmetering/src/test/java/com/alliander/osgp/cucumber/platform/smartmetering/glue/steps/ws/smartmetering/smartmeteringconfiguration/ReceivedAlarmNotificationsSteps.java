@@ -86,7 +86,7 @@ public class ReceivedAlarmNotificationsSteps extends SmartMeteringStepsBase {
             LOGGER.info("DecodedMessage: {}", deviceLogItem.getDecodedMessage());
 
             final boolean isMatch = Pattern.matches(PATTERN, deviceLogItem.getDecodedMessage());
-            assertTrue("There is no match decoded message.", isMatch);
+            assertTrue("There is no match for a decoded message.", isMatch);
         }
     }
 
