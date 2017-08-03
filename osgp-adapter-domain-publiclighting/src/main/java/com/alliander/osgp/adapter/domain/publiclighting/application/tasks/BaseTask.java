@@ -121,7 +121,7 @@ public class BaseTask {
      */
     protected List<Device> findDevicesToContact(final List<Device> devices, final int maximumAllowedAge) {
         List<Object> listOfObjectArrays = this.eventRepository.findLatestEventForEveryDevice(devices);
-        LOGGER.info("listOfObjectArrays.size(): {}", listOfObjectArrays.size());
+        LOGGER.info("devicesWithEventsList.size(): {}", listOfObjectArrays.size());
 
         final Date maxAge = DateTime.now(DateTimeZone.UTC).minusHours(maximumAllowedAge).toDate();
         LOGGER.info("maxAge: {}", maxAge);
@@ -140,6 +140,7 @@ public class BaseTask {
         listOfObjectArrays = null;
 
         final List<Device> devicesToContact = this.deviceRepository.findAll(map.keySet());
+        LOGGER.info("devicesToContact.size(): {}", devicesToContact.size());
         for (final Device device : devicesToContact) {
             LOGGER.info("device: {}, id: {}", device.getDeviceIdentification(), device.getId());
         }
