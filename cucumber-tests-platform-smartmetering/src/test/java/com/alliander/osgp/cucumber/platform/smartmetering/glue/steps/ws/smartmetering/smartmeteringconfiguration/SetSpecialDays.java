@@ -7,15 +7,16 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
@@ -37,11 +38,7 @@ public class SetSpecialDays extends SmartMeteringStepsBase {
 
     @When("^the set special days request is received$")
     public void theSetSpecialDaysRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final Map<String, String> settings = new HashMap<>();
-        settings.put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
-                requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-
-        final SetSpecialDaysRequest setSpecialDaysRequest = SetSpecialDaysRequestFactory.fromParameterMap(settings);
+        final SetSpecialDaysRequest setSpecialDaysRequest = SetSpecialDaysRequestFactory.fromParameterMap(requestData);
 
         final SetSpecialDaysAsyncResponse setSpecialDaysAsyncResponse = this.smartMeteringConfigurationClient
                 .setSpecialDays(setSpecialDaysRequest);
@@ -63,5 +60,6 @@ public class SetSpecialDays extends SmartMeteringStepsBase {
         LOGGER.info("Set special days result is: {}", setSpecialDaysResponse.getResult());
 
         assertNotNull("Set special days result is null", setSpecialDaysResponse.getResult());
+        assertEquals("Set special days result should be OK", OsgpResultType.OK, setSpecialDaysResponse.getResult());
     }
 }

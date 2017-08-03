@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
@@ -71,5 +73,7 @@ public class SetConfigurationObject extends SmartMeteringStepsBase {
         LOGGER.info("Set configuration object result is: {}", setConfigurationObjectResponse.getResult());
 
         assertNotNull("Set configuration object result is null", setConfigurationObjectResponse.getResult());
+        assertEquals("Set configuration object result should be OK", OsgpResultType.OK,
+                setConfigurationObjectResponse.getResult());
     }
 }

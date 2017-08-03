@@ -7,15 +7,16 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
@@ -37,18 +38,13 @@ public class SetActivityCalendar extends SmartMeteringStepsBase {
 
     @When("^the set activity calendar request is received$")
     public void theSetActivityCalendarRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final Map<String, String> settings = new HashMap<>();
-        settings.put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
-                requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-
         final SetActivityCalendarRequest setActivityCalendarRequest = SetActivityCalendarRequestFactory
-                .fromParameterMap(settings);
+                .fromParameterMap(requestData);
 
         final SetActivityCalendarAsyncResponse setActivityCalendarAsyncResponse = this.smartMeteringConfigurationClient
                 .setActivityCalendar(setActivityCalendarRequest);
 
         LOGGER.info("Set activity calendar asyncResponse is received {}", setActivityCalendarAsyncResponse);
-
         assertNotNull("Set activity calendar asyncResponse should not be null", setActivityCalendarAsyncResponse);
 
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
@@ -64,7 +60,8 @@ public class SetActivityCalendar extends SmartMeteringStepsBase {
                 .getSetActivityCalendarResponse(setActivityCalendarAsyncRequest);
 
         LOGGER.info("Set activity calendar with result: {}", setActivityCalendarResponse.getResult().name());
-
         assertNotNull("Set activity calendar response is null", setActivityCalendarResponse.getResult());
+        assertEquals("Set activity calendar response should be OK", OsgpResultType.OK,
+                setActivityCalendarResponse.getResult());
     }
 }

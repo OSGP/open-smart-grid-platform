@@ -10,7 +10,6 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
@@ -41,19 +41,13 @@ public class GetFirmwareVersion extends SmartMeteringStepsBase {
 
     @When("^the get firmware version request is received$")
     public void theGetFirmwareVersionRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final Map<String, String> settings = new HashMap<>();
-
-        settings.put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
-                requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-
         final GetFirmwareVersionRequest getFirmwareVersionRequest = GetFirmwareVersionRequestFactory
-                .fromParameterMap(settings);
+                .fromParameterMap(requestData);
 
         final GetFirmwareVersionAsyncResponse getFirmwareVersionAsyncResponse = this.smartMeteringConfigurationClient
                 .getFirmwareVersion(getFirmwareVersionRequest);
 
         LOGGER.info("Get firmware version asyncResponse is received {}", getFirmwareVersionAsyncResponse);
-
         assertNotNull("Get firmware version asyncResponse should not be null", getFirmwareVersionAsyncResponse);
 
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
@@ -64,22 +58,23 @@ public class GetFirmwareVersion extends SmartMeteringStepsBase {
     public void theFirmwareVersionResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
         final GetFirmwareVersionAsyncRequest getFirmwareVersionAsyncRequest = FirmwareVersionRequestFactory
                 .fromScenarioContext();
+        final int EXPECTED_FIRMWARE_VERSION_SIZE = 3;
 
         final GetFirmwareVersionResponse getFirmwareVersionResponse = this.smartMeteringConfigurationClient
                 .retrieveGetFirmwareVersionResponse(getFirmwareVersionAsyncRequest);
 
         assertNotNull("Get firmware version response has result null", getFirmwareVersionResponse.getResult());
+        assertEquals("Response should be OK", OsgpResultType.OK, getFirmwareVersionResponse.getResult());
 
         final List<FirmwareVersion> firmwareVersions = getFirmwareVersionResponse.getFirmwareVersion();
-
-        assertEquals(firmwareVersions.size(), 3);
+        assertEquals(firmwareVersions.size(), EXPECTED_FIRMWARE_VERSION_SIZE);
 
         for (final FirmwareVersion receivedFirmwareVersion : firmwareVersions) {
-            assertNotNull("The received firmware module type is null", receivedFirmwareVersion.getFirmwareModuleType());
             LOGGER.info("The received firmware module type: {}", receivedFirmwareVersion.getFirmwareModuleType());
+            assertNotNull("The received firmware module type is null", receivedFirmwareVersion.getFirmwareModuleType());
 
-            assertNotNull("The received firmware version is null", receivedFirmwareVersion.getVersion());
             LOGGER.info("The received firmware version: {}", receivedFirmwareVersion.getVersion());
+            assertNotNull("The received firmware version is null", receivedFirmwareVersion.getVersion());
         }
     }
 }

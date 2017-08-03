@@ -9,7 +9,6 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -38,18 +37,13 @@ public class GetAdministrativeStatus extends SmartMeteringStepsBase {
     @When("^the get administrative status request is received$")
     public void theRetrieveAdministrativeStatusRequestIsReceived(final Map<String, String> requestData)
             throws Throwable {
-        final Map<String, String> settings = new HashMap<>();
-        settings.put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
-                requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-
         final GetAdministrativeStatusRequest getAdministrativeStatusRequest = GetAdministrativeStatusRequestFactory
-                .fromParameterMap(settings);
+                .fromParameterMap(requestData);
 
         final GetAdministrativeStatusAsyncResponse getAdministrativeStatusAsyncResponse = this.smartMeteringConfigurationClient
                 .getAdministrativeStatus(getAdministrativeStatusRequest);
 
         LOGGER.info("Get administrative status asyncResponse is received {}", getAdministrativeStatusAsyncResponse);
-
         assertNotNull("Get administrative status asyncResponse should not be null",
                 getAdministrativeStatusAsyncResponse);
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
@@ -64,7 +58,6 @@ public class GetAdministrativeStatus extends SmartMeteringStepsBase {
                 .retrieveGetAdministrativeStatusResponse(getAdministrativeStatusAsyncRequest);
 
         LOGGER.info("The administrative status is: {}", getAdministrativeStatusResponse.getEnabled());
-
         assertNotNull("Administrative status type is null", getAdministrativeStatusResponse.getEnabled());
     }
 

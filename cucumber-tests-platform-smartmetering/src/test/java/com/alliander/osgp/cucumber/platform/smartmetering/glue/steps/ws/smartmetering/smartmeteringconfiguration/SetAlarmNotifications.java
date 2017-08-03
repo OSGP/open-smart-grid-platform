@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
@@ -69,5 +71,7 @@ public class SetAlarmNotifications extends SmartMeteringStepsBase {
         LOGGER.info("The set alarm notifications result is: {}", setAlarmNotificationsResponse.getResult());
 
         assertNotNull("The set alarm notifications result is null", setAlarmNotificationsResponse.getResult());
+        assertEquals("The set alarm notifications should be OK", OsgpResultType.OK,
+                setAlarmNotificationsResponse.getResult());
     }
 }

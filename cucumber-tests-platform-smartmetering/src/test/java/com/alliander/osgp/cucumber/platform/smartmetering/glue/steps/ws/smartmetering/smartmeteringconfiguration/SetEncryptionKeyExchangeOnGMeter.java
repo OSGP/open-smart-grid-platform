@@ -7,15 +7,16 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
@@ -37,11 +38,8 @@ public class SetEncryptionKeyExchangeOnGMeter extends SmartMeteringStepsBase {
 
     @When("^the exchange user key request is received$")
     public void theExchangeUserKeyRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final Map<String, String> settings = new HashMap<>();
-        settings.put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
-                requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
         final SetEncryptionKeyExchangeOnGMeterRequest setEncryptionKeyExchangeOnGMeterRequest = SetEncryptionKeyExchangeOnGMeterRequestFactory
-                .fromParameterMap(settings);
+                .fromParameterMap(requestData);
 
         final SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeterAsyncResponse = this.smartMeteringConfigurationClient
                 .setEncryptionKeyExchangeOnGMeter(setEncryptionKeyExchangeOnGMeterRequest);
@@ -67,6 +65,8 @@ public class SetEncryptionKeyExchangeOnGMeter extends SmartMeteringStepsBase {
                 setEncryptionKeyExchangeOnGMeterResponse.getResult());
 
         assertNotNull("Set encryptionKey exchange on GMeter result is null",
+                setEncryptionKeyExchangeOnGMeterResponse.getResult());
+        assertEquals("Set encryptionKey exchange on GMeter result should be OK", OsgpResultType.OK,
                 setEncryptionKeyExchangeOnGMeterResponse.getResult());
     }
 }

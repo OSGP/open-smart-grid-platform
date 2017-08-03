@@ -8,6 +8,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusRequest;
@@ -66,7 +68,8 @@ public class SetAdministrativeStatus extends SmartMeteringStepsBase {
                 .retrieveSetAdministrativeStatusResponse(setAdministrativeStatusAsyncRequest);
 
         LOGGER.info("The administrative status result is: {}", setAdministrativeStatusResponse.getResult());
-
         assertNotNull("Administrative status type result is null", setAdministrativeStatusResponse.getResult());
+        assertEquals("Administrative status type should be OK", OsgpResultType.OK,
+                setAdministrativeStatusResponse.getResult());
     }
 }
