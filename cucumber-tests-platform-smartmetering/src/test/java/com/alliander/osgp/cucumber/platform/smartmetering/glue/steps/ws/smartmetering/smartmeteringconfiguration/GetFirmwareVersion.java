@@ -7,59 +7,74 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.FirmwareVersionRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetFirmwareVersionRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class GetFirmwareVersion extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT_STATUS = "/Envelope/Body/GetFirmwareVersionResponse/Result/text()";
-    private static final String PATH_RESULT_FIRMWAREVERSION_TYPE = "/Envelope/Body/GetFirmwareVersionResponse/FirmwareVersion/FirmwareModuleType";
-    private static final String PATH_RESULT_FIRMWAREVERSION_VERSION = "/Envelope/Body/GetFirmwareVersionResponse/FirmwareVersion/Version";
+    protected static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersion.class);
 
-    private static final String XPATH_MATCHER_FIRMWAREVERSION_TYPE = "(MODULE_|COMMUNICATION_MODULE_)?ACTIVE_FIRMWARE";
-    private static final String XPATH_MATCHER_FIRMWAREVERSION_VERSION = ".+";
-
-    private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
-    private static final String TEST_CASE_XML = "261 Retrieve firmware version";
-    private static final String TEST_CASE_NAME_REQUEST = "GetFirmwareVersion - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetGetFirmwareVersionResponse - Request 1";
+    @Autowired
+    private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
     @When("^the get firmware version request is received$")
-    public void theGetFirmwareVersionRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    public void theGetFirmwareVersionRequestIsReceived(final Map<String, String> requestData) throws Throwable {
+        final GetFirmwareVersionRequest getFirmwareVersionRequest = GetFirmwareVersionRequestFactory
+                .fromParameterMap(requestData);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final GetFirmwareVersionAsyncResponse getFirmwareVersionAsyncResponse = this.smartMeteringConfigurationClient
+                .getFirmwareVersion(getFirmwareVersionRequest);
+
+        assertNotNull("Get firmware version asyncResponse should not be null", getFirmwareVersionAsyncResponse);
+        LOGGER.info("Get firmware version asyncResponse is received {}", getFirmwareVersionAsyncResponse);
+
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                getFirmwareVersionAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the firmware version result should be returned$")
     public void theFirmwareVersionResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
+        final GetFirmwareVersionAsyncRequest getFirmwareVersionAsyncRequest = FirmwareVersionRequestFactory
+                .fromScenarioContext();
+        final int EXPECTED_FIRMWARE_VERSION_SIZE = 3;
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        final GetFirmwareVersionResponse getFirmwareVersionResponse = this.smartMeteringConfigurationClient
+                .retrieveGetFirmwareVersionResponse(getFirmwareVersionAsyncRequest);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_STATUS, PlatformDefaults.EXPECTED_RESULT_OK));
+        assertNotNull("Get firmware version response has result null", getFirmwareVersionResponse.getResult());
+        assertEquals("Response should be OK", OsgpResultType.OK, getFirmwareVersionResponse.getResult());
 
-        this.runXpathResult.assertXpathList(this.response, PATH_RESULT_FIRMWAREVERSION_TYPE,
-                XPATH_MATCHER_FIRMWAREVERSION_TYPE, 3);
-        this.runXpathResult.assertXpathList(this.response, PATH_RESULT_FIRMWAREVERSION_VERSION,
-                XPATH_MATCHER_FIRMWAREVERSION_VERSION, 3);
+        final List<FirmwareVersion> firmwareVersions = getFirmwareVersionResponse.getFirmwareVersion();
+        assertEquals(firmwareVersions.size(), EXPECTED_FIRMWARE_VERSION_SIZE);
+
+        for (final FirmwareVersion receivedFirmwareVersion : firmwareVersions) {
+            LOGGER.info("The received firmware module type: {}", receivedFirmwareVersion.getFirmwareModuleType());
+            assertNotNull("The received firmware module type is null", receivedFirmwareVersion.getFirmwareModuleType());
+
+            LOGGER.info("The received firmware version: {}", receivedFirmwareVersion.getVersion());
+            assertNotNull("The received firmware version is null", receivedFirmwareVersion.getVersion());
+        }
     }
-
 }

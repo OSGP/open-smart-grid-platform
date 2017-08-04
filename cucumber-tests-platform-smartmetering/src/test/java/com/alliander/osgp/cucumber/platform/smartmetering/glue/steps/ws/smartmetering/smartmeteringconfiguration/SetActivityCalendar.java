@@ -7,48 +7,61 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetActivityCalendarRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class SetActivityCalendar extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT = "/Envelope/Body/SetActivityCalendarResponse/Result/text()";
+    protected static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendar.class);
 
-    private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
-    private static final String TEST_CASE_XML = "414 Use wildcards for date fields for activity calendar";
-    private static final String TEST_CASE_NAME_REQUEST = "SetActivityCalendar - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetSetActivityCalendarResponse - Request 1";
+    @Autowired
+    private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
     @When("^the set activity calendar request is received$")
-    public void theSetActivityCalendarRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    public void theSetActivityCalendarRequestIsReceived(final Map<String, String> requestData) throws Throwable {
+        final SetActivityCalendarRequest setActivityCalendarRequest = SetActivityCalendarRequestFactory
+                .fromParameterMap(requestData);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final SetActivityCalendarAsyncResponse setActivityCalendarAsyncResponse = this.smartMeteringConfigurationClient
+                .setActivityCalendar(setActivityCalendarRequest);
+
+        LOGGER.info("Set activity calendar asyncResponse is received {}", setActivityCalendarAsyncResponse);
+        assertNotNull("Set activity calendar asyncResponse should not be null", setActivityCalendarAsyncResponse);
+
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                setActivityCalendarAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the activity calendar profiles are set on the device$")
     public void theActivityCalendarProfilesAreSetOnTheDevice(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
+        final SetActivityCalendarAsyncRequest setActivityCalendarAsyncRequest = SetActivityCalendarRequestFactory
+                .fromScenarioContext();
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        final SetActivityCalendarResponse setActivityCalendarResponse = this.smartMeteringConfigurationClient
+                .getSetActivityCalendarResponse(setActivityCalendarAsyncRequest);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, PlatformDefaults.EXPECTED_RESULT_OK));
+        LOGGER.info("Set activity calendar with result: {}", setActivityCalendarResponse.getResult().name());
+        assertNotNull("Set activity calendar response is null", setActivityCalendarResponse.getResult());
+        assertEquals("Set activity calendar response should be OK", OsgpResultType.OK,
+                setActivityCalendarResponse.getResult());
     }
 }

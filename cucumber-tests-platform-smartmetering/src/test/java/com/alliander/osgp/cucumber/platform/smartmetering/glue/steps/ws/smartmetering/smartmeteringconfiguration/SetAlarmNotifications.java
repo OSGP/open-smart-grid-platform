@@ -7,49 +7,62 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetAlarmNotificationsRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class SetAlarmNotifications extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT = "/Envelope/Body/SetAlarmNotificationsResponse/Result/text()";
+    protected static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotifications.class);
 
-    private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
-    private static final String TEST_CASE_XML = "266 Retrieve SetAlarmNotifications result";
-    private static final String TEST_CASE_NAME_REQUEST = "SetAlarmNotifications - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetSetAlarmNotificationsResponse - Request 1";
+    @Autowired
+    private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
     @When("^the set alarm notifications request is received$")
-    public void theSetAlarmNotificationsRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    public void theSetAlarmNotificationsRequestIsReceived(final Map<String, String> requestData) throws Throwable {
+        final SetAlarmNotificationsRequest setAlarmNotificationsRequest = SetAlarmNotificationsRequestFactory
+                .fromParameterMap(requestData);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final SetAlarmNotificationsAsyncResponse setAlarmNotificationsAsyncResponse = this.smartMeteringConfigurationClient
+                .setAlarmNotifications(setAlarmNotificationsRequest);
+
+        LOGGER.info("Set alarm notifications response is received {}", setAlarmNotificationsAsyncResponse);
+
+        assertNotNull("Set alarm notifications response should not be null", setAlarmNotificationsAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                setAlarmNotificationsAsyncResponse.getAsyncResponse().getCorrelationUid());
     }
 
     @Then("^the specified alarm notifications should be set on the device$")
     public void theSpecifiedAlarmNotificationsShouldBeSetOnTheDevice(final Map<String, String> settings)
             throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
+        final SetAlarmNotificationsAsyncRequest setAlarmNotificationsAsyncRequest = SetAlarmNotificationsRequestFactory
+                .fromScenarioContext();
+        final SetAlarmNotificationsResponse setAlarmNotificationsResponse = this.smartMeteringConfigurationClient
+                .retrieveSetAlarmNotificationsResponse(setAlarmNotificationsAsyncRequest);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        LOGGER.info("The set alarm notifications result is: {}", setAlarmNotificationsResponse.getResult());
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, PlatformDefaults.EXPECTED_RESULT_OK));
+        assertNotNull("The set alarm notifications result is null", setAlarmNotificationsResponse.getResult());
+        assertEquals("The set alarm notifications should be OK", OsgpResultType.OK,
+                setAlarmNotificationsResponse.getResult());
     }
 }

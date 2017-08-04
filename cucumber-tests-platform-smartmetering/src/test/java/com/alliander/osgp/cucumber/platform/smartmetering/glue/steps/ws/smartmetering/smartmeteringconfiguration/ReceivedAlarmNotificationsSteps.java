@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
@@ -33,10 +32,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class ReceivedAlarmNotificationsSteps extends SmartMeteringStepsBase {
-
-    private static final String XPATH_MATCHER_PUSH_NOTIFICATION = "DlmsPushNotification \\[device = \\w*, trigger type = Push alarm monitor, alarms=\\[(\\w*(, )?)+\\]\\]";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceivedAlarmNotificationsSteps.class);
+
+    private static final String PATTERN = "DlmsPushNotification \\[device = \\w*, trigger type = Push alarm monitor, alarms=\\[(\\w*(, )?)+\\]\\]";
 
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
@@ -75,8 +73,6 @@ public class ReceivedAlarmNotificationsSteps extends SmartMeteringStepsBase {
     @Then("^the alarm should be pushed to the osgp_logging database device_log_item table$")
     public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable(final Map<String, String> settings)
             throws Throwable {
-        final Pattern responsePattern = Pattern.compile(XPATH_MATCHER_PUSH_NOTIFICATION);
-
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
@@ -85,13 +81,12 @@ public class ReceivedAlarmNotificationsSteps extends SmartMeteringStepsBase {
             Assert.fail("DeviceLogItems were not found in the database");
         }
 
-        for (int i = 0; i < 2; i++) {
-            final DeviceLogItem item = deviceLogItems.get(i);
-            LOGGER.info("CreationTime: {}", item.getCreationTime().toString());
-            LOGGER.info("DecodedMessage: {}", item.getDecodedMessage());
+        for (final DeviceLogItem deviceLogItem : deviceLogItems) {
+            LOGGER.info("CreationTime: {}", deviceLogItem.getCreationTime().toString());
+            LOGGER.info("DecodedMessage: {}", deviceLogItem.getDecodedMessage());
 
-            final Matcher responseMatcher = responsePattern.matcher(item.getDecodedMessage());
-            assertTrue("a matching DlmsPushNotification is logged.", responseMatcher.find());
+            final boolean isMatch = Pattern.matches(PATTERN, deviceLogItem.getDecodedMessage());
+            assertTrue("There is no match for a decoded message.", isMatch);
         }
     }
 
