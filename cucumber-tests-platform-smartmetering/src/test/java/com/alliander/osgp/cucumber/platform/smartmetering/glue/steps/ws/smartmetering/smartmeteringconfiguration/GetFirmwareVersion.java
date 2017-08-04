@@ -47,8 +47,8 @@ public class GetFirmwareVersion extends SmartMeteringStepsBase {
         final GetFirmwareVersionAsyncResponse getFirmwareVersionAsyncResponse = this.smartMeteringConfigurationClient
                 .getFirmwareVersion(getFirmwareVersionRequest);
 
-        LOGGER.info("Get firmware version asyncResponse is received {}", getFirmwareVersionAsyncResponse);
         assertNotNull("Get firmware version asyncResponse should not be null", getFirmwareVersionAsyncResponse);
+        LOGGER.info("Get firmware version asyncResponse is received {}", getFirmwareVersionAsyncResponse);
 
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 getFirmwareVersionAsyncResponse.getCorrelationUid());

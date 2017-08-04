@@ -72,19 +72,19 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     @Autowired
     private DefaultWebServiceTemplateFactory smartMeteringConfigurationWebServiceTemplateFactory;
 
-    public UpdateFirmwareAsyncResponse updateFirmware(final UpdateFirmwareRequest request)
+    public UpdateFirmwareAsyncResponse updateFirmware(final UpdateFirmwareRequest updateFirmwareRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        return (UpdateFirmwareAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+        return (UpdateFirmwareAsyncResponse) this.getTemplate().marshalSendAndReceive(updateFirmwareRequest);
     }
 
-    public UpdateFirmwareResponse getUpdateFirmwareResponse(final UpdateFirmwareAsyncRequest asyncRequest)
+    public UpdateFirmwareResponse getUpdateFirmwareResponse(final UpdateFirmwareAsyncRequest updateFirmwareAsyncRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        final String correlationUid = asyncRequest.getCorrelationUid();
+        final String correlationUid = updateFirmwareAsyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        return (UpdateFirmwareResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+        return (UpdateFirmwareResponse) this.getTemplate().marshalSendAndReceive(updateFirmwareAsyncRequest);
     }
 
     public GetFirmwareVersionAsyncResponse getFirmwareVersion(final GetFirmwareVersionRequest getFirmwareVersionRequest)
@@ -118,19 +118,22 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         return (SetActivityCalendarResponse) this.getTemplate().marshalSendAndReceive(setActivityCalendarAsyncRequest);
     }
 
-    public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(final GetAdministrativeStatusRequest request)
+    public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(
+            final GetAdministrativeStatusRequest getAdministrativeStatusRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        return (GetAdministrativeStatusAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+        return (GetAdministrativeStatusAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(getAdministrativeStatusRequest);
     }
 
     public GetAdministrativeStatusResponse retrieveGetAdministrativeStatusResponse(
-            final GetAdministrativeStatusAsyncRequest asyncRequest)
+            final GetAdministrativeStatusAsyncRequest getAdministrativeStatusAsyncRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        final String correlationUid = asyncRequest.getCorrelationUid();
+        final String correlationUid = getAdministrativeStatusAsyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        return (GetAdministrativeStatusResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+        return (GetAdministrativeStatusResponse) this.getTemplate()
+                .marshalSendAndReceive(getAdministrativeStatusAsyncRequest);
     }
 
     public SetAdministrativeStatusAsyncResponse setAdministrativeStatus(
@@ -220,50 +223,56 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
                 .marshalSendAndReceive(setEncryptionKeyExchangeOnGMeterAsyncRequest);
     }
 
-    public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest request)
+    public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest replaceKeysRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        return (ReplaceKeysAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+        return (ReplaceKeysAsyncResponse) this.getTemplate().marshalSendAndReceive(replaceKeysRequest);
     }
 
-    public ReplaceKeysResponse getReplaceKeysResponse(final ReplaceKeysAsyncRequest asyncRequest)
+    public ReplaceKeysResponse getReplaceKeysResponse(final ReplaceKeysAsyncRequest replaceKeysAsyncRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        final String correlationUid = asyncRequest.getCorrelationUid();
+        final String correlationUid = replaceKeysAsyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        return (ReplaceKeysResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+        return (ReplaceKeysResponse) this.getTemplate().marshalSendAndReceive(replaceKeysAsyncRequest);
     }
 
-    public GenerateAndReplaceKeysAsyncResponse generateAndReplaceKeys(final GenerateAndReplaceKeysRequest request)
+    public GenerateAndReplaceKeysAsyncResponse generateAndReplaceKeys(
+            final GenerateAndReplaceKeysRequest generateAndReplaceKeysRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        return (GenerateAndReplaceKeysAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+        return (GenerateAndReplaceKeysAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(generateAndReplaceKeysRequest);
     }
 
     public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(
-            final GenerateAndReplaceKeysAsyncRequest asyncRequest)
+            final GenerateAndReplaceKeysAsyncRequest generateAndReplaceKeysAsyncRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        final String correlationUid = asyncRequest.getCorrelationUid();
+        final String correlationUid = generateAndReplaceKeysAsyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        return (GenerateAndReplaceKeysResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+        return (GenerateAndReplaceKeysResponse) this.getTemplate()
+                .marshalSendAndReceive(generateAndReplaceKeysAsyncRequest);
     }
 
-    public SetClockConfigurationAsyncResponse setClockConfiguration(final SetClockConfigurationRequest request)
+    public SetClockConfigurationAsyncResponse setClockConfiguration(
+            final SetClockConfigurationRequest setClockConfigurationRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        return (SetClockConfigurationAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+        return (SetClockConfigurationAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(setClockConfigurationRequest);
     }
 
     public SetClockConfigurationResponse getSetClockConfigurationResponse(
-            final SetClockConfigurationAsyncRequest request)
+            final SetClockConfigurationAsyncRequest setClockConfigurationAsyncRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        final String correlationUid = request.getCorrelationUid();
+        final String correlationUid = setClockConfigurationAsyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        return (SetClockConfigurationResponse) this.getTemplate().marshalSendAndReceive(request);
+        return (SetClockConfigurationResponse) this.getTemplate()
+                .marshalSendAndReceive(setClockConfigurationAsyncRequest);
     }
 
     private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {

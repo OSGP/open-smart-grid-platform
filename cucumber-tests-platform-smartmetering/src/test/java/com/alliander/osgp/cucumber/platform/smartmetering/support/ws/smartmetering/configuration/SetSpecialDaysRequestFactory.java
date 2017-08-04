@@ -42,12 +42,13 @@ public class SetSpecialDaysRequestFactory {
     }
 
     private static SpecialDaysRequestData fetchSpecialDays() {
-        // 2 bytes for year (century byte and year byte, 0xFFFF = undefined).
-        // 1 for month, 0xFF (undefined), 0xFD (end daylight saving), 0xFE
-        // (begin daylight saving).
-        // 1 for day of month, 0xFF (undefined), 0xFD (2nd last day of month),
-        // 0xFE (last day of month).
-        // 1 for day of week, 1 is monday, 0xFF (undefined)
+        /**
+         * 2 bytes for year (century byte and year byte, 0xFFFF = undefined). 1
+         * for month, 0xFF (undefined), 0xFD (end daylight saving), 0xFE (begin
+         * daylight saving). 1 for day of month, 0xFF (undefined), 0xFD (2nd
+         * last day of month), 0xFE (last day of month). 1 for day of week, 1 is
+         * monday, 0xFF (undefined)
+         */
 
         // last Sunday in every year and month
         final byte[] specialDayDateByteArray = new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFE, 0x07 };

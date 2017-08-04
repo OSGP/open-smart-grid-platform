@@ -10,7 +10,6 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -39,16 +38,8 @@ public class SetAlarmNotifications extends SmartMeteringStepsBase {
 
     @When("^the set alarm notifications request is received$")
     public void theSetAlarmNotificationsRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final Map<String, String> settings = new HashMap<>();
-        settings.put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
-                requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-
-        settings.put(PlatformSmartmeteringKeys.ALARM_TYPE, requestData.get(PlatformSmartmeteringKeys.ALARM_TYPE));
-        settings.put(PlatformSmartmeteringKeys.ALARM_TYPE_ENABLED,
-                requestData.get(PlatformSmartmeteringKeys.ALARM_TYPE_ENABLED));
-
         final SetAlarmNotificationsRequest setAlarmNotificationsRequest = SetAlarmNotificationsRequestFactory
-                .fromParameterMap(settings);
+                .fromParameterMap(requestData);
 
         final SetAlarmNotificationsAsyncResponse setAlarmNotificationsAsyncResponse = this.smartMeteringConfigurationClient
                 .setAlarmNotifications(setAlarmNotificationsRequest);

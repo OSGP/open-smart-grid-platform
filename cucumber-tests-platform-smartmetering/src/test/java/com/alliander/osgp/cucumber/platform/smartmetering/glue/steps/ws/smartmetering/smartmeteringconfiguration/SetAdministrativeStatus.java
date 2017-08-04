@@ -11,7 +11,6 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -40,15 +39,8 @@ public class SetAdministrativeStatus extends SmartMeteringStepsBase {
 
     @When("^the set administrative status request is received$")
     public void theSetAdministrativeStatusRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final Map<String, String> settings = new HashMap<>();
-        settings.put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
-                requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-
-        settings.put(PlatformSmartmeteringKeys.ADMINISTRATIVE_STATUS_TYPE,
-                requestData.get(PlatformSmartmeteringKeys.ADMINISTRATIVE_STATUS_TYPE));
-
         final SetAdministrativeStatusRequest setAdministrativeStatusRequest = SetAdministrativeStatusRequestFactory
-                .fromParameterMap(settings);
+                .fromParameterMap(requestData);
 
         final SetAdministrativeStatusAsyncResponse setAdministrativeStatusAsyncResponse = this.smartMeteringConfigurationClient
                 .setAdministrativeStatus(setAdministrativeStatusRequest);

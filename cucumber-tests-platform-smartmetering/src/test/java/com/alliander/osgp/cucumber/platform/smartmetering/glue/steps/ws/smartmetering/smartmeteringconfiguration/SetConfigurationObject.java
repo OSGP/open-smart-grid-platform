@@ -10,7 +10,6 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -39,19 +38,8 @@ public class SetConfigurationObject extends SmartMeteringStepsBase {
 
     @When("^the set configuration object request is received$")
     public void theSetConfigurationObjectRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final Map<String, String> settings = new HashMap<>();
-        settings.put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
-                requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-
-        settings.put(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_TYPE,
-                requestData.get(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_TYPE));
-        settings.put(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_ENABLED,
-                requestData.get(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_ENABLED));
-        settings.put(PlatformSmartmeteringKeys.GPRS_OPERATION_MODE_TYPE,
-                requestData.get(PlatformSmartmeteringKeys.GPRS_OPERATION_MODE_TYPE));
-
         final SetConfigurationObjectRequest setConfigurationObjectRequest = SetConfigurationObjectRequestFactory
-                .fromParameterMap(settings);
+                .fromParameterMap(requestData);
 
         final SetConfigurationObjectAsyncResponse setConfigurationObjectAsyncResponse = this.smartMeteringConfigurationClient
                 .setConfigurationObject(setConfigurationObjectRequest);
