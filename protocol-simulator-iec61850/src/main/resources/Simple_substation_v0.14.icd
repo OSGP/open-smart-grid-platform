@@ -57,7 +57,7 @@
               <FCDA ldInst="RTU1" prefix="" lnClass="MMXU" lnInst="1" doName="W" fc="MX" />
               <FCDA ldInst="RTU1" prefix="" lnClass="MMXU" lnInst="1" doName="VAr" fc="MX" />
             </DataSet>
-            <ReportControl name="PQDataReport" rptID="PQData" desc="Send PQ data Report every minute" datSet="PQDataSet" intgPd="5000" confRev="1" buffered="false" bufTime="0">
+            <ReportControl name="PQDataReport" rptID="PQData" desc="Send PQ data Report every minute" datSet="PQDataSet" intgPd="60000" confRev="1" buffered="false" bufTime="0">
               <TrgOps period="true" />
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
