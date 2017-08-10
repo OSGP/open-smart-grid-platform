@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
+import java.util.ArrayList;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
@@ -22,6 +24,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Node
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.QualityConverter;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.PhaseDto;
 
 public class Iec61850LoadActualPowerCommand implements RtuReadCommand<MeasurementDto> {
 
@@ -47,6 +50,7 @@ public class Iec61850LoadActualPowerCommand implements RtuReadCommand<Measuremen
         return new MeasurementDto(this.index, DataAttribute.ACTUAL_POWER.getDescription(),
                 QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
                 new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
-                containingNode.getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
+                containingNode.getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat(),
+                new ArrayList<PhaseDto>());
     }
 }

@@ -97,6 +97,10 @@ public class Battery extends LogicalDevice {
     private static final String MMXU1_TOTW_Q = "MMXU1.TotW.q";
     private static final String MMXU1_TOTW_T = "MMXU1.TotW.t";
 
+    private static final String MMXU1_TOTPF_MAG_F = "MMXU1.TotPF.mag.f";
+    private static final String MMXU1_TOTPF_Q = "MMXU1.TotPF.q";
+    private static final String MMXU1_TOTPF_T = "MMXU1.TotPF.t";
+
     private static final String DRCC1_OUTWSET_SUBVAL_F = "DRCC1.OutWSet.subVal.f";
     private static final String DRCC1_OUTWSET_SUBQ = "DRCC1.OutWSet.subQ";
 
@@ -107,10 +111,6 @@ public class Battery extends LogicalDevice {
     private static final String DGEN1_GNOPST_STVAL = "DGEN1.GnOpSt.stVal";
     private static final String DGEN1_GNOPST_Q = "DGEN1.GnOpSt.q";
     private static final String DGEN1_GNOPST_T = "DGEN1.GnOpSt.t";
-
-    private static final String MMXU1_TOTPF_MAG_F = "MMXU1.TotPF.mag.f";
-    private static final String MMXU1_TOTPF_Q = "MMXU1.TotPF.q";
-    private static final String MMXU1_TOTPF_T = "MMXU1.TotPF.t";
 
     private static final String DGEN1_OPTMSRS_STVAL = "DGEN1.OpTmsRs.stVal";
     private static final String DGEN1_OPTMSRS_Q = "DGEN1.OpTmsRs.q";

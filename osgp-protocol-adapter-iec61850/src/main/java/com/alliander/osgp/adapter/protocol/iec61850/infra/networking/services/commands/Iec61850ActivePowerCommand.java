@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,9 +7,7 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -28,53 +26,43 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubD
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.PhaseDto;
 
-public class Iec61850AlarmCommand implements RtuReadCommand<MeasurementDto> {
+public class Iec61850ActivePowerCommand implements RtuReadCommand<MeasurementDto> {
+    private static final int DEFAULT_MEASUREMENT_QUALIFIER_ID = 1;
+    private static final int DEFAULT_MEASUREMENT_VALUE = 1;
 
-    private static final Map<Integer, DataAttribute> map;
+    private int index;
 
-    private static final int ONE = 1;
-    private static final int TWO = 2;
-    private static final int THREE = 3;
-    private static final int FOUR = 4;
-
-    static {
-        map = new HashMap<>();
-        map.put(ONE, DataAttribute.ALARM_ONE);
-        map.put(TWO, DataAttribute.ALARM_TWO);
-        map.put(THREE, DataAttribute.ALARM_THREE);
-        map.put(FOUR, DataAttribute.ALARM_FOUR);
-    }
-
-    private int alarmIndex;
-
-    public Iec61850AlarmCommand(final int alarmIndex) {
-        this.alarmIndex = alarmIndex;
+    public Iec61850ActivePowerCommand(final int index) {
+        this.index = index;
     }
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
-                LogicalNode.GENERIC_PROCESS_I_O, map.get(this.alarmIndex), Fc.ST);
+                LogicalNode.MEASUREMENT_ONE, DataAttribute.ACTIVE_POWER, Fc.MX);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
-        return new MeasurementDto(1, map.get(this.alarmIndex).getDescription(),
-                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
-                this.translateStateValue(containingNode), new ArrayList<PhaseDto>());
+        return new MeasurementDto(this.index, DataAttribute.ACTIVE_POWER.getDescription(),
+                new Integer(DEFAULT_MEASUREMENT_QUALIFIER_ID), new DateTime(DateTimeZone.UTC),
+                new Double(DEFAULT_MEASUREMENT_VALUE),
+
+                Arrays.asList(this.getPhaseData(containingNode.getChild(SubDataAttribute.PHASE_A)),
+                        this.getPhaseData(containingNode.getChild(SubDataAttribute.PHASE_B)),
+                        this.getPhaseData(containingNode.getChild(SubDataAttribute.PHASE_C))));
     }
 
-    private int translateStateValue(final NodeContainer containingNode) {
-        final int value;
-        if (containingNode.getBoolean(SubDataAttribute.STATE).getValue()) {
-            value = 1;
-        } else {
-            value = 0;
-        }
-        return value;
+    private PhaseDto getPhaseData(final NodeContainer containingNode) {
+        final PhaseDto phaseDto = new PhaseDto(this.index, DataAttribute.ACTIVE_POWER.getDescription(),
+                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
+                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
+                containingNode.getChild(SubDataAttribute.C_VALUES).getChild(SubDataAttribute.MAGNITUDE)
+                        .getFloat(SubDataAttribute.FLOAT).getFloat());
+
+        return phaseDto;
     }
 }

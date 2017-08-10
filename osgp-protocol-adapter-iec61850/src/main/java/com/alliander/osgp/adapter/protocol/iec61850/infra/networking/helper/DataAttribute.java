@@ -254,7 +254,11 @@ public enum DataAttribute {
     /**
      * Physical Health
      */
-    PHYSICAL_HEALTH("PhyHealth");
+    PHYSICAL_HEALTH("PhyHealth"),
+    /**
+     * Wind
+     */
+    ACTIVE_POWER("W");
 
     private String description;
 

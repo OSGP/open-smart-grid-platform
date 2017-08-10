@@ -288,7 +288,23 @@ public enum SubDataAttribute {
     /**
      * Array of timestamps
      */
-    TIMES("time");
+    TIMES("time"),
+    /**
+     * Phase A
+     */
+    PHASE_A("phsA"),
+    /**
+     * Phase B
+     */
+    PHASE_B("phsB"),
+    /**
+     * Phase C
+     */
+    PHASE_C("phsC"),
+    /**
+     * C Value
+     */
+    C_VALUES("cVal");
 
     private String description;
 

@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
+import java.util.ArrayList;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
@@ -23,6 +25,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.PhaseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 
 public class Iec61850ScheduleIdCommand implements RtuReadCommand<MeasurementDto>, RtuWriteCommand<SetPointDto> {
@@ -53,7 +56,7 @@ public class Iec61850ScheduleIdCommand implements RtuReadCommand<MeasurementDto>
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(this.index, DATA_ATTRIBUTE.getDescription(), 0, new DateTime(DateTimeZone.UTC),
-                containingNode.getInteger(SUB_DATA_ATTRIBUTE).getValue());
+                containingNode.getInteger(SUB_DATA_ATTRIBUTE).getValue(), new ArrayList<PhaseDto>());
     }
 
     @Override
