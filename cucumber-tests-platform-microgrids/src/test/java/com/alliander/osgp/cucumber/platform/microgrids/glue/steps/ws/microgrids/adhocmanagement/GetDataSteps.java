@@ -150,7 +150,7 @@ public class GetDataSteps extends GlueBase {
         final String expectedNode = responseParameters.get(PlatformKeys.KEY_MEASUREMENT_NODE.concat(indexPostfix));
         assertEquals(measurementDescription + " node", expectedNode, measurement.getNode());
 
-        final int expectedQualifier = Integer
+        final Integer expectedQualifier = Integer
                 .parseInt(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix)));
         assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
 
