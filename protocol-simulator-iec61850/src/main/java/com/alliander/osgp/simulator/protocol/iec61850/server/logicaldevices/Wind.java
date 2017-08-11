@@ -29,13 +29,9 @@ public class Wind extends LogicalDevice {
     private static final String LLN0_HEALTH_Q = "LLN0.Health.q";
     private static final String LLN0_HEALTH_T = "LLN0.Health.t";
 
-    private static final String MMXU1_MAXWPHS_MAG_F = "MMXU1.MaxWPhs.mag.f";
-    private static final String MMXU1_MAXWPHS_Q = "MMXU1.MaxWPhs.q";
-    private static final String MMXU1_MAXWPHS_T = "MMXU1.MaxWPhs.t";
-
-    private static final String MMXU1_MINWPHS_MAG_F = "MMXU1.MinWPhs.mag.f";
-    private static final String MMXU1_MINWPHS_Q = "MMXU1.MinWPhs.q";
-    private static final String MMXU1_MINWPHS_T = "MMXU1.MinWPhs.t";
+    private static final String LLN0_BEH_STVAL = "LLN0.Beh.stVal";
+    private static final String LLN0_BEH_Q = "LLN0.Beh.q";
+    private static final String LLN0_BEH_T = "LLN0.Beh.t";
 
     private static final String MMXU1_TOTW_MAG_F = "MMXU1.TotW.mag.f";
     private static final String MMXU1_TOTW_Q = "MMXU1.TotW.q";
@@ -45,7 +41,15 @@ public class Wind extends LogicalDevice {
     private static final String MMXU1_TOTPF_Q = "MMXU1.TotPF.q";
     private static final String MMXU1_TOTPF_T = "MMXU1.TotPF.t";
 
-    //////
+    private static final String MMXU1_MAXWPHS_MAG_F = "MMXU1.MaxWPhs.mag.f";
+    private static final String MMXU1_MAXWPHS_Q = "MMXU1.MaxWPhs.q";
+    private static final String MMXU1_MAXWPHS_T = "MMXU1.MaxWPhs.t";
+
+    private static final String MMXU1_MINWPHS_MAG_F = "MMXU1.MinWPhs.mag.f";
+    private static final String MMXU1_MINWPHS_Q = "MMXU1.MinWPhs.q";
+    private static final String MMXU1_MINWPHS_T = "MMXU1.MinWPhs.t";
+
+    // new WIND
     private static final String MMXU1_W_PHSA_CVAL_MAG_F = "MMXU1.W.phsA.cVal.mag.f";
     private static final String MMXU1_W_PHSA_Q = "MMXU1.W.phsA.q";
     private static final String MMXU1_W_PHSA_T = "MMXU1.W.phsA.t";
@@ -57,16 +61,21 @@ public class Wind extends LogicalDevice {
     private static final String MMXU1_W_PHSC_CVAL_MAG_F = "MMXU1.W.phsC.cVal.mag.f";
     private static final String MMXU1_W_PHSC_Q = "MMXU1.W.phsC.q";
     private static final String MMXU1_W_PHSC_T = "MMXU1.W.phsC.t";
-    //////
+
+    private static final Set<String> FLOAT32_NODES = Collections
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(MMXU1_MAXWPHS_MAG_F, MMXU1_MINWPHS_MAG_F, MMXU1_TOTW_MAG_F,
+                    MMXU1_TOTPF_MAG_F, MMXU1_W_PHSA_CVAL_MAG_F, MMXU1_W_PHSB_CVAL_MAG_F, MMXU1_W_PHSC_CVAL_MAG_F)));
 
     private static final Set<String> INT8_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_STVAL)));
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_STVAL, LLN0_BEH_STVAL)));
 
     private static final Set<String> QUALITY_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q)));
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q, LLN0_BEH_Q, MMXU1_MAXWPHS_Q, MMXU1_MINWPHS_Q,
+                    MMXU1_TOTW_Q, MMXU1_TOTPF_Q, MMXU1_W_PHSA_Q, MMXU1_W_PHSB_Q, MMXU1_W_PHSC_Q)));
 
     private static final Set<String> TIMESTAMP_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T)));
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T, LLN0_BEH_T, MMXU1_MAXWPHS_T, MMXU1_MINWPHS_T,
+                    MMXU1_TOTW_T, MMXU1_TOTPF_T, MMXU1_W_PHSA_T, MMXU1_W_PHSB_T, MMXU1_W_PHSC_T)));
 
     private static final Map<String, Fc> FC_BY_NODE;
     static {
@@ -75,6 +84,38 @@ public class Wind extends LogicalDevice {
         fcByNode.put(LLN0_HEALTH_STVAL, Fc.ST);
         fcByNode.put(LLN0_HEALTH_Q, Fc.ST);
         fcByNode.put(LLN0_HEALTH_T, Fc.ST);
+
+        fcByNode.put(LLN0_BEH_STVAL, Fc.ST);
+        fcByNode.put(LLN0_BEH_Q, Fc.ST);
+        fcByNode.put(LLN0_BEH_T, Fc.ST);
+
+        fcByNode.put(MMXU1_MAXWPHS_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_MAXWPHS_Q, Fc.MX);
+        fcByNode.put(MMXU1_MAXWPHS_T, Fc.MX);
+
+        fcByNode.put(MMXU1_MINWPHS_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_MINWPHS_Q, Fc.MX);
+        fcByNode.put(MMXU1_MINWPHS_T, Fc.MX);
+
+        fcByNode.put(MMXU1_TOTW_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_TOTW_Q, Fc.MX);
+        fcByNode.put(MMXU1_TOTW_T, Fc.MX);
+
+        fcByNode.put(MMXU1_TOTPF_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_TOTPF_Q, Fc.MX);
+        fcByNode.put(MMXU1_TOTPF_T, Fc.MX);
+
+        fcByNode.put(MMXU1_W_PHSA_CVAL_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_W_PHSA_Q, Fc.MX);
+        fcByNode.put(MMXU1_W_PHSA_T, Fc.MX);
+
+        fcByNode.put(MMXU1_W_PHSB_CVAL_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_W_PHSB_Q, Fc.MX);
+        fcByNode.put(MMXU1_W_PHSB_T, Fc.MX);
+
+        fcByNode.put(MMXU1_W_PHSC_CVAL_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_W_PHSC_Q, Fc.MX);
+        fcByNode.put(MMXU1_W_PHSC_T, Fc.MX);
 
         FC_BY_NODE = Collections.unmodifiableMap(fcByNode);
     }
@@ -91,80 +132,37 @@ public class Wind extends LogicalDevice {
         values.add(this.setQuality(LLN0_HEALTH_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(LLN0_HEALTH_T, Fc.ST, timestamp));
 
-        values.add(this.setRandomByte("LLN0.Beh.stVal", Fc.ST, 1, 2));
-        values.add(this.setQuality("LLN0.Beh.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("LLN0.Beh.t", Fc.ST, timestamp));
+        values.add(this.setRandomByte(LLN0_BEH_STVAL, Fc.ST, 1, 2));
+        values.add(this.setQuality(LLN0_BEH_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(LLN0_BEH_T, Fc.ST, timestamp));
 
-        values.add(this.setRandomByte("LLN0.Mod.stVal", Fc.ST, 1, 2));
-        values.add(this.setQuality("LLN0.Mod.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("LLN0.Mod.t", Fc.ST, timestamp));
+        values.add(this.setRandomFloat(MMXU1_MAXWPHS_MAG_F, Fc.MX, 500, 1000));
+        values.add(this.setQuality(MMXU1_MAXWPHS_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_MAXWPHS_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat("MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
-        values.add(this.setQuality("MMXU1.MaxWPhs.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("MMXU1.MaxWPhs.t", Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU1_MINWPHS_MAG_F, Fc.MX, 0, 500));
+        values.add(this.setQuality(MMXU1_MINWPHS_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_MINWPHS_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat("MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
-        values.add(this.setQuality("MMXU1.MinWPhs.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("MMXU1.MinWPhs.t", Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU1_TOTW_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_TOTW_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_TOTW_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat("MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
-        values.add(this.setQuality("MMXU1.TotW.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("MMXU1.TotW.t", Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU1_TOTPF_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_TOTPF_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_TOTPF_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat("DRCC1.OutWSet.subVal.f", Fc.SV, 0, 1000));
-        values.add(this.setQuality("DRCC1.OutWSet.subQ", Fc.SV, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setRandomFloat(MMXU1_W_PHSA_CVAL_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_W_PHSA_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_W_PHSA_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat("DGEN1.TotWh.mag.f", Fc.MX, 0, 1000));
-        values.add(this.setQuality("DGEN1.TotWh.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("DGEN1.TotWh.t", Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU1_W_PHSB_CVAL_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_W_PHSB_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_W_PHSB_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomByte("DGEN1.GnOpSt.stVal", Fc.ST, 1, 2));
-        values.add(this.setQuality("DGEN1.GnOpSt.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("DGEN1.GnOpSt.t", Fc.ST, timestamp));
-
-        values.add(this.incrementInt("DGEN1.OpTmsRs.stVal", Fc.ST));
-        values.add(this.setQuality("DGEN1.OpTmsRs.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("DGEN1.OpTmsRs.t", Fc.ST, timestamp));
-
-        values.add(this.setBoolean("GGIO1.Alm1.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Alm1.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Alm1.t", Fc.ST, timestamp));
-
-        values.add(this.setBoolean("GGIO1.Alm2.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Alm2.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Alm2.t", Fc.ST, timestamp));
-
-        values.add(this.setBoolean("GGIO1.Alm3.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Alm3.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Alm3.t", Fc.ST, timestamp));
-
-        values.add(this.setBoolean("GGIO1.Alm4.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Alm4.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Alm4.t", Fc.ST, timestamp));
-
-        values.add(this.setRandomInt("GGIO1.IntIn1.stVal", Fc.ST, 1, 100));
-        values.add(this.setQuality("GGIO1.IntIn1.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.IntIn1.t", Fc.ST, timestamp));
-
-        values.add(this.setBoolean("GGIO1.Wrn1.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Wrn1.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Wrn1.t", Fc.ST, timestamp));
-
-        values.add(this.setBoolean("GGIO1.Wrn2.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Wrn2.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Wrn2.t", Fc.ST, timestamp));
-
-        values.add(this.setBoolean("GGIO1.Wrn3.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Wrn3.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Wrn3.t", Fc.ST, timestamp));
-
-        values.add(this.setBoolean("GGIO1.Wrn4.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Wrn4.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Wrn4.t", Fc.ST, timestamp));
-
-        values.add(this.setRandomInt("GGIO1.IntIn2.stVal", Fc.ST, 1, 100));
-        values.add(this.setQuality("GGIO1.IntIn2.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.IntIn2.t", Fc.ST, timestamp));
+        values.add(this.setRandomFloat(MMXU1_W_PHSC_CVAL_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_W_PHSC_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_W_PHSC_T, Fc.MX, timestamp));
 
         return values;
     }
@@ -174,6 +172,10 @@ public class Wind extends LogicalDevice {
         final Fc fc = this.getFunctionalConstraint(node);
         if (fc == null) {
             throw this.illegalNodeException(node);
+        }
+
+        if (FLOAT32_NODES.contains(node)) {
+            return this.setFixedFloat(node, fc, Float.parseFloat(value));
         }
 
         if (INT8_NODES.contains(node)) {

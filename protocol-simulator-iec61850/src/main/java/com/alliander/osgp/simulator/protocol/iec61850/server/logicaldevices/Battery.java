@@ -267,6 +267,10 @@ public class Battery extends LogicalDevice {
         fcByNode.put(MMXU1_TOTW_Q, Fc.MX);
         fcByNode.put(MMXU1_TOTW_T, Fc.MX);
 
+        fcByNode.put(MMXU1_TOTPF_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_TOTPF_Q, Fc.MX);
+        fcByNode.put(MMXU1_TOTPF_T, Fc.MX);
+
         fcByNode.put(DRCC1_OUTWSET_SUBVAL_F, Fc.SV);
         fcByNode.put(DRCC1_OUTWSET_SUBQ, Fc.SV);
 
@@ -277,10 +281,6 @@ public class Battery extends LogicalDevice {
         fcByNode.put(DGEN1_GNOPST_STVAL, Fc.ST);
         fcByNode.put(DGEN1_GNOPST_Q, Fc.ST);
         fcByNode.put(DGEN1_GNOPST_T, Fc.ST);
-
-        fcByNode.put(MMXU1_TOTPF_MAG_F, Fc.MX);
-        fcByNode.put(MMXU1_TOTPF_Q, Fc.MX);
-        fcByNode.put(MMXU1_TOTPF_T, Fc.MX);
 
         fcByNode.put(DGEN1_OPTMSRS_STVAL, Fc.ST);
         fcByNode.put(DGEN1_OPTMSRS_Q, Fc.ST);
@@ -361,6 +361,10 @@ public class Battery extends LogicalDevice {
         values.add(this.setQuality(MMXU1_TOTW_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(MMXU1_TOTW_T, Fc.MX, timestamp));
 
+        values.add(this.setRandomFloat(MMXU1_TOTPF_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_TOTPF_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_TOTPF_T, Fc.MX, timestamp));
+
         values.add(this.setRandomFloat(DRCC1_OUTWSET_SUBVAL_F, Fc.SV, 0, 1000));
         values.add(this.setQuality(DRCC1_OUTWSET_SUBQ, Fc.SV, QualityType.VALIDITY_GOOD.getValue()));
 
@@ -371,10 +375,6 @@ public class Battery extends LogicalDevice {
         values.add(this.setRandomByte(DGEN1_GNOPST_STVAL, Fc.ST, 1, 2));
         values.add(this.setQuality(DGEN1_GNOPST_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(DGEN1_GNOPST_T, Fc.ST, timestamp));
-
-        values.add(this.setRandomFloat(MMXU1_TOTPF_MAG_F, Fc.MX, 0, 1000));
-        values.add(this.setQuality(MMXU1_TOTPF_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(MMXU1_TOTPF_T, Fc.MX, timestamp));
 
         values.add(this.incrementInt(DGEN1_OPTMSRS_STVAL, Fc.ST));
         values.add(this.setQuality(DGEN1_OPTMSRS_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
