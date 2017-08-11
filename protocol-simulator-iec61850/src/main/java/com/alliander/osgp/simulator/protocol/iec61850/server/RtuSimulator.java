@@ -7,6 +7,27 @@
  */
 package com.alliander.osgp.simulator.protocol.iec61850.server;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.PreDestroy;
+
+import org.openmuc.openiec61850.BasicDataAttribute;
+import org.openmuc.openiec61850.ModelNode;
+import org.openmuc.openiec61850.SclParseException;
+import org.openmuc.openiec61850.ServerEventListener;
+import org.openmuc.openiec61850.ServerModel;
+import org.openmuc.openiec61850.ServerSap;
+import org.openmuc.openiec61850.ServiceError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+
 import com.alliander.osgp.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Battery;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Boiler;
@@ -19,25 +40,7 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Load
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LogicalDevice;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Pv;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Rtu;
-import org.openmuc.openiec61850.BasicDataAttribute;
-import org.openmuc.openiec61850.ModelNode;
-import org.openmuc.openiec61850.SclParseException;
-import org.openmuc.openiec61850.ServerEventListener;
-import org.openmuc.openiec61850.ServerModel;
-import org.openmuc.openiec61850.ServerSap;
-import org.openmuc.openiec61850.ServiceError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-
-import javax.annotation.PreDestroy;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Wind;
 
 public class RtuSimulator implements ServerEventListener {
 
@@ -67,8 +70,9 @@ public class RtuSimulator implements ServerEventListener {
         this(port, sclFile, serverName, null, null, null);
     }
 
-    public RtuSimulator(final int port, final InputStream sclFile, final String serverName, final ServerSapEventProducer serverSapEventProducer,
-                        final Long updateValuesDelay, final Long updateValuesPeriod) throws SclParseException {
+    public RtuSimulator(final int port, final InputStream sclFile, final String serverName,
+            final ServerSapEventProducer serverSapEventProducer, final Long updateValuesDelay,
+            final Long updateValuesPeriod) throws SclParseException {
         final List<ServerSap> serverSaps = ServerSap.getSapsFromSclFile(sclFile);
         this.server = serverSaps.get(0);
         this.server.setPort(port);
@@ -83,7 +87,6 @@ public class RtuSimulator implements ServerEventListener {
     }
 
     private void addLogicalDevices(final ServerModel serverModel) {
-
         this.addRtuDevices(serverModel);
         this.addPvDevices(serverModel);
         this.addBatteryDevices(serverModel);
@@ -94,6 +97,7 @@ public class RtuSimulator implements ServerEventListener {
         this.addGasFurnaceDevices(serverModel);
         this.addHeatPumpDevices(serverModel);
         this.addBoilerDevices(serverModel);
+        this.addWindDevices(serverModel);
     }
 
     private void addRtuDevices(final ServerModel serverModel) {
@@ -226,14 +230,28 @@ public class RtuSimulator implements ServerEventListener {
         }
     }
 
+    private void addWindDevices(final ServerModel serverModel) {
+        final String windPrefix = "WIND";
+        int i = 1;
+        String logicalDeviceName = windPrefix + i;
+        ModelNode windNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        while (windNode != null) {
+            this.logicalDevices.add(new Wind(this.getDeviceName(), logicalDeviceName, serverModel));
+            i += 1;
+            logicalDeviceName = windPrefix + i;
+            windNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        }
+    }
+
     public void start() throws IOException {
         if (this.isStarted) {
             throw new IOException("Server is already started");
         }
 
         this.server.startListening(this);
-        if (this.serverSapEventProducer !=null) {
-            this.serverSapEventProducer.scheduleAtFixedRate(this.server, this.updateValuesDelay, this.updateValuesPeriod);
+        if (this.serverSapEventProducer != null) {
+            this.serverSapEventProducer.scheduleAtFixedRate(this.server, this.updateValuesDelay,
+                    this.updateValuesPeriod);
         }
         this.isStarted = true;
     }
