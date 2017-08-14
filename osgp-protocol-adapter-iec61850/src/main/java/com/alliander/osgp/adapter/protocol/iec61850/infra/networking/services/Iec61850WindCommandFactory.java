@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ActivePowerCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ActualPowerCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ActualPowerLimitCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
@@ -101,6 +102,7 @@ public final class Iec61850WindCommandFactory implements RtuReadCommandFactory<M
         RTU_COMMAND_MAP.put(DataAttribute.OPERATIONAL_HOURS.getDescription(), new Iec61850OperationalHoursCommand());
         RTU_COMMAND_MAP.put(DataAttribute.MODE.getDescription(), new Iec61850ModeCommand());
         RTU_COMMAND_MAP.put(DataAttribute.ACTUAL_POWER.getDescription(), new Iec61850ActualPowerCommand());
+        RTU_COMMAND_MAP.put(DataAttribute.ACTIVE_POWER.getDescription(), new Iec61850ActivePowerCommand(ONE));
         RTU_COMMAND_MAP.put(DataAttribute.MAX_ACTUAL_POWER.getDescription(), new Iec61850MaximumActualPowerCommand());
         RTU_COMMAND_MAP.put(DataAttribute.MIN_ACTUAL_POWER.getDescription(), new Iec61850MinimumActualPowerCommand());
         RTU_COMMAND_MAP.put(DataAttribute.ACTUAL_POWER_LIMIT.getDescription(), new Iec61850ActualPowerLimitCommand());
