@@ -96,7 +96,7 @@ Feature: MicroGrids Get Wind Data
        | NumberOfSystems            |        1 |
        | SystemId_1                 |        1 |
        | SystemType_1               | WIND     |
-#       | NumberOfMeasurements_1     |       26 |
+       | NumberOfMeasurements_1     |       22 |
        | MeasurementFilterNode_1_1  | Mod      |
        | MeasurementFilterNode_1_2  | Beh      |
        | MeasurementFilterNode_1_3  | Health   |
@@ -114,127 +114,127 @@ Feature: MicroGrids Get Wind Data
        | MeasurementFilterNode_1_15 | MinWPhs  |
  	   | MeasurementFilterNode_1_16 | MaxWPhs  | 
        | MeasurementFilterNode_1_17 | W        |
-       | MeasurementFilterId_1_17   |        1 |
+#       | MeasurementFilterId_1_17   |        1 |
        | MeasurementFilterNode_1_18 | W        |
-       | MeasurementFilterId_1_18   |        2 |
-       | MeasurementFilterNode_1_23 | OutWSet  |
-       | MeasurementFilterNode_1_24 | TotWh    |
-       | MeasurementFilterNode_1_25 | GnOpSt   |
-       | MeasurementFilterNode_1_26 | OpTmsRs  |
-#       Then the get data response should be returned
-#       | DeviceIdentification      | RTU10001                 |
-#       | Result                    | OK                       |
-#       | NumberOfSystems           |                        1 |
-#       | SystemId_1                |                        1 |
-#       | SystemType_1              | WIND                   |
-#       | NumberOfMeasurements_1    |                       38 |
-#       | MeasurementId_1_1         |                        1 |
-#       | MeasurementNode_1_1       | Mod                      |
-#       | MeasurementQualifier_1_1  |                        0 |
-#       | MeasurementValue_1_1      |                      1.0 |
-#       | MeasurementId_1_2         |                        1 |
-#       | MeasurementNode_1_2       | Beh                      |
-#       | MeasurementQualifier_1_2  |                        0 |
-#       | MeasurementValue_1_2      |                      2.0 |
-#       | MeasurementId_1_3         |                        1 |
-#       | MeasurementNode_1_3       | Health                   |
-#       | MeasurementQualifier_1_3  |                        0 |
-#       | MeasurementValue_1_3      |                      3.0 |
-#       #.......................................................
-#       | MeasurementId_1_4         |                        1 |
-#       | MeasurementNode_1_4       | Alm1                     |
-#       | MeasurementQualifier_1_4  |                        0 |
-#       | MeasurementValue_1_4      |                      0.0 |
-#       | MeasurementId_1_5         |                        1 |
-#       | MeasurementNode_1_5       | Alm2                     |
-#       | MeasurementQualifier_1_5  |                        0 |
-#       | MeasurementValue_1_5      |                      1.0 |
-#       | MeasurementId_1_6         |                        1 |
-#       | MeasurementNode_1_6       | Alm3                     |
-#       | MeasurementQualifier_1_6  |                        0 |
-#       | MeasurementValue_1_6      |                      0.0 |
-#       | MeasurementId_1_7         |                        1 |
-#       | MeasurementNode_1_7       | Alm4                     |
-#       | MeasurementQualifier_1_7  |                        0 |
-#       | MeasurementValue_1_7      |                      1.0 |
-#       | MeasurementId_1_8         |                        1 |
-#       | MeasurementNode_1_8       | IntIn1                   |
-#       | MeasurementQualifier_1_8  |                        0 |
-#       | MeasurementValue_1_8      |                      4.0 |
-#       #.......................................................
-#       | MeasurementId_1_9         |                        1 |
-#       | MeasurementNode_1_9       | Wrn1                     |
-#       | MeasurementQualifier_1_9  |                        0 |
-#       | MeasurementValue_1_9      |                      0.0 |
-#       | MeasurementId_1_10        |                        1 |
-#       | MeasurementNode_1_10      | Wrn2                     |
-#       | MeasurementQualifier_1_10 |                        0 |
-#       | MeasurementValue_1_10     |                      1.0 |
-#       | MeasurementId_1_11        |                        1 |
-#       | MeasurementNode_1_11      | Wrn3                     |
-#       | MeasurementQualifier_1_11 |                        0 |
-#       | MeasurementValue_1_11     |                      0.0 |
-#       | MeasurementId_1_12        |                        1 |
-#       | MeasurementNode_1_12      | Wrn4                     |
-#       | MeasurementQualifier_1_12 |                        0 |
-#       | MeasurementValue_1_12     |                      1.0 |
-#       | MeasurementId_1_13        |                        1 |
-#       | MeasurementNode_1_13      | IntIn2                   |
-#       | MeasurementQualifier_1_13 |                        0 |
-#       | MeasurementValue_1_13     |                      5.0 |
-#       #.......................................................
-#       | MeasurementId_1_14        |                        1 |
-#       | MeasurementNode_1_14      | TotW                     |
-#       | MeasurementQualifier_1_14 |                        0 |
-#       | MeasurementValue_1_14     |                     10.0 |
-#       | MeasurementId_1_15        |                        1 |
-#       | MeasurementNode_1_15      | MinWPhs                  |
-#       | MeasurementQualifier_1_15 |                        0 |
-#       | MeasurementValue_1_15     |                     11.0 |
-#       | MeasurementId_1_16        |                        1 |
-#       | MeasurementNode_1_16      | MaxWPhs                  |
-#       | MeasurementQualifier_1_16 |                        0 |
-#       | MeasurementValue_1_16     |                     12.0 |
-#	   #.......................................................
-#       | MeasurementId_1_17        |                        1 |
-#       | MeasurementNode_1_17      | W                        |
-#	   | MeasurementPhase_1_17_1     | phsA                     |
-#       | MeasurementQualifier_1_17_1 |                        0 |
-#       | MeasurementValue_1_17_1     |                     10.0 |
-#	   | MeasurementPhase_1_17_1     | phsB                     |
-#       | MeasurementQualifier_1_17_2 |                        0 |
-#       | MeasurementValue_1_17_2     |                     11.0 |
-#	   | MeasurementPhase_1_17_2     | phsC                     |
-#       | MeasurementQualifier_1_17_3 |                        0 |
-#       | MeasurementValue_1_17_3     |                     12.0 |
-#	   #.......................................................
-#       | MeasurementId_1_18        |                        2 |
-#       | MeasurementNode_1_18      | W                        |
-#	   | MeasurementPhase_1_18_1     | phsA                     |
-#       | MeasurementQualifier_1_18_1 |                        0 |
-#       | MeasurementValue_1_18_1     |                     10.0 |
-#	   | MeasurementPhase_1_18_2     | phsB                     |  
-#       | MeasurementQualifier_1_18_2 |                        0 |
-#       | MeasurementValue_1_18_2     |                     11.0 |
-#	   | MeasurementPhase_1_18_3     | phsC                     |
-#       | MeasurementQualifier_1_18_3 |                        0 |
-#       | MeasurementValue_1_18_3     |                     12.0 |
-#       #.......................................................
-#       | MeasurementId_1_23        |                        1 |
-#       | MeasurementNode_1_23      | OutWSet                  |
-#       | MeasurementQualifier_1_23 |                        0 |
-#       | MeasurementValue_1_23     |                     14.0 |
-#       #........................................
-#       | MeasurementId_1_24        |                        1 |
-#       | MeasurementNode_1_24      | TotWh                    |
-#       | MeasurementQualifier_1_24 |                        0 |
-#       | MeasurementValue_1_24     |                     15.0 |
-#       | MeasurementId_1_25        |                        1 |
-#       | MeasurementNode_1_25      | GnOpSt                   |
-#       | MeasurementQualifier_1_25 |                        0 |
-#       | MeasurementValue_1_25     |                     15.0 |
-#       | MeasurementId_1_26        |                        1 |
-#       | MeasurementNode_1_26      | OpTmsRs                  |
-#       | MeasurementQualifier_1_26 |                        0 |
-#       | MeasurementValue_1_26     |                     15.0 |
-#       | MeasurementId_1_26        |                        1 |
+#       | MeasurementFilterId_1_18   |        1 |
+       | MeasurementFilterNode_1_19 | OutWSet  |
+       | MeasurementFilterNode_1_20 | TotWh    |
+       | MeasurementFilterNode_1_21 | GnOpSt   |
+       | MeasurementFilterNode_1_22 | OpTmsRs  |
+       Then the get data response should be returned
+       | DeviceIdentification        | RTU10001                 |
+       | Result                      | OK                       |
+       | NumberOfSystems             |                        1 |
+       | SystemId_1                  |                        1 |
+       | SystemType_1                | WIND                     |
+       | NumberOfMeasurements_1      |                       22 |
+       | MeasurementId_1_1           |                        1 |
+       | MeasurementNode_1_1         | Mod                      |
+       | MeasurementQualifier_1_1    |                        0 |
+       | MeasurementValue_1_1        |                      1.0 |
+       | MeasurementId_1_2           |                        1 |
+       | MeasurementNode_1_2         | Beh                      |
+       | MeasurementQualifier_1_2    |                        0 |
+       | MeasurementValue_1_2        |                      2.0 |
+       | MeasurementId_1_3           |                        1 |
+       | MeasurementNode_1_3         | Health                   |
+       | MeasurementQualifier_1_3    |                        0 |
+       | MeasurementValue_1_3        |                      3.0 |
+       #.........................................................
+       | MeasurementId_1_4           |                        1 |
+       | MeasurementNode_1_4         | Alm1                     |
+       | MeasurementQualifier_1_4    |                        0 |
+       | MeasurementValue_1_4        |                      0.0 |
+       | MeasurementId_1_5           |                        1 |
+       | MeasurementNode_1_5         | Alm2                     |
+       | MeasurementQualifier_1_5    |                        0 |
+       | MeasurementValue_1_5        |                      1.0 |
+       | MeasurementId_1_6           |                        1 |
+       | MeasurementNode_1_6         | Alm3                     |
+       | MeasurementQualifier_1_6    |                        0 |
+       | MeasurementValue_1_6        |                      0.0 |
+       | MeasurementId_1_7           |                        1 |
+       | MeasurementNode_1_7         | Alm4                     |
+       | MeasurementQualifier_1_7    |                        0 |
+       | MeasurementValue_1_7        |                      1.0 |
+       | MeasurementId_1_8           |                        1 |
+       | MeasurementNode_1_8         | IntIn1                   |
+       | MeasurementQualifier_1_8    |                        0 |
+       | MeasurementValue_1_8        |                      4.0 |
+       #.........................................................
+       | MeasurementId_1_9           |                        1 |
+       | MeasurementNode_1_9         | Wrn1                     |
+       | MeasurementQualifier_1_9    |                        0 |
+       | MeasurementValue_1_9        |                      0.0 |
+       | MeasurementId_1_10          |                        1 |
+       | MeasurementNode_1_10        | Wrn2                     |
+       | MeasurementQualifier_1_10   |                        0 |
+       | MeasurementValue_1_10       |                      1.0 |
+       | MeasurementId_1_11          |                        1 |
+       | MeasurementNode_1_11        | Wrn3                     |
+       | MeasurementQualifier_1_11   |                        0 |
+       | MeasurementValue_1_11       |                      0.0 |
+       | MeasurementId_1_12          |                        1 |
+       | MeasurementNode_1_12        | Wrn4                     |
+       | MeasurementQualifier_1_12   |                        0 |
+       | MeasurementValue_1_12       |                      1.0 |
+       | MeasurementId_1_13          |                        1 |
+       | MeasurementNode_1_13        | IntIn2                   |
+       | MeasurementQualifier_1_13   |                        0 |
+       | MeasurementValue_1_13       |                      5.0 |
+       #.........................................................
+       | MeasurementId_1_14          |                        1 |
+       | MeasurementNode_1_14        | TotW                     |
+       | MeasurementQualifier_1_14   |                        0 |
+       | MeasurementValue_1_14       |                     10.0 |
+       | MeasurementId_1_15          |                        1 |
+       | MeasurementNode_1_15        | MinWPhs                  |
+       | MeasurementQualifier_1_15   |                        0 |
+       | MeasurementValue_1_15       |                     12.0 |
+       | MeasurementId_1_16          |                        1 |
+       | MeasurementNode_1_16        | MaxWPhs                  |
+       | MeasurementQualifier_1_16   |                        0 |
+       | MeasurementValue_1_16       |                     13.0 |
+       #.........................................................
+       | MeasurementId_1_17          |                        1 |
+       | MeasurementNode_1_17        | W                        |
+	   | MeasurementPhase_1_17_1     | phsA                     |
+       | MeasurementQualifier_1_17_1 |                        0 |
+       | MeasurementValue_1_17_1     |                     10.0 |
+	   | MeasurementPhase_1_17_1     | phsB                     |
+       | MeasurementQualifier_1_17_2 |                        0 |
+       | MeasurementValue_1_17_2     |                     10.0 |
+	   | MeasurementPhase_1_17_2     | phsC                     |
+       | MeasurementQualifier_1_17_3 |                        0 |
+       | MeasurementValue_1_17_3     |                     10.0 |
+	   #.........................................................
+       | MeasurementId_1_18          |                        1 |
+       | MeasurementNode_1_18        | W                        |
+	   | MeasurementPhase_1_18_1     | phsA                     |
+       | MeasurementQualifier_1_18_1 |                        0 |
+       | MeasurementValue_1_18_1     |                     10.0 |
+	   | MeasurementPhase_1_18_2     | phsB                     |  
+       | MeasurementQualifier_1_18_2 |                        0 |
+       | MeasurementValue_1_18_2     |                     10.0 |
+	   | MeasurementPhase_1_18_3     | phsC                     |
+       | MeasurementQualifier_1_18_3 |                        0 |
+       | MeasurementValue_1_18_3     |                     10.0 |
+       #.........................................................
+       | MeasurementId_1_19          |                        1 |
+       | MeasurementNode_1_19        | OutWSet                  |
+       | MeasurementQualifier_1_19   |                        0 |
+       | MeasurementValue_1_19       |                     14.0 |
+       #.........................................................
+       | MeasurementId_1_20          |                        1 |
+       | MeasurementNode_1_20        | TotWh                    |
+       | MeasurementQualifier_1_20   |                        0 |
+       | MeasurementValue_1_20       |                     15.0 |
+       | MeasurementId_1_21          |                        1 |
+       | MeasurementNode_1_21        | GnOpSt                   |
+       | MeasurementQualifier_1_21   |                        0 |
+       | MeasurementValue_1_21       |                     15.0 |
+       | MeasurementId_1_22          |                        1 |
+       | MeasurementNode_1_22        | OpTmsRs                  |
+       | MeasurementQualifier_1_22   |                        0 |
+       | MeasurementValue_1_22       |                     15.0 |
+       | MeasurementId_1_22          |                        1 |
