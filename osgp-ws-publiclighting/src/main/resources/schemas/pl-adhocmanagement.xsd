@@ -199,9 +199,22 @@
   </xsd:element>
 
   <xsd:complexType name="DeviceStatus">
+    <xsd:annotation>
+      <xsd:documentation>
+        DeviceStatus represents the retrieved status of a smart device.
+      </xsd:documentation>
+    </xsd:annotation>
     <xsd:sequence>
       <xsd:element maxOccurs="unbounded" name="LightValues"
-        type="tns:LightValue" />
+        type="tns:LightValue">
+        <xsd:annotation>
+          <xsd:documentation>
+            The list of 'LightValues' can contain:
+            - relay status values in case of SSLD (Substation Lighting Device) smart devices;
+            - light sensor values in case of LMD (Light Measurement Device) smart devices.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
       <xsd:element name="PreferredLinkType" type="tns:LinkType"
         minOccurs="1" maxOccurs="1" />
       <xsd:element name="ActualLinkType" type="tns:LinkType"
@@ -272,6 +285,7 @@
       <xsd:enumeration value="RELAY" />
       <xsd:enumeration value="ONE_TO_TEN_VOLT" />
       <xsd:enumeration value="ONE_TO_TEN_VOLT_REVERSE" />
+      <xsd:enumeration value="ONE_TO_TWENTY_FOUR_VOLT" />
       <xsd:enumeration value="DALI" />
     </xsd:restriction>
   </xsd:simpleType>

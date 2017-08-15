@@ -193,6 +193,7 @@
       <xsd:enumeration value="RELAY" />
       <xsd:enumeration value="ONE_TO_TEN_VOLT" />
       <xsd:enumeration value="ONE_TO_TEN_VOLT_REVERSE" />
+      <xsd:enumeration value="ONE_TO_TWENTY_FOUR_VOLT" />
       <xsd:enumeration value="DALI" />
     </xsd:restriction>
   </xsd:simpleType>
