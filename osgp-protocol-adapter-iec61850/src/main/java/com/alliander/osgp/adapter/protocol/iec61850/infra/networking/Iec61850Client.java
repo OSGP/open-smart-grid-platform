@@ -40,6 +40,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.I
 public class Iec61850Client {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850Client.class);
+    private static final String COULD_NOT_EXECUTE_COMMAND = "Could not execute command";
 
     @Autowired
     private int iec61850PortClient;
@@ -93,8 +94,7 @@ public class Iec61850Client {
         // connect using SSL.
         final ClientSap clientSap = new ClientSap();
         final Iec61850ClientAssociation clientAssociation;
-        LOGGER.info(
-                "Attempting to connect to server: {} on port: {}, max redelivery count: {} and max retry count: {}",
+        LOGGER.info("Attempting to connect to server: {} on port: {}, max redelivery count: {} and max retry count: {}",
                 ipAddress.getHostAddress(), port, this.maxRedeliveriesForIec61850Requests, this.maxRetryCount);
 
         try {
@@ -251,7 +251,7 @@ public class Iec61850Client {
         } catch (final ConnectionFailureException e) {
             throw e;
         } catch (final Exception e) {
-            throw new ProtocolAdapterException(e == null ? "Could not execute command" : e.getMessage(), e);
+            throw new ProtocolAdapterException(e.getMessage() == null ? COULD_NOT_EXECUTE_COMMAND : e.getMessage(), e);
         }
 
         return output;
@@ -281,7 +281,7 @@ public class Iec61850Client {
         } catch (final ConnectionFailureException e) {
             throw e;
         } catch (final Exception e) {
-            throw new ProtocolAdapterException(e == null ? "Could not execute command" : e.getMessage(), e);
+            throw new ProtocolAdapterException(e.getMessage() == null ? COULD_NOT_EXECUTE_COMMAND : e.getMessage(), e);
         }
 
         return output;
@@ -307,7 +307,7 @@ public class Iec61850Client {
                 this.sendCommandWithRetry(function, deviceIdentification, retryCount + 1, deviceMessageLog);
             }
         } catch (final Exception e) {
-            throw new ProtocolAdapterException(e == null ? "Could not execute command" : e.getMessage(), e);
+            throw new ProtocolAdapterException(e.getMessage() == null ? COULD_NOT_EXECUTE_COMMAND : e.getMessage(), e);
         }
 
         return output;
