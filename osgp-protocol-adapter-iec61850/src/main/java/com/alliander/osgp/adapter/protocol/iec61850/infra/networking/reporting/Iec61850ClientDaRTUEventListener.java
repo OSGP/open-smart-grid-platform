@@ -112,7 +112,7 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
         BdaFloat32 totalMeasurement = this.getTotalMeasurementModelNode(member);
         BdaTimestamp timestampMeasurement = this.getTimestampModelNode(member);
         String type = member.getName();
-        type += totalMeasurement.getParent().getName() + "." + totalMeasurement.getName();
+        type += "." + totalMeasurement.getParent().getName() + "." + totalMeasurement.getName();
         BigDecimal value = new BigDecimal(totalMeasurement.getFloat(), new MathContext(3, RoundingMode.HALF_EVEN));
         DataSampleDto sample = new DataSampleDto(type, timestampMeasurement.getDate(), value);
         logicalNode.getDataSamples().add(sample);
@@ -130,7 +130,7 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
         BdaFloat32 singleMeasurement = this.getSingleMeasurementModelNode(childNode);
         BdaTimestamp timestampMeasurement = this.getTimestampModelNode(childNode);
         String type = member.getName() + "." + childNode.getName();
-        type += singleMeasurement.getParent().getParent().getName() + "." + singleMeasurement.getParent().getName() + "." + singleMeasurement.getName();
+        type += "." + singleMeasurement.getParent().getParent().getName() + "." + singleMeasurement.getParent().getName() + "." + singleMeasurement.getName();
         BigDecimal value = new BigDecimal(singleMeasurement.getFloat(), new MathContext(3, RoundingMode.HALF_EVEN));
         DataSampleDto sample = new DataSampleDto(type, timestampMeasurement.getDate(), value);
         logicalNode.getDataSamples().add(sample);
