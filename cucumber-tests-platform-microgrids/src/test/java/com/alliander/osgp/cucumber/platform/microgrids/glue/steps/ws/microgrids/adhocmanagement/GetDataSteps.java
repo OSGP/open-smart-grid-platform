@@ -28,7 +28,6 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRe
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataSystemIdentifier;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Measurement;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Phase;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
@@ -50,8 +49,6 @@ public class GetDataSteps extends GlueBase {
     private static final double DELTA_FOR_MEASUREMENT_VALUE = 0.0001;
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-    private static final String WIND_DEFAULT_NODE_VALUE = "W";
 
     @Autowired
     private AdHocManagementClient client;
@@ -153,43 +150,17 @@ public class GetDataSteps extends GlueBase {
         final String expectedNode = responseParameters.get(PlatformKeys.KEY_MEASUREMENT_NODE.concat(indexPostfix));
         assertEquals(measurementDescription + " node", expectedNode, measurement.getNode());
 
-        if (WIND_DEFAULT_NODE_VALUE.equals(expectedNode)) {
-            this.assertPhases(responseParameters, indexPostfix, measurement);
-        } else {
-            final Integer expectedQualifier = Integer
-                    .parseInt(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix)));
-            assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
+        final int expectedQualifier = Integer
+                .parseInt(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix)));
+        assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
 
-            assertNotNull(measurementDescription + " Time", measurement.getTime());
-            assertTimeFormat(measurement.getTime());
+        assertNotNull(measurementDescription + " Time", measurement.getTime());
+        assertTimeFormat(measurement.getTime());
 
-            final double expectedValue = Double
-                    .parseDouble(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_VALUE.concat(indexPostfix)));
-            assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
-                    DELTA_FOR_MEASUREMENT_VALUE);
-        }
-    }
-
-    private void assertPhases(final Map<String, String> responseParameters, final String indexPostfix,
-            final Measurement measurement) {
-
-        int index = 1;
-        for (final Phase phase : measurement.getPhases()) {
-            final int expectedQualifier = Integer.parseInt(
-                    responseParameters.get(PlatformKeys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix) + "_" + index));
-            assertEquals("Phase qualifier has not the expected value: ", expectedQualifier, phase.getQualifier());
-
-            assertNotNull("Phase time has not a value: ", phase.getTime());
-            assertTimeFormat(measurement.getTime());
-
-            final double expectedValue = Double.parseDouble(
-                    responseParameters.get(PlatformKeys.KEY_MEASUREMENT_VALUE.concat(indexPostfix) + "_" + index));
-            assertEquals("Phase value is not equal with expected value: ", expectedValue, phase.getValue(),
-                    DELTA_FOR_MEASUREMENT_VALUE);
-
-            index++;
-            // TODO: phase.getName()
-        }
+        final double expectedValue = Double
+                .parseDouble(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_VALUE.concat(indexPostfix)));
+        assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
+                DELTA_FOR_MEASUREMENT_VALUE);
     }
 
     private void assertProfiles(final Map<String, String> responseParameters, final List<Profile> profiles,

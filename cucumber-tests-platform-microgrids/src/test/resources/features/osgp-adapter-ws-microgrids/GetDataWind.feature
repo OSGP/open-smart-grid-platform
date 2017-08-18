@@ -3,7 +3,7 @@ Feature: MicroGrids Get Wind Data
   As an OSGP client
   I want to get Wind data from an RTU
   So this data can be used by other processes
-
+l
   Scenario: Request Wind
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
@@ -60,24 +60,24 @@ Feature: MicroGrids Get Wind Data
       | WIND1 | MMXU1.MaxWPhs.q        | VALIDITY_GOOD       |
       | WIND1 | MMXU1.MaxWPhs.t        | 2017-02-01T12:02:00 |
 	  #.......................................................
-	  | WIND1 | MMXU1.W.phsA.cVal.mag.f|                  10 |
-      | WIND1 | MMXU1.W.phsA.q         | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.W.phsA.t         | 2017-02-01T12:02:00 |
-	  | WIND1 | MMXU1.W.phsB.cVal.mag.f|                  10 |
-      | WIND1 | MMXU1.W.phsB.q         | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.W.phsB.t         | 2017-02-01T12:02:00 |
-	  | WIND1 | MMXU1.W.phsC.cVal.mag.f|                  10 |
-      | WIND1 | MMXU1.W.phsC.q         | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.W.phsC.t         | 2017-02-01T12:02:00 |
-	  | WIND1 | MMXU2.W.phsA.cVal.mag.f|                  10 |
-      | WIND1 | MMXU2.W.phsA.q         | VALIDITY_GOOD       |
-      | WIND1 | MMXU2.W.phsA.t         | 2017-02-01T12:02:00 |
-	  | WIND1 | MMXU2.W.phsB.cVal.mag.f|                  10 |
-      | WIND1 | MMXU2.W.phsB.q         | VALIDITY_GOOD       |
-      | WIND1 | MMXU2.W.phsB.t         | 2017-02-01T12:02:00 |
-	  | WIND1 | MMXU2.W.phsC.cVal.mag.f|                  10 |
-      | WIND1 | MMXU2.W.phsC.q         | VALIDITY_GOOD       |
-      | WIND1 | MMXU2.W.phsC.t         | 2017-02-01T12:02:00 |
+	  | WIND1 | MMXU1.phsA.mag.f       |                  10 |
+      | WIND1 | MMXU1.phsA.q           | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.phsA.t           | 2017-02-01T12:02:00 |
+	  | WIND1 | MMXU1.phsB.mag.f       |                  10 |
+      | WIND1 | MMXU1.phsB.q           | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.phsB.t           | 2017-02-01T12:02:00 |
+	  | WIND1 | MMXU1.phsC.mag.f       |                  10 |
+      | WIND1 | MMXU1.phsC.q           | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.phsC.t           | 2017-02-01T12:02:00 |
+	  | WIND1 | MMXU2.phsA.mag.f       |                  10 |
+      | WIND1 | MMXU2.phsA.q           | VALIDITY_GOOD       |
+      | WIND1 | MMXU2.phsA.t           | 2017-02-01T12:02:00 |
+	  | WIND1 | MMXU2.phsB.mag.f       |                  10 |
+      | WIND1 | MMXU2.phsB.q           | VALIDITY_GOOD       |
+      | WIND1 | MMXU2.phsB.t           | 2017-02-01T12:02:00 |
+	  | WIND1 | MMXU2.phsC.mag.f       |                  10 |
+      | WIND1 | MMXU2.phsC.q           | VALIDITY_GOOD       |
+      | WIND1 | MMXU2.phsC.t           | 2017-02-01T12:02:00 |
       #.......................................................
       | WIND1 | DRCC1.OutWSet.subVal.f |                  14 |
       | WIND1 | DRCC1.OutWSet.subQ     | VALIDITY_GOOD       |
@@ -113,9 +113,12 @@ Feature: MicroGrids Get Wind Data
        | MeasurementFilterNode_1_14 | TotW     |
        | MeasurementFilterNode_1_15 | MinWPhs  |
  	   | MeasurementFilterNode_1_16 | MaxWPhs  | 
-       | MeasurementFilterNode_1_17 | W        |
+#       | MeasurementFilterNode_1_17 | W        |
+       | MeasurementFilterNode_1_17 | phsA        |
+       | MeasurementFilterNode_1_17 | phsB        |
+       | MeasurementFilterNode_1_17 | phsC        |
 #       | MeasurementFilterId_1_17   |        1 |
-       | MeasurementFilterNode_1_18 | W        |
+#       | MeasurementFilterNode_1_18 | W        |
 #       | MeasurementFilterId_1_18   |        1 |
        | MeasurementFilterNode_1_19 | OutWSet  |
        | MeasurementFilterNode_1_20 | TotWh    |
@@ -127,7 +130,7 @@ Feature: MicroGrids Get Wind Data
        | NumberOfSystems             |                        1 |
        | SystemId_1                  |                        1 |
        | SystemType_1                | WIND                     |
-       | NumberOfMeasurements_1      |                       22 |
+       | NumberOfMeasurements_1      |                       23 |
        | MeasurementId_1_1           |                        1 |
        | MeasurementNode_1_1         | Mod                      |
        | MeasurementQualifier_1_1    |                        0 |
@@ -196,45 +199,56 @@ Feature: MicroGrids Get Wind Data
        | MeasurementQualifier_1_16   |                        0 |
        | MeasurementValue_1_16       |                     13.0 |
        #.........................................................
-       | MeasurementId_1_17          |                        1 |
-       | MeasurementNode_1_17        | W                        |
-	   | MeasurementPhase_1_17_1     | phsA                     |
-       | MeasurementQualifier_1_17_1 |                        0 |
-       | MeasurementValue_1_17_1     |                     10.0 |
-	   | MeasurementPhase_1_17_1     | phsB                     |
-       | MeasurementQualifier_1_17_2 |                        0 |
-       | MeasurementValue_1_17_2     |                     10.0 |
-	   | MeasurementPhase_1_17_2     | phsC                     |
-       | MeasurementQualifier_1_17_3 |                        0 |
-       | MeasurementValue_1_17_3     |                     10.0 |
-	   #.........................................................
-       | MeasurementId_1_18          |                        1 |
-       | MeasurementNode_1_18        | W                        |
-	   | MeasurementPhase_1_18_1     | phsA                     |
-       | MeasurementQualifier_1_18_1 |                        0 |
-       | MeasurementValue_1_18_1     |                     10.0 |
-	   | MeasurementPhase_1_18_2     | phsB                     |  
-       | MeasurementQualifier_1_18_2 |                        0 |
-       | MeasurementValue_1_18_2     |                     10.0 |
-	   | MeasurementPhase_1_18_3     | phsC                     |
-       | MeasurementQualifier_1_18_3 |                        0 |
-       | MeasurementValue_1_18_3     |                     10.0 |
-       #.........................................................
-       | MeasurementId_1_19          |                        1 |
-       | MeasurementNode_1_19        | OutWSet                  |
-       | MeasurementQualifier_1_19   |                        0 |
-       | MeasurementValue_1_19       |                     14.0 |
+       | MeasurementId_1_17           |                        1 |
+       | MeasurementNode_1_17         | phsA                     |
+       | MeasurementQualifier_1_17    |                        0 |
+       | MeasurementValue_1_17        |                     10.0 |
+       | MeasurementId_1_18           |                        1 |
+       | MeasurementNode_1_18         | phsB                     |
+       | MeasurementQualifier_1_18    |                        0 |
+       | MeasurementValue_1_18        |                     10.0 |
+       | MeasurementId_1_19           |                        1 |
+       | MeasurementNode_1_19         | phsC                     |
+       | MeasurementQualifier_1_19    |                        0 |
+       | MeasurementValue_1_19        |                     10.0 |
+#       | MeasurementId_1_17          |                        1 |
+#       | MeasurementNode_1_17        | W                        |
+#	   | MeasurementPhase_1_17_1     | phsA                     |
+#       | MeasurementQualifier_1_17_1 |                        0 |
+#       | MeasurementValue_1_17_1     |                     10.0 |
+#	   | MeasurementPhase_1_17_1     | phsB                     |
+#       | MeasurementQualifier_1_17_2 |                        0 |
+#       | MeasurementValue_1_17_2     |                     10.0 |
+#	   | MeasurementPhase_1_17_2     | phsC                     |
+#       | MeasurementQualifier_1_17_3 |                        0 |
+#       | MeasurementValue_1_17_3     |                     10.0 |
+#	   #.........................................................
+#       | MeasurementId_1_18          |                        1 |
+#       | MeasurementNode_1_18        | W                        |
+#	   | MeasurementPhase_1_18_1     | phsA                     |
+#       | MeasurementQualifier_1_18_1 |                        0 |
+#       | MeasurementValue_1_18_1     |                     10.0 |
+#	   | MeasurementPhase_1_18_2     | phsB                     |  
+#       | MeasurementQualifier_1_18_2 |                        0 |
+#       | MeasurementValue_1_18_2     |                     10.0 |
+#	   | MeasurementPhase_1_18_3     | phsC                     |
+#       | MeasurementQualifier_1_18_3 |                        0 |
+#       | MeasurementValue_1_18_3     |                     10.0 |
        #.........................................................
        | MeasurementId_1_20          |                        1 |
-       | MeasurementNode_1_20        | TotWh                    |
+       | MeasurementNode_1_20        | OutWSet                  |
        | MeasurementQualifier_1_20   |                        0 |
-       | MeasurementValue_1_20       |                     15.0 |
+       | MeasurementValue_1_20       |                     14.0 |
+       #.........................................................
        | MeasurementId_1_21          |                        1 |
-       | MeasurementNode_1_21        | GnOpSt                   |
+       | MeasurementNode_1_21        | TotWh                    |
        | MeasurementQualifier_1_21   |                        0 |
        | MeasurementValue_1_21       |                     15.0 |
        | MeasurementId_1_22          |                        1 |
-       | MeasurementNode_1_22        | OpTmsRs                  |
+       | MeasurementNode_1_22        | GnOpSt                   |
        | MeasurementQualifier_1_22   |                        0 |
        | MeasurementValue_1_22       |                     15.0 |
-       | MeasurementId_1_22          |                        1 |
+       | MeasurementId_1_23          |                        1 |
+       | MeasurementNode_1_23        | OpTmsRs                  |
+       | MeasurementQualifier_1_23   |                        0 |
+       | MeasurementValue_1_23       |                     15.0 |
