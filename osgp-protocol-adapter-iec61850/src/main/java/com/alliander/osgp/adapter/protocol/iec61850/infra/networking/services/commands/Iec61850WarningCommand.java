@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +25,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Node
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.QualityConverter;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.PhaseDto;
 
 public class Iec61850WarningCommand implements RtuReadCommand<MeasurementDto> {
 
@@ -64,7 +62,7 @@ public class Iec61850WarningCommand implements RtuReadCommand<MeasurementDto> {
         return new MeasurementDto(1, map.get(this.warningIndex).getDescription(),
                 QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
                 new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
-                containingNode.getBoolean(SubDataAttribute.STATE).getValue() ? 1 : 0, new ArrayList<PhaseDto>());
+                containingNode.getBoolean(SubDataAttribute.STATE).getValue() ? 1 : 0);
     }
 
 }

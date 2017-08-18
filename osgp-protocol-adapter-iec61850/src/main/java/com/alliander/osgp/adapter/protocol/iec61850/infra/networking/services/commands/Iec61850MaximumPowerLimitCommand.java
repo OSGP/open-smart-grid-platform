@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
-import java.util.ArrayList;
-
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.Fc;
 
@@ -21,7 +19,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.PhaseDto;
 
 public class Iec61850MaximumPowerLimitCommand implements RtuReadCommand<MeasurementDto> {
 
@@ -39,7 +36,7 @@ public class Iec61850MaximumPowerLimitCommand implements RtuReadCommand<Measurem
 
         return new MeasurementDto(1, DataAttribute.MAXIMUM_POWER_LIMIT.getDescription(), 0,
                 // TODO - Implement when available
-                new DateTime(), 1, new ArrayList<PhaseDto>());
+                new DateTime(), 1);
     }
 
 }

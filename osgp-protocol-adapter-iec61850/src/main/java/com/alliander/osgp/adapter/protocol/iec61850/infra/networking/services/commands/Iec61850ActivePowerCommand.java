@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
-import java.util.Arrays;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
@@ -24,15 +22,17 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Node
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.QualityConverter;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.PhaseDto;
 
 public class Iec61850ActivePowerCommand implements RtuReadCommand<MeasurementDto> {
-    private static final int DEFAULT_MEASUREMENT_QUALIFIER_ID = 1;
-    private static final int DEFAULT_MEASUREMENT_VALUE = 1;
+    // private static final int DEFAULT_MEASUREMENT_QUALIFIER_ID = 1;
+    // private static final int DEFAULT_MEASUREMENT_VALUE = 1;
 
+    // private int index;
+    private LogicalNode logicalNode;
     private int index;
 
     public Iec61850ActivePowerCommand(final int index) {
+        this.logicalNode = LogicalNode.fromString("MMXU" + index);
         this.index = index;
     }
 
@@ -40,7 +40,7 @@ public class Iec61850ActivePowerCommand implements RtuReadCommand<MeasurementDto
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
-                LogicalNode.MEASUREMENT_ONE, DataAttribute.ACTIVE_POWER, Fc.MX);
+                this.logicalNode, DataAttribute.ACTIVE_POWER, Fc.MX);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
@@ -48,21 +48,23 @@ public class Iec61850ActivePowerCommand implements RtuReadCommand<MeasurementDto
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(this.index, DataAttribute.ACTIVE_POWER.getDescription(),
-                new Integer(DEFAULT_MEASUREMENT_QUALIFIER_ID), new DateTime(DateTimeZone.UTC),
-                new Double(DEFAULT_MEASUREMENT_VALUE),
 
-                Arrays.asList(this.getPhaseData(containingNode.getChild(SubDataAttribute.PHASE_A)),
-                        this.getPhaseData(containingNode.getChild(SubDataAttribute.PHASE_B)),
-                        this.getPhaseData(containingNode.getChild(SubDataAttribute.PHASE_C))));
-    }
-
-    private PhaseDto getPhaseData(final NodeContainer containingNode) {
-        final PhaseDto phaseDto = new PhaseDto(this.index, DataAttribute.ACTIVE_POWER.getDescription(),
                 QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
                 new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
-                containingNode.getChild(SubDataAttribute.C_VALUES).getChild(SubDataAttribute.MAGNITUDE)
-                        .getFloat(SubDataAttribute.FLOAT).getFloat());
 
-        return phaseDto;
+                containingNode.getChild(SubDataAttribute.PHASE_A).getChild(SubDataAttribute.C_VALUES)
+                        .getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
     }
+
+    // private PhaseDto getPhaseData(final NodeContainer containingNode) {
+    // final PhaseDto phaseDto = new PhaseDto(this.index,
+    // DataAttribute.ACTIVE_POWER.getDescription(),
+    // QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
+    // new DateTime(containingNode.getDate(SubDataAttribute.TIME),
+    // DateTimeZone.UTC),
+    // containingNode.getChild(SubDataAttribute.C_VALUES).getChild(SubDataAttribute.MAGNITUDE)
+    // .getFloat(SubDataAttribute.FLOAT).getFloat());
+    //
+    // return phaseDto;
+    // }
 }

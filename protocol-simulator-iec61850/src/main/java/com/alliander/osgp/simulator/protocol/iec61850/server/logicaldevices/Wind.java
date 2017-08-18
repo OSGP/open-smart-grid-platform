@@ -109,39 +109,41 @@ public class Wind extends LogicalDevice {
     private static final String MMXU1_MAXWPHS_T = "MMXU1.MaxWPhs.t";
 
     // new WIND
-    private static final String MMXU1_W_PHSA_CVAL_MAG_F = "MMXU1.W.phsA.cVal.mag.f";
-    private static final String MMXU1_W_PHSA_Q = "MMXU1.W.phsA.q";
-    private static final String MMXU1_W_PHSA_T = "MMXU1.W.phsA.t";
+    // private static final String MMXU1_PHSA_CVAL_MAG_F =
+    // "MMXU1.phsA.cVal.mag.f";
+    private static final String MMXU1_PHSA_MAG_F = "MMXU1.phsA.mag.f";
+    private static final String MMXU1_PHSA_Q = "MMXU1.phsA.q";
+    private static final String MMXU1_PHSA_T = "MMXU1.phsA.t";
 
-    private static final String MMXU1_W_PHSB_CVAL_MAG_F = "MMXU1.W.phsB.cVal.mag.f";
-    private static final String MMXU1_W_PHSB_Q = "MMXU1.W.phsB.q";
-    private static final String MMXU1_W_PHSB_T = "MMXU1.W.phsB.t";
+    private static final String MMXU1_PHSB_MAG_F = "MMXU1.phsB.mag.f";
+    private static final String MMXU1_PHSB_Q = "MMXU1.phsB.q";
+    private static final String MMXU1_PHSB_T = "MMXU1.phsB.t";
 
-    private static final String MMXU1_W_PHSC_CVAL_MAG_F = "MMXU1.W.phsC.cVal.mag.f";
-    private static final String MMXU1_W_PHSC_Q = "MMXU1.W.phsC.q";
-    private static final String MMXU1_W_PHSC_T = "MMXU1.W.phsC.t";
+    private static final String MMXU1_PHSC_MAG_F = "MMXU1.phsC.mag.f";
+    private static final String MMXU1_PHSC_Q = "MMXU1.phsC.q";
+    private static final String MMXU1_PHSC_T = "MMXU1.phsC.t";
 
-    private static final String MMXU2_W_PHSA_CVAL_MAG_F = "MMXU2.W.phsA.cVal.mag.f";
-    private static final String MMXU2_W_PHSA_Q = "MMXU2.W.phsA.q";
-    private static final String MMXU2_W_PHSA_T = "MMXU2.W.phsA.t";
+    private static final String MMXU2_PHSA_MAG_F = "MMXU2.phsA.mag.f";
+    private static final String MMXU2_PHSA_Q = "MMXU2.phsA.q";
+    private static final String MMXU2_PHSA_T = "MMXU2.phsA.t";
 
-    private static final String MMXU2_W_PHSB_CVAL_MAG_F = "MMXU2.W.phsB.cVal.mag.f";
-    private static final String MMXU2_W_PHSB_Q = "MMXU2.W.phsB.q";
-    private static final String MMXU2_W_PHSB_T = "MMXU2.W.phsB.t";
+    private static final String MMXU2_PHSB_MAG_F = "MMXU2.phsB.mag.f";
+    private static final String MMXU2_PHSB_Q = "MMXU2.phsB.q";
+    private static final String MMXU2_PHSB_T = "MMXU2.phsB.t";
 
-    private static final String MMXU2_W_PHSC_CVAL_MAG_F = "MMXU2.W.phsC.cVal.mag.f";
-    private static final String MMXU2_W_PHSC_Q = "MMXU2.W.phsC.q";
-    private static final String MMXU2_W_PHSC_T = "MMXU2.W.phsC.t";
+    private static final String MMXU2_PHSC_MAG_F = "MMXU2.phsC.mag.f";
+    private static final String MMXU2_PHSC_Q = "MMXU2.phsC.q";
+    private static final String MMXU2_PHSC_T = "MMXU2.phsC.t";
     // new WIND
 
     private static final Set<String> BOOLEAN_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(GGIO1_ALM1_STVAL, GGIO1_ALM2_STVAL, GGIO1_ALM3_STVAL,
                     GGIO1_ALM4_STVAL, GGIO1_WRN1_STVAL, GGIO1_WRN2_STVAL, GGIO1_WRN3_STVAL, GGIO1_WRN4_STVAL)));
 
-    private static final Set<String> FLOAT32_NODES = Collections.unmodifiableSet(new TreeSet<>(
-            Arrays.asList(DRCC1_OUTWSET_SUBVAL_F, MMXU1_MAXWPHS_MAG_F, MMXU1_MINWPHS_MAG_F, MMXU1_TOTW_MAG_F,
-                    MMXU1_TOTPF_MAG_F, MMXU1_W_PHSA_CVAL_MAG_F, MMXU1_W_PHSB_CVAL_MAG_F, MMXU1_W_PHSC_CVAL_MAG_F,
-                    MMXU2_W_PHSA_CVAL_MAG_F, MMXU2_W_PHSB_CVAL_MAG_F, MMXU2_W_PHSC_CVAL_MAG_F, DGEN1_TOTWH_MAG_F)));
+    private static final Set<String> FLOAT32_NODES = Collections
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(DRCC1_OUTWSET_SUBVAL_F, MMXU1_MAXWPHS_MAG_F,
+                    MMXU1_MINWPHS_MAG_F, MMXU1_TOTW_MAG_F, MMXU1_TOTPF_MAG_F, MMXU1_PHSA_MAG_F, MMXU1_PHSB_MAG_F,
+                    MMXU1_PHSC_MAG_F, MMXU2_PHSA_MAG_F, MMXU2_PHSB_MAG_F, MMXU2_PHSC_MAG_F, DGEN1_TOTWH_MAG_F)));
 
     private static final Set<String> INT8_NODES = Collections.unmodifiableSet(
             new TreeSet<>(Arrays.asList(LLN0_HEALTH_STVAL, LLN0_MOD_STVAL, LLN0_BEH_STVAL, DGEN1_GNOPST_STVAL)));
@@ -151,17 +153,17 @@ public class Wind extends LogicalDevice {
 
     private static final Set<String> QUALITY_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(DRCC1_OUTWSET_SUBQ, LLN0_HEALTH_Q, LLN0_BEH_Q, LLN0_MOD_Q,
-                    MMXU1_MAXWPHS_Q, MMXU1_MINWPHS_Q, MMXU1_TOTW_Q, MMXU1_TOTPF_Q, MMXU1_W_PHSA_Q, MMXU1_W_PHSB_Q,
-                    MMXU1_W_PHSC_Q, MMXU2_W_PHSA_Q, MMXU2_W_PHSB_Q, MMXU2_W_PHSC_Q, GGIO1_ALM1_Q, GGIO1_ALM2_Q,
-                    GGIO1_ALM3_Q, GGIO1_ALM4_Q, GGIO1_INTIN1_Q, GGIO1_INTIN2_Q, GGIO1_WRN1_Q, GGIO1_WRN2_Q,
-                    GGIO1_WRN3_Q, GGIO1_WRN4_Q, DGEN1_TOTWH_Q, DGEN1_GNOPST_Q, DGEN1_OPTMSRS_Q)));
+                    MMXU1_MAXWPHS_Q, MMXU1_MINWPHS_Q, MMXU1_TOTW_Q, MMXU1_TOTPF_Q, MMXU1_PHSA_Q, MMXU1_PHSB_Q,
+                    MMXU1_PHSC_Q, MMXU2_PHSA_Q, MMXU2_PHSB_Q, MMXU2_PHSC_Q, GGIO1_ALM1_Q, GGIO1_ALM2_Q, GGIO1_ALM3_Q,
+                    GGIO1_ALM4_Q, GGIO1_INTIN1_Q, GGIO1_INTIN2_Q, GGIO1_WRN1_Q, GGIO1_WRN2_Q, GGIO1_WRN3_Q,
+                    GGIO1_WRN4_Q, DGEN1_TOTWH_Q, DGEN1_GNOPST_Q, DGEN1_OPTMSRS_Q)));
 
     private static final Set<String> TIMESTAMP_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T, LLN0_BEH_T, LLN0_MOD_T, MMXU1_MAXWPHS_T,
-                    MMXU1_MINWPHS_T, MMXU1_TOTW_T, MMXU1_TOTPF_T, MMXU1_W_PHSA_T, MMXU1_W_PHSB_T, MMXU1_W_PHSC_T,
-                    MMXU2_W_PHSA_T, MMXU2_W_PHSB_T, MMXU2_W_PHSC_T, GGIO1_ALM1_T, GGIO1_ALM2_T, GGIO1_ALM3_T,
-                    GGIO1_ALM4_T, GGIO1_INTIN1_T, GGIO1_INTIN2_T, GGIO1_WRN1_T, GGIO1_WRN2_T, GGIO1_WRN3_T,
-                    GGIO1_WRN4_T, DGEN1_TOTWH_T, DGEN1_GNOPST_T, DGEN1_OPTMSRS_T)));
+                    MMXU1_MINWPHS_T, MMXU1_TOTW_T, MMXU1_TOTPF_T, MMXU1_PHSA_T, MMXU1_PHSB_T, MMXU1_PHSC_T,
+                    MMXU2_PHSA_T, MMXU2_PHSB_T, MMXU2_PHSC_T, GGIO1_ALM1_T, GGIO1_ALM2_T, GGIO1_ALM3_T, GGIO1_ALM4_T,
+                    GGIO1_INTIN1_T, GGIO1_INTIN2_T, GGIO1_WRN1_T, GGIO1_WRN2_T, GGIO1_WRN3_T, GGIO1_WRN4_T,
+                    DGEN1_TOTWH_T, DGEN1_GNOPST_T, DGEN1_OPTMSRS_T)));
 
     private static final Map<String, Fc> FC_BY_NODE;
     static {
@@ -247,29 +249,29 @@ public class Wind extends LogicalDevice {
         fcByNode.put(MMXU1_TOTPF_Q, Fc.MX);
         fcByNode.put(MMXU1_TOTPF_T, Fc.MX);
 
-        fcByNode.put(MMXU1_W_PHSA_CVAL_MAG_F, Fc.MX);
-        fcByNode.put(MMXU1_W_PHSA_Q, Fc.MX);
-        fcByNode.put(MMXU1_W_PHSA_T, Fc.MX);
+        fcByNode.put(MMXU1_PHSA_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_PHSA_Q, Fc.MX);
+        fcByNode.put(MMXU1_PHSA_T, Fc.MX);
 
-        fcByNode.put(MMXU1_W_PHSB_CVAL_MAG_F, Fc.MX);
-        fcByNode.put(MMXU1_W_PHSB_Q, Fc.MX);
-        fcByNode.put(MMXU1_W_PHSB_T, Fc.MX);
+        fcByNode.put(MMXU1_PHSB_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_PHSB_Q, Fc.MX);
+        fcByNode.put(MMXU1_PHSB_T, Fc.MX);
 
-        fcByNode.put(MMXU1_W_PHSC_CVAL_MAG_F, Fc.MX);
-        fcByNode.put(MMXU1_W_PHSC_Q, Fc.MX);
-        fcByNode.put(MMXU1_W_PHSC_T, Fc.MX);
+        fcByNode.put(MMXU1_PHSC_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_PHSC_Q, Fc.MX);
+        fcByNode.put(MMXU1_PHSC_T, Fc.MX);
 
-        fcByNode.put(MMXU2_W_PHSA_CVAL_MAG_F, Fc.MX);
-        fcByNode.put(MMXU2_W_PHSA_Q, Fc.MX);
-        fcByNode.put(MMXU2_W_PHSA_T, Fc.MX);
+        fcByNode.put(MMXU2_PHSA_MAG_F, Fc.MX);
+        fcByNode.put(MMXU2_PHSA_Q, Fc.MX);
+        fcByNode.put(MMXU2_PHSA_T, Fc.MX);
 
-        fcByNode.put(MMXU2_W_PHSB_CVAL_MAG_F, Fc.MX);
-        fcByNode.put(MMXU2_W_PHSB_Q, Fc.MX);
-        fcByNode.put(MMXU2_W_PHSB_T, Fc.MX);
+        fcByNode.put(MMXU2_PHSB_MAG_F, Fc.MX);
+        fcByNode.put(MMXU2_PHSB_Q, Fc.MX);
+        fcByNode.put(MMXU2_PHSB_T, Fc.MX);
 
-        fcByNode.put(MMXU2_W_PHSC_CVAL_MAG_F, Fc.MX);
-        fcByNode.put(MMXU2_W_PHSC_Q, Fc.MX);
-        fcByNode.put(MMXU2_W_PHSC_T, Fc.MX);
+        fcByNode.put(MMXU2_PHSC_MAG_F, Fc.MX);
+        fcByNode.put(MMXU2_PHSC_Q, Fc.MX);
+        fcByNode.put(MMXU2_PHSC_T, Fc.MX);
 
         fcByNode.put(DRCC1_OUTWSET_SUBVAL_F, Fc.SV);
         fcByNode.put(DRCC1_OUTWSET_SUBQ, Fc.SV);
@@ -365,29 +367,29 @@ public class Wind extends LogicalDevice {
         values.add(this.setQuality(MMXU1_TOTPF_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(MMXU1_TOTPF_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat(MMXU1_W_PHSA_CVAL_MAG_F, Fc.MX, 0, 1000));
-        values.add(this.setQuality(MMXU1_W_PHSA_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(MMXU1_W_PHSA_T, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU1_PHSA_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_PHSA_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_PHSA_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat(MMXU1_W_PHSB_CVAL_MAG_F, Fc.MX, 0, 1000));
-        values.add(this.setQuality(MMXU1_W_PHSB_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(MMXU1_W_PHSB_T, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU1_PHSB_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_PHSB_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_PHSB_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat(MMXU1_W_PHSC_CVAL_MAG_F, Fc.MX, 0, 1000));
-        values.add(this.setQuality(MMXU1_W_PHSC_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(MMXU1_W_PHSC_T, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU1_PHSC_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_PHSC_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_PHSC_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat(MMXU2_W_PHSA_CVAL_MAG_F, Fc.MX, 0, 1000));
-        values.add(this.setQuality(MMXU2_W_PHSA_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(MMXU2_W_PHSA_T, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU2_PHSA_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU2_PHSA_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU2_PHSA_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat(MMXU2_W_PHSB_CVAL_MAG_F, Fc.MX, 0, 1000));
-        values.add(this.setQuality(MMXU2_W_PHSB_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(MMXU2_W_PHSB_T, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU2_PHSB_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU2_PHSB_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU2_PHSB_T, Fc.MX, timestamp));
 
-        values.add(this.setRandomFloat(MMXU2_W_PHSC_CVAL_MAG_F, Fc.MX, 0, 1000));
-        values.add(this.setQuality(MMXU2_W_PHSC_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(MMXU2_W_PHSC_T, Fc.MX, timestamp));
+        values.add(this.setRandomFloat(MMXU2_PHSC_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU2_PHSC_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU2_PHSC_T, Fc.MX, timestamp));
 
         values.add(this.setRandomFloat(DRCC1_OUTWSET_SUBVAL_F, Fc.SV, 0, 1000));
         values.add(this.setQuality(DRCC1_OUTWSET_SUBQ, Fc.SV, QualityType.VALIDITY_GOOD.getValue()));
