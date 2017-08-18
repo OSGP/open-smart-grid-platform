@@ -31,6 +31,8 @@ public enum DataAttribute {
      * Property of CSLC Node, Functional firmware configuration.
      */
     FUNCTIONAL_FIRMWARE("FuncFwDw"),
+
+    IND("Ind"),
     /**
      * Property of CSLC Node, IP configuration.
      */
@@ -48,6 +50,14 @@ public enum DataAttribute {
      * Property of XSWC Node, Pos.
      */
     POSITION("Pos"),
+    /**
+     * Property of LLN0 Node, rcb_A, contains the buffered report information.
+     */
+    RCB_A("rcb_A"),
+    /**
+     * Property of LLN0 Node, rcb_B, contains the unbuffered report information.
+     */
+    RCB_B("rcb_B"),
     /**
      * Property of CSLC Node, reboot.
      */

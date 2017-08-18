@@ -75,4 +75,28 @@ public class Iec61850EnableReportingCommand {
         reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         LOGGER.info("Allowing device {} to send reports containing events", deviceConnection.getDeviceIdentification());
     }
+
+    public void enableReportingOnLightMeasurementDevice(final Iec61850Client iec61850Client,
+            final DeviceConnection deviceConnection) throws NodeException {
+
+        final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LD0,
+                LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.RCB_A, Fc.BR);
+
+        // Only reading the sequence number for the report node, as the report
+        // node is not fully described by the ServerModel when using an ICD
+        // file. Since the report node differs from the ServerModel, a full read
+        // of the node and all data-attributes will fail. Therefore, only the
+        // needed data-attributes are read.
+        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                (FcModelNode) reporting.getFcmodelNode().getChild(SubDataAttribute.SEQUENCE_NUMBER.getDescription()));
+
+        final Iec61850ClientBaseEventListener reportListener = deviceConnection.getConnection()
+                .getIec61850ClientAssociation().getReportListener();
+
+        final short sqNum = reporting.getUnsignedByte(SubDataAttribute.SEQUENCE_NUMBER).getValue();
+        reportListener.setSqNum(sqNum);
+        reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
+        LOGGER.info("Allowing light measurement device {} to send reports containing events",
+                deviceConnection.getDeviceIdentification());
+    }
 }

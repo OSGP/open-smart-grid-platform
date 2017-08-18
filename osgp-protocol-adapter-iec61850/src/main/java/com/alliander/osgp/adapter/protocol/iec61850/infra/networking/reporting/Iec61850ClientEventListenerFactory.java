@@ -34,6 +34,8 @@ public class Iec61850ClientEventListenerFactory {
         switch (ied) {
         case FLEX_OVL:
             return new Iec61850ClientSSLDEventListener(deviceIdentification, deviceManagementService);
+        case ABB_RTU:
+            return new Iec61850ClientLMDEventListener(deviceIdentification, deviceManagementService);
         case ZOWN_RTU:
             return new Iec61850ClientRTUEventListener(deviceIdentification, deviceManagementService);
         case DA_RTU:

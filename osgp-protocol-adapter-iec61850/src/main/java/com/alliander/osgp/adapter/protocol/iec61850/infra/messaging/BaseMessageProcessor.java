@@ -96,8 +96,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         } else {
             LOGGER.warn(
                     "All redelivery attempts failed for message with messageType: {}, correlationUid: {}, for device: {}",
-                    deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getDeviceIdentification(),
-                    deviceMessageMetadata.getCorrelationUid());
+                    deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getCorrelationUid(),
+                    deviceMessageMetadata.getDeviceIdentification());
             this.handleExpectedError(e, deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), domain, domainVersion,
@@ -110,8 +110,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
             final String messageType, final int retryCount) {
         final int messagePriority = 0;
         final Long scheduleTime = null;
-        this.handleDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType, retryCount,
-                messagePriority, scheduleTime);
+        this.handleDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType,
+                retryCount, messagePriority, scheduleTime);
     }
 
     /**
@@ -165,8 +165,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
             return (OsgpException) t;
         }
 
-        return new TechnicalException(ComponentType.PROTOCOL_IEC61850,
-                t == null ? "no exception specified" : t.getMessage());
+        return new TechnicalException(ComponentType.PROTOCOL_IEC61850, t == null ? "no exception specified"
+                : t.getMessage());
     }
 
     public void handleExpectedError(final OsgpException e, final String correlationUid,

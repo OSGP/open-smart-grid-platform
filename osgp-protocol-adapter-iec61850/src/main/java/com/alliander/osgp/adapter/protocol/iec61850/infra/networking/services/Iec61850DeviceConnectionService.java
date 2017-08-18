@@ -151,7 +151,7 @@ public class Iec61850DeviceConnectionService {
         // Read the ServerModel, either from the device or from a SCL file.
         ServerModel serverModel;
         try {
-            serverModel = this.readServerModel(clientAssociation, deviceIdentification, iec61850Device);
+            serverModel = this.readServerModel(clientAssociation, deviceIdentification, iec61850Device, ied);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("ProtocolAdapterException: unable to read ServerModel for deviceIdentification "
                     + deviceIdentification, e);
@@ -315,8 +315,25 @@ public class Iec61850DeviceConnectionService {
         if (serverName != null && !serverName.isEmpty()) {
             return serverName;
         } else {
-            // this methode is only called after null-check on ied
+            // this method is only called after null-check on IED
             return ied.getDescription();
+        }
+    }
+
+    /**
+     * Reads server model from device for {@link IED.ABB_RTU} IED type. For
+     * other IED types, uses
+     * {@link Iec61850DeviceConnectionService#readServerModel(ClientAssociation, String, Iec61850Device)}
+     * .
+     */
+    private ServerModel readServerModel(final ClientAssociation clientAssociation, final String deviceIdentification,
+            final Iec61850Device iec61850Device, final IED ied) throws ProtocolAdapterException {
+        if (IED.ABB_RTU.equals(ied)) {
+            LOGGER.info("Reading ServerModel from device: {} of type: {} using readServerModelFromDevice()",
+                    deviceIdentification, ied.name());
+            return this.iec61850Client.readServerModelFromDevice(clientAssociation);
+        } else {
+            return this.readServerModel(clientAssociation, deviceIdentification, iec61850Device);
         }
     }
 

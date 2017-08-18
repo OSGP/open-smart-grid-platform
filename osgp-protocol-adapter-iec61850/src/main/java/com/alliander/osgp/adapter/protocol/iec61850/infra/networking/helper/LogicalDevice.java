@@ -16,6 +16,10 @@ public enum LogicalDevice {
      */
     LIGHTING("IO"),
     /**
+     * The name of the ABB light measurement Logical Device.
+     */
+    LD0("LD0"),
+    /**
      * Logical Device RTU
      */
     RTU("RTU"),

@@ -37,14 +37,6 @@ import com.alliander.osgp.dto.valueobjects.EventTypeDto;
 
 public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventListener {
 
-    /**
-     * The EntryTime from IEC61850 has timestamp values relative to 01-01-1984.
-     * TimeStamp values and Java date time values have milliseconds since
-     * 01-01-1970. The milliseconds between these representations are in the
-     * following offset.
-     */
-    private static final long IEC61850_ENTRY_TIME_OFFSET = 441763200000L;
-
     /*
      * Node names of EvnRpn nodes that occur as members of the report dataset.
      */
@@ -83,7 +75,7 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
 
     private Map<Integer, Integer> buildExternalByInternalIndexMap(
             final DeviceManagementService deviceManagementService, final String deviceIdentification)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final Map<Integer, Integer> indexMap = new TreeMap<>();
         indexMap.put(0, 0);
@@ -158,8 +150,8 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
     private String getReportDescription(final Report report, final DateTime timeOfEntry) {
         return String.format("device: %s, reportId: %s, timeOfEntry: %s, sqNum: %s%s%s", this.deviceIdentification,
                 report.getRptId(), timeOfEntry == null ? "-" : timeOfEntry, report.getSqNum(),
-                report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
-                report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
+                        report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
+                                report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
     }
 
     private void addEventNotificationForReportedData(final FcModelNode evnRpn, final DateTime timeOfEntry,
@@ -264,7 +256,7 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
             /*
              * Use the reports time of entry for the event. The trigger time
              * will appear in the description with the event notification.
-             *
+             * 
              * See: determineDescription(FcModelNode)
              */
             return timeOfEntry;
@@ -292,30 +284,30 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         sb.append("\t           BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
         sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
-                .append(System.lineSeparator());
+        .append(System.lineSeparator());
         sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());
         sb.append("\t             SqNum:\t").append(report.getSqNum()).append(System.lineSeparator());
         sb.append("\t          SubSqNum:\t").append(report.getSubSqNum()).append(System.lineSeparator());
         sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
         if (report.getTimeOfEntry() != null) {
             sb.append("\t                   \t(")
-                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
-                    .append(')').append(System.lineSeparator());
+            .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
+            .append(')').append(System.lineSeparator());
         }
         final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
         if (reasonCodes != null && !reasonCodes.isEmpty()) {
             sb.append("\t       ReasonCodes:").append(System.lineSeparator());
             for (final BdaReasonForInclusion reasonCode : reasonCodes) {
                 sb.append("\t                   \t")
-                        .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                                : reasonCode).append("\t(")
+                .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
+                        : reasonCode).append("\t(")
                         .append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
                         .append(System.lineSeparator());
             }
         }
         sb.append("\t           optFlds:").append(report.getOptFlds()).append("\t(")
-                .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-                .append(System.lineSeparator());
+        .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
+        .append(System.lineSeparator());
         final DataSet dataSet = report.getDataSet();
         if (dataSet == null) {
             sb.append("\t           DataSet:\tnull").append(System.lineSeparator());

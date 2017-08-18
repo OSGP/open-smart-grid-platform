@@ -11,10 +11,8 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
  * Contains the name of the IED.
  */
 public enum IED {
-    /**
-     * The name of the IED.
-     */
     FLEX_OVL("SWDeviceGeneric"),
+    ABB_RTU("TEMPLATE"),
     ZOWN_RTU("WAGO61850Server"),
     DA_RTU("WAGO61850Server");
 
