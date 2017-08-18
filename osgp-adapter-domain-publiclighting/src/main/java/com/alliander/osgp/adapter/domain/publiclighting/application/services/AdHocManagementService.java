@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.publiclighting.application.services;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +19,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.domain.shared.FilterLightAndTariffValuesHelper;
+import com.alliander.osgp.adapter.domain.shared.GetStatusResponse;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
 import com.alliander.osgp.domain.core.valueobjects.DomainType;
 import com.alliander.osgp.domain.core.valueobjects.LightValue;
-import com.alliander.osgp.domain.core.valueobjects.RelayType;
-import com.alliander.osgp.domain.core.valueobjects.TariffValue;
 import com.alliander.osgp.domain.core.valueobjects.TransitionType;
 import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
@@ -63,7 +63,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void setLight(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<LightValue> lightValues, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -99,7 +99,7 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -107,8 +107,11 @@ public class AdHocManagementService extends AbstractService {
         final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper.map(
                 allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, allowedDomainTypeDto), messageType, device.getIpAddress());
+        final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType()) ? DeviceFunction.GET_LIGHT_SENSOR_STATUS
+                .name() : messageType;
+
+                this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                        deviceIdentification, allowedDomainTypeDto), actualMessageType, device.getIpAddress());
     }
 
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
@@ -117,48 +120,88 @@ public class AdHocManagementService extends AbstractService {
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
+        final GetStatusResponse response = new GetStatusResponse();
+        response.setOsgpException(exception);
+        response.setResult(deviceResult);
 
-        ResponseMessageResultType result = deviceResult;
-        OsgpException osgpException = exception;
-        DeviceStatusMapped deviceStatusMapped = null;
-
-        if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-            LOGGER.error("Device Response not ok.", osgpException);
+        if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
+            LOGGER.error("Device Response not ok.", exception);
         } else {
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
-
-            final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
-
-            final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
-
-            final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
-            for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                dosMap.put(dos.getExternalId(), dos);
-            }
-
-            if (status != null) {
-                deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                        allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
-                        status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
-                        status.getEventNotificationsMask());
-
-                this.updateDeviceRelayOverview(device, deviceStatusMapped);
-            } else {
-                result = ResponseMessageResultType.NOT_OK;
-                osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
-                        "Device was not able to report status", new NoDeviceResponseException());
+            try {
+                final Device dev = this.deviceDomainService.searchDevice(deviceIdentification);
+                if (LightMeasurementDevice.LMD_TYPE.equals(dev.getDeviceType())) {
+                    this.handleLmd(status, response);
+                } else {
+                    this.handleSsld(deviceIdentification, status, allowedDomainType, response);
+                }
+            } catch (final FunctionalException e) {
+                LOGGER.error("Caught FunctionalException", e);
             }
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, deviceStatusMapped));
+                deviceIdentification, response.getResult(), response.getOsgpException(), response
+                        .getDeviceStatusMapped()));
+    }
+
+    private void handleLmd(final DeviceStatus status, final GetStatusResponse response) {
+        if (status != null) {
+            final DeviceStatusMapped deviceStatusMapped = new DeviceStatusMapped(null, status.getLightValues(),
+                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                    status.getEventNotificationsMask());
+            // Return mapped status using GetStatusResponse instance.
+            response.setDeviceStatusMapped(deviceStatusMapped);
+        } else {
+            // No status received, create bad response.
+            response.setDeviceStatusMapped(null);
+            response.setOsgpException(new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
+                    "Light measurement device was not able to report light sensor status",
+                    new NoDeviceResponseException()));
+            response.setResult(ResponseMessageResultType.NOT_OK);
+        }
+    }
+
+    private void handleSsld(final String deviceIdentification, final DeviceStatus status,
+            final DomainType allowedDomainType, final GetStatusResponse response) {
+
+        // Find device and output settings.
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+        final List<DeviceOutputSetting> deviceOutputSettings = ssld.getOutputSettings();
+
+        // Create map with external relay number as key set.
+        final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
+        for (final DeviceOutputSetting dos : deviceOutputSettings) {
+            dosMap.put(dos.getExternalId(), dos);
+        }
+
+        if (status != null) {
+            // Map the DeviceStatus for SSLD.
+            final DeviceStatusMapped deviceStatusMapped = new DeviceStatusMapped(
+                    FilterLightAndTariffValuesHelper.filterTariffValues(status.getLightValues(), dosMap,
+                            allowedDomainType), FilterLightAndTariffValuesHelper.filterLightValues(
+                            status.getLightValues(), dosMap, allowedDomainType), status.getPreferredLinkType(),
+                    status.getActualLinkType(), status.getLightType(), status.getEventNotificationsMask());
+
+            // Update the relay overview with the relay information.
+            this.updateDeviceRelayOverview(ssld, deviceStatusMapped);
+
+            // Return mapped status using GetStatusResponse instance.
+            response.setDeviceStatusMapped(deviceStatusMapped);
+        } else {
+            // No status received, create bad response.
+            response.setDeviceStatusMapped(null);
+            response.setOsgpException(new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
+                    "SSLD was not able to report relay status", new NoDeviceResponseException()));
+            response.setResult(ResponseMessageResultType.NOT_OK);
+        }
     }
 
     // === RESUME SCHEDULE ===
 
     public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -244,85 +287,6 @@ public class AdHocManagementService extends AbstractService {
 
         LOGGER.info("Set light measurement device: {} for ssld: {}", lightMeasurementDeviceIdentification,
                 deviceIdentification);
-    }
-
-    // === CUSTOM STATUS FILTER FUNCTIONS ===
-
-    /**
-     * Filter light values based on PublicLighting domain. Only matching values
-     * will be returned.
-     *
-     * @param source
-     *            list to filter
-     * @param dosMap
-     *            mapping of output settings
-     * @param allowedDomainType
-     *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not
-     *         allowed.
-     */
-    public static List<LightValue> filterLightValues(final List<LightValue> source,
-            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
-
-        final List<LightValue> filteredValues = new ArrayList<>();
-        if (allowedDomainType != DomainType.PUBLIC_LIGHTING) {
-            // Return empty list
-            return filteredValues;
-        }
-
-        for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex())
-                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
-                filteredValues.add(lv);
-            }
-        }
-
-        return filteredValues;
-    }
-
-    /**
-     * Filter light values based on TariffSwitching domain. Only matching values
-     * will be returned.
-     *
-     * @param source
-     *            list to filter
-     * @param dosMap
-     *            mapping of output settings
-     * @param allowedDomainType
-     *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not
-     *         allowed.
-     */
-    public static List<TariffValue> filterTariffValues(final List<LightValue> source,
-            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
-
-        final List<TariffValue> filteredValues = new ArrayList<>();
-        if (allowedDomainType != DomainType.TARIFF_SWITCHING) {
-            // Return empty list
-            return filteredValues;
-        }
-
-        for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex())
-                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
-                // Map light value to tariff value
-                final TariffValue tf = new TariffValue();
-                tf.setIndex(lv.getIndex());
-                if (dosMap.get(lv.getIndex()).getOutputType().equals(RelayType.TARIFF_REVERSED)) {
-                    // Reversed means copy the 'isOn' value to the 'isHigh'
-                    // value without inverting the boolean value
-                    tf.setHigh(lv.isOn());
-                } else {
-                    // Not reversed means copy the 'isOn' value to the 'isHigh'
-                    // value inverting the boolean value
-                    tf.setHigh(!lv.isOn());
-                }
-
-                filteredValues.add(tf);
-            }
-        }
-
-        return filteredValues;
     }
 
     /**

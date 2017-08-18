@@ -61,7 +61,7 @@ public class DeviceConnectionScheduledTask extends BaseTask implements Runnable 
                 return;
             }
 
-            this.contactDevices(devicesToContact, DeviceFunction.GET_STATUS);
+            this.contactDevices(devicesToContact, DeviceFunction.GET_LIGHT_SENSOR_STATUS);
         } catch (final Exception e) {
             LOGGER.error("Exception caught during DeviceConnectionScheduledTask.run()", e);
         }
