@@ -15,12 +15,12 @@ import com.alliander.osgp.domain.core.entities.Manufacturer;
 
 public class ManufacturerBuilder implements CucumberBuilder<Manufacturer> {
 
-    private String id = PlatformDefaults.DEFAULT_MANUFACTURER_ID;
+    private String code = PlatformDefaults.DEFAULT_MANUFACTURER_CODE;
     private String name = PlatformDefaults.DEFAULT_MANUFACTURER_NAME;
     private boolean usePrefix = PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX;
 
-    public ManufacturerBuilder withId(final String id) {
-        this.id = id;
+    public ManufacturerBuilder withCode(final String code) {
+        this.code = code;
         return this;
     }
 
@@ -37,7 +37,7 @@ public class ManufacturerBuilder implements CucumberBuilder<Manufacturer> {
     @Override
     public Manufacturer build() {
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setManufacturerId(this.id);
+        manufacturer.setCode(this.code);
         manufacturer.setName(this.name);
         manufacturer.setUsePrefix(this.usePrefix);
         return manufacturer;
@@ -46,8 +46,8 @@ public class ManufacturerBuilder implements CucumberBuilder<Manufacturer> {
     @Override
     public ManufacturerBuilder withSettings(final Map<String, String> inputSettings) {
 
-        if (inputSettings.containsKey(PlatformKeys.MANUFACTURER_ID)) {
-            this.withId(inputSettings.get(PlatformKeys.MANUFACTURER_ID));
+        if (inputSettings.containsKey(PlatformKeys.MANUFACTURER_CODE)) {
+            this.withCode(inputSettings.get(PlatformKeys.MANUFACTURER_CODE));
         }
 
         if (inputSettings.containsKey(PlatformKeys.MANUFACTURER_NAME)) {

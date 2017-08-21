@@ -81,7 +81,6 @@ public class PlatformDefaults {
     public static final Integer DEFAULT_LONG_INTERVAL = 1;
     public static final Float DEFAULT_LONGITUDE = new Float(0);
     public static final String DEFAULT_MANUFACTURER_CODE = "Test";
-    public static final String DEFAULT_MANUFACTURER_ID = "Test";
     public static final String DEFAULT_MANUFACTURER_NAME = "Test";
     public static final Boolean DEFAULT_MANUFACTURER_USE_PREFIX = false;
     public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
@@ -163,7 +162,6 @@ public class PlatformDefaults {
     public static final String FIRMWARE_MODULE_VERSION_SEC = "5";
     public static final String FIRMWARE_INSTALLED_BY = "Test User";
     public static final String FIRMWARE_INSTALLATION_DATE = "now";
-    public static final Boolean DEVICE_FIRMWARE_ACTIVE = true;
 
     public static final Boolean DEVICE_IN_MAINTENANCE = false;
 
