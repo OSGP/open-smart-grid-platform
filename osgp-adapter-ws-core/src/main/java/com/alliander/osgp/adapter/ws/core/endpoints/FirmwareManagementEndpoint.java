@@ -75,9 +75,9 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.DeviceFirmware;
+import com.alliander.osgp.domain.core.entities.DeviceFirmwareFile;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.entities.FirmwareFile;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -652,11 +652,11 @@ public class FirmwareManagementEndpoint {
         final FindAllFirmwaresResponse response = new FindAllFirmwaresResponse();
 
         try {
-            final List<Firmware> firmwares = this.firmwareManagementService.findAllFirmwares(
+            final List<FirmwareFile> firmwareFiles = this.firmwareManagementService.findAllFirmwareFiles(
                     organisationIdentification, request.getManufacturer(), request.getModelCode());
 
             response.getFirmwares().addAll(
-                    this.firmwareManagementMapper.mapAsList(firmwares,
+                    this.firmwareManagementMapper.mapAsList(firmwareFiles,
                             com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
 
         } catch (final MethodConstraintViolationException e) {
@@ -681,10 +681,10 @@ public class FirmwareManagementEndpoint {
         final FindFirmwareResponse response = new FindFirmwareResponse();
 
         try {
-            final Firmware firmware = this.firmwareManagementService.findFirmware(organisationIdentification,
+            final FirmwareFile firmwareFile = this.firmwareManagementService.findFirmwareFile(organisationIdentification,
                     request.getFirmwareId());
 
-            response.setFirmware(this.firmwareManagementMapper.map(firmware,
+            response.setFirmware(this.firmwareManagementMapper.map(firmwareFile,
                     com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
 
         } catch (final MethodConstraintViolationException e) {
@@ -708,8 +708,8 @@ public class FirmwareManagementEndpoint {
                 .getDescription(), request.getDeviceFirmware().getDeviceIdentification());
 
         try {
-            this.firmwareManagementService.saveCurrentDeviceFirmware(this.firmwareManagementMapper.map(
-                    request.getDeviceFirmware(), DeviceFirmware.class));
+            this.firmwareManagementService.saveCurrentDeviceFirmwareFile(this.firmwareManagementMapper.map(
+                    request.getDeviceFirmware(), DeviceFirmwareFile.class));
 
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception while saving current devicefirmware: {} ", e.getMessage(), e);
@@ -857,11 +857,11 @@ public class FirmwareManagementEndpoint {
 
             // Doing it like this, so we don't have to make a whole custom
             // mapper, just to null the Firmware's file
-            for (final DeviceFirmware deviceFirmware : this.firmwareManagementService.getDeviceFirmwares(
+            for (final DeviceFirmwareFile deviceFirmwareFile : this.firmwareManagementService.getDeviceFirmwareFiles(
                     organisationIdentification, request.getDeviceIdentification())) {
 
                 final com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware temp = this.firmwareManagementMapper
-                        .map(deviceFirmware,
+                        .map(deviceFirmwareFile,
                                 com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware.class);
                 temp.getFirmware().setFile(null);
                 deviceFirmwares.add(temp);

@@ -19,10 +19,10 @@ import org.mockito.MockitoAnnotations;
 
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.entities.FirmwareFile;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
+import com.alliander.osgp.domain.core.repositories.FirmwareFileRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
@@ -39,13 +39,13 @@ public class GetFirmwareFileMessageProcessorTest {
     private DeviceRepository deviceRepository;
 
     @Mock
-    private FirmwareRepository firmwareRepository;
+    private FirmwareFileRepository firmwareFileRepository;
 
     @Mock
     private Device deviceMock;
 
     @Mock
-    private Firmware firmwareMock;
+    private FirmwareFile firmwareFileMock;
 
     @InjectMocks
     private GetFirmwareFileMessageProcessor getFirmwareFileMessageProcessor;
@@ -62,11 +62,11 @@ public class GetFirmwareFileMessageProcessorTest {
         final String organisationIdentification = "test-org";
         final String deviceIdentification = "dvc-1";
 
-        final String firmwareIdentification = "fw";
-        final byte[] firmwareFile = firmwareIdentification.getBytes();
+        final String firmwareFileIdentification = "fw";
+        final byte[] firmwareFileBytes = firmwareFileIdentification.getBytes();
 
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, firmwareIdentification);
+                deviceIdentification, firmwareFileIdentification);
         final ObjectMessage message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
                 .withMessageType(DeviceFunction.GET_FIRMWARE_FILE.name()).withDeviceIdentification(deviceIdentification)
                 .withObject(requestMessage).build();
@@ -74,11 +74,11 @@ public class GetFirmwareFileMessageProcessorTest {
         when(this.deviceMock.getDeviceIdentification()).thenReturn(deviceIdentification);
         when(this.deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(this.deviceMock);
 
-        when(this.firmwareMock.getFilename()).thenReturn(firmwareIdentification);
-        when(this.firmwareMock.getFile()).thenReturn(firmwareFile);
-        when(this.firmwareRepository.findByIdentification(firmwareIdentification)).thenReturn(this.firmwareMock);
+        when(this.firmwareFileMock.getFilename()).thenReturn(firmwareFileIdentification);
+        when(this.firmwareFileMock.getFile()).thenReturn(firmwareFileBytes);
+        when(this.firmwareFileRepository.findByIdentification(firmwareFileIdentification)).thenReturn(this.firmwareFileMock);
 
-        final byte[] expectedFile = firmwareFile;
+        final byte[] expectedFile = firmwareFileBytes;
         final String expectedMessageType = DeviceFunction.GET_FIRMWARE_FILE.name();
 
         final ArgumentCaptor<ProtocolResponseMessage> responseMessageArgumentCaptor = ArgumentCaptor

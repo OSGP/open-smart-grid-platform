@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
 import java.util.GregorianCalendar;
+import java.util.Set;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -17,29 +18,46 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
-class FirmwareConverter extends CustomConverter<com.alliander.osgp.domain.core.entities.Firmware, Firmware> {
+class FirmwareConverter extends CustomConverter<com.alliander.osgp.domain.core.entities.FirmwareFile, Firmware> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareConverter.class);
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware convert(
-            final com.alliander.osgp.domain.core.entities.Firmware source,
+            final com.alliander.osgp.domain.core.entities.FirmwareFile source,
             final Type<? extends com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware> destinationType,
             final MappingContext context) {
 
         final Firmware output = new Firmware();
 
+        /*
+         * A firmware file has been changed to be related to (possibly) multiple
+         * device models to be usable across different value streams for all
+         * kinds of devices.
+         *
+         * If this code gets used in a scenario where multiple device models are
+         * actually related to the firmware file it may need to be updated to
+         * deal with this.
+         */
+        final Set<DeviceModel> deviceModels = source.getDeviceModels();
+        if (deviceModels.size() != 1) {
+            LOGGER.warn("Conversion to WS Firmware assumes a single DeviceModel, FirmwareFile (id={}) has {}: {}",
+                    source.getId(), deviceModels.size(), deviceModels);
+        }
+        final DeviceModel deviceModel = deviceModels.iterator().next();
+
         output.setDescription(source.getDescription());
         output.setFilename(source.getFilename());
         output.setId(source.getId().intValue());
-        output.setModelCode(source.getDeviceModel().getModelCode());
+        output.setModelCode(deviceModel.getModelCode());
         output.setPushToNewDevices(source.getPushToNewDevices());
-        output.setManufacturer(source.getDeviceModel().getManufacturerId().getManufacturerId());
+        output.setManufacturer(deviceModel.getManufacturer().getCode());
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData();
         firmwareModuleData.setModuleVersionComm(source.getModuleVersionComm());

@@ -74,7 +74,7 @@ public class BaseTask {
      */
     protected List<DeviceModel> findDeviceModels(final Manufacturer manufacturer) {
         LOGGER.info("Trying to find device models for manufacturer: {}", manufacturer.getName());
-        final List<DeviceModel> deviceModels = this.deviceModelRepository.findByManufacturerId(manufacturer);
+        final List<DeviceModel> deviceModels = this.deviceModelRepository.findByManufacturer(manufacturer);
         if (deviceModels == null) {
             LOGGER.warn("No device models found for manufacturer with name: {}, deviceModels == null",
                     manufacturer.getName());

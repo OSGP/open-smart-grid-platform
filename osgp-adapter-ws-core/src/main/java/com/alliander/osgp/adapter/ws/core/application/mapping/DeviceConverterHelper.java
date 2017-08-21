@@ -118,11 +118,11 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         if (source.getDeviceModel() != null) {
             final DeviceModel deviceModel = new DeviceModel();
             deviceModel.setDescription(source.getDeviceModel().getDescription());
-            if (source.getDeviceModel().getManufacturerId() != null) {
+            if (source.getDeviceModel().getManufacturer() != null) {
                 final Manufacturer manufacturer = new Manufacturer();
-                manufacturer.setManufacturerId(source.getDeviceModel().getManufacturerId().getManufacturerId());
-                manufacturer.setName(source.getDeviceModel().getManufacturerId().getName());
-                manufacturer.setUsePrefix(source.getDeviceModel().getManufacturerId().isUsePrefix());
+                manufacturer.setManufacturerId(source.getDeviceModel().getManufacturer().getCode());
+                manufacturer.setName(source.getDeviceModel().getManufacturer().getName());
+                manufacturer.setUsePrefix(source.getDeviceModel().getManufacturer().isUsePrefix());
                 deviceModel.setManufacturer(manufacturer);
             }
             deviceModel.setModelCode(source.getDeviceModel().getModelCode());

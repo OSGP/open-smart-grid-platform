@@ -17,6 +17,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,11 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecificationExecutor<Device> {
 
     Device findByDeviceIdentification(String deviceIdentification);
+
+    @Query("SELECT d FROM Device d JOIN FETCH d.deviceFirmwareFiles dff JOIN FETCH dff.firmwareFile ff "
+            + "JOIN FETCH ff.firmwareModules fffm JOIN FETCH fffm.firmwareModule fm "
+            + "WHERE d.deviceIdentification = :deviceIdentification")
+    Device findByDeviceIdentificationWithFirmware(@Param("deviceIdentification") String deviceIdentification);
 
     List<Device> findByNetworkAddress(InetAddress address);
 

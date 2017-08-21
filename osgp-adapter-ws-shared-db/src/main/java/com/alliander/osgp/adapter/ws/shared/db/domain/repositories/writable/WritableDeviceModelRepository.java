@@ -17,7 +17,7 @@ import com.alliander.osgp.domain.core.entities.Manufacturer;
 
 @Repository
 public interface WritableDeviceModelRepository extends JpaRepository<DeviceModel, Long> {
-    DeviceModel findByManufacturerIdAndModelCode(Manufacturer manufacturerId, String modelCode);
-    List<DeviceModel> findByManufacturerId(Manufacturer manufacturerId);
-    DeviceModel findByModelCode(String deviceModelCode);
+    DeviceModel findByManufacturerAndModelCode(Manufacturer manufacturer, String modelCode);
+    List<DeviceModel> findByManufacturer(Manufacturer manufacturer);
+    List<DeviceModel> findByModelCode(String modelCode);
 }

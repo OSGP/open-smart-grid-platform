@@ -5,16 +5,16 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable;
+
+package com.alliander.osgp.domain.core.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.alliander.osgp.domain.core.entities.Manufacturer;
+import com.alliander.osgp.domain.core.entities.DeviceFirmwareFile;
 
 @Repository
-public interface WritableManufacturerRepository extends JpaRepository<Manufacturer, Long> {
-    Manufacturer findByCode(String code);
-
-    Manufacturer findByName(String manufacturerName);
+public interface DeviceFirmwareFileRepository extends JpaRepository<DeviceFirmwareFile, Long>,
+        JpaSpecificationExecutor<DeviceFirmwareFile> {
 }

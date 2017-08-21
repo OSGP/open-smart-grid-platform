@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
-import com.alliander.osgp.domain.core.entities.DeviceFirmware;
+import com.alliander.osgp.domain.core.entities.DeviceFirmwareFile;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -354,7 +354,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 }
 
                 final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceFirmware> deviceFirmwareRoot = subquery.from(DeviceFirmware.class);
+                final Root<DeviceFirmwareFile> deviceFirmwareRoot = subquery.from(DeviceFirmwareFile.class);
                 subquery.select(deviceFirmwareRoot.get("device").get("id").as(Long.class));
                 subquery.where(cb.and(
                         cb.like(cb.upper(deviceFirmwareRoot.get("firmware").<String> get(moduleFieldName)),

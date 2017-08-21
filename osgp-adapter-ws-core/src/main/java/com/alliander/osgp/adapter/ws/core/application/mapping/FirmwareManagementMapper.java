@@ -9,17 +9,17 @@ package com.alliander.osgp.adapter.ws.core.application.mapping;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
-import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareFileRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "coreFirmwareManagementMapper")
 public class FirmwareManagementMapper extends ConfigurableMapper {
@@ -28,7 +28,7 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private WritableFirmwareRepository firmwareRepository;
+    private WritableFirmwareFileRepository firmwareFileRepository;
 
     public FirmwareManagementMapper() {
         // Setting auto init to false, to make sure the repo
@@ -45,14 +45,14 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
 
         mapperFactory.getConverterFactory().registerConverter(new FirmwareConverter());
 
-        mapperFactory.getConverterFactory().registerConverter(
-                new DeviceFirmwareConverter(this.deviceRepository, this.firmwareRepository));
+        mapperFactory.getConverterFactory()
+                .registerConverter(new DeviceFirmwareConverter(this.deviceRepository, this.firmwareFileRepository));
         mapperFactory.classMap(FirmwareVersion.class, FirmwareVersionDto.class).byDefault().register();
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.DeviceModel.class,
                         com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class)
-                        .field("manufacturerId.manufacturerId", "manufacturer").byDefault().toClassMap());
+                .field("manufacturer.code", "manufacturer").byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
     }

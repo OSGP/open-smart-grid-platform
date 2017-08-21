@@ -573,13 +573,13 @@ public class ConfigurationService {
         final SmartMeter smartMeter = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        final String firmwareIdentifier = this.firmwareService.determineFirmwareIdentifier(smartMeter,
+        final String firmwareFileIdentifier = this.firmwareService.determineFirmwareFileIdentifier(smartMeter,
                 updateFirmwareRequestData.getVersionByModuleType());
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(), smartMeter.getIpAddress(), firmwareIdentifier),
+                        deviceMessageMetadata.getDeviceIdentification(), smartMeter.getIpAddress(), firmwareFileIdentifier),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }

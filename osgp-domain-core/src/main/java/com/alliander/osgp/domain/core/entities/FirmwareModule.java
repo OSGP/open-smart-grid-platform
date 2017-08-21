@@ -1,0 +1,79 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package com.alliander.osgp.domain.core.entities;
+
+import java.io.Serializable;
+import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+/**
+ * FirmwareModule entity class holds the description of a specific firmware
+ * module of which different versions can be part of firmware files that are
+ * installed on devices.
+ */
+@Entity
+public class FirmwareModule implements Comparable<FirmwareModule>, Serializable {
+
+    private static final long serialVersionUID = 1433265533431664370L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false, updatable = false)
+    private String description;
+
+    protected FirmwareModule() {
+        // No-argument constructor, not to be used by application code.
+    }
+
+    public FirmwareModule(final String description) {
+        this.description = description;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof FirmwareModule)) {
+            return false;
+        }
+        final FirmwareModule other = (FirmwareModule) obj;
+        return Objects.equals(this.description, other.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.description);
+    }
+
+    @Override
+    public int compareTo(final FirmwareModule o) {
+        return this.description.compareTo(o.description);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("FirmwareModule[%s]", this.description);
+    }
+
+    public final Long getId() {
+        return this.id;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+}

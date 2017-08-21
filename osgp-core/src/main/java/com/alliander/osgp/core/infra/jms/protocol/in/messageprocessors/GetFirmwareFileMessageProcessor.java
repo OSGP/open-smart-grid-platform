@@ -19,10 +19,10 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.core.domain.model.protocol.ProtocolResponseService;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.entities.FirmwareFile;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
+import com.alliander.osgp.domain.core.repositories.FirmwareFileRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -45,7 +45,7 @@ public class GetFirmwareFileMessageProcessor extends ProtocolRequestMessageProce
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private FirmwareRepository firmwareRepository;
+    private FirmwareFileRepository firmwareFileRepository;
 
     protected GetFirmwareFileMessageProcessor() {
         super(DeviceFunction.GET_FIRMWARE_FILE);
@@ -56,7 +56,7 @@ public class GetFirmwareFileMessageProcessor extends ProtocolRequestMessageProce
 
         MessageMetadata metadata = null;
         Device device = null;
-        String firmwareIdentification = StringUtils.EMPTY;
+        String firmwareFileIdentification = StringUtils.EMPTY;
 
         try {
             metadata = MessageMetadata.fromMessage(message);
@@ -68,16 +68,18 @@ public class GetFirmwareFileMessageProcessor extends ProtocolRequestMessageProce
             device = this.deviceRepository.findByDeviceIdentification(metadata.getDeviceIdentification());
 
             final RequestMessage requestMessage = (RequestMessage) message.getObject();
-            firmwareIdentification = (String) requestMessage.getRequest();
+            firmwareFileIdentification = (String) requestMessage.getRequest();
 
-            final Firmware firmware = this.firmwareRepository.findByIdentification(firmwareIdentification);
+            final FirmwareFile firmwareFile = this.firmwareFileRepository
+                    .findByIdentification(firmwareFileIdentification);
 
-            final FirmwareFileDto firmwareFileDto = new FirmwareFileDto(firmware.getFilename(), firmware.getFile());
+            final FirmwareFileDto firmwareFileDto = new FirmwareFileDto(firmwareFile.getFilename(),
+                    firmwareFile.getFile());
 
             this.sendSuccesResponse(metadata, device.getProtocolInfo(), firmwareFileDto);
 
         } catch (final Exception e) {
-            LOGGER.error("Exception while retrieving firmware file: {}", firmwareIdentification);
+            LOGGER.error("Exception while retrieving firmware file: {}", firmwareFileIdentification);
             final OsgpException osgpException = new OsgpException(ComponentType.OSGP_CORE,
                     "Exception while retrieving firmware file.", e);
             this.sendFailureResponse(metadata, device.getProtocolInfo(), osgpException);
