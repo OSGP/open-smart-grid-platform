@@ -169,7 +169,7 @@ public class Device implements Serializable {
      * more { @see DeviceFunctionGroup.class }.
      */
     @OneToMany(mappedBy = "device", targetEntity = DeviceAuthorization.class, fetch = FetchType.EAGER)
-    protected final List<DeviceAuthorization> authorizations = new ArrayList<>();
+    private final List<DeviceAuthorization> authorizations = new ArrayList<>();
 
     /**
      * Protocol information indicates which protocol this device is using.
@@ -195,7 +195,7 @@ public class Device implements Serializable {
      * List of organisations which are authorized to use this device.
      */
     @Transient
-    protected final List<String> organisations = new ArrayList<>();
+    private final List<String> organisations = new ArrayList<>();
 
     @ManyToOne()
     @JoinColumn()
