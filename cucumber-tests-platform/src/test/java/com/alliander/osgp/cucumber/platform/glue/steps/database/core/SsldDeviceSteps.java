@@ -28,7 +28,6 @@ import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.RelayStatusRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
@@ -40,9 +39,6 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
     private SsldRepository ssldRepository;
-
-    @Autowired
-    private DeviceRepository deviceRepository;
 
     @Autowired
     private RelayStatusRepository relayStatusRepository;
@@ -65,12 +61,6 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
     @Transactional("txMgrCore")
     public Ssld aDevice(final Map<String, String> settings) throws Throwable {
         return this.createAnSsldDevice(settings);
-    }
-
-    @Given("^the light measurement devices$")
-    @Transactional("txMgrCore")
-    public void theLightMeasurementDevices() throws Throwable {
-        this.createLightMeasurementDevices();
     }
 
     /**
