@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.tariffswitching.application.services;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.domain.shared.FilterLightAndTariffValuesHelper;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
@@ -27,8 +27,6 @@ import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
 import com.alliander.osgp.domain.core.valueobjects.DomainType;
-import com.alliander.osgp.domain.core.valueobjects.LightValue;
-import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.domain.core.valueobjects.TariffValue;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -74,13 +72,13 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper
-                .map(allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
+        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper.map(
+                allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), messageType, device.getIpAddress());
@@ -110,11 +108,11 @@ public class AdHocManagementService extends AbstractService {
             }
 
             if (status != null) {
-                deviceStatusMapped = new DeviceStatusMapped(
-                        filterTariffValues(status.getLightValues(), dosMap, allowedDomainType),
-                        filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
-                        status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
-                        status.getEventNotificationsMask());
+                deviceStatusMapped = new DeviceStatusMapped(FilterLightAndTariffValuesHelper.filterTariffValues(
+                        status.getLightValues(), dosMap, allowedDomainType),
+                        FilterLightAndTariffValuesHelper.filterLightValues(status.getLightValues(), dosMap,
+                                allowedDomainType), status.getPreferredLinkType(), status.getActualLinkType(),
+                        status.getLightType(), status.getEventNotificationsMask());
 
                 this.updateDeviceRelayOverview(ssld, deviceStatusMapped);
             } else {
@@ -126,85 +124,6 @@ public class AdHocManagementService extends AbstractService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, osgpException, deviceStatusMapped));
-    }
-
-    // === CUSTOM STATUS FILTER FUNCTIONS ===
-
-    /**
-     * Filter light values based on PublicLighting domain. Only matching values
-     * will be returned.
-     *
-     * @param source
-     *            list to filter
-     * @param dosMap
-     *            mapping of output settings
-     * @param allowedDomainType
-     *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not
-     *         allowed.
-     */
-    public static List<LightValue> filterLightValues(final List<LightValue> source,
-            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
-
-        final List<LightValue> filteredValues = new ArrayList<>();
-        if (allowedDomainType != DomainType.PUBLIC_LIGHTING) {
-            // Return empty list
-            return filteredValues;
-        }
-
-        for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex())
-                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
-                filteredValues.add(lv);
-            }
-        }
-
-        return filteredValues;
-    }
-
-    /**
-     * Filter light values based on TariffSwitching domain. Only matching values
-     * will be returned.
-     *
-     * @param source
-     *            list to filter
-     * @param dosMap
-     *            mapping of output settings
-     * @param allowedDomainType
-     *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not
-     *         allowed.
-     */
-    public static List<TariffValue> filterTariffValues(final List<LightValue> source,
-            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
-
-        final List<TariffValue> filteredValues = new ArrayList<>();
-        if (allowedDomainType != DomainType.TARIFF_SWITCHING) {
-            // Return empty list
-            return filteredValues;
-        }
-
-        for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex())
-                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
-                // Map light value to tariff value
-                final TariffValue tf = new TariffValue();
-                tf.setIndex(lv.getIndex());
-                if (dosMap.get(lv.getIndex()).getOutputType().equals(RelayType.TARIFF_REVERSED)) {
-                    // Reversed means copy the 'isOn' value to the 'isHigh'
-                    // value without inverting the boolean value
-                    tf.setHigh(lv.isOn());
-                } else {
-                    // Not reversed means copy the 'isOn' value to the 'isHigh'
-                    // value inverting the boolean value
-                    tf.setHigh(!lv.isOn());
-                }
-
-                filteredValues.add(tf);
-            }
-        }
-
-        return filteredValues;
     }
 
     /**
@@ -232,8 +151,8 @@ public class AdHocManagementService extends AbstractService {
                 }
             }
             if (!updated) {
-                final RelayStatus newRelayStatus = new RelayStatus(device, tariffValue.getIndex(), tariffValue.isHigh(),
-                        DateTime.now().toDate());
+                final RelayStatus newRelayStatus = new RelayStatus(device, tariffValue.getIndex(),
+                        tariffValue.isHigh(), DateTime.now().toDate());
                 relayStatuses.add(newRelayStatus);
             }
         }

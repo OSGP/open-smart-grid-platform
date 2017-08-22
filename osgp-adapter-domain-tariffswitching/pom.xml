@@ -64,6 +64,10 @@
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-dto</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-adapter-domain-shared</artifactId>
+    </dependency>
 
     <!-- Spring Framework -->
     <dependency>

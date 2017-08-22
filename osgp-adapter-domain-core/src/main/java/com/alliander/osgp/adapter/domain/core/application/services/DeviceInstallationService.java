@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.core.application.services;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,17 +17,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.domain.shared.FilterLightAndTariffValuesHelper;
+import com.alliander.osgp.adapter.domain.shared.GetStatusResponse;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
 import com.alliander.osgp.domain.core.valueobjects.DomainType;
-import com.alliander.osgp.domain.core.valueobjects.LightValue;
-import com.alliander.osgp.domain.core.valueobjects.RelayType;
-import com.alliander.osgp.domain.core.valueobjects.TariffValue;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.NoDeviceResponseException;
@@ -62,8 +62,11 @@ public class DeviceInstallationService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
+        final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType()) ? DeviceFunction.GET_LIGHT_SENSOR_STATUS
+                .name() : messageType;
+
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, null), messageType, device.getIpAddress());
+                deviceIdentification, null), actualMessageType, device.getIpAddress());
     }
 
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
@@ -71,145 +74,98 @@ public class DeviceInstallationService extends AbstractService {
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
+        final GetStatusResponse response = new GetStatusResponse();
+        response.setOsgpException(exception);
+        response.setResult(deviceResult);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = exception;
-        DeviceStatusMapped deviceStatusMapped = null;
-
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-
+        if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
+            LOGGER.error("Device Response not ok.", exception);
+        } else {
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
-
-            final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
-
-            final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
-
-            final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
-            for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                dosMap.put(dos.getExternalId(), dos);
+            try {
+                final Device dev = this.deviceDomainService.searchDevice(deviceIdentification);
+                if (LightMeasurementDevice.LMD_TYPE.equals(dev.getDeviceType())) {
+                    this.handleLmd(status, response);
+                } else {
+                    this.handleSsld(deviceIdentification, status, response);
+                }
+            } catch (final FunctionalException e) {
+                LOGGER.error("Caught FunctionalException", e);
             }
-
-            if (status != null) {
-                deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                        DomainType.TARIFF_SWITCHING), filterLightValues(status.getLightValues(), dosMap,
-                                DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
-                                status.getLightType(), status.getEventNotificationsMask());
-
-                deviceStatusMapped.setBootLoaderVersion(status.getBootLoaderVersion());
-                deviceStatusMapped.setCurrentConfigurationBackUsed(status.getCurrentConfigurationBackUsed());
-                deviceStatusMapped.setCurrentIp(status.getCurrentIp());
-                deviceStatusMapped.setCurrentTime(status.getCurrentTime());
-                deviceStatusMapped.setDcOutputVoltageCurrent(status.getDcOutputVoltageCurrent());
-                deviceStatusMapped.setDcOutputVoltageMaximum(status.getDcOutputVoltageMaximum());
-                deviceStatusMapped.setEventNotificationsMask(status.getEventNotificationsMask());
-                deviceStatusMapped.setExternalFlashMemSize(status.getExternalFlashMemSize());
-                deviceStatusMapped.setFirmwareVersion(status.getFirmwareVersion());
-                deviceStatusMapped.setHardwareId(status.getHardwareId());
-                deviceStatusMapped.setInternalFlashMemSize(status.getInternalFlashMemSize());
-                deviceStatusMapped.setLastInternalTestResultCode(status.getLastInternalTestResultCode());
-                deviceStatusMapped.setMacAddress(status.getMacAddress());
-                deviceStatusMapped.setMaximumOutputPowerOnDcOutput(status.getMaximumOutputPowerOnDcOutput());
-                deviceStatusMapped.setName(status.getName());
-                deviceStatusMapped.setNumberOfOutputs(status.getNumberOfOutputs());
-                deviceStatusMapped.setSerialNumber(status.getSerialNumber());
-                deviceStatusMapped.setStartupCounter(status.getStartupCounter());
-            } else {
-                result = ResponseMessageResultType.NOT_OK;
-                osgpException = new TechnicalException(ComponentType.DOMAIN_CORE,
-                        "Device was not able to report status", new NoDeviceResponseException());
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Exception occurred while getting device status", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, deviceStatusMapped));
+                deviceIdentification, response.getResult(), response.getOsgpException(), response
+                        .getDeviceStatusMapped()));
     }
 
-    // === CUSTOM STATUS FILTER FUNCTIONS ===
-
-    /**
-     * Filter light values based on PublicLighting domain. Only matching values
-     * will be returned.
-     *
-     * @param source
-     *            list to filter
-     * @param dosMap
-     *            mapping of output settings
-     * @param allowedDomainType
-     *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not
-     *         allowed.
-     */
-    private static List<LightValue> filterLightValues(final List<LightValue> source,
-            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
-
-        final List<LightValue> filteredValues = new ArrayList<>();
-        if (allowedDomainType != DomainType.PUBLIC_LIGHTING) {
-            // Return empty list
-            return filteredValues;
+    private void handleLmd(final DeviceStatus status, final GetStatusResponse response) {
+        if (status != null) {
+            final DeviceStatusMapped deviceStatusMapped = new DeviceStatusMapped(null, status.getLightValues(),
+                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                    status.getEventNotificationsMask());
+            // Return mapped status using GetStatusResponse instance.
+            response.setDeviceStatusMapped(deviceStatusMapped);
+        } else {
+            // No status received, create bad response.
+            response.setDeviceStatusMapped(null);
+            response.setOsgpException(new TechnicalException(ComponentType.DOMAIN_CORE,
+                    "Light measurement device was not able to report light sensor status",
+                    new NoDeviceResponseException()));
+            response.setResult(ResponseMessageResultType.NOT_OK);
         }
-
-        for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex())
-                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
-                filteredValues.add(lv);
-            }
-        }
-
-        return filteredValues;
     }
 
-    /**
-     * Filter light values based on TariffSwitching domain. Only matching values
-     * will be returned.
-     *
-     * @param source
-     *            list to filter
-     * @param dosMap
-     *            mapping of output settings
-     * @param allowedDomainType
-     *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not
-     *         allowed.
-     */
-    private static List<TariffValue> filterTariffValues(final List<LightValue> source,
-            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
+    private void handleSsld(final String deviceIdentification, final DeviceStatus status,
+            final GetStatusResponse response) {
 
-        final List<TariffValue> filteredValues = new ArrayList<>();
-        if (allowedDomainType != DomainType.TARIFF_SWITCHING) {
-            // Return empty list
-            return filteredValues;
+        // Find device and output settings.
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+        final List<DeviceOutputSetting> deviceOutputSettings = ssld.getOutputSettings();
+
+        // Create map with external relay number as key set.
+        final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
+        for (final DeviceOutputSetting dos : deviceOutputSettings) {
+            dosMap.put(dos.getExternalId(), dos);
         }
 
-        for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex())
-                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
-                // Map light value to tariff value
-                final TariffValue tf = new TariffValue();
-                tf.setIndex(lv.getIndex());
-                if (dosMap.get(lv.getIndex()).getOutputType().equals(RelayType.TARIFF_REVERSED)) {
-                    // Reversed means copy the 'isOn' value to the 'isHigh'
-                    // value without inverting the boolean value
-                    tf.setHigh(lv.isOn());
-                } else {
-                    // Not reversed means copy the 'isOn' value to the 'isHigh'
-                    // value inverting the boolean value
-                    tf.setHigh(!lv.isOn());
-                }
+        if (status != null) {
+            // Map the DeviceStatus for SSLD.
+            final DeviceStatusMapped deviceStatusMapped = new DeviceStatusMapped(
+                    FilterLightAndTariffValuesHelper.filterTariffValues(status.getLightValues(), dosMap,
+                            DomainType.TARIFF_SWITCHING), FilterLightAndTariffValuesHelper.filterLightValues(
+                                    status.getLightValues(), dosMap, DomainType.PUBLIC_LIGHTING),
+                                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                                    status.getEventNotificationsMask());
 
-                filteredValues.add(tf);
-            }
+            deviceStatusMapped.setBootLoaderVersion(status.getBootLoaderVersion());
+            deviceStatusMapped.setCurrentConfigurationBackUsed(status.getCurrentConfigurationBackUsed());
+            deviceStatusMapped.setCurrentIp(status.getCurrentIp());
+            deviceStatusMapped.setCurrentTime(status.getCurrentTime());
+            deviceStatusMapped.setDcOutputVoltageCurrent(status.getDcOutputVoltageCurrent());
+            deviceStatusMapped.setDcOutputVoltageMaximum(status.getDcOutputVoltageMaximum());
+            deviceStatusMapped.setEventNotificationsMask(status.getEventNotificationsMask());
+            deviceStatusMapped.setExternalFlashMemSize(status.getExternalFlashMemSize());
+            deviceStatusMapped.setFirmwareVersion(status.getFirmwareVersion());
+            deviceStatusMapped.setHardwareId(status.getHardwareId());
+            deviceStatusMapped.setInternalFlashMemSize(status.getInternalFlashMemSize());
+            deviceStatusMapped.setLastInternalTestResultCode(status.getLastInternalTestResultCode());
+            deviceStatusMapped.setMacAddress(status.getMacAddress());
+            deviceStatusMapped.setMaximumOutputPowerOnDcOutput(status.getMaximumOutputPowerOnDcOutput());
+            deviceStatusMapped.setName(status.getName());
+            deviceStatusMapped.setNumberOfOutputs(status.getNumberOfOutputs());
+            deviceStatusMapped.setSerialNumber(status.getSerialNumber());
+            deviceStatusMapped.setStartupCounter(status.getStartupCounter());
+
+            // Return mapped status using GetStatusResponse instance.
+            response.setDeviceStatusMapped(deviceStatusMapped);
+        } else {
+            // No status received, create bad response.
+            response.setDeviceStatusMapped(null);
+            response.setOsgpException(new TechnicalException(ComponentType.DOMAIN_CORE,
+                    "SSLD was not able to report relay status", new NoDeviceResponseException()));
+            response.setResult(ResponseMessageResultType.NOT_OK);
         }
-
-        return filteredValues;
     }
 
     // === START DEVICE TEST ===
