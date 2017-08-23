@@ -8,8 +8,8 @@
 package com.alliander.osgp.cucumber.platform.smartmetering;
 
 /**
- * Keys specific for the dlms related data. Note: Keep in mind that generic keys
- * should be specified in the cucumber-tests-platform project.
+ * Keys specific for the dlms related data. Note: Keep in mind that generic keys should be specified in the
+ * cucumber-tests-platform project.
  */
 public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platform.PlatformKeys {
 
@@ -118,11 +118,17 @@ public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platf
     public static final String MBUS_PRIMARY_ADDRESS = "MbusPrimaryAddress";
 
     public static final String ADMINISTRATIVE_STATUS_TYPE = "AdministrativeStatusType";
+    public static final String ALARM_NOTIFICATION_COUNT = "AlarmNotificationCount";
     public static final String ALARM_TYPE = "AlarmType";
     public static final String ALARM_TYPE_ENABLED = "AlarmTypeEnabled";
 
+    public static final String CONFIGURATION_FLAG_COUNT = "ConfigurationFlagCount";
     public static final String CONFIGURATION_FLAG_TYPE = "ConfigurationFlagType";
     public static final String CONFIGURATION_FLAG_ENABLED = "ConfigurationFlagEnabled";
     public static final String GPRS_OPERATION_MODE_TYPE = "GprsOperationModeType";
+
+    public static final String SPECIAL_DAY_COUNT = "SpecialDayCount";
+    public static final String SPECIAL_DAY_ID = "SpecialDayId";
+    public static final String SPECIAL_DAY_DATE = "SpecialDayDate";
 
 }

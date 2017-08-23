@@ -18,24 +18,23 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.Actions;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
 
-public class BundleWithoutSoapUi {
+public class BundleSteps {
     @Autowired
     private SmartMeteringBundleClient client;
 
     @Given("^a bundle request$")
-    public void aBundleRequest(final Map<String, String> settings) throws Throwable {
-
+    public void givenABundleRequest(final Map<String, String> settings) throws Throwable {
         final BundleRequest request = new BundleRequest();
-        request.setDeviceIdentification(
-                getString(settings, PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION, PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(settings, PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION,
+                PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
 
         final Actions actions = new Actions();
         request.setActions(actions);
@@ -44,8 +43,9 @@ public class BundleWithoutSoapUi {
     }
 
     @When("^the bundle request is received$")
-    public void theBundleRequestIsReceived() throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+    public void whenTheBundleRequestIsReceived() throws Throwable {
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         final BundleAsyncResponse asyncResponse = this.client.sendBundleRequest(request);
 

@@ -19,27 +19,29 @@ import cucumber.api.java.en.When;
 
 public class BundledGetSpecificAttributeValueSteps extends BaseBundleSteps {
 
-    @When("^a get specific attribute value action is part of the bundle request$")
-    public void aGetSpecificAttributeValueActionIsPartOfTheBundleRequest(final Map<String, String> settings)
+    @When("^the bundle request contains a get specific attribute value action with parameters$")
+    public void theBundleRequestContainsAGetSpecificAttributeValueAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         final GetSpecificAttributeValueRequest action = new GetSpecificAttributeValueRequestBuilder()
-                .fromParameterMap(settings).build();
+                .fromParameterMap(parameters).build();
 
         this.addActionToBundleRequest(request, action);
     }
 
-    @Then("^the bundle response should contain a get specific attribute value response$")
-    public void aSpecificAttributeValueShouldBePartOfTheBundleResponse(final Map<String, String> settings)
+    @Then("^the bundle response should contain a get specific attribute value response with values$")
+    public void theBundleResponseShouldContainAGetSpecificAttributeValueResponse(final Map<String, String> values)
             throws Throwable {
 
         final Response response = this.getNextBundleResponse();
 
-        assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT), response.getResult().name());
+        assertEquals("Result is not as expected.", values.get(PlatformSmartmeteringKeys.RESULT),
+                response.getResult().name());
         assertTrue("Result contains no data.", StringUtils.isNotBlank(response.getResultString()));
         assertTrue("Result data is not as expected",
-                response.getResultString().contains(settings.get(PlatformSmartmeteringKeys.RESPONSE_PART)));
+                response.getResultString().contains(values.get(PlatformSmartmeteringKeys.RESPONSE_PART)));
     }
 }

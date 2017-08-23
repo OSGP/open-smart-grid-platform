@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.hooks.SimulatePushedAlarmsHooks;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ServiceEndpoint;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
@@ -31,7 +30,7 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ReceivedAlarmNotificationsSteps extends SmartMeteringStepsBase {
+public class ReceivedAlarmNotificationsSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceivedAlarmNotificationsSteps.class);
 
     private static final String PATTERN = "DlmsPushNotification \\[device = \\w*, trigger type = Push alarm monitor, alarms=\\[(\\w*(, )?)+\\]\\]";
@@ -91,8 +90,7 @@ public class ReceivedAlarmNotificationsSteps extends SmartMeteringStepsBase {
     }
 
     /*
-     * it may take some time before the records are to the dev_log_item table,
-     * so we have to poll.
+     * it may take some time before the records are to the dev_log_item table, so we have to poll.
      */
     private List<DeviceLogItem> findDeviceLogItems(final String deviceIdentification, final int minExcepted) {
         int loopCount = 0;

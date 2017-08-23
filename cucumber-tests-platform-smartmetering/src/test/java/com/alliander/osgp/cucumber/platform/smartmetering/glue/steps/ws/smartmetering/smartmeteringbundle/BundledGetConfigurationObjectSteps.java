@@ -25,31 +25,43 @@ import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringK
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class GetConfigurationObjectSteps extends BaseBundleSteps {
+public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
 
-    @Given("^a get configuration object is part of a bundled request$")
-    public void aGetConfigurationObjectIsPartOfBundledRequest() throws Throwable {
+    @Given("^the bundle request contains a get configuration object action$")
+    public void theBundleRequestContainsAGetConfigurationObject() throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
-        this.addActionToBundleRequest(request, new GetConfigurationObjectRequest());
+        final GetConfigurationObjectRequest action = new GetConfigurationObjectRequest();
+
+        this.addActionToBundleRequest(request, action);
     }
 
-    @Then("^the bundle response contains a get configuration object response$")
-    public void theBundleResponseContainsConfigurationObjectResponse(final Map<String, String> settings)
-            throws Throwable {
+    @Then("^the bundle response should contain a get configuration object response$")
+    public void theBundleResponseShouldContainAConfigurationObjectResponse() throws Throwable {
 
-        final Response actionResponse = this.getNextBundleResponse();
+        final Response response = this.getNextBundleResponse();
 
         Assert.assertTrue("response should be a GetConfigurationResponse object",
-                actionResponse instanceof GetConfigurationObjectResponse);
-        final ConfigurationObject configurationObject = ((GetConfigurationObjectResponse) actionResponse)
+                response instanceof GetConfigurationObjectResponse);
+    }
+
+    @Then("^the bundle response should contain a get configuration object response with values$")
+    public void theBundleResponseShouldContainAConfigurationObjectResponse(final Map<String, String> values)
+            throws Throwable {
+
+        final Response response = this.getNextBundleResponse();
+
+        Assert.assertTrue("response should be a GetConfigurationResponse object",
+                response instanceof GetConfigurationObjectResponse);
+        final ConfigurationObject configurationObject = ((GetConfigurationObjectResponse) response)
                 .getConfigurationObject();
 
-        Assert.assertEquals("The gprs operation mode is not equal", settings.get("GprsOperationMode"),
+        Assert.assertEquals("The gprs operation mode is not equal", values.get("GprsOperationMode"),
                 configurationObject.getGprsOperationMode().toString());
         configurationObject.getConfigurationFlags().getConfigurationFlag()
-                .forEach(f -> this.testConfigurationFlag(f, settings));
+                .forEach(f -> this.testConfigurationFlag(f, values));
     }
 
     private void testConfigurationFlag(final ConfigurationFlag configFlag, final Map<String, String> settings) {

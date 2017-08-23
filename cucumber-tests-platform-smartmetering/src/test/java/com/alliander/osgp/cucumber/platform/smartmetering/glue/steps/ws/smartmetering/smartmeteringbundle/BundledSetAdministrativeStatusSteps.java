@@ -1,0 +1,62 @@
+package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAdministrativeStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
+import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetAdministrativeStatusRequestBuilder;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+public class BundledSetAdministrativeStatusSteps extends BaseBundleSteps {
+    @When("^the bundle request contains a set administrative status action$")
+    public void theBundleRequestContainsASetAdministrativeStatusAction() throws Throwable {
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+
+        final SetAdministrativeStatusRequest action = new SetAdministrativeStatusRequestBuilder().withDefaults()
+                .build();
+
+        this.addActionToBundleRequest(request, action);
+    }
+
+    @When("^the bundle request contains a set administrative status action with parameters$")
+    public void theBundleRequestContainsASetAdministrativeStatusAction(final Map<String, String> parameters)
+            throws Throwable {
+
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+
+        final SetAdministrativeStatusRequest action = new SetAdministrativeStatusRequestBuilder()
+                .fromParameterMap(parameters).build();
+
+        this.addActionToBundleRequest(request, action);
+    }
+
+    @Then("^the bundle response should contain a set administrative status response$")
+    public void theBundleResponseShouldContainASetAdministrativeStatusResponse() throws Throwable {
+        final Response response = this.getNextBundleResponse();
+
+        assertTrue("Not a valid response", response instanceof ActionResponse);
+    }
+
+    @Then("^the bundle response should contain a set administrative status response with values$")
+    public void theBundleResponseShouldContainASetAdministrativeStatusResponse(final Map<String, String> values)
+            throws Throwable {
+
+        final Response response = this.getNextBundleResponse();
+
+        assertTrue("Not a valid response", response instanceof ActionResponse);
+        assertEquals("Result is not as expected.", values.get(PlatformSmartmeteringKeys.RESULT),
+                response.getResult().name());
+    }
+
+}

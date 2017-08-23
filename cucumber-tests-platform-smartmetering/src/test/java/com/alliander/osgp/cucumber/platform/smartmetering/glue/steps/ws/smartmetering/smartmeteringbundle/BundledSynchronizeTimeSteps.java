@@ -8,13 +8,16 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.zone.ZoneRules;
 import java.util.Map;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FaultResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
@@ -25,23 +28,24 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class SynchronizeTimeSteps extends BaseBundleSteps {
+public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
 
-    @Given("^a synchronize time action is part of a bundled request$")
-    public void aSynchronizeTimeActionIsPartOfABundledRequest(final Map<String, String> settings) throws Throwable {
+    @Given("^the bundle request contains a synchronize time action with parameters$")
+    public void theBundleRequestContainsASynchronizeTimeAction(final Map<String, String> settings) throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
-        final SynchronizeTimeRequest action = this.defaultMapper
+        final SynchronizeTimeRequest action = this.mapperFacade
                 .map(SynchronizeTimeRequestDataFactory.fromParameterMap(settings), SynchronizeTimeRequest.class);
 
         this.addActionToBundleRequest(request, action);
     }
 
-    @Given("^a valid synchronize time action for timezone \"([^\"]*)\" is part of a bundled request$")
-    public void aValidSynchronizeTimeActionForTimezoneIsPartOfABundledRequest(final String timeZoneId)
-            throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+    @Given("^the bundle request contains a valid synchronize time action for timezone \"([^\"]*)\"")
+    public void theBundleRequestContainsAValidSynchronizeTimeAction(final String timeZoneId) throws Throwable {
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         final SynchronizeTimeRequest action = new SynchronizeTimeRequest();
 
@@ -58,10 +62,14 @@ public class SynchronizeTimeSteps extends BaseBundleSteps {
         this.addActionToBundleRequest(request, action);
     }
 
-    @Then("^the bundle response contains a synchronize time response$")
-    public void theBundleResponseContainsASynchronizeTimeResponse(final Map<String, String> settings) throws Throwable {
-        final Response actionResponse = this.getNextBundleResponse();
-        assertEquals(OsgpResultType.fromValue(settings.get(PlatformSmartmeteringKeys.RESULT)), actionResponse.getResult());
+    @Then("^the bundle response should contain a synchronize time response with values$")
+    public void theBundleResponseShouldContainASynchronizeTimeResponse(final Map<String, String> values)
+            throws Throwable {
+        final Response response = this.getNextBundleResponse();
+
+        // TODO [SLIM-1095] Implement a better way for handling fault responses
+        assertTrue("Not a valid response", response instanceof ActionResponse || response instanceof FaultResponse);
+        assertEquals(OsgpResultType.fromValue(values.get(PlatformSmartmeteringKeys.RESULT)), response.getResult());
     }
 
 }

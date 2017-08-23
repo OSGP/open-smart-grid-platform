@@ -26,7 +26,6 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ProfileGenericDataRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
@@ -34,7 +33,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ProfileGenericData extends SmartMeteringStepsBase {
+public class ProfileGenericData {
 
     @Autowired
     private SmartMeteringMonitoringRequestClient<ProfileGenericDataAsyncResponse, ProfileGenericDataRequest> requestClient;
@@ -75,9 +74,8 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
 
         if (expectedNumberOfProfileEntries > 0) {
             /*
-             * Expected value equals expectedNumberOfCaptureObjects, because the
-             * number of ProfileEntryValues in a ProfileEntry should match the
-             * number of captured objects from the buffer.
+             * Expected value equals expectedNumberOfCaptureObjects, because the number of ProfileEntryValues in a
+             * ProfileEntry should match the number of captured objects from the buffer.
              */
             assertEquals("Number of profile entry values", expectedNumberOfCaptureObjects,
                     actualProfileEntries.get(0).getProfileEntryValue().size());

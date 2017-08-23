@@ -41,7 +41,7 @@ public class BaseBundleSteps {
     protected SmartMeteringBundleClient client;
 
     @Autowired
-    protected MapperFacade defaultMapper;
+    protected MapperFacade mapperFacade;
 
     protected void ensureBundleResponse() throws WebServiceSecurityException, GeneralSecurityException, IOException {
         if (ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_RESPONSE) == null) {
