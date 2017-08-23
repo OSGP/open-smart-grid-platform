@@ -8,7 +8,7 @@
 
   <groupId>com.alliander.osgp</groupId>
   <artifactId>platform</artifactId>
-  <version>4.16.0-SNAPSHOT</version>
+  <version>4.17.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <!-- Description, Organization, Licenses, URL and Distribution Management 
     elements are needed for the maven-jxr-plugin to generate a maven site -->
