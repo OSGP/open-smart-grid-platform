@@ -107,6 +107,9 @@
     <!-- Skip code coverage gathering with Jacoco on IT tests from Tomcat. 
       Requires jacoco-agent to be setup on remote Tomcat -->
     <skipITCoverage>true</skipITCoverage>
+    
+    <!-- Default always skip creating a test jar with dependencies tests -->
+    <skipTestJarWithDependenciesAssembly>true</skipTestJarWithDependenciesAssembly>
 
     <!-- Address of Tomcat instance -->
     <addressITCoverage>localhost</addressITCoverage>
