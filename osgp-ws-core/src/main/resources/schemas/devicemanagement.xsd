@@ -348,7 +348,23 @@
         minOccurs="0" />
       <xsd:element name="DeviceModel" type="tns:DeviceModel"
         minOccurs="0" />
+      <xsd:element name="LightMeasurementDevice" type="tns:LightMeasurementDevice"
+        minOccurs="0" />
     </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="LightMeasurementDevice">
+    <xsd:complexContent>
+      <xsd:extension base="tns:Device">
+      <xsd:sequence>
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
+        <xsd:element name="Code" type="xsd:string" minOccurs="0" />
+        <xsd:element name="Color" type="xsd:string" minOccurs="0" />
+        <xsd:element name="DigitalInput" type="xsd:short" minOccurs="0" />
+        <xsd:element name="LastCommunicationTime" type="xsd:dateTime" minOccurs="0" />
+      </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="RelayStatus">
