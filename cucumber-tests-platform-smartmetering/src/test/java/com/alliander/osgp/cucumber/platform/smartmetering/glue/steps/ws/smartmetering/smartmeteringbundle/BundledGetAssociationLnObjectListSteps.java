@@ -14,12 +14,12 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class BundledGetAssociationLnObjectListSteps extends BaseBundleSteps {
 
-    @When("^the bundle request contains a get association ln objects action$")
+    @Given("^the bundle request contains a get association ln objects action$")
     public void theBundleRequestContainsAGetAssociationLnObjectsAction() throws Throwable {
 
         final BundleRequest request = (BundleRequest) ScenarioContext.current()

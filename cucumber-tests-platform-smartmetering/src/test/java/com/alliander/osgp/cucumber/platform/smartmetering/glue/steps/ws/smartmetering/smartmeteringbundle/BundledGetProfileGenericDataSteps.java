@@ -26,12 +26,12 @@ import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.builders.GetProfileGenericDataRequestBuilder;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class BundledGetProfileGenericDataSteps extends BaseBundleSteps {
 
-    @When("^the bundle request contains a get profile generic data action with parameters$")
+    @Given("^the bundle request contains a get profile generic data action with parameters$")
     public void theBundleRequestContainsAGetProfileGenericDataAction(final Map<String, String> parameters)
             throws Throwable {
 

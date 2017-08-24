@@ -13,11 +13,12 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetAdministrativeStatusRequestBuilder;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class BundledSetAdministrativeStatusSteps extends BaseBundleSteps {
-    @When("^the bundle request contains a set administrative status action$")
+
+    @Given("^the bundle request contains a set administrative status action$")
     public void theBundleRequestContainsASetAdministrativeStatusAction() throws Throwable {
         final BundleRequest request = (BundleRequest) ScenarioContext.current()
                 .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
@@ -28,7 +29,7 @@ public class BundledSetAdministrativeStatusSteps extends BaseBundleSteps {
         this.addActionToBundleRequest(request, action);
     }
 
-    @When("^the bundle request contains a set administrative status action with parameters$")
+    @Given("^the bundle request contains a set administrative status action with parameters$")
     public void theBundleRequestContainsASetAdministrativeStatusAction(final Map<String, String> parameters)
             throws Throwable {
 

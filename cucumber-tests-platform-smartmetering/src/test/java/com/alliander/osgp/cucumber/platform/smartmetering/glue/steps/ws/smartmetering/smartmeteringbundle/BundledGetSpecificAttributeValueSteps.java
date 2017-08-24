@@ -15,12 +15,12 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.GetSpecificAttributeValueRequestBuilder;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class BundledGetSpecificAttributeValueSteps extends BaseBundleSteps {
 
-    @When("^the bundle request contains a get specific attribute value action$")
+    @Given("^the bundle request contains a get specific attribute value action$")
     public void theBundleRequestContainsAGetSpecificAttributeValueAction() throws Throwable {
 
         final BundleRequest request = (BundleRequest) ScenarioContext.current()
@@ -32,7 +32,7 @@ public class BundledGetSpecificAttributeValueSteps extends BaseBundleSteps {
         this.addActionToBundleRequest(request, action);
     }
 
-    @When("^the bundle request contains a get specific attribute value action with parameters$")
+    @Given("^the bundle request contains a get specific attribute value action with parameters$")
     public void theBundleRequestContainsAGetSpecificAttributeValueAction(final Map<String, String> parameters)
             throws Throwable {
 

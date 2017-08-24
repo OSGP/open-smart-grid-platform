@@ -11,11 +11,12 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class BundledGetAdministrativeStatusSteps extends BaseBundleSteps {
-    @When("^the bundle request contains a get administrative status action$")
+
+    @Given("^the bundle request contains a get administrative status action$")
     public void theBundleRequestContainsAGetAdministrativeStatusAction() throws Throwable {
 
         final BundleRequest request = (BundleRequest) ScenarioContext.current()
@@ -40,7 +41,6 @@ public class BundledGetAdministrativeStatusSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        // TODO [SLIM-1095] Implement correct assertions using expected values
         assertTrue("Not a valid response", response instanceof AdministrativeStatusResponse);
     }
 

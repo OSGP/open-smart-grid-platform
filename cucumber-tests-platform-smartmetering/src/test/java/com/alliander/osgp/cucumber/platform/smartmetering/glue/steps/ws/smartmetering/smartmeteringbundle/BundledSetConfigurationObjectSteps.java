@@ -13,12 +13,12 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetConfigurationObjectRequestBuilder;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class BundledSetConfigurationObjectSteps extends BaseBundleSteps {
 
-    @When("^the bundle request contains a set configuration object action$")
+    @Given("^the bundle request contains a set configuration object action$")
     public void theBundleRequestContainsASetConfigurationObjectAction() throws Throwable {
         final BundleRequest request = (BundleRequest) ScenarioContext.current()
                 .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
@@ -28,7 +28,7 @@ public class BundledSetConfigurationObjectSteps extends BaseBundleSteps {
         this.addActionToBundleRequest(request, action);
     }
 
-    @When("^the bundle request contains a set configuration object action with parameters$")
+    @Given("^the bundle request contains a set configuration object action with parameters$")
     public void theBundleRequestContainsASetConfigurationObjectAction(final Map<String, String> parameters)
             throws Throwable {
 

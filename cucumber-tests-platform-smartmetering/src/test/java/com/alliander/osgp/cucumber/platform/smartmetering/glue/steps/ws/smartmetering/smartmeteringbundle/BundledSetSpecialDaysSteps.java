@@ -13,12 +13,12 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetSpecialDaysRequestBuilder;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class BundledSetSpecialDaysSteps extends BaseBundleSteps {
 
-    @When("^the bundle request contains a set special days action$")
+    @Given("^the bundle request contains a set special days action$")
     public void theBundleRequestContainsASetSpecialDaysAction() throws Throwable {
         final BundleRequest request = (BundleRequest) ScenarioContext.current()
                 .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
@@ -28,7 +28,7 @@ public class BundledSetSpecialDaysSteps extends BaseBundleSteps {
         this.addActionToBundleRequest(request, action);
     }
 
-    @When("^the bundle request contains a set special days action with parameters$")
+    @Given("^the bundle request contains a set special days action with parameters$")
     public void theBundleRequestContainsASetSpecialDaysAction(final Map<String, String> parameters) throws Throwable {
 
         final BundleRequest request = (BundleRequest) ScenarioContext.current()

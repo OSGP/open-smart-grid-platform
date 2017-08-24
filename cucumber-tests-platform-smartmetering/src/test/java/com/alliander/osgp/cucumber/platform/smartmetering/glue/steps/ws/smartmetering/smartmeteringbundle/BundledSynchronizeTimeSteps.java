@@ -17,7 +17,6 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FaultResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
@@ -82,8 +81,6 @@ public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
             throws Throwable {
         final Response response = this.getNextBundleResponse();
 
-        // TODO [SLIM-1095] Implement a better way for handling fault responses
-        assertTrue("Not a valid response", response instanceof ActionResponse || response instanceof FaultResponse);
         assertEquals(OsgpResultType.fromValue(values.get(PlatformSmartmeteringKeys.RESULT)), response.getResult());
     }
 

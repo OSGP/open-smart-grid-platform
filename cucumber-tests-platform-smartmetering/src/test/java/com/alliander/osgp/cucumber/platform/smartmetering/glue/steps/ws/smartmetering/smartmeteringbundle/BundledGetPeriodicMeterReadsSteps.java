@@ -12,12 +12,12 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.GetPeriodicMeterReadsRequestBuilder;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class BundledGetPeriodicMeterReadsSteps extends BaseBundleSteps {
 
-    @When("^the bundle request contains a get periodic meter reads action$")
+    @Given("^the bundle request contains a get periodic meter reads action$")
     public void theBundleRequestContainsAGetPeriodicMeterReadsAction() throws Throwable {
 
         final BundleRequest request = (BundleRequest) ScenarioContext.current()
@@ -28,7 +28,7 @@ public class BundledGetPeriodicMeterReadsSteps extends BaseBundleSteps {
         this.addActionToBundleRequest(request, action);
     }
 
-    @When("^the bundle request contains a get periodic meter reads action with parameters$")
+    @Given("^the bundle request contains a get periodic meter reads action with parameters$")
     public void theBundleRequestContainsAGetPeriodicMeterReadsActionWithParameters(final Map<String, String> parameters)
             throws Throwable {
 
@@ -55,7 +55,6 @@ public class BundledGetPeriodicMeterReadsSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        // TODO [SLIM-1095] Implement correct assertions using expected values
         assertTrue("Not a valid response", response instanceof PeriodicMeterReadsResponse);
     }
 
