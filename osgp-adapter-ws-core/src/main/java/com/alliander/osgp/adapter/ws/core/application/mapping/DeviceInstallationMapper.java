@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 
 import ma.glasnost.orika.MapperFactory;
@@ -69,8 +72,27 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
                 destination = new Device(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
                         source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
                         source.getContainerMunicipality(), source.getGpsLatitude(), source.getGpsLongitude());
-                destination.setDeviceModel(
-                        this.writableDeviceModelRepository.findByModelCode(source.getDeviceModel().getModelCode()));
+
+                /*
+                 * Model code does not uniquely identify a device model, which
+                 * is why deviceModelRepository is changed to return a list of
+                 * device models.
+                 *
+                 * A better solution would be to determine the manufacturer and
+                 * do a lookup by manufacturer and model code, which should
+                 * uniquely define the device model.
+                 */
+                final List<DeviceModel> deviceModels = this.writableDeviceModelRepository
+                        .findByModelCode(source.getDeviceModel().getModelCode());
+
+                if (deviceModels.size() > 1) {
+                    // TODO update code to deal with non-unique model code.
+                    throw new AssertionError("Model code \"" + source.getDeviceModel().getModelCode()
+                            + "\" does not uniquely identify a device model.");
+                }
+                if (!deviceModels.isEmpty()) {
+                    destination.setDeviceModel(deviceModels.get(0));
+                }
 
                 return destination;
             }

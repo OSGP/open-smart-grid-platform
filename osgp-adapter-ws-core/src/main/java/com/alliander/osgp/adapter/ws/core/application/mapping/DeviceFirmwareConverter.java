@@ -7,44 +7,37 @@
  */
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareFileRepository;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceFirmwareFile;
+import com.alliander.osgp.domain.core.entities.FirmwareFile;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
-import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.DeviceFirmware;
-import com.alliander.osgp.domain.core.entities.Firmware;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-
 class DeviceFirmwareConverter extends
-        CustomConverter<com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware, DeviceFirmware> {
+        CustomConverter<com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware, DeviceFirmwareFile> {
 
     private DeviceRepository deviceRepository;
-    private WritableFirmwareRepository firmwareRepository;
+    private WritableFirmwareFileRepository firmwareFileRepository;
 
     public DeviceFirmwareConverter(final DeviceRepository deviceRepository,
-            final WritableFirmwareRepository firmwareRepository) {
+            final WritableFirmwareFileRepository firmwareFileRepository) {
         this.deviceRepository = deviceRepository;
-        this.firmwareRepository = firmwareRepository;
+        this.firmwareFileRepository = firmwareFileRepository;
     }
 
     @Override
-    public DeviceFirmware convert(
+    public DeviceFirmwareFile convert(
             final com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware source,
-            final Type<? extends DeviceFirmware> destination, final MappingContext context) {
+            final Type<? extends DeviceFirmwareFile> destination, final MappingContext context) {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(source.getDeviceIdentification());
-        final Firmware firmware = this.firmwareRepository.findOne(Long.valueOf(source.getFirmware().getId()));
+        final FirmwareFile firmwareFile = this.firmwareFileRepository.findOne(Long.valueOf(source.getFirmware().getId()));
 
-        final DeviceFirmware output = new DeviceFirmware();
-
-        output.setActive(source.isActive());
-        output.setInstallationDate(source.getInstallationDate().toGregorianCalendar().getTime());
-        output.setInstalledBy(source.getInstalledBy());
-        output.setDevice(device);
-        output.setFirmware(firmware);
-
-        return output;
+        return new DeviceFirmwareFile(device, firmwareFile,
+                source.getInstallationDate().toGregorianCalendar().getTime(), source.getInstalledBy());
     }
 }

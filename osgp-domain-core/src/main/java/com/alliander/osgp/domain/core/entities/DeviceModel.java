@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -18,15 +20,15 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
  * DeviceModel entity class holds information about the device model or type
  */
 @Entity
-public class DeviceModel extends AbstractEntity {
+public class DeviceModel extends AbstractEntity implements Comparable<DeviceModel> {
 
     private static final long serialVersionUID = 7957241305474770350L;
 
     @ManyToOne()
-    @JoinColumn()
-    private Manufacturer manufacturerId;
+    @JoinColumn(name = "manufacturer_id")
+    private Manufacturer manufacturer;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 255)
     private String modelCode;
 
     @Column(length = 255)
@@ -42,21 +44,52 @@ public class DeviceModel extends AbstractEntity {
         // Default constructor
     }
 
-    public DeviceModel(final Manufacturer manufacturerId, final String modelCode, final String description,
+    public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description,
             final boolean metered) {
-        this.manufacturerId = manufacturerId;
+        this.manufacturer = manufacturer;
         this.modelCode = modelCode;
         this.description = description;
-        // default behaviour is true
+        // default behavior is true
         this.fileStorage = true;
         this.metered = metered;
     }
 
-    public DeviceModel(final Manufacturer manufacturerId, final String modelCode, final String description,
+    public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description,
             final boolean fileStorage, final boolean metered) {
-        this(manufacturerId, modelCode, description, metered);
+        this(manufacturer, modelCode, description, metered);
         this.fileStorage = fileStorage;
         this.metered = metered;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof DeviceModel)) {
+            return false;
+        }
+        final DeviceModel other = (DeviceModel) obj;
+        return Objects.equals(this.modelCode, other.modelCode) && Objects.equals(this.manufacturer, other.manufacturer);
+    }
+
+    @Override
+    public int compareTo(final DeviceModel o) {
+        final int compareManufacturer = this.manufacturer.compareTo(o.manufacturer);
+        if (compareManufacturer != 0) {
+            return compareManufacturer;
+        }
+        return this.modelCode.compareTo(o.modelCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.modelCode, this.manufacturer);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DeviceModel[manufacturer=%s, code=%s]", this.manufacturer.getCode(), this.modelCode);
     }
 
     public void updateData(final String description, final boolean metered) {
@@ -64,8 +97,8 @@ public class DeviceModel extends AbstractEntity {
         this.metered = metered;
     }
 
-    public Manufacturer getManufacturerId() {
-        return this.manufacturerId;
+    public Manufacturer getManufacturer() {
+        return this.manufacturer;
     }
 
     public String getDescription() {

@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,6 +34,8 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.domain.core.validation.Identification;
@@ -165,7 +169,7 @@ public class Device implements Serializable {
      * more { @see DeviceFunctionGroup.class }.
      */
     @OneToMany(mappedBy = "device", targetEntity = DeviceAuthorization.class, fetch = FetchType.EAGER)
-    protected final List<DeviceAuthorization> authorizations = new ArrayList<>();
+    private final List<DeviceAuthorization> authorizations = new ArrayList<>();
 
     /**
      * Protocol information indicates which protocol this device is using.
@@ -191,7 +195,7 @@ public class Device implements Serializable {
      * List of organisations which are authorized to use this device.
      */
     @Transient
-    protected final List<String> organisations = new ArrayList<>();
+    private final List<String> organisations = new ArrayList<>();
 
     @ManyToOne()
     @JoinColumn()
@@ -204,7 +208,8 @@ public class Device implements Serializable {
     protected Date technicalInstallationDate;
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
-    private List<DeviceFirmware> deviceFirmwares = new ArrayList<>();
+    @Sort(type = SortType.NATURAL)
+    private SortedSet<DeviceFirmwareFile> deviceFirmwareFiles = new TreeSet<>();
 
     public Device() {
         // Default constructor
@@ -478,27 +483,24 @@ public class Device implements Serializable {
         this.deviceModel = deviceModel;
     }
 
-    public void setFirmware(final Firmware firmware, final String installedBy) {
-        for (final DeviceFirmware deviceFirmware : this.deviceFirmwares) {
-            deviceFirmware.setActive(false);
-        }
-        final DeviceFirmware newDeviceFirmware = new DeviceFirmware();
-        newDeviceFirmware.setActive(true);
-        newDeviceFirmware.setDevice(this);
-        newDeviceFirmware.setFirmware(firmware);
-        newDeviceFirmware.setInstallationDate(new Date());
-        newDeviceFirmware.setInstalledBy(installedBy);
-
-        this.deviceFirmwares.add(newDeviceFirmware);
+    public void addFirmwareFile(final FirmwareFile firmwareFile, final String installedBy) {
+        final DeviceFirmwareFile newDeviceFirmware = new DeviceFirmwareFile(this, firmwareFile, new Date(),
+                installedBy);
+        this.deviceFirmwareFiles.add(newDeviceFirmware);
     }
 
-    public Firmware getActiveFirmware() {
-        for (final DeviceFirmware deviceFirmware : this.deviceFirmwares) {
-            if (deviceFirmware.isActive()) {
-                return deviceFirmware.getFirmware();
-            }
+    public FirmwareFile getActiveFirmwareFile() {
+        /*
+         * In general it could be the case that active firmware modules come
+         * from different firmware files installed on the device.
+         *
+         * There used to be a simpler model where an attribute indicated which
+         * single firmware was active for a device. For now this will return the
+         * most recently installed firmware file.
+         */
+        if (this.deviceFirmwareFiles.isEmpty()) {
+            return null;
         }
-
-        return null;
+        return this.deviceFirmwareFiles.last().getFirmwareFile();
     }
 }
