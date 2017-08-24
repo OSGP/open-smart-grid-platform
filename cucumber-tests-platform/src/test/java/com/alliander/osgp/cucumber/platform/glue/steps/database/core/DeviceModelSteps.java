@@ -66,9 +66,9 @@ public class DeviceModelSteps extends GlueBase {
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED);
 
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setManufacturerId(
-                getString(expectedEntity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID));
-        final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturerId(manufacturer);
+        manufacturer.setCode(
+                getString(expectedEntity, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
+        final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturer(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
             if (deviceModel.getModelCode().equals(modelCode)) {
@@ -94,9 +94,9 @@ public class DeviceModelSteps extends GlueBase {
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
 
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setManufacturerId(
-                getString(entity, PlatformKeys.MANUFACTURER_ID, PlatformDefaults.DEFAULT_MANUFACTURER_ID));
-        final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturerId(manufacturer);
+        manufacturer
+                .setCode(getString(entity, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
+        final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturer(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
             Assert.assertNotEquals(deviceModel.getModelCode(), modelCode);
