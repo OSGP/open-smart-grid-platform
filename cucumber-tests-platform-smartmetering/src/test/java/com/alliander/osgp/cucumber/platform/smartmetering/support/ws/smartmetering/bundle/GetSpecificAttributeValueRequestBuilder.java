@@ -9,9 +9,32 @@ import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringK
 
 public class GetSpecificAttributeValueRequestBuilder {
 
+    private static final BigInteger DEFAULT_CLASS_ID = BigInteger.valueOf(1);
+    private static final short DEFAULT_OBIS_CODE_A = 0;
+    private static final short DEFAULT_OBIS_CODE_B = 0;
+    private static final short DEFAULT_OBIS_CODE_C = 42;
+    private static final short DEFAULT_OBIS_CODE_D = 0;
+    private static final short DEFAULT_OBIS_CODE_E = 0;
+    private static final short DEFAULT_OBIS_CODE_F = 255;
+    private static final BigInteger DEFAULT_ATTRIBUTE = BigInteger.valueOf(2);
+
     private BigInteger classId;
     private ObisCodeValues obisCode;
     private BigInteger attribute;
+
+    public GetSpecificAttributeValueRequestBuilder withDefaults() {
+        this.classId = DEFAULT_CLASS_ID;
+        this.obisCode = new ObisCodeValues();
+        this.obisCode.setA(DEFAULT_OBIS_CODE_A);
+        this.obisCode.setB(DEFAULT_OBIS_CODE_B);
+        this.obisCode.setC(DEFAULT_OBIS_CODE_C);
+        this.obisCode.setD(DEFAULT_OBIS_CODE_D);
+        this.obisCode.setE(DEFAULT_OBIS_CODE_E);
+        this.obisCode.setF(DEFAULT_OBIS_CODE_F);
+        this.attribute = DEFAULT_ATTRIBUTE;
+
+        return this;
+    }
 
     public GetSpecificAttributeValueRequestBuilder fromParameterMap(final Map<String, String> parameters) {
 

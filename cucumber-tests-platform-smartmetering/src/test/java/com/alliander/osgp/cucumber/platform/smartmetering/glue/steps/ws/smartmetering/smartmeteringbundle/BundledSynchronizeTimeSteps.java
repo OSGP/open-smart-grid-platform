@@ -30,6 +30,14 @@ import cucumber.api.java.en.Then;
 
 public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
 
+    private static final String DEFAULT_TIMEZONE = "Europe/Amsterdam";
+
+    @Given("^the bundle request contains a synchronize time action$")
+    public void theBundleRequestContainsASynchronizeTimeAction() throws Throwable {
+
+        this.theBundleRequestContainsAValidSynchronizeTimeAction(DEFAULT_TIMEZONE);
+    }
+
     @Given("^the bundle request contains a synchronize time action with parameters$")
     public void theBundleRequestContainsASynchronizeTimeAction(final Map<String, String> settings) throws Throwable {
 
@@ -60,6 +68,13 @@ public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
         action.setDst(dst);
 
         this.addActionToBundleRequest(request, action);
+    }
+
+    @Then("^the bundle response should contain a synchronize time response$")
+    public void theBundleResponseShouldContainASynchronizeTimeResponse() throws Throwable {
+        final Response response = this.getNextBundleResponse();
+
+        assertTrue("Not a valid response", response instanceof ActionResponse);
     }
 
     @Then("^the bundle response should contain a synchronize time response with values$")

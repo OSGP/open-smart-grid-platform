@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
@@ -19,6 +20,18 @@ import cucumber.api.java.en.When;
 
 public class BundledGetSpecificAttributeValueSteps extends BaseBundleSteps {
 
+    @When("^the bundle request contains a get specific attribute value action$")
+    public void theBundleRequestContainsAGetSpecificAttributeValueAction() throws Throwable {
+
+        final BundleRequest request = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+
+        final GetSpecificAttributeValueRequest action = new GetSpecificAttributeValueRequestBuilder().withDefaults()
+                .build();
+
+        this.addActionToBundleRequest(request, action);
+    }
+
     @When("^the bundle request contains a get specific attribute value action with parameters$")
     public void theBundleRequestContainsAGetSpecificAttributeValueAction(final Map<String, String> parameters)
             throws Throwable {
@@ -30,6 +43,14 @@ public class BundledGetSpecificAttributeValueSteps extends BaseBundleSteps {
                 .fromParameterMap(parameters).build();
 
         this.addActionToBundleRequest(request, action);
+    }
+
+    @Then("^the bundle response should contain a get specific attribute value response$")
+    public void theBundleResponseShouldContainAGetSpecificAttributeValueResponse() throws Throwable {
+
+        final Response response = this.getNextBundleResponse();
+
+        assertTrue("Not a valid response", response instanceof ActionResponse);
     }
 
     @Then("^the bundle response should contain a get specific attribute value response with values$")

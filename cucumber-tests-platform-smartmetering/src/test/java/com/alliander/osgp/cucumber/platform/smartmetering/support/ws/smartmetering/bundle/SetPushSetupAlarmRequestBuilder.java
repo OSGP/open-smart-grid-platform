@@ -15,7 +15,7 @@ public class SetPushSetupAlarmRequestBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmRequestBuilder.class);
 
     private static final String DEFAULT_HOST = "localhost";
-    private static final BigInteger DEFAULT_PORT = new BigInteger("9598");
+    private static final BigInteger DEFAULT_PORT = BigInteger.valueOf(9598);
 
     private String host;
     private BigInteger port;
