@@ -11,11 +11,6 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +19,11 @@ import com.alliander.osgp.adapter.ws.core.application.mapping.ws.ScheduledTaskCo
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
 @Component(value = "coreDeviceManagementMapper")
 public class DeviceManagementMapper extends ConfigurableMapper {
-
-    static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementMapper.class);
 
     @Autowired
     private SsldRepository ssldRepository;
@@ -56,8 +52,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification").field("dateTime", "timestamp")
-                .byDefault().toClassMap());
+                .field("device.deviceIdentification", "deviceIdentification").field("dateTime", "timestamp").byDefault()
+                .toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
@@ -75,6 +71,10 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
     @Override
     public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
         return super.equals(obj) && Objects.equals(this.ssldRepository, ((DeviceManagementMapper) obj).ssldRepository);
     }
 
