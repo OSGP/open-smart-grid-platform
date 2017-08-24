@@ -34,7 +34,6 @@ public class PlatformKeys extends Keys {
     public static final String DELEGATE_FUNCTION_GROUP = "DelegateFunctionGroup";
     public static final String DEVICE_FUNCTION = "DeviceFunction";
     public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
-    public static final String DEVICEFIRMWARE_ACTIVE = "DevicefirmwareActive";
     public static final String DEVICEFIRMWARE_INSTALLATIONDATE = "DevicefirmwareInstallationDate";
     public static final String DEVICEFIRMWARE_INSTALLED_BY = "DevicefirmwareInstalledBy";
 
@@ -216,7 +215,7 @@ public class PlatformKeys extends Keys {
     public static final Object LAST_COMMUNCATION_TIME = "LastCommunicationTime";
     public static final String LOGIN_ATTEMPT_COUNT = "LoginAttemptCount";
     public static final String LONG_INTERVAL = "LongInterval";
-    public static final String MANUFACTURER_ID = "ManufacturerId";
+    public static final String MANUFACTURER_CODE = "ManufacturerCode";
     public static final String MANUFACTURER_NAME = "ManufacturerName";
     public static final String MANUFACTURER_USE_PREFIX = "ManufacturerUsePrefix";
     public static final String METER_TYPE = "MeterType";

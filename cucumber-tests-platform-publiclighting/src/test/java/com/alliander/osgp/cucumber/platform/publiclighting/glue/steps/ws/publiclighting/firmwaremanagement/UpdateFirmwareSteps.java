@@ -39,7 +39,6 @@ import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.adhocmanagement.SetLightSteps;
-import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -53,9 +52,6 @@ public class UpdateFirmwareSteps {
 
     @Autowired
     private CoreFirmwareManagementClient client;
-
-    @Autowired
-    private FirmwareRepository firmwareRepo;
 
     /**
      * Sends a Update Firmware request to the platform for a given device

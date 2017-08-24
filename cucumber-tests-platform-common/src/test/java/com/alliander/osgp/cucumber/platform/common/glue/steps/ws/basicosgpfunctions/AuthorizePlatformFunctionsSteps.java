@@ -356,7 +356,7 @@ public class AuthorizePlatformFunctionsSteps {
 
     private void removeDeviceModel(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final RemoveDeviceModelRequest request = new RemoveDeviceModelRequest();
-        request.setDeviceManufacturerId(PlatformCommonDefaults.DEFAULT_MANUFACTURER_ID);
+        request.setDeviceManufacturerId(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
         request.setDeviceModelId(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
                 this.firmwareManagementClient.removeDeviceModel(request));
