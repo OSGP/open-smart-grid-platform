@@ -1,8 +1,8 @@
 // Pipeline script for the OSGP Integration-Tests Pull Request job in Jenkins
 
 def stream = 'osgp'
-def servername = stream + '-at-' + env.BUILD_NUMBER
-//def servername = stream + '-at-26'
+def servername = stream + '-at-pr-' + env.BUILD_NUMBER
+//def servername = stream + '-at-pr-26'
 def playbook = stream + '-at.yml'
 def extravars = 'ec2_instance_type=t2.large'
 def repo = 'git@github.com:SmartSocietyServices/Integration-Tests.git'
@@ -15,11 +15,12 @@ pipeline {
         // Only keep the 10 most recent builds
         buildDiscarder(logRotator(numToKeepStr:'10'))
     }
+
     stages {
         stage ('Git') {
             steps {
                 // Example sha1 c0c708ef65fa1217e84d9762c974e6b8a40d35b3
-                deleteDir();
+                deleteDir()
                 checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: 'git@github.com:OSGP/Integration-Tests.git']]])
             }
         }
@@ -47,7 +48,7 @@ pipeline {
             steps {
                 sh '''echo Searching for specific Cucumber tags in git commit.
 
-# Format for cucumber-tags in Pull request description: [@tag1 @tag2 @tags3a,@tags3b] 
+# Format for cucumber-tags in Pull request description: [@tag1 @tag2 @tags3a,@tags3b]
 #   will lead to cucumber.options=\'--tags @tag1 --tags @tag2 --tags @tags3a,@tags3b\'
 # These tags will be available as ENV var: ${CUCUMBER_TAGS} for use in maven -Dcucumber.options
 
@@ -72,6 +73,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
             }
         }
+
 
         stage ('Collect coverage') {
             steps {
