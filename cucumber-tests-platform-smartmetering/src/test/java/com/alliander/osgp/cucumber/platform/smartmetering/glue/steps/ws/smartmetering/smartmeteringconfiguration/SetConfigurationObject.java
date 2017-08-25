@@ -7,48 +7,61 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetConfigurationObjectRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class SetConfigurationObject extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT = "/Envelope/Body/SetConfigurationObjectResponse/Result/text()";
+    protected static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObject.class);
 
-    private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
-    private static final String TEST_CASE_XML = "216 Retrieve SetConfigurationObject result";
-    private static final String TEST_CASE_NAME_REQUEST = "SetConfigurationObject - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetSetConfigurationObjectResponse - Request 1";
+    @Autowired
+    private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
     @When("^the set configuration object request is received$")
-    public void theSetConfigurationObjectRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    public void theSetConfigurationObjectRequestIsReceived(final Map<String, String> requestData) throws Throwable {
+        final SetConfigurationObjectRequest setConfigurationObjectRequest = SetConfigurationObjectRequestFactory
+                .fromParameterMap(requestData);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final SetConfigurationObjectAsyncResponse setConfigurationObjectAsyncResponse = this.smartMeteringConfigurationClient
+                .setConfigurationObject(setConfigurationObjectRequest);
+
+        LOGGER.info("Set configuration object response is received {}", setConfigurationObjectAsyncResponse);
+
+        assertNotNull("Set configuration object response should not be null", setConfigurationObjectAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                setConfigurationObjectAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the configuration object should be set on the device$")
     public void theConfigurationObjectShouldBeSetOnTheDevice(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
+        final SetConfigurationObjectAsyncRequest setConfigurationObjectAsyncRequest = SetConfigurationObjectRequestFactory
+                .fromScenarioContext();
+        final SetConfigurationObjectResponse setConfigurationObjectResponse = this.smartMeteringConfigurationClient
+                .retrieveSetConfigurationObjectResponse(setConfigurationObjectAsyncRequest);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        LOGGER.info("Set configuration object result is: {}", setConfigurationObjectResponse.getResult());
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, PlatformDefaults.EXPECTED_RESULT_OK));
+        assertNotNull("Set configuration object result is null", setConfigurationObjectResponse.getResult());
+        assertEquals("Set configuration object result should be OK", OsgpResultType.OK,
+                setConfigurationObjectResponse.getResult());
     }
 }

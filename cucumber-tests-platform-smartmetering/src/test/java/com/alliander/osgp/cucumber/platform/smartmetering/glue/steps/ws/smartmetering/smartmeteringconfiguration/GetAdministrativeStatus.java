@@ -7,51 +7,58 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetAdministrativeStatusRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class GetAdministrativeStatus extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT_ENABLED = "/Envelope/Body/GetAdministrativeStatusResponse/Enabled/text()";
+    protected static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatus.class);
 
-    private static final String XPATH_MATCHER_RESULT_ENABLED = "\\w[A-Z]";
-
-    private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
-    private static final String TEST_CASE_XML = "190 Get administrative status";
-    private static final String TEST_CASE_NAME_REQUEST = "GetAdministrativeStatus - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetGetAdministrativeStatusResponse - Request 1";
+    @Autowired
+    private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
     @When("^the get administrative status request is received$")
-    public void theRetrieveAdministrativeStatusRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    public void theRetrieveAdministrativeStatusRequestIsReceived(final Map<String, String> requestData)
+            throws Throwable {
+        final GetAdministrativeStatusRequest getAdministrativeStatusRequest = GetAdministrativeStatusRequestFactory
+                .fromParameterMap(requestData);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final GetAdministrativeStatusAsyncResponse getAdministrativeStatusAsyncResponse = this.smartMeteringConfigurationClient
+                .getAdministrativeStatus(getAdministrativeStatusRequest);
+
+        LOGGER.info("Get administrative status asyncResponse is received {}", getAdministrativeStatusAsyncResponse);
+        assertNotNull("Get administrative status asyncResponse should not be null",
+                getAdministrativeStatusAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                getAdministrativeStatusAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the administrative status should be returned$")
     public void theAdministrativeStatusShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
+        final GetAdministrativeStatusAsyncRequest getAdministrativeStatusAsyncRequest = GetAdministrativeStatusRequestFactory
+                .fromScenarioContext();
+        final GetAdministrativeStatusResponse getAdministrativeStatusResponse = this.smartMeteringConfigurationClient
+                .retrieveGetAdministrativeStatusResponse(getAdministrativeStatusAsyncRequest);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
-
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ENABLED, XPATH_MATCHER_RESULT_ENABLED));
+        LOGGER.info("The administrative status is: {}", getAdministrativeStatusResponse.getEnabled());
+        assertNotNull("Administrative status type is null", getAdministrativeStatusResponse.getEnabled());
     }
 
 }

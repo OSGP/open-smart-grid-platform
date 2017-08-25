@@ -22,7 +22,10 @@ Feature: SmartMetering Configuration
 
   Scenario: Set configuration object on a device
     When the set configuration object request is received
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification     | TEST1024000000001 |
+      | ConfigurationFlagType    | PO_ENABLE         |
+      | ConfigurationFlagEnabled | TRUE              |
+      | GprsOperationModeType    | ALWAYS_ON         |
     Then the configuration object should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
@@ -40,7 +43,9 @@ Feature: SmartMetering Configuration
 
   Scenario: Set alarm notifications on a device
     When the set alarm notifications request is received
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1024000000001                    |
+      | AlarmType            | CLOCK_INVALID                        |
+      | AlarmTypeEnabled     | TRUE                                 |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
@@ -66,7 +71,8 @@ Feature: SmartMetering Configuration
 
   Scenario: Set administrative status on a device
     When the set administrative status request is received
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification     | TEST1024000000001 |
+      | AdministrativeStatusType | ON                |
     Then the administrative status should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 

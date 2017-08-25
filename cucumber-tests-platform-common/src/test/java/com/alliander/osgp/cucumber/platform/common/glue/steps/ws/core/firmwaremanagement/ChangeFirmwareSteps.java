@@ -28,7 +28,7 @@ import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.PlatformCommonKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreFirmwareManagementClient;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
+import com.alliander.osgp.domain.core.repositories.FirmwareFileRepository;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -42,7 +42,7 @@ public class ChangeFirmwareSteps {
     private CoreFirmwareManagementClient client;
 
     @Autowired
-    private FirmwareRepository firmwareRepo;
+    private FirmwareFileRepository firmwareFileRepository;
 
     /**
      * Sends a Change Firmware request to the platform for a given device
@@ -57,14 +57,14 @@ public class ChangeFirmwareSteps {
 
         final ChangeFirmwareRequest request = new ChangeFirmwareRequest();
 
-        long firmwareId = 0;
-        if (this.firmwareRepo.findAll() != null && this.firmwareRepo.count() > 0) {
-            firmwareId = this.firmwareRepo.findAll().get(0).getId();
+        long firmwareFileId = 0;
+        if (this.firmwareFileRepository.findAll() != null && this.firmwareFileRepository.count() > 0) {
+            firmwareFileId = this.firmwareFileRepository.findAll().get(0).getId();
         }
 
-        request.setId((int) firmwareId);
+        request.setId((int) firmwareFileId);
 
-        request.setFirmware(this.createAndGetFirmware(firmwareId, requestParameters));
+        request.setFirmware(this.createAndGetFirmware(firmwareFileId, requestParameters));
 
         try {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.changeFirmware(request));
@@ -73,10 +73,10 @@ public class ChangeFirmwareSteps {
         }
     }
 
-    private Firmware createAndGetFirmware(final long firmwareId, final Map<String, String> requestParameters)
+    private Firmware createAndGetFirmware(final long firmwareFileId, final Map<String, String> requestParameters)
             throws Throwable {
         final Firmware firmware = new Firmware();
-        firmware.setId((int) firmwareId);
+        firmware.setId((int) firmwareFileId);
         firmware.setFilename(getString(requestParameters, PlatformKeys.FIRMWARE_FILENAME, ""));
         firmware.setDescription(getString(requestParameters, PlatformKeys.FIRMWARE_DESCRIPTION, ""));
         firmware.setPushToNewDevices(getBoolean(requestParameters, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,

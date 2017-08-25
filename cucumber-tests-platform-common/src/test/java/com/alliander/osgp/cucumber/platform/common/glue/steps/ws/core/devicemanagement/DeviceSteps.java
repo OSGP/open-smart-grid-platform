@@ -7,15 +7,20 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
+import static com.alliander.osgp.cucumber.core.Helpers.getShort;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.util.Map;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.junit.Assert;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.inputparsers.XmlGregorianCalendarInputParser;
 
 public class DeviceSteps extends GlueBase {
 
@@ -43,7 +48,8 @@ public class DeviceSteps extends GlueBase {
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_POSTCODE)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_POSTCODE), actualDevice.getContainerPostalCode());
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_POSTCODE),
+                    actualDevice.getContainerPostalCode());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_STREET)) {
@@ -67,11 +73,40 @@ public class DeviceSteps extends GlueBase {
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_NETWORKADDRESS)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_NETWORKADDRESS), actualDevice.getNetworkAddress());
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_NETWORKADDRESS),
+                    actualDevice.getNetworkAddress());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_OWNER)) {
             Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_OWNER), actualDevice.getOwner());
         }
+
+        if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_TYPE)
+                && getString(expectedDevice, PlatformKeys.KEY_DEVICE_TYPE).equals("LMD")) {
+            final LightMeasurementDevice lmd = actualDevice.getLightMeasurementDevice();
+            Assert.assertNotNull("Found device has no Light Measurement Device field", lmd);
+
+            if (expectedDevice.containsKey(PlatformKeys.CODE)) {
+                Assert.assertEquals(getString(expectedDevice, PlatformKeys.CODE), lmd.getCode());
+            }
+
+            if (expectedDevice.containsKey(PlatformKeys.KEY_LIGHTMEASUREMENT_COLOR)) {
+                Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_LIGHTMEASUREMENT_COLOR), lmd.getColor());
+            }
+
+            if (expectedDevice.containsKey(PlatformKeys.KEY_LIGHTMEASUREMENT_DIGITAL_INPUT)) {
+                Assert.assertEquals(getShort(expectedDevice, PlatformKeys.KEY_LIGHTMEASUREMENT_DIGITAL_INPUT),
+                        lmd.getDigitalInput());
+            }
+
+            if (expectedDevice.containsKey(PlatformKeys.KEY_LIGHTMEASUREMENT_LAST_COMMUNICATION_TIME)) {
+                final XMLGregorianCalendar inputXMLGregorianCalendar = XmlGregorianCalendarInputParser
+                        .parse(getString(expectedDevice, PlatformKeys.KEY_LIGHTMEASUREMENT_LAST_COMMUNICATION_TIME));
+                Assert.assertEquals("Last communication time does not match",
+                        inputXMLGregorianCalendar.toGregorianCalendar(),
+                        lmd.getLastCommunicationTime().toGregorianCalendar());
+            }
+        }
+
     }
 }

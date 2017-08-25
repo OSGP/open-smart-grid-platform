@@ -7,48 +7,59 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetSpecialDaysRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class SetSpecialDays extends SmartMeteringStepsBase {
-    private static final String PATH_RESULT = "/Envelope/Body/SetSpecialDaysResponse/Result/text()";
+    protected static final Logger LOGGER = LoggerFactory.getLogger(SetSpecialDays.class);
 
-    private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
-    private static final String TEST_CASE_XML = "215 Retrieve SetSpecialDays result";
-    private static final String TEST_CASE_NAME_REQUEST = "SetSpecialDays - Request 1";
-    private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetSetSpecialDaysResponse - Request 1";
+    @Autowired
+    private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
     @When("^the set special days request is received$")
-    public void theSetSpecialDaysRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
-                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    public void theSetSpecialDaysRequestIsReceived(final Map<String, String> requestData) throws Throwable {
+        final SetSpecialDaysRequest setSpecialDaysRequest = SetSpecialDaysRequestFactory.fromParameterMap(requestData);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        final SetSpecialDaysAsyncResponse setSpecialDaysAsyncResponse = this.smartMeteringConfigurationClient
+                .setSpecialDays(setSpecialDaysRequest);
+
+        LOGGER.info("Set special days response is received {}", setSpecialDaysAsyncResponse);
+
+        assertNotNull("Set special days response should not be null", setSpecialDaysAsyncResponse);
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+                setSpecialDaysAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the special days should be set on the device$")
     public void theSpecialDaysShouldBeSetOnTheDevice(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(PlatformKeys.KEY_CORRELATION_UID,
-                ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID).toString());
+        final SetSpecialDaysAsyncRequest setSpecialDaysAsyncRequest = SetSpecialDaysRequestFactory
+                .fromScenarioContext();
+        final SetSpecialDaysResponse setSpecialDaysResponse = this.smartMeteringConfigurationClient
+                .retrieveSetSpecialDaysResponse(setSpecialDaysAsyncRequest);
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
-                TEST_SUITE_XML);
+        LOGGER.info("Set special days result is: {}", setSpecialDaysResponse.getResult());
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, PlatformDefaults.EXPECTED_RESULT_OK));
+        assertNotNull("Set special days result is null", setSpecialDaysResponse.getResult());
+        assertEquals("Set special days result should be OK", OsgpResultType.OK, setSpecialDaysResponse.getResult());
     }
 }
