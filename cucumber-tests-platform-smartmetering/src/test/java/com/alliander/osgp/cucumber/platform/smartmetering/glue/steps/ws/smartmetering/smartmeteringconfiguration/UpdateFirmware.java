@@ -34,7 +34,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.UpdateFirmwareRequestFactory;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.entities.FirmwareFile;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 
 import cucumber.api.java.en.Then;
@@ -121,10 +121,10 @@ public class UpdateFirmware {
 
         final String deviceIdentification = Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final Device device = this.deviceRepository.findByDeviceIdentificationWithFirmware(deviceIdentification);
         assertNotNull("Device " + deviceIdentification + " not found.", device);
 
-        final Firmware activeFirmware = device.getActiveFirmware();
+        final FirmwareFile activeFirmware = device.getActiveFirmwareFile();
         assertNotNull("No active firmware found for device " + deviceIdentification + ".", activeFirmware);
 
         final String moduleVersionComm = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM);
@@ -146,8 +146,8 @@ public class UpdateFirmware {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         assertNotNull("Device " + deviceIdentification + " not found.", device);
 
-        final Firmware activeFirmware = device.getActiveFirmware();
-        if (activeFirmware == null) {
+        final FirmwareFile activeFirmwareFile = device.getActiveFirmwareFile();
+        if (activeFirmwareFile == null) {
             /*
              * The device has no active firmware in the database, so the firmware from the settings has not been linked
              * to the device.
@@ -162,8 +162,8 @@ public class UpdateFirmware {
         assertFalse(
                 "Device " + deviceIdentification
                         + " should not have firmware versions from the scenario after an unsuccessful update.",
-                Objects.equals(moduleVersionComm, activeFirmware.getModuleVersionComm())
-                        && Objects.equals(moduleVersionMa, activeFirmware.getModuleVersionMa())
-                        && Objects.equals(moduleVersionFunc, activeFirmware.getModuleVersionFunc()));
+                Objects.equals(moduleVersionComm, activeFirmwareFile.getModuleVersionComm())
+                        && Objects.equals(moduleVersionMa, activeFirmwareFile.getModuleVersionMa())
+                        && Objects.equals(moduleVersionFunc, activeFirmwareFile.getModuleVersionFunc()));
     }
 }

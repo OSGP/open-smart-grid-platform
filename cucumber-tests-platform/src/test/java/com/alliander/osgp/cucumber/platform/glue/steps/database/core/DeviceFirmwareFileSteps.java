@@ -7,10 +7,10 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.cucumber.core.Helpers.getDateTime;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,24 +20,24 @@ import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.DeviceFirmware;
-import com.alliander.osgp.domain.core.entities.Firmware;
-import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
+import com.alliander.osgp.domain.core.entities.DeviceFirmwareFile;
+import com.alliander.osgp.domain.core.entities.FirmwareFile;
+import com.alliander.osgp.domain.core.repositories.DeviceFirmwareFileRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
+import com.alliander.osgp.domain.core.repositories.FirmwareFileRepository;
 
 import cucumber.api.java.en.Given;
 
-public class DeviceFirmwareSteps extends GlueBase {
+public class DeviceFirmwareFileSteps extends GlueBase {
 
-	@Autowired
-	private DeviceFirmwareRepository deviceFirmwareRepository;
+    @Autowired
+    private DeviceFirmwareFileRepository deviceFirmwareFileRepository;
 
     @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private FirmwareRepository firmwareRepository;
+    private FirmwareFileRepository firmwareFileRepository;
 
     /**
      * Generic method which adds a device firmware using the settings.
@@ -54,18 +54,15 @@ public class DeviceFirmwareSteps extends GlueBase {
                 getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         
         // Get the latest firmware
-        final List<Firmware> firmwares = this.firmwareRepository.findAll();
-        final Firmware firmware = firmwares.get(firmwares.size() - 1);
+        final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findAll();
+        final FirmwareFile firmwareFile = firmwareFiles.get(firmwareFiles.size() - 1);
+        final Date installationDate = getDateTime(getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE,
+                PlatformDefaults.FIRMWARE_INSTALLATION_DATE)).toDate();
+        final String installedBy = getString(settings, PlatformKeys.FIRMWARE_INSTALLED_BY,
+                PlatformDefaults.FIRMWARE_INSTALLED_BY);
+        final DeviceFirmwareFile deviceFirmwareFile = new DeviceFirmwareFile(device, firmwareFile, installationDate,
+                installedBy);
 
-        final DeviceFirmware deviceFirmware = new DeviceFirmware();
-		deviceFirmware.setInstalledBy(getString(settings, PlatformKeys.FIRMWARE_INSTALLED_BY, PlatformDefaults.FIRMWARE_INSTALLED_BY));
-		deviceFirmware.setInstallationDate(
-				getDateTime(getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE, PlatformDefaults.FIRMWARE_INSTALLATION_DATE))
-						.toDate());
-		deviceFirmware.setActive(getBoolean(settings, PlatformKeys.DEVICEFIRMWARE_ACTIVE, PlatformDefaults.DEVICE_FIRMWARE_ACTIVE));
-		deviceFirmware.setDevice(device);
-		deviceFirmware.setFirmware(firmware);
-		
-        this.deviceFirmwareRepository.save(deviceFirmware);
+        this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
     }
 }

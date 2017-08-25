@@ -18,12 +18,13 @@ import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFirmwareFileRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EanRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
-import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
+import com.alliander.osgp.domain.core.repositories.FirmwareFileFirmwareModuleRepository;
+import com.alliander.osgp.domain.core.repositories.FirmwareFileRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.RelayStatusRepository;
@@ -43,7 +44,7 @@ public class CoreDatabase {
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     @Autowired
-    private DeviceFirmwareRepository deviceFirmwareRepository;
+    private DeviceFirmwareFileRepository deviceFirmwareFileRepository;
 
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
@@ -61,7 +62,10 @@ public class CoreDatabase {
     private EventRepository eventRepository;
 
     @Autowired
-    private FirmwareRepository firmwareRepository;
+    private FirmwareFileFirmwareModuleRepository firmwareFileFirmwareModuleRepository;
+
+    @Autowired
+    private FirmwareFileRepository firmwareFileRepository;
 
     @Autowired
     private ManufacturerRepository manufacturerRepository;
@@ -103,7 +107,7 @@ public class CoreDatabase {
         }
 
         // Create default test manufacturer
-        final Manufacturer manufacturer = new Manufacturer(PlatformDefaults.DEFAULT_MANUFACTURER_ID,
+        final Manufacturer manufacturer = new Manufacturer(PlatformDefaults.DEFAULT_MANUFACTURER_CODE,
                 PlatformDefaults.DEFAULT_MANUFACTURER_NAME, false);
         this.manufacturerRepository.save(manufacturer);
 
@@ -130,13 +134,14 @@ public class CoreDatabase {
         this.scheduledTaskRepository.deleteAllInBatch();
         this.eanRepository.deleteAllEans();
         this.deviceRepository.deleteDeviceOutputSettings();
-        this.deviceFirmwareRepository.deleteAllInBatch();
+        this.deviceFirmwareFileRepository.deleteAllInBatch();
         this.eventRepository.deleteAllInBatch();
         this.smartMeterRepository.deleteAllInBatch();
         this.relayStatusRepository.deleteAllInBatch();
         this.ssldRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllInBatch();
-        this.firmwareRepository.deleteAllInBatch();
+        this.firmwareFileFirmwareModuleRepository.deleteAllInBatch();
+        this.firmwareFileRepository.deleteAllInBatch();
         this.deviceModelRepository.deleteAllInBatch();
         this.manufacturerRepository.deleteAllInBatch();
         this.organisationRepository.deleteAllInBatch();
@@ -149,13 +154,14 @@ public class CoreDatabase {
         this.scheduledTaskRepository.deleteAll();
         this.eanRepository.deleteAllEans();
         this.deviceRepository.deleteDeviceOutputSettings();
-        this.deviceFirmwareRepository.deleteAll();
+        this.deviceFirmwareFileRepository.deleteAll();
         this.eventRepository.deleteAll();
         this.smartMeterRepository.deleteAll();
         this.relayStatusRepository.deleteAll();
         this.ssldRepository.deleteAll();
         this.deviceRepository.deleteAll();
-        this.firmwareRepository.deleteAll();
+        this.firmwareFileFirmwareModuleRepository.deleteAll();
+        this.firmwareFileRepository.deleteAll();
         this.deviceModelRepository.deleteAll();
         this.manufacturerRepository.deleteAll();
         this.organisationRepository.deleteAll();

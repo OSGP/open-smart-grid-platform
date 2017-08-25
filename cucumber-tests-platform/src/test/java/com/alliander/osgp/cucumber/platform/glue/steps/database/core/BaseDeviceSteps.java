@@ -16,6 +16,7 @@ import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,8 +75,20 @@ public abstract class BaseDeviceSteps extends GlueBase {
                     getDate(settings, PlatformKeys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
         }
 
-        final DeviceModel deviceModel = this.deviceModelRepository.findByModelCode(
+        /*
+         * Model code does not uniquely identify a device model, which is why
+         * deviceModelRepository is changed to return a list of device models.
+         * In the test data that is set up, there probably is only one device
+         * model for the given model code, and just selecting the first device
+         * model returned should work.
+         *
+         * A better solution might be to add the manufacturer in the scenario
+         * data and do a lookup by manufacturer and model code, which should
+         * uniquely define the device model.
+         */
+        final List<DeviceModel> deviceModels = this.deviceModelRepository.findByModelCode(
                 getString(settings, PlatformKeys.KEY_DEVICE_MODEL, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        final DeviceModel deviceModel = deviceModels.get(0);
 
         if (settings.containsKey(PlatformKeys.DEVICEMODEL_METERED)) {
             deviceModel.updateData(PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, getBoolean(settings,

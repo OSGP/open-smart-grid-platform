@@ -59,8 +59,8 @@ public class ManufacturerSteps extends GlueBase {
         final Manufacturer entity = this.repo
                 .findByName(getString(expectedEntity, "Name", PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
 
-        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", PlatformDefaults.DEFAULT_MANUFACTURER_ID),
-                entity.getManufacturerId());
+        Assert.assertEquals(getString(expectedEntity, "ManufacturerCode", PlatformDefaults.DEFAULT_MANUFACTURER_CODE),
+                entity.getCode());
         Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX),
                 entity.isUsePrefix());
     }
