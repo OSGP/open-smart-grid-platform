@@ -1,4 +1,5 @@
 // Pipeline script for the OSGP Integration-Tests Pull Request job in Jenkins
+
 def stream = 'osgp'
 def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 //def servername = stream + '-at-pr-26'
@@ -72,7 +73,6 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
             }
         }
-
 
         stage ('Collect coverage') {
             steps {
