@@ -28,7 +28,7 @@ pipeline {
         stage('Build') {
             steps {
                 // TODO: use withMaven
-                sh "/usr/local/apache-maven/bin/mvn clean install"
+                sh "/usr/local/apache-maven/bin/mvn clean install -DskipTestJarWithDependenciesAssembly=false"
             }
         }
 
