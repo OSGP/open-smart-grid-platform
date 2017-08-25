@@ -11,49 +11,64 @@ Feature: SmartMetering Bundle - SetActivityCalendar
   Scenario: Set activity calendar on a device in a bundle request
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
-    And the bundle request contains a set activity calendar action with parameters
-      | CalendarName                | testcal1                 |
+    And an activity calendar
+      | ActivityCalendarName        | CALENDAR                 |
       | ActivatePassiveCalendarTime | FFFFFFFEFFFFFFFFFF000000 |
-    #    And the activity calendar contains a season profile
-    #      |SeasonProfileName | season01 |
-    #      |SeasonStart | FFFF0C03FFFFFFFFFF000000 |
-    #    And the season profile season01 contains a week profile
-    #      | WeekProfileName | week0016 |
-    #    And the week profile week0016 contains a day profile for monday
-    #      | DayId | 1 |
-    #      | DayScheduleCount | 1|
-    #      | StartTime_1 | 06050000 |
-    #      | ScriptSelector_1 | 1|
-    #    And the week profile week0016 contains a day profile for tuesday
-    #      | DayId | 1 |
-    #      | DayScheduleCount | 1|
-    #      | StartTime_1 | 06000000 |
-    #      | ScriptSelector_1 | 1|
-    #    And the week profile week0016 contains a day profile for wednesday
-    #      | DayId | 1 |
-    #      | DayScheduleCount | 1|
-    #      | StartTime_1 | 06000000 |
-    #      | ScriptSelector_1 | 1|
-    #    And the week profile week0016 contains a day profile for thursday
-    #      | DayId | 1 |
-    #      | DayScheduleCount | 1|
-    #      | StartTime_1 | 06000000 |
-    #      | ScriptSelector_1 | 1|
-    #    And the week profile week0016 contains a day profile for friday
-    #      | DayId | 1 |
-    #      | DayScheduleCount | 1|
-    #      | StartTime_1 | 06000000 |
-    #      | ScriptSelector_1 | 1|
-    #    And the week profile week0016 contains a day profile for saturday
-    #      | DayId | 1 |
-    #      | DayScheduleCount | 1|
-    #      | StartTime_1 | 06050000 |
-    #      | ScriptSelector_1 | 1|
-    #    And the week profile week0016 contains a day profile for sunday
-    #      | DayId | 1 |
-    #      | DayScheduleCount | 1|
-    #      | StartTime_1 | 06050000 |
-    #      | ScriptSelector_1 | 1|
+    And the activity calendar contains a season profile
+      | SeasonProfileName | SEASON01                 |
+      | SeasonStart       | FFFF0101FFFFFFFFFF000000 |
+      | WeekName          | WEEK0001                 |
+    And the activity calendar contains a week profile
+      | WeekProfileName | WEEK0001 |
+      | MondayDayId     |        0 |
+      | TuesdayDayId    |        0 |
+      | WednesdayDayId  |        0 |
+      | ThursdayDayId   |        0 |
+      | FridayDayId     |        0 |
+      | SaturdayDayId   |        0 |
+      | SundayDayId     |        0 |
+    And the activity calendar contains a week profile
+      | WeekProfileName | WEEK0002 |
+      | MondayDayId     |        1 |
+      | TuesdayDayId    |        1 |
+      | WednesdayDayId  |        1 |
+      | ThursdayDayId   |        1 |
+      | FridayDayId     |        1 |
+      | SaturdayDayId   |        0 |
+      | SundayDayId     |        0 |
+    And the activity calendar contains a week profile
+      | WeekProfileName | WEEK0003 |
+      | MondayDayId     |        2 |
+      | TuesdayDayId    |        2 |
+      | WednesdayDayId  |        2 |
+      | ThursdayDayId   |        2 |
+      | FridayDayId     |        2 |
+      | SaturdayDayId   |        0 |
+      | SundayDayId     |        0 |
+    And the activity calendar contains a day profile
+      | DayId                 |        0 |
+      | DayProfileActionCount |        1 |
+      | StartTime_1           | 00000000 |
+      | ScriptSelector_1      |        1 |
+    And the activity calendar contains a day profile
+      | DayId                 |        1 |
+      | DayProfileActionCount |        3 |
+      | StartTime_1           | 00000000 |
+      | ScriptSelector_1      |        1 |
+      | StartTime_2           | 07000000 |
+      | ScriptSelector_2      |        2 |
+      | StartTime_3           | 21000000 |
+      | ScriptSelector_3      |        1 |
+    And the activity calendar contains a day profile
+      | DayId                 |        2 |
+      | DayProfileActionCount |        3 |
+      | StartTime_1           | 00000000 |
+      | ScriptSelector_1      |        1 |
+      | StartTime_2           | 07000000 |
+      | ScriptSelector_2      |        2 |
+      | StartTime_3           | 21000000 |
+      | ScriptSelector_3      |        1 |
+    And the bundle request contains a set activity calendar action
     When the bundle request is received
     Then the bundle response should contain a set special days response with values
       | Result | OK |

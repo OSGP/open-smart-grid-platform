@@ -1,4 +1,3 @@
-@TestThis 
 @SmartMetering @Platform
 Feature: SmartMetering Bundle
   As a grid operator
@@ -21,7 +20,7 @@ Feature: SmartMetering Bundle
     And the bundle request contains a get actual meter reads action
     And the bundle request contains a get administrative status action
     And the bundle request contains a get periodic meter reads action
-    # And the bundle request contains a set activity calendar action
+    And the bundle request contains a set activity calendar action
     And the bundle request contains a get configuration object action
     And the bundle request contains a set alarm notifications action
     And the bundle request contains a set configuration object action

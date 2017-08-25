@@ -29,7 +29,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsRespo
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAllAttributeValuesRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAllAttributeValuesResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAssociationLnObjectsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse;
@@ -40,6 +39,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterRe
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetClockConfigurationRequest;
@@ -66,13 +66,14 @@ public class BundleSteps extends BaseBundleSteps {
         REQUEST_RESPONSE_MAP.put(FindEventsRequest.class, FindEventsResponse.class);
         REQUEST_RESPONSE_MAP.put(GetActualMeterReadsRequest.class, ActualMeterReadsResponse.class);
         REQUEST_RESPONSE_MAP.put(GetAdministrativeStatusRequest.class, AdministrativeStatusResponse.class);
-        REQUEST_RESPONSE_MAP.put(GetAllAttributeValuesRequest.class, GetAllAttributeValuesResponse.class);
+        REQUEST_RESPONSE_MAP.put(GetAllAttributeValuesRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(GetAssociationLnObjectsRequest.class, AssociationLnObjectsResponse.class);
         REQUEST_RESPONSE_MAP.put(GetConfigurationObjectRequest.class, GetConfigurationObjectResponse.class);
         REQUEST_RESPONSE_MAP.put(GetPeriodicMeterReadsRequest.class, PeriodicMeterReadsResponse.class);
         REQUEST_RESPONSE_MAP.put(GetProfileGenericDataRequest.class, ProfileGenericDataResponse.class);
         REQUEST_RESPONSE_MAP.put(GetSpecificAttributeValueRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterResponse.class);
+        REQUEST_RESPONSE_MAP.put(SetActivityCalendarRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(SetAdministrativeStatusRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(SetAlarmNotificationsRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(SetClockConfigurationRequest.class, ActionResponse.class);

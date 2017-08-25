@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAllAttributeValuesRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAllAttributeValuesResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
@@ -35,7 +35,7 @@ public class BundledGetAllAttributeValuesSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof GetAllAttributeValuesResponse);
+        assertTrue("Not a valid response", response instanceof ActionResponse);
 
     }
 
@@ -45,7 +45,7 @@ public class BundledGetAllAttributeValuesSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof GetAllAttributeValuesResponse);
+        assertTrue("Not a valid response", response instanceof ActionResponse);
         assertEquals("Result is not as expected.", values.get(PlatformSmartmeteringKeys.RESULT),
                 response.getResult().name());
         assertTrue("Result contains no data.", StringUtils.isNotBlank(response.getResultString()));
