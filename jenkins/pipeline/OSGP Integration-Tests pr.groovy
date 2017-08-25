@@ -61,7 +61,7 @@ pipeline {
 
 EXTRACTED_TAGS=`echo $ghprbPullLongDescription | grep -o \'\\[@.*\\]\' | sed \'s/\\[/ /g\' | sed \'s/\\]//g\' | sed \':a;N;$!ba;s/\\n/ /g\' | sed \'s/ / --tags /g\'`
 
-echo CUCUMBER_TAGS=$EXTRACTED_TAGS > "${WORKSPACE}/cucumber-tags"
+echo $EXTRACTED_TAGS > "${WORKSPACE}/cucumber-tags"
 
 echo Found cucumber tags: [$EXTRACTED_TAGS]'''
 
