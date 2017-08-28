@@ -46,7 +46,7 @@ pipeline {
                 //	sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 //} // withMaven will discover the generated Maven artifacts, JUnit Surefire & FailSafe reports and FindBugs reports
                 
-                sh "/usr/local/apache-maven/bin/mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
             }
         }
 
