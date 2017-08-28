@@ -53,17 +53,17 @@ pipeline {
                 //	sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 //} // withMaven will discover the generated Maven artifacts, JUnit Surefire & FailSafe reports and FindBugs reports
                 
-                //sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 
-                rtMaven.run pom: 'pom.xml', goals: 'clean install -DskipTestJarWithDependenciesAssembly=false', buildInfo: buildInfo
+                // rtMaven.run pom: 'pom.xml', goals: 'clean install -DskipTestJarWithDependenciesAssembly=false', buildInfo: buildInfo
             }
         }
         
-        stage ('Publish build info') {
-        	steps { 
-				server.publishBuildInfo buildInfo
-        	} 
-        }
+        //stage ('Publish build info') {
+        //	steps { 
+		//		server.publishBuildInfo buildInfo
+        //	} 
+        //}
 
         stage ('Deploy AWS system') {
             steps {
