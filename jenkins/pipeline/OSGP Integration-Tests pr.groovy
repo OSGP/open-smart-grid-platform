@@ -36,7 +36,7 @@ pipeline {
         
         stage ('Artifactory configuration') {
             steps {
-				rtMaven.tool = MAVEN_TOOL // Tool name from Jenkins configuration
+				rtMaven.tool = 'Apache Maven 3.5.0' // Tool name from Jenkins configuration
 				rtMaven.deployer releaseRepo:'osgp-release-local', snapshotRepo:'osgp-snapshot-local', server: server
 				rtMaven.resolver releaseRepo:'osgp-release', snapshotRepo:'osgp-snapshot', server: server
 				def buildInfo = Artifactory.newBuildInfo()
