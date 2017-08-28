@@ -9,6 +9,10 @@ def repo = 'git@github.com:SmartSocietyServices/Integration-Tests.git'
 
 def server = Artifactory.server 'OSGP Artifactory Server'
 def rtMaven = Artifactory.newMavenBuild()
+rtMaven.tool = 'Apache Maven 3.5.0' // Tool name from Jenkins configuration
+rtMaven.deployer releaseRepo:'osgp-release-local', snapshotRepo:'osgp-snapshot-local', server: server
+rtMaven.resolver releaseRepo:'osgp-release', snapshotRepo:'osgp-snapshot', server: server
+def buildInfo = Artifactory.newBuildInfo()
 
 pipeline {
     agent any
@@ -34,15 +38,6 @@ pipeline {
             }
         }
         
-        stage ('Artifactory configuration') {
-            steps {
-				rtMaven.tool = 'Apache Maven 3.5.0' // Tool name from Jenkins configuration
-				rtMaven.deployer releaseRepo:'osgp-release-local', snapshotRepo:'osgp-snapshot-local', server: server
-				rtMaven.resolver releaseRepo:'osgp-release', snapshotRepo:'osgp-snapshot', server: server
-				def buildInfo = Artifactory.newBuildInfo()
-			}
-		}
-
         stage ('Build') {
             steps {
                 // TODO: use withMaven
