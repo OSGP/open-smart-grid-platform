@@ -7,6 +7,9 @@ def playbook = stream + '-at.yml'
 def extravars = 'ec2_instance_type=t2.large'
 def repo = 'git@github.com:SmartSocietyServices/Integration-Tests.git'
 
+def server = Artifactory.server 'OSGP Artifactory Server'
+def rtMaven = Artifactory.newMavenBuild()
+
 pipeline {
     agent any
     options {
@@ -30,6 +33,15 @@ pipeline {
                 step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
             }
         }
+        
+        stage 'Artifactory configuration' {
+            steps {
+				rtMaven.tool = MAVEN_TOOL // Tool name from Jenkins configuration
+				rtMaven.deployer releaseRepo:'osgp-release-local', snapshotRepo:'osgp-snapshot-local', server: server
+				rtMaven.resolver releaseRepo:'osgp-release', snapshotRepo:'osgp-snapshot', server: server
+				def buildInfo = Artifactory.newBuildInfo()
+			}
+		}
 
         stage ('Build') {
             steps {
@@ -46,8 +58,16 @@ pipeline {
                 //	sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 //} // withMaven will discover the generated Maven artifacts, JUnit Surefire & FailSafe reports and FindBugs reports
                 
-                sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                //sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                
+                rtMaven.run pom: 'pom.xml', goals: 'clean install -DskipTestJarWithDependenciesAssembly=false', buildInfo: buildInfo
             }
+        }
+        
+        stage 'Publish build info' {
+        	steps { 
+				server.publishBuildInfo buildInfo
+        	} 
         }
 
         stage ('Deploy AWS system') {
