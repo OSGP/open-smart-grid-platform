@@ -34,7 +34,7 @@ pipeline {
             }
         }
         
-        stage 'Artifactory configuration' {
+        stage ('Artifactory configuration') {
             steps {
 				rtMaven.tool = MAVEN_TOOL // Tool name from Jenkins configuration
 				rtMaven.deployer releaseRepo:'osgp-release-local', snapshotRepo:'osgp-snapshot-local', server: server
@@ -64,7 +64,7 @@ pipeline {
             }
         }
         
-        stage 'Publish build info' {
+        stage ('Publish build info') {
         	steps { 
 				server.publishBuildInfo buildInfo
         	} 
