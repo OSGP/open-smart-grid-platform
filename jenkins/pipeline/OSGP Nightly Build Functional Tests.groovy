@@ -5,6 +5,7 @@ def servername = stream + '-at-' + env.BUILD_NUMBER
 //def servername = stream + '-at-26'
 def playbook = stream + '-at.yml'
 def extravars = 'ec2_instance_type=t2.large'
+def repo = 'git@github.com:OSGP/Integration-Tests.git'
 
 pipeline {
     agent any
@@ -14,21 +15,25 @@ pipeline {
         // Only keep the 10 most recent builds
         buildDiscarder(logRotator(numToKeepStr:'10'))
     }
+
     stages {
         stage('Git') {
             steps {
                 // Cleanup workspace
                 deleteDir()
 
-                git branch: 'development', credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f', url: 'git@github.com:OSGP/Integration-Tests.git'
+                git branch: 'development', credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f', url: repo
                 sh 'git submodule update --init --recursive --remote'
             }
         }
 
         stage('Build') {
             steps {
-                // TODO: use withMaven
-                sh "/usr/local/apache-maven/bin/mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                withMaven(
+                        maven: 'Apache Maven 3.5.0',
+                        mavenLocalRepo: '.repository') {
+                    sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                }
             }
         }
 
@@ -50,8 +55,11 @@ pipeline {
 
         stage ('Collect coverage') {
             steps {
-                // TODO: use withMaven
-                sh "/usr/local/apache-maven/bin/mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
+                withMaven(
+                        maven: 'Apache Maven 3.5.0',
+                        mavenLocalRepo: '.repository') {
+                    sh "mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
+                }
             }
         }
 
