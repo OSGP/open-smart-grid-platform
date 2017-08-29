@@ -11,7 +11,6 @@ import java.io.IOException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
@@ -71,45 +70,26 @@ public class SetClockConfigurationCommandExecutor
     public Void execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SetClockConfigurationRequestDto object) throws ProtocolAdapterException {
 
-        try {
-            this.dlmsLogWrite(conn, ATTRIBUTE_TIME_ZONE);
-            this.writeAttribute(conn,
-                    new SetParameter(ATTRIBUTE_TIME_ZONE, DataObject.newInteger16Data(object.getTimeZoneOffset())),
-                    "Timezone");
+        this.dlmsLogWrite(conn, ATTRIBUTE_TIME_ZONE);
+        this.writeAttribute(conn,
+                new SetParameter(ATTRIBUTE_TIME_ZONE, DataObject.newInteger16Data(object.getTimeZoneOffset())),
+                "Timezone");
 
-            final CosemDateTime daylightSavingsBegin = this.configurationMapper.map(object.getDaylightSavingsBegin(),
-                    CosemDateTime.class);
-            this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN);
-            this.writeAttribute(conn, new SetParameter(ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN,
-                    DataObject.newOctetStringData(daylightSavingsBegin.encode())), "Daylight savings begin");
+        final CosemDateTime daylightSavingsBegin = this.configurationMapper.map(object.getDaylightSavingsBegin(),
+                CosemDateTime.class);
+        this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN);
+        this.writeAttribute(conn, new SetParameter(ATTRIBUTE_DAYLIGHT_SAVINGS_BEGIN,
+                DataObject.newOctetStringData(daylightSavingsBegin.encode())), "Daylight savings begin");
 
-            final CosemDateTime daylightSavingsEnd = this.configurationMapper.map(object.getDaylightSavingsEnd(),
-                    CosemDateTime.class);
-            this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_END);
-            this.writeAttribute(conn, new SetParameter(ATTRIBUTE_DAYLIGHT_SAVINGS_END,
-                    DataObject.newOctetStringData(daylightSavingsEnd.encode())), "Daylight savinds end");
+        final CosemDateTime daylightSavingsEnd = this.configurationMapper.map(object.getDaylightSavingsEnd(),
+                CosemDateTime.class);
+        this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_END);
+        this.writeAttribute(conn, new SetParameter(ATTRIBUTE_DAYLIGHT_SAVINGS_END,
+                DataObject.newOctetStringData(daylightSavingsEnd.encode())), "Daylight savinds end");
 
-            /*
-             * Read value, if it's the same don't try to set it, to avoid
-             * READ_WRITE access error because this attribute is read-only in
-             * DSMR.
-             */
-            final GetResult dstDeviationResult = conn.getConnection().get(ATTRIBUTE_DAYLIGHT_SAVINGS_DEVIATION);
-            final byte currentDstDeviation = (byte) dstDeviationResult.getResultData().getValue();
-            if (currentDstDeviation != object.getDaylightSavingsDeviation()) {
-                this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_DEVIATION);
-                this.writeAttribute(conn,
-                        new SetParameter(ATTRIBUTE_DAYLIGHT_SAVINGS_DEVIATION,
-                                DataObject.newInteger8Data(object.getDaylightSavingsDeviation())),
-                        "Daylight savings deviation");
-            }
-
-            this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED);
-            this.writeAttribute(conn, new SetParameter(ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED,
-                    DataObject.newBoolData(object.isDaylightSavingsEnabled())), "Daylight savings enabled");
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
+        this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED);
+        this.writeAttribute(conn, new SetParameter(ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED,
+                DataObject.newBoolData(object.isDaylightSavingsEnabled())), "Daylight savings enabled");
         return null;
     }
 
