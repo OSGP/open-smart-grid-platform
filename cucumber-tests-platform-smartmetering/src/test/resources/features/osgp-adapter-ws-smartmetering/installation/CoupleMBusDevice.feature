@@ -1,7 +1,7 @@
 @SmartMetering @Platform
-Feature: SmartMetering Installation - Couple MBus Device
+Feature: SmartMetering Installation - Couple M-Bus Device
   As a grid operator
-  I want to be able to couple an MBus device to a smart meter
+  I want to be able to couple an M-Bus device to a smart meter
 
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985

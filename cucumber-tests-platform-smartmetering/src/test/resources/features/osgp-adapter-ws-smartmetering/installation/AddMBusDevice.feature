@@ -1,7 +1,7 @@
 @SmartMetering @Platform
-Feature: SmartMetering Installation - Add MBus device
+Feature: SmartMetering Installation - Add M-Bus device
   As a grid operator
-  I want to be able to add a new MBus device
+  I want to be able to add a new M-Bus device
 
   Scenario: Add a new gas device
     When receiving a smartmetering add device request
@@ -13,7 +13,7 @@ Feature: SmartMetering Installation - Add MBus device
       | MbusVersion                    |               066 |
       | MbusDeviceTypeIdentification   |                03 |
       | DSMR_version                   | 4.2.2             |
-    Then the get add device response should be returned
+    Then the add device response should be returned
       | DeviceIdentification | TEST1024G00000001 |
       | Result               | OK                |
     And the dlms device with identification "TEST1024G00000001" exists

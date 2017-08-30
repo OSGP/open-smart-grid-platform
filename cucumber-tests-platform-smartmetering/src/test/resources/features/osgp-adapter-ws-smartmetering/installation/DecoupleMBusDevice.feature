@@ -1,7 +1,7 @@
 @SmartMetering @Platform
-Feature: SmartMetering Installation - Decouple MBus Device
+Feature: SmartMetering Installation - Decouple M-Bus Device
   As a grid operator
-  I want to be able to decouple an MBus device from a smart meter
+  I want to be able to decouple an M-Bus device from a smart meter
 
   Scenario: DeCouple G-meter from E-meter
     Given a dlms device

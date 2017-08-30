@@ -95,8 +95,10 @@ public class DlmsDeviceSteps {
 
     @Given("^all mbus channels are occupied for E-meter \"([^\"]*)\"$")
     public void allMBusChannelsAreOccupiedForEMeter(final String eMeter) throws Throwable {
-        // A smart meter has 4 mbus channels available,
-        // so make sure that each channel a mbus device is created
+        /**
+         * A smart meter has 4 M-Bus channels available, so make sure that for
+         * each channel an M-Bus device is created
+         */
         for (int index = 1; index <= 4; index++) {
             final Map<String, String> inputSettings = new HashMap<>();
             inputSettings.put(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION, "TESTG10240000002" + index);
@@ -160,8 +162,9 @@ public class DlmsDeviceSteps {
         final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
 
         /*
-         * If the new keys are stored, the device should have some no longer valid keys. There should be 1 master key
-         * and more than one authentication and encryption keys.
+         * If the new keys are stored, the device should have some no longer
+         * valid keys. There should be 1 master key and more than one
+         * authentication and encryption keys.
          */
         int numberOfMasterKeys = 0;
         int numberOfAuthenticationKeys = 0;
@@ -169,17 +172,17 @@ public class DlmsDeviceSteps {
 
         for (final SecurityKey securityKey : securityKeys) {
             switch (securityKey.getSecurityKeyType()) {
-                case E_METER_MASTER:
-                    numberOfMasterKeys += 1;
-                    break;
-                case E_METER_AUTHENTICATION:
-                    numberOfAuthenticationKeys += 1;
-                    break;
-                case E_METER_ENCRYPTION:
-                    numberOfEncryptionKeys += 1;
-                    break;
-                default:
-                    // other keys are not counted
+            case E_METER_MASTER:
+                numberOfMasterKeys += 1;
+                break;
+            case E_METER_AUTHENTICATION:
+                numberOfAuthenticationKeys += 1;
+                break;
+            case E_METER_ENCRYPTION:
+                numberOfEncryptionKeys += 1;
+                break;
+            default:
+                // other keys are not counted
             }
         }
 
@@ -202,8 +205,9 @@ public class DlmsDeviceSteps {
         final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
 
         /*
-         * If the keys are not changed, the device should only have valid keys. There should be 1 master key and one
-         * authentication and encryption key.
+         * If the keys are not changed, the device should only have valid keys.
+         * There should be 1 master key and one authentication and encryption
+         * key.
          */
         int numberOfMasterKeys = 0;
         int numberOfAuthenticationKeys = 0;
@@ -211,17 +215,17 @@ public class DlmsDeviceSteps {
 
         for (final SecurityKey securityKey : securityKeys) {
             switch (securityKey.getSecurityKeyType()) {
-                case E_METER_MASTER:
-                    numberOfMasterKeys += 1;
-                    break;
-                case E_METER_AUTHENTICATION:
-                    numberOfAuthenticationKeys += 1;
-                    break;
-                case E_METER_ENCRYPTION:
-                    numberOfEncryptionKeys += 1;
-                    break;
-                default:
-                    // other keys are not counted
+            case E_METER_MASTER:
+                numberOfMasterKeys += 1;
+                break;
+            case E_METER_AUTHENTICATION:
+                numberOfAuthenticationKeys += 1;
+                break;
+            case E_METER_ENCRYPTION:
+                numberOfEncryptionKeys += 1;
+                break;
+            default:
+                // other keys are not counted
             }
             assertNull("security key " + securityKey.getSecurityKeyType() + " valid to date", securityKey.getValidTo());
         }
@@ -345,8 +349,8 @@ public class DlmsDeviceSteps {
     }
 
     /**
-     * ProtocolInfo is fixed system data, inserted by flyway. Therefore the ProtocolInfo instance will be retrieved from
-     * the database, and not built.
+     * ProtocolInfo is fixed system data, inserted by flyway. Therefore the
+     * ProtocolInfo instance will be retrieved from the database, and not built.
      *
      * @param inputSettings
      * @return ProtocolInfo
@@ -366,12 +370,15 @@ public class DlmsDeviceSteps {
     private DeviceModel getDeviceModel(final Map<String, String> inputSettings) {
         if (inputSettings.containsKey(PlatformKeys.KEY_DEVICE_MODEL)) {
             /*
-             * Model code does not uniquely identify a device model, which is why deviceModelRepository is changed to
-             * return a list of device models. In the test data that is set up, there probably is only one device model
-             * for the given model code, and just selecting the first device model returned should work.
+             * Model code does not uniquely identify a device model, which is
+             * why deviceModelRepository is changed to return a list of device
+             * models. In the test data that is set up, there probably is only
+             * one device model for the given model code, and just selecting the
+             * first device model returned should work.
              *
-             * A better solution might be to add the manufacturer in the scenario data and do a lookup by manufacturer
-             * and model code, which should uniquely define the device model.
+             * A better solution might be to add the manufacturer in the
+             * scenario data and do a lookup by manufacturer and model code,
+             * which should uniquely define the device model.
              */
             final List<DeviceModel> deviceModels = this.deviceModelRepository
                     .findByModelCode(inputSettings.get(PlatformKeys.KEY_DEVICE_MODEL));
