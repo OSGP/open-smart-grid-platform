@@ -1,7 +1,7 @@
 @SmartMetering @Platform
 Feature: SmartMetering Bundle - GetAllAttributeValuesAction
   As a grid operator 
-  I want to get all attribute values from a meter
+  I want to get all attribute values from a meter via a bundle request
 
   Background: 
     Given a dlms device

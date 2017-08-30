@@ -13,10 +13,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetConfigurationObjectRequestBuilder;
 
@@ -27,25 +25,20 @@ public class BundledSetConfigurationObjectSteps extends BaseBundleSteps {
 
     @Given("^the bundle request contains a set configuration object action$")
     public void theBundleRequestContainsASetConfigurationObjectAction() throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         final SetConfigurationObjectRequest action = new SetConfigurationObjectRequestBuilder().withDefaults().build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Given("^the bundle request contains a set configuration object action with parameters$")
     public void theBundleRequestContainsASetConfigurationObjectAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final SetConfigurationObjectRequest action = new SetConfigurationObjectRequestBuilder()
                 .fromParameterMap(parameters).build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a set configuration object response$")

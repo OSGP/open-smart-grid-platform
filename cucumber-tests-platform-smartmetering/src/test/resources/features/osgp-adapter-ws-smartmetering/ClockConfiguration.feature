@@ -1,4 +1,3 @@
-# @TestThis
 @SmartMetering @Platform
 Feature: SmartMetering Clock configuration
   As a grid operator

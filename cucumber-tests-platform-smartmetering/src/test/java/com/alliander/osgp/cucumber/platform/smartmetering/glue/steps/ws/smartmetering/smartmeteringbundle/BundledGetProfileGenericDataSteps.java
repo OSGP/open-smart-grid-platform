@@ -14,16 +14,13 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericData;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
-import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.builders.GetProfileGenericDataRequestBuilder;
 
 import cucumber.api.java.en.Given;
@@ -35,13 +32,10 @@ public class BundledGetProfileGenericDataSteps extends BaseBundleSteps {
     public void theBundleRequestContainsAGetProfileGenericDataAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final GetProfileGenericDataRequest action = new GetProfileGenericDataRequestBuilder()
                 .fromParameterMap(parameters).build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a profile generic data response with values$")

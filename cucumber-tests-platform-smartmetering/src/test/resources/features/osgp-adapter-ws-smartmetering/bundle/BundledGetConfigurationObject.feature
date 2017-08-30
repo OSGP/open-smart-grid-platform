@@ -1,7 +1,7 @@
 @SmartMetering @Platform
 Feature: SmartMetering Bundle - GetConfigurationObject
   As a grid operator 
-  I want to retrieve the events from a meter
+  I want to retrieve the configuration object from a meter via a bundle request
 
   Background: 
     Given a dlms device

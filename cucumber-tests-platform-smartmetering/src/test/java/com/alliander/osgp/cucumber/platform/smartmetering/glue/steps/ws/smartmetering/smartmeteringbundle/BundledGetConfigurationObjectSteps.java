@@ -13,14 +13,11 @@ import java.util.Map;
 
 import org.junit.Assert;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationObject;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -30,12 +27,9 @@ public class BundledGetConfigurationObjectSteps extends BaseBundleSteps {
     @Given("^the bundle request contains a get configuration object action$")
     public void theBundleRequestContainsAGetConfigurationObject() throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final GetConfigurationObjectRequest action = new GetConfigurationObjectRequest();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a get configuration object response$")

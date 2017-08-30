@@ -1,7 +1,7 @@
 @SmartMetering @Platform
 Feature: SmartMetering Bundle - SetActivityCalendar
   As a grid operator 
-  I want to be able to set activity calendsar on a meter via a bundle request
+  I want to be able to set activity calendar on a meter via a bundle request
 
   Background: 
     Given a dlms device

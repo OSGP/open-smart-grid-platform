@@ -1,4 +1,4 @@
-@SmartMetering @Platform 
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - SetSpecialDays
   As a grid operator 
   I want to be able to set special days on a meter via a bundle request
@@ -17,4 +17,4 @@ Feature: SmartMetering Bundle - SetSpecialDays
       | SpecialDayDate_1 | FFFFFFFFFF |
     When the bundle request is received
     Then the bundle response should contain a set special days response with values
-      | Result               | OK                |
+      | Result | OK |

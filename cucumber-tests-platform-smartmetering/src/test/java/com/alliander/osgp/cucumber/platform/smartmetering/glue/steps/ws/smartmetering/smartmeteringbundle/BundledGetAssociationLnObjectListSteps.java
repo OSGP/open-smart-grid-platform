@@ -12,13 +12,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AssociationLnObjectsResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAssociationLnObjectsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 import cucumber.api.java.en.Given;
@@ -29,12 +27,9 @@ public class BundledGetAssociationLnObjectListSteps extends BaseBundleSteps {
     @Given("^the bundle request contains a get association ln objects action$")
     public void theBundleRequestContainsAGetAssociationLnObjectsAction() throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final GetAssociationLnObjectsRequest action = new GetAssociationLnObjectsRequest();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a get association ln objects response$")

@@ -16,11 +16,9 @@ import java.time.zone.ZoneRules;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SynchronizeTimeRequestDataFactory;
 
@@ -40,19 +38,14 @@ public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
     @Given("^the bundle request contains a synchronize time action with parameters$")
     public void theBundleRequestContainsASynchronizeTimeAction(final Map<String, String> settings) throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final SynchronizeTimeRequest action = this.mapperFacade
                 .map(SynchronizeTimeRequestDataFactory.fromParameterMap(settings), SynchronizeTimeRequest.class);
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Given("^the bundle request contains a valid synchronize time action for timezone \"([^\"]*)\"")
     public void theBundleRequestContainsAValidSynchronizeTimeAction(final String timeZoneId) throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         final SynchronizeTimeRequest action = new SynchronizeTimeRequest();
 
@@ -66,7 +59,7 @@ public class BundledSynchronizeTimeSteps extends BaseBundleSteps {
         action.setDeviation(offset);
         action.setDst(dst);
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a synchronize time response$")

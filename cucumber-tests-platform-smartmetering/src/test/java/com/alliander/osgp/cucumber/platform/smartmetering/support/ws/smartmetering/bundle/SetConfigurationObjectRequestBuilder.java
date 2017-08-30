@@ -11,20 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationFlag;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationFlagType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationObject;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GprsOperationModeType;
+import com.alliander.osgp.cucumber.platform.core.Helpers;
+import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetConfigurationObjectRequestBuilder {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectRequestBuilder.class);
 
     private static final GprsOperationModeType DEFAULT_GPRS_OPERATION_MODE_TYPE = GprsOperationModeType.ALWAYS_ON;
     private static final int DEFAULT_CONFIGURATION_FLAG_COUNT = 1;
@@ -63,20 +60,13 @@ public class SetConfigurationObjectRequestBuilder {
     }
 
     private GprsOperationModeType getGprsOperationModeType(final Map<String, String> parameters) {
-        if (parameters.containsKey(PlatformSmartmeteringKeys.GPRS_OPERATION_MODE_TYPE)) {
-            return GprsOperationModeType.fromValue(parameters.get(PlatformSmartmeteringKeys.GPRS_OPERATION_MODE_TYPE));
-        }
-        LOGGER.debug("Key for GPRS Operation Mode Type not found, using default value");
-        return DEFAULT_GPRS_OPERATION_MODE_TYPE;
+        return Helpers.getEnum(parameters, PlatformSmartmeteringKeys.GPRS_OPERATION_MODE_TYPE,
+                GprsOperationModeType.class, DEFAULT_GPRS_OPERATION_MODE_TYPE);
     }
 
     private int getConfigurationFlagCount(final Map<String, String> parameters) {
-        if (parameters.containsKey(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_COUNT)) {
-            return Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_COUNT));
-        }
-
-        return DEFAULT_CONFIGURATION_FLAG_COUNT;
-
+        return Helpers.getInteger(parameters, PlatformSmartmeteringKeys.CONFIGURATION_FLAG_COUNT,
+                DEFAULT_CONFIGURATION_FLAG_COUNT);
     }
 
     private ConfigurationFlag getDefaultConfigurationFlag() {
@@ -94,20 +84,13 @@ public class SetConfigurationObjectRequestBuilder {
     }
 
     private ConfigurationFlagType getConfigurationFlagType(final Map<String, String> parameters, final int index) {
-        final String key = PlatformSmartmeteringKeys.CONFIGURATION_FLAG_TYPE + "_" + index;
-        if (parameters.containsKey(key)) {
-            return ConfigurationFlagType.fromValue(parameters.get(key));
-        }
-        return DEFAULT_CONFIGURATION_FLAG_TYPE;
+        final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_TYPE, index);
+        return Helpers.getEnum(parameters, key, ConfigurationFlagType.class, DEFAULT_CONFIGURATION_FLAG_TYPE);
     }
 
     private boolean getConfigurationFlagEnabled(final Map<String, String> parameters, final int index) {
-        final String key = PlatformSmartmeteringKeys.CONFIGURATION_FLAG_ENABLED + "_" + index;
-        if (parameters.containsKey(key)) {
-            return Boolean.parseBoolean(parameters.get(key));
-        }
-        return DEFAULT_CONFIGURATION_FLAG_ENABLED;
-
+        final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_ENABLED, index);
+        return Helpers.getBoolean(parameters, key, DEFAULT_CONFIGURATION_FLAG_ENABLED);
     }
 
 }

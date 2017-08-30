@@ -8,6 +8,7 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,21 +16,20 @@ import javax.xml.bind.DatatypeConverter;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDay;
+import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
+import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetSpecialDaysRequestBuilder {
 
     private static final int DEFAULT_SPECIAL_DAY_COUNT = 1;
     private static final int DEFAULT_SPECIAL_DAY_ID = 1;
-    private static final byte[] DEFAULT_SPECIAL_DAY_DATE = new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-            (byte) 0xFF, (byte) 0xFF };
+    private static final String DEFAULT_SPECIAL_DAY_DATE = "FFFFFFFFFF";
 
     private List<SpecialDay> specialDays = new ArrayList<>();
 
     public SetSpecialDaysRequestBuilder withDefaults() {
-        this.specialDays = new ArrayList<>();
-        this.specialDays.add(this.getDefaultSpecialDay());
-        return this;
+        return this.fromParameterMap(Collections.emptyMap());
     }
 
     public SetSpecialDaysRequestBuilder fromParameterMap(final Map<String, String> parameters) {
@@ -48,18 +48,7 @@ public class SetSpecialDaysRequestBuilder {
     }
 
     private int getSpecialDayCount(final Map<String, String> parameters) {
-        if (parameters.containsKey(PlatformSmartmeteringKeys.SPECIAL_DAY_COUNT)) {
-            return Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.SPECIAL_DAY_COUNT));
-        }
-        return DEFAULT_SPECIAL_DAY_COUNT;
-
-    }
-
-    private SpecialDay getDefaultSpecialDay() {
-        final SpecialDay specialDay = new SpecialDay();
-        specialDay.setDayId(DEFAULT_SPECIAL_DAY_ID);
-        specialDay.setSpecialDayDate(DEFAULT_SPECIAL_DAY_DATE);
-        return specialDay;
+        return Helpers.getInteger(parameters, PlatformSmartmeteringKeys.SPECIAL_DAY_COUNT, DEFAULT_SPECIAL_DAY_COUNT);
     }
 
     private SpecialDay getSpecialDay(final Map<String, String> parameters, final int index) {
@@ -70,20 +59,14 @@ public class SetSpecialDaysRequestBuilder {
     }
 
     private int getSpecialDayId(final Map<String, String> parameters, final int index) {
-        final String key = PlatformSmartmeteringKeys.SPECIAL_DAY_ID + "_" + index;
-        if (parameters.containsKey(key)) {
-            return Integer.parseInt(parameters.get(key));
-        }
-        return DEFAULT_SPECIAL_DAY_ID;
+        final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.SPECIAL_DAY_ID, index);
+        return Helpers.getInteger(parameters, key, DEFAULT_SPECIAL_DAY_ID);
     }
 
     private byte[] getSpecialDayDate(final Map<String, String> parameters, final int index) {
-        final String key = PlatformSmartmeteringKeys.SPECIAL_DAY_DATE + "_" + index;
-        if (parameters.containsKey(key)) {
-            return DatatypeConverter.parseHexBinary(parameters.get(key));
-        }
-        return DEFAULT_SPECIAL_DAY_DATE;
-
+        final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.SPECIAL_DAY_DATE, index);
+        final String value = Helpers.getString(parameters, key, DEFAULT_SPECIAL_DAY_DATE);
+        return DatatypeConverter.parseHexBinary(value);
     }
 
 }

@@ -1,5 +1,5 @@
 @SmartMetering @Platform
-Feature: SmartMetering - Bundle - ReadAlarmRegister
+Feature: SmartMetering Bundle - ReadAlarmRegister
   As a grid operator 
   I want to be able to read the alarm register from a meter via a bundle request
 

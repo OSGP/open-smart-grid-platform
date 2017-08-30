@@ -12,13 +12,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.GetSpecificAttributeValueRequestBuilder;
 
@@ -30,26 +28,20 @@ public class BundledGetSpecificAttributeValueSteps extends BaseBundleSteps {
     @Given("^the bundle request contains a get specific attribute value action$")
     public void theBundleRequestContainsAGetSpecificAttributeValueAction() throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final GetSpecificAttributeValueRequest action = new GetSpecificAttributeValueRequestBuilder().withDefaults()
                 .build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Given("^the bundle request contains a get specific attribute value action with parameters$")
     public void theBundleRequestContainsAGetSpecificAttributeValueAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final GetSpecificAttributeValueRequest action = new GetSpecificAttributeValueRequestBuilder()
                 .fromParameterMap(parameters).build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a get specific attribute value response$")

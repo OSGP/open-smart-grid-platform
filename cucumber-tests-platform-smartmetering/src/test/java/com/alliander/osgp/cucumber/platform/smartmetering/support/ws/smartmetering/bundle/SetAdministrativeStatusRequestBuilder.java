@@ -7,10 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import java.util.Collections;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType;
+import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetAdministrativeStatusRequestBuilder {
@@ -20,8 +22,7 @@ public class SetAdministrativeStatusRequestBuilder {
     private AdministrativeStatusType statusType;
 
     public SetAdministrativeStatusRequestBuilder withDefaults() {
-        this.statusType = DEFAULT_STATUS_TYPE;
-        return this;
+        return this.fromParameterMap(Collections.emptyMap());
     }
 
     public SetAdministrativeStatusRequestBuilder fromParameterMap(final Map<String, String> parameters) {
@@ -36,10 +37,7 @@ public class SetAdministrativeStatusRequestBuilder {
     }
 
     private AdministrativeStatusType getAdministrativeStatusType(final Map<String, String> parameters) {
-        if (parameters.containsKey(PlatformSmartmeteringKeys.ADMINISTRATIVE_STATUS_TYPE)) {
-            return AdministrativeStatusType
-                    .fromValue(parameters.get(PlatformSmartmeteringKeys.ADMINISTRATIVE_STATUS_TYPE));
-        }
-        return DEFAULT_STATUS_TYPE;
+        return Helpers.getEnum(parameters, PlatformSmartmeteringKeys.ADMINISTRATIVE_STATUS_TYPE,
+                AdministrativeStatusType.class, DEFAULT_STATUS_TYPE);
     }
 }

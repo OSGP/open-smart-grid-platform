@@ -1,7 +1,7 @@
 @SmartMetering @Platform
 Feature: SmartMetering Bundle - SetConfigurationObject
   As a grid operator 
-  I want to be able to set configuration on a meter via a bundle request
+  I want to be able to set configuration object on a meter via a bundle request
 
   Background: 
     Given a dlms device

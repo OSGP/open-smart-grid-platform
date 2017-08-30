@@ -15,4 +15,3 @@ Feature: SmartMetering Bundle - GetAdministrativeStatus
     When the bundle request is received
     Then the bundle response should contain a get administrative status response with values
       | Result | OK |
-    

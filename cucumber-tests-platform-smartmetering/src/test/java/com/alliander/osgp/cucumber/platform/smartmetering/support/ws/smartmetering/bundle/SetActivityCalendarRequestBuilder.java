@@ -31,12 +31,12 @@ public class SetActivityCalendarRequestBuilder {
             "FFFFFFFEFFFFFFFFFF000000");
 
     static {
-        final SeasonProfile sseasonProfile = new SeasonProfile("SEASON01", "FFFF0101FFFFFFFFFF000000", "WEEK0001");
+        final SeasonProfile seasonProfile = new SeasonProfile("SEASON01", "FFFF0101FFFFFFFFFF000000", "WEEK0001");
         final WeekProfile weekProfile = new WeekProfile("WEEK0001", 0, 0, 0, 0, 0, 0, 0);
-        final DayProfileAction dayprofileAction = new DayProfileAction("00000000", 1);
+        final DayProfileAction dayProfileAction = new DayProfileAction("00000000", 1);
         final DayProfile dayProfile = new DayProfile(0);
-        dayProfile.getDayProfileActions().add(dayprofileAction);
-        DEFAULT_ACTIVITY_CALENDAR.getSeasonProfiles().put(sseasonProfile.getName(), sseasonProfile);
+        dayProfile.getDayProfileActions().add(dayProfileAction);
+        DEFAULT_ACTIVITY_CALENDAR.getSeasonProfiles().put(seasonProfile.getName(), seasonProfile);
         DEFAULT_ACTIVITY_CALENDAR.getWeekProfiles().put(weekProfile.getName(), weekProfile);
         DEFAULT_ACTIVITY_CALENDAR.getDayProfiles().put(dayProfile.getDayId(), dayProfile);
     }

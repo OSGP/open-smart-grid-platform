@@ -15,6 +15,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAlarmNotific
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications;
+import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
+import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetAlarmNotificationsRequestBuilder {
@@ -49,11 +51,8 @@ public class SetAlarmNotificationsRequestBuilder {
     }
 
     private int getAlarmNotificationCount(final Map<String, String> parameters) {
-        if (parameters.containsKey(PlatformSmartmeteringKeys.ALARM_NOTIFICATION_COUNT)) {
-            return Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.ALARM_NOTIFICATION_COUNT));
-        }
-        return DEFAULT_ALARM_NOTIFICATIONS_COUNT;
-
+        return Helpers.getInteger(parameters, PlatformSmartmeteringKeys.ALARM_NOTIFICATION_COUNT,
+                DEFAULT_ALARM_NOTIFICATIONS_COUNT);
     }
 
     private AlarmNotification getDefaultAlarmNotification() {
@@ -71,20 +70,13 @@ public class SetAlarmNotificationsRequestBuilder {
     }
 
     private AlarmType getAlarmType(final Map<String, String> parameters, final int index) {
-        final String key = PlatformSmartmeteringKeys.ALARM_TYPE + "_" + index;
-        if (parameters.containsKey(key)) {
-            return AlarmType.fromValue(parameters.get(key));
-        }
-        return DEFAULT_ALARM_TYPE;
+        final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.ALARM_TYPE, index);
+        return Helpers.getEnum(parameters, key, AlarmType.class, DEFAULT_ALARM_TYPE);
     }
 
     private boolean getEnabled(final Map<String, String> parameters, final int index) {
-        final String key = PlatformSmartmeteringKeys.ALARM_TYPE_ENABLED + "_" + index;
-        if (parameters.containsKey(key)) {
-            return Boolean.parseBoolean(parameters.get(key));
-        }
-        return DEFAULT_ENABLED;
-
+        final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.ALARM_TYPE_ENABLED, index);
+        return Helpers.getBoolean(parameters, key, DEFAULT_ENABLED);
     }
 
 }

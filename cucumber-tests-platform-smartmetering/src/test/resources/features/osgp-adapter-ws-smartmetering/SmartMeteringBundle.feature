@@ -1,7 +1,7 @@
 @SmartMetering @Platform
 Feature: SmartMetering Bundle
   As a grid operator
-  I want to be able to perform SmartMeteringBundle operations on a device
+  I want to be able to perform operations on a device via a bundle request
   In order to ...
 
   Background: 
@@ -29,19 +29,3 @@ Feature: SmartMetering Bundle
     When the bundle request is received
     Then the number of responses in the bundle response should match the number of actions in the bundle request
     And the order of the responses in the bundle response should match the order of actions in the bundle request
-    #    And the bundle response should contain a find events response
-    #    And the bundle response should contain a set special days response
-    #    And the bundle response should contain a get specific attribute value response
-    #    And the bundle response should contain a read alarm register response
-    #    And the bundle response should contain a set administrative status response
-    #    And the bundle response should contain a get actual meter reads response
-    #    And the bundle response should contain a get administrative status response
-    #    And the bundle response should contain a get periodic meter reads response
-    #    And the bundle response should contain a set activity calendar response
-    #    And the bundle response should contain a get configuration object response
-    #    And the bundle response should contain a set alarm notifications response
-    #    And the bundle response should contain a set configuration object response
-    #    And the bundle response should contain a set push setup alarm response
-    #    And the bundle response should contain a synchronize time response
-    
-    

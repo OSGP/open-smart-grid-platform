@@ -13,10 +13,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetAdministrativeStatusRequestBuilder;
 
@@ -27,26 +25,21 @@ public class BundledSetAdministrativeStatusSteps extends BaseBundleSteps {
 
     @Given("^the bundle request contains a set administrative status action$")
     public void theBundleRequestContainsASetAdministrativeStatusAction() throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         final SetAdministrativeStatusRequest action = new SetAdministrativeStatusRequestBuilder().withDefaults()
                 .build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Given("^the bundle request contains a set administrative status action with parameters$")
     public void theBundleRequestContainsASetAdministrativeStatusAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final SetAdministrativeStatusRequest action = new SetAdministrativeStatusRequestBuilder()
                 .fromParameterMap(parameters).build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a set administrative status response$")

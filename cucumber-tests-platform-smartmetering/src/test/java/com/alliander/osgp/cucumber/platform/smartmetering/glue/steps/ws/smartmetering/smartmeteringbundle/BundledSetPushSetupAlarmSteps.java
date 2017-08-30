@@ -13,10 +13,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetPushSetupAlarmRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetPushSetupAlarmRequestBuilder;
 
@@ -27,25 +25,20 @@ public class BundledSetPushSetupAlarmSteps extends BaseBundleSteps {
 
     @Given("^the bundle request contains a set push setup alarm action$")
     public void theBundleRequestContainsASetPushSetupAlarmAction() throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         final SetPushSetupAlarmRequest action = new SetPushSetupAlarmRequestBuilder().withDefaults().build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Given("^the bundle request contains a set push setup alarm action with parameters$")
     public void theBundleRequestContainsASetPushSetupAlarmAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final SetPushSetupAlarmRequest action = new SetPushSetupAlarmRequestBuilder().fromParameterMap(parameters)
                 .build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a set push setup alarm response$")

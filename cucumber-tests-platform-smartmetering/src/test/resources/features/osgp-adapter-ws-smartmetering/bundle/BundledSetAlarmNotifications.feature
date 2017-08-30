@@ -14,9 +14,9 @@ Feature: SmartMetering Bundle - SetAlarmNotifications
     And the bundle request contains a set alarm notifications action with parameters
       | AlarmNotificationCount |             2 |
       | AlarmType_1            | POWER_UP      |
-      | AlarmTypeEnabled_1     |             true |
+      | AlarmTypeEnabled_1     | true          |
       | AlarmType_2            | FRAUD_ATTEMPT |
-      | AlarmTypeEnabled_2     |             true |
+      | AlarmTypeEnabled_2     | true          |
     When the bundle request is received
     Then the bundle response should contain a set alarm notifications response with values
       | Result | OK |

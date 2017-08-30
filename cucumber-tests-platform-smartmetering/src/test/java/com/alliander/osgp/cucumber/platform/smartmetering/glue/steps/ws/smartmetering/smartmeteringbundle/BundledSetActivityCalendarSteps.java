@@ -13,11 +13,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetActivityCalendarRequestBuilder;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SetConfigurationObjectRequestBuilder;
@@ -97,9 +97,10 @@ public class BundledSetActivityCalendarSteps extends BaseBundleSteps {
 
         for (int i = 1; i <= actionCount; i++) {
 
-            final String start = parameters.get(PlatformSmartmeteringKeys.DAY_PROFILE_START_TIME + "_" + i);
-            final int selector = Integer
-                    .parseInt(parameters.get(PlatformSmartmeteringKeys.DAY_PROFILE_SCRIPT_SELECTOR + "_" + i));
+            final String start = SettingsHelper.getStringValue(parameters,
+                    PlatformSmartmeteringKeys.DAY_PROFILE_START_TIME, i);
+            final int selector = SettingsHelper.getIntegerValue(parameters,
+                    PlatformSmartmeteringKeys.DAY_PROFILE_SCRIPT_SELECTOR, i);
 
             profile.getDayProfileActions().add(new DayProfileAction(start, selector));
         }
@@ -112,8 +113,6 @@ public class BundledSetActivityCalendarSteps extends BaseBundleSteps {
 
     @Given("^the bundle request contains a set activity calendar action$")
     public void theBundleRequestContainsASetActivityCalendarAction() throws Throwable {
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
         SetActivityCalendarRequest action;
         if (ScenarioContext.current().get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR) == null) {
@@ -127,20 +126,17 @@ public class BundledSetActivityCalendarSteps extends BaseBundleSteps {
 
         }
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Given("^the bundle request contains a set activity calendar action with parameters$")
     public void theBundleRequestContainsASetConfigurationObjectAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
         final SetConfigurationObjectRequest action = new SetConfigurationObjectRequestBuilder()
                 .fromParameterMap(parameters).build();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a set activity calendar response$")
