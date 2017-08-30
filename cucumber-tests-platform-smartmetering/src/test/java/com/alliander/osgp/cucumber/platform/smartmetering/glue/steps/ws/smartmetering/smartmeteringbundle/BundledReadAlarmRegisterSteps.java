@@ -9,8 +9,6 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
@@ -35,14 +33,4 @@ public class BundledReadAlarmRegisterSteps extends BaseBundleSteps {
 
         assertTrue("Not a valid response", response instanceof ReadAlarmRegisterResponse);
     }
-
-    @Then("^the bundle response should contain a read alarm register response with values$")
-    public void theBundleResponseShouldContainAReadAlarmRegisterResponse(final Map<String, String> values)
-            throws Throwable {
-
-        final Response response = this.getNextBundleResponse();
-
-        assertTrue("Not a valid response", response instanceof ReadAlarmRegisterResponse);
-    }
-
 }

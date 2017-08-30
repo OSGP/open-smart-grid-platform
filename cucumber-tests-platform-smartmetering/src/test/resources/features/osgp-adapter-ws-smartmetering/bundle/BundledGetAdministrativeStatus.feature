@@ -13,5 +13,4 @@ Feature: SmartMetering Bundle - GetAdministrativeStatus
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a get administrative status action
     When the bundle request is received
-    Then the bundle response should contain a get administrative status response with values
-      | Result | OK |
+    Then the bundle response should contain a get administrative status response

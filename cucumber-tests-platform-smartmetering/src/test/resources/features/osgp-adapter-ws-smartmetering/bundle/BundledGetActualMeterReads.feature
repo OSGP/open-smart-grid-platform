@@ -13,5 +13,5 @@ Feature: SmartMetering Bundle - GetActualMeterReads
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a get actual meter reads action
     When the bundle request is received
-    Then the bundle response should contain a get actual meter reads response with values
-      | Result | OK |
+    Then the bundle response should contain a get actual meter reads response
+

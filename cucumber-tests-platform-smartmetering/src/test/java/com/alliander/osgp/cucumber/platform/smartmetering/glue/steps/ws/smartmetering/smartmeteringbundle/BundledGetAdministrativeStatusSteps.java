@@ -9,8 +9,6 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AdministrativeStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
@@ -35,14 +33,4 @@ public class BundledGetAdministrativeStatusSteps extends BaseBundleSteps {
 
         assertTrue("Not a valid response", response instanceof AdministrativeStatusResponse);
     }
-
-    @Then("^the bundle response should contain a get administrative status response with values$")
-    public void theBundleResponseShouldContainAGetAdministrativeStatusResponse(final Map<String, String> values)
-            throws Throwable {
-
-        final Response response = this.getNextBundleResponse();
-
-        assertTrue("Not a valid response", response instanceof AdministrativeStatusResponse);
-    }
-
 }

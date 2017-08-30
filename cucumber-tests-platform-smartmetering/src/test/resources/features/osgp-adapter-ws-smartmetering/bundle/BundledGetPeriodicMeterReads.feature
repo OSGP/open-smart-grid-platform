@@ -16,5 +16,4 @@ Feature: SmartMetering Bundle - GetPeriodicMeterReads
       | BeginDate  | 2016-01-01T00:00:00.000Z |
       | EndDate    | 2017-01-01T00:00:00.000Z |
     When the bundle request is received
-    Then the bundle response should contain a get periodic meter reads response with values
-      | Result | OK |
+    Then the bundle response should contain a get periodic meter reads response

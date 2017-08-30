@@ -46,14 +46,4 @@ public class BundledGetPeriodicMeterReadsSteps extends BaseBundleSteps {
 
         assertTrue("Not a valid response", response instanceof PeriodicMeterReadsResponse);
     }
-
-    @Then("^the bundle response should contain a get periodic meter reads response with values$")
-    public void theBundleResponseShouldContainAGetPeriodicMeterReadsResponseWithValues(final Map<String, String> values)
-            throws Throwable {
-
-        final Response response = this.getNextBundleResponse();
-
-        assertTrue("Not a valid response", response instanceof PeriodicMeterReadsResponse);
-    }
-
 }

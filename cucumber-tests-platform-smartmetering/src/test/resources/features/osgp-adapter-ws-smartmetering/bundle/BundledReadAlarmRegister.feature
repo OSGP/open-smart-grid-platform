@@ -13,5 +13,4 @@ Feature: SmartMetering Bundle - ReadAlarmRegister
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a read alarm register action
     When the bundle request is received
-    Then the bundle response should contain a read alarm register response with values
-      | Result | OK |
+    Then the bundle response should contain a read alarm register response
