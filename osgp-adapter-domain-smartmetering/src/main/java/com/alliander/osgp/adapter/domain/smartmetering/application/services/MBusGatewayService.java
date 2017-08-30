@@ -281,7 +281,7 @@ public class MBusGatewayService {
             throw new FunctionalException(FunctionalExceptionType.ALL_MBUS_CHANNELS_OCCUPIED,
                     ComponentType.DOMAIN_SMART_METERING,
                     new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "All MBus channels are already occupied for gateway "
+                            "All M-Bus channels are already occupied for gateway "
                                     + gatewayDevice.getDeviceIdentification()));
         }
     }
