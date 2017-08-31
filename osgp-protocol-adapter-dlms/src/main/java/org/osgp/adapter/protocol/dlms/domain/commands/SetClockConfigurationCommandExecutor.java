@@ -44,9 +44,6 @@ public class SetClockConfigurationCommandExecutor
     private static final AttributeAddress ATTRIBUTE_DAYLIGHT_SAVINGS_END = new AttributeAddress(
             InterfaceClass.CLOCK.id(), LOGICAL_NAME, ClockAttribute.DAYLIGHT_SAVINGS_END.attributeId());
 
-    private static final AttributeAddress ATTRIBUTE_DAYLIGHT_SAVINGS_DEVIATION = new AttributeAddress(
-            InterfaceClass.CLOCK.id(), LOGICAL_NAME, ClockAttribute.DAYLIGHT_SAVINGS_DEVIATION.attributeId());
-
     private static final AttributeAddress ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED = new AttributeAddress(
             InterfaceClass.CLOCK.id(), LOGICAL_NAME, ClockAttribute.DAYLIGHT_SAVINGS_ENABLED.attributeId());
 
