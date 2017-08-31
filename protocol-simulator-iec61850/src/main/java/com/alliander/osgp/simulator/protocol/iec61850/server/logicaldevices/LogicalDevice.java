@@ -8,6 +8,7 @@
 package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,13 +21,18 @@ import org.openmuc.openiec61850.BdaInt64;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaQuality;
 import org.openmuc.openiec61850.BdaTimestamp;
+import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.ServerModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.alliander.osgp.simulator.protocol.iec61850.server.BasicDataAttributesHelper;
 
 public abstract class LogicalDevice {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogicalDevice.class);
 
     private final String physicalDeviceName;
     private final String logicalDeviceName;
@@ -137,6 +143,12 @@ public abstract class LogicalDevice {
         return value;
     }
 
+    protected BasicDataAttribute setVisibleString(final String node, final Fc fc, final byte[] d) {
+        final BdaVisibleString value = (BdaVisibleString) this.serverModel.findModelNode(this.createNodeName(node), fc);
+        value.setValue(d);
+        return value;
+    }
+
     protected BasicDataAttribute setQuality(final String node, final Fc fc, final short q) {
         final BdaQuality value = (BdaQuality) this.serverModel.findModelNode(this.createNodeName(node), fc);
         value.setValue(this.shortToByteArray(q));
@@ -164,4 +176,24 @@ public abstract class LogicalDevice {
                 + "\" is not configured with logical device \"" + this.getLogicalDeviceName()
                 + "\" on simulated RTU device \"" + this.getPhysicalDeviceName() + "\".");
     }
+
+    /**
+     * Writes an updated value for a node to the server model. This attribute
+     * update can also trigger updates to other attributes. Those updates are
+     * also handled.
+     *
+     * @param node
+     *            The externally updated node.
+     * @param value
+     *            The new value for the node.
+     * @return The externally updated node and the related updated nodes.
+     */
+    public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final String node,
+            final BasicDataAttribute value) {
+        LOGGER.info("No special update action needed for changing node \"" + node + "\" in " + this.logicalDeviceName
+                + " to " + value);
+
+        return new ArrayList<>();
+    }
+
 }

@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.simulator.protocol.iec61850.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -42,12 +43,33 @@ public class RtuSimulatorConfig {
         LOGGER.info(
                 "Start simulator with icdFilename={}, port={}, serverName={}, stopGeneratingValues={}, updateValuesDelay={}, updateValuesPeriod={}",
                 icdFilename, port, serverName, stopGeneratingValues, updateValuesDelay, updateValuesPeriod);
-        final InputStream icdFile = this.resourceLoader.getResource("classpath:" + icdFilename).getInputStream();
-        LOGGER.info("Simulator icdFile is {} on the classpath", icdFile != null ? "found" : "not found");
+        // <<<<<<< HEAD
+        // final InputStream icdFile =
+        // this.resourceLoader.getResource("classpath:" +
+        // icdFilename).getInputStream();
+        // LOGGER.info("Simulator icdFile is {} on the classpath", icdFile !=
+        // null ? "found" : "not found");
+        //
+        // try {
+        // final RtuSimulator rtuSimulator = new RtuSimulator(port, icdFile,
+        // serverName, this.serverSapEventProducer,
+        // updateValuesDelay, updateValuesPeriod);
+        // =======
+
+        InputStream icdInputStream;
+        final File icdFile = new File(icdFilename);
+        if (icdFile.exists()) {
+            LOGGER.info("Simulator icd {} found as external file", icdFilename);
+            icdInputStream = this.resourceLoader.getResource("file:" + icdFilename).getInputStream();
+        } else {
+            LOGGER.info("Simulator icd {} not found as external file, load it from the classpath", icdFilename);
+            icdInputStream = this.resourceLoader.getResource("classpath:" + icdFilename).getInputStream();
+        }
+        LOGGER.info("Simulator icd file loaded");
 
         try {
-            final RtuSimulator rtuSimulator = new RtuSimulator(port, icdFile, serverName, this.serverSapEventProducer,
-                    updateValuesDelay, updateValuesPeriod);
+            final RtuSimulator rtuSimulator = new RtuSimulator(port, icdInputStream, serverName,
+                    this.serverSapEventProducer, updateValuesDelay, updateValuesPeriod);
             if (stopGeneratingValues) {
                 rtuSimulator.ensurePeriodicDataGenerationIsStopped();
             }
@@ -56,7 +78,7 @@ public class RtuSimulatorConfig {
         } catch (final SclParseException e) {
             LOGGER.warn("Error parsing SCL/ICD file {}", e);
         } finally {
-            icdFile.close();
+            icdInputStream.close();
         }
 
         return null;

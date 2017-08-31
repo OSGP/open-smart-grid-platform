@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PreDestroy;
 
@@ -36,6 +38,7 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Engi
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.GasFurnace;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.HeatBuffer;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.HeatPump;
+import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LightMeasurementRtu;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Load;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LogicalDevice;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Pv;
@@ -98,6 +101,7 @@ public class RtuSimulator implements ServerEventListener {
         this.addHeatPumpDevices(serverModel);
         this.addBoilerDevices(serverModel);
         this.addWindDevices(serverModel);
+        this.addLightMeasurementDevice(serverModel);
     }
 
     private void addRtuDevices(final ServerModel serverModel) {
@@ -243,6 +247,17 @@ public class RtuSimulator implements ServerEventListener {
         }
     }
 
+    private void addLightMeasurementDevice(final ServerModel serverModel) {
+        final String logicalDeviceName = "LD0";
+        final ModelNode lightMeasurementRtuNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+
+        if (lightMeasurementRtuNode != null) {
+            // Light Measurement RTU found in the server model.
+            LOGGER.info("Adding lmRtu " + logicalDeviceName);
+            this.logicalDevices.add(new LightMeasurementRtu(this.getDeviceName(), logicalDeviceName, serverModel));
+        }
+    }
+
     public void start() throws IOException {
         if (this.isStarted) {
             throw new IOException("Server is already started");
@@ -271,9 +286,33 @@ public class RtuSimulator implements ServerEventListener {
     public List<ServiceError> write(final List<BasicDataAttribute> bdas) {
         for (final BasicDataAttribute bda : bdas) {
             LOGGER.info("got a write request: " + bda);
+            this.writeValueAndUpdateRelatedAttributes(bda);
         }
 
-        return null;
+        return new ArrayList<>();
+    }
+
+    /**
+     * Writes an updated value for an attribute to the server model. This
+     * attribute update can also trigger updates to other attributes. Those
+     * updates are also handled.
+     *
+     * @param bda
+     *            The attribute that has been updated.
+     */
+    private void writeValueAndUpdateRelatedAttributes(final BasicDataAttribute bda) {
+        final String logicalNodeSeparator = "/";
+        final Pattern pattern = Pattern.compile(this.serverName + "(.*?)" + logicalNodeSeparator + "(.*?):");
+        final Matcher matcher = pattern.matcher(bda.toString());
+        if (matcher.find()) {
+            final String logicalDeviceName = matcher.group(1);
+            final String node = matcher.group(2);
+
+            final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
+            final List<BasicDataAttribute> updatedAttributes = logicalDevice.writeValueAndUpdateRelatedAttributes(node,
+                    bda);
+            this.server.setValues(updatedAttributes);
+        }
     }
 
     @Override

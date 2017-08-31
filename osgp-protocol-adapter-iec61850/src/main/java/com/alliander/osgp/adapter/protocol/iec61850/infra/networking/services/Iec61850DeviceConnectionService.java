@@ -14,10 +14,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Report;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850ReportGroup;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.ClientAssociation;
@@ -34,6 +30,10 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Report;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850ReportGroup;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
@@ -151,7 +151,7 @@ public class Iec61850DeviceConnectionService {
         // Read the ServerModel, either from the device or from a SCL file.
         ServerModel serverModel;
         try {
-            serverModel = this.readServerModel(clientAssociation, deviceIdentification, iec61850Device);
+            serverModel = this.readServerModel(clientAssociation, deviceIdentification, iec61850Device, ied);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("ProtocolAdapterException: unable to read ServerModel for deviceIdentification "
                     + deviceIdentification, e);
@@ -175,31 +175,40 @@ public class Iec61850DeviceConnectionService {
         return new DeviceConnection(iec61850Connection, deviceIdentification, organisationIdentification, serverName);
     }
 
-    private void enableReportsForDevice(final String serverName, final String deviceIdentification, final ServerModel serverModel, final ClientAssociation clientAssociation) {
+    private void enableReportsForDevice(final String serverName, final String deviceIdentification,
+            final ServerModel serverModel, final ClientAssociation clientAssociation) {
         final List<Iec61850DeviceReportGroup> deviceReportGroups = this.iec61850DeviceReportRepository
                 .findByDeviceIdentificationAndEnabled(deviceIdentification, true);
-        for (Iec61850DeviceReportGroup deviceReportGroup : deviceReportGroups) {
-            this.enableReportGroup(serverName, deviceIdentification, deviceReportGroup.getIec61850ReportGroup(), serverModel, clientAssociation);
+        for (final Iec61850DeviceReportGroup deviceReportGroup : deviceReportGroups) {
+            this.enableReportGroup(serverName, deviceIdentification, deviceReportGroup.getIec61850ReportGroup(),
+                    serverModel, clientAssociation);
         }
     }
 
-    private void enableReportGroup(final String serverName, final String deviceIdentification, final Iec61850ReportGroup reportGroup, final ServerModel serverModel, final ClientAssociation clientAssociation) {
-        for (Iec61850Report iec61850Report : reportGroup.getIec61850Reports()) {
+    private void enableReportGroup(final String serverName, final String deviceIdentification,
+            final Iec61850ReportGroup reportGroup, final ServerModel serverModel,
+            final ClientAssociation clientAssociation) {
+        for (final Iec61850Report iec61850Report : reportGroup.getIec61850Reports()) {
             this.enableReport(serverName, deviceIdentification, iec61850Report, serverModel, clientAssociation);
         }
     }
 
-    private void enableReport(final String serverName, final String deviceIdentification, final Iec61850Report iec61850Report, final ServerModel serverModel, final ClientAssociation clientAssociation) {
+    private void enableReport(final String serverName, final String deviceIdentification,
+            final Iec61850Report iec61850Report, final ServerModel serverModel,
+            final ClientAssociation clientAssociation) {
         int i = 1;
-        Rcb rcb = this.getRcb(serverModel, getReportNode(serverName, iec61850Report.getLogicalDevice(), i, iec61850Report.getLogicalNode()));
+        Rcb rcb = this.getRcb(serverModel,
+                this.getReportNode(serverName, iec61850Report.getLogicalDevice(), i, iec61850Report.getLogicalNode()));
         while (rcb != null) {
             this.enableRcb(deviceIdentification, clientAssociation, rcb);
             i += 1;
-            rcb = this.getRcb(serverModel, getReportNode(serverName, iec61850Report.getLogicalDevice(), i, iec61850Report.getLogicalNode()));
+            rcb = this.getRcb(serverModel, this.getReportNode(serverName, iec61850Report.getLogicalDevice(), i,
+                    iec61850Report.getLogicalNode()));
         }
     }
 
-    private String getReportNode(final String serverName, final String logicalDevice, final int index, final String reportNode) {
+    private String getReportNode(final String serverName, final String logicalDevice, final int index,
+            final String reportNode) {
         return serverName + logicalDevice + index + "/" + reportNode;
     }
 
@@ -211,15 +220,15 @@ public class Iec61850DeviceConnectionService {
         return rcb;
     }
 
-    private void enableRcb(final String deviceIdentification, final ClientAssociation clientAssociation, final Rcb rcb) {
+    private void enableRcb(final String deviceIdentification, final ClientAssociation clientAssociation,
+            final Rcb rcb) {
         try {
             clientAssociation.enableReporting(rcb);
         } catch (final IOException e) {
-            LOGGER.error("IOException: unable to enable reporting for deviceIdentification "
-                    + deviceIdentification, e);
+            LOGGER.error("IOException: unable to enable reporting for deviceIdentification " + deviceIdentification, e);
         } catch (final ServiceError e) {
-            LOGGER.error("ServiceError: unable to enable reporting for deviceIdentification "
-                    + deviceIdentification, e);
+            LOGGER.error("ServiceError: unable to enable reporting for deviceIdentification " + deviceIdentification,
+                    e);
         }
     }
 
@@ -241,9 +250,7 @@ public class Iec61850DeviceConnectionService {
             port = iec61850Device.getPort().intValue();
         } else if (IED.FLEX_OVL.equals(ied)) {
             port = this.iec61850SsldPortServer;
-        } else if (IED.ZOWN_RTU.equals(ied)) {
-            port = this.iec61850RtuPortServer;
-        } else if (IED.DA_RTU.equals(ied)) {
+        } else if (IED.ZOWN_RTU.equals(ied) || IED.DA_RTU.equals(ied)) {
             port = this.iec61850RtuPortServer;
         } else {
             port = IEC61850_DEFAULT_PORT;
@@ -308,8 +315,25 @@ public class Iec61850DeviceConnectionService {
         if (serverName != null && !serverName.isEmpty()) {
             return serverName;
         } else {
-            // this methode is only called after null-check on ied
+            // this method is only called after null-check on IED
             return ied.getDescription();
+        }
+    }
+
+    /**
+     * Reads server model from device for {@link IED.ABB_RTU} IED type. For
+     * other IED types, uses
+     * {@link Iec61850DeviceConnectionService#readServerModel(ClientAssociation, String, Iec61850Device)}
+     * .
+     */
+    private ServerModel readServerModel(final ClientAssociation clientAssociation, final String deviceIdentification,
+            final Iec61850Device iec61850Device, final IED ied) throws ProtocolAdapterException {
+        if (IED.ABB_RTU.equals(ied)) {
+            LOGGER.info("Reading ServerModel from device: {} of type: {} using readServerModelFromDevice()",
+                    deviceIdentification, ied.name());
+            return this.iec61850Client.readServerModelFromDevice(clientAssociation);
+        } else {
+            return this.readServerModel(clientAssociation, deviceIdentification, iec61850Device);
         }
     }
 

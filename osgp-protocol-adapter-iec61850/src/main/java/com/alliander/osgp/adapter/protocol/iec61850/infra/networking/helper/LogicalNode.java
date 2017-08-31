@@ -20,6 +20,13 @@ public enum LogicalNode {
      */
     PHYSICAL_DEVICE_ONE("LPHD1"),
     /**
+     * SPGGIO_X, general IO Node.
+     */
+    SPGGIO_1("SPGGIO1"),
+    SPGGIO_2("SPGGIO2"),
+    SPGGIO_3("SPGGIO3"),
+    SPGGIO_4("SPGGIO4"),
+    /**
      * CSLC, configuration Logical Node.
      */
     STREET_LIGHT_CONFIGURATION("CSLC"),
@@ -175,7 +182,30 @@ public enum LogicalNode {
         case 4:
             return SWITCH_COMPONENT_FOUR;
         default:
-            throw new IllegalArgumentException("Invalid index value : " + index);
+            throw new IllegalArgumentException("Invalid index value for relay: " + index);
+        }
+    }
+
+    /**
+     * Get the name of a SPGGIO Logical Node by index/number.
+     *
+     * @param index
+     *            The index/number of the SPGGIO.
+     *
+     * @return The name of a SPGGIO Logical Node.
+     */
+    public static LogicalNode getSpggioByIndex(final int index) {
+        switch (index) {
+        case 1:
+            return SPGGIO_1;
+        case 2:
+            return SPGGIO_2;
+        case 3:
+            return SPGGIO_3;
+        case 4:
+            return SPGGIO_4;
+        default:
+            throw new IllegalArgumentException("Invalid index value for SPGGIO: " + index);
         }
     }
 

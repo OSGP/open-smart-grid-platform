@@ -40,6 +40,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientRTUEventListener.class);
 
+<<<<<<< HEAD
     /**
      * The EntryTime from IEC61850 has timestamp values relative to 01-01-1984.
      * TimeStamp values and Java date time values have milliseconds since
@@ -54,6 +55,11 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private static final Pattern REPORT_PATTERN = Pattern
             .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\$(Status|Measurements|Heartbeat)\\Z");
+=======
+    private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER)";
+    private static final Pattern REPORT_PATTERN = Pattern.compile("\\A(.*)" + NODE_NAMES
+            + "([1-9]\\d*+)/LLN0\\$(Status|Measurements|Heartbeat)\\Z");
+>>>>>>> development
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
 
@@ -97,8 +103,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     @Override
     public void newReport(final Report report) {
-        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null
-                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null : new DateTime(report.getTimeOfEntry()
+                .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
 
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -160,8 +166,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
             this.logger.info("Handle member {} for {}", member.getReference(), reportDescription);
             try {
-                final MeasurementDto dto = reportHandler
-                        .handleMember(new ReadOnlyNodeContainer(this.deviceIdentification, member));
+                final MeasurementDto dto = reportHandler.handleMember(new ReadOnlyNodeContainer(
+                        this.deviceIdentification, member));
                 if (dto != null) {
                     measurements.add(dto);
                 } else {
@@ -177,12 +183,16 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
         systems.add(systemResult);
 
-        final ReportDto reportDto = new ReportDto(report.getSqNum(),
-                new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET),
-                report.getRptId());
+        final ReportDto reportDto = new ReportDto(report.getSqNum(), new DateTime(report.getTimeOfEntry()
+                .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET), report.getRptId());
 
+<<<<<<< HEAD
         this.deviceManagementService.sendMeasurements(this.deviceIdentification,
                 new GetDataResponseDto(systems, reportDto));
+=======
+        this.deviceManagementService.sendMeasurements(this.deviceIdentification, new GetDataResponseDto(systems,
+                reportDto));
+>>>>>>> development
     }
 
     private void logReportDetails(final Report report) {
@@ -210,8 +220,13 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             for (final BdaReasonForInclusion reasonCode : reasonCodes) {
                 sb.append("\t                   \t")
                         .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
+<<<<<<< HEAD
                                 : reasonCode)
                         .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
+=======
+                                : reasonCode).append("\t(")
+                        .append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
+>>>>>>> development
                         .append(System.lineSeparator());
             }
         }

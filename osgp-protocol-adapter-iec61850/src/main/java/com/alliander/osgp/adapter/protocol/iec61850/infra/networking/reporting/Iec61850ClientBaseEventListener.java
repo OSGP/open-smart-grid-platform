@@ -24,10 +24,17 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
     protected final String deviceIdentification;
     protected final DeviceManagementService deviceManagementService;
     protected Integer firstNewSqNum = null;
+    /**
+     * The EntryTime from IEC61850 has timestamp values relative to 01-01-1984.
+     * TimeStamp values and Java date time values have milliseconds since
+     * 01-01-1970. The milliseconds between these representations are in the
+     * following offset.
+     */
+    protected static final long IEC61850_ENTRY_TIME_OFFSET = 441763200000L;
 
     public Iec61850ClientBaseEventListener(final String deviceIdentification,
             final DeviceManagementService deviceManagementService, final Class<?> loggerClass)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
         this.deviceManagementService = deviceManagementService;
         this.deviceIdentification = deviceIdentification;
         this.logger = LoggerFactory.getLogger(loggerClass);
