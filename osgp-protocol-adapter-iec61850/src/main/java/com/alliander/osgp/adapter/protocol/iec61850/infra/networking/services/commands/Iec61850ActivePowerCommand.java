@@ -24,47 +24,34 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubD
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
 public class Iec61850ActivePowerCommand implements RtuReadCommand<MeasurementDto> {
-    // private static final int DEFAULT_MEASUREMENT_QUALIFIER_ID = 1;
-    // private static final int DEFAULT_MEASUREMENT_VALUE = 1;
 
-    // private int index;
-    private LogicalNode logicalNode;
-    private int index;
+    private final LogicalNode logicalNode;
+    private final DataAttribute dataAttribute;
+    private final int index;
 
-    public Iec61850ActivePowerCommand(final int index) {
+    public Iec61850ActivePowerCommand(final int index, final DataAttribute dataAttribute) {
         this.logicalNode = LogicalNode.fromString("MMXU" + index);
         this.index = index;
+        this.dataAttribute = dataAttribute;
     }
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
-                this.logicalNode, DataAttribute.ACTIVE_POWER, Fc.MX);
+                this.logicalNode, this.dataAttribute, Fc.MX);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
-        return new MeasurementDto(this.index, DataAttribute.ACTIVE_POWER.getDescription(),
+        return new MeasurementDto(this.index, this.dataAttribute.getDescription(),
 
                 QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
                 new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
 
-                containingNode.getChild(SubDataAttribute.PHASE_A).getChild(SubDataAttribute.C_VALUES)
-                        .getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
+                containingNode.getChild(SubDataAttribute.C_VALUES).getChild(SubDataAttribute.MAGNITUDE)
+                        .getFloat(SubDataAttribute.FLOAT).getFloat());
     }
-
-    // private PhaseDto getPhaseData(final NodeContainer containingNode) {
-    // final PhaseDto phaseDto = new PhaseDto(this.index,
-    // DataAttribute.ACTIVE_POWER.getDescription(),
-    // QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-    // new DateTime(containingNode.getDate(SubDataAttribute.TIME),
-    // DateTimeZone.UTC),
-    // containingNode.getChild(SubDataAttribute.C_VALUES).getChild(SubDataAttribute.MAGNITUDE)
-    // .getFloat(SubDataAttribute.FLOAT).getFloat());
-    //
-    // return phaseDto;
-    // }
 }
