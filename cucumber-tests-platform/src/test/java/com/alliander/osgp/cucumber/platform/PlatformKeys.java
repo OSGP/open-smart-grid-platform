@@ -34,7 +34,6 @@ public class PlatformKeys extends Keys {
     public static final String DELEGATE_FUNCTION_GROUP = "DelegateFunctionGroup";
     public static final String DEVICE_FUNCTION = "DeviceFunction";
     public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
-    public static final String DEVICEFIRMWARE_ACTIVE = "DevicefirmwareActive";
     public static final String DEVICEFIRMWARE_INSTALLATIONDATE = "DevicefirmwareInstallationDate";
     public static final String DEVICEFIRMWARE_INSTALLED_BY = "DevicefirmwareInstalledBy";
 
@@ -213,10 +212,10 @@ public class PlatformKeys extends Keys {
     public static final String KEY_USE_PAGES = "UsePages";
     public static final String KEY_USER_NAME = "UserName";
     public static final String KEY_VERSION = "Version";
-    public static final Object LAST_COMMUNCATION_TIME = "LastCommunicationTime";
+    public static final String LAST_COMMUNICATION_TIME = "LastCommunicationTime";
     public static final String LOGIN_ATTEMPT_COUNT = "LoginAttemptCount";
     public static final String LONG_INTERVAL = "LongInterval";
-    public static final String MANUFACTURER_ID = "ManufacturerId";
+    public static final String MANUFACTURER_CODE = "ManufacturerCode";
     public static final String MANUFACTURER_NAME = "ManufacturerName";
     public static final String MANUFACTURER_USE_PREFIX = "ManufacturerUsePrefix";
     public static final String METER_TYPE = "MeterType";
@@ -283,6 +282,9 @@ public class PlatformKeys extends Keys {
     public static final String FIRMWARE_INSTALLATION_DATE = "InstallationDate";
     public static final String KEY_SCHEDULE_VERSION = "Version";
     public static final String KEY_LIGHTMEASUREMENT_IDENTIFICATION = "Identification";
+    public static final String KEY_LIGHTMEASUREMENT_COLOR = "Color";
+    public static final String KEY_LIGHTMEASUREMENT_DIGITAL_INPUT = "DigitalInput";
+    public static final String KEY_LIGHTMEASUREMENT_LAST_COMMUNICATION_TIME = "LastCommunicationTime";
     public static final String SMS_TYPE = "SmsType";
     public static final String KEY_LIGHTMEASUREMENT_LASTMESSAGE = "LastMessage";
     public static final String SMS_INDEX = "SmsIndex";

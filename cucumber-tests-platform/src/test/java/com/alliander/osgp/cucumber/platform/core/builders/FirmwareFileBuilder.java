@@ -12,9 +12,11 @@ import java.util.Map;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.entities.FirmwareFile;
+import com.alliander.osgp.domain.core.repositories.FirmwareModuleRepository;
+import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleData;
 
-public class FirmwareBuilder implements CucumberBuilder<Firmware> {
+public class FirmwareFileBuilder implements CucumberBuilder<FirmwareFile> {
 
     private DeviceModel deviceModel;
     private String filename;
@@ -28,80 +30,85 @@ public class FirmwareBuilder implements CucumberBuilder<Firmware> {
     private byte file[];
     private String hash;
 
-    public FirmwareBuilder withDeviceModel(final DeviceModel deviceModel) {
+    public FirmwareFileBuilder withDeviceModel(final DeviceModel deviceModel) {
         this.deviceModel = deviceModel;
         return this;
     }
 
-    public FirmwareBuilder withFilename(final String filename) {
+    public FirmwareFileBuilder withFilename(final String filename) {
         this.filename = filename;
         return this;
     }
 
-    public FirmwareBuilder withDescription(final String description) {
+    public FirmwareFileBuilder withDescription(final String description) {
         this.description = description;
         return this;
     }
 
-    public FirmwareBuilder withPushToNewDevices(final boolean pushToNewDevices) {
+    public FirmwareFileBuilder withPushToNewDevices(final boolean pushToNewDevices) {
         this.pushToNewDevices = pushToNewDevices;
         return this;
     }
 
-    public FirmwareBuilder withModuleVersionComm(final String moduleVersionComm) {
+    public FirmwareFileBuilder withModuleVersionComm(final String moduleVersionComm) {
         this.moduleVersionComm = moduleVersionComm;
         return this;
     }
 
-    public FirmwareBuilder withModuleVersionFunc(final String moduleVersionFunc) {
+    public FirmwareFileBuilder withModuleVersionFunc(final String moduleVersionFunc) {
         this.moduleVersionFunc = moduleVersionFunc;
         return this;
     }
 
-    public FirmwareBuilder withModuleVersionMa(final String moduleVersionMa) {
+    public FirmwareFileBuilder withModuleVersionMa(final String moduleVersionMa) {
         this.moduleVersionMa = moduleVersionMa;
         return this;
     }
 
-    public FirmwareBuilder withModuleVersionMbus(final String moduleVersionMbus) {
+    public FirmwareFileBuilder withModuleVersionMbus(final String moduleVersionMbus) {
         this.moduleVersionMbus = moduleVersionMbus;
         return this;
     }
 
-    public FirmwareBuilder withModuleVersionSec(final String moduleVersionSec) {
+    public FirmwareFileBuilder withModuleVersionSec(final String moduleVersionSec) {
         this.moduleVersionSec = moduleVersionSec;
         return this;
     }
 
-    public FirmwareBuilder withFile(final byte[] file) {
+    public FirmwareFileBuilder withFile(final byte[] file) {
         this.file = file;
         return this;
     }
 
-    public FirmwareBuilder withHash(final String hash) {
+    public FirmwareFileBuilder withHash(final String hash) {
         this.hash = hash;
         return this;
     }
 
     @Override
-    public Firmware build() {
-        final Firmware firmware = new Firmware();
-        firmware.setDeviceModel(this.deviceModel);
-        firmware.setFilename(this.filename);
-        firmware.setDescription(this.description);
-        firmware.setPushToNewDevices(this.pushToNewDevices);
-        firmware.setModuleVersionComm(this.moduleVersionComm);
-        firmware.setModuleVersionFunc(this.moduleVersionFunc);
-        firmware.setModuleVersionMa(this.moduleVersionMa);
-        firmware.setModuleVersionMbus(this.moduleVersionMbus);
-        firmware.setModuleVersionSec(this.moduleVersionSec);
-        firmware.setFile(this.file);
-        firmware.setHash(this.hash);
-        return firmware;
+    public FirmwareFile build() {
+        throw new UnsupportedOperationException(
+                "Firmware module version configuration model in test builders needs to be made more generic. For now call: build(firmwareModuleRepository, isForSmartMeters)");
+    }
+
+    public FirmwareFile build(final FirmwareModuleRepository firmwareModuleRepository, final boolean isForSmartMeters) {
+        final FirmwareFile firmwareFile = new FirmwareFile();
+        if (this.deviceModel != null) {
+            firmwareFile.addDeviceModel(this.deviceModel);
+        }
+        firmwareFile.setFilename(this.filename);
+        firmwareFile.setDescription(this.description);
+        firmwareFile.setPushToNewDevices(this.pushToNewDevices);
+        firmwareFile.setFile(this.file);
+        firmwareFile.setHash(this.hash);
+        firmwareFile.updateFirmwareModuleData(new FirmwareModuleData(this.moduleVersionComm, this.moduleVersionFunc,
+                this.moduleVersionMa, this.moduleVersionMbus, this.moduleVersionSec)
+                        .getVersionsByModule(firmwareModuleRepository, isForSmartMeters));
+        return firmwareFile;
     }
 
     @Override
-    public FirmwareBuilder withSettings(final Map<String, String> inputSettings) {
+    public FirmwareFileBuilder withSettings(final Map<String, String> inputSettings) {
         if (inputSettings.containsKey(PlatformKeys.FIRMWARE_FILENAME)) {
             this.withFilename(inputSettings.get(PlatformKeys.FIRMWARE_FILENAME));
         }
@@ -111,7 +118,8 @@ public class FirmwareBuilder implements CucumberBuilder<Firmware> {
         }
 
         if (inputSettings.containsKey(PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES)) {
-            this.withPushToNewDevices(Boolean.parseBoolean(inputSettings.get(PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES)));
+            this.withPushToNewDevices(
+                    Boolean.parseBoolean(inputSettings.get(PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES)));
         }
 
         if (inputSettings.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM)) {

@@ -22,7 +22,7 @@ Feature: SmartMetering Firmware
 
   Scenario: successful upgrade of firmware
     Given a manufacturer
-      | ManufacturerId   | KAIF  |
+      | ManufacturerCode | KAIF  |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -35,8 +35,11 @@ Feature: SmartMetering Firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareModuleVersionMbus |                        |
+      | FirmwareModuleVersionSec  |                        |
       | FirmwareFilename          | KFPP_V060100FF.bin     |
       | ModelCode                 | MA105                  |
+      | FirmwareIsForSmartMeters  | true                   |
     When the request for a firmware upgrade is received
       | DeviceIdentification      | TEST1024000000002      |
       | FirmwareModuleVersionComm | Telit 10.00.154        |
@@ -55,7 +58,7 @@ Feature: SmartMetering Firmware
 
   Scenario: successful upgrade of a single firmware module
     Given a manufacturer
-      | ManufacturerId   | KAIF  |
+      | ManufacturerCode | KAIF  |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -68,8 +71,11 @@ Feature: SmartMetering Firmware
       | FirmwareModuleVersionComm |                    |
       | FirmwareModuleVersionMa   |                    |
       | FirmwareModuleVersionFunc | M57 4836           |
+      | FirmwareModuleVersionMbus |                    |
+      | FirmwareModuleVersionSec  |                    |
       | FirmwareFilename          | KFPP_V060100FF.bin |
       | ModelCode                 | MA105              |
+      | FirmwareIsForSmartMeters  | true               |
     When the request for a firmware upgrade is received
       | DeviceIdentification      | TEST1024000000002 |
       | FirmwareModuleVersionFunc | M57 4836          |
@@ -84,7 +90,7 @@ Feature: SmartMetering Firmware
 
   Scenario: upgrade of firmware, installation file not available
     Given a manufacturer
-      | ManufacturerId   | KAIF  |
+      | ManufacturerCode | KAIF  |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -97,8 +103,11 @@ Feature: SmartMetering Firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareModuleVersionMbus |                        |
+      | FirmwareModuleVersionSec  |                        |
       | FirmwareFilename          | KFPP_V060100FA         |
       | ModelCode                 | MA105                  |
+      | FirmwareIsForSmartMeters  | true                   |
     When the request for a firmware upgrade is received
       | DeviceIdentification      | TEST1024000000002      |
       | FirmwareModuleVersionComm | Telit 10.00.154        |
@@ -118,7 +127,7 @@ Feature: SmartMetering Firmware
 
   Scenario: upgrade of firmware, corrupt installation file
     Given a manufacturer
-      | ManufacturerId   | KAIF  |
+      | ManufacturerCode | KAIF  |
       | ManufacturerName | Kaifa |
     And a device model
       | ManufacturerName | Kaifa |
@@ -131,8 +140,11 @@ Feature: SmartMetering Firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareModuleVersionMbus |                        |
+      | FirmwareModuleVersionSec  |                        |
       | FirmwareFilename          | KFPP_V060100FF.corrupt |
       | ModelCode                 | MA105                  |
+      | FirmwareIsForSmartMeters  | true                   |
     When the request for a firmware upgrade is received
       | DeviceIdentification      | TEST1024000000002      |
       | FirmwareModuleVersionComm | Telit 10.00.154        |

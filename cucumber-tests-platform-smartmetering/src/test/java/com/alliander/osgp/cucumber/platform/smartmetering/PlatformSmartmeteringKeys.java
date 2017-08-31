@@ -37,6 +37,7 @@ public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platf
      * Use this device identification key in sending the request to OSGP
      */
     public static final String GATEWAY_DEVICE_IDENTIFICATION = "GatewayDeviceIdentification";
+    public static final String MBUS_DEVICE_IDENTIFICATION = "MbusDeviceIdentification";
 
     public static final String GPS_LATITUDE = "GpsLatitude";
     public static final String GPS_LONGITUDE = "GpsLongitude";

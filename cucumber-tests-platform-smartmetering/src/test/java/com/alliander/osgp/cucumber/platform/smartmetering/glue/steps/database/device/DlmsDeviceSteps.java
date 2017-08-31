@@ -350,7 +350,22 @@ public class DlmsDeviceSteps {
 
     private DeviceModel getDeviceModel(final Map<String, String> inputSettings) {
         if (inputSettings.containsKey(PlatformKeys.KEY_DEVICE_MODEL)) {
-            return this.deviceModelRepository.findByModelCode(inputSettings.get(PlatformKeys.KEY_DEVICE_MODEL));
+            /*
+             * Model code does not uniquely identify a device model, which is
+             * why deviceModelRepository is changed to return a list of device
+             * models. In the test data that is set up, there probably is only
+             * one device model for the given model code, and just selecting the
+             * first device model returned should work.
+             *
+             * A better solution might be to add the manufacturer in the
+             * scenario data and do a lookup by manufacturer and model code,
+             * which should uniquely define the device model.
+             */
+            final List<DeviceModel> deviceModels = this.deviceModelRepository
+                    .findByModelCode(inputSettings.get(PlatformKeys.KEY_DEVICE_MODEL));
+            if (!deviceModels.isEmpty()) {
+                return deviceModels.get(0);
+            }
         }
         return null;
     }
