@@ -1,7 +1,4 @@
-#################
-## Eclipse
-#################
-
+# Eclipse
 *.pydevproject
 .project
 .metadata
@@ -20,7 +17,6 @@ local.properties
 .loadpath
 *.log
 
-
 # External tool builders
 .externalToolBuilders/
 
@@ -34,3 +30,7 @@ local.properties
 .buildpath
 
 **/.directory
+
+# IntellIJ stuff
+*.iml
+/.idea/

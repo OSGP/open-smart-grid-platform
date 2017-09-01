@@ -1,11 +1,11 @@
 // Pipeline script for the OSGP Integration-Tests Pull Request job in Jenkins
 
 def stream = 'osgp'
-def servername = stream + '-at-' + env.BUILD_NUMBER
-//def servername = stream + '-at-26'
+def servername = stream + '-at-pr-' + env.BUILD_NUMBER
+//def servername = stream + '-at-pr-26'
 def playbook = stream + '-at.yml'
 def extravars = 'ec2_instance_type=t2.large'
-def repo = 'git@github.com:SmartSocietyServices/Integration-Tests.git'
+def repo = 'git@github.com:OSGP/Integration-Tests.git'
 
 pipeline {
     agent any
@@ -15,12 +15,14 @@ pipeline {
         // Only keep the 10 most recent builds
         buildDiscarder(logRotator(numToKeepStr:'10'))
     }
+
     stages {
         stage ('Git') {
             steps {
-                // Example sha1 c0c708ef65fa1217e84d9762c974e6b8a40d35b3
-                deleteDir();
-                checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: 'git@github.com:OSGP/Integration-Tests.git']]])
+                // Cleanup workspace
+                deleteDir()
+
+                checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: repo]]])
             }
         }
 
@@ -29,14 +31,17 @@ pipeline {
                 step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
             }
         }
-
+        
         stage ('Build') {
             steps {
-                // TODO: use withMaven
-                sh "/usr/local/apache-maven/bin/mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                withMaven(
+                        maven: 'Apache Maven 3.5.0',
+                        mavenLocalRepo: '.repository') {
+                	sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                }
             }
         }
-
+        
         stage ('Deploy AWS system') {
             steps {
                 build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook), string(name: 'EXTRAVARS', value: extravars)]
@@ -47,7 +52,7 @@ pipeline {
             steps {
                 sh '''echo Searching for specific Cucumber tags in git commit.
 
-# Format for cucumber-tags in Pull request description: [@tag1 @tag2 @tags3a,@tags3b] 
+# Format for cucumber-tags in Pull request description: [@tag1 @tag2 @tags3a,@tags3b]
 #   will lead to cucumber.options=\'--tags @tag1 --tags @tag2 --tags @tags3a,@tags3b\'
 # These tags will be available as ENV var: ${CUCUMBER_TAGS} for use in maven -Dcucumber.options
 
@@ -75,15 +80,19 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
 
         stage ('Collect coverage') {
             steps {
-                // TODO: use withMaven
-                sh "/usr/local/apache-maven/bin/mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
+                withMaven(
+                        maven: 'Apache Maven 3.5.0',
+                        mavenLocalRepo: '.repository',
+                        options: [openTasksPublisher(disabled: true)]) {
+                    sh "mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
+                }
             }
         }
 
         stage('Reporting') {
             steps {
                 jacoco execPattern: '**/code-coverage/jacoco-it.exec'
-                cucumber '**/cucumber.json'
+                cucumber buildStatus: null, fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
                 archiveArtifacts '**/target/*.tgz'
 
                 // Check the console log for failed tests
