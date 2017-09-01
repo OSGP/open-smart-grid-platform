@@ -44,6 +44,8 @@ public class MBusGatewayService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MBusGatewayService.class);
 
+    private static final int MAXIMUM_NUMBER_OF_MBUS_CHANNELS = 4;
+
     @Autowired
     @Qualifier(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
@@ -63,11 +65,10 @@ public class MBusGatewayService {
 
     /**
      * @param deviceMessageMetadata
-     *            the metadata of the message, including the correlationUid, the
-     *            deviceIdentification and the organization
+     *            the metadata of the message, including the correlationUid, the deviceIdentification and the
+     *            organization
      * @param requestData
-     *            the requestData of the message, including the identification
-     *            of the m-bus device and the channel
+     *            the requestData of the message, including the identification of the m-bus device and the channel
      */
     public void coupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
             final CoupleMbusDeviceRequestData requestData) throws FunctionalException {
@@ -84,6 +85,7 @@ public class MBusGatewayService {
 
             this.checkAndHandleInactiveMbusDevice(mbusDevice);
             this.checkAndHandleIfGivenMBusAlreadyCoupled(mbusDevice);
+            this.checkAndHandleIfAllMBusChannelsAreAlreadyOccupied(gatewayDevice);
             final MbusChannelElementsDto mbusChannelElementsDto = this.makeMbusChannelElementsDto(mbusDevice);
 
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
@@ -174,9 +176,8 @@ public class MBusGatewayService {
     }
 
     /**
-     * Updates the M-Bus device identified in the input part of the
-     * {@code mbusChannelElementsResponseDto} with respect to persisted
-     * attributes related to the coupling with the given {@code gatewayDevice}.
+     * Updates the M-Bus device identified in the input part of the {@code mbusChannelElementsResponseDto} with respect
+     * to persisted attributes related to the coupling with the given {@code gatewayDevice}.
      *
      * @param gatewayDevice
      * @param mbusChannelElementsResponseDto
@@ -190,9 +191,8 @@ public class MBusGatewayService {
         final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
         /*
-         * If the flow of handling the response gets to this point, the channel
-         * has already been confirmed not be null, so the following should be
-         * safe with regards to NullPointerExceptions.
+         * If the flow of handling the response gets to this point, the channel has already been confirmed not be null,
+         * so the following should be safe with regards to NullPointerExceptions.
          */
         final short channel = mbusChannelElementsResponseDto.getChannel();
         mbusDevice.setChannel(channel);
@@ -203,8 +203,7 @@ public class MBusGatewayService {
     }
 
     /**
-     * Updates the M-Bus device identified in the input part of the
-     * {@code deCoupleMbusResponseDto}.
+     * Updates the M-Bus device identified in the input part of the {@code deCoupleMbusResponseDto}.
      *
      * @param deCoupleMbusDeviceResponseDto
      * @throws FunctionalException
@@ -244,9 +243,8 @@ public class MBusGatewayService {
     }
 
     /**
-     * This method checks if a channel was found on the gateway, and if not it
-     * will throw a FunctionalException with the NO_MBUS_DEVICE_CHANNEL_FOUND
-     * type.
+     * This method checks if a channel was found on the gateway, and if not it will throw a FunctionalException with the
+     * NO_MBUS_DEVICE_CHANNEL_FOUND type.
      */
     private void checkAndHandleIfChannelNotFound(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto)
             throws FunctionalException {
@@ -258,8 +256,8 @@ public class MBusGatewayService {
     }
 
     /**
-     * This method checks if the given mbusDevice is already coupled with a
-     * gateway. In that case it will throw a FunctionalException.
+     * This method checks if the given mbusDevice is already coupled with a gateway. In that case it will throw a
+     * FunctionalException.
      */
     private void checkAndHandleIfGivenMBusAlreadyCoupled(final SmartMeter mbusDevice) throws FunctionalException {
         if (mbusDevice.getGatewayDevice() != null) {
@@ -275,16 +273,27 @@ public class MBusGatewayService {
         }
     }
 
+    private void checkAndHandleIfAllMBusChannelsAreAlreadyOccupied(final SmartMeter gatewayDevice)
+            throws FunctionalException {
+        final List<SmartMeter> mBusDevices = this.smartMeteringDeviceRepository
+                .getMbusDevicesForGateway(gatewayDevice.getId());
+        if (mBusDevices != null && mBusDevices.size() >= MAXIMUM_NUMBER_OF_MBUS_CHANNELS) {
+            throw new FunctionalException(FunctionalExceptionType.ALL_MBUS_CHANNELS_OCCUPIED,
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                            "All M-Bus channels are already occupied for gateway "
+                                    + gatewayDevice.getDeviceIdentification()));
+        }
+    }
+
     /**
-     * This method checks if a gateway is not already connected with another
-     * M-Bus device. In that case it will throw a FunctionalException.
+     * This method checks if a gateway is not already connected with another M-Bus device. In that case it will throw a
+     * FunctionalException.
      * <p>
-     * Note: we know it is another M-Bus device (and not the one from the couple
-     * device request) because upon receiving the couple device request a check
-     * is done to see if the given device is already coupled.
+     * Note: we know it is another M-Bus device (and not the one from the couple device request) because upon receiving
+     * the couple device request a check is done to see if the given device is already coupled.
      *
-     * @see #coupleMbusDevice(DeviceMessageMetadata,
-     *      CoupleMbusDeviceRequestData)
+     * @see #coupleMbusDevice(DeviceMessageMetadata, CoupleMbusDeviceRequestData)
      * @see #checkAndHandleIfGivenMBusAlreadyCoupled(SmartMeter)
      */
     private void checkAndHandleChannelOnGateway(final SmartMeter gateway,
