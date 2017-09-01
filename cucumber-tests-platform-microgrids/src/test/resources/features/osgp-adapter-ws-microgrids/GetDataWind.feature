@@ -1,109 +1,107 @@
-@TestThis
-@MicroGrids @Platform @Iec61850MockServer @Iec61850MockServerPampus
+@MicroGrids @Platform @Iec61850MockServer @Iec61850MockServerPampusWithWindDevice
 Feature: MicroGrids Get Wind Data
   As an OSGP client
   I want to get Wind data from an RTU
   So this data can be used by other processes
-  l
 
   Scenario: Request Wind
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU10001 |
-      | Port                 |    62102 |
-    And an rtu simulator returning
-      | WIND1 | LLN0.Mod.stVal         |                   1 |
-      | WIND1 | LLN0.Mod.q             | VALIDITY_GOOD       |
-      | WIND1 | LLN0.Beh.stVal         |                   2 |
-      | WIND1 | LLN0.Beh.q             | VALIDITY_GOOD       |
-      | WIND1 | LLN0.Health.stVal      |                   3 |
-      | WIND1 | LLN0.Health.q          | VALIDITY_GOOD       |
+      | DeviceIdentification | RTU10005 |
+      | Port                 |    62105 |
+    And the Pampus RTU returning
+      | WIND1 | LLN0.Mod.stVal          |                   1 |
+      | WIND1 | LLN0.Mod.q              | VALIDITY_GOOD       |
+      | WIND1 | LLN0.Beh.stVal          |                   2 |
+      | WIND1 | LLN0.Beh.q              | VALIDITY_GOOD       |
+      | WIND1 | LLN0.Health.stVal       |                   3 |
+      | WIND1 | LLN0.Health.q           | VALIDITY_GOOD       |
       #.......................................................
-      | WIND1 | GGIO1.Alm1.stVal       | false               |
-      | WIND1 | GGIO1.Alm1.q           | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.Alm1.t           | 2017-02-01T12:01:00 |
-      | WIND1 | GGIO1.Alm2.stVal       | true                |
-      | WIND1 | GGIO1.Alm2.q           | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.Alm2.t           | 2017-02-01T12:01:00 |
-      | WIND1 | GGIO1.Alm3.stVal       | false               |
-      | WIND1 | GGIO1.Alm3.q           | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.Alm3.t           | 2017-02-01T12:01:00 |
-      | WIND1 | GGIO1.Alm4.stVal       | true                |
-      | WIND1 | GGIO1.Alm4.q           | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.Alm4.t           | 2017-02-01T12:01:00 |
-      | WIND1 | GGIO1.IntIn1.stVal     |                   4 |
-      | WIND1 | GGIO1.IntIn1.q         | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.IntIn1.t         | 2017-02-01T12:01:00 |
-      | WIND1 | GGIO1.IntIn2.stVal     |                   5 |
-      | WIND1 | GGIO1.IntIn2.q         | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.IntIn2.t         | 2017-02-01T12:01:00 |
-      | WIND1 | GGIO1.Wrn1.stVal       | false               |
-      | WIND1 | GGIO1.Wrn1.q           | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.Wrn1.t           | 2017-02-01T12:01:00 |
-      | WIND1 | GGIO1.Wrn2.stVal       | true                |
-      | WIND1 | GGIO1.Wrn2.q           | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.Wrn2.t           | 2017-02-01T12:01:00 |
-      | WIND1 | GGIO1.Wrn3.stVal       | false               |
-      | WIND1 | GGIO1.Wrn3.q           | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.Wrn3.t           | 2017-02-01T12:01:00 |
-      | WIND1 | GGIO1.Wrn4.stVal       | true                |
-      | WIND1 | GGIO1.Wrn4.q           | VALIDITY_GOOD       |
-      | WIND1 | GGIO1.Wrn4.t           | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.Alm1.stVal        | false               |
+      | WIND1 | GGIO1.Alm1.q            | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.Alm1.t            | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.Alm2.stVal        | true                |
+      | WIND1 | GGIO1.Alm2.q            | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.Alm2.t            | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.Alm3.stVal        | false               |
+      | WIND1 | GGIO1.Alm3.q            | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.Alm3.t            | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.Alm4.stVal        | true                |
+      | WIND1 | GGIO1.Alm4.q            | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.Alm4.t            | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.IntIn1.stVal      |                   4 |
+      | WIND1 | GGIO1.IntIn1.q          | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.IntIn1.t          | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.IntIn2.stVal      |                   5 |
+      | WIND1 | GGIO1.IntIn2.q          | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.IntIn2.t          | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.Wrn1.stVal        | false               |
+      | WIND1 | GGIO1.Wrn1.q            | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.Wrn1.t            | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.Wrn2.stVal        | true                |
+      | WIND1 | GGIO1.Wrn2.q            | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.Wrn2.t            | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.Wrn3.stVal        | false               |
+      | WIND1 | GGIO1.Wrn3.q            | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.Wrn3.t            | 2017-02-01T12:01:00 |
+      | WIND1 | GGIO1.Wrn4.stVal        | true                |
+      | WIND1 | GGIO1.Wrn4.q            | VALIDITY_GOOD       |
+      | WIND1 | GGIO1.Wrn4.t            | 2017-02-01T12:01:00 |
       #.......................................................
-      | WIND1 | MMXU1.TotW.mag.f       |                  10 |
-      | WIND1 | MMXU1.TotW.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.TotW.t           | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU1.TotPF.mag.f      |                  11 |
-      | WIND1 | MMXU1.TotPF.q          | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.TotPF.t          | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU1.MinWPhs.mag.f    |                  12 |
-      | WIND1 | MMXU1.MinWPhs.q        | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.MinWPhs.t        | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU1.MaxWPhs.mag.f    |                  13 |
-      | WIND1 | MMXU1.MaxWPhs.q        | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.MaxWPhs.t        | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU1.TotW.mag.f        |                  10 |
+      | WIND1 | MMXU1.TotW.q            | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.TotW.t            | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU1.TotPF.mag.f       |                  11 |
+      | WIND1 | MMXU1.TotPF.q           | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.TotPF.t           | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU1.MinWPhs.mag.f     |                  12 |
+      | WIND1 | MMXU1.MinWPhs.q         | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.MinWPhs.t         | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU1.MaxWPhs.mag.f     |                  13 |
+      | WIND1 | MMXU1.MaxWPhs.q         | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.MaxWPhs.t         | 2017-02-01T12:02:00 |
       #.......................................................
-      | WIND1 | MMXU1.phsA.mag.f       |                  11 |
-      | WIND1 | MMXU1.phsA.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.phsA.t           | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU1.phsB.mag.f       |                  12 |
-      | WIND1 | MMXU1.phsB.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.phsB.t           | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU1.phsC.mag.f       |                  13 |
-      | WIND1 | MMXU1.phsC.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU1.phsC.t           | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU2.phsA.mag.f       |                  21 |
-      | WIND1 | MMXU2.phsA.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU2.phsA.t           | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU2.phsB.mag.f       |                  22 |
-      | WIND1 | MMXU2.phsB.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU2.phsB.t           | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU2.phsC.mag.f       |                  23 |
-      | WIND1 | MMXU2.phsC.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU2.phsC.t           | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU3.phsA.mag.f       |                  31 |
-      | WIND1 | MMXU3.phsA.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU3.phsA.t           | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU3.phsB.mag.f       |                  32 |
-      | WIND1 | MMXU3.phsB.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU3.phsB.t           | 2017-02-01T12:02:00 |
-      | WIND1 | MMXU3.phsC.mag.f       |                  33 |
-      | WIND1 | MMXU3.phsC.q           | VALIDITY_GOOD       |
-      | WIND1 | MMXU3.phsC.t           | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU1.W.phsA.cVal.mag.f |                  11 |
+      | WIND1 | MMXU1.W.phsA.q          | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.W.phsA.t          | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU1.W.phsB.cVal.mag.f |                  12 |
+      | WIND1 | MMXU1.W.phsB.q          | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.W.phsB.t          | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU1.W.phsC.cVal.mag.f |                  13 |
+      | WIND1 | MMXU1.W.phsC.q          | VALIDITY_GOOD       |
+      | WIND1 | MMXU1.W.phsC.t          | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU2.W.phsA.cVal.mag.f |                  21 |
+      | WIND1 | MMXU2.W.phsA.q          | VALIDITY_GOOD       |
+      | WIND1 | MMXU2.W.phsA.t          | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU2.W.phsB.cVal.mag.f |                  22 |
+      | WIND1 | MMXU2.W.phsB.q          | VALIDITY_GOOD       |
+      | WIND1 | MMXU2.W.phsB.t          | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU2.W.phsC.cVal.mag.f |                  23 |
+      | WIND1 | MMXU2.W.phsC.q          | VALIDITY_GOOD       |
+      | WIND1 | MMXU2.W.phsC.t          | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU3.W.phsA.cVal.mag.f |                  31 |
+      | WIND1 | MMXU3.W.phsA.q          | VALIDITY_GOOD       |
+      | WIND1 | MMXU3.W.phsA.t          | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU3.W.phsB.cVal.mag.f |                  32 |
+      | WIND1 | MMXU3.W.phsB.q          | VALIDITY_GOOD       |
+      | WIND1 | MMXU3.W.phsB.t          | 2017-02-01T12:02:00 |
+      | WIND1 | MMXU3.W.phsC.cVal.mag.f |                  33 |
+      | WIND1 | MMXU3.W.phsC.q          | VALIDITY_GOOD       |
+      | WIND1 | MMXU3.W.phsC.t          | 2017-02-01T12:02:00 |
       #.......................................................
-      | WIND1 | DRCC1.OutWSet.subVal.f |                  14 |
-      | WIND1 | DRCC1.OutWSet.subQ     | VALIDITY_GOOD       |
+      | WIND1 | DRCC1.OutWSet.subVal.f  |                  14 |
+      | WIND1 | DRCC1.OutWSet.subQ      | VALIDITY_GOOD       |
       #.......................................................
-      | WIND1 | DGEN1.TotWh.mag.f      |                  15 |
-      | WIND1 | DGEN1.TotWh.q          | VALIDITY_GOOD       |
-      | WIND1 | DGEN1.TotWh.t          | 2017-02-01T12:02:00 |
-      | WIND1 | DGEN1.GnOpSt.stVal     |                  15 |
-      | WIND1 | DGEN1.GnOpSt.q         | VALIDITY_GOOD       |
-      | WIND1 | DGEN1.GnOpSt.t         | 2017-02-01T12:02:00 |
-      | WIND1 | DGEN1.OpTmsRs.stVal    |                  15 |
-      | WIND1 | DGEN1.OpTmsRs.q        | VALIDITY_GOOD       |
-      | WIND1 | DGEN1.OpTmsRs.t        | 2017-02-01T12:02:00 |
+      | WIND1 | DGEN1.TotWh.mag.f       |                  15 |
+      | WIND1 | DGEN1.TotWh.q           | VALIDITY_GOOD       |
+      | WIND1 | DGEN1.TotWh.t           | 2017-02-01T12:02:00 |
+      | WIND1 | DGEN1.GnOpSt.stVal      |                  15 |
+      | WIND1 | DGEN1.GnOpSt.q          | VALIDITY_GOOD       |
+      | WIND1 | DGEN1.GnOpSt.t          | 2017-02-01T12:02:00 |
+      | WIND1 | DGEN1.OpTmsRs.stVal     |                  15 |
+      | WIND1 | DGEN1.OpTmsRs.q         | VALIDITY_GOOD       |
+      | WIND1 | DGEN1.OpTmsRs.t         | 2017-02-01T12:02:00 |
     When a get data request is received
-      | DeviceIdentification       | RTU10001 |
+      | DeviceIdentification       | RTU10005 |
       | NumberOfSystems            |        1 |
       | SystemId_1                 |        1 |
       | SystemType_1               | WIND     |
@@ -130,29 +128,29 @@ Feature: MicroGrids Get Wind Data
       | MeasurementFilterNode_1_18 | W.phsB   |
       | MeasurementFilterId_1_19   |        1 |
       | MeasurementFilterNode_1_19 | W.phsC   |
-      | MeasurementFilterId_1_20   |        1 |
+      | MeasurementFilterId_1_20   |        2 |
       | MeasurementFilterNode_1_20 | W.phsA   |
-      | MeasurementFilterId_1_21   |        1 |
+      | MeasurementFilterId_1_21   |        2 |
       | MeasurementFilterNode_1_21 | W.phsB   |
-      | MeasurementFilterId_1_22   |        1 |
+      | MeasurementFilterId_1_22   |        2 |
       | MeasurementFilterNode_1_22 | W.phsC   |
-      | MeasurementFilterId_1_23   |        1 |
+      | MeasurementFilterId_1_23   |        3 |
       | MeasurementFilterNode_1_23 | W.phsA   |
-      | MeasurementFilterId_1_24   |        1 |
+      | MeasurementFilterId_1_24   |        3 |
       | MeasurementFilterNode_1_24 | W.phsB   |
-      | MeasurementFilterId_1_25   |        1 |
+      | MeasurementFilterId_1_25   |        3 |
       | MeasurementFilterNode_1_25 | W.phsC   |
       | MeasurementFilterNode_1_26 | OutWSet  |
       | MeasurementFilterNode_1_27 | TotWh    |
       | MeasurementFilterNode_1_28 | GnOpSt   |
       | MeasurementFilterNode_1_29 | OpTmsRs  |
     Then the get data response should be returned
-      | DeviceIdentification      | RTU10001 |
+      | DeviceIdentification      | RTU10005 |
       | Result                    | OK       |
       | NumberOfSystems           |        1 |
       | SystemId_1                |        1 |
       | SystemType_1              | WIND     |
-      | NumberOfMeasurements_1    |       23 |
+      | NumberOfMeasurements_1    |       29 |
       | MeasurementId_1_1         |        1 |
       | MeasurementNode_1_1       | Mod      |
       | MeasurementQualifier_1_1  |        0 |
