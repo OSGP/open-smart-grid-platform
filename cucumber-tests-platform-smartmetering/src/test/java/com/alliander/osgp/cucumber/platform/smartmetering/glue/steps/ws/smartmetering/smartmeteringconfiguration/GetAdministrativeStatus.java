@@ -21,14 +21,13 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetAdministrativeStatusRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetAdministrativeStatus extends SmartMeteringStepsBase {
+public class GetAdministrativeStatus {
     protected static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatus.class);
 
     @Autowired

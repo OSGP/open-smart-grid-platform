@@ -28,7 +28,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EnableDebug
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.DisableDebuggingRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.EnableDebuggingRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
@@ -37,7 +36,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
+public class EnableAndDisableDebugging {
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;

@@ -28,12 +28,11 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.FindEventsRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementResponseClient;
 
-public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
+public abstract class AbstractFindEventsReads {
 
     @Autowired
     private SmartMeteringManagementRequestClient<FindEventsAsyncResponse, FindEventsRequest> smartMeteringManagementRequestClient;
@@ -48,7 +47,7 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
     protected abstract String getEventLogCategory();
 
     public void receivingAFindEventsRequest(final Map<String, String> requestData) throws Throwable {
-        final Map<String, String> settings = new HashMap<String, String>();
+        final Map<String, String> settings = new HashMap<>();
         settings.put(PlatformSmartmeteringKeys.EVENT_TYPE, this.getEventLogCategory());
         settings.put(PlatformSmartmeteringKeys.KEY_BEGIN_DATE,
                 requestData.get(PlatformSmartmeteringKeys.KEY_BEGIN_DATE));
@@ -75,9 +74,8 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
                 findEventsResponse.getEvents().size());
 
         /*
-         * For every event in the response, check if it matches with the
-         * AllowedEventTypes list. If so, the EventType is from the correct type
-         * as expected.
+         * For every event in the response, check if it matches with the AllowedEventTypes list. If so, the EventType is
+         * from the correct type as expected.
          */
         for (final Event event : findEventsResponse.getEvents()) {
             Event eventMatch = null;

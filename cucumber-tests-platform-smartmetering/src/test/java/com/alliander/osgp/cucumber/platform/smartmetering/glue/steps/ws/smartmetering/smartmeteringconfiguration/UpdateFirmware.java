@@ -31,7 +31,6 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.UpdateFirmwareRequestFactory;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -42,7 +41,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 @Transactional(value = "txMgrCore")
-public class UpdateFirmware extends SmartMeteringStepsBase {
+public class UpdateFirmware {
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -150,8 +149,8 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
         final FirmwareFile activeFirmwareFile = device.getActiveFirmwareFile();
         if (activeFirmwareFile == null) {
             /*
-             * The device has no active firmware in the database, so the
-             * firmware from the settings has not been linked to the device.
+             * The device has no active firmware in the database, so the firmware from the settings has not been linked
+             * to the device.
              */
             return;
         }

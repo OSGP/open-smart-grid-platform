@@ -8,8 +8,8 @@
 package com.alliander.osgp.cucumber.platform.smartmetering;
 
 /**
- * Keys specific for the dlms related data. Note: Keep in mind that generic keys
- * should be specified in the cucumber-tests-platform project.
+ * Keys specific for the dlms related data. Note: Keep in mind that generic keys should be specified in the
+ * cucumber-tests-platform project.
  */
 public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platform.PlatformKeys {
 
@@ -118,11 +118,36 @@ public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platf
     public static final String MBUS_PRIMARY_ADDRESS = "MbusPrimaryAddress";
 
     public static final String ADMINISTRATIVE_STATUS_TYPE = "AdministrativeStatusType";
+    public static final String ALARM_NOTIFICATION_COUNT = "AlarmNotificationCount";
     public static final String ALARM_TYPE = "AlarmType";
     public static final String ALARM_TYPE_ENABLED = "AlarmTypeEnabled";
 
+    public static final String CONFIGURATION_FLAG_COUNT = "ConfigurationFlagCount";
     public static final String CONFIGURATION_FLAG_TYPE = "ConfigurationFlagType";
     public static final String CONFIGURATION_FLAG_ENABLED = "ConfigurationFlagEnabled";
     public static final String GPRS_OPERATION_MODE_TYPE = "GprsOperationModeType";
+
+    public static final String SPECIAL_DAY_COUNT = "SpecialDayCount";
+    public static final String SPECIAL_DAY_ID = "SpecialDayId";
+    public static final String SPECIAL_DAY_DATE = "SpecialDayDate";
+
+    public static final String ACTIVITY_CALENDAR = "ActivityCalendar";
+    public static final String ACTIVITY_CALENDAR_NAME = "ActivityCalendarName";
+    public static final String ACTIVITY_CALENDAR_ACTIVATE_PASSIVE_CALENDAR_TIME = "ActivatePassiveCalendarTime";
+    public static final String SEASON_PROFILE_NAME = "SeasonProfileName";
+    public static final String SEASON_PROFILE_START = "SeasonStart";
+    public static final String SEASON_PROFILE_WEEK_NAME = "WeekName";
+    public static final String WEEK_PROFILE_NAME = "WeekProfileName";
+    public static final String WEEK_PROFILE_MONDAY_DAY_ID = "MondayDayId";
+    public static final String WEEK_PROFILE_TUESDAY_DAY_ID = "TuesdayDayId";
+    public static final String WEEK_PROFILE_WEDNESDAY_DAY_ID = "WednesdayDayId";
+    public static final String WEEK_PROFILE_THURSDAY_DAY_ID = "ThursdayDayId";
+    public static final String WEEK_PROFILE_FRIDAY_DAY_ID = "FridayDayId";
+    public static final String WEEK_PROFILE_SATURDAY_DAY_ID = "SaturdayDayId";
+    public static final String WEEK_PROFILE_SUNDAY_DAY_ID = "SundayDayId";
+    public static final String DAY_PROFILE_DAY_ID = "DayId";
+    public static final String DAY_PROFILE_ACTION_COUNT = "DayProfileActionCount";
+    public static final String DAY_PROFILE_START_TIME = "StartTime";
+    public static final String DAY_PROFILE_SCRIPT_SELECTOR = "ScriptSelector";
 
 }

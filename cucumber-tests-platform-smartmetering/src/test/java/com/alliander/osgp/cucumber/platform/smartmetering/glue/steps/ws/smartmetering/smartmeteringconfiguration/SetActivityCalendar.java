@@ -23,14 +23,13 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActiv
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetActivityCalendarRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetActivityCalendar extends SmartMeteringStepsBase {
+public class SetActivityCalendar {
     protected static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendar.class);
 
     @Autowired

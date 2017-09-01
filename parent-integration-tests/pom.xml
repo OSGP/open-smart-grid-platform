@@ -90,7 +90,6 @@
     <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
     <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
-    <soapui.maven.plugin.version>5.3.0</soapui.maven.plugin.version>
     <jgoodies.version>1.0.5</jgoodies.version>
     <jacoco.version>0.7.9</jacoco.version>
     <selenium.java.version>3.4.0</selenium.java.version>
@@ -114,21 +113,6 @@
     <!-- Address of Tomcat instance -->
     <addressITCoverage>localhost</addressITCoverage>
   </properties>
-
-  <repositories>
-    <repository>
-      <id>smartbear</id>
-      <name>smartbear repository</name>
-      <url>http://www.soapui.org/repository/maven2/</url>
-    </repository>
-  </repositories>
-  
-  <pluginRepositories>
-    <pluginRepository>
-      <id>smartbear-sweden-plugin-repository</id>
-      <url>http://www.soapui.org/repository/maven2/</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <dependencyManagement>
     <dependencies>
@@ -730,30 +714,6 @@
         <scope>test</scope>
       </dependency>
 
-      <!-- SOAP-UI -->
-      <dependency>
-        <groupId>com.smartbear.soapui</groupId>
-        <artifactId>soapui-maven-plugin</artifactId>
-        <version>${soapui.maven.plugin.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>httpcore</artifactId>
-            <groupId>org.apache.httpcomponents</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jfxrt</artifactId>
-            <groupId>javafx</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.smartbear.soapui</groupId>
-        <artifactId>soapui</artifactId>
-        <version>${soapui.maven.plugin.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <!-- Included because of open bug in SOAP-UI: https://sourceforge.net/p/soapui/bugs/694/ -->
       <dependency>
         <groupId>jgoodies</groupId>
         <artifactId>forms</artifactId>
@@ -823,11 +783,6 @@
               </goals>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
-          <groupId>com.smartbear.soapui</groupId>
-          <artifactId>soapui-maven-plugin</artifactId>
-          <version>${soapui.maven.plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

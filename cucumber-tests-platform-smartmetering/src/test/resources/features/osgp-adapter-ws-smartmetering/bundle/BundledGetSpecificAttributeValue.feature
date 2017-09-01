@@ -1,7 +1,7 @@
 @SmartMetering @Platform
-Feature: SmartMetering - Bundle - GetSpecificAttributeValueAction
+Feature: SmartMetering Bundle - GetSpecificAttributeValueAction
   As a grid operator 
-  I want to retrieve a specific attribute value from a meter
+  I want to retrieve a specific attribute value from a meter via a bundle request
 
   Background: 
     Given a dlms device
@@ -11,7 +11,7 @@ Feature: SmartMetering - Bundle - GetSpecificAttributeValueAction
   Scenario: Retrieve COSEM Logical Device Name in a a bundle
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
-    And a get specific attribute value action is part of the bundle request
+    And the bundle request contains a get specific attribute value action with parameters
       | DeviceIdentification | TEST1024000000001 |
       | ClassId              |                 1 |
       | ObisCodeA            |                 0 |
@@ -22,14 +22,14 @@ Feature: SmartMetering - Bundle - GetSpecificAttributeValueAction
       | ObisCodeF            |               255 |
       | Attribute            |                 2 |
     When the bundle request is received
-    Then the bundle response should contain a get specific attribute value response
+    Then the bundle response should contain a get specific attribute value response with values
       | Result       | OK                                                        |
       | ResponsePart | bytes[100, 101, 118, 105, 99, 101, 32, 110, 97, 109, 101] |
 
   Scenario: Retrieve Administrative in/out
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
-    And a get specific attribute value action is part of the bundle request
+    And the bundle request contains a get specific attribute value action with parameters
       | DeviceIdentification | TEST1024000000001 |
       | ClassId              |                 1 |
       | ObisCodeA            |                 0 |
@@ -40,14 +40,14 @@ Feature: SmartMetering - Bundle - GetSpecificAttributeValueAction
       | ObisCodeF            |               255 |
       | Attribute            |                 2 |
     When the bundle request is received
-    Then the bundle response should contain a get specific attribute value response
+    Then the bundle response should contain a get specific attribute value response with values
       | Result       | OK                                    |
       | ResponsePart | Choice=ENUMERATE, ResultData isNumber |
 
   Scenario: Retrieve Currently Active Tariff
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
-    And a get specific attribute value action is part of the bundle request
+    And the bundle request contains a get specific attribute value action with parameters
       | DeviceIdentification | TEST1024000000001 |
       | ClassId              |                 1 |
       | ObisCodeA            |                 0 |
@@ -58,6 +58,6 @@ Feature: SmartMetering - Bundle - GetSpecificAttributeValueAction
       | ObisCodeF            |               255 |
       | Attribute            |                 2 |
     When the bundle request is received
-    Then the bundle response should contain a get specific attribute value response
+    Then the bundle response should contain a get specific attribute value response with values
       | Result       | OK            |
       | ResponsePart | bytes[65, 66] |
