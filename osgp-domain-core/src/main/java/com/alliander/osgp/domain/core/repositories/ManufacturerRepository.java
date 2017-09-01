@@ -16,7 +16,8 @@ import com.alliander.osgp.domain.core.entities.Manufacturer;
 
 @Repository
 public interface ManufacturerRepository
-		extends JpaRepository<Manufacturer, Long>, JpaSpecificationExecutor<Manufacturer> {
-
+        extends JpaRepository<Manufacturer, Long>, JpaSpecificationExecutor<Manufacturer> {
     Manufacturer findByName(String name);
+
+    Manufacturer findByCode(String code);
 }
