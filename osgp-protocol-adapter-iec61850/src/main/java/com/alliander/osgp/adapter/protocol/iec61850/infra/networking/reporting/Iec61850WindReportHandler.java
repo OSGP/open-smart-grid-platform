@@ -8,8 +8,10 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.openmuc.openiec61850.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,8 @@ public class Iec61850WindReportHandler implements Iec61850ReportHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850WindReportHandler.class);
 
     private static final String SYSTEM_TYPE = "WIND";
+
+    private static final List<String> COMPOSITE_NODES = Arrays.asList(new String[] { "W" });
 
     private int systemId;
 
@@ -41,16 +45,42 @@ public class Iec61850WindReportHandler implements Iec61850ReportHandler {
     }
 
     @Override
-    public MeasurementDto handleMember(final ReadOnlyNodeContainer member) {
+    public List<MeasurementDto> handleMember(final ReadOnlyNodeContainer member) {
 
-        final RtuReadCommand<MeasurementDto> command = Iec61850WindCommandFactory.getInstance()
-                .getCommand(member.getFcmodelNode().getName());
+        final List<MeasurementDto> measurements = new ArrayList<>();
 
-        if (command == null) {
-            LOGGER.warn("No command found for node {}", member.getFcmodelNode().getName());
-            return null;
+        if (this.isCompositeNode(member)) {
+            for (final ModelNode child : member.getFcmodelNode().getChildren()) {
+                final String compositeNodeName = this.getCompositeNodeName(child);
+
+                final RtuReadCommand<MeasurementDto> command = Iec61850WindCommandFactory.getInstance()
+                        .getCommand(compositeNodeName);
+
+                if (command == null) {
+                    LOGGER.warn("No command found for node {}", compositeNodeName);
+                } else {
+                    measurements.add(command.translate(member.getChild(child.getName())));
+                }
+            }
         } else {
-            return command.translate(member);
+            final RtuReadCommand<MeasurementDto> command = Iec61850WindCommandFactory.getInstance()
+                    .getCommand(member.getFcmodelNode().getName());
+
+            if (command == null) {
+                LOGGER.warn("No command found for node {}", member.getFcmodelNode().getName());
+            } else {
+                measurements.add(command.translate(member));
+            }
         }
+        return measurements;
     }
+
+    private boolean isCompositeNode(final ReadOnlyNodeContainer member) {
+        return COMPOSITE_NODES.contains(member.getFcmodelNode().getName());
+    }
+
+    private String getCompositeNodeName(final ModelNode childNode) {
+        return childNode.getParent().getName() + "." + childNode.getName();
+    }
+
 }

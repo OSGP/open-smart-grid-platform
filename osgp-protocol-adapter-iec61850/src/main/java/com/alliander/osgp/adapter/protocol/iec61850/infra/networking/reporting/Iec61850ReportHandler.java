@@ -10,11 +10,11 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 import java.util.List;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
 public interface Iec61850ReportHandler {
     GetDataSystemIdentifierDto createResult(List<MeasurementDto> measurements);
 
-    MeasurementDto handleMember(final ReadOnlyNodeContainer member);
+    List<MeasurementDto> handleMember(final ReadOnlyNodeContainer member);
 }

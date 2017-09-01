@@ -139,27 +139,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             return;
         }
 
-        final List<MeasurementDto> measurements = new ArrayList<>();
-        for (final FcModelNode member : members) {
-            if (member == null) {
-                this.logger.warn("Member == null in DataSet for {}", reportDescription);
-                continue;
-            }
-
-            this.logger.info("Handle member {} for {}", member.getReference(), reportDescription);
-            try {
-                final MeasurementDto dto = reportHandler
-                        .handleMember(new ReadOnlyNodeContainer(this.deviceIdentification, member));
-                if (dto != null) {
-                    measurements.add(dto);
-                } else {
-                    this.logger.warn("Unsupprted member {}, skipping", member.getName());
-                }
-            } catch (final Exception e) {
-                this.logger.error("Error adding event notification for member {} from {}", member.getReference(),
-                        reportDescription, e);
-            }
-        }
+        final List<MeasurementDto> measurements = this.processMeasurements(reportHandler, reportDescription, members);
 
         final GetDataSystemIdentifierDto systemResult = reportHandler.createResult(measurements);
         final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
@@ -171,6 +151,33 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
         this.deviceManagementService.sendMeasurements(this.deviceIdentification,
                 new GetDataResponseDto(systems, reportDto));
+    }
+
+    private List<MeasurementDto> processMeasurements(final Iec61850ReportHandler reportHandler,
+            final String reportDescription, final List<FcModelNode> members) {
+        final List<MeasurementDto> measurements = new ArrayList<>();
+        for (final FcModelNode member : members) {
+            if (member == null) {
+                this.logger.warn("Member == null in DataSet for {}", reportDescription);
+                continue;
+            }
+
+            this.logger.info("Handle member {} for {}", member.getReference(), reportDescription);
+            try {
+                final List<MeasurementDto> memberMeasurements = reportHandler
+                        .handleMember(new ReadOnlyNodeContainer(this.deviceIdentification, member));
+
+                if (memberMeasurements.isEmpty()) {
+                    this.logger.warn("Unsupported member {}, skipping", member.getName());
+                } else {
+                    measurements.addAll(memberMeasurements);
+                }
+            } catch (final Exception e) {
+                this.logger.error("Error adding measurement for member {} from {}", member.getReference(),
+                        reportDescription, e);
+            }
+        }
+        return measurements;
     }
 
     private void logReportDetails(final Report report) {
