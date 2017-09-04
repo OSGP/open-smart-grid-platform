@@ -21,7 +21,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.PeriodicMeterReadsRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
@@ -29,7 +28,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class PeriodicMeterReads extends SmartMeteringStepsBase {
+public class PeriodicMeterReads {
 
     @Autowired
     private SmartMeteringMonitoringRequestClient<PeriodicMeterReadsAsyncResponse, PeriodicMeterReadsRequest> requestClient;

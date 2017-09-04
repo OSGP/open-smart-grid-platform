@@ -25,7 +25,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmw
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.FirmwareVersionRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetFirmwareVersionRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
@@ -33,7 +32,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetFirmwareVersion extends SmartMeteringStepsBase {
+public class GetFirmwareVersion {
     protected static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersion.class);
 
     @Autowired

@@ -8,69 +8,49 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.Actions;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericData;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponseData;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
-import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.builders.BundleRequestBuilder;
 import com.alliander.osgp.cucumber.platform.smartmetering.builders.GetProfileGenericDataRequestBuilder;
-import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
-public class GetProfileGenericDataSteps {
-    @Autowired
-    private SmartMeteringBundleClient client;
+public class BundledGetProfileGenericDataSteps extends BaseBundleSteps {
 
-    @When("^a get profile generic data request is received as part of a bundled request$")
-    public void whenAGetProfileGenericDataBundleRequestIsReceived(final Map<String, String> settings) throws Throwable {
-
-        final GetProfileGenericDataRequest action = new GetProfileGenericDataRequestBuilder().fromParameterMap(settings)
-                .build();
-
-        final Actions actions = new Actions();
-        actions.getActionList().add(action);
-
-        final BundleRequest request = new BundleRequestBuilder()
-                .withDeviceIdentification(settings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)).withActions(actions).build();
-        final BundleAsyncResponse response = this.client.sendBundleRequest(request);
-
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.CORRELATION_UID, response.getCorrelationUid());
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION, response.getDeviceIdentification());
-    }
-
-    @Then("^the profile generic data should be part of the bundle response$")
-    public void thenTheProfileGenericDataShouldBePartOfTheBundleResponse(final Map<String, String> settings)
+    @Given("^the bundle request contains a get profile generic data action with parameters$")
+    public void theBundleRequestContainsAGetProfileGenericDataAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final BundleAsyncRequest request = new BundleAsyncRequest();
-        request.setCorrelationUid((String) ScenarioContext.current().get(PlatformSmartmeteringKeys.CORRELATION_UID));
-        request.setDeviceIdentification((String) ScenarioContext.current().get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
+        final GetProfileGenericDataRequest action = new GetProfileGenericDataRequestBuilder()
+                .fromParameterMap(parameters).build();
 
-        final BundleResponse bundleResponse = this.client.retrieveBundleResponse(request);
-        final ProfileGenericDataResponseData profileGenericDataResponseData = (ProfileGenericDataResponseData) bundleResponse
-                .getAllResponses().getResponseList().get(0);
-        final ProfileGenericData profileGenericData = profileGenericDataResponseData.getProfileGenericData();
+        this.addActionToBundleRequest(action);
+    }
 
-        this.assertEqualCaptureObjects(profileGenericData.getCaptureObjectList().getCaptureObjects(), settings);
-        this.assertEqualProfileEntries(profileGenericData.getProfileEntryList().getProfileEntries(), settings);
+    @Then("^the bundle response should contain a profile generic data response with values$")
+    public void theBundleResponseShouldContainAProfileGenericDataResponse(final Map<String, String> values)
+            throws Throwable {
+
+        final Response response = this.getNextBundleResponse();
+
+        assertTrue("Not a valid response", response instanceof ProfileGenericDataResponse);
+
+        final ProfileGenericDataResponse profileGenericDataResponse = (ProfileGenericDataResponse) response;
+        final ProfileGenericData profileGenericData = profileGenericDataResponse.getProfileGenericData();
+
+        this.assertEqualCaptureObjects(profileGenericData.getCaptureObjectList().getCaptureObjects(), values);
+        this.assertEqualProfileEntries(profileGenericData.getProfileEntryList().getProfileEntries(), values);
     }
 
     private void assertEqualCaptureObjects(final List<CaptureObject> actualCaptureObjects,

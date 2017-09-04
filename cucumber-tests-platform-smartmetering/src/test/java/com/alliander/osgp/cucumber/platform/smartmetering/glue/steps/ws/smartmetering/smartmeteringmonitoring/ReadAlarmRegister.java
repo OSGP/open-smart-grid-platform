@@ -19,7 +19,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRe
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ReadAlarmRegisterRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
@@ -27,7 +26,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ReadAlarmRegister extends SmartMeteringStepsBase {
+public class ReadAlarmRegister {
 
     @Autowired
     private SmartMeteringMonitoringRequestClient<ReadAlarmRegisterAsyncResponse, ReadAlarmRegisterRequest> requestClient;

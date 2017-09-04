@@ -8,38 +8,39 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetClockConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetClockConfigurationRequestDataFactory;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class SetClockConfigurationSteps extends BaseBundleSteps {
+public class BundledSetClockConfigurationSteps extends BaseBundleSteps {
 
-    @Given("^a set clock configuration action is part of a bundled request$")
-    public void aSetClockConfigurationActionIsPartOfABundledRequest(final Map<String, String> settings)
+    @Given("^the bundle request contains a set clock configuration action with parameters$")
+    public void theBundleRequestContainsASetClockConfigurationAction(final Map<String, String> settings)
             throws Throwable {
 
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
-
-        final SetClockConfigurationRequest action = this.defaultMapper.map(
+        final SetClockConfigurationRequest action = this.mapperFacade.map(
                 SetClockConfigurationRequestDataFactory.fromParameterMap(settings), SetClockConfigurationRequest.class);
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
-    @Then("^the bundle response contains a set clock configuration response$")
-    public void theBundleResponseContainsASetClockConfigurationResponse(final Map<String, String> settings)
+    @Then("^the bundle response should contain a set clock configuration response with values$")
+    public void theBundleResponseShouldContainASetClockConfigurationResponse(final Map<String, String> settings)
             throws Throwable {
-        final Response actionResponse = this.getNextBundleResponse();
-        assertEquals(OsgpResultType.fromValue(settings.get(PlatformSmartmeteringKeys.RESULT)), actionResponse.getResult());
+
+        final Response response = this.getNextBundleResponse();
+
+        assertTrue("Not a valid response", response instanceof ActionResponse);
+        assertEquals(OsgpResultType.fromValue(settings.get(PlatformSmartmeteringKeys.RESULT)), response.getResult());
     }
 }
