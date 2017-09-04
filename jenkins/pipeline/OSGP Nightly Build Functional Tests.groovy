@@ -57,7 +57,8 @@ pipeline {
             steps {
                 withMaven(
                         maven: 'Apache Maven 3.5.0',
-                        mavenLocalRepo: '.repository') {
+                        mavenLocalRepo: '.repository',
+                        options: [openTasksPublisher(disabled: true)]) {
                     sh "mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
                 }
             }
@@ -66,7 +67,7 @@ pipeline {
         stage('Reporting') {
             steps {
                 jacoco execPattern: '**/code-coverage/jacoco-it.exec'
-                cucumber '**/cucumber.json'
+                cucumber buildStatus: null, fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
                 archiveArtifacts '**/target/*.tgz'
 
                 // Check the console log for failed tests
