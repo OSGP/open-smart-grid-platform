@@ -391,7 +391,11 @@ public class RtuSimulator implements ServerEventListener {
                 final List<BasicDataAttribute> values = new ArrayList<>();
 
                 for (final LogicalDevice ld : this.logicalDevices) {
-                    values.addAll(ld.getAttributesAndSetValues(timestamp));
+                    try {
+                        values.addAll(ld.getAttributesAndSetValues(timestamp));
+                    } catch (final Exception e) {
+                        LOGGER.info("Exception while generating values.", e);
+                    }
                 }
 
                 this.server.setValues(values);
