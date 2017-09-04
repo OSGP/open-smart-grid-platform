@@ -37,7 +37,7 @@ pipeline {
                 withMaven(
                         maven: 'Apache Maven 3.5.0',
                         mavenLocalRepo: '.repository') {
-                	sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                    sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 }
             }
         }

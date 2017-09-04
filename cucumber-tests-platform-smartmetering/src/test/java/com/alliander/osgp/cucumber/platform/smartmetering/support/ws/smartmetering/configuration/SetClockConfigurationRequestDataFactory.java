@@ -8,7 +8,6 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
 import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getByte;
 import static com.alliander.osgp.cucumber.core.Helpers.getHexDecoded;
 import static com.alliander.osgp.cucumber.core.Helpers.getShort;
 
@@ -22,16 +21,16 @@ public class SetClockConfigurationRequestDataFactory {
 
     public static SetClockConfigurationRequestData fromParameterMap(final Map<String, String> parameters) {
         final SetClockConfigurationRequestData setClockConfigurationData = new SetClockConfigurationRequestData();
-        setClockConfigurationData.setDaylightSavingsBegin(
-                getHexDecoded(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_BEGIN, PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_BEGIN));
-        setClockConfigurationData.setDaylightSavingsEnd(
-                getHexDecoded(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_END, PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_END));
-        setClockConfigurationData.setDaylightSavingsDeviation(
-                getByte(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_DEVIATION, PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_DEVIATION));
-        setClockConfigurationData.setDaylightSavingsEnabled(
-                getBoolean(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_ENABLED, PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_ENABLED));
         setClockConfigurationData
-                .setTimeZoneOffset(getShort(parameters, PlatformSmartmeteringKeys.TIME_ZONE_OFFSET, PlatformSmartmeteringDefaults.TIME_ZONE_OFFSET));
+                .setDaylightSavingsBegin(getHexDecoded(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_BEGIN,
+                        PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_BEGIN));
+        setClockConfigurationData.setDaylightSavingsEnd(getHexDecoded(parameters,
+                PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_END, PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_END));
+        setClockConfigurationData
+                .setDaylightSavingsEnabled(getBoolean(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_ENABLED,
+                        PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_ENABLED));
+        setClockConfigurationData.setTimeZoneOffset(getShort(parameters, PlatformSmartmeteringKeys.TIME_ZONE_OFFSET,
+                PlatformSmartmeteringDefaults.TIME_ZONE_OFFSET));
 
         return setClockConfigurationData;
     }

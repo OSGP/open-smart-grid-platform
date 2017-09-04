@@ -15,7 +15,6 @@ Feature: SmartMetering Clock configuration
       | TimeZoneOffset           |                      -60 |
       | DaylightSavingsBegin     | FFFF03FE0702000000FFC400 |
       | DaylightSavingsEnd       | FFFF0AFE0703000000FF8880 |
-      | DaylightSavingsDeviation |                      -60 |
       | DaylightSavingsEnabled   | TRUE                     |
     Then the set clock configuration response should be returned
       | DeviceIdentification | TEST1024000000001 |
@@ -28,7 +27,6 @@ Feature: SmartMetering Clock configuration
       | TimeZoneOffset           |                     -480 |
       | DaylightSavingsBegin     | FFFF03FE0702000000FFC400 |
       | DaylightSavingsEnd       | FFFF0AFE0703000000FF8880 |
-      | DaylightSavingsDeviation |                       60 |
       | DaylightSavingsEnabled   | true                     |
     And the bundle request contains a valid synchronize time action for timezone "Europe/Amsterdam"
     When the bundle request is received
@@ -44,7 +42,6 @@ Feature: SmartMetering Clock configuration
       | TimeZoneOffset           |                      -60 |
       | DaylightSavingsBegin     | FFFF03FE0702000000FFC400 |
       | DaylightSavingsEnd       | FFFF0AFE0703000000FF8880 |
-      | DaylightSavingsDeviation |                       60 |
       | DaylightSavingsEnabled   | true                     |
     And the bundle request contains a valid synchronize time action for timezone "Europe/Amsterdam"
     When the bundle request is received

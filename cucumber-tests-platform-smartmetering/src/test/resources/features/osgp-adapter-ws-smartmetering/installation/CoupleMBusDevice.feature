@@ -371,4 +371,4 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | Code    |                               217 |
       | Message | ALL_MBUS_CHANNELS_OCCUPIED |
     And the mbus device "TESTG102400000001" is not coupled to the device "TEST1024000000001"
-      
+
