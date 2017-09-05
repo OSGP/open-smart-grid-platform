@@ -949,14 +949,6 @@
         </xsd:element>
         <xsd:element name="DaylightSavingsBegin" type="common:CosemDateTimeType" />
         <xsd:element name="DaylightSavingsEnd" type="common:CosemDateTimeType" />
-        <xsd:element name="DaylightSavingsDeviation">
-          <xsd:simpleType>
-            <xsd:restriction base="xsd:byte">
-              <xsd:minInclusive value="-120" />
-              <xsd:maxInclusive value="120" />
-            </xsd:restriction>
-          </xsd:simpleType>
-        </xsd:element>
         <xsd:element name="DaylightSavingsEnabled" type="xsd:boolean" default="true" />
         </xsd:sequence>
       </xsd:extension>
