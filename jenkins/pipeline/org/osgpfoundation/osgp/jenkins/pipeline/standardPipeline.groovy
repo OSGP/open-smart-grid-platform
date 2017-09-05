@@ -16,6 +16,7 @@ def call(body) {
         agent any
         options {
             ansiColor('xterm')
+            timestamps()
             timeout(240)
             // Only keep the 10 most recent builds
             buildDiscarder(logRotator(numToKeepStr: '10'))
