@@ -41,7 +41,7 @@ echo "- Create directory structure ..."
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo mkdir -p /data/software/artifacts/\"\""
 echo "  [${CMD}]"
 ${CMD}
-CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo chown -R ${USER}:${USER} /data/software/artifacts\"\""
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo chown -R ${USER}:${USER} /data/software\"\""
 echo "  [${CMD}]"
 ${CMD}
 
