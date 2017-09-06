@@ -27,10 +27,6 @@ public class Iec61850MockServerConfig {
     @Bean(destroyMethod = "stop", initMethod = "start")
     public Iec61850MockServer iec61850MockServerPampus() {
         return new Iec61850MockServer("PAMPUS", "Pampus_v0.4.5.icd", 62102, "WAGO61850Server");
-        // return new Iec61850MockServer("PAMPUS",
-        // "Pampus_with_engine_profiles_and_wind.icd", 62102,
-        // "WAGO61850Server");
-
     }
 
     @Bean(destroyMethod = "stop", initMethod = "start")
