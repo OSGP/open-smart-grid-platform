@@ -43,18 +43,6 @@ public class RtuSimulatorConfig {
         LOGGER.info(
                 "Start simulator with icdFilename={}, port={}, serverName={}, stopGeneratingValues={}, updateValuesDelay={}, updateValuesPeriod={}",
                 icdFilename, port, serverName, stopGeneratingValues, updateValuesDelay, updateValuesPeriod);
-        // <<<<<<< HEAD
-        // final InputStream icdFile =
-        // this.resourceLoader.getResource("classpath:" +
-        // icdFilename).getInputStream();
-        // LOGGER.info("Simulator icdFile is {} on the classpath", icdFile !=
-        // null ? "found" : "not found");
-        //
-        // try {
-        // final RtuSimulator rtuSimulator = new RtuSimulator(port, icdFile,
-        // serverName, this.serverSapEventProducer,
-        // updateValuesDelay, updateValuesPeriod);
-        // =======
 
         InputStream icdInputStream;
         final File icdFile = new File(icdFilename);
