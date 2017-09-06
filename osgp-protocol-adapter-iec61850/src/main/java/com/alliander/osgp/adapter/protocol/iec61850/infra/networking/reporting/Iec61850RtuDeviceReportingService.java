@@ -33,16 +33,18 @@ public class Iec61850RtuDeviceReportingService {
 
     private void enableReports(final DeviceConnection connection, final Collection<? extends Rcb> reports) {
         for (final Rcb report : reports) {
+            final String reportReference = report.getReference().toString();
             try {
+                LOGGER.info("Enable reporting for report {}.", reportReference);
                 final NodeContainer node = new NodeContainer(connection, report);
                 node.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
             } catch (final NullPointerException e) {
                 LOGGER.debug("NullPointerException", e);
-                LOGGER.warn("Skip enable reporting for report {}.", report.getReference().getName());
+                LOGGER.warn("Skip enable reporting for report {}.", reportReference);
             } catch (final NodeWriteException e) {
                 LOGGER.debug("NodeWriteException", e);
-                LOGGER.error("Enable reporting for report {}, failed with exception: {}",
-                        report.getReference().getName(), e.getMessage());
+                LOGGER.error("Enable reporting for report {}, failed with exception: {}", reportReference,
+                        e.getMessage());
             }
         }
     }
