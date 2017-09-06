@@ -290,18 +290,6 @@ public enum SubDataAttribute {
      */
     TIMES("time"),
     /**
-     * Phase A
-     */
-    PHASE_A("phsA"),
-    /**
-     * Phase B
-     */
-    PHASE_B("phsB"),
-    /**
-     * Phase C
-     */
-    PHASE_C("phsC"),
-    /**
      * C Value
      */
     C_VALUES("cVal");
