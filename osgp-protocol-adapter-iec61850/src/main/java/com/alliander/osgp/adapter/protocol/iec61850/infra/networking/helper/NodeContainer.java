@@ -105,7 +105,7 @@ public class NodeContainer {
             LOGGER.error("BdaTimeStamp is null, most likely attribute: {} does not exist");
         }
 
-        LOGGER.info("device: {}, {} has value {}", this.deviceIdentification, child.getDescription(),
+        LOGGER.debug("device: {}, {} has value {}", this.deviceIdentification, child.getDescription(),
                 dBdaTimestamp.getDate());
         return dBdaTimestamp.getDate();
     }
