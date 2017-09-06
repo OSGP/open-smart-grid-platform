@@ -6,7 +6,7 @@ mkdir -p target/artifacts
 find . -name *.war -exec cp -f {} target/artifacts \;
 
 echo "retrieve additional artifacts ..."
-VERSION=`grep "<version>" pom.xml | sed "s#<[/]\?version>##g;s# ##g"`
+VERSION=`grep "<version>" pom.xml | sed "s#<[/]\?version>##g;s# ##g" | grep SNAPSHOT`
 echo "  [$VERSION]"
 ARTIFACTORY_URL=https://artifactory.smartsocietyservices.com
 CURL_URL=${ARTIFACTORY_URL}/artifactory/osgp-snapshots/com/alliander/osgp/config/${VERSION}/config-${VERSION}.zip
