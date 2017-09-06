@@ -27,8 +27,8 @@ VERSION=`grep "<version>" pom.xml | sed "s#<[/]\?version>##g;s# ##g" | grep SNAP
 echo "  [$VERSION]"
 ARTIFACTORY_URL=https://artifactory.smartsocietyservices.com
 
-CURL_URL=${ARTIFACTORY_URL}/artifactory/osgp-snapshots/com/alliander/osgp/config/${VERSION}/config-${VERSION}.zip
-CURL_TARGET_FILE=target/artifacts/config-${VERSION}.zip
+CURL_URL=${ARTIFACTORY_URL}/artifactory/osgp-snapshots/com/alliander/osgp/config/${VERSION}/config-${VERSION}.tar.gz
+CURL_TARGET_FILE=target/artifacts/config-${VERSION}.tar.gz
 echo "  [curl -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
 curl -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
 
