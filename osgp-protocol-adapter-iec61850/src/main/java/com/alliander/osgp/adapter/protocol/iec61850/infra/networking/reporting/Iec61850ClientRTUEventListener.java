@@ -222,8 +222,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             if ((members != null) && !members.isEmpty()) {
                 sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
                 for (final FcModelNode member : members) {
-                    sb.append("\t            member:\t").append(member).append(System.lineSeparator());
-                    sb.append("\t                   \t\t").append(member);
+                    sb.append("\t            member:\t").append(member.getReference()).append(System.lineSeparator());
                 }
             }
         }
