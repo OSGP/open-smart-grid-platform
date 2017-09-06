@@ -15,6 +15,7 @@ echo "  [curl -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
 curl -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
 
 CURL_URL=${ARTIFACTORY_URL}/artifactory/sss-snapshots/com/alliander/osgp/configuration/${VERSION}/configuration-${VERSION}.tgz
+VERSION=`grep "<version>" pom.xml | sed "s#<[/]\?version>##g;s# ##g" | grep SNAPSHOT | sed "s#-SNAPSHOT##g"`
 CURL_TARGET_FILE=target/artifacts/configuration-${VERSION}.tgz
 echo "  [curl -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
 curl -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
