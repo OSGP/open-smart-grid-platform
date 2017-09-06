@@ -26,25 +26,26 @@ public class Iec61850RtuDeviceReportingService {
     public void enableReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
         final ServerModel serverModel = connection.getConnection().getServerModel();
 
-        this.enableReports(connection, serverModel.getBrcbs());
-        this.enableReports(connection, serverModel.getUrcbs());
+        this.enableReports(connection, deviceIdentification, serverModel.getBrcbs());
+        this.enableReports(connection, deviceIdentification, serverModel.getUrcbs());
 
     }
 
-    private void enableReports(final DeviceConnection connection, final Collection<? extends Rcb> reports) {
+    private void enableReports(final DeviceConnection connection, final String deviceIdentification,
+            final Collection<? extends Rcb> reports) {
         for (final Rcb report : reports) {
             final String reportReference = report.getReference().toString();
             try {
-                LOGGER.info("Enable reporting for report {}.", reportReference);
+                LOGGER.info("Enable reporting for report {} on device {}.", reportReference, deviceIdentification);
                 final NodeContainer node = new NodeContainer(connection, report);
                 node.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
             } catch (final NullPointerException e) {
                 LOGGER.debug("NullPointerException", e);
-                LOGGER.warn("Skip enable reporting for report {}.", reportReference);
+                LOGGER.warn("Skip enable reporting for report {} on device {}.", reportReference, deviceIdentification);
             } catch (final NodeWriteException e) {
                 LOGGER.debug("NodeWriteException", e);
-                LOGGER.error("Enable reporting for report {}, failed with exception: {}", reportReference,
-                        e.getMessage());
+                LOGGER.error("Enable reporting for report {} on device {}, failed with exception: {}", reportReference,
+                        deviceIdentification, e.getMessage());
             }
         }
     }
