@@ -54,16 +54,4 @@ public class Iec61850ActivePowerCommand implements RtuReadCommand<MeasurementDto
                 containingNode.getChild(SubDataAttribute.C_VALUES).getChild(SubDataAttribute.MAGNITUDE)
                         .getFloat(SubDataAttribute.FLOAT).getFloat());
     }
-
-    // @Override
-    // public MeasurementDto translate(final ModelNode modelNode) {
-    // return new MeasurementDto(this.index,
-    // this.dataAttribute.getDescription(),
-    //
-    // QualityConverter.toShort(modelNode..getQuality(SubDataAttribute.QUALITY).getValue()),
-    // new DateTime(modelNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
-    //
-    // modelNode.getChild(SubDataAttribute.C_VALUES).getChild(SubDataAttribute.MAGNITUDE)
-    // .getFloat(SubDataAttribute.FLOAT).getFloat());
-    // }
 }
