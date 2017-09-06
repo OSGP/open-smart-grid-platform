@@ -38,7 +38,8 @@ public enum DataAttribute {
      */
     IP_CONFIGURATION("IPCf"),
     /**
-     * Property of XSWC Node, CfSt, configuration state of a relay which determines if the relay can be operated.
+     * Property of XSWC Node, CfSt, configuration state of a relay which
+     * determines if the relay can be operated.
      */
     MASTER_CONTROL("CfSt"),
     /**
@@ -162,19 +163,23 @@ public enum DataAttribute {
      */
     TOTAL_ENERGY("TotWh"),
     /**
-     * Battery: State of Charge, Heat Pump: Coefficient of Performance, Wind: Cosinus Phi
+     * Battery: State of Charge, Heat Pump: Coefficient of Performance, Wind:
+     * Cosinus Phi
      */
     AVERAGE_POWER_FACTOR("TotPF"),
     /**
-     * Property of LLN0 Node, ReportStatus01, contains the reporting information.
+     * Property of LLN0 Node, ReportStatus01, contains the reporting
+     * information.
      */
     REPORT_STATUS_ONE("ReportStatus01"),
     /**
-     * Property of LLN0 Node, ReportMeasurements01, contains the reporting information.
+     * Property of LLN0 Node, ReportMeasurements01, contains the reporting
+     * information.
      */
     REPORT_MEASUREMENTS_ONE("ReportMeasurements01"),
     /**
-     * Property of LLN0 Node, ReportHeartbeat01, contains the reporting information.
+     * Property of LLN0 Node, ReportHeartbeat01, contains the reporting
+     * information.
      */
     REPORT_HEARTBEAT_ONE("ReportHeartbeat01"),
     /**
