@@ -23,14 +23,13 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfi
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetConfigurationObjectRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetConfigurationObject extends SmartMeteringStepsBase {
+public class SetConfigurationObject {
     protected static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObject.class);
 
     @Autowired

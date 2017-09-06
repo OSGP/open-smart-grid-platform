@@ -99,15 +99,6 @@ Feature: SmartMetering Configuration
       | Result               | NOT_OK            |
     And the keys are not changed in the osgp_adapter_protocol_dlms database security_key table
 
-  Scenario: Get configuration object on a device
-    Given a bundle request
-      | DeviceIdentification | TEST1024000000001 |
-    And a get configuration object is part of a bundled request
-    When the bundle request is received
-    Then the bundle response contains a get configuration object response
-      | GprsOperationMode    | ALWAYS_ON |
-      | DISCOVER_ON_POWER_ON | true      |
-
   @ResetKeysOnDevice
   Scenario: Replace keys with generated ones on a device
     When the generate and replace keys request is received

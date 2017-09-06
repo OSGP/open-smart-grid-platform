@@ -21,14 +21,13 @@ import org.springframework.data.domain.PageRequest;
 
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ResponseNotifier;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 import cucumber.api.java.en.Then;
 
-public class AuditTrail extends SmartMeteringStepsBase {
+public class AuditTrail {
     private static final String PATTERN_RETRY_OPERATION = "retry count= .*, correlationuid= .*";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuditTrail.class);
@@ -55,7 +54,8 @@ public class AuditTrail extends SmartMeteringStepsBase {
             LOGGER.info("CreationTime: {}", deviceLogItem.getCreationTime().toString());
             LOGGER.info("DecodedMessage: {}", deviceLogItem.getDecodedMessage());
 
-            final boolean isMatchRetryOperation = Pattern.matches(PATTERN_RETRY_OPERATION, deviceLogItem.getDecodedMessage());
+            final boolean isMatchRetryOperation = Pattern.matches(PATTERN_RETRY_OPERATION,
+                    deviceLogItem.getDecodedMessage());
             assertTrue("No retry log item found.", isMatchRetryOperation);
         }
     }

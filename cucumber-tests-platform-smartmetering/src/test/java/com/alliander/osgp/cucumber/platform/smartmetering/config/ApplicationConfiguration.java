@@ -8,16 +8,11 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
 import com.alliander.osgp.shared.application.config.AbstractConfig;
-
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
  * Base class for the application configuration.
@@ -63,14 +58,4 @@ public class ApplicationConfiguration extends AbstractConfig {
 
     @Value("${jaxb2.marshaller.context.path.smartmetering.monitoring}")
     public String contextPathSmartMeteringMonitoring;
-
-    @Bean
-    public MapperFactory defaultMapperFactory() {
-        return new DefaultMapperFactory.Builder().build();
-    }
-
-    @Bean
-    public MapperFacade defaultMapper(final MapperFactory defaultMapperFactory) {
-        return defaultMapperFactory.getMapperFacade();
-    }
 }

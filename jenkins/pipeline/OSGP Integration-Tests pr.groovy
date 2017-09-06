@@ -11,6 +11,7 @@ pipeline {
     agent any
     options {
         ansiColor('xterm')
+        timestamps()
         timeout(240)
         // Only keep the 10 most recent builds
         buildDiscarder(logRotator(numToKeepStr:'10'))
@@ -37,7 +38,7 @@ pipeline {
                 withMaven(
                         maven: 'Apache Maven 3.5.0',
                         mavenLocalRepo: '.repository') {
-                	sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
+                    sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 }
             }
         }
