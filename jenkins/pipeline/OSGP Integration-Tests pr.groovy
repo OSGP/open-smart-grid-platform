@@ -2,9 +2,8 @@
 
 def stream = 'osgp'
 def servername = stream + '-at-pr-' + env.BUILD_NUMBER
-//def servername = stream + '-at-pr-26'
+//def servername = stream + '-at-pr-1'
 def playbook = stream + '-at.yml'
-def extravars = 'ec2_instance_type=t2.large'
 def repo = 'git@github.com:OSGP/Integration-Tests.git'
 
 pipeline {
@@ -42,10 +41,31 @@ pipeline {
                 }
             }
         }
-        
-        stage ('Deploy AWS system') {
+
+        stage ('Create new AWS system') {
             steps {
-                build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook), string(name: 'EXTRAVARS', value: extravars)]
+                build job: 'Deploy an AWS System', parameters: [
+                        string(name: 'SERVERNAME', value: servername),
+                        string(name: 'PLAYBOOK', value: 'single-instance.yml'),
+                        string(name: 'INSTANCETYPE', value: 'c4.large')]
+            }
+        }
+
+        stage ('Collect artifacts from build') {
+            steps {
+                sh "collectAndDeployArtifactsFromBuild.sh ${servername}-instance.dev.osgp.cloud centos \"OSGP Development.pem\""
+            }
+        }
+
+        stage ('Deploy local artifacts') {
+            steps {
+                build job: 'Deploy an AWS System', parameters: [
+                        string(name: 'SERVERNAME', value: servername),
+                        string(name: 'PLAYBOOK', value: playbook),
+                        booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
+                        string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
+                        string(name: 'OSGP_VERSION', value: '4.17.0-SNAPSHOT'),
+                        booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true)]
             }
         }
 

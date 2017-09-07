@@ -10,6 +10,7 @@ fi
 SERVER=$1
 USER=$2
 SSH_KEY_FILE=$3
+ARTIFACTORYAUTH=$4
 ARTIFACTSDIR=target/artifacts
 REMOTESOFTWAREDIR=/data/software
 REMOTEARTIFACTSDIR=${REMOTESOFTWAREDIR}/artifacts
@@ -32,13 +33,13 @@ ARTIFACTORY_URL=https://artifactory.smartsocietyservices.com/artifactory
 
 CURL_URL=${ARTIFACTORY_URL}/osgp-snapshots/com/alliander/osgp/config/${VERSION}/config-${VERSION}.tar.gz
 CURL_TARGET_FILE=${ARTIFACTSDIR}/config-${VERSION}.tar.gz
-echo "  [curl -u jenkins:5530b58993258e3f753c0afb5f2e8dc6 -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
-curl -u jenkins:5530b58993258e3f753c0afb5f2e8dc6 -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
+echo "  [curl -u ${ARTIFACTORYAUTH} -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
+curl -u ${ARTIFACTORYAUTH} -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
 
 CURL_URL=${ARTIFACTORY_URL}/sss-snapshots/com/alliander/osgp/configuration/${VERSION}/configuration-${VERSION}-configuration.tgz
 CURL_TARGET_FILE=${ARTIFACTSDIR}/configuration-${VERSION}.tgz
-echo "  [curl -u jenkins:5530b58993258e3f753c0afb5f2e8dc6 -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
-curl -u jenkins:5530b58993258e3f753c0afb5f2e8dc6 -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
+echo "  [curl -u ${ARTIFACTORYAUTH} -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
+curl -u ${ARTIFACTORYAUTH} -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
 
 echo "- Create directory structure ..."
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo mkdir -p ${REMOTEARTIFACTSDIR}/\"\""
