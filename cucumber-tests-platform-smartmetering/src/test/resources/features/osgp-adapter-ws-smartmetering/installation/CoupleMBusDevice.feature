@@ -81,7 +81,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | Code    |                               216 |
       | Message | GIVEN_MBUS_DEVICE_ALREADY_COUPLED |
     And the M-Bus device "TESTG102400000001" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
-
+  
   Scenario: Couple G-meter "TESTG102400000002" to E-meter "TEST1024000000001" on second channel with already coupled channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -149,6 +149,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
+  @bjorn
   Scenario: Couple G-meter to an E-meter that is already coupled with other G-meter on channel 2
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -173,12 +174,15 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | 8 |        66 |
       | 9 |         3 |
     When the Couple G-meter "TESTG102400000002" request is received for E-meter "TEST1024000000001"
-    Then retrieving the Couple response results in an exception
-    And a SOAP fault should have been returned
-      | Code    |                               209 |
-      | Message | CHANNEL_ON_DEVICE_ALREADY_COUPLED |
+    #Then retrieving the Couple response results in an exception
+    Then the Couple response is "OK"
+    #And a SOAP fault should have been returned
+    #| Code    |                               209 |
+    #| Message | CHANNEL_ON_DEVICE_ALREADY_COUPLED |
     And the M-Bus device "TESTG102400000001" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "3"
-    And the mbus device "TESTG102400000002" is not coupled to the device "TEST1024000000001"
+    #And the mbus device "TESTG102400000002" is not coupled to the device "TEST1024000000001"
+    And the M-Bus device "TESTG102400000002" is coupled to device "TEST1024000000001" on M-Bus channel "1"
+
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
