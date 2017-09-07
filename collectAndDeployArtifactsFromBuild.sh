@@ -32,7 +32,7 @@ CURL_TARGET_FILE=target/artifacts/config-${VERSION}.tar.gz
 echo "  [curl -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
 curl -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
 
-CURL_URL=${ARTIFACTORY_URL}/artifactory/sss-snapshots/com/alliander/osgp/configuration/${VERSION}/configuration-${VERSION}.tgz
+CURL_URL=${ARTIFACTORY_URL}/artifactory/sss-snapshots/com/alliander/osgp/configuration/${VERSION}/configuration-${VERSION}-configuration.tgz
 CURL_TARGET_FILE=target/artifacts/configuration-${VERSION}.tgz
 echo "  [curl -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
 curl -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
