@@ -10,6 +10,9 @@ fi
 SERVER=$1
 USER=$2
 SSH_KEY_FILE=$3
+ARTIFACTSDIR=target/artifacts
+REMOTESOFTWAREDIR=/data/software
+REMOTEARTIFACTSDIR=${REMOTESOFTWAREDIR}/artifacts
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
 [ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${3/ /} => ${HOME}/.ssh/${3} ..." && ln -sf "${HOME}/.ssh/${3}" "${HOME}/.ssh/${3/ /}"
@@ -18,35 +21,35 @@ SSH_KEY_FILE=$3
 [ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE="-oIdentityFile=\"${HOME}/.ssh/${3/ /}\"" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
 
 echo "Collecting all artifacts ..."
-rm -rf target/artifacts
-mkdir -p target/artifacts
-find . -name *.war -exec cp -f {} target/artifacts \;
+rm -rf ${ARTIFACTSDIR}
+mkdir -p ${ARTIFACTSDIR}
+find . -name *.war -exec cp -f {} ${ARTIFACTSDIR} \;
 
 echo "retrieve additional artifacts ..."
 VERSION=`grep "<version>" pom.xml | sed "s#<[/]\?version>##g;s# ##g" | grep SNAPSHOT`
 echo "  [$VERSION]"
-ARTIFACTORY_URL=https://artifactory.smartsocietyservices.com
+ARTIFACTORY_URL=https://artifactory.smartsocietyservices.com/artifactory
 
-CURL_URL=${ARTIFACTORY_URL}/artifactory/osgp-snapshots/com/alliander/osgp/config/${VERSION}/config-${VERSION}.tar.gz
-CURL_TARGET_FILE=target/artifacts/config-${VERSION}.tar.gz
-echo "  [curl -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
-curl -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
+CURL_URL=${ARTIFACTORY_URL}/osgp-snapshots/com/alliander/osgp/config/${VERSION}/config-${VERSION}.tar.gz
+CURL_TARGET_FILE=${ARTIFACTSDIR}/config-${VERSION}.tar.gz
+echo "  [curl -u jenkins:5530b58993258e3f753c0afb5f2e8dc6 -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
+curl -u jenkins:5530b58993258e3f753c0afb5f2e8dc6 -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
 
-CURL_URL=${ARTIFACTORY_URL}/artifactory/sss-snapshots/com/alliander/osgp/configuration/${VERSION}/configuration-${VERSION}-configuration.tgz
-CURL_TARGET_FILE=target/artifacts/configuration-${VERSION}.tgz
-echo "  [curl -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
-curl -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
+CURL_URL=${ARTIFACTORY_URL}/sss-snapshots/com/alliander/osgp/configuration/${VERSION}/configuration-${VERSION}-configuration.tgz
+CURL_TARGET_FILE=${ARTIFACTSDIR}/configuration-${VERSION}.tgz
+echo "  [curl -u jenkins:5530b58993258e3f753c0afb5f2e8dc6 -XGET \"${CURL_URL}\" -o ${CURL_TARGET_FILE}]"
+curl -u jenkins:5530b58993258e3f753c0afb5f2e8dc6 -XGET "${CURL_URL}" -o ${CURL_TARGET_FILE}
 
 echo "- Create directory structure ..."
-CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo mkdir -p /data/software/artifacts/\"\""
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo mkdir -p ${REMOTEARTIFACTSDIR}/\"\""
 echo "  [${CMD}]"
 ${CMD}
-CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo chown -R ${USER}:${USER} /data/software\"\""
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo chown -R ${USER}:${USER} ${REMOTESOFTWAREDIR}\"\""
 echo "  [${CMD}]"
 ${CMD}
 
 echo "- Copy over artifacts to ${SERVER} ..."
-CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} target/artifacts/* ${USER}@${SERVER}:/data/software/artifacts/"
+CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${ARTIFACTSDIR}/* ${USER}@${SERVER}:${REMOTEARTIFACTSDIR}/"
 echo "  [${CMD}]"
 ${CMD}
 
