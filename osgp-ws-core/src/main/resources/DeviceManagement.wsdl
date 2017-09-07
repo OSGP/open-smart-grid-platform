@@ -227,6 +227,39 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="SetDeviceLifecycleStatusHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusRequest">
+    <wsdl:part element="dman:SetDeviceLifecycleStatusRequest"
+      name="SetDeviceLifecycleStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusAsyncResponse">
+    <wsdl:part element="dman:SetDeviceLifecycleStatusAsyncResponse"
+      name="SetDeviceLifecycleStatusAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusAsyncRequest">
+    <wsdl:part element="dman:SetDeviceLifecycleStatusAsyncRequest"
+      name="SetDeviceLifecycleStatusAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusResponse">
+    <wsdl:part element="dman:SetDeviceLifecycleStatusResponse"
+      name="SetDeviceLifecycleStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:portType name="DeviceManagementPort">
     <wsdl:operation name="FindEvents">
       <wsdl:input message="tns:FindEventsRequest" name="FindEventsRequest">
@@ -332,6 +365,23 @@
       </wsdl:input>
       <wsdl:output message="tns:SetDeviceVerificationKeyResponse"
         name="SetDeviceVerificationKeyResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetDeviceLifecycleStatus">
+      <wsdl:input message="tns:SetDeviceLifecycleStatusRequest"
+        name="SetDeviceLifecycleStatusRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetDeviceLifecycleStatusAsyncResponse"
+        name="SetDeviceLifecycleStatusAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetDeviceLifecycleStatusResponse">
+      <wsdl:input message="tns:SetDeviceLifecycleStatusAsyncRequest"
+        name="SetDeviceLifecycleStatusAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetDeviceLifecycleStatusResponse"
+        name="SetDeviceLifecycleStatusResponse">
       </wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
@@ -540,6 +590,37 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SetDeviceVerificationKeyResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetDeviceLifecycleStatus">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetDeviceLifecycleStatusRequest">
+        <soap:header message="tns:SetDeviceLifecycleStatusHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:SetDeviceLifecycleStatusHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:SetDeviceLifecycleStatusHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetDeviceLifecycleStatusAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetDeviceLifecycleStatusResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetDeviceLifecycleStatusAsyncRequest">
+        <soap:header message="tns:SetDeviceLifecycleStatusAsyncHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:SetDeviceLifecycleStatusAsyncHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:SetDeviceLifecycleStatusAsyncHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetDeviceLifecycleStatusResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
