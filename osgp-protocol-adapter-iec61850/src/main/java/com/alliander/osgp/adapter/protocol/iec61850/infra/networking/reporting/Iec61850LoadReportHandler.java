@@ -46,17 +46,18 @@ public class Iec61850LoadReportHandler implements Iec61850ReportHandler {
     }
 
     @Override
-    public MeasurementDto handleMember(final ReadOnlyNodeContainer member) {
+    public List<MeasurementDto> handleMember(final ReadOnlyNodeContainer member) {
 
+        final List<MeasurementDto> measurements = new ArrayList<>();
         final RtuReadCommand<MeasurementDto> command = Iec61850LoadCommandFactory.getInstance()
                 .getCommand(this.getCommandName(member));
 
         if (command == null) {
             LOGGER.warn("No command found for node {}", member.getFcmodelNode().getName());
-            return null;
         } else {
-            return command.translate(member);
+            measurements.add(command.translate(member));
         }
+        return measurements;
     }
 
     private static void intializeNodesUsingIdList() {

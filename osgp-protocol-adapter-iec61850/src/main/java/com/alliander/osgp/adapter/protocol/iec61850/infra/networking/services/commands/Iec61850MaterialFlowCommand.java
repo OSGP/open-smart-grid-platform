@@ -45,8 +45,8 @@ public class Iec61850MaterialFlowCommand implements RtuReadCommand<MeasurementDt
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(this.index, DataAttribute.MATERIAL_FLOW.getDescription(),
-                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()), new DateTime(
-                        containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC), containingNode
-                        .getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
+                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
+                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
+                containingNode.getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
     }
 }

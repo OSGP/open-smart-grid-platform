@@ -51,6 +51,7 @@ public class Iec61850SystemServiceFactory {
             this.systemServices.put(LogicalDevice.GAS_FURNACE.name(), new Iec61850GasFurnaceSystemService());
             this.systemServices.put(LogicalDevice.BOILER.name(), new Iec61850BoilerSystemService());
             this.systemServices.put(LogicalDevice.HEAT_PUMP.name(), new Iec61850HeatPumpSystemService());
+            this.systemServices.put(LogicalDevice.WIND.name(), new Iec61850WindSystemService());
         }
         return this.systemServices;
     }

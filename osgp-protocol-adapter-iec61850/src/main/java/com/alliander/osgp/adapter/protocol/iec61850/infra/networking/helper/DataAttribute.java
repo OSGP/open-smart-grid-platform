@@ -163,7 +163,8 @@ public enum DataAttribute {
      */
     TOTAL_ENERGY("TotWh"),
     /**
-     * State of Charge for Battery, Coefficient of Performance for HeatPump
+     * Battery: State of Charge, Heat Pump: Coefficient of Performance, Wind:
+     * Cosinus Phi
      */
     AVERAGE_POWER_FACTOR("TotPF"),
     /**
@@ -264,7 +265,23 @@ public enum DataAttribute {
     /**
      * Physical Health
      */
-    PHYSICAL_HEALTH("PhyHealth");
+    PHYSICAL_HEALTH("PhyHealth"),
+    /**
+     * Active Power
+     */
+    ACTIVE_POWER("W"),
+    /**
+     * Active Power Phase A
+     */
+    ACTIVE_POWER_PHASE_A("W.phsA"),
+    /**
+     * Active Power Phase B
+     */
+    ACTIVE_POWER_PHASE_B("W.phsB"),
+    /**
+     * Active Power Phase C
+     */
+    ACTIVE_POWER_PHASE_C("W.phsC");
 
     private String description;
 

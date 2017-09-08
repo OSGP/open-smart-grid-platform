@@ -97,6 +97,10 @@ public class Battery extends LogicalDevice {
     private static final String MMXU1_TOTW_Q = "MMXU1.TotW.q";
     private static final String MMXU1_TOTW_T = "MMXU1.TotW.t";
 
+    private static final String MMXU1_TOTPF_MAG_F = "MMXU1.TotPF.mag.f";
+    private static final String MMXU1_TOTPF_Q = "MMXU1.TotPF.q";
+    private static final String MMXU1_TOTPF_T = "MMXU1.TotPF.t";
+
     private static final String DRCC1_OUTWSET_SUBVAL_F = "DRCC1.OutWSet.subVal.f";
     private static final String DRCC1_OUTWSET_SUBQ = "DRCC1.OutWSet.subQ";
 
@@ -107,10 +111,6 @@ public class Battery extends LogicalDevice {
     private static final String DGEN1_GNOPST_STVAL = "DGEN1.GnOpSt.stVal";
     private static final String DGEN1_GNOPST_Q = "DGEN1.GnOpSt.q";
     private static final String DGEN1_GNOPST_T = "DGEN1.GnOpSt.t";
-
-    private static final String MMXU1_TOTPF_MAG_F = "MMXU1.TotPF.mag.f";
-    private static final String MMXU1_TOTPF_Q = "MMXU1.TotPF.q";
-    private static final String MMXU1_TOTPF_T = "MMXU1.TotPF.t";
 
     private static final String DGEN1_OPTMSRS_STVAL = "DGEN1.OpTmsRs.stVal";
     private static final String DGEN1_OPTMSRS_Q = "DGEN1.OpTmsRs.q";
@@ -178,15 +178,15 @@ public class Battery extends LogicalDevice {
 
     private static final Set<String> QUALITY_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q, LLN0_BEH_Q, LLN0_MOD_Q, MMXU1_MAXWPHS_Q,
-                    MMXU1_MINWPHS_Q, MMXU1_TOTW_Q, DRCC1_OUTWSET_SUBQ, DGEN1_TOTWH_Q, DGEN1_GNOPST_Q, MMXU1_TOTPF_Q,
+                    MMXU1_MINWPHS_Q, MMXU1_TOTW_Q, DRCC1_OUTWSET_SUBQ, MMXU1_TOTPF_Q, DGEN1_TOTWH_Q, DGEN1_GNOPST_Q,
                     DGEN1_OPTMSRS_Q, GGIO1_ALM1_Q, GGIO1_ALM2_Q, GGIO1_ALM3_Q, GGIO1_ALM4_Q, GGIO1_INTIN1_Q,
                     GGIO1_INTIN2_Q, GGIO1_WRN1_Q, GGIO1_WRN2_Q, GGIO1_WRN3_Q, GGIO1_WRN4_Q)));
 
     private static final Set<String> TIMESTAMP_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T, LLN0_BEH_T, LLN0_MOD_T, MMXU1_MAXWPHS_T,
-                    MMXU1_MINWPHS_T, MMXU1_TOTW_T, DRCC1_OUTWSET_SUBQ, DGEN1_TOTWH_T, DGEN1_GNOPST_T, MMXU1_TOTPF_T,
-                    DGEN1_OPTMSRS_T, GGIO1_ALM1_T, GGIO1_ALM2_T, GGIO1_ALM3_T, GGIO1_ALM4_T, GGIO1_INTIN1_T,
-                    GGIO1_INTIN2_T, GGIO1_WRN1_T, GGIO1_WRN2_T, GGIO1_WRN3_T, GGIO1_WRN4_T, DSCH1_SCHDABSTM_TIME_0,
+                    MMXU1_MINWPHS_T, MMXU1_TOTW_T, MMXU1_TOTPF_T, DGEN1_TOTWH_T, DGEN1_GNOPST_T, DGEN1_OPTMSRS_T,
+                    GGIO1_ALM1_T, GGIO1_ALM2_T, GGIO1_ALM3_T, GGIO1_ALM4_T, GGIO1_INTIN1_T, GGIO1_INTIN2_T,
+                    GGIO1_WRN1_T, GGIO1_WRN2_T, GGIO1_WRN3_T, GGIO1_WRN4_T, DSCH1_SCHDABSTM_TIME_0,
                     DSCH1_SCHDABSTM_TIME_1, DSCH1_SCHDABSTM_TIME_2, DSCH1_SCHDABSTM_TIME_3, DSCH2_SCHDABSTM_TIME_0,
                     DSCH2_SCHDABSTM_TIME_1, DSCH2_SCHDABSTM_TIME_2, DSCH2_SCHDABSTM_TIME_3, DSCH3_SCHDABSTM_TIME_0,
                     DSCH3_SCHDABSTM_TIME_1, DSCH3_SCHDABSTM_TIME_2, DSCH3_SCHDABSTM_TIME_3, DSCH4_SCHDABSTM_TIME_0,
@@ -267,6 +267,10 @@ public class Battery extends LogicalDevice {
         fcByNode.put(MMXU1_TOTW_Q, Fc.MX);
         fcByNode.put(MMXU1_TOTW_T, Fc.MX);
 
+        fcByNode.put(MMXU1_TOTPF_MAG_F, Fc.MX);
+        fcByNode.put(MMXU1_TOTPF_Q, Fc.MX);
+        fcByNode.put(MMXU1_TOTPF_T, Fc.MX);
+
         fcByNode.put(DRCC1_OUTWSET_SUBVAL_F, Fc.SV);
         fcByNode.put(DRCC1_OUTWSET_SUBQ, Fc.SV);
 
@@ -277,10 +281,6 @@ public class Battery extends LogicalDevice {
         fcByNode.put(DGEN1_GNOPST_STVAL, Fc.ST);
         fcByNode.put(DGEN1_GNOPST_Q, Fc.ST);
         fcByNode.put(DGEN1_GNOPST_T, Fc.ST);
-
-        fcByNode.put(MMXU1_TOTPF_MAG_F, Fc.MX);
-        fcByNode.put(MMXU1_TOTPF_Q, Fc.MX);
-        fcByNode.put(MMXU1_TOTPF_T, Fc.MX);
 
         fcByNode.put(DGEN1_OPTMSRS_STVAL, Fc.ST);
         fcByNode.put(DGEN1_OPTMSRS_Q, Fc.ST);
@@ -361,6 +361,10 @@ public class Battery extends LogicalDevice {
         values.add(this.setQuality(MMXU1_TOTW_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(MMXU1_TOTW_T, Fc.MX, timestamp));
 
+        values.add(this.setRandomFloat(MMXU1_TOTPF_MAG_F, Fc.MX, 0, 1000));
+        values.add(this.setQuality(MMXU1_TOTPF_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(MMXU1_TOTPF_T, Fc.MX, timestamp));
+
         values.add(this.setRandomFloat(DRCC1_OUTWSET_SUBVAL_F, Fc.SV, 0, 1000));
         values.add(this.setQuality(DRCC1_OUTWSET_SUBQ, Fc.SV, QualityType.VALIDITY_GOOD.getValue()));
 
@@ -371,10 +375,6 @@ public class Battery extends LogicalDevice {
         values.add(this.setRandomByte(DGEN1_GNOPST_STVAL, Fc.ST, 1, 2));
         values.add(this.setQuality(DGEN1_GNOPST_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(DGEN1_GNOPST_T, Fc.ST, timestamp));
-
-        values.add(this.setRandomFloat(MMXU1_TOTPF_MAG_F, Fc.MX, 0, 1000));
-        values.add(this.setQuality(MMXU1_TOTPF_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(MMXU1_TOTPF_T, Fc.MX, timestamp));
 
         values.add(this.incrementInt(DGEN1_OPTMSRS_STVAL, Fc.ST));
         values.add(this.setQuality(DGEN1_OPTMSRS_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));

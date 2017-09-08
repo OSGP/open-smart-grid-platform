@@ -58,7 +58,11 @@ public enum LogicalDevice {
     /**
      * Logical Device Boiler
      */
-    BOILER("BOILER");
+    BOILER("BOILER"),
+    /**
+     * Logical Device Wind
+     */
+    WIND("WIND");
 
     private String description;
 

@@ -288,7 +288,11 @@ public enum SubDataAttribute {
     /**
      * Array of timestamps
      */
-    TIMES("time");
+    TIMES("time"),
+    /**
+     * C Value
+     */
+    C_VALUES("cVal");
 
     private String description;
 

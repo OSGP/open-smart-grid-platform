@@ -40,9 +40,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientRTUEventListener.class);
 
-    private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER)";
-    private static final Pattern REPORT_PATTERN = Pattern.compile("\\A(.*)" + NODE_NAMES
-            + "([1-9]\\d*+)/LLN0\\$(Status|Measurements|Heartbeat)\\Z");
+    private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER|WIND)";
+    private static final Pattern REPORT_PATTERN = Pattern
+            .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\$(Status|Measurements|Heartbeat)\\Z");
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
 
@@ -57,6 +57,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         REPORT_HANDLERS_MAP.put("GAS_FURNACE", Iec61850GasFurnaceReportHandler.class);
         REPORT_HANDLERS_MAP.put("HEAT_PUMP", Iec61850HeatPumpReportHandler.class);
         REPORT_HANDLERS_MAP.put("BOILER", Iec61850BoilerReportHandler.class);
+        REPORT_HANDLERS_MAP.put("WIND", Iec61850WindReportHandler.class);
     }
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
@@ -84,8 +85,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     @Override
     public void newReport(final Report report) {
-        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null : new DateTime(report.getTimeOfEntry()
-                .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null
+                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
 
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -138,6 +139,22 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             return;
         }
 
+        final List<MeasurementDto> measurements = this.processMeasurements(reportHandler, reportDescription, members);
+
+        final GetDataSystemIdentifierDto systemResult = reportHandler.createResult(measurements);
+        final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
+        systems.add(systemResult);
+
+        final ReportDto reportDto = new ReportDto(report.getSqNum(),
+                new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET),
+                report.getRptId());
+
+        this.deviceManagementService.sendMeasurements(this.deviceIdentification,
+                new GetDataResponseDto(systems, reportDto));
+    }
+
+    private List<MeasurementDto> processMeasurements(final Iec61850ReportHandler reportHandler,
+            final String reportDescription, final List<FcModelNode> members) {
         final List<MeasurementDto> measurements = new ArrayList<>();
         for (final FcModelNode member : members) {
             if (member == null) {
@@ -147,28 +164,20 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
             this.logger.info("Handle member {} for {}", member.getReference(), reportDescription);
             try {
-                final MeasurementDto dto = reportHandler.handleMember(new ReadOnlyNodeContainer(
-                        this.deviceIdentification, member));
-                if (dto != null) {
-                    measurements.add(dto);
+                final List<MeasurementDto> memberMeasurements = reportHandler
+                        .handleMember(new ReadOnlyNodeContainer(this.deviceIdentification, member));
+
+                if (memberMeasurements.isEmpty()) {
+                    this.logger.warn("Unsupported member {}, skipping", member.getName());
                 } else {
-                    this.logger.warn("Unsupprted member {}, skipping", member.getName());
+                    measurements.addAll(memberMeasurements);
                 }
             } catch (final Exception e) {
-                this.logger.error("Error adding event notification for member {} from {}", member.getReference(),
+                this.logger.error("Error adding measurement for member {} from {}", member.getReference(),
                         reportDescription, e);
             }
         }
-
-        final GetDataSystemIdentifierDto systemResult = reportHandler.createResult(measurements);
-        final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
-        systems.add(systemResult);
-
-        final ReportDto reportDto = new ReportDto(report.getSqNum(), new DateTime(report.getTimeOfEntry()
-                .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET), report.getRptId());
-
-        this.deviceManagementService.sendMeasurements(this.deviceIdentification, new GetDataResponseDto(systems,
-                reportDto));
+        return measurements;
     }
 
     private void logReportDetails(final Report report) {
@@ -196,8 +205,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             for (final BdaReasonForInclusion reasonCode : reasonCodes) {
                 sb.append("\t                   \t")
                         .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                                : reasonCode).append("\t(")
-                        .append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
+                                : reasonCode)
+                        .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
                         .append(System.lineSeparator());
             }
         }
@@ -213,8 +222,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             if ((members != null) && !members.isEmpty()) {
                 sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
                 for (final FcModelNode member : members) {
-                    sb.append("\t            member:\t").append(member).append(System.lineSeparator());
-                    sb.append("\t                   \t\t").append(member);
+                    sb.append("\t            member:\t").append(member.getReference()).append(System.lineSeparator());
                 }
             }
         }
