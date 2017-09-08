@@ -55,19 +55,7 @@ public class ManufacturerSteps extends GlueBase {
      * @throws Throwable
      */
     @Then("^the entity manufacturer exists$")
-    public void theEntityManufacturerExists(final Map<String, String> expectedEntity) throws Throwable {
-        // TODO: Wait until the stuff is created.
-        final Manufacturer manufacturer = this.manufacturerRepository
-                .findByName(getString(expectedEntity, "Name", PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
-
-        Assert.assertEquals(getString(expectedEntity, "ManufacturerCode", PlatformDefaults.DEFAULT_MANUFACTURER_CODE),
-                manufacturer.getCode());
-        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX),
-                manufacturer.isUsePrefix());
-    }
-
-    @Then("^the entity manufacturer exists with code$")
-    public void theEntityManufacturerExistsWithCode(final Map<String, String> settings) throws Throwable {
+    public void theEntityManufacturerExists(final Map<String, String> settings) throws Throwable {
         final Manufacturer manufacturer = this.manufacturerRepository.findByCode(
                 getString(settings, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
 
