@@ -71,7 +71,8 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
         device.updateRegistrationData(this.networkAddress, this.deviceType);
 
         // After updateRegistrationData because that sets active to true again.
-        device.setActive(this.isActive);
+        // device.setActive(this.isActive);
+        device.setDeviceLifecycleStatus(this.deviceLifeCycleStatus);
         device.updateProtocol(this.protocolInfo);
         device.updateInMaintenance(this.inMaintenance);
         device.setVersion(this.version);

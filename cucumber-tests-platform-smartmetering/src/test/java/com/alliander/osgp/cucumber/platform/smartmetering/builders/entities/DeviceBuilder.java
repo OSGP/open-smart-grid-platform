@@ -12,6 +12,7 @@ import java.util.Map;
 import com.alliander.osgp.cucumber.platform.core.builders.CucumberBuilder;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements CucumberBuilder<Device> {
 
@@ -32,11 +33,9 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements C
         final Device device = new Device(this.deviceIdentification, this.alias, this.containerCity,
                 this.containerPostalCode, this.containerStreet, this.containerNumber, this.containerMunicipality,
                 this.gpsLatitude, this.gpsLongitude);
-        device.setActive(this.isActive);
-        device.updateRegistrationData(this.networkAddress, this.deviceType);
 
-        // After updateRegistrationData because that sets active to true again.
-        device.setActivated(this.isActivated);
+        // Sets deviceLifeCycleStatus to REGISTERED.
+        device.updateRegistrationData(this.networkAddress, this.deviceType);
 
         device.updateProtocol(this.protocolInfo);
         device.updateInMaintenance(this.inMaintenance);
@@ -47,6 +46,9 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements C
         device.setVersion(this.version);
         device.setDeviceModel(this.deviceModel);
         device.setTechnicalInstallationDate(this.technicalInstallationDate);
+        // A device for FlexOVL is only active after technicalInstallationDate
+        // is set.
+        device.setDeviceLifecycleStatus(DeviceLifecycleStatus.IN_USE);
 
         return device;
     }
