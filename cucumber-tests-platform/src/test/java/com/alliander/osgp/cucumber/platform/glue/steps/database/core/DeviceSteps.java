@@ -114,8 +114,8 @@ public class DeviceSteps extends BaseDeviceSteps {
                 Assert.assertTrue(Boolean.parseBoolean(settings.get("PublicKeyPresent")) == ssld.isPublicKeyPresent());
             }
         }
-        if (settings.containsKey("DeviceModel")) {
-            Assert.assertEquals(settings.get("DeviceModel"), device.getDeviceModel().getModelCode());
+        if (settings.containsKey("DeviceModelCode")) {
+            Assert.assertEquals(settings.get("DeviceModelCode"), device.getDeviceModel().getModelCode());
         }
     }
 
