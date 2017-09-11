@@ -43,6 +43,10 @@ public enum SubDataAttribute {
      */
     CURRENT_VERSION("curVer"),
     /**
+     * Attribute of Property RCB, Data Set.
+     */
+    DATA_SET("DatSet"),
+    /**
      * Attribute of Property Sensor, used to transition the device between day
      * and night transition.
      */
@@ -127,6 +131,15 @@ public enum SubDataAttribute {
      * reporting is disabled! {@link RptEna} must be set to false.
      */
     PURGE_BUF("PurgeBuf"),
+    /**
+     * Property of report, Report ID.
+     */
+    REPORT_ID("RptID"),
+    /**
+     * Property of RCB, Reserve. Must be set before {@link RptEna} is set to
+     * true.
+     */
+    RESERVE_REPORTING_CONTROL_BLOCK("Resv"),
     /**
      * Attribute of Property Clock, contains the time zone value
      */

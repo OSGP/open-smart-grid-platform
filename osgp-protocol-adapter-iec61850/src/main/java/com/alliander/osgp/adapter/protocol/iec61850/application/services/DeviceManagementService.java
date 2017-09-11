@@ -10,8 +10,6 @@ package com.alliander.osgp.adapter.protocol.iec61850.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
 import org.osgpfoundation.osgp.dto.da.GetPQValuesResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
+import com.alliander.osgp.core.db.api.iec61850.entities.LightMeasurementDevice;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
+import com.alliander.osgp.core.db.api.iec61850.repositories.LmdDataRepository;
 import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
@@ -43,6 +45,9 @@ public class DeviceManagementService {
     private SsldDataRepository ssldDataRepository;
 
     @Autowired
+    private LmdDataRepository lmdDataRepository;
+
+    @Autowired
     private Iec61850DeviceReportGroupRepository deviceReportGroupRepository;
 
     @Autowired
@@ -53,6 +58,14 @@ public class DeviceManagementService {
 
     public DeviceManagementService() {
         // Parameterless constructor required for transactions...
+    }
+
+    public List<LightMeasurementDevice> findAllLightMeasurementDevices() {
+        return this.lmdDataRepository.findAll();
+    }
+
+    public LightMeasurementDevice findLightMeasurementDevice(final String deviceIdentification) {
+        return this.lmdDataRepository.findByDeviceIdentification(deviceIdentification);
     }
 
     /**
@@ -71,8 +84,12 @@ public class DeviceManagementService {
 
         final Ssld ssldDevice = this.ssldDataRepository.findByDeviceIdentification(deviceIdentification);
         if (ssldDevice == null) {
-            throw new ProtocolAdapterException("Unable to find device using deviceIdentification: "
-                    + deviceIdentification);
+            final LightMeasurementDevice lmd = this.lmdDataRepository.findByDeviceIdentification(deviceIdentification);
+            if (lmd == null) {
+
+                throw new ProtocolAdapterException("Unable to find device using deviceIdentification: "
+                        + deviceIdentification);
+            }
         }
 
         LOGGER.info("addEventNotifications called for device {}: {}", deviceIdentification, eventNotifications);
@@ -112,23 +129,25 @@ public class DeviceManagementService {
         // hard-coded
         // for now
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .dataObject(response)
-                .deviceMessageMetadata(
-                        new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
-                                DeviceFunctionDto.GET_DATA.name(), 0)).result(ResponseMessageResultType.OK)
-                .domain("MICROGRIDS").domainVersion("1.0").build();
+        .dataObject(response)
+        .deviceMessageMetadata(
+                new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
+                        DeviceFunctionDto.GET_DATA.name(), 0)).result(ResponseMessageResultType.OK)
+                        .domain("MICROGRIDS").domainVersion("1.0").build();
         this.responseSender.send(responseMessage);
     }
 
-    public void sendPqValues(final String deviceIdentification, final String reportDataSet, final GetPQValuesResponseDto response)
-            throws ProtocolAdapterException {
-        Iec61850DeviceReportGroup deviceReportGroup = this.deviceReportGroupRepository.findByDeviceIdentificationAndReportDataSet(deviceIdentification, reportDataSet);
+    public void sendPqValues(final String deviceIdentification, final String reportDataSet,
+            final GetPQValuesResponseDto response) throws ProtocolAdapterException {
+        final Iec61850DeviceReportGroup deviceReportGroup = this.deviceReportGroupRepository
+                .findByDeviceIdentificationAndReportDataSet(deviceIdentification, reportDataSet);
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .dataObject(response)
-                .deviceMessageMetadata(
-                        new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
-                                DeviceFunctionDto.GET_POWER_QUALITY_VALUES.name(), 0)).result(ResponseMessageResultType.OK)
-                .domain(deviceReportGroup.getDomain()).domainVersion(deviceReportGroup.getDomainVersion()).build();
+        .dataObject(response)
+        .deviceMessageMetadata(
+                new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
+                        DeviceFunctionDto.GET_POWER_QUALITY_VALUES.name(), 0))
+                .result(ResponseMessageResultType.OK).domain(deviceReportGroup.getDomain())
+                .domainVersion(deviceReportGroup.getDomainVersion()).build();
         this.responseSender.send(responseMessage);
     }
 }
