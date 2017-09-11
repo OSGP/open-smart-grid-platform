@@ -36,6 +36,9 @@ public class Iec61850Device extends AbstractEntity {
     @Column
     private String serverName;
 
+    @Column
+    private boolean enableAllReportsOnConnect;
+
     public Iec61850Device() {
         // Default constructor
     }
@@ -93,7 +96,16 @@ public class Iec61850Device extends AbstractEntity {
         return this.serverName;
     }
 
-    public void setServerName(String serverName) {
+    public void setServerName(final String serverName) {
         this.serverName = serverName;
     }
+
+    public boolean isEnableAllReportsOnConnect() {
+        return this.enableAllReportsOnConnect;
+    }
+
+    public void setEnableAllReportsOnConnect(final boolean enableAllReportsOnConnect) {
+        this.enableAllReportsOnConnect = enableAllReportsOnConnect;
+    }
+
 }
