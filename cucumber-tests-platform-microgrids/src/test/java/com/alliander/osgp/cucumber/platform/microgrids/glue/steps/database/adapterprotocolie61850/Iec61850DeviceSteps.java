@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.database.adapterprotocolie61850;
 
+import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
@@ -20,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.cucumber.core.GlueBase;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.microgrids.PlatformMicrogridsDefaults;
@@ -95,8 +95,8 @@ public class Iec61850DeviceSteps extends GlueBase {
         iec61850Device.setIcdFilename(getString(settings, PlatformMicrogridsKeys.KEY_IEC61850_ICD_FILENAME));
         iec61850Device.setPort(getInteger(settings, PlatformMicrogridsKeys.KEY_IEC61850_PORT));
         iec61850Device.setServerName(getString(settings, PlatformMicrogridsKeys.KEY_IEC61850_SERVERNAME));
-        iec61850Device.setEnableAllReportsOnConnect(Helpers.getBoolean(settings,
-                PlatformMicrogridsKeys.ENABLE_ALL_REPORTS, PlatformMicrogridsDefaults.ENABLE_ALL_REPORTS));
+        iec61850Device.setEnableAllReportsOnConnect(getBoolean(settings, PlatformMicrogridsKeys.ENABLE_ALL_REPORTS,
+                PlatformMicrogridsDefaults.ENABLE_ALL_REPORTS));
 
         this.iec61850DeviceRespository.save(iec61850Device);
     }
