@@ -17,17 +17,13 @@ public class SetClockConfigurationRequestDto implements ActionRequestDto {
 
     protected final CosemDateTimeDto daylightSavingsEnd;
 
-    protected final byte daylightSavingsDeviation;
-
     protected final boolean daylightSavingsEnabled;
 
     public SetClockConfigurationRequestDto(final short timeZoneOffset, final CosemDateTimeDto daylightSavingsBegin,
-            final CosemDateTimeDto daylightSavingsEnd, final byte daylightSavingsDeviation,
-            final boolean daylightSavingsEnabled) {
+            final CosemDateTimeDto daylightSavingsEnd, final boolean daylightSavingsEnabled) {
         this.timeZoneOffset = timeZoneOffset;
         this.daylightSavingsBegin = daylightSavingsBegin;
         this.daylightSavingsEnd = daylightSavingsEnd;
-        this.daylightSavingsDeviation = daylightSavingsDeviation;
         this.daylightSavingsEnabled = daylightSavingsEnabled;
     }
 
@@ -41,10 +37,6 @@ public class SetClockConfigurationRequestDto implements ActionRequestDto {
 
     public CosemDateTimeDto getDaylightSavingsEnd() {
         return this.daylightSavingsEnd;
-    }
-
-    public byte getDaylightSavingsDeviation() {
-        return this.daylightSavingsDeviation;
     }
 
     public boolean isDaylightSavingsEnabled() {
