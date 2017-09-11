@@ -75,8 +75,8 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
                 asyncResponse.getDeviceIdentification());
     }
 
-    @Then("^the get add device response should be returned$")
-    public void theGetAddDeviceResponseShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
+    @Then("^the add device response should be returned$")
+    public void theAddDeviceResponseShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
 
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,

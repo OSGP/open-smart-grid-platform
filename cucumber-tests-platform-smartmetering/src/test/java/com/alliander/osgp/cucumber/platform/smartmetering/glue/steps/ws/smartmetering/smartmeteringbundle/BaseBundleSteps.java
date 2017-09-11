@@ -29,9 +29,8 @@ import ma.glasnost.orika.MapperFacade;
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -41,14 +40,16 @@ public class BaseBundleSteps {
     protected SmartMeteringBundleClient client;
 
     @Autowired
-    protected MapperFacade defaultMapper;
+    protected MapperFacade mapperFacade;
 
     protected void ensureBundleResponse() throws WebServiceSecurityException, GeneralSecurityException, IOException {
         if (ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_RESPONSE) == null) {
-            final String correlationUid = (String) ScenarioContext.current().get(PlatformSmartmeteringKeys.KEY_CORRELATION_UID);
+            final String correlationUid = (String) ScenarioContext.current()
+                    .get(PlatformSmartmeteringKeys.KEY_CORRELATION_UID);
             final BundleAsyncRequest asyncRequest = new BundleAsyncRequest();
             asyncRequest.setCorrelationUid(correlationUid);
-            asyncRequest.setDeviceIdentification((String) ScenarioContext.current().get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
+            asyncRequest.setDeviceIdentification(
+                    (String) ScenarioContext.current().get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
 
             final BundleResponse response = this.client.retrieveBundleResponse(asyncRequest);
             ScenarioContext.current().put(PlatformSmartmeteringKeys.BUNDLE_RESPONSE, response);
@@ -58,7 +59,11 @@ public class BaseBundleSteps {
         }
     }
 
-    protected void addActionToBundleRequest(final BundleRequest bundleRequest, final Action action) {
+    protected void addActionToBundleRequest(final Action action) {
+
+        final BundleRequest bundleRequest = (BundleRequest) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+
         bundleRequest.getActions().getActionList().add(action);
         this.increaseCount(PlatformSmartmeteringKeys.BUNDLE_ACTION_COUNT);
     }
@@ -66,7 +71,8 @@ public class BaseBundleSteps {
     protected Response getNextBundleResponse()
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         this.ensureBundleResponse();
-        final BundleResponse bundleResponse = (BundleResponse) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
+        final BundleResponse bundleResponse = (BundleResponse) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.BUNDLE_RESPONSE);
         return bundleResponse.getAllResponses().getResponseList()
                 .get(this.getAndIncreaseCount(PlatformSmartmeteringKeys.BUNDLE_RESPONSE_COUNT));
     }

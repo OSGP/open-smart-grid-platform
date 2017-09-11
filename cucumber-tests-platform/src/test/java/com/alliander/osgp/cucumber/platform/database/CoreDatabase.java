@@ -25,6 +25,7 @@ import com.alliander.osgp.domain.core.repositories.EanRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareFileFirmwareModuleRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareFileRepository;
+import com.alliander.osgp.domain.core.repositories.LightMeasurementDeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.RelayStatusRepository;
@@ -85,6 +86,9 @@ public class CoreDatabase {
     @Autowired
     private RelayStatusRepository relayStatusRepository;
 
+    @Autowired
+    private LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -130,6 +134,7 @@ public class CoreDatabase {
     private void batchDeleteAll() {
         LOGGER.info("Starting batchDeleteAll()");
         this.deviceAuthorizationRepository.deleteAllInBatch();
+        this.lightMeasurementDeviceRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
         this.eanRepository.deleteAllEans();
@@ -150,6 +155,7 @@ public class CoreDatabase {
     private void normalDeleteAll() {
         LOGGER.info("Starting normalDeleteAll()");
         this.deviceAuthorizationRepository.deleteAll();
+        this.lightMeasurementDeviceRepository.deleteAll();
         this.deviceLogItemRepository.deleteAll();
         this.scheduledTaskRepository.deleteAll();
         this.eanRepository.deleteAllEans();

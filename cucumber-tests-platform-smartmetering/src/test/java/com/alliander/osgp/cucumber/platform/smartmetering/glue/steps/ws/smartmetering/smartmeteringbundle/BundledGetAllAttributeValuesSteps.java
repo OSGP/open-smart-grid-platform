@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
 import static org.junit.Assert.assertEquals;
@@ -5,35 +12,44 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAllAttributeValuesRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
-import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class BundledGetAllAttributeValuesSteps extends BaseBundleSteps {
 
-    @When("^a get all attribute values action is part of the bundle request$")
-    public void aGetAllAttributeValuesActionIsPartOfTheBundleRequest() throws Throwable {
-
-        final BundleRequest request = (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+    @Given("^the bundle request contains a get all attribute values action$")
+    public void theBundleRequestContainsAGetAllAttributeValuesAction() throws Throwable {
 
         final GetAllAttributeValuesRequest action = new GetAllAttributeValuesRequest();
 
-        this.addActionToBundleRequest(request, action);
+        this.addActionToBundleRequest(action);
     }
 
     @Then("^the bundle response should contain a get all attribute values response$")
-    public void allAttributeValuesShouldBePartOfTheBundleResponse(final Map<String, String> settings) throws Throwable {
+    public void theBundleResponseShouldContainAGetAllAttributeValuesResponse() throws Throwable {
 
         final Response response = this.getNextBundleResponse();
 
-        assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT), response.getResult().name());
+        assertTrue("Not a valid response", response instanceof ActionResponse);
+
+    }
+
+    @Then("^the bundle response should contain a get all attribute values response with values$")
+    public void theBundleResponseShouldContainAGetAllAttributeValuesResponse(final Map<String, String> values)
+            throws Throwable {
+
+        final Response response = this.getNextBundleResponse();
+
+        assertTrue("Not a valid response", response instanceof ActionResponse);
+        assertEquals("Result is not as expected.", values.get(PlatformSmartmeteringKeys.RESULT),
+                response.getResult().name());
         assertTrue("Result contains no data.", StringUtils.isNotBlank(response.getResultString()));
 
     }
