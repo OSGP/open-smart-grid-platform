@@ -26,6 +26,7 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverterHelper.class);
@@ -58,8 +59,9 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         }
 
         destination.setActivated(source.isActivated());
-        if (source.isActive() != null) {
-            destination.setActive(source.isActive());
+        if (source.getDeviceLifecycleStatus() != null) {
+            destination
+                    .setDeviceLifecycleStatus(DeviceLifecycleStatus.valueOf(source.getDeviceLifecycleStatus().name()));
         }
 
         destination.updateRegistrationData(destination.getNetworkAddress(), source.getDeviceType());
@@ -82,7 +84,9 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device();
         destination.setAlias(source.getAlias());
         destination.setActivated(source.isActivated());
-        destination.setActive(source.isActive());
+        destination.setDeviceLifecycleStatus(
+                com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus
+                        .valueOf(source.getDeviceLifecycleStatus().name()));
         destination.setContainerCity(source.getContainerCity());
         destination.setContainerNumber(source.getContainerNumber());
         destination.setContainerPostalCode(source.getContainerPostalCode());

@@ -16,10 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.valueobjects.Certification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainCoreDeviceManagementService")
 @Transactional(value = "transactionManager")
@@ -38,7 +41,7 @@ public class DeviceManagementService extends AbstractService {
 
     public void setEventNotifications(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<EventNotificationType> eventNotifications, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("setEventNotifications called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -55,12 +58,13 @@ public class DeviceManagementService extends AbstractService {
                 deviceIdentification, eventNotificationMessageDataContainer), messageType, device.getIpAddress());
     }
 
-    //   === UPDATE DEVICE SSL CERTIFICATION ===
+    // === UPDATE DEVICE SSL CERTIFICATION ===
 
     public void updateDeviceSslCertification(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Certification certification, final String messageType) throws FunctionalException {
-        LOGGER.debug("UpdateDeviceSslCertification called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+            final String correlationUid, final Certification certification, final String messageType)
+            throws FunctionalException {
+        LOGGER.debug("UpdateDeviceSslCertification called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -70,17 +74,19 @@ public class DeviceManagementService extends AbstractService {
             return;
         }
 
-        final com.alliander.osgp.dto.valueobjects.CertificationDto certificationDto = this.domainCoreMapper.map(
-                certification, com.alliander.osgp.dto.valueobjects.CertificationDto.class);
+        final com.alliander.osgp.dto.valueobjects.CertificationDto certificationDto = this.domainCoreMapper
+                .map(certification, com.alliander.osgp.dto.valueobjects.CertificationDto.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, certificationDto), messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, certificationDto),
+                messageType, device.getIpAddress());
     }
 
-    //  === SET DEVICE VERIFICATION KEY ===
+    // === SET DEVICE VERIFICATION KEY ===
 
     public void setDeviceVerificationKey(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String verificationKey, final String messageType) throws FunctionalException {
+            final String correlationUid, final String verificationKey, final String messageType)
+            throws FunctionalException {
         LOGGER.debug("SetDeviceVerificationKey called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
@@ -92,7 +98,30 @@ public class DeviceManagementService extends AbstractService {
             return;
         }
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, verificationKey), messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, verificationKey),
+                messageType, device.getIpAddress());
     }
+
+    // === SET DEVICE LIFECYCLE STATUS ===
+
+    public void setDeviceLifecycleStatus(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final DeviceLifecycleStatus deviceLifecycleStatus, final String messageType)
+            throws FunctionalException {
+
+        LOGGER.debug("SetDeviceLifecycleStatus called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.findDevice(deviceIdentification);
+
+        device.setDeviceLifecycleStatus(deviceLifecycleStatus);
+        this.deviceDomainService.saveDevice(device);
+
+        final ResponseMessageResultType result = ResponseMessageResultType.OK;
+
+        this.webServiceResponseMessageSender.send(
+                new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, null));
+    }
+
 }

@@ -73,4 +73,8 @@ public class AbstractService {
     protected Ssld findSsldForDevice(final Device device) {
         return this.ssldRepository.findOne(device.getId());
     }
+
+    protected Device findDevice(final String deviceIdentification) throws FunctionalException {
+        return this.deviceDomainService.searchDevice(deviceIdentification);
+    }
 }

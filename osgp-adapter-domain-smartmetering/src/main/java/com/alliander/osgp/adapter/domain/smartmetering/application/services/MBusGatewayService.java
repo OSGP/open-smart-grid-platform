@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.exceptions.ChannelAlreadyOccupiedException
 import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.MBusChannelNotFoundException;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestData;
@@ -313,7 +314,7 @@ public class MBusGatewayService {
     }
 
     private void checkAndHandleInactiveMbusDevice(final SmartMeter mbusDevice) throws FunctionalException {
-        if (!mbusDevice.isActive()) {
+        if (!mbusDevice.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)) {
             LOGGER.info("The given M-bus device {} is inactive", mbusDevice.getDeviceIdentification());
 
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_SMART_METERING,

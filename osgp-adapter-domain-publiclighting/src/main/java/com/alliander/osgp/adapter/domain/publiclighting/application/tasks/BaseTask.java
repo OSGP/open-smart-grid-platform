@@ -29,6 +29,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -99,8 +100,12 @@ public class BaseTask {
         LOGGER.info("Trying to find devices for device models for manufacturer...");
         final List<Device> devices = new ArrayList<>();
         for (final DeviceModel deviceModel : deviceModels) {
-            final List<Device> devs = this.deviceRepository.findByDeviceModelAndDeviceTypeAndInMaintenanceAndIsActive(
-                    deviceModel, deviceType, false, true);
+            // TODO: Find out if it is necessary to add devices that are
+            // REGISTERED as well (both have is_active = true, only difference
+            // is presence of a technical installation date)
+            final List<Device> devs = this.deviceRepository
+                    .findByDeviceModelAndDeviceTypeAndInMaintenanceAndDeviceLifecycleStatus(deviceModel, deviceType,
+                            false, DeviceLifecycleStatus.IN_USE);
             devices.addAll(devs);
         }
         if (devices.isEmpty()) {

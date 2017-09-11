@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 @Repository
 @Transactional
@@ -38,8 +39,8 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
 
     List<Device> findByNetworkAddress(InetAddress address);
 
-    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id " + "	FROM d.authorizations auth "
-            + "	WHERE auth.organisation = ?1" + ")")
+    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id "
+            + "	FROM d.authorizations auth " + "	WHERE auth.organisation = ?1" + ")")
     Page<Device> findAllAuthorized(Organisation organisation, Pageable request);
 
     @Query("SELECT d " + "FROM Device d " + "WHERE NOT EXISTS " + "(" + "	SELECT auth.id "
@@ -47,8 +48,8 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
             + "	WHERE auth.functionGroup = com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER" + ")")
     List<Device> findDevicesWithNoOwner();
 
-    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id " + "	FROM d.authorizations auth "
-            + "	WHERE auth.organisation = ?1 AND "
+    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id "
+            + "	FROM d.authorizations auth " + "	WHERE auth.organisation = ?1 AND "
             + "		(auth.functionGroup = com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER OR "
             + "		 auth.functionGroup = com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
             + ") AND " + "d.modificationTime >= ?2")
@@ -61,6 +62,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
     @Query(value = "delete from device_output_setting", nativeQuery = true)
     void deleteDeviceOutputSettings();
 
-    List<Device> findByDeviceModelAndDeviceTypeAndInMaintenanceAndIsActive(DeviceModel deviceModel, String deviceType,
-            boolean inMaintenance, boolean isActive);
+    List<Device> findByDeviceModelAndDeviceTypeAndInMaintenanceAndDeviceLifecycleStatus(DeviceModel deviceModel,
+            String deviceType, boolean inMaintenance, DeviceLifecycleStatus deviceLifecycleStatus);
 }

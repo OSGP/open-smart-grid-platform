@@ -21,6 +21,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.validation.PublicKey;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -53,7 +54,7 @@ public class DeviceManagementService extends AbstractService {
 
     public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification,
             final String correlationUid, final String messageType, @PublicKey final String publicKey)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]",
                 deviceIdentification, organisationIdentification, messageType);
@@ -64,8 +65,9 @@ public class DeviceManagementService extends AbstractService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
         }
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, publicKey), messageType, null);
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, publicKey),
+                messageType, null);
     }
 
     public void handleUpdateKeyResponse(final String deviceIdentification, final String organisationIdentification,
@@ -120,8 +122,9 @@ public class DeviceManagementService extends AbstractService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
         }
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, null), messageType, null);
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
+                null);
 
     }
 
@@ -169,23 +172,24 @@ public class DeviceManagementService extends AbstractService {
         LOGGER.info("MessageType: {}. ActivateDevice for organisationIdentification: {} for deviceIdentification: {}",
                 messageType, organisationIdentification, deviceIdentification);
 
-        this.setDeviceIsActive(organisationIdentification, deviceIdentification, correlationUid, true);
+        this.setDeviceLifecycleStatus(organisationIdentification, deviceIdentification, correlationUid,
+                DeviceLifecycleStatus.IN_USE);
     }
 
     public void deactivateDevice(final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid, final String messageType) {
-        LOGGER.info(
-                "MessageType: {}. DeactivateDevice for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("MessageType: {}. DeactivateDevice for organisationIdentification: {} for deviceIdentification: {}",
                 messageType, organisationIdentification, deviceIdentification);
 
-        this.setDeviceIsActive(organisationIdentification, deviceIdentification, correlationUid, false);
+        this.setDeviceLifecycleStatus(organisationIdentification, deviceIdentification, correlationUid,
+                DeviceLifecycleStatus.DESTROYED);
     }
 
-    private void setDeviceIsActive(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final boolean active) {
+    private void setDeviceLifecycleStatus(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final DeviceLifecycleStatus deviceLifecycleStatus) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-        device.setActive(active);
+        device.setDeviceLifecycleStatus(deviceLifecycleStatus);
 
         this.deviceRepository.save(device);
 
