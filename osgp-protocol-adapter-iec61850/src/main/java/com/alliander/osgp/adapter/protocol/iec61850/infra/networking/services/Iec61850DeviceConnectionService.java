@@ -60,10 +60,6 @@ public class Iec61850DeviceConnectionService {
     @Autowired
     private Iec61850RtuDeviceReportingService iec61850RtuDeviceReportingService;
 
-    // @Autowired
-    // private Iec61850DeviceReportGroupRepository
-    // iec61850DeviceReportRepository;
-    //
     @Autowired
     private Iec61850Client iec61850Client;
 
