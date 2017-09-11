@@ -569,7 +569,8 @@ public class DeviceManagementEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetDeviceLifecycleStatusAsyncRequest asyncRequest) throws OsgpException {
 
-        LOGGER.info("Get Set Event Notifications Response received from organisation: {} with correlationUid: {}.",
+        LOGGER.info(
+                "Get Set Device Lifecycle Status Notifications Response received from organisation: {} with correlationUid: {}.",
                 organisationIdentification, asyncRequest.getCorrelationUid());
 
         final SetDeviceLifecycleStatusResponse response = new SetDeviceLifecycleStatusResponse();
@@ -579,9 +580,6 @@ public class DeviceManagementEndpoint {
                     .dequeueSetDeviceLifecycleStatusResponse(asyncRequest.getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }
-            if (response.getResult().equals(OsgpResultType.OK)) {
-
             }
         } catch (final Exception e) {
             this.handleException(e);
