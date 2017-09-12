@@ -149,7 +149,7 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
 
     private void configureForCommunicationWithDeviceSimulator(final Device device) {
         /*
-         * This call also sets the device to be active and activated.
+         * This call also sets the device to be IN_USE and activated.
          */
         device.updateRegistrationData(PlatformSmartmeteringDefaults.NETWORK_ADDRESS, device.getDeviceType());
 

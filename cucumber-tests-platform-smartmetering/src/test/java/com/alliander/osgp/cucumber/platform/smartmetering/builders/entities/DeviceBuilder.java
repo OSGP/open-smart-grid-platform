@@ -12,7 +12,6 @@ import java.util.Map;
 import com.alliander.osgp.cucumber.platform.core.builders.CucumberBuilder;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements CucumberBuilder<Device> {
 
@@ -34,9 +33,6 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements C
                 this.containerPostalCode, this.containerStreet, this.containerNumber, this.containerMunicipality,
                 this.gpsLatitude, this.gpsLongitude);
 
-        // Sets deviceLifeCycleStatus to REGISTERED.
-        device.updateRegistrationData(this.networkAddress, this.deviceType);
-
         device.updateProtocol(this.protocolInfo);
         device.updateInMaintenance(this.inMaintenance);
         if (this.gatewayDeviceIdentification != null) {
@@ -46,9 +42,10 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements C
         device.setVersion(this.version);
         device.setDeviceModel(this.deviceModel);
         device.setTechnicalInstallationDate(this.technicalInstallationDate);
-        // A device for FlexOVL is only active after technicalInstallationDate
-        // is set.
-        device.setDeviceLifecycleStatus(DeviceLifecycleStatus.IN_USE);
+        // updateRegistrationDate sets the status to IN_USE, so setting of any
+        // other status has to be done after that.
+        device.updateRegistrationData(this.networkAddress, this.deviceType);
+        device.setDeviceLifecycleStatus(this.deviceLifeCycleStatus);
 
         return device;
     }
