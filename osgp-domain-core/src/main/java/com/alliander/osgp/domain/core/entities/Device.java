@@ -206,8 +206,8 @@ public class Device implements Serializable {
     /**
      * DeviceLifecycleStatus of this entity
      */
-    @Column()
-    protected String deviceLifecycleStatus;
+    @Column(nullable = false)
+    private String deviceLifecycleStatus = DeviceLifecycleStatus.NEW_IN_INVENTORY.name();
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     @Sort(type = SortType.NATURAL)
@@ -454,7 +454,7 @@ public class Device implements Serializable {
         this.networkAddress = networkAddress;
         this.deviceType = deviceType;
         this.isActivated = true;
-        this.deviceLifecycleStatus = DeviceLifecycleStatus.REGISTERED.name();
+        this.deviceLifecycleStatus = DeviceLifecycleStatus.IN_USE.name();
     }
 
     public void updateGatewayDevice(final Device gatewayDevice) {

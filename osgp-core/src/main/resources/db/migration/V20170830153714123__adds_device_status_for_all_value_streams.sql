@@ -5,6 +5,8 @@ BEGIN
   IF NOT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema AND table_name = 'device' AND column_name = 'device_lifecycle_status')
   THEN
   	ALTER TABLE device ADD COLUMN device_lifecycle_status VARCHAR(255);
+  	ALTER TABLE device ALTER COLUMN device_lifecycle_status SET DEFAULT 'NEW_IN_INVENTORY';
+  	
   	
   	-- Migrating publiclighting devices to appropriate device lifecycle status --
   	-- A public lighting device without a device_type is not yet registered with the platform, and therefor gets the status NEW_IN_INVENTORY --
