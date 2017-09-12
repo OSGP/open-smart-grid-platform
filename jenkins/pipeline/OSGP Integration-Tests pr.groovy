@@ -9,6 +9,7 @@ def repo = 'git@github.com:OSGP/Integration-Tests.git'
 
 pipeline {
     agent any
+    
     options {
         ansiColor('xterm')
         timestamps()
