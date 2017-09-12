@@ -1,3 +1,6 @@
+/**
+ * Pipeline script for a standard pull request build.
+ */
 def call(body) {
 
     // The following makes it possible to parameterize this script.
@@ -14,6 +17,7 @@ def call(body) {
 
     pipeline {
         agent any
+        
         options {
             ansiColor('xterm')
             timestamps()
