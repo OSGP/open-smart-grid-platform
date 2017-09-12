@@ -39,4 +39,10 @@ public class Iec61850MockServerConfig {
     public Iec61850MockServer iec61850MockServerWago() {
         return new Iec61850MockServer("WAGO", "WAGO123.icd", 62104, "WAGO123");
     }
+
+    @Bean(destroyMethod = "stop", initMethod = "start")
+    public Iec61850MockServer iec61850MockServerPampusWithWindDevice() {
+        return new Iec61850MockServer("PAMPUS_WITH_WIND", "Pampus_with_engine_profiles_and_wind.icd", 62105,
+                "WAGO61850Server");
+    }
 }

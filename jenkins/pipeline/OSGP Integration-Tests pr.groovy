@@ -2,13 +2,14 @@
 
 def stream = 'osgp'
 def servername = stream + '-at-pr-' + env.BUILD_NUMBER
-//def servername = stream + '-at-pr-26'
+//def servername = stream + '-at-pr-1'
 def playbook = stream + '-at.yml'
 def extravars = 'ec2_instance_type=t2.large'
 def repo = 'git@github.com:OSGP/Integration-Tests.git'
 
 pipeline {
     agent any
+    
     options {
         ansiColor('xterm')
         timestamps()
@@ -42,13 +43,13 @@ pipeline {
                 }
             }
         }
-        
+       
         stage ('Deploy AWS system') {
             steps {
                 build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook), string(name: 'EXTRAVARS', value: extravars)]
             }
         }
-
+        
         stage('Run tests') {
             steps {
                 sh '''echo Searching for specific Cucumber tags in git commit.
