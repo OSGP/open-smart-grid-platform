@@ -93,9 +93,8 @@ public class DeviceModelSteps extends GlueBase {
         final String modelCode = getString(entity, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
 
-        final Manufacturer manufacturer = new Manufacturer();
-        manufacturer
-                .setCode(getString(entity, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
+        final Manufacturer manufacturer = this.manufacturerRepository.findByCode(modelCode);
+
         final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturer(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
