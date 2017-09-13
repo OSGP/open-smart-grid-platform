@@ -46,6 +46,9 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
     @Autowired
     private LmdDataService lmdDataService;
 
+    @Autowired
+    private Boolean isBufferedReportingEnabled;
+
     @Override
     public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
             throws JMSException {
@@ -117,7 +120,12 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
     private void enableReporting(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest)
             throws NodeException {
         LOGGER.info("Trying to enable reporting for device: {}", deviceRequest.getDeviceIdentification());
-        new Iec61850EnableReportingCommand().enableReportingOnLightMeasurementDevice(this.iec61850Client,
-                deviceConnection);
+        if (this.isBufferedReportingEnabled) {
+            new Iec61850EnableReportingCommand().enableBufferedReportingOnLightMeasurementDevice(this.iec61850Client,
+                    deviceConnection);
+        } else {
+            new Iec61850EnableReportingCommand().enableUnbufferedReportingOnLightMeasurementDevice(this.iec61850Client,
+                    deviceConnection);
+        }
     }
 }

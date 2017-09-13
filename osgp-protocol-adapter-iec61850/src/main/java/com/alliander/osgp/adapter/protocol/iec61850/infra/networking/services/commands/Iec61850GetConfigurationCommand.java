@@ -51,7 +51,7 @@ public class Iec61850GetConfigurationCommand {
 
     public ConfigurationDto getConfigurationFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final Ssld ssld, final Iec61850Mapper mapper)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
         final Function<ConfigurationDto> function = new Function<ConfigurationDto>() {
 
             @Override
@@ -229,7 +229,7 @@ public class Iec61850GetConfigurationCommand {
 
     private void checkRelayType(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final DeviceOutputSetting deviceOutputSetting, final DeviceMessageLog deviceMessageLog)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
         final RelayType registeredRelayType = deviceOutputSetting.getRelayType();
 
         final int expectedSwType;

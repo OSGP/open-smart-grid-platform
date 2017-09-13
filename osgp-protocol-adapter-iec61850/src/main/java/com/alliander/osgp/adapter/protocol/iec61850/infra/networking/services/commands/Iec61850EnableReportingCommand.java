@@ -76,11 +76,32 @@ public class Iec61850EnableReportingCommand {
         LOGGER.info("Allowing device {} to send reports containing events", deviceConnection.getDeviceIdentification());
     }
 
-    public void enableReportingOnLightMeasurementDevice(final Iec61850Client iec61850Client,
+    public void enableBufferedReportingOnLightMeasurementDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection) throws NodeException {
 
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LD0,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.RCB_A, Fc.BR);
+
+        // Read the reporting enabled boolean.
+        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                (FcModelNode) reporting.getFcmodelNode().getChild(SubDataAttribute.ENABLE_REPORTING.getDescription()));
+
+        final boolean reportingEnabled = reporting.getBoolean(SubDataAttribute.ENABLE_REPORTING).getValue();
+        LOGGER.info("reportingEnabled for buffered reports: {}", reportingEnabled);
+
+        if (reportingEnabled) {
+            LOGGER.info("Buffered reporting is already enabled for device: {}",
+                    deviceConnection.getDeviceIdentification());
+            return;
+        }
+
+        iec61850Client.readNodeDataValues(
+                deviceConnection.getConnection().getClientAssociation(),
+                (FcModelNode) reporting.getFcmodelNode().getChild(
+                        SubDataAttribute.RESERVE_REPORTING_CONTROL_BLOCK.getDescription()));
+
+        // Write reserve boolean.
+        reporting.writeBoolean(SubDataAttribute.RESERVE_REPORTING_CONTROL_BLOCK, true);
 
         // Only reading the sequence number for the report node, as the report
         // node is not fully described by the ServerModel when using an ICD
@@ -95,8 +116,59 @@ public class Iec61850EnableReportingCommand {
 
         final short sqNum = reporting.getUnsignedByte(SubDataAttribute.SEQUENCE_NUMBER).getValue();
         reportListener.setSqNum(sqNum);
+
+        final String dataSetReference = reporting.getString(SubDataAttribute.DATA_SET);
+        LOGGER.info("dataSetReference for buffered reports: {}", dataSetReference);
+
+        // Enable reporting.
         reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
-        LOGGER.info("Allowing light measurement device {} to send reports containing events",
+        LOGGER.info("Allowing light measurement device {} to send buffered reports containing events",
+                deviceConnection.getDeviceIdentification());
+    }
+
+    public void enableUnbufferedReportingOnLightMeasurementDevice(final Iec61850Client iec61850Client,
+            final DeviceConnection deviceConnection) throws NodeException {
+
+        final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LD0,
+                LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.RCB_A, Fc.RP);
+
+        // Read the reporting enabled boolean.
+        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                (FcModelNode) reporting.getFcmodelNode().getChild(SubDataAttribute.ENABLE_REPORTING.getDescription()));
+
+        final boolean reportingEnabled = reporting.getBoolean(SubDataAttribute.ENABLE_REPORTING).getValue();
+        LOGGER.info("reportingEnabled for unbuffered reports: {}", reportingEnabled);
+
+        if (reportingEnabled) {
+            LOGGER.info("Unbuffered reporting is already enabled for device: {}",
+                    deviceConnection.getDeviceIdentification());
+            return;
+        }
+
+        // Only reading the sequence number for the report node, as the report
+        // node is not fully described by the ServerModel when using an ICD
+        // file. Since the report node differs from the ServerModel, a full read
+        // of the node and all data-attributes will fail. Therefore, only the
+        // needed data-attributes are read.
+        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                (FcModelNode) reporting.getFcmodelNode().getChild(SubDataAttribute.SEQUENCE_NUMBER.getDescription()));
+
+        final Iec61850ClientBaseEventListener reportListener = deviceConnection.getConnection()
+                .getIec61850ClientAssociation().getReportListener();
+
+        final short sqNum = reporting.getUnsignedByte(SubDataAttribute.SEQUENCE_NUMBER).getValue();
+        reportListener.setSqNum(sqNum);
+
+        final String dataSetReference = reporting.getString(SubDataAttribute.DATA_SET);
+        LOGGER.info("dataSetReference for unbuffered reporting: {}", dataSetReference);
+
+        // Set data set reference.
+        reporting.writeString(SubDataAttribute.DATA_SET, "TEMPLATELD0/LLN0.StatNrmlA");
+        reporting.writeString(SubDataAttribute.REPORT_ID, "A");
+
+        // Enable reporting.
+        reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
+        LOGGER.info("Allowing light measurement device {} to send unbuffered reports containing events",
                 deviceConnection.getDeviceIdentification());
     }
 }

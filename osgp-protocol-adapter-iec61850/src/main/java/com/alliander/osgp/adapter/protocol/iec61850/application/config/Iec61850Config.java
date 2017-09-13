@@ -38,11 +38,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({
-    @PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true), })
 public class Iec61850Config extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850Config.class);
@@ -65,6 +63,8 @@ public class Iec61850Config extends AbstractConfig {
     private static final String PROPERTY_NAME_IEC61850_ICD_FILE_USE = "iec61850.icd.file.use";
 
     private static final String PROPERTY_NAME_IEC61850_ICD_FILES_FOLDER = "iec61850.icd.files.folder";
+
+    private static final String PROPERTY_NAME_IEC61850_IS_BUFFERED_REPORTING_ENABLED = "iec61850.is.buffered.reporting.enabled";
 
     public Iec61850Config() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
@@ -251,6 +251,14 @@ public class Iec61850Config extends AbstractConfig {
         final String filesFolder = this.environment.getProperty(PROPERTY_NAME_IEC61850_ICD_FILES_FOLDER);
         LOGGER.info("Using ICD files folder: {}", filesFolder);
         return filesFolder;
+    }
+
+    @Bean
+    public Boolean isBufferedReportingEnabled() {
+        final Boolean isBufferedReportingEnabled = Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_IEC61850_IS_BUFFERED_REPORTING_ENABLED));
+        LOGGER.info("{} = {}", PROPERTY_NAME_IEC61850_IS_BUFFERED_REPORTING_ENABLED, isBufferedReportingEnabled);
+        return isBufferedReportingEnabled;
     }
 
     @Bean
