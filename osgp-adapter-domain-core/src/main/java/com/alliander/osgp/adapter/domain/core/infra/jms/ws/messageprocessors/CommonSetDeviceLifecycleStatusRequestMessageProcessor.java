@@ -48,14 +48,13 @@ public class CommonSetDeviceLifecycleStatusRequestMessageProcessor extends WebSe
         LOGGER.debug("Processing common set device verification key message");
 
         String correlationUid = null;
-        String messageType = null;
+        final String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
         DeviceLifecycleStatus deviceLifecycleStatus = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             deviceLifecycleStatus = (DeviceLifecycleStatus) message.getObject();
@@ -72,7 +71,7 @@ public class CommonSetDeviceLifecycleStatusRequestMessageProcessor extends WebSe
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.deviceManagementService.setDeviceLifecycleStatus(organisationIdentification, deviceIdentification,
-                    correlationUid, deviceLifecycleStatus, messageType);
+                    correlationUid, deviceLifecycleStatus);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
