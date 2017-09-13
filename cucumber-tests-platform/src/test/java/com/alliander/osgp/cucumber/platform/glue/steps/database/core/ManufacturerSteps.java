@@ -51,7 +51,7 @@ public class ManufacturerSteps extends GlueBase {
     /**
      * Verify whether the entity is created as expected.
      *
-     * @param expectedEntity
+     * @param settings
      * @throws Throwable
      */
     @Then("^the entity manufacturer exists$")

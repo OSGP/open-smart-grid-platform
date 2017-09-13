@@ -33,4 +33,4 @@ local.properties
 
 # IntellIJ stuff
 *.iml
-/.idea/
+.idea/
