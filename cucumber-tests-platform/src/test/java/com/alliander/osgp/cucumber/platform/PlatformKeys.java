@@ -101,11 +101,11 @@ public class PlatformKeys extends Keys {
     public static final String KEY_DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
     public static final String KEY_DEVICE_MAINTENANCE = "DeviceMaintenance";
     public static final String KEY_DEVICE_MODEL = "DeviceModel";
-    public static final String KEY_DEVICE_MODEL_DESCRIPTION = "Description";
+    public static final String KEY_DEVICE_MODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String KEY_DEVICE_MODEL_FILESTORAGE = "FileStorage";
     public static final String KEY_DEVICE_MODEL_MANUFACTURER = "Manufacturer";
     public static final String KEY_DEVICE_MODEL_METERED = "Metered";
-    public static final String KEY_DEVICE_MODEL_MODELCODE = "ModelCode";
+    public static final String KEY_DEVICE_MODEL_MODELCODE = "DeviceModelCode";
 
     public static final String KEY_DEVICE_SUPPLIER = "Supplier";
     public static final String KEY_DEVICE_TYPE = "DeviceType";
