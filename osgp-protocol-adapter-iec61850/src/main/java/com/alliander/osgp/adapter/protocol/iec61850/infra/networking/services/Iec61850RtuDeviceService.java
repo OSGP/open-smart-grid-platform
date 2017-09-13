@@ -40,7 +40,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Devi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850RtuDeviceReportingService;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
@@ -168,8 +167,6 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
             @Override
             public GetDataResponseDto apply(final DeviceMessageLog deviceMessageLog) throws Exception {
-                final Iec61850RtuDeviceReportingService reportingService = new Iec61850RtuDeviceReportingService();
-                reportingService.enableReportingOnDevice(connection, deviceRequest.getDeviceIdentification());
 
                 final List<GetDataSystemIdentifierDto> identifiers = new ArrayList<>();
                 for (final SystemFilterDto systemFilter : requestedData.getSystemFilters()) {
@@ -195,9 +192,6 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
         final Function<Void> function = new Function<Void>() {
             @Override
             public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
-
-                final Iec61850RtuDeviceReportingService reportingService = new Iec61850RtuDeviceReportingService();
-                reportingService.enableReportingOnDevice(connection, deviceRequest.getDeviceIdentification());
 
                 for (final SetDataSystemIdentifierDto identifier : setDataRequest.getSetDataSystemIdentifiers()) {
 

@@ -7,11 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,9 +17,7 @@ import org.joda.time.DateTime;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.Rcb;
 import org.openmuc.openiec61850.ServerModel;
-import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +26,6 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Report;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850ReportGroup;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
@@ -48,6 +40,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientEventListenerFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850RtuDeviceReportingService;
 
 @Component
 public class Iec61850DeviceConnectionService {
@@ -65,7 +58,7 @@ public class Iec61850DeviceConnectionService {
     private Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Autowired
-    private Iec61850DeviceReportGroupRepository iec61850DeviceReportRepository;
+    private Iec61850RtuDeviceReportingService iec61850RtuDeviceReportingService;
 
     @Autowired
     private Iec61850Client iec61850Client;
@@ -158,8 +151,6 @@ public class Iec61850DeviceConnectionService {
             throw new ConnectionFailureException(e.getMessage(), e);
         }
 
-        this.enableReportsForDevice(serverName, deviceIdentification, serverModel, clientAssociation);
-
         // Cache the connection.
         final Iec61850Connection iec61850Connection = new Iec61850Connection(iec61850ClientAssociation, serverModel,
                 startTime);
@@ -167,69 +158,17 @@ public class Iec61850DeviceConnectionService {
             this.cacheIec61850Connection(deviceIdentification, iec61850Connection);
         }
 
+        final DeviceConnection connection = new DeviceConnection(iec61850Connection, deviceIdentification,
+                organisationIdentification, serverName);
+
+        this.iec61850RtuDeviceReportingService.enableReportingForDevice(connection, deviceIdentification, serverName);
+
         final DateTime endTime = DateTime.now();
         LOGGER.info(
                 "Connected to device: {}, fetched server model. Start time: {}, end time: {}, total time in milliseconds: {}",
                 deviceIdentification, startTime, endTime, endTime.minus(startTime.getMillis()).getMillis());
 
-        return new DeviceConnection(iec61850Connection, deviceIdentification, organisationIdentification, serverName);
-    }
-
-    private void enableReportsForDevice(final String serverName, final String deviceIdentification,
-            final ServerModel serverModel, final ClientAssociation clientAssociation) {
-        final List<Iec61850DeviceReportGroup> deviceReportGroups = this.iec61850DeviceReportRepository
-                .findByDeviceIdentificationAndEnabled(deviceIdentification, true);
-        for (final Iec61850DeviceReportGroup deviceReportGroup : deviceReportGroups) {
-            this.enableReportGroup(serverName, deviceIdentification, deviceReportGroup.getIec61850ReportGroup(),
-                    serverModel, clientAssociation);
-        }
-    }
-
-    private void enableReportGroup(final String serverName, final String deviceIdentification,
-            final Iec61850ReportGroup reportGroup, final ServerModel serverModel,
-            final ClientAssociation clientAssociation) {
-        for (final Iec61850Report iec61850Report : reportGroup.getIec61850Reports()) {
-            this.enableReport(serverName, deviceIdentification, iec61850Report, serverModel, clientAssociation);
-        }
-    }
-
-    private void enableReport(final String serverName, final String deviceIdentification,
-            final Iec61850Report iec61850Report, final ServerModel serverModel,
-            final ClientAssociation clientAssociation) {
-        int i = 1;
-        Rcb rcb = this.getRcb(serverModel,
-                this.getReportNode(serverName, iec61850Report.getLogicalDevice(), i, iec61850Report.getLogicalNode()));
-        while (rcb != null) {
-            this.enableRcb(deviceIdentification, clientAssociation, rcb);
-            i += 1;
-            rcb = this.getRcb(serverModel, this.getReportNode(serverName, iec61850Report.getLogicalDevice(), i,
-                    iec61850Report.getLogicalNode()));
-        }
-    }
-
-    private String getReportNode(final String serverName, final String logicalDevice, final int index,
-            final String reportNode) {
-        return serverName + logicalDevice + index + "/" + reportNode;
-    }
-
-    private Rcb getRcb(final ServerModel serverModel, final String node) {
-        Rcb rcb = serverModel.getBrcb(node);
-        if (rcb == null) {
-            rcb = serverModel.getUrcb(node);
-        }
-        return rcb;
-    }
-
-    private void enableRcb(final String deviceIdentification, final ClientAssociation clientAssociation,
-            final Rcb rcb) {
-        try {
-            clientAssociation.enableReporting(rcb);
-        } catch (final IOException e) {
-            LOGGER.error("IOException: unable to enable reporting for deviceIdentification " + deviceIdentification, e);
-        } catch (final ServiceError e) {
-            LOGGER.error("ServiceError: unable to enable reporting for deviceIdentification " + deviceIdentification,
-                    e);
-        }
+        return connection;
     }
 
     private void logProtocolAdapterException(final String deviceIdentification, final ProtocolAdapterException e) {

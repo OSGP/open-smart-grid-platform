@@ -21,6 +21,7 @@ import javax.annotation.PreDestroy;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.ModelNode;
+import org.openmuc.openiec61850.Rcb;
 import org.openmuc.openiec61850.SclParseException;
 import org.openmuc.openiec61850.ServerEventListener;
 import org.openmuc.openiec61850.ServerModel;
@@ -87,6 +88,50 @@ public class RtuSimulator implements ServerEventListener {
         this.serverModel = this.server.getModelCopy();
 
         this.addLogicalDevices(this.serverModel);
+    }
+
+    public void ensureReportsDisabled() {
+        for (final Rcb rcb : this.server.getModelCopy().getBrcbs()) {
+            this.ensureReportDisabled(rcb);
+        }
+        for (final Rcb rcb : this.server.getModelCopy().getUrcbs()) {
+            this.ensureReportDisabled(rcb);
+        }
+    }
+
+    public void assertAllReportsEnabled() {
+        for (final Rcb rcb : this.server.getModelCopy().getBrcbs()) {
+            this.assertReportEnabled(rcb);
+        }
+        for (final Rcb rcb : this.server.getModelCopy().getUrcbs()) {
+            this.assertReportEnabled(rcb);
+        }
+    }
+
+    public void assertNoReportsEnabled() {
+        for (final Rcb rcb : this.server.getModelCopy().getBrcbs()) {
+            this.assertReportNotEnabled(rcb);
+        }
+        for (final Rcb rcb : this.server.getModelCopy().getUrcbs()) {
+            this.assertReportNotEnabled(rcb);
+        }
+    }
+
+    private void ensureReportDisabled(final Rcb rcb) {
+        rcb.getRptEna().setValue(false);
+        this.server.setValues(Arrays.asList(rcb.getRptEna()));
+    }
+
+    private void assertReportEnabled(final Rcb rcb) {
+        if (!rcb.getRptEna().getValue()) {
+            throw new AssertionError("Report " + rcb.getReference() + " should be enabled");
+        }
+    }
+
+    private void assertReportNotEnabled(final Rcb rcb) {
+        if (rcb.getRptEna().getValue()) {
+            throw new AssertionError("Report " + rcb.getReference() + " should not be enabled");
+        }
     }
 
     private void addLogicalDevices(final ServerModel serverModel) {
