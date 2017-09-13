@@ -411,7 +411,7 @@ public class AuthorizePlatformFunctionsSteps {
     private void changeManufacturer(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final ChangeManufacturerRequest request = new ChangeManufacturerRequest();
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setManufacturerId(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
+        manufacturer.setCode(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
         manufacturer.setName(PlatformCommonDefaults.DEFAULT_MANUFACTURER_NAME);
         manufacturer.setUsePrefix(PlatformCommonDefaults.DEFAULT_MANUFACTURER_USE_PREFIX);
         request.setManufacturer(manufacturer);
@@ -429,7 +429,7 @@ public class AuthorizePlatformFunctionsSteps {
     private void createManufacturer(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final AddManufacturerRequest request = new AddManufacturerRequest();
         final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setManufacturerId(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
+        manufacturer.setCode(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
         manufacturer.setName(PlatformCommonDefaults.DEFAULT_MANUFACTURER_NAME);
         manufacturer.setUsePrefix(PlatformCommonDefaults.DEFAULT_MANUFACTURER_USE_PREFIX);
         request.setManufacturer(manufacturer);
