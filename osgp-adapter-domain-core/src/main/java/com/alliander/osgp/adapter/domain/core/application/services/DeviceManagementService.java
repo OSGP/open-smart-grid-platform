@@ -106,8 +106,7 @@ public class DeviceManagementService extends AbstractService {
     // === SET DEVICE LIFECYCLE STATUS ===
 
     public void setDeviceLifecycleStatus(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DeviceLifecycleStatus deviceLifecycleStatus, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final DeviceLifecycleStatus deviceLifecycleStatus) throws FunctionalException {
 
         LOGGER.debug("SetDeviceLifecycleStatus called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);

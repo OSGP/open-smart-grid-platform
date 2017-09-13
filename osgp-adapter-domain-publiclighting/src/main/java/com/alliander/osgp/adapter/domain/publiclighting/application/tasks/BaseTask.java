@@ -100,13 +100,15 @@ public class BaseTask {
         LOGGER.info("Trying to find devices for device models for manufacturer...");
         final List<Device> devices = new ArrayList<>();
         for (final DeviceModel deviceModel : deviceModels) {
-            // TODO: Find out if it is necessary to add devices that are
-            // REGISTERED as well (both have is_active = true, only difference
-            // is presence of a technical installation date)
-            final List<Device> devs = this.deviceRepository
+
+            final List<Device> devsInUse = this.deviceRepository
                     .findByDeviceModelAndDeviceTypeAndInMaintenanceAndDeviceLifecycleStatus(deviceModel, deviceType,
                             false, DeviceLifecycleStatus.IN_USE);
-            devices.addAll(devs);
+            final List<Device> devsRegistered = this.deviceRepository
+                    .findByDeviceModelAndDeviceTypeAndInMaintenanceAndDeviceLifecycleStatus(deviceModel, deviceType,
+                            false, DeviceLifecycleStatus.REGISTERED);
+            devices.addAll(devsInUse);
+            devices.addAll(devsRegistered);
         }
         if (devices.isEmpty()) {
             LOGGER.warn("No devices found for device models for manufacturer");
