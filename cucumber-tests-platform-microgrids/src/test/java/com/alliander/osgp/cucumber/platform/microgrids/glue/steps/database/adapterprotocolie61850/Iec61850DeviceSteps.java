@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.database.adapterprotocolie61850;
 
+import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
@@ -66,9 +67,11 @@ public class Iec61850DeviceSteps extends GlueBase {
     @Given("^an rtu iec61850 device$")
     public void anRtuIec61850Device(final Map<String, String> settings) throws Throwable {
 
-        ScenarioContext.current().put(PlatformMicrogridsKeys.KEY_DEVICE_IDENTIFICATION, PlatformMicrogridsDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+        ScenarioContext.current().put(PlatformMicrogridsKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformMicrogridsDefaults.DEFAULT_DEVICE_IDENTIFICATION);
         final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_DEFAULT_SETTINGS);
-        rtuSettings.put(PlatformMicrogridsKeys.KEY_NETWORKADDRESS, this.iec61850MockServerConfig.iec61850MockNetworkAddress());
+        rtuSettings.put(PlatformMicrogridsKeys.KEY_NETWORKADDRESS,
+                this.iec61850MockServerConfig.iec61850MockNetworkAddress());
 
         this.rtuDeviceSteps.anRtuDevice(rtuSettings);
 
@@ -86,11 +89,14 @@ public class Iec61850DeviceSteps extends GlueBase {
          * the device. ICD filename, port and servername may be null
          */
         final Iec61850Device iec61850Device = new Iec61850Device(
-                getString(settings, PlatformMicrogridsKeys.KEY_DEVICE_IDENTIFICATION, PlatformMicrogridsDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(settings, PlatformMicrogridsKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformMicrogridsDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         iec61850Device.setIcdFilename(getString(settings, PlatformMicrogridsKeys.KEY_IEC61850_ICD_FILENAME));
         iec61850Device.setPort(getInteger(settings, PlatformMicrogridsKeys.KEY_IEC61850_PORT));
         iec61850Device.setServerName(getString(settings, PlatformMicrogridsKeys.KEY_IEC61850_SERVERNAME));
+        iec61850Device.setEnableAllReportsOnConnect(getBoolean(settings, PlatformMicrogridsKeys.ENABLE_ALL_REPORTS,
+                PlatformMicrogridsDefaults.ENABLE_ALL_REPORTS));
 
         this.iec61850DeviceRespository.save(iec61850Device);
     }

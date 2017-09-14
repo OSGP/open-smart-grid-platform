@@ -74,6 +74,18 @@ public class Iec61850MockServer {
         LOGGER.info("Stopped IEC61850 Mock server for device {}", this.mockedDevice);
     }
 
+    public void ensureReportsDisabled() {
+        this.rtuSimulator.ensureReportsDisabled();
+    }
+
+    public void assertReportsEnabled() {
+        this.rtuSimulator.assertAllReportsEnabled();
+    }
+
+    public void assertReportsDisabled() {
+        this.rtuSimulator.assertNoReportsEnabled();
+    }
+
     public void mockValue(final String logicalDeviceName, final String node, final String value) {
         if (!this.isInitialised()) {
             LOGGER.error("RtuSimulator for device {} has not yet been initialised.", this.mockedDevice);

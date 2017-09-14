@@ -9,23 +9,23 @@ Feature: CoreDeviceInstallation Device Creating
       | ModelCode | <ModelCode> |
       | Metered   | <Metered>   |
     When receiving an add device request
-      | DeviceUid             | <DeviceUid>             |
-      | DeviceIdentification  | <DeviceIdentification>  |
-      | alias                 | <Alias>                 |
-      | Owner                 | <Owner>                 |
-      | containerPostalCode   | <ContainerPostalCode>   |
-      | containerCity         | <ContainerCity>         |
-      | containerStreet       | <ContainerStreet>       |
-      | containerNumber       | <ContainerNumber>       |
-      | containerMunicipality | <ContainerMunicipality> |
-      | gpsLatitude           | <GpsLatitude>           |
-      | gpsLongitude          | <GpsLongitude>          |
-      | HasSchedule           | <HasSchedule>           |
-      | PublicKeyPresent      | <PublicKeyPresent>      |
-      | Manufacturer          | <Manufacturer>          |
-      | ModelCode             | <ModelCode>             |
-      | Description           | <Description>           |
-      | Metered               | <Metered>               |
+      | DeviceUid              | <DeviceUid>             |
+      | DeviceIdentification   | <DeviceIdentification>  |
+      | alias                  | <Alias>                 |
+      | Owner                  | <Owner>                 |
+      | containerPostalCode    | <ContainerPostalCode>   |
+      | containerCity          | <ContainerCity>         |
+      | containerStreet        | <ContainerStreet>       |
+      | containerNumber        | <ContainerNumber>       |
+      | containerMunicipality  | <ContainerMunicipality> |
+      | gpsLatitude            | <GpsLatitude>           |
+      | gpsLongitude           | <GpsLongitude>          |
+      | HasSchedule            | <HasSchedule>           |
+      | PublicKeyPresent       | <PublicKeyPresent>      |
+      | Manufacturer           | <Manufacturer>          |
+      | DeviceModelCode        | <ModelCode>             |
+      | DeviceModelDescription | <Description>           |
+      | Metered                | <Metered>               |
     Then the add device response is successful
     # Note: 'Activated' en 'Active' moeten altijd 'false' zijn, de device zet deze waarden automatisch op 'true'
     And the device exists
@@ -123,24 +123,24 @@ Feature: CoreDeviceInstallation Device Creating
       | ModelCode | <ModelCode> |
       | Metered   | <Metered>   |
     When receiving an add device request
-      | DeviceUid             | <DeviceUid>             |
-      | DeviceIdentification  | <DeviceIdentification>  |
-      | alias                 | <Alias>                 |
-      | Owner                 | <Owner>                 |
-      | containerPostalCode   | <ContainerPostalCode>   |
-      | containerCity         | <ContainerCity>         |
-      | containerStreet       | <ContainerStreet>       |
-      | containerNumber       | <ContainerNumber>       |
-      | containerMunicipality | <ContainerMunicipality> |
-      | gpsLatitude           | <GpsLatitude>           |
-      | gpsLongitude          | <GpsLongitude>          |
-      | Activated             | <Activated>             |
-      | HasSchedule           | <HasSchedule>           |
-      | PublicKeyPresent      | <PublicKeyPresent>      |
-      | Manufacturer          | <Manufacturer>          |
-      | ModelCode             | <ModelCode>             |
-      | Description           | <Description>           |
-      | Metered               | <Metered>               |
+      | DeviceUid              | <DeviceUid>             |
+      | DeviceIdentification   | <DeviceIdentification>  |
+      | alias                  | <Alias>                 |
+      | Owner                  | <Owner>                 |
+      | containerPostalCode    | <ContainerPostalCode>   |
+      | containerCity          | <ContainerCity>         |
+      | containerStreet        | <ContainerStreet>       |
+      | containerNumber        | <ContainerNumber>       |
+      | containerMunicipality  | <ContainerMunicipality> |
+      | gpsLatitude            | <GpsLatitude>           |
+      | gpsLongitude           | <GpsLongitude>          |
+      | Activated              | <Activated>             |
+      | HasSchedule            | <HasSchedule>           |
+      | PublicKeyPresent       | <PublicKeyPresent>      |
+      | Manufacturer           | <Manufacturer>          |
+      | DeviceModelCode        | <ModelCode>             |
+      | DeviceModelDescription | <Description>           |
+      | Metered                | <Metered>               |
     Then the add device response contains soap fault
       | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                             |
       | FaultString      | Validation error                                                                                                                                                                                                                            |
