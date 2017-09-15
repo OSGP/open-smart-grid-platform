@@ -20,6 +20,8 @@ import java.util.TreeSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -207,7 +209,8 @@ public class Device implements Serializable {
      * DeviceLifecycleStatus of this entity
      */
     @Column(nullable = false)
-    private String deviceLifecycleStatus = DeviceLifecycleStatus.NEW_IN_INVENTORY.name();
+    @Enumerated(EnumType.STRING)
+    private DeviceLifecycleStatus deviceLifecycleStatus = DeviceLifecycleStatus.NEW_IN_INVENTORY;
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     @Sort(type = SortType.NATURAL)
@@ -454,7 +457,7 @@ public class Device implements Serializable {
         this.networkAddress = networkAddress;
         this.deviceType = deviceType;
         this.isActivated = true;
-        this.deviceLifecycleStatus = DeviceLifecycleStatus.IN_USE.name();
+        this.deviceLifecycleStatus = DeviceLifecycleStatus.IN_USE;
     }
 
     public void updateGatewayDevice(final Device gatewayDevice) {
@@ -499,10 +502,10 @@ public class Device implements Serializable {
     }
 
     public DeviceLifecycleStatus getDeviceLifecycleStatus() {
-        return DeviceLifecycleStatus.valueOf(this.deviceLifecycleStatus);
+        return this.deviceLifecycleStatus;
     }
 
     public void setDeviceLifecycleStatus(final DeviceLifecycleStatus deviceLifecycleStatus) {
-        this.deviceLifecycleStatus = deviceLifecycleStatus.name();
+        this.deviceLifecycleStatus = deviceLifecycleStatus;
     }
 }

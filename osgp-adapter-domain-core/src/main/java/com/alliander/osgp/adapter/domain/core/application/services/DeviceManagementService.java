@@ -37,8 +37,6 @@ public class DeviceManagementService extends AbstractService {
         // Parameterless constructor required for transactions...
     }
 
-    // === SET EVENT NOTIFICATIONS ===
-
     public void setEventNotifications(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<EventNotificationType> eventNotifications, final String messageType)
             throws FunctionalException {
@@ -57,8 +55,6 @@ public class DeviceManagementService extends AbstractService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, eventNotificationMessageDataContainer), messageType, device.getIpAddress());
     }
-
-    // === UPDATE DEVICE SSL CERTIFICATION ===
 
     public void updateDeviceSslCertification(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Certification certification, final String messageType)
@@ -82,8 +78,6 @@ public class DeviceManagementService extends AbstractService {
                 messageType, device.getIpAddress());
     }
 
-    // === SET DEVICE VERIFICATION KEY ===
-
     public void setDeviceVerificationKey(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String verificationKey, final String messageType)
             throws FunctionalException {
@@ -103,16 +97,15 @@ public class DeviceManagementService extends AbstractService {
                 messageType, device.getIpAddress());
     }
 
-    // === SET DEVICE LIFECYCLE STATUS ===
-
     public void setDeviceLifecycleStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DeviceLifecycleStatus deviceLifecycleStatus) throws FunctionalException {
 
-        LOGGER.debug("SetDeviceLifecycleStatus called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+        LOGGER.debug(
+                "SetDeviceLifecycleStatus called with organisation {}, deviceLifecycleStatus {} and deviceIdentification {}",
+                organisationIdentification, deviceLifecycleStatus.name(), deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
-        final Device device = this.findDevice(deviceIdentification);
+        final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
 
         device.setDeviceLifecycleStatus(deviceLifecycleStatus);
         this.deviceDomainService.saveDevice(device);

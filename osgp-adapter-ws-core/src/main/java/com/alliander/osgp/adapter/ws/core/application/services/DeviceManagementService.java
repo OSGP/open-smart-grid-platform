@@ -698,8 +698,9 @@ public class DeviceManagementService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DEVICE_LIFECYCLE_STATUS);
 
-        LOGGER.debug("enqueueSetDeviceLifecycleStatusRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
+        LOGGER.debug(
+                "enqueueSetDeviceLifecycleStatusRequest called with organisation {}, deviceLifecycleStatus {} and deviceIdentifcation {}",
+                organisationIdentification, deviceLifecycleStatus.name(), deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);

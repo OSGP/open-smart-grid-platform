@@ -50,19 +50,22 @@ BEGIN
   	UPDATE device SET device_lifecycle_status = 'DESTROYED' 
   	WHERE (device.device_type = 'SMART_METER_E' OR device.device_type = 'SMART_METER_G')
   	AND device.is_active = false 
-  	AND device.is_activated = false;
   	
   	UPDATE device SET device_lifecycle_status = 'IN_USE' 
   	WHERE (device.device_type = 'SMART_METER_E' OR device.device_type = 'SMART_METER_G')
   	AND device.is_active = true 
-  	AND device.is_activated = true;
   	
-  	-- Get rid of the is_active column, this is replaced by device_lifecycle_status 'IN_USE'--
-  	ALTER TABLE device DROP COLUMN is_active;
-  	
+  	-- Assign a default value to every row where device_lifecycle_status is still null --
+  	UPDATE device SET device_lifecycle_status = 'NEW_IN_INVENTORY' WHERE device_lifecycle_status IS NULL;
   	-- Make device_lifecycle_status non-nullable --
   	ALTER TABLE device ALTER COLUMN device_lifecycle_status SET NOT NULL;
   	
+  END IF;
+  
+  -- Get rid of the is_active column, this is replaced by device_lifecycle_status --
+  IF EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema AND table_name = 'device' AND column_name = 'is_active')
+  THEN
+  	ALTER TABLE device DROP COLUMN is_active;
   END IF;
   
   IF NOT EXISTS(SELECT 1 FROM device_function_mapping WHERE function = 'SET_DEVICE_LIFECYCLE_STATUS')

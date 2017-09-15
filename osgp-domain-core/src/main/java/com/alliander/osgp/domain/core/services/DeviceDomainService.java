@@ -61,8 +61,6 @@ public class DeviceDomainService {
         final Device device = this.searchDevice(deviceIdentification);
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
 
-        // Is a device Active when it has a technical installation date or also
-        // when it is registered?
         if (!device.isActivated() || !device.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)) {
             throw new InactiveDeviceException(deviceIdentification);
         }
