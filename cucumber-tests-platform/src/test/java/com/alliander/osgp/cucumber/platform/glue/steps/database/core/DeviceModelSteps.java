@@ -65,9 +65,9 @@ public class DeviceModelSteps extends GlueBase {
         final boolean modelMetered = getBoolean(expectedEntity, PlatformKeys.KEY_DEVICE_MODEL_METERED,
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED);
 
-        final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setCode(
+        final Manufacturer manufacturer = this.manufacturerRepository.findByCode(
                 getString(expectedEntity, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
+
         final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturer(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
@@ -93,9 +93,9 @@ public class DeviceModelSteps extends GlueBase {
         final String modelCode = getString(entity, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE);
 
-        final Manufacturer manufacturer = new Manufacturer();
-        manufacturer
-                .setCode(getString(entity, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
+        final Manufacturer manufacturer = this.manufacturerRepository.findByCode(
+                getString(entity, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
+
         final List<DeviceModel> entityList = this.deviceModelRepository.findByManufacturer(manufacturer);
 
         for (final DeviceModel deviceModel : entityList) {
@@ -111,8 +111,8 @@ public class DeviceModelSteps extends GlueBase {
      */
     public DeviceModel insertDeviceModel(final Map<String, String> settings) {
 
-        final Manufacturer manufacturer = this.manufacturerRepository
-                .findByName(getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
+        final Manufacturer manufacturer = this.manufacturerRepository.findByName(
+                getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
         final DeviceModel deviceModel = new DeviceModelBuilder().withSettings(settings).withManufacturer(manufacturer)
                 .build();
         return this.deviceModelRepository.save(deviceModel);

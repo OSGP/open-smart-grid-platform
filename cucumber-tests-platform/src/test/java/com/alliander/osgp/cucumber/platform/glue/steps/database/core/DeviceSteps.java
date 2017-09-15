@@ -120,8 +120,9 @@ public class DeviceSteps extends BaseDeviceSteps {
                         .isPublicKeyPresent());
             }
         }
-        if (settings.containsKey(PlatformKeys.KEY_DEVICE_MODEL)) {
-            Assert.assertEquals(settings.get(PlatformKeys.KEY_DEVICE_MODEL), device.getDeviceModel().getModelCode());
+        if (settings.containsKey(PlatformKeys.KEY_DEVICE_MODEL_MODELCODE)) {
+            Assert.assertEquals(settings.get(PlatformKeys.KEY_DEVICE_MODEL_MODELCODE),
+                    device.getDeviceModel().getModelCode());
         }
     }
 
