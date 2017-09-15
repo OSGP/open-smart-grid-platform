@@ -16,6 +16,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 /**
  * FirmwareModule entity class holds the description of a specific firmware
  * module of which different versions can be part of firmware files that are
@@ -60,7 +62,11 @@ public class FirmwareModule implements Comparable<FirmwareModule>, Serializable 
 
     @Override
     public int compareTo(final FirmwareModule o) {
-        return this.description.compareTo(o.description);
+        if (o == null) {
+            return -1;
+        }
+
+        return ObjectUtils.compare(this.description, o.description);
     }
 
     @Override
