@@ -66,7 +66,7 @@ public class FirmwareFileSteps {
      * @throws Throwable
      */
     @Given("^a firmware")
-    public void aFirmware(final Map<String, String> settings) {
+    public void aFirmware(final Map<String, String> settings) throws IOException {
 
         /*
          * Model code does not uniquely identify a device model, which is why
@@ -130,17 +130,17 @@ public class FirmwareFileSteps {
         final String identification = getString(settings, PlatformKeys.FIRMWARE_FILENAME,
                 UUID.randomUUID().toString().replace("-", ""));
         final String filename = getString(settings, PlatformKeys.FIRMWARE_FILENAME, "");
-        byte[] file = null;
-        try {
-            file = this.getFirmwareFileBytes(filename);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        final byte[] file = this.readFile(deviceModel, filename, isForSmartMeters);
         FirmwareFile firmwareFile = new FirmwareFile(identification, filename,
                 getString(settings, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION),
                 getBoolean(settings, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
                         PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE),
                 file, null);
+
+        if (!isForSmartMeters) {
+            // Create file on disk
+            this.createFile(deviceModel.getManufacturer().getCode(), deviceModel.getModelCode(), filename);
+        }
         /*
          * Save the firmware file before adding the device model and updating
          * the firmware module data. Trying to save a new firmware file with the
@@ -151,6 +151,24 @@ public class FirmwareFileSteps {
         firmwareFile.addDeviceModel(deviceModel);
         firmwareFile.updateFirmwareModuleData(versionsByModule);
         this.firmwareFileRepository.save(firmwareFile);
+    }
+
+    private void createFile(final String manufacturerCode, final String modelCode, final String filename) {
+        final File modelCodeFolder = new File(
+                this.firmwareFilePath + File.separator + manufacturerCode + File.separator + modelCode);
+        if (!modelCodeFolder.exists()) {
+            modelCodeFolder.mkdirs();
+        }
+
+        final File firmwareFile = new File(modelCodeFolder.getAbsolutePath() + File.separator + filename);
+        if (!firmwareFile.exists()) {
+            try {
+                firmwareFile.createNewFile();
+            } catch (final IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -232,6 +250,23 @@ public class FirmwareFileSteps {
         });
     }
 
+    private byte[] readFile(final DeviceModel deviceModel, final String filename, final boolean isForSmartMeters)
+            throws IOException {
+        String filePathInfix = "";
+        if (!isForSmartMeters) {
+            filePathInfix = deviceModel.getManufacturer().getCode() + File.separator + deviceModel.getModelCode()
+                    + File.separator;
+        }
+        byte[] fileBytes;
+        if (isForSmartMeters) {
+            fileBytes = this.getFirmwareFileBytes(filePathInfix + filename);
+        } else {
+            fileBytes = null;
+        }
+
+        return fileBytes;
+    }
+
     private byte[] getFirmwareFileBytes(final String filename) throws IOException {
         final String path = this.getFirmwareFilepath(filename);
         try {
@@ -245,10 +280,10 @@ public class FirmwareFileSteps {
 
     private String getFirmwareFilepath(final String filename) {
         String path = this.firmwareFilePath;
-        if (StringUtils.endsWith(this.firmwareFilePath, "/")) {
+        if (StringUtils.endsWith(this.firmwareFilePath, File.separator)) {
             path = this.firmwareFilePath + filename;
         } else {
-            path = this.firmwareFilePath + "/" + filename;
+            path = this.firmwareFilePath + File.separator + filename;
         }
         return path;
     }
