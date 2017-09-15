@@ -42,7 +42,7 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements C
         device.setVersion(this.version);
         device.setDeviceModel(this.deviceModel);
         device.setTechnicalInstallationDate(this.technicalInstallationDate);
-        // updateRegistrationDate sets the status to IN_USE, so setting of any
+        // updateRegistrationData sets the status to IN_USE, so setting of any
         // other status has to be done after that.
         device.updateRegistrationData(this.networkAddress, this.deviceType);
         device.setDeviceLifecycleStatus(this.deviceLifeCycleStatus);

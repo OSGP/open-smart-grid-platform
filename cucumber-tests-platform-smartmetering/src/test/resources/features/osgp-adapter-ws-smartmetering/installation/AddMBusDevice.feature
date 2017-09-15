@@ -1,4 +1,4 @@
-@SmartMetering @Platform @TEST
+@SmartMetering @Platform
 Feature: SmartMetering Installation - Add M-Bus device
   As a grid operator
   I want to be able to add a new M-Bus device

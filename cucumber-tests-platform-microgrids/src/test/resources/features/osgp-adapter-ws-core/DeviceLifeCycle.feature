@@ -4,8 +4,6 @@ Feature: Core Operations, DeviceLifeCycle
   I want to distinguish the various statuses of a device
   So I know what I can or cannot do with the device
 
-# This skip tag can be removed as soon as all code from shared and platform is merged and deployed.
-  @Skip
   Scenario Outline: Set rtu device status
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
@@ -14,14 +12,11 @@ Feature: Core Operations, DeviceLifeCycle
       | DeviceLifecycleStatus | <Status> |
     Then the device lifecycle status in the database is
       | DeviceIdentification  | RTU10001 |
-      | DeviceLifecycleStatus | <Status>          |
-    And the status change is logged in the audit trail
-      | DeviceIdentification | TEST1024000000001                          |
-      | Log message          | "The device status is updated to <Status>" |
+      | DeviceLifecycleStatus | <Status> |
 
     Examples: 
-      | Status           |
-      | NEW_IN_INVENTORY |
+      | Status                |
+      | NEW_IN_INVENTORY      |
       | READY_FOR_USE         |
       | REGISTERED            |
       | IN_USE                |

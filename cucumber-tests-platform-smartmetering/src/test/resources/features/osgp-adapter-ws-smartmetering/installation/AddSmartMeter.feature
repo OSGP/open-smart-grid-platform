@@ -1,4 +1,4 @@
-@SmartMetering @Platform @TEST
+@SmartMetering @Platform
 Feature: SmartMetering Installation - Add smart meter
   As a grid operator
   I want to be able to add a smart meter

@@ -39,7 +39,6 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     String gatewayDeviceIdentification = PlatformSmartmeteringDefaults.GATEWAY_DEVICE_IDENTIFICATION;
     Date technicalInstallationDate = PlatformSmartmeteringDefaults.TECHNICAL_INSTALLATION_DATE;
     DeviceModel deviceModel = PlatformSmartmeteringDefaults.DEVICE_MODEL;
-    // boolean isActive = PlatformSmartmeteringDefaults.IS_ACTIVE;
     DeviceLifecycleStatus deviceLifeCycleStatus = PlatformDefaults.DEFAULT_DEVICE_LIFECYCLE_STATUS;
 
     public T setVersion(final Long version) {

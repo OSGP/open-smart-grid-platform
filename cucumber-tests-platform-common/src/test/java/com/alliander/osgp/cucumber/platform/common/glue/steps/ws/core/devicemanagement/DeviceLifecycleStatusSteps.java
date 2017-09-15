@@ -7,20 +7,15 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus;
@@ -30,20 +25,16 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifec
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.core.Wait;
-import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class DeviceLifecycleStatusSteps {
-
-    private static final String PATTERN_RETRY_OPERATION = "retry count= .*, correlationuid= .*";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceLifecycleStatusSteps.class);
 
@@ -76,9 +67,6 @@ public class DeviceLifecycleStatusSteps {
         final SetDeviceLifecycleStatusAsyncRequest asyncRequest = new SetDeviceLifecycleStatusAsyncRequest();
         asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
         asyncRequest.setDeviceId((String) ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-        // final SetDeviceLifecycleStatusResponse response =
-        // this.deviceManagementClient
-        // .getSetDeviceLifecycleStatusResponse(asyncRequest);
 
         Wait.until(() -> {
             SetDeviceLifecycleStatusResponse response = null;
@@ -99,23 +87,5 @@ public class DeviceLifecycleStatusSteps {
         assertEquals("Device Lifecycle Status should be " + deviceLifecycleStatus,
                 com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus.valueOf(deviceLifecycleStatus),
                 device.getDeviceLifecycleStatus());
-    }
-
-    @Then("^the status change is logged in the audit trail$")
-    public void theStatusChangeIsLoggedInTheAuditTrail(final Map<String, String> settings) throws Throwable {
-        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-
-        final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
-                .findByDeviceIdentification(deviceIdentification, new PageRequest(0, 2)).getContent();
-
-        for (final DeviceLogItem deviceLogItem : deviceLogItems) {
-            LOGGER.info("CreationTime: {}", deviceLogItem.getCreationTime().toString());
-            LOGGER.info("DecodedMessage: {}", deviceLogItem.getDecodedMessage());
-
-            final boolean isMatchRetryOperation = Pattern.matches(PATTERN_RETRY_OPERATION,
-                    deviceLogItem.getDecodedMessage());
-            assertTrue("No retry log item found.", isMatchRetryOperation);
-        }
     }
 }

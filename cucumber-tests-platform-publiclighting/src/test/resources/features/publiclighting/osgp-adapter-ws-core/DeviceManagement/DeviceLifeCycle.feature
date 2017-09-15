@@ -4,8 +4,6 @@ Feature: Core Operations, DeviceLifeCycle
   I want to distinguish the various statuses of a device
   So I know what I can or cannot do with the device
 
-# This skip tag can be removed as soon as all code from shared and platform is merged and deployed.
-  @Skip
   Scenario Outline: Set dlms device status
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
@@ -15,9 +13,6 @@ Feature: Core Operations, DeviceLifeCycle
     Then the device lifecycle status in the database is
       | DeviceIdentification  | TEST1024000000001 |
       | DeviceLifecycleStatus | <Status>          |
-    And the status change is logged in the audit trail
-      | DeviceIdentification | TEST1024000000001                          |
-      | Log message          | "The device status is updated to <Status>" |
 
     Examples: 
       | Status                |
