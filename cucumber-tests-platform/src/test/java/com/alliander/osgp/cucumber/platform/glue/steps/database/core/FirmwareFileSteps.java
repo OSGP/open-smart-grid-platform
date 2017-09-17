@@ -252,16 +252,9 @@ public class FirmwareFileSteps {
 
     private byte[] readFile(final DeviceModel deviceModel, final String filename, final boolean isForSmartMeters)
             throws IOException {
-        String filePathInfix = "";
-        if (!isForSmartMeters) {
-            filePathInfix = deviceModel.getManufacturer().getCode() + File.separator + deviceModel.getModelCode()
-                    + File.separator;
-        }
-        byte[] fileBytes;
+        byte[] fileBytes = null;
         if (isForSmartMeters) {
-            fileBytes = this.getFirmwareFileBytes(filePathInfix + filename);
-        } else {
-            fileBytes = null;
+            fileBytes = this.getFirmwareFileBytes(filename);
         }
 
         return fileBytes;
