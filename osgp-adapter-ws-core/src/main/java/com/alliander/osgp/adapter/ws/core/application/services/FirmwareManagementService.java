@@ -444,7 +444,9 @@ public class FirmwareManagementService {
             final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer);
             final DeviceModel databaseDeviceModel = this.deviceModelRepository
                     .findByManufacturerAndModelCode(databaseManufacturer, modelCode);
-            firmwareFiles = this.firmwareFileRepository.findByDeviceModel(databaseDeviceModel);
+            if (databaseDeviceModel != null) {
+                firmwareFiles = this.firmwareFileRepository.findByDeviceModel(databaseDeviceModel);
+            }
         } else {
             final List<DeviceModel> deviceModels = this.deviceModelRepository.findByModelCode(modelCode);
             for (final DeviceModel deviceModel : deviceModels) {
@@ -525,7 +527,8 @@ public class FirmwareManagementService {
             } else {
                 // Storing the file in the database
                 savedFirmwareFile = new FirmwareFile(fileName, description, pushToNewDevices,
-                        databaseFirmwareFiles.get(0).getFile(), this.getMd5Hash(databaseFirmwareFiles.get(0).getFile()));
+                        databaseFirmwareFiles.get(0).getFile(),
+                        this.getMd5Hash(databaseFirmwareFiles.get(0).getFile()));
             }
         } else {
             if (databaseDeviceModel.isFileStorage()) {
