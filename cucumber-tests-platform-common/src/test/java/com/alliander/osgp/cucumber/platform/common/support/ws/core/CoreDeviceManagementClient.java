@@ -24,6 +24,10 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsRequ
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledTasksResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
@@ -94,5 +98,20 @@ public class CoreDeviceManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (FindScheduledTasksResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public SetDeviceLifecycleStatusAsyncResponse setDeviceLifecycleStatus(final SetDeviceLifecycleStatusRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (SetDeviceLifecycleStatusAsyncResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public SetDeviceLifecycleStatusResponse getSetDeviceLifecycleStatusResponse(
+            final SetDeviceLifecycleStatusAsyncRequest asyncRequest)
+            throws WebServiceSecurityException, InterruptedException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (SetDeviceLifecycleStatusResponse) wst.marshalSendAndReceive(asyncRequest);
     }
 }
