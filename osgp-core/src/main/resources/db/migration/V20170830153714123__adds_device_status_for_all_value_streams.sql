@@ -49,11 +49,11 @@ BEGIN
   	-- Migrating smartmetering devices to appropriate device lifecycle status--
   	UPDATE device SET device_lifecycle_status = 'DESTROYED' 
   	WHERE (device.device_type = 'SMART_METER_E' OR device.device_type = 'SMART_METER_G')
-  	AND device.is_active = false 
+  	AND device.is_active = false; 
   	
   	UPDATE device SET device_lifecycle_status = 'IN_USE' 
   	WHERE (device.device_type = 'SMART_METER_E' OR device.device_type = 'SMART_METER_G')
-  	AND device.is_active = true 
+  	AND device.is_active = true;
   	
   	-- Assign a default value to every row where device_lifecycle_status is still null --
   	UPDATE device SET device_lifecycle_status = 'NEW_IN_INVENTORY' WHERE device_lifecycle_status IS NULL;
