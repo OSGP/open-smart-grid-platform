@@ -61,7 +61,6 @@ public class PlatformKeys extends Keys {
     public static final String KEY_ACTIVATED = "Activated";
 
     public static final String KEY_ACTIVE = "Active";
-    public static final String KEY_DEVICE_LIFECYCLE_STATUS = "DeviceLifecycleStatus";
     public static final String KEY_ACTUAL_LINKTYPE = "ActualLinkType";
 
     public static final String KEY_ORGANIZATION_NAME = "OrganizationName";

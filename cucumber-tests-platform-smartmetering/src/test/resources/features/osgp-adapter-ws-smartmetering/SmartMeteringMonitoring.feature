@@ -63,9 +63,9 @@ Feature: SmartMetering Monitoring
 
   Scenario: Refuse an operation with an inactive device
     Given a dlms device
-      | DeviceIdentification  | E9998000014123414 |
-      | DeviceType            | SMART_METER_E     |
-      | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
+      | DeviceIdentification | E9998000014123414 |
+      | DeviceType           | SMART_METER_E     |
+      | Active               | False             |
     When the actual meter reads request is received for an inactive device
       | DeviceIdentification | E9998000014123414 |
     Then a SOAP fault should have been returned

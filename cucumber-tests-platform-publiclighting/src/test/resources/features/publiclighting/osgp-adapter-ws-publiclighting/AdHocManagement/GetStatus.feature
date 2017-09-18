@@ -101,19 +101,18 @@ Feature: PublicLightingAdhocManagement GetStatus
 
   Scenario Outline: Get status for an inactive device
     Given an ssld device
-      | DeviceIdentification  | TEST1024000000001 |
-      | IsActivated           | <IsActivated>     |
-      | DeviceLifecycleStatus | <Status>          |
+      | DeviceIdentification | TEST1024000000001 |
+      | IsActivated          | <IsActivated>     |
+      | Active               | <IsActive>        |
     When receiving a get status request
       | DeviceIdentification | TEST1024000000001 |
     Then the get status response contains soap fault
       | Message | INACTIVE_DEVICE |
 
     Examples: 
-      | IsActivated | Status           |
-      | false       | NEW_IN_INVENTORY |
-      | false       | REGISTERED       |
-      | false       | DESTROYED        |
+      | IsActivated | IsActive |
+      | false       | true     |
+      | true        | false    |
 
   Scenario: Get status for an unregistered device
     Given an ssld device
