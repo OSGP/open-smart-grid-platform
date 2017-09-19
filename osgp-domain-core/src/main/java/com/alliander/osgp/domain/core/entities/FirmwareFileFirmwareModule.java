@@ -93,7 +93,7 @@ public class FirmwareFileFirmwareModule implements Comparable<FirmwareFileFirmwa
     @MapsId("firmwareModuleId")
     private FirmwareModule firmwareModule;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     private String moduleVersion;
 
     protected FirmwareFileFirmwareModule() {
@@ -165,6 +165,10 @@ public class FirmwareFileFirmwareModule implements Comparable<FirmwareFileFirmwa
 
     public String getModuleVersion() {
         return this.moduleVersion;
+    }
+
+    public void setModuleVersion(final String moduleVersion) {
+        this.moduleVersion = moduleVersion;
     }
 
 }

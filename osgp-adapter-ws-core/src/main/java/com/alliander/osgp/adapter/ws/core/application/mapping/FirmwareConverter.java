@@ -74,7 +74,7 @@ class FirmwareConverter extends CustomConverter<com.alliander.osgp.domain.core.e
             output.setCreationTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar));
         } catch (final DatatypeConfigurationException e) {
             // This won't happen, so no further action is needed.
-            LOGGER.error("Bad date format in one of Firmare installation dates", e);
+            LOGGER.error("Bad date format in one of Firmware installation dates", e);
         }
 
         return output;
