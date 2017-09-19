@@ -60,6 +60,12 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     private Integer timeZoneOffsetMinutes;
 
     @Autowired
+    private Float defaultLatitude;
+
+    @Autowired
+    private Float defaultLongitude;
+
+    @Autowired
     private OslpDeviceSettingsService oslpDeviceSettingsService;
 
     @Autowired
@@ -204,18 +210,25 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         locationInfo.setTimeOffset(this.timeZoneOffsetMinutes);
 
         // Get the GPS values from OSGP-CORE database.
-        final GpsCoordinatesDto gpsCoordinates = this.deviceDataService.getGpsCoordinatesForDevice(deviceIdentification);
-
-        // Add GPS information when available in meta data.
+        final GpsCoordinatesDto gpsCoordinates = this.deviceDataService
+                .getGpsCoordinatesForDevice(deviceIdentification);
         if (gpsCoordinates != null && gpsCoordinates.getLatitude() != null && gpsCoordinates.getLongitude() != null) {
-            final int latitude = (int) ((gpsCoordinates.getLatitude()) * 1000000);
-            final int longitude = (int) ((gpsCoordinates.getLongitude()) * 1000000);
-            locationInfo.setLatitude(latitude).setLongitude(longitude);
+            // Add GPS information when available in meta data.
+            locationInfo.setLatitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLatitude()))
+                    .setLongitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLongitude()));
+        } else {
+            // Otherwise use default GPS information.
+            locationInfo.setLatitude(this.convertGpsCoordinateFromFloatToInt(this.defaultLatitude)).setLongitude(
+                    this.convertGpsCoordinateFromFloatToInt(this.defaultLongitude));
         }
 
         responseBuilder.setLocationInfo(locationInfo);
 
         return Oslp.Message.newBuilder().setRegisterDeviceResponse(responseBuilder.build()).build();
+    }
+
+    private int convertGpsCoordinateFromFloatToInt(final Float input) {
+        return (int) (input * 1000000);
     }
 
     private Oslp.Message handleConfirmRegisterDeviceRequest(final byte[] deviceId, final byte[] sequenceNumber,
@@ -234,9 +247,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
-                        .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                        .setSequenceWindow(this.sequenceNumberWindow)).build();
+                                .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+                                .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
+                                .setSequenceWindow(this.sequenceNumberWindow)).build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,
