@@ -2,13 +2,12 @@
 
 def stream = 'osgp'
 def servername = stream + '-at-' + env.BUILD_NUMBER
-//def servername = stream + '-at-26'
 def playbook = stream + '-at.yml'
-def extravars = 'ec2_instance_type=t2.large'
 def repo = 'git@github.com:OSGP/Integration-Tests.git'
 
 pipeline {
     agent any
+
     options {
         ansiColor('xterm')
         timestamps()
@@ -32,7 +31,10 @@ pipeline {
             steps {
                 withMaven(
                         maven: 'Apache Maven 3.5.0',
-                        mavenLocalRepo: '.repository') {
+                        mavenLocalRepo: '.repository',
+                        options: [
+                                artifactsPublisher(disabled: true)
+                        ]) {
                     sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 }
             }
@@ -40,7 +42,7 @@ pipeline {
 
         stage ('Deploy AWS system') {
             steps {
-                build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook), string(name: 'EXTRAVARS', value: extravars)]
+                build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
             }
         }
 
@@ -59,7 +61,10 @@ pipeline {
                 withMaven(
                         maven: 'Apache Maven 3.5.0',
                         mavenLocalRepo: '.repository',
-                        options: [openTasksPublisher(disabled: true)]) {
+                        options: [
+                                artifactsPublisher(disabled: true),
+                                openTasksPublisher(disabled: true)
+                        ]) {
                     sh "mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
                 }
             }
@@ -83,6 +88,10 @@ pipeline {
         }
         failure {
             step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com,hans.rooden@cgi.com,martijn.sips@cgi.com', sendToIndividuals: false])
+        }
+        success {
+            // Clean the complete workspace
+            cleanWs()
         }
     }
 }

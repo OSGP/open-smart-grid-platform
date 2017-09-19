@@ -2,14 +2,17 @@
 
 def stream = 'osgp'
 def servername = stream + '-at-pr-' + env.BUILD_NUMBER
-//def servername = stream + '-at-pr-1'
 def playbook = stream + '-at.yml'
-def extravars = 'ec2_instance_type=t2.large'
 def repo = 'git@github.com:OSGP/Integration-Tests.git'
 
 pipeline {
     agent any
-    
+
+    environment {
+        // Default the pom version
+        POMVERSION="latest"
+    }
+
     options {
         ansiColor('xterm')
         timestamps()
@@ -24,13 +27,26 @@ pipeline {
                 // Cleanup workspace
                 deleteDir()
 
-                checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: repo]]])
+                checkout([$class: 'GitSCM',
+                          branches: [[name: '${sha1}']],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [[$class: 'SubmoduleOption',
+                                        disableSubmodules: false,
+                                        parentCredentials: false,
+                                        recursiveSubmodules: true,
+                                        reference: '',
+                                        trackingSubmodules: true]],
+                          submoduleCfg: [],
+                          userRemoteConfigs: [[credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f',
+                                               refspec: '+refs/pull/*:refs/remotes/origin/pr/*',
+                                               url: repo]]])
             }
         }
 
         stage ('Set status') {
             steps {
-                step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
+                step([$class: 'GitHubSetCommitStatusBuilder',
+                      contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
             }
         }
         
@@ -38,18 +54,51 @@ pipeline {
             steps {
                 withMaven(
                         maven: 'Apache Maven 3.5.0',
-                        mavenLocalRepo: '.repository') {
+                        mavenLocalRepo: '.repository',
+                        options: [
+                                artifactsPublisher(disabled: true),
+                        ]) {
                     sh "mvn clean install -DskipTestJarWithDependenciesAssembly=false"
                 }
+
+                // Collect all build wars and copy them to target/artifacts
+                sh "rm -rf target/artifacts && mkdir -p target/artifacts && find . -name *.war -exec cp -f {} target/artifacts \\;"
+
+                // Clone the release repository in order to deploy
+                sh "git clone git@github.com:SmartSocietyServices/release.git"
+
+                script {
+                    // Determine the actual pom version from the pom.
+                    POMVERSION = sh ( script: "grep \"<version>\" pom.xml | sed \"s#<[/]\\?version>##g;s# ##g\" | grep SNAPSHOT", returnStdout: true).trim()
+                }
+                echo "Using version ${POMVERSION} (from pom) to collect artifacts which are needed to deploy a new environment but weren't build in this job."
+
+                // Download missing artifacts from artifactory for the same version
+                // - The following artifacts are not in this repository
+                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
+                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
+                // - The following artifacts are not specified in the root pom.xml, thus they should be retrieved from the artifactory.
+                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ distribution_automation_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
+                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ iec61850_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
+
+                // Now create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
+                sh "cd release && plays/deploy-files-to-system.yml -e osgp_version=${POMVERSION} -e deployment_name=${servername} -e directory_to_deploy=../../target/artifacts -e tomcat_restart=false -e ec2_instance_type=m4.large"
+            }
+        }
+
+        stage ('Deploy local artifacts') {
+            steps {
+                // Deploy stream specific system using the local artifacts from /data/software/artifacts on the system
+                build job: 'Deploy an AWS System', parameters: [
+                        string(name: 'SERVERNAME', value: servername),
+                        string(name: 'PLAYBOOK', value: playbook),
+                        booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
+                        string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
+                        string(name: 'OSGP_VERSION', value: POMVERSION),
+                        booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true)]
             }
         }
        
-        stage ('Deploy AWS system') {
-            steps {
-                build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook), string(name: 'EXTRAVARS', value: extravars)]
-            }
-        }
-        
         stage('Run tests') {
             steps {
                 sh '''echo Searching for specific Cucumber tags in git commit.
@@ -85,7 +134,10 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 withMaven(
                         maven: 'Apache Maven 3.5.0',
                         mavenLocalRepo: '.repository',
-                        options: [openTasksPublisher(disabled: true)]) {
+                        options: [
+                                artifactsPublisher(disabled: true),
+                                openTasksPublisher(disabled: true)
+                        ]) {
                     sh "mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
                 }
             }
