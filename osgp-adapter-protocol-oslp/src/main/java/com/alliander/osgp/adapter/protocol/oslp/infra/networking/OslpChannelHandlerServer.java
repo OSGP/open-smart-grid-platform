@@ -129,12 +129,12 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     payload = this.handleConfirmRegisterDeviceRequest(message.getDeviceId(),
                             message.getSequenceNumber(), message.getPayloadMessage().getConfirmRegisterDeviceRequest());
                 } else if (message.getPayloadMessage().hasEventNotificationRequest()) {
-                    payload = (this.handleEventNotificationRequest(message.getDeviceId(), message.getSequenceNumber(),
-                            message.getPayloadMessage().getEventNotificationRequest()));
+                    payload = this.handleEventNotificationRequest(message.getDeviceId(), message.getSequenceNumber(),
+                            message.getPayloadMessage().getEventNotificationRequest());
                 } else {
                     LOGGER.warn("{} Received unknown payload. Received: {}.", channelId, message.getPayloadMessage()
                             .toString());
-                    // TODO return error code to device.
+                    // Optional extra: return error code to device.
                     return;
                 }
 
@@ -215,7 +215,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         if (gpsCoordinates != null && gpsCoordinates.getLatitude() != null && gpsCoordinates.getLongitude() != null) {
             // Add GPS information when available in meta data.
             locationInfo.setLatitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLatitude()))
-                    .setLongitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLongitude()));
+            .setLongitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLongitude()));
         } else {
             // Otherwise use default GPS information.
             locationInfo.setLatitude(this.convertGpsCoordinateFromFloatToInt(this.defaultLatitude)).setLongitude(
@@ -247,9 +247,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                                .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
-                                .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                                .setSequenceWindow(this.sequenceNumberWindow)).build();
+                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+                        .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
+                        .setSequenceWindow(this.sequenceNumberWindow)).build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,
