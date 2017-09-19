@@ -17,6 +17,7 @@ import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 @Service
 @Validated
@@ -52,7 +53,7 @@ public class SmartMeterDomainService {
 
         final SmartMeter smartMeter = this.searchSmartMeter(deviceIdentification);
 
-        if (!smartMeter.isActive()) {
+        if (!smartMeter.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)) {
             throw new InactiveDeviceException(deviceIdentification);
         }
 

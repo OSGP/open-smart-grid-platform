@@ -25,6 +25,7 @@ import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
@@ -116,8 +117,9 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         destination.setHasSchedule(source.isHasSchedule());
         destination.setActivated(source.isActivated());
 
-        if (source.isActive() != null) {
-            destination.setActive(source.isActive());
+        if (source.getDeviceLifecycleStatus() != null) {
+            destination
+                    .setDeviceLifecycleStatus(DeviceLifecycleStatus.valueOf(source.getDeviceLifecycleStatus().name()));
         }
 
         // clearing the existing Eans to prevent duplication

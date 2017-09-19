@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -38,6 +39,10 @@ public class DeviceDomainService {
 
     @Autowired
     private SsldRepository ssldRepository;
+
+    public Device saveDevice(final Device device) {
+        return this.deviceRepository.save(device);
+    }
 
     public Device searchDevice(@Identification final String deviceIdentification) throws FunctionalException {
 
@@ -56,7 +61,7 @@ public class DeviceDomainService {
         final Device device = this.searchDevice(deviceIdentification);
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
 
-        if (!device.isActivated() || !device.isActive()) {
+        if (!device.isActivated() || !device.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)) {
             throw new InactiveDeviceException(deviceIdentification);
         }
 

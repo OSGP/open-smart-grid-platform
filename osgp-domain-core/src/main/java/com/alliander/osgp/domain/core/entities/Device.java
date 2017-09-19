@@ -20,6 +20,8 @@ import java.util.TreeSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,6 +42,7 @@ import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 /**
  * Entity class which is the base for all smart devices. Other smart device
@@ -159,11 +162,6 @@ public class Device implements Serializable {
     protected boolean isActivated;
 
     /**
-     * Indicates if a device is active
-     */
-    protected boolean isActive;
-
-    /**
      * List of { @see DeviceAuthorization.class } containing authorizations for
      * this device. More that one organisation can be authorized to use one ore
      * more { @see DeviceFunctionGroup.class }.
@@ -206,6 +204,13 @@ public class Device implements Serializable {
      */
     @Column()
     protected Date technicalInstallationDate;
+
+    /**
+     * DeviceLifecycleStatus of this entity
+     */
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DeviceLifecycleStatus deviceLifecycleStatus = DeviceLifecycleStatus.NEW_IN_INVENTORY;
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     @Sort(type = SortType.NATURAL)
@@ -386,14 +391,6 @@ public class Device implements Serializable {
         this.isActivated = isActivated;
     }
 
-    public boolean isActive() {
-        return this.isActive;
-    }
-
-    public void setActive(final boolean isActive) {
-        this.isActive = isActive;
-    }
-
     public boolean isInMaintenance() {
         return this.inMaintenance;
     }
@@ -460,7 +457,7 @@ public class Device implements Serializable {
         this.networkAddress = networkAddress;
         this.deviceType = deviceType;
         this.isActivated = true;
-        this.isActive = true;
+        this.deviceLifecycleStatus = DeviceLifecycleStatus.IN_USE;
     }
 
     public void updateGatewayDevice(final Device gatewayDevice) {
@@ -502,5 +499,13 @@ public class Device implements Serializable {
             return null;
         }
         return this.deviceFirmwareFiles.last().getFirmwareFile();
+    }
+
+    public DeviceLifecycleStatus getDeviceLifecycleStatus() {
+        return this.deviceLifecycleStatus;
+    }
+
+    public void setDeviceLifecycleStatus(final DeviceLifecycleStatus deviceLifecycleStatus) {
+        this.deviceLifecycleStatus = deviceLifecycleStatus;
     }
 }
