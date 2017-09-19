@@ -11,11 +11,13 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.Map;
 
+import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.inputparsers.DateInputParser;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
@@ -37,7 +39,7 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     String gatewayDeviceIdentification = PlatformSmartmeteringDefaults.GATEWAY_DEVICE_IDENTIFICATION;
     Date technicalInstallationDate = PlatformSmartmeteringDefaults.TECHNICAL_INSTALLATION_DATE;
     DeviceModel deviceModel = PlatformSmartmeteringDefaults.DEVICE_MODEL;
-    boolean isActive = PlatformSmartmeteringDefaults.IS_ACTIVE;
+    DeviceLifecycleStatus deviceLifeCycleStatus = PlatformDefaults.DEFAULT_DEVICE_LIFECYCLE_STATUS;
 
     public T setVersion(final Long version) {
         this.version = version;
@@ -129,8 +131,8 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
         return (T) this;
     }
 
-    public T setIsActive(final boolean isActive) {
-        this.isActive = isActive;
+    public T setDeviceLifecycleStatus(final DeviceLifecycleStatus deviceLifecycleStatus) {
+        this.deviceLifeCycleStatus = deviceLifecycleStatus;
         return (T) this;
     }
 
@@ -179,10 +181,10 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
             this.setTechnicalInstallationDate(
                     DateInputParser.parse(inputSettings.get(PlatformSmartmeteringKeys.TECHNICAL_INSTALLATION_DATE)));
         }
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.IS_ACTIVE)) {
-            this.setIsActive(Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.IS_ACTIVE)));
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_LIFECYCLE_STATUS)) {
+            this.setDeviceLifecycleStatus(DeviceLifecycleStatus
+                    .valueOf(inputSettings.get(PlatformSmartmeteringKeys.KEY_DEVICE_LIFECYCLE_STATUS)));
         }
-
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.GATEWAY_DEVICE_IDENTIFICATION)) {
             this.setGatewayDevice(inputSettings.get(PlatformSmartmeteringKeys.GATEWAY_DEVICE_IDENTIFICATION));
         }

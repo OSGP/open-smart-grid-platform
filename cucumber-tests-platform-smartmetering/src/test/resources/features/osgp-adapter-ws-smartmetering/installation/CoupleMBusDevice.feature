@@ -3,7 +3,6 @@ Feature: SmartMetering Installation - Couple M-Bus Device
   As a grid operator
   I want to be able to couple an M-Bus device to a smart meter
 
-
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on first channel
@@ -257,9 +256,9 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And a dlms device
-      | DeviceIdentification | TESTG102400000001 |
-      | DeviceType           | SMART_METER_G     |
-      | Active               | False             |
+      | DeviceIdentification  | TESTG102400000001 |
+      | DeviceType            | SMART_METER_G     |
+      | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
     Then retrieving the Couple response results in an exception
     And a SOAP fault should have been returned
@@ -268,9 +267,9 @@ Feature: SmartMetering Installation - Couple M-Bus Device
 
   Scenario: Couple G-meter to an inactive E-meter
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Active               | False             |
+      | DeviceIdentification  | TEST1024000000001 |
+      | DeviceType            | SMART_METER_E     |
+      | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
     And a dlms device
       | DeviceIdentification | TESTG102400000001 |
       | DeviceType           | SMART_METER_G     |
@@ -308,7 +307,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-      
+
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Couple unbound G-meter "TESTG101205673101" to E-meter "TEST1024000000001" on a channel 2
@@ -350,7 +349,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
-      
+
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Couple G-meter to an E-meter when all MBus channels are occupied
@@ -368,7 +367,6 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
     Then retrieving the Couple response results in an exception
     And a SOAP fault should have been returned
-      | Code    |                               217 |
+      | Code    |                        217 |
       | Message | ALL_MBUS_CHANNELS_OCCUPIED |
     And the mbus device "TESTG102400000001" is not coupled to the device "TEST1024000000001"
-
