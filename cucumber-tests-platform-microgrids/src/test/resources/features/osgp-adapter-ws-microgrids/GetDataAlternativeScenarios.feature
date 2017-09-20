@@ -26,7 +26,7 @@ Feature: Get Data Alternative Scenarios
       | DeviceIdentification | RTU-WAGO    |
       | ServerName           | WAGO123     |
       | IcdFilename          | WAGO123.icd |
-      | Port                 |       62104 |
+      | Port                 |       62105 |
     And the WAGO RTU returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |
@@ -55,7 +55,7 @@ Feature: Get Data Alternative Scenarios
       | DeviceIdentification | RTU-PAMPUS-WAGO |
       | ServerName           | WAGO            |
       | Port                 |           62102 |
-    And an rtu simulator returning
+    And the Pampus RTU returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |
     When a get data request is received
