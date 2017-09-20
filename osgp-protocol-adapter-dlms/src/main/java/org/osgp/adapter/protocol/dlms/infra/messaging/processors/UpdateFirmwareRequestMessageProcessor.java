@@ -12,6 +12,7 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.application.services.FirmwareService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -36,6 +37,9 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateFirmwareRequestMessageProcessor.class);
+
+    @Autowired
+    private ConfigurationService configurationService;
 
     @Autowired
     private FirmwareService firmwareService;
@@ -82,7 +86,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
         this.assertRequestObjectType(String.class, requestObject);
 
         final String firmwareIdentification = (String) requestObject;
-        return this.firmwareService.updateFirmware(conn, device, firmwareIdentification);
+        return this.configurationService.updateFirmware(conn, device, firmwareIdentification);
     }
 
     private void processUpdateFirmwareRequest(final MessageMetadata messageMetadata,
