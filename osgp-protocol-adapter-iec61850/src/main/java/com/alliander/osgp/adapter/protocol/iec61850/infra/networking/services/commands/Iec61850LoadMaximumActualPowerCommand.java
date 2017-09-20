@@ -23,6 +23,11 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Qual
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
+/*
+ * Deprecated as with ZS-265 the single LOAD logical devices with multiple MMXU and MMTR logical nodes
+ * is replaced by multiple LOAD logical devices with single MMXU and MMTR logical nodes
+ */
+@Deprecated
 public class Iec61850LoadMaximumActualPowerCommand implements RtuReadCommand<MeasurementDto> {
 
     private LogicalNode logicalNode;
