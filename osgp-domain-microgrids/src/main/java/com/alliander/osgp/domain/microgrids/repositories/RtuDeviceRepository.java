@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
 
 @Repository
@@ -21,5 +22,6 @@ public interface RtuDeviceRepository extends JpaRepository<RtuDevice, Long> {
 
     RtuDevice findByDeviceIdentification(String deviceIdentification);
 
-    List<RtuDevice> findByIsActiveAndLastCommunicationTimeBefore(boolean active, Date lastCommunicationTime);
+    List<RtuDevice> findByDeviceLifecycleStatusAndLastCommunicationTimeBefore(
+            DeviceLifecycleStatus deviceLifecycleStatus, Date lastCommunicationTime);
 }

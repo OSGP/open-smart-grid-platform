@@ -26,6 +26,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
@@ -40,6 +41,10 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledT
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledTasksResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceAliasRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceAliasResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceVerificationKeyAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceVerificationKeyAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceVerificationKeyRequest;
@@ -93,6 +98,9 @@ public class DeviceManagementEndpoint {
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
+
+    @Autowired
+    private LoggingMessageSender loggingMessageSender;
 
     /**
      * Constructor
@@ -522,6 +530,56 @@ public class DeviceManagementEndpoint {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             } else {
                 LOGGER.debug("Set Device Verification Key is null");
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetDeviceLifecycleStatusRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public SetDeviceLifecycleStatusAsyncResponse setDeviceLifecycleRequest(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetDeviceLifecycleStatusRequest request) throws OsgpException {
+
+        LOGGER.info("SetDeviceLifecycleStatusRequest received for device: {} and organisation: {}.",
+                request.getDeviceIdentification(), organisationIdentification);
+
+        final SetDeviceLifecycleStatusAsyncResponse asyncResponse = new SetDeviceLifecycleStatusAsyncResponse();
+
+        try {
+            final String correlationUid = this.deviceManagementService.enqueueSetDeviceLifecycleStatusRequest(
+                    organisationIdentification, request.getDeviceIdentification(), request.getDeviceLifecycleStatus());
+
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceId(request.getDeviceIdentification());
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "SetDeviceLifecycleStatusAsyncRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public SetDeviceLifecycleStatusResponse getSetDeviceLifecycleStatusResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetDeviceLifecycleStatusAsyncRequest asyncRequest) throws OsgpException {
+
+        LOGGER.info(
+                "Get Set Device Lifecycle Status Notifications Response received from organisation: {} with correlationUid: {}.",
+                organisationIdentification, asyncRequest.getCorrelationUid());
+
+        final SetDeviceLifecycleStatusResponse response = new SetDeviceLifecycleStatusResponse();
+
+        try {
+            final ResponseMessage message = this.deviceManagementService
+                    .dequeueSetDeviceLifecycleStatusResponse(asyncRequest.getCorrelationUid());
+            if (message != null) {
+                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
         } catch (final Exception e) {
             this.handleException(e);
