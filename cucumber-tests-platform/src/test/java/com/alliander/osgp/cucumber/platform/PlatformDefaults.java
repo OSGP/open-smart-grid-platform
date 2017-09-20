@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform;
 
 import org.joda.time.DateTime;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.domain.core.valueobjects.LongTermIntervalType;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
@@ -18,7 +19,7 @@ import com.alliander.osgp.domain.core.valueobjects.RelayType;
 public class PlatformDefaults {
 
     public static final Boolean DEFAULT_ACTIVATED = true;
-    public static final Boolean DEFAULT_ACTIVE = true;
+    public static final DeviceLifecycleStatus DEFAULT_DEVICE_LIFECYCLE_STATUS = DeviceLifecycleStatus.IN_USE;
     public static final Integer DEFAULT_ACTUAL_CONSUMED_ENERGY = 96;
     public static final Integer DEFAULT_ACTUAL_CONSUMED_POWER = 48;
     public static final Integer DEFAULT_ACTUAL_CURRENT1 = 1;

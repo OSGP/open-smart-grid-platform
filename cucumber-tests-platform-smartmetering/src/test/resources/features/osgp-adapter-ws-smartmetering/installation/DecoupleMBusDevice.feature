@@ -45,7 +45,7 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
-      | Active                      | False             |
+      | DeviceLifecycleStatus       | NEW_IN_INVENTORY  |
     When the DeCouple G-meter "TESTG102400000001" from E-meter "TEST1024000000001" request is received
     Then retrieving the DeCouple response results in an exception
     And a SOAP fault should have been returned
@@ -54,9 +54,9 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
 
   Scenario: DeCouple G-meter from an inactive E-meter
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-      | Active               | False             |
+      | DeviceIdentification  | TEST1024000000001 |
+      | DeviceType            | SMART_METER_E     |
+      | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
     And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
@@ -128,4 +128,3 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
       | 7 | 0 |
       | 8 | 0 |
       | 9 | 0 |
-
