@@ -17,7 +17,7 @@ import com.alliander.osgp.cucumber.platform.microgrids.mocks.iec61850.Iec61850Mo
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class RtuPampusWithWindDeviceSteps extends GlueBase {
+public class RtuSchoteroogSteps extends GlueBase implements RtuSteps {
 
     private static final int INDEX_LOGICAL_DEVICE_NAME = 0;
     private static final int INDEX_NODE_NAME = 1;
@@ -25,10 +25,11 @@ public class RtuPampusWithWindDeviceSteps extends GlueBase {
     private static final int NUMBER_OF_INPUTS_FOR_MOCK_VALUE = 3;
 
     @Autowired
-    private Iec61850MockServer iec61850MockServerPampusWithWindDevice;
+    private Iec61850MockServer iec61850MockServerSchoteroog;
 
-    @Given("^the Pampus RTU returning$")
-    public void anRtuSimulatorReturning(final List<List<String>> mockValues) throws Throwable {
+    @Given("^the Schoteroog RTU returning$")
+    @Override
+    public void anRtuReturning(final List<List<String>> mockValues) throws Throwable {
         for (final List<String> mockValue : mockValues) {
             if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
                 throw new AssertionError("Mock value input rows from the Step DataTable must have "
@@ -38,12 +39,13 @@ public class RtuPampusWithWindDeviceSteps extends GlueBase {
             final String node = mockValue.get(INDEX_NODE_NAME);
             final String value = mockValue.get(INDEX_NODE_VALUE);
 
-            this.iec61850MockServerPampusWithWindDevice.mockValue(logicalDeviceName, node, value);
+            this.iec61850MockServerSchoteroog.mockValue(logicalDeviceName, node, value);
         }
     }
 
-    @Then("^the Pampus RTU should contain$")
-    public void theRtuSimulatorShouldContain(final List<List<String>> mockValues) throws Throwable {
+    @Then("^the Schoteroog RTU should contain$")
+    @Override
+    public void theRtuShouldContain(final List<List<String>> mockValues) throws Throwable {
         for (final List<String> mockValue : mockValues) {
             if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
                 throw new AssertionError("Mock value input rows from the Step DataTable must have "
@@ -52,7 +54,7 @@ public class RtuPampusWithWindDeviceSteps extends GlueBase {
             final String logicalDeviceName = mockValue.get(INDEX_LOGICAL_DEVICE_NAME);
             final String node = mockValue.get(INDEX_NODE_NAME);
             final String value = mockValue.get(INDEX_NODE_VALUE);
-            this.iec61850MockServerPampusWithWindDevice.assertValue(logicalDeviceName, node, value);
+            this.iec61850MockServerSchoteroog.assertValue(logicalDeviceName, node, value);
         }
     }
 
