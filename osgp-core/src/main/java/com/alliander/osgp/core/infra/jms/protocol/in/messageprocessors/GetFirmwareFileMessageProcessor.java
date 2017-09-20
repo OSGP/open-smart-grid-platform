@@ -73,7 +73,7 @@ public class GetFirmwareFileMessageProcessor extends ProtocolRequestMessageProce
             final FirmwareFile firmwareFile = this.firmwareFileRepository
                     .findByIdentification(firmwareFileIdentification);
 
-            final FirmwareFileDto firmwareFileDto = new FirmwareFileDto(firmwareFile.getFilename(),
+            final FirmwareFileDto firmwareFileDto = new FirmwareFileDto(firmwareFile.getIdentification(),
                     firmwareFile.getFile());
 
             this.sendSuccesResponse(metadata, device.getProtocolInfo(), firmwareFileDto);
