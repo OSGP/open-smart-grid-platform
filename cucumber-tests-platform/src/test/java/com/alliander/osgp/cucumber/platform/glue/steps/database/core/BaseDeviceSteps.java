@@ -36,6 +36,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 public abstract class BaseDeviceSteps extends GlueBase {
 
@@ -113,7 +114,8 @@ public abstract class BaseDeviceSteps extends GlueBase {
 
         device.updateInMaintenance(getBoolean(settings, PlatformKeys.IN_MAINTENANCE, PlatformDefaults.IN_MAINTENANCE));
         device.setVersion(getLong(settings, PlatformKeys.KEY_VERSION));
-        device.setActive(getBoolean(settings, PlatformKeys.KEY_ACTIVE, PlatformDefaults.DEFAULT_ACTIVE));
+        device.setDeviceLifecycleStatus(getEnum(settings, PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS,
+                DeviceLifecycleStatus.class, PlatformDefaults.DEFAULT_DEVICE_LIFECYCLE_STATUS));
         if (getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION) != "null") {
             device.addOrganisation(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
@@ -126,8 +128,7 @@ public abstract class BaseDeviceSteps extends GlueBase {
                 getString(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
                 getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY),
                 (settings.containsKey(PlatformKeys.KEY_LATITUDE) && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
-                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE)
-                        : null,
+                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE) : null,
                 (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
                         && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
                                 ? getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformDefaults.DEFAULT_LONGITUDE)

@@ -25,6 +25,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -70,52 +71,58 @@ public class DeviceSteps extends BaseDeviceSteps {
             return entity;
         });
 
-        if (settings.containsKey("Alias")) {
-            Assert.assertEquals(settings.get("Alias"), device.getAlias());
+        if (settings.containsKey(PlatformKeys.ALIAS)) {
+            Assert.assertEquals(settings.get(PlatformKeys.ALIAS), device.getAlias());
         }
-        if (settings.containsKey("OrganizationIdentification")) {
-            Assert.assertEquals(settings.get("OrganizationIdentification"),
+        if (settings.containsKey(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
+            Assert.assertEquals(settings.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION),
                     device.getOwner().getOrganisationIdentification());
         }
-        if (settings.containsKey("ContainerPostalCode")) {
-            Assert.assertEquals(settings.get("ContainerPostalCode"), device.getContainerPostalCode());
+        if (settings.containsKey(PlatformKeys.CONTAINER_POSTALCODE)) {
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_POSTALCODE), device.getContainerPostalCode());
         }
-        if (settings.containsKey("ContainerCity")) {
-            Assert.assertEquals(settings.get("ContainerCity"), device.getContainerCity());
+        if (settings.containsKey(PlatformKeys.CONTAINER_CITY)) {
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_CITY), device.getContainerCity());
         }
-        if (settings.containsKey("ContainerStreet")) {
-            Assert.assertEquals(settings.get("ContainerStreet"), device.getContainerStreet());
+        if (settings.containsKey(PlatformKeys.CONTAINER_STREET)) {
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_STREET), device.getContainerStreet());
         }
-        if (settings.containsKey("ContainerNumber")) {
-            Assert.assertEquals(settings.get("ContainerNumber"), device.getContainerNumber());
+        if (settings.containsKey(PlatformKeys.CONTAINER_NUMBER)) {
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_NUMBER), device.getContainerNumber());
         }
-        if (settings.containsKey("ContainerMunicipality")) {
-            Assert.assertEquals(settings.get("ContainerMunicipality"), device.getContainerMunicipality());
+        if (settings.containsKey(PlatformKeys.CONTAINER_MUNICIPALITY)) {
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_MUNICIPALITY), device.getContainerMunicipality());
         }
-        if (settings.containsKey("GpsLatitude")) {
-            Assert.assertTrue(Float.parseFloat(settings.get("GpsLatitude")) == device.getGpsLatitude());
+        if (settings.containsKey(PlatformKeys.KEY_LATITUDE)) {
+            Assert.assertTrue(Float.parseFloat(settings.get(PlatformKeys.KEY_LATITUDE)) == device.getGpsLatitude());
         }
-        if (settings.containsKey("GpsLongitude")) {
-            Assert.assertTrue(Float.parseFloat(settings.get("GpsLongitude")) == device.getGpsLongitude());
+        if (settings.containsKey(PlatformKeys.KEY_LONGITUDE)) {
+            Assert.assertTrue(Float.parseFloat(settings.get(PlatformKeys.KEY_LONGITUDE)) == device.getGpsLongitude());
         }
-        if (settings.containsKey("Activated")) {
-            Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")) == device.isActivated());
+        if (settings.containsKey(PlatformKeys.KEY_ACTIVATED)) {
+            Assert.assertTrue(Boolean.parseBoolean(settings.get(PlatformKeys.KEY_ACTIVATED)) == device.isActivated());
         }
-        if (settings.containsKey("Active")) {
-            Assert.assertTrue(Boolean.parseBoolean(settings.get("Active")) == device.isActive());
+        if (settings.containsKey(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)) {
+            Assert.assertTrue(DeviceLifecycleStatus.valueOf(
+                    settings.get(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)) == device.getDeviceLifecycleStatus());
         }
-        if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
-            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
+        if (settings.containsKey(PlatformKeys.KEY_HAS_SCHEDULE)
+                || settings.containsKey(PlatformKeys.KEY_PUBLICKEYPRESENT)) {
+            final Ssld ssld = this.ssldRepository
+                    .findByDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-            if (settings.containsKey("HasSchedule")) {
-                Assert.assertTrue(Boolean.parseBoolean(settings.get("HasSchedule")) == ssld.getHasSchedule());
+            if (settings.containsKey(PlatformKeys.KEY_HAS_SCHEDULE)) {
+                Assert.assertTrue(
+                        Boolean.parseBoolean(settings.get(PlatformKeys.KEY_HAS_SCHEDULE)) == ssld.getHasSchedule());
             }
-            if (settings.containsKey("PublicKeyPresent")) {
-                Assert.assertTrue(Boolean.parseBoolean(settings.get("PublicKeyPresent")) == ssld.isPublicKeyPresent());
+            if (settings.containsKey(PlatformKeys.KEY_PUBLICKEYPRESENT)) {
+                Assert.assertTrue(Boolean.parseBoolean(settings.get(PlatformKeys.KEY_PUBLICKEYPRESENT)) == ssld
+                        .isPublicKeyPresent());
             }
         }
-        if (settings.containsKey("DeviceModelCode")) {
-            Assert.assertEquals(settings.get("DeviceModelCode"), device.getDeviceModel().getModelCode());
+        if (settings.containsKey(PlatformKeys.KEY_DEVICE_MODEL_MODELCODE)) {
+            Assert.assertEquals(settings.get(PlatformKeys.KEY_DEVICE_MODEL_MODELCODE),
+                    device.getDeviceModel().getModelCode());
         }
     }
 
@@ -158,7 +165,8 @@ public class DeviceSteps extends BaseDeviceSteps {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
 
-            Assert.assertTrue("Entity is inactive", entity.isActive());
+            Assert.assertTrue("Entity is inactive",
+                    entity.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE));
         });
     }
 
@@ -173,7 +181,8 @@ public class DeviceSteps extends BaseDeviceSteps {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             Assert.assertNotNull("Device with identification [" + deviceIdentification + "]", entity);
 
-            Assert.assertFalse("Entity is active", entity.isActive());
+            Assert.assertFalse("Entity is active",
+                    entity.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE));
         });
     }
 
