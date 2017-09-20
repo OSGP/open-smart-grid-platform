@@ -130,7 +130,14 @@ public class FirmwareFileSteps {
         final String identification = getString(settings, PlatformKeys.FIRMWARE_FILENAME,
                 UUID.randomUUID().toString().replace("-", ""));
         final String filename = getString(settings, PlatformKeys.FIRMWARE_FILENAME, "");
-        final byte[] file = this.readFile(deviceModel, filename, isForSmartMeters);
+        final boolean fileExists = getBoolean(settings, PlatformKeys.FIRMWARE_FILE_EXISTS,
+                PlatformDefaults.FIRMWARE_FILE_EXISTS);
+        final byte[] file;
+        if (fileExists) {
+            file = this.readFile(deviceModel, filename, isForSmartMeters);
+        } else {
+            file = null;
+        }
         FirmwareFile firmwareFile = new FirmwareFile(identification, filename,
                 getString(settings, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION),
                 getBoolean(settings, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
