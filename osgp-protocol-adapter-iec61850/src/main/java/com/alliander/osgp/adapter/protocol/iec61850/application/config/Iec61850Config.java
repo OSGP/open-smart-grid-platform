@@ -66,6 +66,9 @@ public class Iec61850Config extends AbstractConfig {
 
     private static final String PROPERTY_NAME_IEC61850_IS_BUFFERED_REPORTING_ENABLED = "iec61850.is.buffered.reporting.enabled";
 
+    private static final String PROPERTY_NAME_OSLP_DEFAULT_LATITUDE = "iec61850.default.latitude";
+    private static final String PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE = "iec61850.default.longitude";
+
     public Iec61850Config() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
@@ -259,6 +262,16 @@ public class Iec61850Config extends AbstractConfig {
                 .getRequiredProperty(PROPERTY_NAME_IEC61850_IS_BUFFERED_REPORTING_ENABLED));
         LOGGER.info("{} = {}", PROPERTY_NAME_IEC61850_IS_BUFFERED_REPORTING_ENABLED, isBufferedReportingEnabled);
         return isBufferedReportingEnabled;
+    }
+
+    @Bean
+    public Float defaultLatitude() {
+        return Float.parseFloat(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_DEFAULT_LATITUDE));
+    }
+
+    @Bean
+    public Float defaultLongitude() {
+        return Float.parseFloat(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE));
     }
 
     @Bean
