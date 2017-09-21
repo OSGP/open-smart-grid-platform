@@ -22,24 +22,12 @@ pipeline {
     }
 
     stages {
-        stage ('Git') {
-            steps {
-                // Cleanup workspace
-                deleteDir()
 
-                checkout([$class: 'GitSCM',
-                          branches: [[name: '${sha1}']],
-                          doGenerateSubmoduleConfigurations: false,
-                          extensions: [[$class: 'SubmoduleOption',
-                                        disableSubmodules: false,
-                                        parentCredentials: false,
-                                        recursiveSubmodules: true,
-                                        reference: '',
-                                        trackingSubmodules: true]],
-                          submoduleCfg: [],
-                          userRemoteConfigs: [[credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f',
-                                               refspec: '+refs/pull/*:refs/remotes/origin/pr/*',
-                                               url: repo]]])
+        // The pr job will clone the git repository, but nothing more. So gitmodules are not downloaded. Therefore we
+        // need to trigger this manually
+        stage ('Update submodules') {
+            steps {
+                sh "git submodule update --remote --init"
             }
         }
 
@@ -62,10 +50,10 @@ pipeline {
                 }
 
                 // Collect all build wars and copy them to target/artifacts
-                sh "rm -rf target/artifacts && mkdir -p target/artifacts && find . -name *.war -exec cp -f {} target/artifacts \\;"
+                sh "rm -rf target/artifacts && mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;"
 
                 // Clone the release repository in order to deploy
-                sh "git clone git@github.com:SmartSocietyServices/release.git"
+                sh "rm -rf release && git clone git@github.com:SmartSocietyServices/release.git"
 
                 script {
                     // Determine the actual pom version from the pom.

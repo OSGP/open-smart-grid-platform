@@ -32,21 +32,6 @@ def call(body) {
         }
 
         stages {
-            stage('Git') {
-                steps {
-                    // Cleanup directory.
-                    deleteDir()
-
-                    // Checkout the pr branch
-                    checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false,
-                              extensions: [[$class: 'SubmoduleOption', disableSubmodules: false,
-                                            parentCredentials: false, recursiveSubmodules: true, reference: '',
-                                            trackingSubmodules: true]], submoduleCfg: [],
-                              userRemoteConfigs: [[credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f',
-                                                   refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: repo]]])
-                }
-            }
-
             stage('Set status') {
                 steps {
                     step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
