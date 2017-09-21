@@ -17,13 +17,12 @@ pipeline {
     }
 
     stages {
-        stage('Git') {
-            steps {
-                // Cleanup workspace
-                deleteDir()
 
-                git branch: 'development', credentialsId: '68539ca2-6175-4f68-a7af-caa86f7aa37f', url: repo
-                sh 'git submodule update --init --recursive --remote'
+        // The nightly job will clone the git repository, but nothing more. So gitmodules are not downloaded. Therefore we
+        // need to trigger this manually
+        stage ('Update submodules') {
+            steps {
+                sh "git submodule update --remote --init"
             }
         }
 
