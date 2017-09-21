@@ -57,6 +57,12 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     private Integer timeZoneOffsetMinutes;
 
     @Autowired
+    private Float defaultLatitude;
+
+    @Autowired
+    private Float defaultLongitude;
+
+    @Autowired
     private String testDeviceId;
 
     @Autowired
@@ -129,8 +135,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     payload = this.handleEventNotificationRequest(message.getDeviceId(), message.getSequenceNumber(),
                             message.getPayloadMessage().getEventNotificationRequest());
                 } else {
-                    LOGGER.warn("{} Received unknown payload. Received: {}.", channelId,
-                            message.getPayloadMessage().toString());
+                    LOGGER.warn("{} Received unknown payload. Received: {}.", channelId, message.getPayloadMessage()
+                            .toString());
                     // Optional extra: return error code to device.
                     return;
                 }
@@ -158,8 +164,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     public void processSignedOslpEnvelope(final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 
         // Try to find the channel.
-        final Integer channelId = Integer
-                .parseInt(signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto().getCorrelationUid());
+        final Integer channelId = Integer.parseInt(signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto()
+                .getCorrelationUid());
         final Channel channel = this.findChannel(channelId);
         if (channel == null) {
             LOGGER.error("Unable to find channel for channelId: {}. Can't send response message to device.", channelId);
@@ -191,8 +197,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         this.deviceRegistrationService.sendDeviceRegisterRequest(inetAddress, deviceType, hasSchedule,
                 deviceIdentification);
 
-        OslpDevice oslpDevice = this.oslpDeviceSettingsService
-                .getDeviceByDeviceIdentification(registerRequest.getDeviceIdentification());
+        OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(registerRequest
+                .getDeviceIdentification());
 
         // Save the security related values in the OSLP database.
         oslpDevice.updateRegistrationData(deviceUid, registerRequest.getDeviceType().toString(),
@@ -213,17 +219,23 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         // Get the GPS values from OSGP-CORE database.
         final GpsCoordinatesDto gpsCoordinates = this.deviceDataService
                 .getGpsCoordinatesForDevice(deviceIdentification);
-
-        // Add GPS information when available in meta data.
         if (gpsCoordinates != null && gpsCoordinates.getLatitude() != null && gpsCoordinates.getLongitude() != null) {
-            final int latitude = (int) ((gpsCoordinates.getLatitude()) * 1000000);
-            final int longitude = (int) ((gpsCoordinates.getLongitude()) * 1000000);
-            locationInfo.setLatitude(latitude).setLongitude(longitude);
+            // Add GPS information when available in meta data.
+            locationInfo.setLatitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLatitude()))
+            .setLongitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLongitude()));
+        } else {
+            // Otherwise use default GPS information.
+            locationInfo.setLatitude(this.convertGpsCoordinateFromFloatToInt(this.defaultLatitude)).setLongitude(
+                    this.convertGpsCoordinateFromFloatToInt(this.defaultLongitude));
         }
 
         responseBuilder.setLocationInfo(locationInfo);
 
         return Oslp.Message.newBuilder().setRegisterDeviceResponse(responseBuilder.build()).build();
+    }
+
+    private int convertGpsCoordinateFromFloatToInt(final Float input) {
+        return (int) (input * 1000000);
     }
 
     private Oslp.Message handleConfirmRegisterDeviceRequest(final byte[] deviceId, final byte[] sequenceNumber,
@@ -238,12 +250,13 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             throw new ProtocolAdapterException("ConfirmRegisterDevice failed", e);
         }
 
-        return Oslp.Message.newBuilder()
-                .setConfirmRegisterDeviceResponse(Oslp.ConfirmRegisterDeviceResponse.newBuilder()
-                        .setStatus(Oslp.Status.OK).setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+        return Oslp.Message
+                .newBuilder()
+                .setConfirmRegisterDeviceResponse(
+                        Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
+                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
                         .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                        .setSequenceWindow(this.sequenceNumberWindow))
-                .build();
+                        .setSequenceWindow(this.sequenceNumberWindow)).build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,
@@ -255,8 +268,10 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     SequenceNumberUtils.convertByteArrayToInteger(sequenceNumber));
         } catch (final ProtocolAdapterException ex) {
             LOGGER.error("handle event notification request exception", ex);
-            return Oslp.Message.newBuilder().setEventNotificationResponse(
-                    Oslp.EventNotificationResponse.newBuilder().setStatus(Oslp.Status.REJECTED)).build();
+            return Oslp.Message
+                    .newBuilder()
+                    .setEventNotificationResponse(
+                            Oslp.EventNotificationResponse.newBuilder().setStatus(Oslp.Status.REJECTED)).build();
         }
 
         final Oslp.Status oslpStatus = Oslp.Status.OK;

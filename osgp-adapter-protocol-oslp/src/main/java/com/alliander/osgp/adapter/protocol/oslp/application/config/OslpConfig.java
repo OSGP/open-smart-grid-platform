@@ -50,8 +50,8 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 @Configuration
 @EnableTransactionManagement()
 @PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true), })
 public class OslpConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
@@ -63,6 +63,9 @@ public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_SECURITY_PROVIDER = "oslp.security.provider";
     private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_WINDOW = "oslp.sequence.number.window";
     private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM = "oslp.sequence.number.maximum";
+
+    private static final String PROPERTY_NAME_OSLP_DEFAULT_LATITUDE = "oslp.default.latitude";
+    private static final String PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE = "oslp.default.longitude";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
 
@@ -239,5 +242,15 @@ public class OslpConfig extends AbstractConfig {
     @Qualifier("sequenceNumberMaximum")
     public Integer sequenceNumberMaximum() {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM));
+    }
+
+    @Bean
+    public Float defaultLatitude() {
+        return Float.parseFloat(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_DEFAULT_LATITUDE));
+    }
+
+    @Bean
+    public Float defaultLongitude() {
+        return Float.parseFloat(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE));
     }
 }
