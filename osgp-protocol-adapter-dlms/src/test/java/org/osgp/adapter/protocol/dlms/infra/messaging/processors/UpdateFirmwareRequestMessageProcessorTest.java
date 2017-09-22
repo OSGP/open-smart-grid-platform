@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.application.services.FirmwareService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -53,6 +54,9 @@ public class UpdateFirmwareRequestMessageProcessorTest {
 
     @Mock
     private RetryHeaderFactory retryHeaderFactory;
+
+    @Mock
+    private ConfigurationService configurationService;
 
     @Mock
     private FirmwareService firmwareService;
@@ -130,7 +134,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         this.processor.processMessage(message);
 
         // Assert
-        verify(this.firmwareService, times(1)).updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
+        verify(this.configurationService, times(1)).updateFirmware(this.dlmsConnectionHolderMock, this.dlmsDeviceMock,
                 firmwareIdentification);
     }
 
