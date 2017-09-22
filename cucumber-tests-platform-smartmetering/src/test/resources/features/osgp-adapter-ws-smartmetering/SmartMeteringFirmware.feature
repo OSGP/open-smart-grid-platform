@@ -107,6 +107,7 @@ Feature: SmartMetering Firmware
       | FirmwareModuleVersionSec  |                        |
       | FirmwareFilename          | KFPP_V060100FA         |
       | ModelCode                 | MA105                  |
+      | FirmwareFileExists        | false                  |
       | FirmwareIsForSmartMeters  | true                   |
     When the request for a firmware upgrade is received
       | DeviceIdentification      | TEST1024000000002      |
