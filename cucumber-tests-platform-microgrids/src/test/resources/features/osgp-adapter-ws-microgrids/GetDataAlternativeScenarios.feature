@@ -1,4 +1,4 @@
-Feature: Get Data Alternative Scenarios
+Feature: Microgrids Get Data Alternative Scenarios
   In order to make OSGP more robust
   As an OSGP client
   I want to properly handle alternative or wrong configurations and get data failures
