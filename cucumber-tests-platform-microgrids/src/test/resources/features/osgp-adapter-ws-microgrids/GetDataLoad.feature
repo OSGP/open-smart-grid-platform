@@ -8,7 +8,7 @@ Feature: Microgrids Get Load Data
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUS-LOAD |
       | Port                 |           62102 |
-    And an rtu simulator returning
+    And the Pampus RTU returning
       #...........................................................
       | LOAD1 | LLN0.Mod.stVal      |                   1 |
       | LOAD1 | LLN0.Mod.q          | VALIDITY_GOOD       |
