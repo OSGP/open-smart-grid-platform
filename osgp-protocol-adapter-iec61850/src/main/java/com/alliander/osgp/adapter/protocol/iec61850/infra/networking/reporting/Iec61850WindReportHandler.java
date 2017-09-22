@@ -17,6 +17,7 @@ import org.openmuc.openiec61850.ModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850WindCommandFactory;
@@ -38,10 +39,12 @@ public class Iec61850WindReportHandler implements Iec61850ReportHandler {
         intializeNodesUsingIdList();
     }
 
-    private int systemId;
+    private final int systemId;
+    private final Iec61850WindCommandFactory iec61850WindCommandFactory;
 
     public Iec61850WindReportHandler(final int systemId) {
         this.systemId = systemId;
+        this.iec61850WindCommandFactory = BeanUtil.getBean(Iec61850WindCommandFactory.class);
     }
 
     @Override
@@ -61,7 +64,7 @@ public class Iec61850WindReportHandler implements Iec61850ReportHandler {
         if (this.isCompositeNode(member.getFcmodelNode())) {
             for (final ModelNode child : member.getFcmodelNode().getChildren()) {
 
-                final RtuReadCommand<MeasurementDto> command = Iec61850WindCommandFactory.getInstance()
+                final RtuReadCommand<MeasurementDto> command = this.iec61850WindCommandFactory
                         .getCommand(this.getChildCommandName(child));
 
                 if (command == null) {
@@ -71,7 +74,7 @@ public class Iec61850WindReportHandler implements Iec61850ReportHandler {
                 }
             }
         } else {
-            final RtuReadCommand<MeasurementDto> command = Iec61850WindCommandFactory.getInstance()
+            final RtuReadCommand<MeasurementDto> command = this.iec61850WindCommandFactory
                     .getCommand(this.getCommandName(member));
 
             if (command == null) {

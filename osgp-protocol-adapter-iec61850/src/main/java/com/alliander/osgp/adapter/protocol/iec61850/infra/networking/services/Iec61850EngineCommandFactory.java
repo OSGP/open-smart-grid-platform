@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
@@ -38,6 +39,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
+@Component
 public final class Iec61850EngineCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850EngineCommandFactory.class);
@@ -50,24 +52,12 @@ public final class Iec61850EngineCommandFactory implements RtuReadCommandFactory
     private static final int SCHEDULE_ID_START = 1;
     private static final int SCHEDULE_ID_END = 4;
 
-    private static Iec61850EngineCommandFactory instance;
-
     private static final Map<String, RtuReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
     private static final List<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new ArrayList<>();
 
     static {
         initializeRtuCommandMap();
         initializeDataAttributesUsingFilterIdList();
-    }
-
-    private Iec61850EngineCommandFactory() {
-    }
-
-    public static synchronized Iec61850EngineCommandFactory getInstance() {
-        if (instance == null) {
-            instance = new Iec61850EngineCommandFactory();
-        }
-        return instance;
     }
 
     @Override

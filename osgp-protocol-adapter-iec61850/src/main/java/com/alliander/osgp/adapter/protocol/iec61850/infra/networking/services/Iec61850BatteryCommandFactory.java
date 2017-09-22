@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
@@ -39,6 +40,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
+@Component
 public final class Iec61850BatteryCommandFactory
         implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
 
@@ -57,18 +59,6 @@ public final class Iec61850BatteryCommandFactory
     static {
         initializeRtuCommandMap();
         initializeDataAttributesUsingFilterIdList();
-    }
-
-    private static Iec61850BatteryCommandFactory instance;
-
-    private Iec61850BatteryCommandFactory() {
-    }
-
-    public static synchronized Iec61850BatteryCommandFactory getInstance() {
-        if (instance == null) {
-            instance = new Iec61850BatteryCommandFactory();
-        }
-        return instance;
     }
 
     @Override

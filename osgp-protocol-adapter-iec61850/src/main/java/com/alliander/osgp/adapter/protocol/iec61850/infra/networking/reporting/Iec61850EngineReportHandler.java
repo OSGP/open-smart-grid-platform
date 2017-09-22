@@ -13,6 +13,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
@@ -31,10 +32,12 @@ public class Iec61850EngineReportHandler implements Iec61850ReportHandler {
         intializeNodesUsingIdList();
     }
 
-    private int systemId;
+    private final int systemId;
+    private final Iec61850EngineCommandFactory iec61850EngineCommandFactory;
 
     public Iec61850EngineReportHandler(final int systemId) {
         this.systemId = systemId;
+        this.iec61850EngineCommandFactory = BeanUtil.getBean(Iec61850EngineCommandFactory.class);
     }
 
     @Override
@@ -50,7 +53,7 @@ public class Iec61850EngineReportHandler implements Iec61850ReportHandler {
     public List<MeasurementDto> handleMember(final ReadOnlyNodeContainer member) {
 
         final List<MeasurementDto> measurements = new ArrayList<>();
-        final RtuReadCommand<MeasurementDto> command = Iec61850EngineCommandFactory.getInstance()
+        final RtuReadCommand<MeasurementDto> command = this.iec61850EngineCommandFactory
                 .getCommand(this.getCommandName(member));
 
         if (command == null) {

@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
@@ -29,10 +31,14 @@ import com.alliander.osgp.dto.valueobjects.microgrids.SetDataSystemIdentifierDto
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 
+@Service
 public class Iec61850RtuSystemService implements SystemService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RtuSystemService.class);
     private static final LogicalDevice DEVICE = LogicalDevice.RTU;
+
+    @Autowired
+    private Iec61850RtuCommandFactory iec61850RtuCommandFactory;
 
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
@@ -46,7 +52,7 @@ public class Iec61850RtuSystemService implements SystemService {
 
         for (final MeasurementFilterDto filter : systemFilter.getMeasurementFilters()) {
 
-            final RtuReadCommand<MeasurementDto> command = Iec61850RtuCommandFactory.getInstance().getCommand(filter);
+            final RtuReadCommand<MeasurementDto> command = this.iec61850RtuCommandFactory.getCommand(filter);
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
             } else {

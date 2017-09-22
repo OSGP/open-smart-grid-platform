@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
@@ -43,11 +44,10 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
+@Component
 public class Iec61850HeatPumpCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850HeatPumpCommandFactory.class);
-
-    private static Iec61850HeatPumpCommandFactory instance;
 
     private static final int ONE = 1;
     private static final int TWO = 2;
@@ -62,16 +62,6 @@ public class Iec61850HeatPumpCommandFactory implements RtuReadCommandFactory<Mea
     static {
         initializeRtuCommandMap();
         initializeDataAttributesUsingFilterIdList();
-    }
-
-    private Iec61850HeatPumpCommandFactory() {
-    }
-
-    public static synchronized Iec61850HeatPumpCommandFactory getInstance() {
-        if (instance == null) {
-            instance = new Iec61850HeatPumpCommandFactory();
-        }
-        return instance;
     }
 
     @Override
