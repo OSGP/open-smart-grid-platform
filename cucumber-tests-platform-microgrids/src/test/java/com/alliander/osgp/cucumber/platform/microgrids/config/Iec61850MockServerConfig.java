@@ -26,19 +26,17 @@ public class Iec61850MockServerConfig {
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public Iec61850MockServer iec61850MockServerPampus() {
-        return new Iec61850MockServer("PAMPUS", "Pampus_v0.4.9_with_separate_load_devices.icd", 62102,
-                "WAGO61850Server");
+        return new Iec61850MockServer("PAMPUS", "Pampus.icd", 62102, "WAGO61850Server");
     }
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public Iec61850MockServer iec61850MockServerMarkerWadden() {
-        return new Iec61850MockServer("MARKER WADDEN", "MarkerWadden_v0.1.2_including_engine_control_logic.icd", 62103,
-                "WAGO61850Server");
+        return new Iec61850MockServer("MARKER WADDEN", "MarkerWadden.icd", 62103, "WAGO61850Server");
     }
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public Iec61850MockServer iec61850MockServerSchoteroog() {
-        return new Iec61850MockServer("SCHOTEROOG", "Schoteroog_v0.4.5.icd", 62104, "WAGO61850Server");
+        return new Iec61850MockServer("SCHOTEROOG", "Schoteroog.icd", 62104, "WAGO61850Server");
     }
 
     @Bean(destroyMethod = "stop", initMethod = "start")
