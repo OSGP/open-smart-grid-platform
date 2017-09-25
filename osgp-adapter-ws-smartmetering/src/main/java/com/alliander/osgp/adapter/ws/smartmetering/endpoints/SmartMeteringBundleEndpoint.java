@@ -104,6 +104,8 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
         final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(request.getCorrelationUid(),
                 BundleMessagesResponse.class);
 
+        this.throwExceptionIfResultNotOk(meterResponseData, "get bundle response");
+
         // Create response.
         return this.actionMapperResponseService.mapAllActions(meterResponseData.getMessageData());
     }
