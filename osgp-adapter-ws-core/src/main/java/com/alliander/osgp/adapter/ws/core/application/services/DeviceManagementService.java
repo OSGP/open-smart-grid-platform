@@ -55,6 +55,7 @@ import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
+import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
@@ -133,6 +134,9 @@ public class DeviceManagementService {
 
     @Autowired
     private WritableSsldRepository writableSsldRepository;
+
+    @Autowired
+    private DeviceDomainService deviceDomainService;
 
     @Autowired
     @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
@@ -694,7 +698,7 @@ public class DeviceManagementService {
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+        final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DEVICE_LIFECYCLE_STATUS);
 
