@@ -48,6 +48,12 @@ public class DeviceRegistrationService {
     @Autowired
     private boolean isReportingAfterDeviceRegistrationEnabled;
 
+    @Autowired
+    private Float defaultLatitude;
+
+    @Autowired
+    private Float defaultLongitude;
+
     /**
      * After the device has registered with the platform successfully, the
      * device has to be informed that the registration worked. Disable an
@@ -108,13 +114,26 @@ public class DeviceRegistrationService {
                     deviceConnection.getDeviceIdentification(), longitude, latitude);
 
             if (longitude != null && latitude != null) {
-                try {
-                    new Iec61850SetGpsCoordinatesCommand().setGpsCoordinates(deviceConnection, longitude, latitude);
-                } catch (final NodeWriteException e) {
-                    LOGGER.error(
-                            "Unable to set location information for device: "
-                                    + deviceConnection.getDeviceIdentification(), e);
-                }
+                // Add GPS information when available in meta data.
+                this.writeGpsCoordinates(deviceConnection, longitude, latitude);
+            } else {
+                // Otherwise use default GPS information.
+                this.writeGpsCoordinates(deviceConnection, this.defaultLongitude, this.defaultLatitude);
+            }
+        } else {
+            LOGGER.warn("No SSLD found for device identification: {}", deviceConnection.getDeviceIdentification());
+        }
+    }
+
+    private void writeGpsCoordinates(final DeviceConnection deviceConnection, final Float longitude,
+            final Float latitude) {
+        if (longitude != null && latitude != null) {
+            try {
+                new Iec61850SetGpsCoordinatesCommand().setGpsCoordinates(deviceConnection, longitude, latitude);
+            } catch (final NodeWriteException e) {
+                LOGGER.error(
+                        "Unable to set location information for device: " + deviceConnection.getDeviceIdentification(),
+                        e);
             }
         }
     }

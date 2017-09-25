@@ -44,14 +44,22 @@ public class Iec61850RtuDeviceReportingService {
 
     public void enableReportingForDevice(final DeviceConnection connection, final String deviceIdentification,
             final String serverName) {
-        final Iec61850Device device = this.iec61850DeviceRepository.findByDeviceIdentification(deviceIdentification);
+        try {
+            final Iec61850Device device = this.iec61850DeviceRepository
+                    .findByDeviceIdentification(deviceIdentification);
 
-        if (device.isEnableAllReportsOnConnect()) {
-            this.enableAllReports(connection, deviceIdentification);
-        } else {
-            this.enableSpecificReports(connection, deviceIdentification, serverName);
+            if (device.isEnableAllReportsOnConnect()) {
+                this.enableAllReports(connection, deviceIdentification);
+            } else {
+                this.enableSpecificReports(connection, deviceIdentification, serverName);
+            }
+        } catch (final NullPointerException npe) {
+            LOGGER.error(
+                    "Caught null pointer exception, is Iec61850Device.enableAllReportsOnConnect not set in database?",
+                    npe);
+        } catch (final Exception e) {
+            LOGGER.error("Caught unexpected exception", e);
         }
-
     }
 
     private void enableAllReports(final DeviceConnection connection, final String deviceIdentification) {
@@ -111,8 +119,10 @@ public class Iec61850RtuDeviceReportingService {
         while (rcb != null) {
             this.enableRcb(deviceIdentification, clientAssociation, rcb);
             i += 1;
-            rcb = this.getRcb(serverModel, this.getReportNode(serverName, iec61850Report.getLogicalDevice(), i,
-                    iec61850Report.getLogicalNode()));
+            rcb = this.getRcb(
+                    serverModel,
+                    this.getReportNode(serverName, iec61850Report.getLogicalDevice(), i,
+                            iec61850Report.getLogicalNode()));
         }
     }
 
@@ -129,15 +139,13 @@ public class Iec61850RtuDeviceReportingService {
         return rcb;
     }
 
-    private void enableRcb(final String deviceIdentification, final ClientAssociation clientAssociation,
-            final Rcb rcb) {
+    private void enableRcb(final String deviceIdentification, final ClientAssociation clientAssociation, final Rcb rcb) {
         try {
             clientAssociation.enableReporting(rcb);
         } catch (final IOException e) {
             LOGGER.error("IOException: unable to enable reporting for deviceIdentification " + deviceIdentification, e);
         } catch (final ServiceError e) {
-            LOGGER.error("ServiceError: unable to enable reporting for deviceIdentification " + deviceIdentification,
-                    e);
+            LOGGER.error("ServiceError: unable to enable reporting for deviceIdentification " + deviceIdentification, e);
         }
     }
 
