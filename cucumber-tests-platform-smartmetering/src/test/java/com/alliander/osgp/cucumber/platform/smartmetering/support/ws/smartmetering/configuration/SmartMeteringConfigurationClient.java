@@ -54,6 +54,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncry
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
@@ -273,6 +277,20 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
         return (SetClockConfigurationResponse) this.getTemplate()
                 .marshalSendAndReceive(setClockConfigurationAsyncRequest);
+    }
+
+    public SetPushSetupSmsAsyncResponse setPushSetupSms(final SetPushSetupSmsRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (SetPushSetupSmsAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+    }
+
+    public SetPushSetupSmsResponse getSetPushSetupSmsResponse(final SetPushSetupSmsAsyncRequest asyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = asyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (SetPushSetupSmsResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
     }
 
     private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
