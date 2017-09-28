@@ -75,7 +75,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         if (reportMatcher.matches()) {
             String node = reportMatcher.group(2);
 
-            if (node.equals("LOAD") && this.useCombinedLoad()) {
+            if ("LOAD".equals(node) && this.useCombinedLoad()) {
                 node += "_COMBINED";
             }
 
@@ -98,8 +98,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         if (device != null) {
             return device.isUseCombinedLoad();
         }
-        final Boolean defaultUseCombinedLoad = BeanUtil.getBeanByName("defaultUseCombinedLoad", Boolean.class);
-        return defaultUseCombinedLoad;
+        return BeanUtil.getBeanByName("defaultUseCombinedLoad", Boolean.class);
     }
 
     @Override
