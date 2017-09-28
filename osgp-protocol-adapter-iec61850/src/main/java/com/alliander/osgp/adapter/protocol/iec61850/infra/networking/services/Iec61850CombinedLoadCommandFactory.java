@@ -33,6 +33,13 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
+/**
+ *
+ * @deprecated, the structure of multiple mmxu/mmtr nodes within a single load
+ * device is replaced by multiple load devices with single mmxu/mmtr nodes. This
+ * code should be removed when all rtu devices are using the new structure
+ *
+ */
 @Deprecated
 @Component
 public final class Iec61850CombinedLoadCommandFactory
