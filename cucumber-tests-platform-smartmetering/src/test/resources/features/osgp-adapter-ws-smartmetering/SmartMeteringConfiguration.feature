@@ -4,7 +4,7 @@ Feature: SmartMetering Configuration
   I want to be able to perform SmartMeteringConfiguration operations on a device
   In order to ...
 
-  Background:
+  Background: 
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -43,9 +43,9 @@ Feature: SmartMetering Configuration
 
   Scenario: Set alarm notifications on a device
     When the set alarm notifications request is received
-      | DeviceIdentification | TEST1024000000001                    |
-      | AlarmType            | CLOCK_INVALID                        |
-      | AlarmTypeEnabled     | TRUE                                 |
+      | DeviceIdentification | TEST1024000000001 |
+      | AlarmType            | CLOCK_INVALID     |
+      | AlarmTypeEnabled     | TRUE              |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
@@ -107,3 +107,11 @@ Feature: SmartMetering Configuration
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
     And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
+
+  Scenario: Set push setup sms on a device
+    When the set PushSetupSms request is received
+      | DeviceIdentification | TEST1024000000001 |
+      | Hostname             | localhost         |
+      | Port                 |              9598 |
+    Then the PushSetupSms should be set on the device
+      | DeviceIdentification | TEST1024000000001 |
