@@ -78,7 +78,7 @@ public class ApplicationContext extends AbstractConfig {
     }
 
     @Bean
-    public boolean useCombinedLoad() {
+    public Boolean defaultUseCombinedLoad() {
         return Boolean.parseBoolean(this.environment.getProperty(PROPERTY_NAME_USE_COMBINED_LOAD));
     }
 }

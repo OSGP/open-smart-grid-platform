@@ -15,12 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850LoadSystemService;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850LoadCommandFactory;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
 public class Iec61850LoadReportHandler implements Iec61850ReportHandler {
 
@@ -29,12 +27,11 @@ public class Iec61850LoadReportHandler implements Iec61850ReportHandler {
     private static final String SYSTEM_TYPE = "LOAD";
 
     private final int systemId;
-    private final RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> rtuReadCommandFactory;
+    private final Iec61850LoadCommandFactory iec61850LoadCommandFactory;
 
     public Iec61850LoadReportHandler(final int systemId) {
         this.systemId = systemId;
-        final Iec61850LoadSystemService iec61850LoadSystemService = BeanUtil.getBean(Iec61850LoadSystemService.class);
-        this.rtuReadCommandFactory = iec61850LoadSystemService.getFactory();
+        this.iec61850LoadCommandFactory = BeanUtil.getBean(Iec61850LoadCommandFactory.class);
     }
 
     @Override
@@ -51,7 +48,7 @@ public class Iec61850LoadReportHandler implements Iec61850ReportHandler {
 
         final List<MeasurementDto> measurements = new ArrayList<>();
 
-        final RtuReadCommand<MeasurementDto> command = this.rtuReadCommandFactory
+        final RtuReadCommand<MeasurementDto> command = this.iec61850LoadCommandFactory
                 .getCommand(member.getFcmodelNode().getName());
 
         if (command == null) {
@@ -61,5 +58,4 @@ public class Iec61850LoadReportHandler implements Iec61850ReportHandler {
         }
         return measurements;
     }
-
 }

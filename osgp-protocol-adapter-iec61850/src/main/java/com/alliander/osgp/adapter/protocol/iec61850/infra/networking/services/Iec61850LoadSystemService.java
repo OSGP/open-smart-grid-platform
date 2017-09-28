@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -37,7 +39,10 @@ public class Iec61850LoadSystemService implements SystemService {
     private static final LogicalDevice DEVICE = LogicalDevice.LOAD;
 
     @Autowired
-    private boolean useCombinedLoad = false;
+    private Boolean defaultUseCombinedLoad = false;
+
+    @Autowired
+    private Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Autowired
     private Iec61850CombinedLoadCommandFactory iec61850CombinedLoadCommandFactory;
@@ -57,7 +62,8 @@ public class Iec61850LoadSystemService implements SystemService {
 
         for (final MeasurementFilterDto filter : systemFilter.getMeasurementFilters()) {
 
-            final RtuReadCommand<MeasurementDto> command = this.getFactory().getCommand(filter);
+            final RtuReadCommand<MeasurementDto> command = this.getFactory(connection.getDeviceIdentification())
+                    .getCommand(filter);
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
             } else {
@@ -76,8 +82,9 @@ public class Iec61850LoadSystemService implements SystemService {
 
     }
 
-    public RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> getFactory() {
-        if (this.useCombinedLoad) {
+    public RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> getFactory(final String deviceIdentification) {
+        final Iec61850Device device = this.iec61850DeviceRepository.findByDeviceIdentification(deviceIdentification);
+        if ((device == null && this.defaultUseCombinedLoad) || device.isUseCombinedLoad()) {
             return this.iec61850CombinedLoadCommandFactory;
         } else {
             return this.iec61850LoadCommandFactory;
