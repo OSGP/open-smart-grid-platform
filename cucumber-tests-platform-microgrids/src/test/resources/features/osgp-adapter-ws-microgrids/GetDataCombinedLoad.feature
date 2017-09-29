@@ -1,4 +1,4 @@
-@MicroGrids @Platform @Iec61850MockServerMarkerWadden @she
+@MicroGrids @Platform @Iec61850MockServerMarkerWadden
 Feature: Microgrids Get Load Data
   As an OSGP client
   I want to get Load data from an RTU
@@ -72,36 +72,6 @@ Feature: Microgrids Get Load Data
       | LOAD1 | MMXU2.MaxWPhs.mag.f |                  22 |
       | LOAD1 | MMXU2.MaxWPhs.q     | VALIDITY_GOOD       |
       | LOAD1 | MMXU2.MaxWPhs.t     | 2017-02-01T12:02:00 |
-    #     #...........................................................
-    #     | LOAD1 | MMXU3.TotW.mag.f    |                  30 |
-    #     | LOAD1 | MMXU3.TotW.q        | VALIDITY_GOOD       |
-    #     | LOAD1 | MMXU3.TotW.t        | 2017-02-01T12:02:00 |
-    #     | LOAD1 | MMXU3.MinWPhs.mag.f |                  31 |
-    #     | LOAD1 | MMXU3.MinWPhs.q     | VALIDITY_GOOD       |
-    #     | LOAD1 | MMXU3.MinWPhs.t     | 2017-02-01T12:02:00 |
-    #     | LOAD1 | MMXU3.MaxWPhs.mag.f |                  32 |
-    #     | LOAD1 | MMXU3.MaxWPhs.q     | VALIDITY_GOOD       |
-    #     | LOAD1 | MMXU3.MaxWPhs.t     | 2017-02-01T12:02:00 |
-    #     #...........................................................
-    #     | LOAD1 | MMXU4.TotW.mag.f    |                  40 |
-    #     | LOAD1 | MMXU4.TotW.q        | VALIDITY_GOOD       |
-    #     | LOAD1 | MMXU4.TotW.t        | 2017-02-01T12:02:00 |
-    #     | LOAD1 | MMXU4.MinWPhs.mag.f |                  41 |
-    #     | LOAD1 | MMXU4.MinWPhs.q     | VALIDITY_GOOD       |
-    #     | LOAD1 | MMXU4.MinWPhs.t     | 2017-02-01T12:02:00 |
-    #     | LOAD1 | MMXU4.MaxWPhs.mag.f |                  42 |
-    #     | LOAD1 | MMXU4.MaxWPhs.q     | VALIDITY_GOOD       |
-    #     | LOAD1 | MMXU4.MaxWPhs.t     | 2017-02-01T12:02:00 |
-    #     #...........................................................
-    #     | LOAD1 | MMXU5.TotW.mag.f    |                  50 |
-    #     | LOAD1 | MMXU5.TotW.q        | VALIDITY_GOOD       |
-    #     | LOAD1 | MMXU5.TotW.t        | 2017-02-01T12:02:00 |
-    #     | LOAD1 | MMXU5.MinWPhs.mag.f |                  51 |
-    #     | LOAD1 | MMXU5.MinWPhs.q     | VALIDITY_GOOD       |
-    #     | LOAD1 | MMXU5.MinWPhs.t     | 2017-02-01T12:02:00 |
-    #     | LOAD1 | MMXU5.MaxWPhs.mag.f |                  52 |
-    #     | LOAD1 | MMXU5.MaxWPhs.q     | VALIDITY_GOOD       |
-    #     | LOAD1 | MMXU5.MaxWPhs.t     | 2017-02-01T12:02:00 |
     When a get data request is received
       #...........................................................
       | DeviceIdentification       | RTU-MARKERWADDEN-LOAD |
@@ -137,27 +107,6 @@ Feature: Microgrids Get Load Data
       | MeasurementFilterNode_1_18 | MinWPhs               |
       | MeasurementFilterId_1_19   |                     2 |
       | MeasurementFilterNode_1_19 | MaxWPhs               |
-    #     #...........................................................
-    #     | MeasurementFilterId_1_20   |                     3 |
-    #     | MeasurementFilterNode_1_20 | TotW                  |
-    #     | MeasurementFilterId_1_21   |                     3 |
-    #     | MeasurementFilterNode_1_21 | MinWPhs               |
-    #     | MeasurementFilterNode_1_22 |                     3 |
-    #     | MeasurementFilterNode_1_22 | MaxWPhs               |
-    #     #...........................................................
-    #     | MeasurementFilterId_1_23   |                     4 |
-    #     | MeasurementFilterNode_1_23 | TotW                  |
-    #     | MeasurementFilterId_1_24   |                     4 |
-    #     | MeasurementFilterNode_1_24 | MinWPhs               |
-    #     | MeasurementFilterNode_1_25 |                     4 |
-    #     | MeasurementFilterNode_1_25 | MaxWPhs               |
-    #     #...........................................................
-    #     | MeasurementFilterId_1_26   |                     5 |
-    #     | MeasurementFilterNode_1_26 | TotW                  |
-    #     | MeasurementFilterId_1_27   |                     5 |
-    #     | MeasurementFilterNode_1_27 | MinWPhs               |
-    #     | MeasurementFilterNode_1_28 |                     5 |
-    #     | MeasurementFilterNode_1_28 | MaxWPhs               |
     Then the get data response should be returned
       #...........................................................
       | DeviceIdentification      | RTU-MARKERWADDEN-LOAD    |
@@ -265,51 +214,3 @@ Feature: Microgrids Get Load Data
       | MeasurementValue_1_19     |                       22 |
       | MeasurementQualifier_1_19 |                        0 |
       | MeasurementTime_1_19      | 2017-02-01T12:02:00.000Z |
-#     #...........................................................
-#     | MeasurementId_1_20        |                        3 |
-#     | MeasurementNode_1_20      | TotW                     |
-#     | MeasurementValue_1_20     |                       30 |
-#     | MeasurementQualifier_1_20 |                        0 |
-#     | MeasurementTime_1_20      | 2017-02-01T12:02:00.000Z |
-#     | MeasurementId_1_21        |                        3 |
-#     | MeasurementNode_1_21      | MinWPhs                  |
-#     | MeasurementValue_1_21     |                       31 |
-#     | MeasurementQualifier_1_21 |                        0 |
-#     | MeasurementTime_1_21      | 2017-02-01T12:02:00.000Z |
-#     | MeasurementId_1_22        |                        3 |
-#     | MeasurementNode_1_22      | MaxWPhs                  |
-#     | MeasurementValue_1_22     |                       32 |
-#     | MeasurementQualifier_1_22 |                        0 |
-#     | MeasurementTime_1_22      | 2017-02-01T12:02:00.000Z |
-#     #...........................................................
-#     | MeasurementId_1_23        |                        4 |
-#     | MeasurementNode_1_23      | TotW                     |
-#     | MeasurementValue_1_23     |                       40 |
-#     | MeasurementQualifier_1_23 |                        0 |
-#     | MeasurementTime_1_23      | 2017-02-01T12:02:00.000Z |
-#     | MeasurementId_1_24        |                        4 |
-#     | MeasurementNode_1_24      | MinWPhs                  |
-#     | MeasurementValue_1_24     |                       41 |
-#     | MeasurementQualifier_1_24 |                        0 |
-#     | MeasurementTime_1_24      | 2017-02-01T12:02:00.000Z |
-#     | MeasurementId_1_25        |                        4 |
-#     | MeasurementNode_1_25      | MaxWPhs                  |
-#     | MeasurementValue_1_25     |                       42 |
-#     | MeasurementQualifier_1_25 |                        0 |
-#     | MeasurementTime_1_25      | 2017-02-01T12:02:00.000Z |
-#     #...........................................................
-#     | MeasurementId_1_26        |                        5 |
-#     | MeasurementNode_1_26      | TotW                     |
-#     | MeasurementValue_1_26     |                       50 |
-#     | MeasurementQualifier_1_26 |                        0 |
-#     | MeasurementTime_1_26      | 2017-02-01T12:02:00.000Z |
-#     | MeasurementId_1_27        |                        5 |
-#     | MeasurementNode_1_27      | MinWPhs                  |
-#     | MeasurementValue_1_27     |                       51 |
-#     | MeasurementQualifier_1_27 |                        0 |
-#     | MeasurementTime_1_27      | 2017-02-01T12:02:00.000Z |
-#     | MeasurementId_1_28        |                        5 |
-#     | MeasurementNode_1_28      | MaxWPhs                  |
-#     | MeasurementValue_1_28     |                       52 |
-#     | MeasurementQualifier_1_28 |                        0 |
-#     | MeasurementTime_1_28      | 2017-02-01T12:02:00.000Z |
