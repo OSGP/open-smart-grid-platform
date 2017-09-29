@@ -27,7 +27,10 @@ import org.openmuc.openiec61850.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850BdaOptFldsHelper;
@@ -52,6 +55,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         REPORT_HANDLERS_MAP.put("BATTERY", Iec61850BatteryReportHandler.class);
         REPORT_HANDLERS_MAP.put("ENGINE", Iec61850EngineReportHandler.class);
         REPORT_HANDLERS_MAP.put("LOAD", Iec61850LoadReportHandler.class);
+        REPORT_HANDLERS_MAP.put("LOAD_COMBINED", Iec61850CombinedLoadReportHandler.class);
         REPORT_HANDLERS_MAP.put("CHP", Iec61850ChpReportHandler.class);
         REPORT_HANDLERS_MAP.put("HEAT_BUFFER", Iec61850HeatBufferReportHandler.class);
         REPORT_HANDLERS_MAP.put("GAS_FURNACE", Iec61850GasFurnaceReportHandler.class);
@@ -69,7 +73,12 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
         final Matcher reportMatcher = REPORT_PATTERN.matcher(dataSetRef);
         if (reportMatcher.matches()) {
-            final String node = reportMatcher.group(2);
+            String node = reportMatcher.group(2);
+
+            if ("LOAD".equals(node) && this.useCombinedLoad()) {
+                node += "_COMBINED";
+            }
+
             final int systemId = Integer.parseInt(reportMatcher.group(3));
             final Class<?> clazz = REPORT_HANDLERS_MAP.get(node);
             try {
@@ -81,6 +90,15 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             }
         }
         return null;
+    }
+
+    private boolean useCombinedLoad() {
+        final Iec61850DeviceRepository repository = BeanUtil.getBean(Iec61850DeviceRepository.class);
+        final Iec61850Device device = repository.findByDeviceIdentification(this.deviceIdentification);
+        if (device != null) {
+            return device.isUseCombinedLoad();
+        }
+        return BeanUtil.getBeanByName("defaultUseCombinedLoad", Boolean.class);
     }
 
     @Override

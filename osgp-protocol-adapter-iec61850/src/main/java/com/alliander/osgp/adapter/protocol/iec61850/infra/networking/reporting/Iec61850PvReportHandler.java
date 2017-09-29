@@ -13,6 +13,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850PvCommandFactory;
@@ -25,10 +26,12 @@ public class Iec61850PvReportHandler implements Iec61850ReportHandler {
 
     private static final String SYSTEM_TYPE = "PV";
 
-    private int systemId;
+    private final int systemId;
+    private final Iec61850PvCommandFactory iec61850PvCommandFactory;
 
     public Iec61850PvReportHandler(final int systemId) {
         this.systemId = systemId;
+        this.iec61850PvCommandFactory = BeanUtil.getBean(Iec61850PvCommandFactory.class);
     }
 
     @Override
@@ -44,7 +47,7 @@ public class Iec61850PvReportHandler implements Iec61850ReportHandler {
     public List<MeasurementDto> handleMember(final ReadOnlyNodeContainer member) {
 
         final List<MeasurementDto> measurements = new ArrayList<>();
-        final RtuReadCommand<MeasurementDto> command = Iec61850PvCommandFactory.getInstance()
+        final RtuReadCommand<MeasurementDto> command = this.iec61850PvCommandFactory
                 .getCommand(member.getFcmodelNode().getName());
 
         if (command == null) {

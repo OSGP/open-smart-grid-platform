@@ -13,6 +13,8 @@ import java.util.List;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
@@ -27,10 +29,14 @@ import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 
+@Service
 public class Iec61850HeatBufferSystemService implements SystemService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850HeatBufferSystemService.class);
     private static final LogicalDevice DEVICE = LogicalDevice.HEAT_BUFFER;
+
+    @Autowired
+    private Iec61850HeatBufferCommandFactory iec61850HeatBufferCommandFactory;
 
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
@@ -44,8 +50,7 @@ public class Iec61850HeatBufferSystemService implements SystemService {
 
         for (final MeasurementFilterDto filter : systemFilter.getMeasurementFilters()) {
 
-            final RtuReadCommand<MeasurementDto> command = Iec61850HeatBufferCommandFactory.getInstance().getCommand(
-                    filter);
+            final RtuReadCommand<MeasurementDto> command = this.iec61850HeatBufferCommandFactory.getCommand(filter);
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
             } else {

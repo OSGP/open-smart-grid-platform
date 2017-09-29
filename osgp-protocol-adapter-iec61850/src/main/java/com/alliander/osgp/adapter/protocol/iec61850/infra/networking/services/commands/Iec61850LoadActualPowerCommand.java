@@ -23,6 +23,14 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Qual
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
+/**
+ *
+ * @deprecated, the structure of multiple mmxu/mmtr nodes within a single load
+ * device is replaced by multiple load devices with single mmxu/mmtr nodes. This
+ * code should be removed when all rtu devices are using the new structure
+ *
+ */
+@Deprecated
 public class Iec61850LoadActualPowerCommand implements RtuReadCommand<MeasurementDto> {
 
     private LogicalNode logicalNode;

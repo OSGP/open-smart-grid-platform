@@ -61,6 +61,9 @@ public class Iec61850DeviceConnectionService {
     private Iec61850RtuDeviceReportingService iec61850RtuDeviceReportingService;
 
     @Autowired
+    private Iec61850ClientEventListenerFactory iec61850ClientEventListenerFactory;
+
+    @Autowired
     private Iec61850Client iec61850Client;
 
     @Autowired
@@ -124,7 +127,7 @@ public class Iec61850DeviceConnectionService {
         // Create instance of appropriate event listener.
         Iec61850ClientBaseEventListener eventListener = null;
         try {
-            eventListener = Iec61850ClientEventListenerFactory.getInstance().getEventListener(ied, deviceIdentification,
+            eventListener = this.iec61850ClientEventListenerFactory.getEventListener(ied, deviceIdentification,
                     this.deviceManagementService);
         } catch (final ProtocolAdapterException e) {
             this.logProtocolAdapterException(deviceIdentification, e);

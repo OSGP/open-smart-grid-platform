@@ -39,6 +39,9 @@ public class Iec61850Device extends AbstractEntity {
     @Column
     private boolean enableAllReportsOnConnect;
 
+    @Column
+    private boolean useCombinedLoad;
+
     public Iec61850Device() {
         // Default constructor
     }
@@ -106,6 +109,14 @@ public class Iec61850Device extends AbstractEntity {
 
     public void setEnableAllReportsOnConnect(final boolean enableAllReportsOnConnect) {
         this.enableAllReportsOnConnect = enableAllReportsOnConnect;
+    }
+
+    public boolean isUseCombinedLoad() {
+        return this.useCombinedLoad;
+    }
+
+    public void setUseCombinedLoad(final boolean useCombinedLoad) {
+        this.useCombinedLoad = useCombinedLoad;
     }
 
 }

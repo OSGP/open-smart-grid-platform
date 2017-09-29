@@ -9,34 +9,48 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850HeatBufferCommandFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850CombinedLoadCommandFactory;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
-public class Iec61850HeatBufferReportHandler implements Iec61850ReportHandler {
+/**
+ *
+ * @deprecated, the structure of multiple mmxu/mmtr nodes within a single load
+ * device is replaced by multiple load devices with single mmxu/mmtr nodes. This
+ * code should be removed when all rtu devices are using the new structure
+ *
+ */
+@Deprecated
+public class Iec61850CombinedLoadReportHandler implements Iec61850ReportHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850HeatBufferReportHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850CombinedLoadReportHandler.class);
 
-    private static final String SYSTEM_TYPE = "HEAT_BUFFER";
+    private static final String SYSTEM_TYPE = "LOAD";
     private static final List<String> NODES_USING_ID_LIST = new ArrayList<>();
+
+    private static final Pattern NODE_PATTERN = Pattern
+            .compile("\\A(.*)LOAD([1-9]\\d*+)/(LLN0|MMTR|MMXU|GGIO)([1-9]\\d*+)?\\.(.*)\\Z");
 
     static {
         intializeNodesUsingIdList();
     }
 
-    private final int systemId;
-    private final Iec61850HeatBufferCommandFactory iec61850HeatBufferCommandFactory;
+    @Autowired
+    private Iec61850CombinedLoadCommandFactory iec61850CombinedLoadCommandFactory;
 
-    public Iec61850HeatBufferReportHandler(final int systemId) {
+    private int systemId;
+
+    public Iec61850CombinedLoadReportHandler(final int systemId) {
         this.systemId = systemId;
-        this.iec61850HeatBufferCommandFactory = BeanUtil.getBean(Iec61850HeatBufferCommandFactory.class);
     }
 
     @Override
@@ -52,7 +66,8 @@ public class Iec61850HeatBufferReportHandler implements Iec61850ReportHandler {
     public List<MeasurementDto> handleMember(final ReadOnlyNodeContainer member) {
 
         final List<MeasurementDto> measurements = new ArrayList<>();
-        final RtuReadCommand<MeasurementDto> command = this.iec61850HeatBufferCommandFactory
+
+        final RtuReadCommand<MeasurementDto> command = this.iec61850CombinedLoadCommandFactory
                 .getCommand(this.getCommandName(member));
 
         if (command == null) {
@@ -64,7 +79,10 @@ public class Iec61850HeatBufferReportHandler implements Iec61850ReportHandler {
     }
 
     private static void intializeNodesUsingIdList() {
-        NODES_USING_ID_LIST.add("TmpSv");
+        NODES_USING_ID_LIST.add("TotWh");
+        NODES_USING_ID_LIST.add("TotW");
+        NODES_USING_ID_LIST.add("MaxWPhs");
+        NODES_USING_ID_LIST.add("MinWPhs");
     }
 
     private static boolean useId(final String nodeName) {
@@ -72,13 +90,23 @@ public class Iec61850HeatBufferReportHandler implements Iec61850ReportHandler {
     }
 
     private String getCommandName(final ReadOnlyNodeContainer member) {
+
         final String nodeName = member.getFcmodelNode().getName();
         if (useId(nodeName)) {
-            final String refName = member.getFcmodelNode().getReference().toString();
-            final int startIndex = refName.length() - nodeName.length() - 2;
-            return nodeName + refName.substring(startIndex, startIndex + 1);
+            final String reference = member.getFcmodelNode().getReference().toString();
+            return nodeName + this.getIndex(reference);
         } else {
             return nodeName;
         }
     }
+
+    private String getIndex(final String reference) {
+        String index = "";
+        final Matcher reportMatcher = NODE_PATTERN.matcher(reference);
+        if (reportMatcher.matches()) {
+            index = reportMatcher.group(4);
+        }
+        return index;
+    }
+
 }

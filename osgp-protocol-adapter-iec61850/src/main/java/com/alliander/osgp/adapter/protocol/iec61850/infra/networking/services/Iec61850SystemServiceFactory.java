@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.SystemService;
@@ -21,6 +22,39 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
 public class Iec61850SystemServiceFactory {
+
+    @Autowired
+    private Iec61850RtuSystemService iec61850RtuSystemService;
+
+    @Autowired
+    private Iec61850PvSystemService iec61850PvSystemService;
+
+    @Autowired
+    private Iec61850BatterySystemService iec61850BatterySystemService;
+
+    @Autowired
+    private Iec61850EngineSystemService iec61850EngineSystemService;
+
+    @Autowired
+    private Iec61850LoadSystemService iec61850LoadSystemService;
+
+    @Autowired
+    private Iec61850HeatBufferSystemService iec61850HeatBufferSystemService;
+
+    @Autowired
+    private Iec61850ChpSystemService iec61850ChpSystemService;
+
+    @Autowired
+    private Iec61850GasFurnaceSystemService iec61850GasFurnaceSystemService;
+
+    @Autowired
+    private Iec61850BoilerSystemService iec61850BoilerSystemService;
+
+    @Autowired
+    private Iec61850HeatPumpSystemService iec61850HeatPumpSystemService;
+
+    @Autowired
+    private Iec61850WindSystemService iec61850WindSystemService;
 
     private Map<String, SystemService> systemServices;
 
@@ -41,17 +75,17 @@ public class Iec61850SystemServiceFactory {
         if (this.systemServices == null) {
             this.systemServices = new HashMap<>();
 
-            this.systemServices.put(LogicalDevice.RTU.name(), new Iec61850RtuSystemService());
-            this.systemServices.put(LogicalDevice.PV.name(), new Iec61850PvSystemService());
-            this.systemServices.put(LogicalDevice.BATTERY.name(), new Iec61850BatterySystemService());
-            this.systemServices.put(LogicalDevice.ENGINE.name(), new Iec61850EngineSystemService());
-            this.systemServices.put(LogicalDevice.LOAD.name(), new Iec61850LoadSystemService());
-            this.systemServices.put(LogicalDevice.HEAT_BUFFER.name(), new Iec61850HeatBufferSystemService());
-            this.systemServices.put(LogicalDevice.CHP.name(), new Iec61850ChpSystemService());
-            this.systemServices.put(LogicalDevice.GAS_FURNACE.name(), new Iec61850GasFurnaceSystemService());
-            this.systemServices.put(LogicalDevice.BOILER.name(), new Iec61850BoilerSystemService());
-            this.systemServices.put(LogicalDevice.HEAT_PUMP.name(), new Iec61850HeatPumpSystemService());
-            this.systemServices.put(LogicalDevice.WIND.name(), new Iec61850WindSystemService());
+            this.systemServices.put(LogicalDevice.RTU.name(), this.iec61850RtuSystemService);
+            this.systemServices.put(LogicalDevice.PV.name(), this.iec61850PvSystemService);
+            this.systemServices.put(LogicalDevice.BATTERY.name(), this.iec61850BatterySystemService);
+            this.systemServices.put(LogicalDevice.ENGINE.name(), this.iec61850EngineSystemService);
+            this.systemServices.put(LogicalDevice.LOAD.name(), this.iec61850LoadSystemService);
+            this.systemServices.put(LogicalDevice.HEAT_BUFFER.name(), this.iec61850HeatBufferSystemService);
+            this.systemServices.put(LogicalDevice.CHP.name(), this.iec61850ChpSystemService);
+            this.systemServices.put(LogicalDevice.GAS_FURNACE.name(), this.iec61850GasFurnaceSystemService);
+            this.systemServices.put(LogicalDevice.BOILER.name(), this.iec61850BoilerSystemService);
+            this.systemServices.put(LogicalDevice.HEAT_PUMP.name(), this.iec61850HeatPumpSystemService);
+            this.systemServices.put(LogicalDevice.WIND.name(), this.iec61850WindSystemService);
         }
         return this.systemServices;
     }
