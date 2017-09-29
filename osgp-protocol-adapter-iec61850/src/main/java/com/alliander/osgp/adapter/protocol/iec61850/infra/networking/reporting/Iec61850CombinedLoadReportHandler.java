@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850CombinedLoadCommandFactory;
@@ -44,13 +44,12 @@ public class Iec61850CombinedLoadReportHandler implements Iec61850ReportHandler 
         intializeNodesUsingIdList();
     }
 
-    @Autowired
-    private Iec61850CombinedLoadCommandFactory iec61850CombinedLoadCommandFactory;
-
     private int systemId;
+    private Iec61850CombinedLoadCommandFactory iec61850CombinedLoadCommandFactory;
 
     public Iec61850CombinedLoadReportHandler(final int systemId) {
         this.systemId = systemId;
+        this.iec61850CombinedLoadCommandFactory = BeanUtil.getBean(Iec61850CombinedLoadCommandFactory.class);
     }
 
     @Override
