@@ -97,6 +97,8 @@ public class Iec61850DeviceSteps extends GlueBase {
         iec61850Device.setServerName(getString(settings, PlatformMicrogridsKeys.KEY_IEC61850_SERVERNAME));
         iec61850Device.setEnableAllReportsOnConnect(getBoolean(settings, PlatformMicrogridsKeys.ENABLE_ALL_REPORTS,
                 PlatformMicrogridsDefaults.ENABLE_ALL_REPORTS));
+        iec61850Device.setUseCombinedLoad(getBoolean(settings, PlatformMicrogridsKeys.USE_COMBINED_LOAD,
+                PlatformMicrogridsDefaults.USE_COMBINED_LOAD));
 
         this.iec61850DeviceRespository.save(iec61850Device);
     }

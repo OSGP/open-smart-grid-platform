@@ -26,23 +26,21 @@ public class Iec61850MockServerConfig {
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public Iec61850MockServer iec61850MockServerPampus() {
-        return new Iec61850MockServer("PAMPUS", "Pampus_v0.4.5.icd", 62102, "WAGO61850Server");
+        return new Iec61850MockServer("PAMPUS", "Pampus.icd", 62102, "WAGO61850Server");
     }
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public Iec61850MockServer iec61850MockServerMarkerWadden() {
-        return new Iec61850MockServer("MARKER WADDEN", "MarkerWadden_0_1_1_including_engine_control_logic.icd", 62103,
-                "WAGO61850Server");
+        return new Iec61850MockServer("MARKER WADDEN", "MarkerWadden.icd", 62103, "WAGO61850Server");
+    }
+
+    @Bean(destroyMethod = "stop", initMethod = "start")
+    public Iec61850MockServer iec61850MockServerSchoteroog() {
+        return new Iec61850MockServer("SCHOTEROOG", "Schoteroog.icd", 62104, "WAGO61850Server");
     }
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public Iec61850MockServer iec61850MockServerWago() {
-        return new Iec61850MockServer("WAGO", "WAGO123.icd", 62104, "WAGO123");
-    }
-
-    @Bean(destroyMethod = "stop", initMethod = "start")
-    public Iec61850MockServer iec61850MockServerPampusWithWindDevice() {
-        return new Iec61850MockServer("PAMPUS_WITH_WIND", "Pampus_with_engine_profiles_and_wind.icd", 62105,
-                "WAGO61850Server");
+        return new Iec61850MockServer("WAGO", "WAGO123.icd", 62105, "WAGO123");
     }
 }

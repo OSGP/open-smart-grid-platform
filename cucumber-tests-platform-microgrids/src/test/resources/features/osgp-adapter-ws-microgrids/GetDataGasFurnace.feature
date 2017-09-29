@@ -1,15 +1,15 @@
-@MicroGrids @Platform
+@MicroGrids @Platform @Iec61850MockServerSchoteroog
 Feature: MicroGrids Get Gas Furnace Data
   In order to be able to know data of a gas furnace with a remote terminal unit
   As an OSGP client
   I want to get Gas Furnace data from an RTU
 
-  @Iec61850MockServerPampus
+
   Scenario: GetData for Gas Furnace
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU-PAMPUS |
-      | Port                 |      62102 |
-    And an rtu simulator returning
+      | DeviceIdentification | RTU-SCHOTEROOG |
+      | Port                 |      62104 |
+    And the Schoteroog RTU returning
       | GAS_FURNACE1 | LLN0.Mod.stVal        |                   1 |
       | GAS_FURNACE1 | LLN0.Mod.q            | VALIDITY_GOOD       |
       | GAS_FURNACE1 | LLN0.Beh.stVal        |                   2 |
@@ -47,7 +47,7 @@ Feature: MicroGrids Get Gas Furnace Data
       | GAS_FURNACE1 | GGIO1.Wrn4.stVal      | true                |
       | GAS_FURNACE1 | GGIO1.Wrn4.q          | VALIDITY_GOOD       |
     When a get data request is received
-      | DeviceIdentification       | RTU-PAMPUS  |
+      | DeviceIdentification       | RTU-SCHOTEROOG  |
       | NumberOfSystems            |           1 |
       | SystemId_1                 |           1 |
       | SystemType_1               | GAS_FURNACE |
@@ -74,7 +74,7 @@ Feature: MicroGrids Get Gas Furnace Data
       | MeasurementFilterNode_1_16 | Wrn3        |
       | MeasurementFilterNode_1_17 | Wrn4        |
     Then the get data response should be returned
-      | DeviceIdentification      | RTU-PAMPUS               |
+      | DeviceIdentification      | RTU-SCHOTEROOG               |
       | Result                    | OK                       |
       | NumberOfSystems           |                        1 |
       | SystemId_1                |                        1 |
