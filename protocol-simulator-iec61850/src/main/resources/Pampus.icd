@@ -4,7 +4,7 @@
   <Private type="ServerInterval">T#50ms</Private>
   <Private type="SCLPrivateTagEnable">False</Private>
   <Header id="WAGO61850Server" nameStructure="IEDName" />
-  <!--Create on WAGO Kontakttechnik GmbH Co KG with Configurator Version 3.1.9 at 21-9-2017 13:30:15-->
+  <!--Create on WAGO Kontakttechnik GmbH Co KG with Configurator Version 3.1.9 at 28-9-2017 16:19:45-->
   <Communication>
     <SubNetwork name="node">
       <ConnectedAP iedName="WAGO61850Server" apName="W1">
@@ -22,7 +22,7 @@
       </ConnectedAP>
     </SubNetwork>
   </Communication>
-  <IED name="WAGO61850Server" type="Telecontrol application" manufacturer="WAGO Kontakttechnik GmbH Co KG" configVersion="3.1.9" desc="Version 0.6.0" engRight="full" owner="">
+  <IED name="WAGO61850Server" type="Telecontrol application" manufacturer="WAGO Kontakttechnik GmbH Co KG" configVersion="3.1.9" desc="Version 0.6.1" engRight="full" owner="">
     <Services nameLength="64">
       <ClientServices bufReport="true" sv="true" />
       <DynAssociation />
@@ -2002,7 +2002,7 @@
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
             </ReportControl>
-            <ReportControl name="ReportStatus01" rptID="LOAD2_Status" datSet="Measurements" intgPd="0" confRev="1" buffered="true" bufTime="0">
+            <ReportControl name="ReportStatus01" rptID="LOAD2_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0">
               <TrgOps dchg="true" />
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
@@ -2120,7 +2120,7 @@
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
             </ReportControl>
-            <ReportControl name="ReportStatus01" rptID="LOAD3_Status" datSet="Measurements" intgPd="0" confRev="1" buffered="true" bufTime="0">
+            <ReportControl name="ReportStatus01" rptID="LOAD3_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0">
               <TrgOps dchg="true" />
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
@@ -2238,7 +2238,7 @@
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
             </ReportControl>
-            <ReportControl name="ReportStatus01" rptID="LOAD4_Status" datSet="Measurements" intgPd="0" confRev="1" buffered="true" bufTime="0">
+            <ReportControl name="ReportStatus01" rptID="LOAD4_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0">
               <TrgOps dchg="true" />
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
@@ -2356,7 +2356,7 @@
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
             </ReportControl>
-            <ReportControl name="ReportStatus01" rptID="LOAD5_Status" datSet="Measurements" intgPd="0" confRev="1" buffered="true" bufTime="0">
+            <ReportControl name="ReportStatus01" rptID="LOAD5_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0">
               <TrgOps dchg="true" />
               <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
               <RptEnabled max="1" />
