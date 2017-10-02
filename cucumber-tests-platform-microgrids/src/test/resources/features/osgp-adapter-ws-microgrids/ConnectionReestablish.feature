@@ -8,30 +8,30 @@ Feature: MicroGrids Re-establish Connection
 
   Scenario: Connection lost and reestablished
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU10001 |
-      | Port                 |    62102 |
+      | DeviceIdentification | RTU-PAMPUS |
+      | Port                 |      62102 |
     When the OSGP connection is lost with the RTU device
     Then I should receive a notification
     And the get data response should be returned
-      | DeviceIdentification     | RTU10001 |
-      | Result                   | OK       |
-      | NumberOfSystems          |        1 |
-      | SystemId_1               |        1 |
-      | SystemType_1             | RTU      |
-      | NumberOfMeasurements_1   |        1 |
-      | MeasurementId_1_1        |        1 |
-      | MeasurementNode_1_1      | Alm1     |
-      | MeasurementValue_1_1     |        1 |
-      | MeasurementQualifier_1_1 |        0 |
+      | DeviceIdentification     | RTU-PAMPUS |
+      | Result                   | OK         |
+      | NumberOfSystems          |          1 |
+      | SystemId_1               |          1 |
+      | SystemType_1             | RTU        |
+      | NumberOfMeasurements_1   |          1 |
+      | MeasurementId_1_1        |          1 |
+      | MeasurementNode_1_1      | Alm1       |
+      | MeasurementValue_1_1     |          1 |
+      | MeasurementQualifier_1_1 |          0 |
     And I should receive a notification
     And the get data response should be returned
-      | DeviceIdentification     | RTU10001 |
-      | Result                   | OK       |
-      | NumberOfSystems          |        1 |
-      | SystemId_1               |        1 |
-      | SystemType_1             | RTU      |
-      | NumberOfMeasurements_1   |        1 |
-      | MeasurementId_1_1        |        1 |
-      | MeasurementNode_1_1      | Alm1     |
-      | MeasurementValue_1_1     |        0 |
-      | MeasurementQualifier_1_1 |        0 |
+      | DeviceIdentification     | RTU-PAMPUS |
+      | Result                   | OK         |
+      | NumberOfSystems          |          1 |
+      | SystemId_1               |          1 |
+      | SystemType_1             | RTU        |
+      | NumberOfMeasurements_1   |          1 |
+      | MeasurementId_1_1        |          1 |
+      | MeasurementNode_1_1      | Alm1       |
+      | MeasurementValue_1_1     |          0 |
+      | MeasurementQualifier_1_1 |          0 |

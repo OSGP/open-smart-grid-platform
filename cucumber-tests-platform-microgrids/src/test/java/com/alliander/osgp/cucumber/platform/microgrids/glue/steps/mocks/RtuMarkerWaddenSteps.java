@@ -17,7 +17,7 @@ import com.alliander.osgp.cucumber.platform.microgrids.mocks.iec61850.Iec61850Mo
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class RtuMarkerWaddenSteps extends GlueBase {
+public class RtuMarkerWaddenSteps extends GlueBase implements RtuSteps {
 
     private static final int INDEX_LOGICAL_DEVICE_NAME = 0;
     private static final int INDEX_NODE_NAME = 1;
@@ -28,7 +28,8 @@ public class RtuMarkerWaddenSteps extends GlueBase {
     private Iec61850MockServer iec61850MockServerMarkerWadden;
 
     @Given("^the Marker Wadden RTU returning$")
-    public void theMarkerWaddenRtuReturning(final List<List<String>> mockValues) throws Throwable {
+    @Override
+    public void anRtuReturning(final List<List<String>> mockValues) throws Throwable {
         for (final List<String> mockValue : mockValues) {
             if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
                 throw new AssertionError("Mock value input rows from the Step DataTable must have "
@@ -43,7 +44,8 @@ public class RtuMarkerWaddenSteps extends GlueBase {
     }
 
     @Then("^the Marker Wadden RTU should contain$")
-    public void theMarkerWaddenRtuShouldContain(final List<List<String>> mockValues) throws Throwable {
+    @Override
+    public void theRtuShouldContain(final List<List<String>> mockValues) throws Throwable {
         for (final List<String> mockValue : mockValues) {
             if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
                 throw new AssertionError("Mock value input rows from the Step DataTable must have "

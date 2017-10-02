@@ -1,15 +1,14 @@
-@MicroGrids @Platform
+@MicroGrids @Platform @Iec61850MockServerSchoteroog
 Feature: Microgrids Get CHP Data
   As an OSGP client
   I want to get CHP data from an RTU
   So this data can be used by other processes
 
-  @Iec61850MockServerPampus
   Scenario: Request CHP
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU-PAMPUS |
-      | Port                 |      62102 |
-    And an rtu simulator returning
+      | DeviceIdentification | RTU-SCHOTEROOG |
+      | Port                 |          62104 |
+    And the Schoteroog RTU returning
       | CHP1 | TTMP1.TmpSv.instMag.f |                  10 |
       | CHP1 | TTMP1.TmpSv.q         | VALIDITY_GOOD       |
       | CHP1 | TTMP1.TmpSv.t         | 2017-02-01T12:01:00 |
@@ -17,17 +16,17 @@ Feature: Microgrids Get CHP Data
       | CHP1 | TTMP2.TmpSv.q         | VALIDITY_GOOD       |
       | CHP1 | TTMP2.TmpSv.t         | 2017-02-01T12:02:00 |
     When a get data request is received
-      | DeviceIdentification      | RTU-PAMPUS |
-      | NumberOfSystems           |          1 |
-      | SystemId_1                |          1 |
-      | SystemType_1              | CHP        |
-      | NumberOfMeasurements_1    |          2 |
-      | MeasurementFilterNode_1_1 | TmpSv      |
-      | MeasurementFilterId_1_1   |          1 |
-      | MeasurementFilterNode_1_2 | TmpSv      |
-      | MeasurementFilterId_1_2   |          2 |
+      | DeviceIdentification      | RTU-SCHOTEROOG |
+      | NumberOfSystems           |              1 |
+      | SystemId_1                |              1 |
+      | SystemType_1              | CHP            |
+      | NumberOfMeasurements_1    |              2 |
+      | MeasurementFilterNode_1_1 | TmpSv          |
+      | MeasurementFilterId_1_1   |              1 |
+      | MeasurementFilterNode_1_2 | TmpSv          |
+      | MeasurementFilterId_1_2   |              2 |
     Then the get data response should be returned
-      | DeviceIdentification     | RTU-PAMPUS               |
+      | DeviceIdentification     | RTU-SCHOTEROOG           |
       | Result                   | OK                       |
       | NumberOfSystems          |                        1 |
       | SystemId_1               |                        1 |

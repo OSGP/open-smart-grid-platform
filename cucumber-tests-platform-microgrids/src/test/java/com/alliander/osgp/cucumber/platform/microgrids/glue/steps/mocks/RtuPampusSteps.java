@@ -17,7 +17,7 @@ import com.alliander.osgp.cucumber.platform.microgrids.mocks.iec61850.Iec61850Mo
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class RtuPampusSteps extends GlueBase {
+public class RtuPampusSteps extends GlueBase implements RtuSteps {
 
     private static final int INDEX_LOGICAL_DEVICE_NAME = 0;
     private static final int INDEX_NODE_NAME = 1;
@@ -27,8 +27,9 @@ public class RtuPampusSteps extends GlueBase {
     @Autowired
     private Iec61850MockServer iec61850MockServerPampus;
 
-    @Given("^an rtu simulator returning$")
-    public void anRtuSimulatorReturning(final List<List<String>> mockValues) throws Throwable {
+    @Given("^the Pampus RTU returning$")
+    @Override
+    public void anRtuReturning(final List<List<String>> mockValues) throws Throwable {
         for (final List<String> mockValue : mockValues) {
             if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
                 throw new AssertionError("Mock value input rows from the Step DataTable must have "
@@ -42,8 +43,9 @@ public class RtuPampusSteps extends GlueBase {
         }
     }
 
-    @Then("^the rtu simulator should contain$")
-    public void theRtuSimulatorShouldContain(final List<List<String>> mockValues) throws Throwable {
+    @Then("^the Pampus RTU should contain$")
+    @Override
+    public void theRtuShouldContain(final List<List<String>> mockValues) throws Throwable {
         for (final List<String> mockValue : mockValues) {
             if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
                 throw new AssertionError("Mock value input rows from the Step DataTable must have "

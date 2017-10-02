@@ -12,5 +12,5 @@ package com.alliander.osgp.cucumber.platform.microgrids;
 public class PlatformMicrogridsKeys extends com.alliander.osgp.cucumber.platform.PlatformKeys {
 
     public static final String ENABLE_ALL_REPORTS = "EnableAllReports";
-
+    public static final String USE_COMBINED_LOAD = "UseCombinedLoad";
 }
