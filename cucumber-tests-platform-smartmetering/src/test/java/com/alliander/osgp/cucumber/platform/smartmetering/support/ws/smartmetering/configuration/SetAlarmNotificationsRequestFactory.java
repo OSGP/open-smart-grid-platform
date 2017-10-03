@@ -21,6 +21,9 @@ import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringK
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
 public class SetAlarmNotificationsRequestFactory {
+
+    public static final int NUMBER_ALARM_TYPES = 22;
+
     private SetAlarmNotificationsRequestFactory() {
         // Private constructor for utility class
     }
@@ -46,13 +49,16 @@ public class SetAlarmNotificationsRequestFactory {
 
     private static SetAlarmNotificationsRequestData fetchAlarmNotifications(
             final Map<String, String> requestParameters) {
-        final AlarmNotification alarmNotification = new AlarmNotification();
-        alarmNotification.setAlarmType(AlarmType.valueOf(requestParameters.get(PlatformSmartmeteringKeys.ALARM_TYPE)));
-        alarmNotification
-                .setEnabled(Boolean.parseBoolean(requestParameters.get(PlatformSmartmeteringKeys.ALARM_TYPE_ENABLED)));
-
         final List<AlarmNotification> lstAlarmNotifications = new ArrayList<>();
-        lstAlarmNotifications.add(alarmNotification);
+
+        if (nullCheckAlarmType(requestParameters, "")) {
+            lstAlarmNotifications.add(addAlarmNotification(requestParameters, ""));
+        }
+        for (int i = 1; i < NUMBER_ALARM_TYPES; i++) {
+            if (nullCheckAlarmType(requestParameters, Integer.toString(i))) {
+                lstAlarmNotifications.add(addAlarmNotification(requestParameters, Integer.toString(i)));
+            }
+        }
 
         final AlarmNotifications alarmNotifications = new AlarmNotifications();
         alarmNotifications.getAlarmNotification().addAll(lstAlarmNotifications);
@@ -61,6 +67,21 @@ public class SetAlarmNotificationsRequestFactory {
         setAlarmNotificationsRequestData.setAlarmNotifications(alarmNotifications);
 
         return setAlarmNotificationsRequestData;
+    }
+
+    private static AlarmNotification addAlarmNotification(final Map<String, String> requestParameters,
+            final String postfix) {
+        final AlarmNotification alarmNotification = new AlarmNotification();
+        alarmNotification
+                .setAlarmType(AlarmType.valueOf(requestParameters.get(PlatformSmartmeteringKeys.ALARM_TYPE + postfix)));
+        alarmNotification.setEnabled(
+                Boolean.parseBoolean(requestParameters.get(PlatformSmartmeteringKeys.ALARM_TYPE_ENABLED + postfix)));
+
+        return alarmNotification;
+    }
+
+    private static boolean nullCheckAlarmType(final Map<String, String> requestParameters, final String postfix) {
+        return (requestParameters.get(PlatformSmartmeteringKeys.ALARM_TYPE + postfix) == null) ? false : true;
     }
 
 }
