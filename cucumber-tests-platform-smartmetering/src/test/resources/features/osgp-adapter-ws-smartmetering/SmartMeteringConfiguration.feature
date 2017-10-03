@@ -155,3 +155,11 @@ Feature: SmartMetering Configuration
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
     And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
+
+  Scenario: Set push setup sms on a device
+    When the set PushSetupSms request is received
+      | DeviceIdentification | TEST1024000000001 |
+      | Hostname             | localhost         |
+      | Port                 |              9598 |
+    Then the PushSetupSms should be set on the device
+      | DeviceIdentification | TEST1024000000001 |
