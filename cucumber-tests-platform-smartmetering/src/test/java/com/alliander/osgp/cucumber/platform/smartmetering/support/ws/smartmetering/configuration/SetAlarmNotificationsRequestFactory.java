@@ -60,6 +60,11 @@ public class SetAlarmNotificationsRequestFactory {
             }
         }
 
+        return addAlarmNotificationsToRequestData(lstAlarmNotifications);
+    }
+
+    private static SetAlarmNotificationsRequestData addAlarmNotificationsToRequestData(
+            final List<AlarmNotification> lstAlarmNotifications) {
         final AlarmNotifications alarmNotifications = new AlarmNotifications();
         alarmNotifications.getAlarmNotification().addAll(lstAlarmNotifications);
 
