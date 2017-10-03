@@ -55,8 +55,8 @@ public class SetAlarmNotificationsRequestFactory {
             lstAlarmNotifications.add(addAlarmNotification(requestParameters, ""));
         }
         for (int i = 1; i < NUMBER_ALARM_TYPES; i++) {
-            if (nullCheckAlarmType(requestParameters, Integer.toString(i))) {
-                lstAlarmNotifications.add(addAlarmNotification(requestParameters, Integer.toString(i)));
+            if (nullCheckAlarmType(requestParameters, "_" + Integer.toString(i))) {
+                lstAlarmNotifications.add(addAlarmNotification(requestParameters, "_" + Integer.toString(i)));
             }
         }
 

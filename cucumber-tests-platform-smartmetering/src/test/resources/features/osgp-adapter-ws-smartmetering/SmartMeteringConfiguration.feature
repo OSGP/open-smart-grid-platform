@@ -40,7 +40,7 @@ Feature: SmartMetering Configuration
       | DeviceIdentification | UNKNOWN0000000001 |
     Then the alarm should be pushed to the osgp_logging database device_log_item table
       | DeviceIdentification | UNKNOWN0000000001 |
-
+  
   Scenario: Set alarm notifications on a device
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1024000000001 |
@@ -48,52 +48,52 @@ Feature: SmartMetering Configuration
       | AlarmTypeEnabled     | TRUE              |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
-
+  
   Scenario: Set all alarm notifications disabled on a device
     When the set alarm notifications request is received
       | DeviceIdentification | TEST1024000000001                     |
-      | AlarmType1           | CLOCK_INVALID                         |
+      | AlarmType_1           | CLOCK_INVALID                         |
       | AlarmTypeEnabled1    | false                                 |
-      | AlarmType2           | REPLACE_BATTERY                       |
+      | AlarmType_2           | REPLACE_BATTERY                       |
       | AlarmTypeEnabled2    | false                                 |
-      | AlarmType3           | POWER_UP                              |
+      | AlarmType_3           | POWER_UP                              |
       | AlarmTypeEnabled3    | false                                 |
-      | AlarmType4           | PROGRAM_MEMORY_ERROR                  |
+      | AlarmType_4           | PROGRAM_MEMORY_ERROR                  |
       | AlarmTypeEnabled4    | false                                 |
-      | AlarmType5           | RAM_ERROR                             |
+      | AlarmType_5           | RAM_ERROR                             |
       | AlarmTypeEnabled5    | false                                 |
-      | AlarmType6           | NV_MEMORY_ERROR                       |
+      | AlarmType_6           | NV_MEMORY_ERROR                       |
       | AlarmTypeEnabled6    | false                                 |
-      | AlarmType7           | MEASUREMENT_SYSTEM_ERROR              |
+      | AlarmType_7           | MEASUREMENT_SYSTEM_ERROR              |
       | AlarmTypeEnabled7    | false                                 |
-      | AlarmType8           | WATCHDOG_ERROR                        |
+      | AlarmType_8           | WATCHDOG_ERROR                        |
       | AlarmTypeEnabled8    | false                                 |
-      | AlarmType9           | FRAUD_ATTEMPT                         |
+      | AlarmType_9           | FRAUD_ATTEMPT                         |
       | AlarmTypeEnabled9    | false                                 |
-      | AlarmType10          | COMMUNICATION_ERROR_M_BUS_CHANNEL_1   |
+      | AlarmType_10          | COMMUNICATION_ERROR_M_BUS_CHANNEL_1   |
       | AlarmTypeEnabled10   | false                                 |
-      | AlarmType11          | COMMUNICATION_ERROR_M_BUS_CHANNEL_2   |
+      | AlarmType_11          | COMMUNICATION_ERROR_M_BUS_CHANNEL_2   |
       | AlarmTypeEnabled11   | false                                 |
-      | AlarmType12          | COMMUNICATION_ERROR_M_BUS_CHANNEL_3   |
+      | AlarmType_12          | COMMUNICATION_ERROR_M_BUS_CHANNEL_3   |
       | AlarmTypeEnabled12   | false                                 |
-      | AlarmType13          | COMMUNICATION_ERROR_M_BUS_CHANNEL_4   |
+      | AlarmType_13          | COMMUNICATION_ERROR_M_BUS_CHANNEL_4   |
       | AlarmTypeEnabled13   | false                                 |
-      | AlarmType14          | FRAUD_ATTEMPT_M_BUS_CHANNEL_1         |
+      | AlarmType_14          | FRAUD_ATTEMPT_M_BUS_CHANNEL_1         |
       | AlarmTypeEnabled14   | false                                 |
-      | AlarmType15          | FRAUD_ATTEMPT_M_BUS_CHANNEL_2         |
+      | AlarmType_15          | FRAUD_ATTEMPT_M_BUS_CHANNEL_2         |
       | AlarmTypeEnabled15   | false                                 |
-      | AlarmType16          | FRAUD_ATTEMPT_M_BUS_CHANNEL_3         |
+      | AlarmType_16          | FRAUD_ATTEMPT_M_BUS_CHANNEL_3         |
       | AlarmTypeEnabled16   | false                                 |
-      | AlarmType17          | FRAUD_ATTEMPT_M_BUS_CHANNEL_4         |
+      | AlarmType_17          | FRAUD_ATTEMPT_M_BUS_CHANNEL_4         |
       | AlarmTypeEnabled17   | false                                 |
-      | AlarmType18          | NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1 |
+      | AlarmType_18          | NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1 |
       | AlarmTypeEnabled18   | false                                 |
-      | AlarmType19          | NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2 |
+      | AlarmType_19          | NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2 |
       | AlarmTypeEnabled19   | false                                 |
-      | AlarmType20          | NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3 |
+      | AlarmType_20          | NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3 |
       | AlarmTypeEnabled20   | false                                 |
-      | AlarmType21          | NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4 |
-      | AlarmTypeEnabled21   | false                                 |
+      | AlarmType_21          | NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4 |
+      | AlarmTypeEnabled_21   | false                                 |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
