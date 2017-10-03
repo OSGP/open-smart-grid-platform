@@ -27,12 +27,13 @@ import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
 /**
  *
- * @deprecated, the structure of multiple mmxu/mmtr nodes within a single load
- * device is replaced by multiple load devices with single mmxu/mmtr nodes. This
- * code should be removed when all rtu devices are using the new structure
+ * This class is used by both combined load and separated load devices
+ *
+ * Combined: single load device contains multiple mmxu/mmtr nodes (deprecated)
+ *
+ * Separated: multiple load devices with single mmxu/mmtr nodes.
  *
  */
-@Deprecated
 public class Iec61850LoadTotalEnergyCommand implements RtuReadCommand<MeasurementDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LoadTotalEnergyCommand.class);
@@ -41,7 +42,14 @@ public class Iec61850LoadTotalEnergyCommand implements RtuReadCommand<Measuremen
     private final LogicalNode logicalNode;
     private final int index;
 
+    public Iec61850LoadTotalEnergyCommand() {
+        // Constructor for separated load devices
+        this.logicalNode = LogicalNode.fromString(NODE + 1);
+        this.index = 1;
+    }
+
     public Iec61850LoadTotalEnergyCommand(final int index) {
+        // Constructor for combined load devices
         this.logicalNode = LogicalNode.fromString(NODE + index);
         this.index = index;
     }
