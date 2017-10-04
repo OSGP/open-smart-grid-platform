@@ -7,8 +7,12 @@
  */
 package com.alliander.osgp.adapter.domain.publiclighting.application.config;
 
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -19,5 +23,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.domain.publiclighting" })
 @EnableTransactionManagement
 public class ApplicationContext {
+
+    @Resource
+    private Environment environment;
+
+    private static final String PROPERTY_NAME_SET_TRANSITION_LOGS_RESPONSE = "public.lighting.set.transition.logs.response";
+
+    @Bean
+    public Boolean isSetTransitionResponseLoggingEnabled() {
+        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_SET_TRANSITION_LOGS_RESPONSE));
+    }
 
 }

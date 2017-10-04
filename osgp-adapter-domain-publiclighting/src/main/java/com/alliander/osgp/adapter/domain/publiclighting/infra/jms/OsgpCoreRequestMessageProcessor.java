@@ -9,8 +9,13 @@ package com.alliander.osgp.adapter.domain.publiclighting.infra.jms;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.domain.publiclighting.application.services.AdHocManagementService;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.EventMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.UnknownMessageTypeException;
 
@@ -18,6 +23,10 @@ import com.alliander.osgp.shared.infra.jms.UnknownMessageTypeException;
 public class OsgpCoreRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageProcessor.class);
+
+    @Autowired
+    @Qualifier("domainPublicLightingAdHocManagementService")
+    private AdHocManagementService adHocManagementService;
 
     public void processMessage(final RequestMessage requestMessage, final String messageType)
             throws UnknownMessageTypeException {
@@ -30,8 +39,23 @@ public class OsgpCoreRequestMessageProcessor {
         LOGGER.info(
                 "Received request message from OSGP-CORE messageType: {} deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}, className: {}",
                 messageType, deviceIdentification, organisationIdentification, correlationUid, dataObject.getClass()
-                .getCanonicalName());
+                        .getCanonicalName());
 
-        throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
+        if (DeviceFunction.SET_TRANSITION.name().equals(messageType)) {
+            final EventMessageDataContainer dataContainer = (EventMessageDataContainer) dataObject;
+            this.handleLightMeasurementDeviceTransition(organisationIdentification, deviceIdentification,
+                    correlationUid, dataContainer);
+        } else {
+            throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
+        }
+    }
+
+    private void handleLightMeasurementDeviceTransition(final String organisationIdentification,
+            final String deviceIdentification, final String correlationUid,
+            final EventMessageDataContainer eventMessageDataContainer) {
+        LOGGER.info("Received transition message of light measurement device: {}", deviceIdentification);
+
+        this.adHocManagementService.handleLightMeasurementDeviceTransition(organisationIdentification,
+                deviceIdentification, correlationUid, eventMessageDataContainer);
     }
 }

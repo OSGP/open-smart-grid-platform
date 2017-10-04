@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.domain.publiclighting.application.services.AdHocManagementService;
 import com.alliander.osgp.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
 import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
@@ -25,27 +26,34 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
- * Class for processing public lighting default response messages
+ * Class for processing public lighting set transition response messages
  */
-@Component("domainPublicLightingDefaultResponseMessageProcessor")
-public class PublicLightingDefaultResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainPublicLightingSetTransitionResponseMessageProcessor")
+public class PublicLightingSetTransitionResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingDefaultResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PublicLightingSetTransitionResponseMessageProcessor.class);
+
+    @Autowired
+    @Qualifier("domainPublicLightingAdHocManagementService")
+    private AdHocManagementService adHocManagementService;
 
     @Autowired
     @Qualifier("domainPublicLightingDefaultDeviceResponseService")
     private DefaultDeviceResponseService defaultDeviceResponseService;
 
-    protected PublicLightingDefaultResponseMessageProcessor() {
-        super(DeviceFunction.SET_LIGHT);
-        this.addMessageType(DeviceFunction.RESUME_SCHEDULE);
+    @Autowired
+    private Boolean isSetTransitionResponseLoggingEnabled;
+
+    protected PublicLightingSetTransitionResponseMessageProcessor() {
+        super(DeviceFunction.SET_TRANSITION);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing public lighting default response message");
+        LOGGER.debug("Processing public lighting set transition response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -80,9 +88,15 @@ public class PublicLightingDefaultResponseMessageProcessor extends OsgpCoreRespo
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
-
+            if (this.isSetTransitionResponseLoggingEnabled) {
+                this.adHocManagementService.handleSetTransitionResponse(deviceIdentification,
+                        organisationIdentification, correlationUid, messageType, responseMessageResultType,
+                        osgpException);
+            } else {
+                this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
+                        organisationIdentification, correlationUid, messageType, responseMessageResultType,
+                        osgpException);
+            }
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }

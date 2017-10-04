@@ -32,8 +32,8 @@ import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
  */
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-domain-publiclighting.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterDomainPublicLighting/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterDomainPublicLighting/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
 
     private static final String PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_RESPONSE_TIME_TO_LIVE = "jms.get.power.usage.history.response.time.to.live";
@@ -139,7 +139,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public JmsConfiguration incomingOsgpCoreRequestsJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeReceiveConfiguration(
-                JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_REQUESTS, this.incomingOsgpCoreResponseMessageListener);
+                JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_REQUESTS, this.incomingOsgpCoreRequestMessageListener);
     }
 
     @Bean(name = "domainPublicLightingIncomingOsgpCoreRequestsMessageListenerContainer")

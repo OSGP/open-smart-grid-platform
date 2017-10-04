@@ -29,11 +29,9 @@ import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-core.properties"),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-core.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true), })
 public class DomainMessagingConfig extends AbstractConfig {
 
     // JMS Settings
@@ -66,6 +64,8 @@ public class DomainMessagingConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_REQUEST_TIME_TO_LIVE = "jms.get.power.usage.history.request.time.to.live";
 
+    private static final String PROPERTY_NAME_NETMANAGEMENT_ORGANISATION = "netmanagement.organisation";
+
     @Autowired
     private DomainInfoRepository domainInfoRepository;
 
@@ -89,7 +89,8 @@ public class DomainMessagingConfig extends AbstractConfig {
 
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.domainRedeliveryPolicyMap());
-        activeMQConnectionFactory.setBrokerURL(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
+        activeMQConnectionFactory.setBrokerURL(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
 
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
 
@@ -111,13 +112,18 @@ public class DomainMessagingConfig extends AbstractConfig {
 
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
 
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy
-                .setUseExponentialBackOff(Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
 
         return redeliveryPolicy;
     }
@@ -130,10 +136,13 @@ public class DomainMessagingConfig extends AbstractConfig {
         LOGGER.debug("Creating bean: domainResponseJmsTemplateFactory");
 
         final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_EXPLICIT_QOS_ENABLED)), Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_TIME_TO_LIVE)), Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_DELIVERY_PERSISTENT)));
-        return new DomainResponseMessageJmsTemplateFactory(this.domainPooledConnectionFactory(), jmsTemplateSettings, this.domainInfoRepository.findAll());
+                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_EXPLICIT_QOS_ENABLED)),
+                Long.parseLong(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_TIME_TO_LIVE)),
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_RESPONSES_DELIVERY_PERSISTENT)));
+        return new DomainResponseMessageJmsTemplateFactory(this.domainPooledConnectionFactory(), jmsTemplateSettings,
+                this.domainInfoRepository.findAll());
     }
 
     // === INCOMING DOMAIN REQUESTS ===
@@ -160,11 +169,14 @@ public class DomainMessagingConfig extends AbstractConfig {
     @Bean
     public DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory() {
         final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_EXPLICIT_QOS_ENABLED)), Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_TIME_TO_LIVE)), Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_DELIVERY_PERSISTENT)));
+                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_EXPLICIT_QOS_ENABLED)),
+                Long.parseLong(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_TIME_TO_LIVE)),
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_DOMAIN_REQUESTS_DELIVERY_PERSISTENT)));
 
-        return new DomainRequestMessageJmsTemplateFactory(this.domainPooledConnectionFactory(), jmsTemplateSettings, this.domainInfoRepository.findAll());
+        return new DomainRequestMessageJmsTemplateFactory(this.domainPooledConnectionFactory(), jmsTemplateSettings,
+                this.domainInfoRepository.findAll());
     }
 
     // === INCOMING DOMAIN RESPONSES ===
@@ -189,5 +201,10 @@ public class DomainMessagingConfig extends AbstractConfig {
     public Long getPowerUsageHistoryRequestTimeToLive() {
         return Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_REQUEST_TIME_TO_LIVE));
+    }
+
+    @Bean
+    public String netmanagementOrganisation() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_NETMANAGEMENT_ORGANISATION);
     }
 }

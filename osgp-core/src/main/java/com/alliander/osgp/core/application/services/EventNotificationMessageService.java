@@ -15,13 +15,21 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.core.infra.jms.domain.in.DomainRequestMessageJmsTemplateFactory;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Event;
@@ -31,9 +39,13 @@ import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+import com.alliander.osgp.domain.core.services.CorrelationIdProviderTimestampService;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
+import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 @Service
 @Transactional
@@ -49,6 +61,15 @@ public class EventNotificationMessageService {
 
     @Autowired
     private SsldRepository ssldRepository;
+
+    @Autowired
+    private DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory;
+
+    @Autowired
+    private CorrelationIdProviderTimestampService correlationIdProviderTimestampService;
+
+    @Autowired
+    private String netmanagementOrganisation;
 
     @Transactional(value = "transactionManager")
     public void handleEvent(final String deviceIdentification, final Date dateTime, final EventType eventType,
@@ -106,6 +127,7 @@ public class EventNotificationMessageService {
          */
         final List<Event> lightSwitchingEvents = new ArrayList<>();
         final List<Event> tariffSwitchingEvents = new ArrayList<>();
+        final List<Event> lightMeasurementDeviceEvents = new ArrayList<>();
 
         for (final EventNotificationDto eventNotification : eventNotifications) {
             final DateTime eventTime = eventNotification.getDateTime();
@@ -122,11 +144,15 @@ public class EventNotificationMessageService {
             } else if (eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
                     || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
                 tariffSwitchingEvents.add(event);
+            } else if (eventType.equals(EventType.LIGHT_SENSOR_REPORTS_DARK)
+                    || eventType.equals(EventType.LIGHT_SENSOR_REPORTS_LIGHT)) {
+                lightMeasurementDeviceEvents.add(event);
             }
         }
 
         this.handleLightSwitchingEvents(device, lightSwitchingEvents);
         this.handleTariffSwitchingEvents(device, tariffSwitchingEvents);
+        this.handleLightMeasurementDeviceEvents(device, lightMeasurementDeviceEvents);
     }
 
     private void handleLightSwitchingEvents(final Device device, final List<Event> lightSwitchingEvents) {
@@ -255,6 +281,44 @@ public class EventNotificationMessageService {
                 ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, isRelayOn,
                         dateTime == null ? DateTime.now().toDate() : dateTime));
             }
+        }
+    }
+
+    private void handleLightMeasurementDeviceEvents(final Device device, final List<Event> lightMeasurementDeviceEvents) {
+        if (lightMeasurementDeviceEvents.isEmpty()) {
+            LOGGER.info("List of events is empty for device: {}, not needed to process events.",
+                    device.getDeviceIdentification());
+            return;
+        }
+
+        try {
+            // Prepare message to send to OSGP-ADAPTER-DOMAIN-PUBLICLIGHTING.
+            final String deviceIdentification = device.getDeviceIdentification();
+            final String correlationUid = this.correlationIdProviderTimestampService.getCorrelationId(
+                    this.netmanagementOrganisation, deviceIdentification);
+            final EventMessageDataContainer dataContainer = new EventMessageDataContainer(lightMeasurementDeviceEvents);
+            final RequestMessage requestMessage = new RequestMessage(correlationUid, this.netmanagementOrganisation,
+                    deviceIdentification, dataContainer);
+
+            // Get JmsTemplate.
+            final String key = "PUBLIC_LIGHTING-1.0";
+            final JmsTemplate jmsTemplate = this.domainRequestMessageJmsTemplateFactory.getJmsTemplate(key);
+
+            // Send message.
+            jmsTemplate.send(new MessageCreator() {
+
+                @Override
+                public Message createMessage(final Session session) throws JMSException {
+                    final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
+                    objectMessage.setJMSType(DeviceFunction.SET_TRANSITION.name());
+                    return objectMessage;
+                }
+
+            });
+        } catch (final Exception e) {
+            LOGGER.error(
+                    String.format("Unexpected exception while handling events for light measurement device: %s",
+                            device.getDeviceIdentification()), e);
         }
     }
 }
