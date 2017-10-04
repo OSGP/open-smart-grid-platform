@@ -42,16 +42,20 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
     private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
             .setSecurityKeyType(SecurityKeyType.PASSWORD).setKey(PlatformSmartmeteringDefaults.PASSWORD);
-    private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_AUTHENTICATION).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB);
-    private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_ENCRYPTION).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB);
-    private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_MASTER).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB);
-    private final SecurityKeyBuilder mbusEncryptionSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.G_METER_ENCRYPTION).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION);
-    private final SecurityKeyBuilder mbusMasterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.G_METER_MASTER).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER);
+    private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION)
+            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB);
+    private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION)
+            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB);
+    private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_MASTER).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB);
+    private final SecurityKeyBuilder mbusEncryptionSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.G_METER_ENCRYPTION)
+            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION);
+    private final SecurityKeyBuilder mbusMasterSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.G_METER_MASTER)
+            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER);
 
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
@@ -252,25 +256,43 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
             this.setChallengeLength(Integer.parseInt(inputSettings.get(PlatformSmartmeteringKeys.CHALLENGE_LENGTH)));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED)) {
-            this.setWithListSupported(Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED)));
+            this.setWithListSupported(
+                    Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED)));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED)) {
-            this.setSelectiveAccessSupported(Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED)));
+            this.setSelectiveAccessSupported(
+                    Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED)));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.IP_ADDRESS_IS_STATIC)) {
-            this.setIpAddressIsStatic(Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.IP_ADDRESS_IS_STATIC)));
-        }
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.PORT)) {
-            this.setPort(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.PORT)));
+            this.setIpAddressIsStatic(
+                    Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.IP_ADDRESS_IS_STATIC)));
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.CLIENT_ID)) {
             this.setClientId(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.CLIENT_ID)));
         }
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.LOGICAL_ID)) {
-            this.setLogicalId(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID)));
-        }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.IN_DEBUG_MODE)) {
             this.setInDebugMode(Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.IN_DEBUG_MODE)));
+        }
+
+        /**
+         * For port/logical_id we want to be able to override the default value
+         * to be null to enable testing against a real device.
+         */
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.LOGICAL_ID)) {
+            if (inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID).isEmpty()
+                    || inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID).equals("null")) {
+                this.setLogicalId(null);
+            } else {
+                this.setLogicalId(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID)));
+            }
+        }
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.PORT)) {
+            if (inputSettings.get(PlatformSmartmeteringKeys.PORT).isEmpty()
+                    || inputSettings.get(PlatformSmartmeteringKeys.PORT).equals("null")) {
+                this.setPort(null);
+            } else {
+                this.setPort(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.PORT)));
+            }
         }
 
         return this;
