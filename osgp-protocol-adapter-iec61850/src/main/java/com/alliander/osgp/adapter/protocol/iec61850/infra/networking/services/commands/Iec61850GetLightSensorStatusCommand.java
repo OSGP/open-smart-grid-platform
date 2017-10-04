@@ -61,7 +61,7 @@ public class Iec61850GetLightSensorStatusCommand {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper
          * .Function
@@ -96,7 +96,7 @@ public class Iec61850GetLightSensorStatusCommand {
                     Boolean.toString(stVal.getValue()));
 
             final List<LightValueDto> sensorValues = new ArrayList<>();
-            sensorValues.add(new LightValueDto(index, stVal.getValue(), luxValue));
+            sensorValues.add(new LightValueDto(index, !stVal.getValue(), luxValue));
 
             DeviceMessageLoggingService.logMessage(deviceMessageLog, this.deviceConnection.getDeviceIdentification(),
                     this.deviceConnection.getOrganisationIdentification(), false);
