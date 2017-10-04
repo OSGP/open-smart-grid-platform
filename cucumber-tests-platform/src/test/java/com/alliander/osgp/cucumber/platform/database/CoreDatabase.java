@@ -134,7 +134,6 @@ public class CoreDatabase {
     private void batchDeleteAll() {
         LOGGER.info("Starting batchDeleteAll()");
         this.deviceAuthorizationRepository.deleteAllInBatch();
-        this.lightMeasurementDeviceRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
         this.eanRepository.deleteAllEans();
@@ -145,6 +144,7 @@ public class CoreDatabase {
         this.relayStatusRepository.deleteAllInBatch();
         this.ssldRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllInBatch();
+        this.lightMeasurementDeviceRepository.deleteAllInBatch();
         this.firmwareFileFirmwareModuleRepository.deleteAllInBatch();
         this.firmwareFileRepository.deleteAllInBatch();
         this.deviceModelRepository.deleteAllInBatch();
@@ -155,7 +155,6 @@ public class CoreDatabase {
     private void normalDeleteAll() {
         LOGGER.info("Starting normalDeleteAll()");
         this.deviceAuthorizationRepository.deleteAll();
-        this.lightMeasurementDeviceRepository.deleteAll();
         this.deviceLogItemRepository.deleteAll();
         this.scheduledTaskRepository.deleteAll();
         this.eanRepository.deleteAllEans();
@@ -166,6 +165,7 @@ public class CoreDatabase {
         this.relayStatusRepository.deleteAll();
         this.ssldRepository.deleteAll();
         this.deviceRepository.deleteAll();
+        this.lightMeasurementDeviceRepository.deleteAll();
         this.firmwareFileFirmwareModuleRepository.deleteAll();
         this.firmwareFileRepository.deleteAll();
         this.deviceModelRepository.deleteAll();
