@@ -279,16 +279,14 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
          * to be null to enable testing against a real device.
          */
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.LOGICAL_ID)) {
-            if (inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID).isEmpty()
-                    || inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID).equals("null")) {
+            if (inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID).isEmpty()) {
                 this.setLogicalId(null);
             } else {
                 this.setLogicalId(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.LOGICAL_ID)));
             }
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.PORT)) {
-            if (inputSettings.get(PlatformSmartmeteringKeys.PORT).isEmpty()
-                    || inputSettings.get(PlatformSmartmeteringKeys.PORT).equals("null")) {
+            if (inputSettings.get(PlatformSmartmeteringKeys.PORT).isEmpty()) {
                 this.setPort(null);
             } else {
                 this.setPort(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.PORT)));
