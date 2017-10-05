@@ -49,18 +49,18 @@ public class SetAlarmNotificationsRequestFactory {
 
     private static SetAlarmNotificationsRequestData fetchAlarmNotifications(
             final Map<String, String> requestParameters) {
-        final List<AlarmNotification> lstAlarmNotifications = new ArrayList<>();
+        final List<AlarmNotification> AlarmNotificationsList = new ArrayList<>();
 
         if (nullCheckAlarmType(requestParameters, "")) {
-            lstAlarmNotifications.add(addAlarmNotification(requestParameters, ""));
+            AlarmNotificationsList.add(getAlarmNotification(requestParameters, ""));
         }
         for (int i = 1; i < NUMBER_ALARM_TYPES; i++) {
             if (nullCheckAlarmType(requestParameters, "_" + Integer.toString(i))) {
-                lstAlarmNotifications.add(addAlarmNotification(requestParameters, "_" + Integer.toString(i)));
+                AlarmNotificationsList.add(getAlarmNotification(requestParameters, "_" + Integer.toString(i)));
             }
         }
 
-        return addAlarmNotificationsToRequestData(lstAlarmNotifications);
+        return addAlarmNotificationsToRequestData(AlarmNotificationsList);
     }
 
     private static SetAlarmNotificationsRequestData addAlarmNotificationsToRequestData(
@@ -74,7 +74,7 @@ public class SetAlarmNotificationsRequestFactory {
         return setAlarmNotificationsRequestData;
     }
 
-    private static AlarmNotification addAlarmNotification(final Map<String, String> requestParameters,
+    private static AlarmNotification getAlarmNotification(final Map<String, String> requestParameters,
             final String postfix) {
         final AlarmNotification alarmNotification = new AlarmNotification();
         alarmNotification
