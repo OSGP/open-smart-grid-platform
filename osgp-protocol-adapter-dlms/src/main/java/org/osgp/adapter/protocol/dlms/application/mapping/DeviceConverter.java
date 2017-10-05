@@ -47,6 +47,11 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
                     Hex.encodeHexString(source.getGlobalEncryptionUnicastKey()), source.getDeliveryDate(), null));
         }
 
+        if (source.getMbusDefaultKey() != null) {
+            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.G_METER_MASTER,
+                    Hex.encodeHexString(source.getMbusDefaultKey()), source.getDeliveryDate(), null));
+        }
+
         return dlmsDevice;
     }
 
