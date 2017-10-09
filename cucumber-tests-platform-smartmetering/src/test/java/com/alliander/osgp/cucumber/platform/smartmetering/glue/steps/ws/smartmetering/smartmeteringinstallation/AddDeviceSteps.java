@@ -30,6 +30,7 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.AddDeviceRequestFactory;
@@ -65,6 +66,8 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
                 settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
         ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY,
                 settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY,
+                settings.get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
 
         final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
         final AddDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient.addDevice(request);
