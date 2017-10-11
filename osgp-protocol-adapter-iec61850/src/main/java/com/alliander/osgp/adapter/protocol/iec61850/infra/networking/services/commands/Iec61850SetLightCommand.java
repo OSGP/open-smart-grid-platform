@@ -63,8 +63,8 @@ public class Iec61850SetLightCommand {
                     final boolean on = relayWithInternalIdToSwitch.isOn();
                     final String deviceIdentification = deviceConnection.getDeviceIdentification();
 
-                    LOGGER.info("Trying to switch light relay with internal index: {} on: {} for device: {}", index,
-                            on, deviceIdentification);
+                    LOGGER.info("Trying to switch light relay with internal index: {} on: {} for device: {}", index, on,
+                            deviceIdentification);
 
                     try {
                         Iec61850SetLightCommand.this.switchLightRelay(iec61850Client, deviceConnection,
@@ -89,7 +89,8 @@ public class Iec61850SetLightCommand {
     }
 
     private void switchLightRelay(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final DeviceMessageLog deviceMessageLog, final int index, final boolean on) throws NodeException {
+            final DeviceMessageLog deviceMessageLog, final int index, final boolean on)
+            throws NodeException, ProtocolAdapterException {
 
         final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(index);
 

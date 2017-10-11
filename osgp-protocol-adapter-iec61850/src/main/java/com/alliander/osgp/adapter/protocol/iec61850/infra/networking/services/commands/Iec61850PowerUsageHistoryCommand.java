@@ -90,7 +90,7 @@ public class Iec61850PowerUsageHistoryCommand {
     private List<PowerUsageDataDto> getPowerUsageHistoryDataFromRelay(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final TimePeriodDto timePeriod,
             final DeviceOutputSetting deviceOutputSetting, final DeviceMessageLog deviceMessageLog)
-            throws NodeReadException {
+            throws NodeReadException, ProtocolAdapterException {
         final List<PowerUsageDataDto> powerUsageHistoryDataFromRelay = new ArrayList<>();
 
         final int relayIndex = deviceOutputSetting.getExternalId();
@@ -118,8 +118,8 @@ public class Iec61850PowerUsageHistoryCommand {
 
         for (int i = 0; i < numberOfEntries; i++) {
             final int bufferIndex = (idxOldest + i) % numberOfEntries;
-            final NodeContainer indexedItvNode = onIntervalBuffer.getChild(SubDataAttribute.INTERVAL.getDescription()
-                    + (bufferIndex + 1));
+            final NodeContainer indexedItvNode = onIntervalBuffer
+                    .getChild(SubDataAttribute.INTERVAL.getDescription() + (bufferIndex + 1));
             LOGGER.info("device: {}, itv{}: {}", deviceConnection.getDeviceIdentification(), bufferIndex + 1,
                     indexedItvNode);
 

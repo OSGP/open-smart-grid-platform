@@ -19,6 +19,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.SystemService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -43,7 +44,7 @@ public class Iec61850BoilerSystemService implements SystemService {
 
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
-            final DeviceConnection connection) throws NodeReadException {
+            final DeviceConnection connection) throws NodeReadException, ProtocolAdapterException {
         final int logicalDeviceIndex = systemFilter.getId();
 
         LOGGER.info("Get data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);
@@ -79,7 +80,7 @@ public class Iec61850BoilerSystemService implements SystemService {
 
     @Override
     public void setData(final SetDataSystemIdentifierDto systemIdentifier, final Iec61850Client client,
-            final DeviceConnection connection) throws NodeWriteException {
+            final DeviceConnection connection) throws NodeWriteException, ProtocolAdapterException {
         final int logicalDeviceIndex = systemIdentifier.getId();
 
         LOGGER.info("Set data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);

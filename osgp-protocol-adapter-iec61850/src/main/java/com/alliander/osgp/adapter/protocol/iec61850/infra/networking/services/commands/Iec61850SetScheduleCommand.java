@@ -172,8 +172,8 @@ public class Iec61850SetScheduleCommand {
                                         Integer.toString(timeOffValue));
                             }
 
-                            final Byte timeOffActionTime = scheduleNode
-                                    .getByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE).getValue();
+                            final Byte timeOffActionTime = scheduleNode.getByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE)
+                                    .getValue();
                             if (timeOffActionTime != timeOffTypeValue) {
                                 scheduleNode.writeByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE, timeOffTypeValue);
 
@@ -182,8 +182,8 @@ public class Iec61850SetScheduleCommand {
                                         Byte.toString(timeOffTypeValue));
                             }
 
-                            final Integer minimumTimeOn = scheduleNode.getUnsignedShort(
-                                    SubDataAttribute.MINIMUM_TIME_ON).getValue();
+                            final Integer minimumTimeOn = scheduleNode
+                                    .getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON).getValue();
                             final Integer newMinimumTimeOn = scheduleEntry.getMinimumLightsOn() / 60;
                             if (minimumTimeOn != newMinimumTimeOn) {
                                 scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON, newMinimumTimeOn);
@@ -193,8 +193,8 @@ public class Iec61850SetScheduleCommand {
                                         Integer.toString(newMinimumTimeOn));
                             }
 
-                            final Integer triggerMinutesBefore = scheduleNode.getUnsignedShort(
-                                    SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE).getValue();
+                            final Integer triggerMinutesBefore = scheduleNode
+                                    .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE).getValue();
                             if (triggerMinutesBefore != scheduleEntry.getTriggerWindowMinutesBefore()) {
                                 scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
                                         scheduleEntry.getTriggerWindowMinutesBefore());
@@ -204,8 +204,8 @@ public class Iec61850SetScheduleCommand {
                                         Integer.toString(scheduleEntry.getTriggerWindowMinutesBefore()));
                             }
 
-                            final Integer triggerMinutesAfter = scheduleNode.getUnsignedShort(
-                                    SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER).getValue();
+                            final Integer triggerMinutesAfter = scheduleNode
+                                    .getUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER).getValue();
                             if (triggerMinutesAfter != scheduleEntry.getTriggerWindowMinutesAfter()) {
                                 scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
                                         scheduleEntry.getTriggerWindowMinutesAfter());
@@ -216,8 +216,7 @@ public class Iec61850SetScheduleCommand {
                             }
                         }
                     }
-                    DeviceMessageLoggingService.logMessage(deviceMessageLog,
-                            deviceConnection.getDeviceIdentification(),
+                    DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
                             deviceConnection.getOrganisationIdentification(), false);
                     return null;
                 }
@@ -284,9 +283,9 @@ public class Iec61850SetScheduleCommand {
 
                         // First time we come across this relay, checking its
                         // type.
-                        this.checkRelayForSchedules(
-                                ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex)
-                                .getRelayType(), relayType, internalIndex);
+                        this.checkRelayForSchedules(ssldDataService
+                                .getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(), relayType,
+                                internalIndex);
 
                         // Adding it to scheduleEntries.
                         final List<ScheduleEntry> scheduleEntries = new ArrayList<>();
@@ -311,12 +310,12 @@ public class Iec61850SetScheduleCommand {
             final WindowTypeDto triggerWindow = schedule.getTriggerWindow();
             if (triggerWindow != null) {
                 if (triggerWindow.getMinutesBefore() > Integer.MAX_VALUE) {
-                    throw new IllegalArgumentException("Schedule TriggerWindow minutesBefore must not be greater than "
-                            + Integer.MAX_VALUE);
+                    throw new IllegalArgumentException(
+                            "Schedule TriggerWindow minutesBefore must not be greater than " + Integer.MAX_VALUE);
                 }
                 if (triggerWindow.getMinutesAfter() > Integer.MAX_VALUE) {
-                    throw new IllegalArgumentException("Schedule TriggerWindow minutesAfter must not be greater than "
-                            + Integer.MAX_VALUE);
+                    throw new IllegalArgumentException(
+                            "Schedule TriggerWindow minutesAfter must not be greater than " + Integer.MAX_VALUE);
                 }
                 builder.triggerWindowMinutesBefore((int) triggerWindow.getMinutesBefore());
                 builder.triggerWindowMinutesAfter((int) triggerWindow.getMinutesAfter());
@@ -340,8 +339,8 @@ public class Iec61850SetScheduleCommand {
             }
             return builder.build();
         } catch (IllegalStateException | IllegalArgumentException e) {
-            throw new ProtocolAdapterException("Error converting ScheduleDto and LightValueDto into a ScheduleEntry: "
-                    + e.getMessage(), e);
+            throw new ProtocolAdapterException(
+                    "Error converting ScheduleDto and LightValueDto into a ScheduleEntry: " + e.getMessage(), e);
         }
     }
 
@@ -383,8 +382,8 @@ public class Iec61850SetScheduleCommand {
      */
     private short convertTime(final String time) throws ProtocolAdapterException {
         if (time == null || !time.matches("\\d\\d:\\d\\d(:\\d\\d)?\\.?\\d*")) {
-            throw new ProtocolAdapterException("Schedule time (" + time
-                    + ") is not formatted as hh:mm, hh:mm:ss or hh:mm:ss.SSS");
+            throw new ProtocolAdapterException(
+                    "Schedule time (" + time + ") is not formatted as hh:mm, hh:mm:ss or hh:mm:ss.SSS");
         }
         return Short.parseShort(time.replace(":", "").substring(0, 4));
     }
@@ -411,10 +410,12 @@ public class Iec61850SetScheduleCommand {
     /**
      * Disable the schedule entries for all relays of a given
      * {@link RelayTypeDto} using the {@link DeviceOutputSetting}s for a device.
+     *
+     * @throws ProtocolAdapterException
      */
     private void disableScheduleEntries(final RelayTypeDto relayTypeDto, final DeviceConnection deviceConnection,
             final Iec61850Client iec61850Client, final DeviceMessageLog deviceMessageLog, final Ssld ssld,
-            final SsldDataService ssldDataService) throws NodeException {
+            final SsldDataService ssldDataService) throws NodeException, ProtocolAdapterException {
 
         final List<DeviceOutputSetting> deviceOutputSettings = ssldDataService.findByRelayType(ssld,
                 RelayType.valueOf(relayTypeDto.name()));

@@ -7,14 +7,13 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 
-import java.util.Objects;
-
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ObjectReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Connection;
 
 public class DeviceConnection {
@@ -40,17 +39,18 @@ public class DeviceConnection {
     /**
      * Returns a {@link NodeContainer} for the given {@link ObjectReference}
      * data and the Functional constraint.
+     *
+     * @throws ProtocolAdapterException
      */
     public NodeContainer getFcModelNode(final LogicalDevice logicalDevice, final LogicalNode logicalNode,
-            final DataAttribute dataAttribute, final Fc fc) {
+            final DataAttribute dataAttribute, final Fc fc) throws ProtocolAdapterException {
         final ObjectReference objectReference = this.createObjectReference(logicalDevice, logicalNode, dataAttribute);
-
         final FcModelNode fcModelNode = (FcModelNode) this.connection.getServerModel().findModelNode(objectReference,
                 fc);
         if (fcModelNode == null) {
             LOGGER.error("FcModelNode is null, most likely the data attribute: {} does not exist",
                     dataAttribute.getDescription());
-            Objects.requireNonNull(fcModelNode,
+            throw new ProtocolAdapterException(
                     String.format("FcModelNode with objectReference %s does not exist", objectReference));
         }
 
@@ -60,9 +60,12 @@ public class DeviceConnection {
     /**
      * Returns a {@link NodeContainer} for the given {@link ObjectReference}
      * data and the Functional constraint.
+     *
+     * @throws ProtocolAdapterException
      */
     public NodeContainer getFcModelNode(final LogicalDevice logicalDevice, final int logicalDeviceIndex,
-            final LogicalNode logicalNode, final DataAttribute dataAttribute, final Fc fc) {
+            final LogicalNode logicalNode, final DataAttribute dataAttribute, final Fc fc)
+            throws ProtocolAdapterException {
         final ObjectReference objectReference = this.createObjectReference(logicalDevice, logicalDeviceIndex,
                 logicalNode, dataAttribute);
         final FcModelNode fcModelNode = (FcModelNode) this.connection.getServerModel().findModelNode(objectReference,
@@ -70,7 +73,7 @@ public class DeviceConnection {
         if (fcModelNode == null) {
             LOGGER.error("FcModelNode is null, most likely the data attribute: {} does not exist",
                     dataAttribute.getDescription());
-            Objects.requireNonNull(fcModelNode,
+            throw new ProtocolAdapterException(
                     String.format("FcModelNode with objectReference %s does not exist", objectReference));
         }
 

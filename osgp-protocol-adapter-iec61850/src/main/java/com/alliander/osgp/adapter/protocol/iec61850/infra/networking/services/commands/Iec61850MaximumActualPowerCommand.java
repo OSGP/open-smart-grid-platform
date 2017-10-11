@@ -13,6 +13,7 @@ import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -27,7 +28,8 @@ public class Iec61850MaximumActualPowerCommand implements RtuReadCommand<Measure
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex)
+            throws NodeReadException, ProtocolAdapterException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
                 LogicalNode.MEASUREMENT_ONE, DataAttribute.MAX_ACTUAL_POWER, Fc.MX);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());

@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Devi
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.SystemService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -52,7 +53,7 @@ public class Iec61850LoadSystemService implements SystemService {
 
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
-            final DeviceConnection connection) throws NodeReadException {
+            final DeviceConnection connection) throws NodeReadException, ProtocolAdapterException {
 
         final int logicalDeviceIndex = systemFilter.getId();
 

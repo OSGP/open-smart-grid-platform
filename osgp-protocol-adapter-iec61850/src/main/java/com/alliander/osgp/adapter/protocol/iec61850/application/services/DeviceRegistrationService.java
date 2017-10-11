@@ -103,10 +103,12 @@ public class DeviceRegistrationService {
      * Set the location information for this device. If the osgp_core database
      * contains longitude and latitude information for the given device, those
      * values must be saved to the corresponding data-attributes.
+     *
+     * @throws ProtocolAdapterException
      */
-    protected void setLocationInformation(final DeviceConnection deviceConnection) {
-        final Ssld ssld = DeviceRegistrationService.this.ssldDataRepository.findByDeviceIdentification(deviceConnection
-                .getDeviceIdentification());
+    protected void setLocationInformation(final DeviceConnection deviceConnection) throws ProtocolAdapterException {
+        final Ssld ssld = DeviceRegistrationService.this.ssldDataRepository
+                .findByDeviceIdentification(deviceConnection.getDeviceIdentification());
         if (ssld != null) {
             final Float longitude = ssld.getGpsLongitude();
             final Float latitude = ssld.getGpsLatitude();
@@ -126,7 +128,7 @@ public class DeviceRegistrationService {
     }
 
     private void writeGpsCoordinates(final DeviceConnection deviceConnection, final Float longitude,
-            final Float latitude) {
+            final Float latitude) throws ProtocolAdapterException {
         if (longitude != null && latitude != null) {
             try {
                 new Iec61850SetGpsCoordinatesCommand().setGpsCoordinates(deviceConnection, longitude, latitude);
@@ -141,15 +143,17 @@ public class DeviceRegistrationService {
     /**
      * Set attribute to false in order to signal the device the registration was
      * successful.
-     *
+     * 
      * @throws NodeWriteException
      *             In case writing of the data-attribute fails.
+     * @throws ProtocolAdapterException
      */
-    protected void disableRegistration(final DeviceConnection deviceConnection) throws NodeWriteException {
+    protected void disableRegistration(final DeviceConnection deviceConnection)
+            throws NodeWriteException, ProtocolAdapterException {
         new Iec61850DisableRegistrationCommand().disableRegistration(deviceConnection);
     }
 
-    protected void enableReporting(final DeviceConnection deviceConnection) {
+    protected void enableReporting(final DeviceConnection deviceConnection) throws ProtocolAdapterException {
         try {
             new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(
                     DeviceRegistrationService.this.iec61850DeviceConnectionService.getIec61850Client(),
@@ -171,6 +175,9 @@ public class DeviceRegistrationService {
                     new Iec61850ClearReportCommand().clearReportOnDevice(deviceConnection);
                 } catch (final NodeWriteException e) {
                     LOGGER.error("Unable to clear report for device: " + deviceConnection.getDeviceIdentification(), e);
+                } catch (final ProtocolAdapterException e) {
+                    LOGGER.error("Unable to get fcModelnode for device: " + deviceConnection.getDeviceIdentification(),
+                            e);
                 }
                 DeviceRegistrationService.this.iec61850DeviceConnectionService.disconnect(deviceConnection, null);
             }
