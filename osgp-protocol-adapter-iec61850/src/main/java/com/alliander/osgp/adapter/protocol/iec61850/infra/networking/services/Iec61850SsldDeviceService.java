@@ -39,7 +39,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetPow
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -612,7 +611,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     }
 
     private void enableReporting(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest)
-            throws NodeWriteException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
         // Enabling device reporting.
         new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(this.iec61850Client,
                 deviceConnection);

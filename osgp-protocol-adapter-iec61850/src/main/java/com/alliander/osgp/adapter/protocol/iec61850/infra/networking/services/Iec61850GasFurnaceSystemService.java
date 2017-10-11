@@ -40,7 +40,7 @@ public class Iec61850GasFurnaceSystemService implements SystemService {
 
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
-            final DeviceConnection connection) throws NodeException, ProtocolAdapterException {
+            final DeviceConnection connection) throws ProtocolAdapterException {
 
         final int logicalDeviceIndex = systemFilter.getId();
 

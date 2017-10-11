@@ -16,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -77,8 +75,7 @@ public class Iec61850UpdateFirmwareCommand {
     }
 
     private void updateFunctionalFirmware(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final String fullUrl, final DeviceMessageLog deviceMessageLog)
-            throws NodeException, ProtocolAdapterException {
+            final String fullUrl, final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
         LOGGER.info("Reading the functional firmware node for device: {}", deviceConnection.getDeviceIdentification());
         final NodeContainer functionalFirmwareNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.FUNCTIONAL_FIRMWARE, Fc.CF);
@@ -109,8 +106,7 @@ public class Iec61850UpdateFirmwareCommand {
     }
 
     private void updateSecurityFirmware(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final String fullUrl, final DeviceMessageLog deviceMessageLog)
-            throws NodeException, ProtocolAdapterException {
+            final String fullUrl, final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
         LOGGER.info("Reading the security firmware node for device: {}", deviceConnection.getDeviceIdentification());
         final NodeContainer securityFirmwareNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SECURITY_FIRMWARE, Fc.CF);
@@ -140,7 +136,7 @@ public class Iec61850UpdateFirmwareCommand {
     }
 
     private Date determineFirmwareUpdateDateTime(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeReadException, ProtocolAdapterException {
+            final DeviceConnection deviceConnection) throws ProtocolAdapterException {
         final NodeContainer clock = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF);
         iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),

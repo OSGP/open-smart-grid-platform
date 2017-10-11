@@ -143,13 +143,12 @@ public class DeviceRegistrationService {
     /**
      * Set attribute to false in order to signal the device the registration was
      * successful.
-     * 
+     *
      * @throws NodeWriteException
      *             In case writing of the data-attribute fails.
      * @throws ProtocolAdapterException
      */
-    protected void disableRegistration(final DeviceConnection deviceConnection)
-            throws NodeWriteException, ProtocolAdapterException {
+    protected void disableRegistration(final DeviceConnection deviceConnection) throws ProtocolAdapterException {
         new Iec61850DisableRegistrationCommand().disableRegistration(deviceConnection);
     }
 

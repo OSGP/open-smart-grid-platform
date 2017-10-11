@@ -11,7 +11,6 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -25,7 +24,7 @@ public class Iec61850SetGpsCoordinatesCommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850SetGpsCoordinatesCommand.class);
 
     public void setGpsCoordinates(final DeviceConnection deviceConnection, final Float longitude, final Float latitude)
-            throws NodeWriteException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
         final NodeContainer astronomical = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.ASTRONOMICAL, Fc.CF);
         astronomical.writeFloat(SubDataAttribute.GPS_LONGITUDE, longitude);

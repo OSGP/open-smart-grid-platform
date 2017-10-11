@@ -21,7 +21,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.lmd.LmdDeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -119,7 +118,7 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
     }
 
     private void enableReporting(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest)
-            throws NodeException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
         LOGGER.info("Trying to enable reporting for device: {}", deviceRequest.getDeviceIdentification());
         if (this.isBufferedReportingEnabled) {
             new Iec61850EnableReportingCommand().enableBufferedReportingOnLightMeasurementDevice(this.iec61850Client,
