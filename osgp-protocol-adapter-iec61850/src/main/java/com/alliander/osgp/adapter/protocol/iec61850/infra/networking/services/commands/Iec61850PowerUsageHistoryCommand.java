@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -90,7 +89,7 @@ public class Iec61850PowerUsageHistoryCommand {
     private List<PowerUsageDataDto> getPowerUsageHistoryDataFromRelay(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final TimePeriodDto timePeriod,
             final DeviceOutputSetting deviceOutputSetting, final DeviceMessageLog deviceMessageLog)
-            throws NodeReadException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
         final List<PowerUsageDataDto> powerUsageHistoryDataFromRelay = new ArrayList<>();
 
         final int relayIndex = deviceOutputSetting.getExternalId();
