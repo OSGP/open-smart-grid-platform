@@ -8,11 +8,28 @@
 package org.osgp.adapter.protocol.dlms.domain.entities;
 
 public enum SecurityKeyType {
+    /**
+     * DLMS master key (Key Encryption Key)
+     */
     E_METER_MASTER,
-    G_METER_MASTER,
+    /**
+     * DLMS authentication key
+     */
     E_METER_AUTHENTICATION,
+    /**
+     * DLMS global unicast encryption key
+     */
     E_METER_ENCRYPTION,
+    /**
+     * M-Bus Default key
+     */
+    G_METER_MASTER,
+    /**
+     * M-Bus User key
+     */
     G_METER_ENCRYPTION,
-    M_BUS_USER,
+    /**
+     * Password (e.g. used as DLMS Low Level Security secret)
+     */
     PASSWORD
 }

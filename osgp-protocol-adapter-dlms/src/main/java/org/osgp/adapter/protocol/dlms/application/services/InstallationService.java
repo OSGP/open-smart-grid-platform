@@ -59,6 +59,7 @@ public class InstallationService {
         this.reEncryptMasterKey(smartMeteringDevice);
         this.reEncryptAuthenticationKey(smartMeteringDevice);
         this.reEncryptEncryptionKey(smartMeteringDevice);
+        this.reEncryptMbusDefaultKey(smartMeteringDevice);
     }
 
     private void reEncryptMasterKey(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
@@ -79,6 +80,13 @@ public class InstallationService {
         final byte[] reEncryptedEncryptionKey = this.reEncryptionService
                 .reEncryptKey(smartMeteringDevice.getGlobalEncryptionUnicastKey(), SecurityKeyType.E_METER_ENCRYPTION);
         smartMeteringDevice.setGlobalEncryptionUnicastKey(reEncryptedEncryptionKey);
+    }
+
+    private void reEncryptMbusDefaultKey(final SmartMeteringDeviceDto smartMeteringDevice)
+            throws ProtocolAdapterException {
+        final byte[] reEncryptedMbusDefaultKey = this.reEncryptionService
+                .reEncryptKey(smartMeteringDevice.getMbusDefaultKey(), SecurityKeyType.G_METER_MASTER);
+        smartMeteringDevice.setMbusDefaultKey(reEncryptedMbusDefaultKey);
     }
 
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
