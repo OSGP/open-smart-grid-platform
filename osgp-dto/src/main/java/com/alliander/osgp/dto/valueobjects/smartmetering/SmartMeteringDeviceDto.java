@@ -50,6 +50,8 @@ public class SmartMeteringDeviceDto implements Serializable {
 
     private Short mbusDeviceTypeIdentification;
 
+    private byte[] mbusDefaultKey;
+
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
@@ -192,5 +194,13 @@ public class SmartMeteringDeviceDto implements Serializable {
 
     public void setMbusDeviceTypeIdentification(final Short mbusDeviceTypeIdentification) {
         this.mbusDeviceTypeIdentification = mbusDeviceTypeIdentification;
+    }
+
+    public byte[] getMbusDefaultKey() {
+        return this.mbusDefaultKey;
+    }
+
+    public void setMbusDefaultKey(final byte[] mbusDefaultKey) {
+        this.mbusDefaultKey = mbusDefaultKey;
     }
 }
