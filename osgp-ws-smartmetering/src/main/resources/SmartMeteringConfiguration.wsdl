@@ -325,6 +325,20 @@
     <wsdl:part element="smconf:SetClockConfigurationResponse" name="SetClockConfigurationKeysResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="ConfigureDefinableLoadProfileRequest">
+    <wsdl:part element="smconf:ConfigureDefinableLoadProfileRequest" name="ConfigureDefinableLoadProfileRequest" />
+  </wsdl:message>
+  <wsdl:message name="ConfigureDefinableLoadProfileAsyncResponse">
+    <wsdl:part element="smconf:ConfigureDefinableLoadProfileAsyncResponse" name="ConfigureDefinableLoadProfileAsyncResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConfigureDefinableLoadProfileAsyncRequest">
+    <wsdl:part element="smconf:ConfigureDefinableLoadProfileAsyncRequest" name="ConfigureDefinableLoadProfileAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ConfigureDefinableLoadProfileResponse">
+    <wsdl:part element="smconf:ConfigureDefinableLoadProfileResponse" name="ConfigureDefinableLoadProfileResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="SmartMeteringConfigurationPort">
 
     <wsdl:operation name="GetGetFirmwareVersionResponse">
@@ -581,6 +595,20 @@
       <wsdl:input message="tns:SetClockConfigurationAsyncRequest" name="SetClockConfigurationAsyncRequest">
       </wsdl:input>
       <wsdl:output message="tns:SetClockConfigurationResponse" name="SetClockConfigurationResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="ConfigureDefinableLoadProfile">
+      <wsdl:input message="tns:ConfigureDefinableLoadProfileRequest" name="ConfigureDefinableLoadProfileRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:ConfigureDefinableLoadProfileAsyncResponse"
+        name="ConfigureDefinableLoadProfileAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetConfigureDefinableLoadProfileResponse">
+      <wsdl:input message="tns:ConfigureDefinableLoadProfileAsyncRequest" name="ConfigureDefinableLoadProfileAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:ConfigureDefinableLoadProfileResponse" name="ConfigureDefinableLoadProfileResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -1076,6 +1104,36 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SetClockConfigurationResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfigureDefinableLoadProfile">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ConfigureDefinableLoadProfileRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ConfigureDefinableLoadProfileAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetConfigureDefinableLoadProfileResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ConfigureDefinableLoadProfileAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ConfigureDefinableLoadProfileResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

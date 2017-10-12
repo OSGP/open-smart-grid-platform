@@ -208,6 +208,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="ConfigureDefinableLoadProfileRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:DefinableLoadProfileConfigurationData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>  
   <xsd:complexType name="Actions">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">
@@ -237,6 +244,7 @@
         <xsd:element ref="tns:GetConfigurationObjectRequest" />
         <xsd:element ref="tns:GetProfileGenericDataRequest" />
         <xsd:element ref="tns:GenerateAndReplaceKeysRequest" />
+        <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
