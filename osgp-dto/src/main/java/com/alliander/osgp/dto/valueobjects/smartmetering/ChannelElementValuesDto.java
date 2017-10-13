@@ -18,13 +18,13 @@ public class ChannelElementValuesDto implements Serializable {
     private static final long serialVersionUID = 5377631203726277889L;
 
     private final short channel;
-    private final short primaryAddress;
+    private final Short primaryAddress;
     private final String identificationNumber;
     private final String manufacturerIdentification;
     private final short version;
     private final short deviceTypeIdentification;
 
-    public ChannelElementValuesDto(final short channel, final short primaryAddress, final String identificationNumber,
+    public ChannelElementValuesDto(final short channel, final Short primaryAddress, final String identificationNumber,
             final String manufacturerIdentification, final short version, final short deviceTypeIdentification) {
         this.channel = channel;
         this.primaryAddress = primaryAddress;
@@ -56,7 +56,7 @@ public class ChannelElementValuesDto implements Serializable {
         return this.channel > 0;
     }
 
-    public short getPrimaryAddress() {
+    public Short getPrimaryAddress() {
         return this.primaryAddress;
     }
 
