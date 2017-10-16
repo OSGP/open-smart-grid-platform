@@ -411,13 +411,13 @@ public class Iec61850SetScheduleCommand {
     /**
      * Disable the schedule entries for all relays of a given
      * {@link RelayTypeDto} using the {@link DeviceOutputSetting}s for a device.
-     * 
+     *
      * @throws NodeNotFoundException
      * @throws NodeException
      */
     private void disableScheduleEntries(final RelayTypeDto relayTypeDto, final DeviceConnection deviceConnection,
             final Iec61850Client iec61850Client, final DeviceMessageLog deviceMessageLog, final Ssld ssld,
-            final SsldDataService ssldDataService) throws NodeNotFoundException, NodeException {
+            final SsldDataService ssldDataService) throws NodeException {
 
         final List<DeviceOutputSetting> deviceOutputSettings = ssldDataService.findByRelayType(ssld,
                 RelayType.valueOf(relayTypeDto.name()));

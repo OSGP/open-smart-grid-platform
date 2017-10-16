@@ -110,8 +110,7 @@ public class DeviceRegistrationService {
      * @throws NodeNotFoundException
      *
      */
-    protected void setLocationInformation(final DeviceConnection deviceConnection)
-            throws NodeNotFoundException, NodeException {
+    protected void setLocationInformation(final DeviceConnection deviceConnection) throws NodeException {
         final Ssld ssld = DeviceRegistrationService.this.ssldDataRepository
                 .findByDeviceIdentification(deviceConnection.getDeviceIdentification());
         if (ssld != null) {
@@ -133,7 +132,7 @@ public class DeviceRegistrationService {
     }
 
     private void writeGpsCoordinates(final DeviceConnection deviceConnection, final Float longitude,
-            final Float latitude) throws NodeNotFoundException, NodeException {
+            final Float latitude) throws NodeException {
         if (longitude != null && latitude != null) {
             try {
                 new Iec61850SetGpsCoordinatesCommand().setGpsCoordinates(deviceConnection, longitude, latitude);
@@ -159,8 +158,7 @@ public class DeviceRegistrationService {
         new Iec61850DisableRegistrationCommand().disableRegistration(deviceConnection);
     }
 
-    protected void enableReporting(final DeviceConnection deviceConnection)
-            throws NodeNotFoundException, NodeException {
+    protected void enableReporting(final DeviceConnection deviceConnection) throws NodeException {
         try {
             new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(
                     DeviceRegistrationService.this.iec61850DeviceConnectionService.getIec61850Client(),

@@ -35,7 +35,7 @@ public class Iec61850EnableReportingCommand {
      *
      */
     public void enableReportingOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection)
-            throws NodeNotFoundException, NodeException {
+            throws NodeException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
         // Only reading the sequence number for the report node, as the report
@@ -66,7 +66,7 @@ public class Iec61850EnableReportingCommand {
      *
      */
     public void enableReportingOnDeviceWithoutUsingSequenceNumber(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeNotFoundException, NodeException {
+            final DeviceConnection deviceConnection) throws NodeException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
 
@@ -128,7 +128,7 @@ public class Iec61850EnableReportingCommand {
     }
 
     public void enableUnbufferedReportingOnLightMeasurementDevice(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeNotFoundException, NodeException {
+            final DeviceConnection deviceConnection) throws NodeException {
 
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LD0,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.RCB_A, Fc.RP);
