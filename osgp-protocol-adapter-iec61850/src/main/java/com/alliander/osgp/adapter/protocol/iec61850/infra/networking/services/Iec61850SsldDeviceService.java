@@ -39,6 +39,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetPow
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -611,7 +613,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     }
 
     private void enableReporting(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest)
-            throws ProtocolAdapterException {
+            throws NodeNotFoundException, NodeException {
         // Enabling device reporting.
         new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(this.iec61850Client,
                 deviceConnection);

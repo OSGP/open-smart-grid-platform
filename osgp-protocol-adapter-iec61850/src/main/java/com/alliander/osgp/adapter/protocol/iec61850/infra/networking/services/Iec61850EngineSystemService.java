@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.SystemService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -42,7 +42,7 @@ public class Iec61850EngineSystemService implements SystemService {
 
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
-            final DeviceConnection connection) throws ProtocolAdapterException {
+            final DeviceConnection connection) throws NodeException {
 
         final int logicalDeviceIndex = systemFilter.getId();
 
@@ -80,7 +80,7 @@ public class Iec61850EngineSystemService implements SystemService {
 
     @Override
     public void setData(final SetDataSystemIdentifierDto systemIdentifier, final Iec61850Client client,
-            final DeviceConnection connection) throws ProtocolAdapterException {
+            final DeviceConnection connection) throws NodeException {
 
         final int logicalDeviceIndex = systemIdentifier.getId();
 

@@ -11,7 +11,8 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
@@ -23,7 +24,8 @@ public class Iec61850DisableRegistrationCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850DisableRegistrationCommand.class);
 
-    public void disableRegistration(final DeviceConnection deviceConnection) throws ProtocolAdapterException {
+    public void disableRegistration(final DeviceConnection deviceConnection)
+            throws NodeNotFoundException, NodeException {
         final NodeContainer deviceRegistration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
         deviceRegistration.writeBoolean(SubDataAttribute.DEVICE_REGISTRATION_ENABLED, false);

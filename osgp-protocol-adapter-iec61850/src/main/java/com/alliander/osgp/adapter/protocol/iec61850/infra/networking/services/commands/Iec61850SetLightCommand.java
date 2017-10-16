@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -89,7 +91,7 @@ public class Iec61850SetLightCommand {
 
     private void switchLightRelay(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final DeviceMessageLog deviceMessageLog, final int index, final boolean on)
-            throws ProtocolAdapterException {
+            throws NodeNotFoundException, NodeException {
 
         final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(index);
 

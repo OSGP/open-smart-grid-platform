@@ -12,7 +12,8 @@ import org.openmuc.openiec61850.FcModelNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -29,10 +30,12 @@ public class Iec61850EnableReportingCommand {
     /**
      * Enable reporting so the device can send reports.
      *
-     * @throws ProtocolAdapterException
+     * @throws NodeNotFoundException
+     * @throws NodeException
+     *
      */
     public void enableReportingOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection)
-            throws ProtocolAdapterException {
+            throws NodeNotFoundException, NodeException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
         // Only reading the sequence number for the report node, as the report
@@ -58,10 +61,12 @@ public class Iec61850EnableReportingCommand {
      * When using the {@link Iec61850ClearReportCommand} the 'sequence number'
      * will always be reset to 0.
      *
-     * @throws ProtocolAdapterException
+     * @throws NodeNotFoundException
+     * @throws NodeException
+     *
      */
     public void enableReportingOnDeviceWithoutUsingSequenceNumber(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws ProtocolAdapterException {
+            final DeviceConnection deviceConnection) throws NodeNotFoundException, NodeException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
 
@@ -74,7 +79,7 @@ public class Iec61850EnableReportingCommand {
     }
 
     public void enableBufferedReportingOnLightMeasurementDevice(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws ProtocolAdapterException {
+            final DeviceConnection deviceConnection) throws NodeNotFoundException, NodeException {
 
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LD0,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.RCB_A, Fc.BR);
@@ -123,7 +128,7 @@ public class Iec61850EnableReportingCommand {
     }
 
     public void enableUnbufferedReportingOnLightMeasurementDevice(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws ProtocolAdapterException {
+            final DeviceConnection deviceConnection) throws NodeNotFoundException, NodeException {
 
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LD0,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.RCB_A, Fc.RP);

@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -104,9 +106,12 @@ public class DeviceRegistrationService {
      * contains longitude and latitude information for the given device, those
      * values must be saved to the corresponding data-attributes.
      *
-     * @throws ProtocolAdapterException
+     * @throws NodeException
+     * @throws NodeNotFoundException
+     *
      */
-    protected void setLocationInformation(final DeviceConnection deviceConnection) throws ProtocolAdapterException {
+    protected void setLocationInformation(final DeviceConnection deviceConnection)
+            throws NodeNotFoundException, NodeException {
         final Ssld ssld = DeviceRegistrationService.this.ssldDataRepository
                 .findByDeviceIdentification(deviceConnection.getDeviceIdentification());
         if (ssld != null) {
@@ -128,7 +133,7 @@ public class DeviceRegistrationService {
     }
 
     private void writeGpsCoordinates(final DeviceConnection deviceConnection, final Float longitude,
-            final Float latitude) throws ProtocolAdapterException {
+            final Float latitude) throws NodeNotFoundException, NodeException {
         if (longitude != null && latitude != null) {
             try {
                 new Iec61850SetGpsCoordinatesCommand().setGpsCoordinates(deviceConnection, longitude, latitude);
@@ -144,15 +149,18 @@ public class DeviceRegistrationService {
      * Set attribute to false in order to signal the device the registration was
      * successful.
      *
-     * @throws NodeWriteException
+     * @throws NodeException
      *             In case writing of the data-attribute fails.
-     * @throws ProtocolAdapterException
+     * @throws NodeNotFoundException
+     *
      */
-    protected void disableRegistration(final DeviceConnection deviceConnection) throws ProtocolAdapterException {
+    protected void disableRegistration(final DeviceConnection deviceConnection)
+            throws NodeNotFoundException, NodeException {
         new Iec61850DisableRegistrationCommand().disableRegistration(deviceConnection);
     }
 
-    protected void enableReporting(final DeviceConnection deviceConnection) throws ProtocolAdapterException {
+    protected void enableReporting(final DeviceConnection deviceConnection)
+            throws NodeNotFoundException, NodeException {
         try {
             new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(
                     DeviceRegistrationService.this.iec61850DeviceConnectionService.getIec61850Client(),

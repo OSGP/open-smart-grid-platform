@@ -13,8 +13,9 @@ import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -42,7 +43,8 @@ public class Iec61850ScheduleTypeCommand implements RtuReadCommand<MeasurementDt
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws ProtocolAdapterException {
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex)
+            throws NodeNotFoundException, NodeException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
                 this.logicalNode, DATA_ATTRIBUTE, FC);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
@@ -58,7 +60,7 @@ public class Iec61850ScheduleTypeCommand implements RtuReadCommand<MeasurementDt
     @Override
     public void executeWrite(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice, final int logicalDeviceIndex, final SetPointDto setPoint)
-            throws ProtocolAdapterException {
+            throws NodeException {
 
         final int value = this.checkValue(setPoint.getValue());
 

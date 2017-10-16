@@ -64,9 +64,8 @@ public class Iec61850GetLightSensorStatusCommand {
          *
          * @see
          * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper
-         * .Function
-         * #apply(com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects
-         * .DeviceMessageLog)
+         * .Function #apply(com.alliander.osgp.adapter.protocol.iec61850.domain.
+         * valueobjects .DeviceMessageLog)
          */
         @Override
         public DeviceStatusDto apply(final DeviceMessageLog deviceMessageLog) throws Exception {
