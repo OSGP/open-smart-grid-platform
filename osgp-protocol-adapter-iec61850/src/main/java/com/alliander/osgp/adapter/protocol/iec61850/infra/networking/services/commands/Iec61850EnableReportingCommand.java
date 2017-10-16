@@ -30,6 +30,7 @@ public class Iec61850EnableReportingCommand {
      * Enable reporting so the device can send reports.
      *
      * @throws NodeException
+     *             In case writing or reading of data-attributes fails.
      *
      */
     public void enableReportingOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection)
@@ -60,6 +61,7 @@ public class Iec61850EnableReportingCommand {
      * will always be reset to 0.
      *
      * @throws NodeException
+     *             In case writing of data-attributes fails.
      *
      */
     public void enableReportingOnDeviceWithoutUsingSequenceNumber(final Iec61850Client iec61850Client,
