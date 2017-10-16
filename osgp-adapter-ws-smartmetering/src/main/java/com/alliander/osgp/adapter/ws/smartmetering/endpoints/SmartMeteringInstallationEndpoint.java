@@ -37,6 +37,8 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Installat
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.valueobjects.DeviceModel;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -77,9 +79,11 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response = new AddDeviceAsyncResponse();
             final SmartMeteringDevice device = this.installationMapper.map(request.getDevice(),
                     SmartMeteringDevice.class);
-
+            final DeviceModel deviceModel = new DeviceModel(request.getDeviceModel().getManufacturer(),
+                    request.getDeviceModel().getModelCode(), "");
+            final AddSmartMeterRequest addSmartMeterRequest = new AddSmartMeterRequest(device, deviceModel);
             final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
-                    organisationIdentification, device.getDeviceIdentification(), device,
+                    organisationIdentification, device.getDeviceIdentification(), addSmartMeterRequest,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.installationMapper.map(scheduleTime, Long.class));
 

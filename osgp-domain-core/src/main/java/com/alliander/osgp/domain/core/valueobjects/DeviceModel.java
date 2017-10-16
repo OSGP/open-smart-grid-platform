@@ -3,8 +3,11 @@
  */
 package com.alliander.osgp.domain.core.valueobjects;
 
+import java.io.Serializable;
 
-public class DeviceModel {
+public class DeviceModel implements Serializable {
+
+    private static final long serialVersionUID = 2817683210984491986L;
 
     private String manufacturer;
 
