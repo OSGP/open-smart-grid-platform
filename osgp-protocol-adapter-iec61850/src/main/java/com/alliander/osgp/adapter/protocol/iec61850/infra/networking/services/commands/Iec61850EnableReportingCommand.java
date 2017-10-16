@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -30,7 +29,6 @@ public class Iec61850EnableReportingCommand {
     /**
      * Enable reporting so the device can send reports.
      *
-     * @throws NodeNotFoundException
      * @throws NodeException
      *
      */
@@ -61,7 +59,6 @@ public class Iec61850EnableReportingCommand {
      * When using the {@link Iec61850ClearReportCommand} the 'sequence number'
      * will always be reset to 0.
      *
-     * @throws NodeNotFoundException
      * @throws NodeException
      *
      */
@@ -79,7 +76,7 @@ public class Iec61850EnableReportingCommand {
     }
 
     public void enableBufferedReportingOnLightMeasurementDevice(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeNotFoundException, NodeException {
+            final DeviceConnection deviceConnection) throws NodeException {
 
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LD0,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.RCB_A, Fc.BR);

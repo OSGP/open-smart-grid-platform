@@ -23,7 +23,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.Schedule
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -412,7 +411,6 @@ public class Iec61850SetScheduleCommand {
      * Disable the schedule entries for all relays of a given
      * {@link RelayTypeDto} using the {@link DeviceOutputSetting}s for a device.
      *
-     * @throws NodeNotFoundException
      * @throws NodeException
      */
     private void disableScheduleEntries(final RelayTypeDto relayTypeDto, final DeviceConnection deviceConnection,

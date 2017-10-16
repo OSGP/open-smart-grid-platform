@@ -107,7 +107,6 @@ public class DeviceRegistrationService {
      * values must be saved to the corresponding data-attributes.
      *
      * @throws NodeException
-     * @throws NodeNotFoundException
      *
      */
     protected void setLocationInformation(final DeviceConnection deviceConnection) throws NodeException {
@@ -150,11 +149,9 @@ public class DeviceRegistrationService {
      *
      * @throws NodeException
      *             In case writing of the data-attribute fails.
-     * @throws NodeNotFoundException
      *
      */
-    protected void disableRegistration(final DeviceConnection deviceConnection)
-            throws NodeNotFoundException, NodeException {
+    protected void disableRegistration(final DeviceConnection deviceConnection) throws NodeException {
         new Iec61850DisableRegistrationCommand().disableRegistration(deviceConnection);
     }
 
