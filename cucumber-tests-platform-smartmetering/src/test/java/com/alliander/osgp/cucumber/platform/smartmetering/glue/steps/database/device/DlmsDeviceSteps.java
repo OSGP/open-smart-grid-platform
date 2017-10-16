@@ -38,6 +38,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.builders.entities.Smar
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
@@ -118,6 +119,20 @@ public class DlmsDeviceSteps {
 
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         assertNotNull("DLMS device with identification " + deviceIdentification + " in protocol database", dlmsDevice);
+    }
+
+    @Then("^the dlms device with identification \"([^\"]*)\" exists with device model$")
+    public void theDlmsDeviceWithIdentificationExistsWithDeviceModel(final String deviceIdentification,
+            final Map<String, String> deviceModelAttributes) throws Throwable {
+        this.theDlmsDeviceWithIdentificationExists(deviceIdentification);
+
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final DeviceModel deviceModel = device.getDeviceModel();
+        assertEquals(PlatformKeys.DEVICEMODEL_MODELCODE, deviceModelAttributes.get(PlatformKeys.DEVICEMODEL_MODELCODE),
+                deviceModel.getModelCode());
+        final Manufacturer manufacturer = deviceModel.getManufacturer();
+        assertEquals(PlatformKeys.MANUFACTURER_CODE, deviceModelAttributes.get(PlatformKeys.MANUFACTURER_CODE),
+                manufacturer.getCode());
     }
 
     @Then("^the smart meter is registered in the core database$")
