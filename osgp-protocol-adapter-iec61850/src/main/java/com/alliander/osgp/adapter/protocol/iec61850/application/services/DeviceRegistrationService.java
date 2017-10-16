@@ -180,11 +180,11 @@ public class DeviceRegistrationService {
             public void run() {
                 try {
                     new Iec61850ClearReportCommand().clearReportOnDevice(deviceConnection);
-                } catch (final NodeWriteException e) {
-                    LOGGER.error("Unable to clear report for device: " + deviceConnection.getDeviceIdentification(), e);
-                } catch (final ProtocolAdapterException e) {
+                } catch (final NodeNotFoundException e) {
                     LOGGER.error("Unable to get fcModelnode for device: " + deviceConnection.getDeviceIdentification(),
                             e);
+                } catch (final NodeException e) {
+                    LOGGER.error("Unable to clear report for device: " + deviceConnection.getDeviceIdentification(), e);
                 }
                 DeviceRegistrationService.this.iec61850DeviceConnectionService.disconnect(deviceConnection, null);
             }
