@@ -299,7 +299,7 @@ public class MBusGatewayService {
         }
     }
 
-    private short getPrimaryAddress(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto,
+    private Short getPrimaryAddress(final MbusChannelElementsResponseDto mbusChannelElementsResponseDto,
             final short channel) {
         // because the List is 0-based, it is needed to subtract 1 to get the
         // ChannelElements for the desired channel.

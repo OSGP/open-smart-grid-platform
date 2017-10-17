@@ -49,6 +49,7 @@ public class InstallationMapperTest {
         smartMeteringDevice.setMbusManufacturerIdentification("XYZ");
         smartMeteringDevice.setMbusVersion((short) 66);
         smartMeteringDevice.setMbusDeviceTypeIdentification((short) 3);
+        smartMeteringDevice.setMbusDefaultKey("mbusDefaultKey".getBytes());
 
         final SmartMeter device = this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeter.class);
 
@@ -85,6 +86,7 @@ public class InstallationMapperTest {
         smartMeteringDevice.setMbusManufacturerIdentification("XYZ");
         smartMeteringDevice.setMbusVersion((short) 112);
         smartMeteringDevice.setMbusDeviceTypeIdentification((short) 3);
+        smartMeteringDevice.setMbusDefaultKey("mbusDefaultKey".getBytes());
 
         final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade()
                 .map(smartMeteringDevice, SmartMeteringDeviceDto.class);
@@ -113,6 +115,7 @@ public class InstallationMapperTest {
         assertEquals(smartMeteringDevice.getMbusVersion(), smartMeteringDeviceDto.getMbusVersion());
         assertEquals(smartMeteringDevice.getMbusDeviceTypeIdentification(),
                 smartMeteringDeviceDto.getMbusDeviceTypeIdentification());
+        assertArrayEquals(smartMeteringDevice.getMbusDefaultKey(), smartMeteringDeviceDto.getMbusDefaultKey());
     }
 
 }
