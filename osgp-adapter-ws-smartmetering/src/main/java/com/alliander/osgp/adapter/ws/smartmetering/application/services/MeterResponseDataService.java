@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,8 @@ public class MeterResponseDataService {
      */
     public void enqueue(final MeterResponseData meterResponseData) {
 
-        if (this.meterResponseDataRepository.findSingleResultByCorrelationUid(meterResponseData.getCorrelationUid()) == null) {
+        if (this.meterResponseDataRepository
+                .findSingleResultByCorrelationUid(meterResponseData.getCorrelationUid()) == null) {
             this.meterResponseDataRepository.save(meterResponseData);
         } else {
             LOGGER.warn(
@@ -102,6 +105,20 @@ public class MeterResponseDataService {
         return meterResponseData;
     }
 
+    public List<MeterResponseData> dequeueMeterResponseDataList(final String correlationUid)
+            throws UnknownCorrelationUidException {
+        final List<MeterResponseData> meterResponseDataList = this.meterResponseDataRepository
+                .findByCorrelationUid(correlationUid);
+
+        if (meterResponseDataList == null) {
+            LOGGER.warn("No response data for correlation UID {}", correlationUid);
+            throw new UnknownCorrelationUidException(ComponentType.WS_SMART_METERING);
+        }
+
+        this.removeMeterResponseDataList(meterResponseDataList, correlationUid);
+        return meterResponseDataList;
+    }
+
     /**
      * MeterResponseData is valid when MeterResponseData message data type is
      * equal to the expected type OR The response message result type is NOT_OK,
@@ -119,7 +136,16 @@ public class MeterResponseDataService {
     }
 
     private void remove(final MeterResponseData meterResponseData) {
-        LOGGER.info("deleting MeterResponseData for CorrelationUid {}", meterResponseData.getCorrelationUid());
+        LOGGER.info("Deleting MeterResponseData for CorrelationUid {}", meterResponseData.getCorrelationUid());
         this.meterResponseDataRepository.delete(meterResponseData);
+    }
+
+    private void removeMeterResponseDataList(final List<MeterResponseData> meterResponseDataList,
+            final String correlationUid) {
+        if (!meterResponseDataList.isEmpty()) {
+            LOGGER.info("Deleting MeterResponseDataList for CorrelationUid {}", correlationUid);
+        }
+
+        this.meterResponseDataRepository.delete(meterResponseDataList);
     }
 }
