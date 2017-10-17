@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -32,6 +31,7 @@ public class Iec61850EnableReportingCommand {
      *
      * @throws NodeException
      *             In case writing or reading of data-attributes fails.
+     *
      */
     public void enableReportingOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection)
             throws NodeException {
@@ -60,11 +60,12 @@ public class Iec61850EnableReportingCommand {
      * When using the {@link Iec61850ClearReportCommand} the 'sequence number'
      * will always be reset to 0.
      *
-     * @throws NodeWriteException
+     * @throws NodeException
      *             In case writing of data-attributes fails.
+     *
      */
     public void enableReportingOnDeviceWithoutUsingSequenceNumber(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeWriteException {
+            final DeviceConnection deviceConnection) throws NodeException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
 
@@ -95,10 +96,9 @@ public class Iec61850EnableReportingCommand {
             return;
         }
 
-        iec61850Client.readNodeDataValues(
-                deviceConnection.getConnection().getClientAssociation(),
-                (FcModelNode) reporting.getFcmodelNode().getChild(
-                        SubDataAttribute.RESERVE_REPORTING_CONTROL_BLOCK.getDescription()));
+        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                (FcModelNode) reporting.getFcmodelNode()
+                        .getChild(SubDataAttribute.RESERVE_REPORTING_CONTROL_BLOCK.getDescription()));
 
         // Write reserve boolean.
         reporting.writeBoolean(SubDataAttribute.RESERVE_REPORTING_CONTROL_BLOCK, true);

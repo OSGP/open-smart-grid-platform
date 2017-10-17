@@ -61,8 +61,8 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
 
             LOGGER.info("Iec61850LmdDeviceService.getStatus() called for LMD: {}", lmd);
 
-            final DeviceStatusDto deviceStatus = new Iec61850GetLightSensorStatusCommand().getStatusFromDevice(
-                    this.iec61850Client, deviceConnection, lmd);
+            final DeviceStatusDto deviceStatus = new Iec61850GetLightSensorStatusCommand()
+                    .getStatusFromDevice(this.iec61850Client, deviceConnection, lmd);
 
             final GetStatusDeviceResponse deviceResponse = new GetStatusDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),

@@ -34,9 +34,8 @@ public class Iec61850UpdateSslCertificateCommand {
 
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-    public void pushSslCertificateToDevice(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection, final CertificationDto certification)
-            throws ProtocolAdapterException {
+    public void pushSslCertificateToDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
+            final CertificationDto certification) throws ProtocolAdapterException {
         final Function<Void> function = new Function<Void>() {
 
             @Override

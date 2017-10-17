@@ -11,7 +11,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
@@ -23,7 +23,7 @@ public class Iec61850ClearReportCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClearReportCommand.class);
 
-    public void clearReportOnDevice(final DeviceConnection deviceConnection) throws NodeWriteException {
+    public void clearReportOnDevice(final DeviceConnection deviceConnection) throws NodeException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
 

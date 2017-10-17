@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -103,10 +105,13 @@ public class DeviceRegistrationService {
      * Set the location information for this device. If the osgp_core database
      * contains longitude and latitude information for the given device, those
      * values must be saved to the corresponding data-attributes.
+     *
+     * @throws NodeException
+     *
      */
-    protected void setLocationInformation(final DeviceConnection deviceConnection) {
-        final Ssld ssld = DeviceRegistrationService.this.ssldDataRepository.findByDeviceIdentification(deviceConnection
-                .getDeviceIdentification());
+    protected void setLocationInformation(final DeviceConnection deviceConnection) throws NodeException {
+        final Ssld ssld = DeviceRegistrationService.this.ssldDataRepository
+                .findByDeviceIdentification(deviceConnection.getDeviceIdentification());
         if (ssld != null) {
             final Float longitude = ssld.getGpsLongitude();
             final Float latitude = ssld.getGpsLatitude();
@@ -126,7 +131,7 @@ public class DeviceRegistrationService {
     }
 
     private void writeGpsCoordinates(final DeviceConnection deviceConnection, final Float longitude,
-            final Float latitude) {
+            final Float latitude) throws NodeException {
         if (longitude != null && latitude != null) {
             try {
                 new Iec61850SetGpsCoordinatesCommand().setGpsCoordinates(deviceConnection, longitude, latitude);
@@ -142,14 +147,15 @@ public class DeviceRegistrationService {
      * Set attribute to false in order to signal the device the registration was
      * successful.
      *
-     * @throws NodeWriteException
+     * @throws NodeException
      *             In case writing of the data-attribute fails.
+     *
      */
-    protected void disableRegistration(final DeviceConnection deviceConnection) throws NodeWriteException {
+    protected void disableRegistration(final DeviceConnection deviceConnection) throws NodeException {
         new Iec61850DisableRegistrationCommand().disableRegistration(deviceConnection);
     }
 
-    protected void enableReporting(final DeviceConnection deviceConnection) {
+    protected void enableReporting(final DeviceConnection deviceConnection) throws NodeException {
         try {
             new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(
                     DeviceRegistrationService.this.iec61850DeviceConnectionService.getIec61850Client(),
@@ -169,7 +175,10 @@ public class DeviceRegistrationService {
             public void run() {
                 try {
                     new Iec61850ClearReportCommand().clearReportOnDevice(deviceConnection);
-                } catch (final NodeWriteException e) {
+                } catch (final NodeNotFoundException e) {
+                    LOGGER.error("Unable to get fcModelnode for device: " + deviceConnection.getDeviceIdentification(),
+                            e);
+                } catch (final NodeException e) {
                     LOGGER.error("Unable to clear report for device: " + deviceConnection.getDeviceIdentification(), e);
                 }
                 DeviceRegistrationService.this.iec61850DeviceConnectionService.disconnect(deviceConnection, null);

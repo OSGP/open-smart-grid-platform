@@ -50,8 +50,8 @@ public class Iec61850GetStatusCommand {
                 final List<LightValueDto> lightValues = new ArrayList<>();
 
                 for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
-                    final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(deviceOutputSetting
-                            .getInternalId());
+                    final LogicalNode logicalNode = LogicalNode
+                            .getSwitchComponentByIndex(deviceOutputSetting.getInternalId());
                     final NodeContainer position = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING, logicalNode,
                             DataAttribute.POSITION, Fc.ST);
                     iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),

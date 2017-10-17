@@ -62,10 +62,14 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            final Serializable dataResponse = this.handleGetData(
-                    new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
-                            serverModel), deviceRequest.getDeviceIdentification(), deviceRequest
-                            .getOrganisationIdentification(), serverName), deviceRequest, messageProcessor);
+            final Serializable dataResponse = this
+                    .handleGetData(
+                            new DeviceConnection(
+                                    new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
+                                            serverModel),
+                                    deviceRequest.getDeviceIdentification(),
+                                    deviceRequest.getOrganisationIdentification(), serverName),
+                            deviceRequest, messageProcessor);
 
             final DaDeviceResponse deviceResponse = new DaDeviceResponse(deviceRequest.getOrganisationIdentification(),
                     deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK,
@@ -115,8 +119,8 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
     }
 
     private String getServerName(final DeviceRequest deviceRequest) {
-        final Iec61850Device iec61850Device = this.iec61850DeviceRepository.findByDeviceIdentification(deviceRequest
-                .getDeviceIdentification());
+        final Iec61850Device iec61850Device = this.iec61850DeviceRepository
+                .findByDeviceIdentification(deviceRequest.getDeviceIdentification());
         if (iec61850Device != null && iec61850Device.getServerName() != null) {
             return iec61850Device.getServerName();
         } else {

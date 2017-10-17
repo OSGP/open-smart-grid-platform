@@ -7,12 +7,12 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.device.rtu;
 
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 
 public interface RtuWriteCommand<T> {
     void executeWrite(Iec61850Client client, DeviceConnection connection, LogicalDevice logicalDevice,
-            int logicalDeviceIndex, T writeData) throws NodeWriteException;
+            int logicalDeviceIndex, T writeData) throws NodeException;
 }

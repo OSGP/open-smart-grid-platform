@@ -13,6 +13,7 @@ import org.openmuc.openiec61850.ObjectReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Connection;
 
 public class DeviceConnection {
@@ -38,14 +39,19 @@ public class DeviceConnection {
     /**
      * Returns a {@link NodeContainer} for the given {@link ObjectReference}
      * data and the Functional constraint.
+     *
+     * @throws NodeNotFoundException
      */
     public NodeContainer getFcModelNode(final LogicalDevice logicalDevice, final LogicalNode logicalNode,
-            final DataAttribute dataAttribute, final Fc fc) {
-        final FcModelNode fcModelNode = (FcModelNode) this.connection.getServerModel().findModelNode(
-                this.createObjectReference(logicalDevice, logicalNode, dataAttribute), fc);
+            final DataAttribute dataAttribute, final Fc fc) throws NodeNotFoundException {
+        final ObjectReference objectReference = this.createObjectReference(logicalDevice, logicalNode, dataAttribute);
+        final FcModelNode fcModelNode = (FcModelNode) this.connection.getServerModel().findModelNode(objectReference,
+                fc);
         if (fcModelNode == null) {
             LOGGER.error("FcModelNode is null, most likely the data attribute: {} does not exist",
                     dataAttribute.getDescription());
+            throw new NodeNotFoundException(
+                    String.format("FcModelNode with objectReference %s does not exist", objectReference));
         }
 
         return new NodeContainer(this, fcModelNode);
@@ -54,14 +60,21 @@ public class DeviceConnection {
     /**
      * Returns a {@link NodeContainer} for the given {@link ObjectReference}
      * data and the Functional constraint.
+     *
+     * @throws NodeNotFoundException
      */
     public NodeContainer getFcModelNode(final LogicalDevice logicalDevice, final int logicalDeviceIndex,
-            final LogicalNode logicalNode, final DataAttribute dataAttribute, final Fc fc) {
-        final FcModelNode fcModelNode = (FcModelNode) this.connection.getServerModel().findModelNode(
-                this.createObjectReference(logicalDevice, logicalDeviceIndex, logicalNode, dataAttribute), fc);
+            final LogicalNode logicalNode, final DataAttribute dataAttribute, final Fc fc)
+            throws NodeNotFoundException {
+        final ObjectReference objectReference = this.createObjectReference(logicalDevice, logicalDeviceIndex,
+                logicalNode, dataAttribute);
+        final FcModelNode fcModelNode = (FcModelNode) this.connection.getServerModel().findModelNode(objectReference,
+                fc);
         if (fcModelNode == null) {
             LOGGER.error("FcModelNode is null, most likely the data attribute: {} does not exist",
                     dataAttribute.getDescription());
+            throw new NodeNotFoundException(
+                    String.format("FcModelNode with objectReference %s does not exist", objectReference));
         }
 
         return new NodeContainer(this, fcModelNode);

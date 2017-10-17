@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -45,8 +44,8 @@ public class Iec61850UpdateFirmwareCommand {
             public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
                 final int count = firmwareModuleData.countNumberOfModules();
                 if (count != 1) {
-                    throw new ProtocolAdapterException(String.format(
-                            "Number of firmware modules is not equal to 1 but %d", count));
+                    throw new ProtocolAdapterException(
+                            String.format("Number of firmware modules is not equal to 1 but %d", count));
                 }
 
                 // Check if the functional or security firmware needs to be
@@ -56,16 +55,14 @@ public class Iec61850UpdateFirmwareCommand {
                             fullUrl, deviceMessageLog);
                 } else if (FirmwareModuleType.SECURITY.name()
                         .equalsIgnoreCase(firmwareModuleData.getModuleVersionSec())) {
-                    Iec61850UpdateFirmwareCommand.this.updateSecurityFirmware(iec61850Client, deviceConnection,
-                            fullUrl, deviceMessageLog);
+                    Iec61850UpdateFirmwareCommand.this.updateSecurityFirmware(iec61850Client, deviceConnection, fullUrl,
+                            deviceMessageLog);
                 } else {
-                    throw new ProtocolAdapterException(
-                            String.format(
-                                    "Unsupported firmwareModuleData (only functional and security are allowed): communication: %s, functional: %s, module-active: %s, m-bus: %s, security: %s, fullUrl: %s",
-                                    firmwareModuleData.getModuleVersionComm(),
-                                    firmwareModuleData.getModuleVersionFunc(), firmwareModuleData.getModuleVersionMa(),
-                                    firmwareModuleData.getModuleVersionMbus(),
-                                    firmwareModuleData.getModuleVersionSec(), fullUrl));
+                    throw new ProtocolAdapterException(String.format(
+                            "Unsupported firmwareModuleData (only functional and security are allowed): communication: %s, functional: %s, module-active: %s, m-bus: %s, security: %s, fullUrl: %s",
+                            firmwareModuleData.getModuleVersionComm(), firmwareModuleData.getModuleVersionFunc(),
+                            firmwareModuleData.getModuleVersionMa(), firmwareModuleData.getModuleVersionMbus(),
+                            firmwareModuleData.getModuleVersionSec(), fullUrl));
                 }
 
                 DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
@@ -140,7 +137,7 @@ public class Iec61850UpdateFirmwareCommand {
     }
 
     private Date determineFirmwareUpdateDateTime(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeReadException {
+            final DeviceConnection deviceConnection) throws NodeException {
         final NodeContainer clock = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF);
         iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),

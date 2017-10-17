@@ -18,7 +18,7 @@ import org.openmuc.openiec61850.Fc;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ProfilePair;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -54,7 +54,7 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
 
     @Override
     public ProfileDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
                 this.logicalNode, DATA_ATTRIBUTE, FC);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
@@ -72,7 +72,7 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
     @Override
     public void executeWrite(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice, final int logicalDeviceIndex, final ProfileDto profile)
-                    throws NodeWriteException {
+            throws NodeException {
 
         this.checkProfile(profile);
 
