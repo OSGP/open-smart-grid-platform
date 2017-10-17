@@ -65,6 +65,8 @@ public class DeviceFactory {
         device.setMbusVersion(Helpers.getShort(settings, PlatformSmartmeteringKeys.MBUS_VERSION, null));
         device.setMbusDeviceTypeIdentification(
                 Helpers.getShort(settings, PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION, null));
+        device.setMbusDefaultKey(RequestFactoryHelper.hexDecodeDeviceKey(
+                settings.get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY), PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
 
         return device;
     }

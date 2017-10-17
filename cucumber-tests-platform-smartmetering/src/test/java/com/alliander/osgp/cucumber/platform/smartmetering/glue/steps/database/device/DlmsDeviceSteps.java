@@ -270,6 +270,26 @@ public class DlmsDeviceSteps {
                 receivedEncryptionKey, encryptionKey.getKey());
     }
 
+    @Then("^the stored M-Bus Default key is not equal to the received key$")
+    public void theStoredMbusDefaultKeysIsNotEqualToTheReceivedKey() throws Throwable {
+        final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
+        final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
+        assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
+                deviceIdentification);
+
+        final String deviceDescription = "DLMS device with identification " + deviceIdentification;
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
+
+        final SecurityKey mbusDefaultKey = dlmsDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER);
+        assertNotNull("M-Bus Default key for " + deviceDescription + " must be stored", mbusDefaultKey);
+
+        final String receivedMbusDefaultKey = (String) ScenarioContext.current()
+                .get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY);
+        assertNotEquals("Stored M-Bus Default key for " + deviceDescription + " must be different from received key",
+                receivedMbusDefaultKey, mbusDefaultKey.getKey());
+    }
+
     private void setScenarioContextForDevice(final Map<String, String> inputSettings, final Device device) {
         final String deviceType = inputSettings.get(PlatformSmartmeteringKeys.DEVICE_TYPE);
         if (this.isGasSmartMeter(deviceType)) {
