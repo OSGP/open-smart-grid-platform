@@ -105,18 +105,18 @@ public class MeterResponseDataService {
         return meterResponseData;
     }
 
-    public List<MeterResponseData> dequeueMeterResponseDataList(final String correlationUid)
+    public List<MeterResponseData> dequeueMeterResponseData(final String correlationUid)
             throws UnknownCorrelationUidException {
-        final List<MeterResponseData> meterResponseDataList = this.meterResponseDataRepository
+        final List<MeterResponseData> meterResponseData = this.meterResponseDataRepository
                 .findByCorrelationUid(correlationUid);
 
-        if (meterResponseDataList == null) {
+        if (meterResponseData == null) {
             LOGGER.warn("No response data for correlation UID {}", correlationUid);
             throw new UnknownCorrelationUidException(ComponentType.WS_SMART_METERING);
         }
 
-        this.removeMeterResponseDataList(meterResponseDataList, correlationUid);
-        return meterResponseDataList;
+        this.removeMeterResponseData(meterResponseData);
+        return meterResponseData;
     }
 
     /**
@@ -140,12 +140,7 @@ public class MeterResponseDataService {
         this.meterResponseDataRepository.delete(meterResponseData);
     }
 
-    private void removeMeterResponseDataList(final List<MeterResponseData> meterResponseDataList,
-            final String correlationUid) {
-        if (!meterResponseDataList.isEmpty()) {
-            LOGGER.info("Deleting MeterResponseDataList for CorrelationUid {}", correlationUid);
-        }
-
-        this.meterResponseDataRepository.delete(meterResponseDataList);
+    private void removeMeterResponseData(final List<MeterResponseData> meterResponseData) {
+        this.meterResponseDataRepository.delete(meterResponseData);
     }
 }

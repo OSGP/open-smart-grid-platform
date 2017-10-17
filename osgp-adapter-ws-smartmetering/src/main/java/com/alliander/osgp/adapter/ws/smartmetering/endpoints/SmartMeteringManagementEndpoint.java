@@ -134,7 +134,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         final FindEventsResponse response = new FindEventsResponse();
         try {
             final List<MeterResponseData> meterResponseDataList = this.meterResponseDataService
-                    .dequeueMeterResponseDataList(request.getCorrelationUid());
+                    .dequeueMeterResponseData(request.getCorrelationUid());
 
             final List<Event> events = this.getEventsFromMeterResponseData(meterResponseDataList);
 
