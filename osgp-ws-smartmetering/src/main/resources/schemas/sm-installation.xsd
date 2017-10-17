@@ -211,6 +211,9 @@
       <xsd:element name="Mbus_device_type_identification"
         minOccurs="0" type="xsd:unsignedByte" />
 
+      <xsd:element name="Mbus_default_key" type="xsd:hexBinary"
+        minOccurs="0" />
+
     </xsd:sequence>
   </xsd:complexType>
 
