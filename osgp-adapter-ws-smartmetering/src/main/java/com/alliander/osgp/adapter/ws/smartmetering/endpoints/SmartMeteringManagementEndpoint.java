@@ -136,6 +136,10 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final List<MeterResponseData> meterResponseDataList = this.meterResponseDataService
                     .dequeueMeterResponseData(request.getCorrelationUid());
 
+            for (final MeterResponseData meterResponseData : meterResponseDataList) {
+                this.throwExceptionIfResultNotOk(meterResponseData, "Find Events");
+            }
+
             final List<Event> events = this.getEventsFromMeterResponseData(meterResponseDataList);
 
             LOGGER.info("Get find events response: number of events: {}", events.size());
@@ -146,10 +150,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             response.getEvents().addAll(this.managementMapper.mapAsList(events,
                     com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class));
-
-            for (final MeterResponseData meterResponseData : meterResponseDataList) {
-                this.throwExceptionIfResultNotOk(meterResponseData, "Find Events");
-            }
 
             response.setResult(OsgpResultType.OK);
 
