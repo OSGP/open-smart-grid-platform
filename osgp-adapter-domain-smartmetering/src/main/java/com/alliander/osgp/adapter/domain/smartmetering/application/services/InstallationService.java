@@ -17,14 +17,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
+import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.DeviceModel;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
@@ -56,6 +61,12 @@ public class InstallationService {
     private SmartMeterRepository smartMeteringDeviceRepository;
 
     @Autowired
+    private ManufacturerRepository manufacturerRepository;
+
+    @Autowired
+    private DeviceModelRepository deviceModelRepository;
+
+    @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
 
     @Autowired
@@ -78,13 +89,15 @@ public class InstallationService {
     }
 
     public void addMeter(final DeviceMessageMetadata deviceMessageMetadata,
-            final SmartMeteringDevice smartMeteringDeviceValueObject) throws FunctionalException {
+            final AddSmartMeterRequest addSmartMeterRequest) throws FunctionalException {
 
         LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         SmartMeter device = this.smartMeteringDeviceRepository
                 .findByDeviceIdentification(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeteringDevice smartMeteringDeviceValueObject = addSmartMeterRequest.getDevice();
+
         if (device == null) {
 
             /*
@@ -102,6 +115,12 @@ public class InstallationService {
             }
 
             device.updateProtocol(protocolInfo);
+
+            final DeviceModel deviceModelValueObject = addSmartMeterRequest.getDeviceModel();
+            final Manufacturer manufacturer = this.manufacturerRepository
+                    .findByCode(deviceModelValueObject.getManufacturer());
+            device.setDeviceModel(this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,
+                    deviceModelValueObject.getModelCode()));
 
             device = this.smartMeteringDeviceRepository.save(device);
 
