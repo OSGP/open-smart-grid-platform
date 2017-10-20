@@ -662,7 +662,7 @@
       <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
-            <xsd:maxLength value="15" />
+            <xsd:maxLength value="255" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
