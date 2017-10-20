@@ -993,8 +993,8 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="CaptureObjects" type="common:CaptureObjectDefinitions" />
-          <xsd:element name="CapturePeriod" type="xsd:unsignedInt" />
+          <xsd:element name="CaptureObjects" type="common:CaptureObjectDefinitions" minOccurs="0" />
+          <xsd:element name="CapturePeriod" type="xsd:unsignedInt" minOccurs="0" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
