@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysRequest;
@@ -277,6 +281,24 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
         return (SetClockConfigurationResponse) this.getTemplate()
                 .marshalSendAndReceive(setClockConfigurationAsyncRequest);
+    }
+
+    public ConfigureDefinableLoadProfileAsyncResponse configureDefinableLoadProfile(
+            final ConfigureDefinableLoadProfileRequest configureDefinableLoadProfileRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (ConfigureDefinableLoadProfileAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(configureDefinableLoadProfileRequest);
+    }
+
+    public ConfigureDefinableLoadProfileResponse getConfigureDefinableLoadProfileResponse(
+            final ConfigureDefinableLoadProfileAsyncRequest configureDefinableLoadProfileAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = configureDefinableLoadProfileAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (ConfigureDefinableLoadProfileResponse) this.getTemplate()
+                .marshalSendAndReceive(configureDefinableLoadProfileAsyncRequest);
     }
 
     public SetPushSetupSmsAsyncResponse setPushSetupSms(final SetPushSetupSmsRequest request)

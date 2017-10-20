@@ -19,8 +19,8 @@ import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.database.DlmsDatabase;
+import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.simulator.DeviceSimulatorSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.ReplaceKeysSteps;
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation.DeviceSimulatorSteps;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ServiceEndpoint;
 
 import cucumber.api.java.After;
