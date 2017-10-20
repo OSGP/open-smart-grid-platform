@@ -9,15 +9,19 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "configurationMapper")
 public class ConfigurationMapper extends ConfigurableMapper {
+
+    private static final String CAPTURE_OBJECTS = "captureObjects";
+    private static final String CAPTURE_OBJECTS_CAPTURE_OBJECT = "captureObjects.captureObject";
 
     @Override
     public void configure(final MapperFactory mapperFactory) {
@@ -33,6 +37,12 @@ public class ConfigurationMapper extends ConfigurableMapper {
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class)
                 .field("alarmNotification", "alarmNotificationsSet").byDefault().register();
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
+
+        mapperFactory.classMap(DefinableLoadProfileConfigurationData.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData.class)
+                .fieldAToB(CAPTURE_OBJECTS_CAPTURE_OBJECT, CAPTURE_OBJECTS)
+                .fieldBToA(CAPTURE_OBJECTS, CAPTURE_OBJECTS_CAPTURE_OBJECT).byDefault().register();
+        mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
 
         // These two converters are needed because they combine two fields
         // into one SendDestinationAndMethod object (or split the object into
