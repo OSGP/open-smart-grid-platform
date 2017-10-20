@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.FindEventsRequestBuilder;
 
 import cucumber.api.java.en.Given;
@@ -37,24 +39,12 @@ public class BundledFindEventsSteps extends BaseBundleSteps {
         this.addActionToBundleRequest(action);
     }
 
-    @Then("^the bundle response should contain a find events response$")
-    public void theBundleResponseShouldContainAFindEventsResponse() throws Throwable {
-
-        final Response response = this.getNextBundleResponse();
-
-        assertTrue("Not a valid response", response instanceof FindEventsResponse);
-    }
-
     @Then("^the bundle response should contain a find events response with values$")
     public void theBundleResponseShouldContainAFindEventsResponse(final Map<String, String> values) throws Throwable {
-
         final Response response = this.getNextBundleResponse();
 
-        // NOTE: Unfortunately, when no events are found,
-        // the response currently does not contain any useful values to test against.
-        // (All fields in the response will be null)
-        // Otherwise additional asserts could be added here...
         assertTrue("Not a valid response", response instanceof FindEventsResponse);
+        assertEquals("Result is not as expected.", values.get(PlatformSmartmeteringKeys.RESULT),
+                response.getResult().name());
     }
-
 }
