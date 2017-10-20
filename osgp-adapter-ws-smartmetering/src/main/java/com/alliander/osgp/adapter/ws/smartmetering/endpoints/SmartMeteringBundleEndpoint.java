@@ -106,7 +106,6 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
 
         this.throwExceptionIfResultNotOk(meterResponseData, "get bundle response");
 
-        // Create response.
-        return this.actionMapperResponseService.mapAllActions(meterResponseData.getMessageData());
+        return this.actionMapperResponseService.mapAllActions(meterResponseData);
     }
 }
