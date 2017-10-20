@@ -21,10 +21,10 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -45,7 +45,7 @@ public class InstallationService {
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SmartMeteringDevice device,
+            @Identification final String deviceIdentification, final AddSmartMeterRequest addSmartMeterRequest,
             final int messagePriority, final Long scheduleTime) {
 
         LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
@@ -60,7 +60,7 @@ public class InstallationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(addSmartMeterRequest).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
