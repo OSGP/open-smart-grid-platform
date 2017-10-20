@@ -234,6 +234,21 @@ public class DeviceSteps extends BaseDeviceSteps {
         });
     }
 
+    @Then("^the M-Bus device \"([^\"]*)\" is coupled to device \"([^\"]*)\" on M-Bus channel \"([^\"]*)\"$")
+    public void theMBusDeviceIsCoupledToDeviceOnMBusChannel(final String gMeter, final String eMeter,
+            final Short channel) throws Throwable {
+        Wait.until(() -> {
+            final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);
+            final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(eMeter);
+
+            Assert.assertNotNull("No GatewayDevice found", gatewayDevice);
+            Assert.assertNotNull("No MbusDevice found", mbusDevice);
+
+            Assert.assertEquals("GatewayDevice does not match", gatewayDevice, mbusDevice.getGatewayDevice());
+            Assert.assertEquals("Channel does not match", channel, mbusDevice.getChannel());
+        });
+    }
+
     @Then("^the mbus device \"([^\"]*)\" is not coupled to the device \"([^\"]*)\"$")
     public void theMbusDeviceIsNotCoupledToTheDevice(final String gMeter, final String eMeter) {
         Wait.until(() -> {

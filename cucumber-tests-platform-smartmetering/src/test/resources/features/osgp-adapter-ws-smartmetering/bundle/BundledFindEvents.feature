@@ -1,4 +1,4 @@
-@SmartMetering @Platform 
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - FindEvents
   As a grid operator 
   I want to retrieve the events from a meter via a bundle request
@@ -16,8 +16,5 @@ Feature: SmartMetering Bundle - FindEvents
       | From             | 2014-01-01T00:00:00.000Z |
       | Until            | 2014-10-01T00:00:00.000Z |
     When the bundle request is received
-    # NOTE: It would be better to test with values here, 
-    # but the response for the above request currently does not contain any useful data. 
-    #Then the bundle response should contain a find events response with values
-    #  | Result | OK |
-    Then the bundle response should contain a find events response
+    Then the bundle response should contain a find events response with values
+      | Result | OK |

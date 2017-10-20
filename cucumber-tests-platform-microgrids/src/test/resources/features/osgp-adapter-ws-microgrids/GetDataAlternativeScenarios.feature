@@ -18,7 +18,7 @@ Feature: Microgrids Get Data Alternative Scenarios
     Then a SOAP fault should be returned
       | DeviceIdentification | RTU-PAMPUS                   |
       | Component            | PROTOCOL_IEC61850            |
-      | Message              | fcmodelNode must not be null |
+      | Message              | FcModelNode with objectReference WAGO61850ServerPV4/LLN0.Health does not exist |
 
   @Iec61850MockServerWago
   Scenario: Request PV1 Health not default servername
@@ -68,7 +68,7 @@ Feature: Microgrids Get Data Alternative Scenarios
     Then a SOAP fault should be returned
       | DeviceIdentification | RTU-PAMPUS-WAGO              |
       | Component            | PROTOCOL_IEC61850            |
-      | Message              | fcmodelNode must not be null |
+      | Message              | FcModelNode with objectReference WAGOPV1/LLN0.Health does not exist |
 
   # Scenario is skipped, as it is not working yet, device simulator is closing connection...
   # The actual behavior of a real device is yet to be tested...
@@ -106,4 +106,4 @@ Feature: Microgrids Get Data Alternative Scenarios
     Then a SOAP fault should be returned
       | DeviceIdentification | RTU-PAMPUS-CHP               |
       | Component            | PROTOCOL_IEC61850            |
-      | Message              | fcmodelNode must not be null |
+      | Message              | FcModelNode with objectReference WAGO61850ServerCHP1/LLN0.Health does not exist |

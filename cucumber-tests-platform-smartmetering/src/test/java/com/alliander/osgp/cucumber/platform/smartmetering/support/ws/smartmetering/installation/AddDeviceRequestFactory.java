@@ -11,7 +11,6 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
 public class AddDeviceRequestFactory {
@@ -22,8 +21,8 @@ public class AddDeviceRequestFactory {
 
     public static AddDeviceRequest fromParameterMap(final Map<String, String> requestParameters) {
         final AddDeviceRequest addDeviceRequest = new AddDeviceRequest();
-        final Device device = DeviceFactory.fromParameterMap(requestParameters);
-        addDeviceRequest.setDevice(device);
+        addDeviceRequest.setDevice(DeviceFactory.fromParameterMap(requestParameters));
+        addDeviceRequest.setDeviceModel(DeviceModelFactory.fromParameterMap(requestParameters));
         return addDeviceRequest;
     }
 
