@@ -58,6 +58,8 @@
   <xsd:element name="FindEventsResponse">
     <xsd:complexType>
       <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
         <xsd:element name="Events" type="tns:Event"
           maxOccurs="unbounded" minOccurs="0" />
       </xsd:sequence>
