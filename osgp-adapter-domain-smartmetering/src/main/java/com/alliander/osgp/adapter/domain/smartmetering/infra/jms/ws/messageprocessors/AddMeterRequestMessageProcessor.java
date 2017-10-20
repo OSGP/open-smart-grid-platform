@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -36,8 +36,8 @@ public class AddMeterRequestMessageProcessor extends WebServiceRequestMessagePro
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) dataObject;
+        final AddSmartMeterRequest addSmartMeterRequest = (AddSmartMeterRequest) dataObject;
 
-        this.installationService.addMeter(deviceMessageMetadata, smartMeteringDevice);
+        this.installationService.addMeter(deviceMessageMetadata, addSmartMeterRequest);
     }
 }
