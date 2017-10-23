@@ -73,7 +73,7 @@
       <xsd:enumeration value="SET_CLOCK_CONFIGURATION" />
       <xsd:enumeration value="GET_CONFIGURATION_OBJECT" />
       <xsd:enumeration value="GENERATE_AND_REPLACE_KEYS" />
-      <xsd:enumeration value="CONFIGURE_DEFINABLE_LOAD_PROFILE" />"
+      <xsd:enumeration value="CONFIGURE_DEFINABLE_LOAD_PROFILE" />
     </xsd:restriction>
   </xsd:simpleType>
 
