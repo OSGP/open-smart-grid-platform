@@ -69,13 +69,17 @@ public abstract class AbstractFindEventsReads {
                 .getResponse(findEventsAsyncRequest);
 
         assertNotNull("FindEventsRequestResponse should not be null", findEventsResponse);
+        assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT),
+                findEventsResponse.getResult().name());
+
         assertNotNull("Expected events", findEventsResponse.getEvents());
         assertEquals("Number of events should match", Integer.parseInt(settings.get(EXPECTED_NUMBER_OF_EVENTS)),
                 findEventsResponse.getEvents().size());
 
         /*
-         * For every event in the response, check if it matches with the AllowedEventTypes list. If so, the EventType is
-         * from the correct type as expected.
+         * For every event in the response, check if it matches with the
+         * AllowedEventTypes list. If so, the EventType is from the correct type
+         * as expected.
          */
         for (final Event event : findEventsResponse.getEvents()) {
             Event eventMatch = null;
