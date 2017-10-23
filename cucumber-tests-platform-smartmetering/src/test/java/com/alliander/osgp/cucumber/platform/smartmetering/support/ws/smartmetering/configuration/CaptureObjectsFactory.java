@@ -15,32 +15,30 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObjectDe
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class CaptureObjectsFactory {
 
-    private final static String NUMBER_OF_CAPTURE_OBJECTS = "NumberOfCaptureObjects";
-    private final static String CLASS_ID = "CaptureObject_ClassId";
-    private final static String LOGICAL_NAME = "CaptureObject_LogicalName";
-    private final static String ATTRIBUTE_INDEX = "CaptureObject_AttributeIndex";
-    private final static String DATA_INDEX = "CaptureObject_DataIndex";
-
     public static CaptureObjectDefinitions fromParameterMap(final Map<String, String> requestParameters) {
 
-        if (!requestParameters.containsKey(NUMBER_OF_CAPTURE_OBJECTS)) {
+        if (!requestParameters.containsKey(PlatformSmartmeteringKeys.NUMBER_OF_CAPTURE_OBJECTS)) {
             return null;
         }
 
         final CaptureObjectDefinitions captureObjectDefinitions = new CaptureObjectDefinitions();
         final List<CaptureObjectDefinition> captureObjects = captureObjectDefinitions.getCaptureObject();
 
-        final int numberOfCaptureObjects = Helpers.getInteger(requestParameters, NUMBER_OF_CAPTURE_OBJECTS, 0);
+        final int numberOfCaptureObjects = Helpers.getInteger(requestParameters,
+                PlatformSmartmeteringKeys.NUMBER_OF_CAPTURE_OBJECTS, 0);
         for (int i = 1; i <= numberOfCaptureObjects; i++) {
             final CaptureObjectDefinition captureObjectDefinition = new CaptureObjectDefinition();
-            captureObjectDefinition.setClassId(SettingsHelper.getIntegerValue(requestParameters, CLASS_ID, i));
+            captureObjectDefinition.setClassId(SettingsHelper.getIntegerValue(requestParameters,
+                    PlatformSmartmeteringKeys.CAPTURE_OBJECT_CLASS_ID, i));
             captureObjectDefinition.setLogicalName(logicalNameFromParemeterMap(requestParameters, i));
-            captureObjectDefinition
-                    .setAttributeIndex(SettingsHelper.getByteValue(requestParameters, ATTRIBUTE_INDEX, i));
-            captureObjectDefinition.setDataIndex(SettingsHelper.getIntegerValue(requestParameters, DATA_INDEX, i));
+            captureObjectDefinition.setAttributeIndex(SettingsHelper.getByteValue(requestParameters,
+                    PlatformSmartmeteringKeys.CAPTURE_OBJECT_ATTRIBUTE_INDEX, i));
+            captureObjectDefinition.setDataIndex(SettingsHelper.getIntegerValue(requestParameters,
+                    PlatformSmartmeteringKeys.CAPTURE_OBJECT_DATA_INDEX, i));
             captureObjects.add(captureObjectDefinition);
         }
         return captureObjectDefinitions;
@@ -48,7 +46,8 @@ public class CaptureObjectsFactory {
 
     private static ObisCodeValues logicalNameFromParemeterMap(final Map<String, String> requestParameters,
             final int i) {
-        final String logicalName = SettingsHelper.getStringValue(requestParameters, LOGICAL_NAME, i);
+        final String logicalName = SettingsHelper.getStringValue(requestParameters,
+                PlatformSmartmeteringKeys.CAPTURE_OBJECT_LOGICAL_NAME, i);
         final String[] obisBytes = logicalName.split("\\.");
         final ObisCodeValues obisCodeValues = new ObisCodeValues();
         obisCodeValues.setA(Short.parseShort(obisBytes[0]));

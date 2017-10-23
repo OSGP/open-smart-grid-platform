@@ -11,15 +11,15 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData;
 import com.alliander.osgp.cucumber.core.Helpers;
+import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class DefinableLoadProfileConfigurationDataFactory {
-
-    private final static String CAPTURE_PERIOD = "CapturePeriod";
 
     public static DefinableLoadProfileConfigurationData fromParameterMap(final Map<String, String> parameters) {
         final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = new DefinableLoadProfileConfigurationData();
         definableLoadProfileConfigurationData.setCaptureObjects(CaptureObjectsFactory.fromParameterMap(parameters));
-        definableLoadProfileConfigurationData.setCapturePeriod(Helpers.getLong(parameters, CAPTURE_PERIOD, null));
+        definableLoadProfileConfigurationData
+                .setCapturePeriod(Helpers.getLong(parameters, PlatformSmartmeteringKeys.CAPTURE_PERIOD, null));
         return definableLoadProfileConfigurationData;
     }
 }
