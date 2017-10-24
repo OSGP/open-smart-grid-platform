@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
+package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.simulator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -20,12 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
+import com.alliander.osgp.cucumber.core.GlueBase;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class DeviceSimulatorSteps extends AbstractSmartMeteringSteps {
+public class DeviceSimulatorSteps extends GlueBase {
 
     @Autowired
     private SimulatorTriggerClient simulatorTriggerClient;
