@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.domain.repositories;
 
 import java.util.List;
 
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,7 @@ public interface DlmsSecurityKeyRepository extends JpaRepository<SecurityKey, Lo
 
     @Query("SELECT s FROM SecurityKey s JOIN FETCH s.dlmsDevice WHERE s.securityKeyType = (:securityKeyType)")
     public List<SecurityKey> findBySecurityKeyType(@Param("securityKeyType") SecurityKeyType securityKeyType);
+
+    SecurityKey findByDlmsDeviceAndSecurityKeyTypeAndValidToIsNull(DlmsDevice dlmsDevice,
+            SecurityKeyType securityKeyType);
 }
