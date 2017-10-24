@@ -219,7 +219,8 @@ public class DeviceManagementEndpoint {
     public FindMessageLogsResponse findMessageLogs(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindMessageLogsRequest request) throws OsgpException {
 
-        LOGGER.info("Find message logs for organisation: {}.", organisationIdentification);
+        LOGGER.info("Find message logs of device '{}' for organisation: {}.", request.getDeviceIdentification(),
+                organisationIdentification);
 
         final FindMessageLogsResponse response = new FindMessageLogsResponse();
 

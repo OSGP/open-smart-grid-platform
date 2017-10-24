@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.logging.domain.repositories;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,8 +16,5 @@ import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 
 @Repository
 public interface DeviceLogItemRepository extends JpaRepository<DeviceLogItem, Long> {
-    Page<DeviceLogItem> findByDeviceIdentificationInOrderByCreationTimeDesc(List<String> deviceIdentification,
-            Pageable pagable);
-
     Page<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
 }
