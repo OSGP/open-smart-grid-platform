@@ -16,6 +16,7 @@ import javax.crypto.KeyGenerator;
 import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
+import org.osgp.adapter.protocol.dlms.domain.commands.ConfigureDefinableLoadProfileCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GenerateAndReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
@@ -47,6 +48,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
@@ -118,6 +120,8 @@ public class ConfigurationService {
 
     @Autowired
     private EncryptionService encryptionService;
+
+    private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
 
     public static final int AES_GMC_128_KEY_SIZE = 128;
 
@@ -325,6 +329,18 @@ public class ConfigurationService {
                 this.getConfigurationObjectCommandExecutor.execute(conn, device, null));
     }
 
+    public void configureDefinableLoadProfile(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration)
+            throws ProtocolAdapterException {
+
+        try {
+            this.configureDefinableLoadProfileCommandExecutor.execute(conn, device, definableLoadProfileConfiguration);
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Unexpected exception while configuring definable load profile.", e);
+            throw e;
+        }
+    }
+
     private String getSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType securityKeyType)
             throws FunctionalException {
         SecurityKey savedSecurityKey = null;
@@ -367,5 +383,4 @@ public class ConfigurationService {
             throw new AssertionError("Expected AES algorithm to be available for key generation.", e);
         }
     }
-
 }
