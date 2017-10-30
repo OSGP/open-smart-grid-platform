@@ -347,6 +347,14 @@
     <wsdl:part element="smconf:SetMbusUserKeyByChannelAsyncResponse" name="SetMbusUserKeyByChannelAsyncResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="SetMbusUserKeyByChannelAsyncRequest">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelAsyncRequest" name="SetMbusUserKeyByChannelAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetMbusUserKeyByChannelResponse">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelResponse" name="SetMbusUserKeyByChannelResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="SmartMeteringConfigurationPort">
 
     <wsdl:operation name="GetGetFirmwareVersionResponse">

@@ -1040,12 +1040,12 @@
       <xsd:extension base="common:Command">
         <xsd:sequence>
           <xsd:element name="Channel">
--           <xsd:simpleType>
--             <xsd:restriction base="xsd:unsignedByte">
--               <xsd:minInclusive value="1" />
--               <xsd:maxInclusive value="4" />
--             </xsd:restriction>
--           </xsd:simpleType>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:unsignedByte">
+                <xsd:minInclusive value="1" />
+                <xsd:maxInclusive value="4" />
+              </xsd:restriction>
+            </xsd:simpleType>
           </xsd:element>
         </xsd:sequence>
       </xsd:extension>
