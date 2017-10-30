@@ -214,7 +214,14 @@
         <xsd:extension base="smconf:DefinableLoadProfileConfigurationData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
-  </xsd:element>  
+  </xsd:element>
+  <xsd:element name="SetMbusUserKeyByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetMbusUserKeyByChannelRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:complexType name="Actions">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">
@@ -245,6 +252,7 @@
         <xsd:element ref="tns:GetProfileGenericDataRequest" />
         <xsd:element ref="tns:GenerateAndReplaceKeysRequest" />
         <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest" />
+        <xsd:element ref="tns:SetMbusUserKeyByChannelRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
