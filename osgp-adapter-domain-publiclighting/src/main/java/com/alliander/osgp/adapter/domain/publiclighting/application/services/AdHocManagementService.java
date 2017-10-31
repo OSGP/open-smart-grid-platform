@@ -80,8 +80,8 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.LightValueDto> lightValuesDto = this.domainCoreMapper.mapAsList(
-                lightValues, com.alliander.osgp.dto.valueobjects.LightValueDto.class);
+        final List<com.alliander.osgp.dto.valueobjects.LightValueDto> lightValuesDto = this.domainCoreMapper
+                .mapAsList(lightValues, com.alliander.osgp.dto.valueobjects.LightValueDto.class);
         final LightValueMessageDataContainerDto lightValueMessageDataContainer = new LightValueMessageDataContainerDto(
                 lightValuesDto);
 
@@ -113,13 +113,13 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper.map(
-                allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
+        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper
+                .map(allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
-        final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType()) ? DeviceFunction.GET_LIGHT_SENSOR_STATUS
-                .name() : messageType;
+        final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType())
+                ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name() : messageType;
 
-                this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), actualMessageType, device.getIpAddress());
     }
 
@@ -149,9 +149,9 @@ public class AdHocManagementService extends AbstractService {
             }
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, response.getResult(), response.getOsgpException(), response
-                .getDeviceStatusMapped()));
+        this.webServiceResponseMessageSender
+                .send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification,
+                        response.getResult(), response.getOsgpException(), response.getDeviceStatusMapped()));
     }
 
     private void handleLmd(final DeviceStatus status, final GetStatusResponse response) {
@@ -188,9 +188,11 @@ public class AdHocManagementService extends AbstractService {
             // Map the DeviceStatus for SSLD.
             final DeviceStatusMapped deviceStatusMapped = new DeviceStatusMapped(
                     FilterLightAndTariffValuesHelper.filterTariffValues(status.getLightValues(), dosMap,
-                            allowedDomainType), FilterLightAndTariffValuesHelper.filterLightValues(
-                                    status.getLightValues(), dosMap, allowedDomainType), status.getPreferredLinkType(),
-                                    status.getActualLinkType(), status.getLightType(), status.getEventNotificationsMask());
+                            allowedDomainType),
+                    FilterLightAndTariffValuesHelper.filterLightValues(status.getLightValues(), dosMap,
+                            allowedDomainType),
+                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                    status.getEventNotificationsMask());
 
             // Update the relay overview with the relay information.
             this.updateDeviceRelayOverview(ssld, deviceStatusMapped);
@@ -218,8 +220,8 @@ public class AdHocManagementService extends AbstractService {
 
         if (!ssld.getHasSchedule()) {
             throw new FunctionalException(FunctionalExceptionType.UNSCHEDULED_DEVICE,
-                    ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(String.format(
-                            "Device %1$s does not have a schedule.", deviceIdentification)));
+                    ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(
+                            String.format("Device %1$s does not have a schedule.", deviceIdentification)));
         }
 
         final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainerDto = new ResumeScheduleMessageDataContainerDto(
@@ -235,18 +237,30 @@ public class AdHocManagementService extends AbstractService {
             final String correlationUid, @NotNull final TransitionType transitionType, final DateTime transitionTime,
             final String messageType) throws FunctionalException {
 
-        LOGGER.debug("setTransition called for device {} with organisation {}", deviceIdentification,
+        LOGGER.debug("Public setTransition called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
+
+        this.setTransition(organisationIdentification, device, correlationUid, transitionType, transitionTime,
+                messageType);
+    }
+
+    private void setTransition(final String organisationIdentification, final Device device,
+            final String correlationUid, final TransitionType transitionType, final DateTime transitionTime,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.debug("Private setTransition called for device {} with organisation {}",
+                device.getDeviceIdentification(), organisationIdentification);
 
         final TransitionMessageDataContainerDto transitionMessageDataContainerDto = new TransitionMessageDataContainerDto(
                 this.domainCoreMapper.map(transitionType, com.alliander.osgp.dto.valueobjects.TransitionTypeDto.class),
                 transitionTime);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, transitionMessageDataContainerDto), messageType, device.getIpAddress());
+                device.getDeviceIdentification(), transitionMessageDataContainerDto), messageType,
+                device.getIpAddress());
     }
 
     // === TRANSITION MESSAGE FROM LIGHT MEASUREMENT DEVICE ===
@@ -291,6 +305,7 @@ public class AdHocManagementService extends AbstractService {
         }
 
         // Find all SSLDs which need to receive a SET_TRANSITION message.
+        LOGGER.info("Find SSLDs for light measurement device: {}", deviceIdentification);
         final List<Ssld> ssldsToTransition = this.ssldRepository
                 .findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
                         lmd, DeviceLifecycleStatus.IN_USE);
@@ -330,8 +345,8 @@ public class AdHocManagementService extends AbstractService {
             final String correlationUid, final TransitionType transitionType, final DateTime transitionTime) {
         for (final Ssld ssld : ssldsToTransition) {
             try {
-                this.setTransition(organisationIdentification, ssld.getDeviceIdentification(), correlationUid,
-                        transitionType, transitionTime, DeviceFunction.SET_TRANSITION.name());
+                this.setTransition(organisationIdentification, ssld, correlationUid, transitionType, transitionTime,
+                        DeviceFunction.SET_TRANSITION.name());
             } catch (final FunctionalException e) {
                 LOGGER.error("Caught unexpected FunctionalException", e);
             }
@@ -429,13 +444,13 @@ public class AdHocManagementService extends AbstractService {
         if (osgpException == null) {
             LOGGER.info(
                     "Received response: {} for messageType: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
-                    responseMessageResultType.getValue(), messageType, deviceIdentification,
-                    organisationIdentification, correlationUid);
+                    responseMessageResultType.getValue(), messageType, deviceIdentification, organisationIdentification,
+                    correlationUid);
         } else {
             LOGGER.error(
                     "Exception: {} for response: {} for messageType: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
-                    osgpException.getMessage(), responseMessageResultType.getValue(), messageType,
-                    deviceIdentification, organisationIdentification, correlationUid);
+                    osgpException.getMessage(), responseMessageResultType.getValue(), messageType, deviceIdentification,
+                    organisationIdentification, correlationUid);
         }
 
     }
