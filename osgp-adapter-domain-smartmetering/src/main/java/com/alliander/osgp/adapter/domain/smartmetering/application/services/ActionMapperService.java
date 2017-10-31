@@ -52,6 +52,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigu
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
@@ -79,6 +80,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
@@ -150,6 +152,7 @@ public class ActionMapperService {
         CLASS_MAP.put(ProfileGenericDataRequestData.class, ProfileGenericDataRequestDataDto.class);
         CLASS_MAP.put(GenerateAndReplaceKeysRequestData.class, GenerateAndReplaceKeysRequestDataDto.class);
         CLASS_MAP.put(DefinableLoadProfileConfigurationData.class, DefinableLoadProfileConfigurationDto.class);
+        CLASS_MAP.put(SetMbusUserKeyByChannelRequestData.class, SetMbusUserKeyByChannelRequestDataDto.class);
     }
 
     /**
@@ -189,6 +192,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequestData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GenerateAndReplaceKeysRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(DefinableLoadProfileConfigurationData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetMbusUserKeyByChannelRequestData.class, this.configurationMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageDataContainer,
