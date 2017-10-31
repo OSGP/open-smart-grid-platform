@@ -7,10 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.KeyGenerator;
-
+import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -37,7 +34,8 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
-    public static final int AES_GMC_128_KEY_SIZE = 128;
+    @Autowired
+    private DomainHelperService domainHelperService;
 
     public GenerateAndReplaceKeyCommandExecutor() {
         super(GenerateAndReplaceKeysRequestDataDto.class);
@@ -60,22 +58,12 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     }
 
     private SetKeysRequestDto generateAndEncryptKeys() throws FunctionalException {
-        final byte[] authenticationKey = this.generateKey();
-        final byte[] encryptionKey = this.generateKey();
+        final byte[] authenticationKey = this.domainHelperService.generateKey();
+        final byte[] encryptionKey = this.domainHelperService.generateKey();
 
         final byte[] encryptedAuthenticationKey = this.encryptionService.encrypt(authenticationKey);
         final byte[] encryptedEncryptionKey = this.encryptionService.encrypt(encryptionKey);
 
         return new SetKeysRequestDto(encryptedAuthenticationKey, encryptedEncryptionKey);
-    }
-
-    private final byte[] generateKey() {
-        try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(AES_GMC_128_KEY_SIZE);
-            return keyGenerator.generateKey().getEncoded();
-        } catch (final NoSuchAlgorithmException e) {
-            throw new AssertionError("Expected AES algorithm to be available for key generation.", e);
-        }
     }
 }

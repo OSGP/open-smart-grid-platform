@@ -23,10 +23,8 @@ import org.openmuc.jdlms.interfaceclass.method.MBusClientMethod;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -66,9 +64,6 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
 
     @Autowired
     private DomainHelperService domainHelperService;
-
-    @Autowired
-    private DlmsSecurityKeyRepository dlmsSecurityKeyRepository;
 
     public SetEncryptionKeyExchangeOnGMeterCommandExecutor() {
         super(GMeterInfoDto.class);
@@ -145,15 +140,6 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
             throw new ProtocolAdapterException(
                     "Unexpected exception during decryption of security keys, reason = " + e.getMessage());
         }
-    }
-
-    public SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType) {
-        return this.dlmsSecurityKeyRepository.findByDlmsDeviceAndSecurityKeyTypeAndValidToIsNull(device,
-                securityKeyType);
-    }
-
-    public SecurityKey saveSecurityKey(final SecurityKey securityKey) {
-        return this.dlmsSecurityKeyRepository.save(securityKey);
     }
 
     private void checkMethodResultCode(final MethodResult methodResultCode, final String methodParameterName)

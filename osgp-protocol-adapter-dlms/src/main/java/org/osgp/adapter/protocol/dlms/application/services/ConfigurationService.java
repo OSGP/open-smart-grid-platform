@@ -7,11 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.List;
-
-import javax.crypto.KeyGenerator;
 
 import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AccessResultCode;
@@ -32,7 +28,6 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandEx
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -332,7 +327,6 @@ public class ConfigurationService {
     public void configureDefinableLoadProfile(final DlmsConnectionHolder conn, final DlmsDevice device,
             final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration)
             throws ProtocolAdapterException {
-
         try {
             this.configureDefinableLoadProfileCommandExecutor.execute(conn, device, definableLoadProfileConfiguration);
         } catch (final ProtocolAdapterException e) {
@@ -343,44 +337,15 @@ public class ConfigurationService {
 
     private String getSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType securityKeyType)
             throws FunctionalException {
-        SecurityKey savedSecurityKey = null;
-        SecurityKey newSecurityKey = null;
-
-        savedSecurityKey = this.setEncryptionKeyExchangeOnGMeterCommandExecutor.getSecurityKey(dlmsDevice,
-                securityKeyType);
-
-        if (savedSecurityKey == null) {
-            newSecurityKey = this.generateAndSaveSecurityKey(dlmsDevice, securityKeyType);
-        } else {
-            final Date now = new Date();
-            savedSecurityKey.setValidTo(now);
-            this.setEncryptionKeyExchangeOnGMeterCommandExecutor.saveSecurityKey(savedSecurityKey);
-
-            newSecurityKey = this.generateAndSaveSecurityKey(dlmsDevice, securityKeyType);
-        }
-        return newSecurityKey.getKey();
-    }
-
-    private SecurityKey generateAndSaveSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType securityKeyType)
-            throws FunctionalException {
-        // new generated key
-        final byte[] generatedKey = this.generateKey();
+        final byte[] generatedKey = this.domainHelperService.generateKey();
         final byte[] encryptedKey = this.encryptionService.encrypt(generatedKey);
 
-        final Date now = new Date();
-        final SecurityKey securityKey = new SecurityKey(dlmsDevice, securityKeyType, Hex.encodeHexString(encryptedKey),
-                now, null);
+        // Add the new key and store in the repo
+        DlmsDevice devicePostSave = this.domainHelperService.storeNewKey(dlmsDevice, encryptedKey, securityKeyType);
 
-        return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.saveSecurityKey(securityKey);
-    }
+        // Update key status
+        devicePostSave = this.domainHelperService.storeNewKeyState(devicePostSave, securityKeyType);
 
-    private final byte[] generateKey() {
-        try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(AES_GMC_128_KEY_SIZE);
-            return keyGenerator.generateKey().getEncoded();
-        } catch (final NoSuchAlgorithmException e) {
-            throw new AssertionError("Expected AES algorithm to be available for key generation.", e);
-        }
+        return Hex.encodeHexString(encryptedKey);
     }
 }

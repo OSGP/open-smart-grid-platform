@@ -25,4 +25,8 @@ public interface DlmsSecurityKeyRepository extends JpaRepository<SecurityKey, Lo
 
     SecurityKey findByDlmsDeviceAndSecurityKeyTypeAndValidToIsNull(DlmsDevice dlmsDevice,
             SecurityKeyType securityKeyType);
+
+    SecurityKey findByDlmsDeviceAndSecurityKeyTypeAndValidToNotNull(DlmsDevice dlmsDevice,
+            SecurityKeyType securityKeyType);
+
 }
