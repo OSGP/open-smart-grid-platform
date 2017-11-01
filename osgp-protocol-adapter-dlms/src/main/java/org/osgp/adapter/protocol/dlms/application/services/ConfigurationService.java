@@ -16,6 +16,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GenerateAndReplaceKeyComma
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetMBusDeviceOnChannelCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
@@ -39,18 +40,21 @@ import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
@@ -89,6 +93,9 @@ public class ConfigurationService {
 
     @Autowired
     private SetEncryptionKeyExchangeOnGMeterCommandExecutor setEncryptionKeyExchangeOnGMeterCommandExecutor;
+
+    @Autowired
+    private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
 
     @Autowired
     private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
@@ -217,6 +224,40 @@ public class ConfigurationService {
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
         return "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + device.getDeviceIdentification();
+    }
+
+    public String setMbusUserKeyByChannel(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestDataDto)
+            throws ProtocolAdapterException, FunctionalException {
+
+        LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
+
+        final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest = new GetMBusDeviceOnChannelRequestDataDto(
+                device.getDeviceIdentification(), setMbusUserKeyByChannelRequestDataDto.getChannel());
+        final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor.execute(conn,
+                device, mbusDeviceOnChannelRequest);
+
+        final DlmsDevice mbusDevice = this.domainHelperService.findMbusDevice(
+                Long.valueOf(channelElementValues.getIdentificationNumber()),
+                channelElementValues.getManufacturerIdentification());
+
+        /*
+         * TODO change this with set encryption key exchange on g-meter updates.
+         *
+         * Set encryption key exchange on g-meter is being refactored because
+         * the G_METER_ENCRYPTION key should be generated and not retrieved from
+         * the database. When these changes get merged the following lines will
+         * very likely be broken and should be updated in a similar manner.
+         */
+
+        final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(
+                setMbusUserKeyByChannelRequestDataDto.getChannel(), mbusDevice.getDeviceIdentification(),
+                mbusDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey(),
+                mbusDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
+
+        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
+
+        return "Set M-Bus User Key By Channel Result is OK for device id: " + device.getDeviceIdentification();
     }
 
     public String setActivityCalendar(final DlmsConnectionHolder conn, final DlmsDevice device,

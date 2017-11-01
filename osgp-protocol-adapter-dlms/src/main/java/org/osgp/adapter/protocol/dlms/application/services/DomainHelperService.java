@@ -134,4 +134,17 @@ public class DomainHelperService {
         }
         return deviceIpAddress;
     }
+
+    public DlmsDevice findMbusDevice(final Long mbusIdentificationNumber, final String mbusManufacturerIdentification)
+            throws FunctionalException {
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository
+                .findByMbusIdentificationNumberAndMbusManufacturerIdentification(mbusIdentificationNumber,
+                        mbusManufacturerIdentification);
+        if (dlmsDevice == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                    new ProtocolAdapterException("Unable to find M-Bus device for M-Bus identification number: "
+                            + mbusIdentificationNumber + " and manufacturer ID: " + mbusManufacturerIdentification));
+        }
+        return dlmsDevice;
+    }
 }

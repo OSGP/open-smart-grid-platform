@@ -15,4 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
 
     DlmsDevice findByDeviceIdentification(String deviceIdentification);
+
+    DlmsDevice findByMbusIdentificationNumberAndMbusManufacturerIdentification(Long mbusIdentificationNumber,
+            String mbusManufacturerIdentification);
 }
