@@ -5,6 +5,7 @@
   xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
   xmlns:smmon="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
   xmlns:adhoc="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10"
+  xmlns:sminst="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10"
   xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10"
   attributeFormDefault="unqualified" elementFormDefault="qualified"
   targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10">
@@ -23,6 +24,9 @@
   <xsd:import
     namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10"
     schemaLocation="sm-adhoc.xsd" />
+  <xsd:import
+    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10"
+    schemaLocation="sm-installation.xsd" />
 
   <!-- Requests and Responses -->
   <xsd:element name="FindEventsRequest">
@@ -214,7 +218,14 @@
         <xsd:extension base="smconf:DefinableLoadProfileConfigurationData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
-  </xsd:element>  
+  </xsd:element> 
+    <xsd:element name="CoupleMbusDeviceByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="sminst:CoupleMbusDeviceByChannelRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>   
   <xsd:complexType name="Actions">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">
@@ -245,6 +256,7 @@
         <xsd:element ref="tns:GetProfileGenericDataRequest" />
         <xsd:element ref="tns:GenerateAndReplaceKeysRequest" />
         <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest" />
+        <xsd:element ref="tns:CoupleMbusDeviceByChannelRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
