@@ -9,10 +9,11 @@ Feature: SmartMetering Configuration
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And a dlms device
-      | DeviceIdentification        | TESTG102400000001 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     |                 1 |
+      | DeviceIdentification        | TESTG102400000001                                                |
+      | DeviceType                  | SMART_METER_G                                                    |
+      | GatewayDeviceIdentification | TEST1024000000001                                                |
+      | Channel                     |                                                                1 |
+      | MbusUserKey                 | 17ec0e5f6a3314df6239cf9f1b902cbfc9f39e82c57a40ffd8a3e552cc720c92 |
 
   Scenario: Set special days on a device
     When the set special days request is received
@@ -100,10 +101,34 @@ Feature: SmartMetering Configuration
   Scenario: Exchange user key on a gas device
     When the exchange user key request is received
       | DeviceIdentification | TESTG102400000001 |
-    Then the new user key should be set on the gas device
-      | DeviceIdentification        | TESTG102400000001 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1024000000001 |
+    Then the exchange user key response should be returned
+      | DeviceIdentification | TESTG102400000001 |
+      | Result               | OK                |
+    And a valid m-bus user key is stored
+      | DeviceIdentification | TESTG102400000001 |
+
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
+  Scenario: Exchange user key on an m-bus device identified by channel
+    Given a dlms device
+      | DeviceIdentification           | TESTG101205673117 |
+      | DeviceType                     | SMART_METER_G     |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusManufacturerIdentification | LGB               |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
+      | 5 |         1 |
+      | 6 | 302343985 |
+      | 7 |     12514 |
+      | 8 |        66 |
+      | 9 |         3 |
+    When the set m-bus user key by channel request is received
+      | DeviceIdentification | TEST1024000000001 |
+      | Channel              |                 2 |
+    Then the set m-bus user key by channel response should be returned
+      | DeviceIdentification | TEST1024000000001 |
+      | Result               | OK                |
+    And a valid m-bus user key is stored
+      | DeviceIdentification | TESTG101205673117 |
 
   Scenario: Use wildcards for set activity calendar
     When the set activity calendar request is received

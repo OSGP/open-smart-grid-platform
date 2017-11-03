@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -305,6 +306,47 @@ public class DlmsDeviceSteps {
                 receivedMbusDefaultKey, mbusDefaultKey.getKey());
     }
 
+    @Then("^a valid m-bus user key is stored$")
+    public void aValidMbusUserKeyIsStored(final Map<String, String> settings) throws Throwable {
+        final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
+        final String deviceIdentification = settings.get(keyDeviceIdentification);
+        assertNotNull("The M-Bus device identification must be in the step data for key " + keyDeviceIdentification,
+                deviceIdentification);
+
+        final String deviceDescription = "M-Bus device with identification " + deviceIdentification;
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
+
+        final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
+
+        int numberOfMbusDefaultKeys = 0;
+        int numberOfMbusUserKeys = 0;
+        int numberOfValidMbusUserKeys = 0;
+
+        final Date now = new Date();
+        for (final SecurityKey securityKey : securityKeys) {
+            switch (securityKey.getSecurityKeyType()) {
+            case G_METER_MASTER:
+                numberOfMbusDefaultKeys += 1;
+                break;
+            case G_METER_ENCRYPTION:
+                numberOfMbusUserKeys += 1;
+                final Date validFrom = securityKey.getValidFrom();
+                final Date validTo = securityKey.getValidTo();
+                if ((validFrom != null && now.after(validFrom)) && (validTo == null || now.before(validTo))) {
+                    numberOfValidMbusUserKeys += 1;
+                }
+                break;
+            default:
+                // other keys are not counted
+            }
+        }
+
+        assertEquals("Number of M-Bus Default keys stored", 1, numberOfMbusDefaultKeys);
+        assertTrue("At least one M-Bus User key must be stored", numberOfMbusUserKeys > 0);
+        assertEquals("Number of valid M-Bus User keys stored", 1, numberOfValidMbusUserKeys);
+    }
+
     private void setScenarioContextForDevice(final Map<String, String> inputSettings, final Device device) {
         final String deviceType = inputSettings.get(PlatformSmartmeteringKeys.DEVICE_TYPE);
         if (this.isGasSmartMeter(deviceType)) {
@@ -354,13 +396,21 @@ public class DlmsDeviceSteps {
     private void createDlmsDeviceInProtocolAdapterDatabase(final Map<String, String> inputSettings) {
         final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().withSettings(inputSettings);
 
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.GATEWAY_DEVICE_IDENTIFICATION)) {
-            dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().enable();
-            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().enable();
-        } else if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE)
+        final String deviceType = inputSettings.getOrDefault(PlatformSmartmeteringKeys.DEVICE_TYPE, SMART_METER_E);
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE)
                 && "true".equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
             dlmsDeviceBuilder.getPasswordBuilder().enable();
-        } else {
+        } else if (this.isGasSmartMeter(deviceType)) {
+            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().enable();
+            /*
+             * Don't insert a default value for the M-Bus User key. So only
+             * enable the builder if an M-Bus User key is explicitly configured
+             * in the step data.
+             */
+            if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_USER_KEY)) {
+                dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().enable();
+            }
+        } else if (this.isESmartMeter(deviceType)) {
             dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().enable();
             dlmsDeviceBuilder.getMasterSecurityKeyBuilder().enable();
             dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
