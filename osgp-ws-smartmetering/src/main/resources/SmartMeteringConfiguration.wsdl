@@ -141,6 +141,28 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="GetMBusEncryptionKeyStatusRequest">
+    <wsdl:part element="smconf:GetMBusEncryptionKeyStatusRequest"
+      name="GetMBusEncryptionKeyStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetMBusEncryptionKeyStatusAsyncResponse">
+    <wsdl:part element="smconf:GetMBusEncryptionKeyStatusAsyncResponse"
+      name="GetMBusEncryptionKeyStatusAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetMBusEncryptionKeyStatusAsyncRequest">
+    <wsdl:part element="smconf:GetMBusEncryptionKeyStatusAsyncRequest"
+      name="GetMBusEncryptionKeyStatusAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetMBusEncryptionKeyStatusResponse">
+    <wsdl:part element="smconf:GetMBusEncryptionKeyStatusResponse"
+      name="GetMBusEncryptionKeyStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:message name="SetActivityCalendarRequest">
     <wsdl:part element="smconf:SetActivityCalendarRequest"
       name="setActivityCalendarRequest">
@@ -499,6 +521,24 @@
       </wsdl:input>
       <wsdl:output message="tns:SetEncryptionKeyExchangeOnGMeterResponse"
         name="SetEncryptionKeyExchangeOnGMeterResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetMBusEncryptionKeyStatus">
+      <wsdl:input message="tns:GetMBusEncryptionKeyStatusRequest"
+        name="GetMBusEncryptionKeyStatusRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetMBusEncryptionKeyStatusAsyncResponse"
+        name="GetMBusEncryptionKeyStatusAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetMBusEncryptionKeyStatusResponse">
+      <wsdl:input message="tns:GetMBusEncryptionKeyStatusAsyncRequest"
+        name="GetMBusEncryptionKeyStatusAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetMBusEncryptionKeyStatusResponse"
+        name="GetMBusEncryptionKeyStatusResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -918,6 +958,37 @@
           use="literal" />
       </wsdl:input>
       <wsdl:output name="SetEncryptionKeyExchangeOnGMeterResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetMBusEncryptionKeyStatus">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetMBusEncryptionKeyStatusRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetMBusEncryptionKeyStatusAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetMBusEncryptionKeyStatusResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetMBusEncryptionKeyStatusAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetMBusEncryptionKeyStatusResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
