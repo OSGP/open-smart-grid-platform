@@ -108,7 +108,7 @@ Feature: SmartMetering Configuration
       | Channel                     |                 1 |
     When the exchange user key request is received
       | DeviceIdentification | TESTG102411111111 |
-    Then the new user key is generated and should be set on the gas device
+    Then the new user key is generated and should be set on the M-bus device
       | DeviceIdentification        | TESTG102411111111 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST2560000000001 |

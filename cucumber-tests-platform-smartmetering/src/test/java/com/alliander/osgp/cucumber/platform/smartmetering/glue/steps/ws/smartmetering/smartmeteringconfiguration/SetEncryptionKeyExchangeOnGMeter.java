@@ -93,8 +93,8 @@ public class SetEncryptionKeyExchangeOnGMeter {
         assertNotNull("Generated user key is null", newSecurityKey);
     }
 
-    @Then("^the new user key is generated and should be set on the gas device$")
-    public void theNewUserKeyIsGeneratedAndShouldBeSetOnTheGasDevice(final Map<String, String> settings)
+    @Then("^the new user key is generated and should be set on the M-bus device$")
+    public void theNewUserKeyIsGeneratedAndShouldBeSetOnTheMbusDevice(final Map<String, String> settings)
             throws Throwable {
         final SetEncryptionKeyExchangeOnGMeterAsyncRequest setEncryptionKeyExchangeOnGMeterAsyncRequest = SetEncryptionKeyExchangeOnGMeterRequestFactory
                 .fromScenarioContext();
