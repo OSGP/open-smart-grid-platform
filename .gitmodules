@@ -1,4 +1,4 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = SLIM-1382-mbus-keys-status
+	branch = SLIM-1382-mbus-encryption-key-status
