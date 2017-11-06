@@ -12,7 +12,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
  */
 public enum IED {
     FLEX_OVL("SWDeviceGeneric"),
-    ABB_RTU("TEMPLATE"),
+    ABB_RTU("AA1TH01"),
     ZOWN_RTU("WAGO61850Server"),
     DA_RTU("WAGO61850Server");
 

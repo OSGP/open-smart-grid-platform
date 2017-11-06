@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
@@ -96,13 +98,6 @@ public class Iec61850EnableReportingCommand {
             return;
         }
 
-        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                (FcModelNode) reporting.getFcmodelNode()
-                        .getChild(SubDataAttribute.RESERVE_REPORTING_CONTROL_BLOCK.getDescription()));
-
-        // Write reserve boolean.
-        reporting.writeBoolean(SubDataAttribute.RESERVE_REPORTING_CONTROL_BLOCK, true);
-
         // Only reading the sequence number for the report node, as the report
         // node is not fully described by the ServerModel when using an ICD
         // file. Since the report node differs from the ServerModel, a full read
@@ -119,6 +114,17 @@ public class Iec61850EnableReportingCommand {
 
         final String dataSetReference = reporting.getString(SubDataAttribute.DATA_SET);
         LOGGER.info("dataSetReference for buffered reports: {}", dataSetReference);
+
+        if (StringUtils.isEmpty(dataSetReference)) {
+            // Data set reference should be something like:
+            // "AA1TH01LD0/LLN0.StatNrmlA".
+            // If not set, this will cause problems. Not possible to write to
+            // this node.
+            final String dataSet = this.getDataSetReferenceForLightMeasurementDevice();
+            LOGGER.warn(
+                    "Expected value like [{}] to be present in {}. This will most likely cause trouble when buffered reports are received in the future!",
+                    dataSet, SubDataAttribute.DATA_SET.getDescription());
+        }
 
         // Enable reporting.
         reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
@@ -162,13 +168,20 @@ public class Iec61850EnableReportingCommand {
         final String dataSetReference = reporting.getString(SubDataAttribute.DATA_SET);
         LOGGER.info("dataSetReference for unbuffered reporting: {}", dataSetReference);
 
-        // Set data set reference.
-        reporting.writeString(SubDataAttribute.DATA_SET, "TEMPLATELD0/LLN0.StatNrmlA");
-        reporting.writeString(SubDataAttribute.REPORT_ID, "A");
+        if (StringUtils.isEmpty(dataSetReference)) {
+            // Set data set reference.
+            reporting.writeString(SubDataAttribute.DATA_SET, this.getDataSetReferenceForLightMeasurementDevice());
+            reporting.writeString(SubDataAttribute.REPORT_ID, "A");
+        }
 
         // Enable reporting.
         reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         LOGGER.info("Allowing light measurement device {} to send unbuffered reports containing events",
                 deviceConnection.getDeviceIdentification());
+    }
+
+    private String getDataSetReferenceForLightMeasurementDevice() {
+        return IED.ABB_RTU.getDescription() + LogicalDevice.LD0.getDescription() + "/"
+                + LogicalNode.LOGICAL_NODE_ZERO.getDescription() + "." + "StatNrmlA";
     }
 }

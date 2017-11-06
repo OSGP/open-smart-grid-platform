@@ -28,6 +28,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 
@@ -44,6 +45,12 @@ public class Iec61850RtuDeviceReportingService {
 
     public void enableReportingForDevice(final DeviceConnection connection, final String deviceIdentification,
             final String serverName) {
+        if (connection.getConnection().getIed() != null && IED.FLEX_OVL.equals(connection.getConnection().getIed())) {
+            // We don't need 'enableReportingForDevice()' logic for FLEX_OVL
+            // devices.
+            return;
+        }
+
         try {
             final Iec61850Device device = this.iec61850DeviceRepository
                     .findByDeviceIdentification(deviceIdentification);
@@ -119,10 +126,8 @@ public class Iec61850RtuDeviceReportingService {
         while (rcb != null) {
             this.enableRcb(deviceIdentification, clientAssociation, rcb);
             i += 1;
-            rcb = this.getRcb(
-                    serverModel,
-                    this.getReportNode(serverName, iec61850Report.getLogicalDevice(), i,
-                            iec61850Report.getLogicalNode()));
+            rcb = this.getRcb(serverModel, this.getReportNode(serverName, iec61850Report.getLogicalDevice(), i,
+                    iec61850Report.getLogicalNode()));
         }
     }
 
@@ -139,13 +144,15 @@ public class Iec61850RtuDeviceReportingService {
         return rcb;
     }
 
-    private void enableRcb(final String deviceIdentification, final ClientAssociation clientAssociation, final Rcb rcb) {
+    private void enableRcb(final String deviceIdentification, final ClientAssociation clientAssociation,
+            final Rcb rcb) {
         try {
             clientAssociation.enableReporting(rcb);
         } catch (final IOException e) {
             LOGGER.error("IOException: unable to enable reporting for deviceIdentification " + deviceIdentification, e);
         } catch (final ServiceError e) {
-            LOGGER.error("ServiceError: unable to enable reporting for deviceIdentification " + deviceIdentification, e);
+            LOGGER.error("ServiceError: unable to enable reporting for deviceIdentification " + deviceIdentification,
+                    e);
         }
     }
 

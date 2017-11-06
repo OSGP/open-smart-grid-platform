@@ -11,13 +11,17 @@ import org.joda.time.DateTime;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.ServerModel;
 
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
+
 public class Iec61850Connection {
 
-    private Iec61850ClientAssociation clientAssociation;
+    private final Iec61850ClientAssociation clientAssociation;
 
-    private ServerModel serverModel;
+    private final ServerModel serverModel;
 
-    private DateTime connectionStartTime;
+    private final DateTime connectionStartTime;
+
+    private IED ied;
 
     public Iec61850Connection(final Iec61850ClientAssociation clientAssociation, final ServerModel serverModel) {
         this.clientAssociation = clientAssociation;
@@ -26,10 +30,11 @@ public class Iec61850Connection {
     }
 
     public Iec61850Connection(final Iec61850ClientAssociation clientAssociation, final ServerModel serverModel,
-            final DateTime connectionStartTime) {
+            final DateTime connectionStartTime, final IED ied) {
         this.clientAssociation = clientAssociation;
         this.serverModel = serverModel;
         this.connectionStartTime = connectionStartTime;
+        this.ied = ied;
     }
 
     public Iec61850ClientAssociation getIec61850ClientAssociation() {
@@ -46,5 +51,9 @@ public class Iec61850Connection {
 
     public DateTime getConnectionStartTime() {
         return this.connectionStartTime;
+    }
+
+    public IED getIed() {
+        return this.ied;
     }
 }
