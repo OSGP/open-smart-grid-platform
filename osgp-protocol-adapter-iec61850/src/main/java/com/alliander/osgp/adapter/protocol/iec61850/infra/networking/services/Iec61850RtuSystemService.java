@@ -87,16 +87,11 @@ public class Iec61850RtuSystemService implements SystemService {
 
         LOGGER.info("Set data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);
 
-        for (final SetPointDto sp : systemIdentifier.getSetPoints()) {
-            final RtuWriteCommand<SetPointDto> command = Iec61850SetPointCommandFactory.getInstance()
-                    .getCommand(sp.getNode() + sp.getId());
-            if (command == null) {
-                LOGGER.warn("Unsupported set point [{}], skip set data for it.", sp.getNode() + sp.getId());
-            } else {
-                command.executeWrite(client, connection, DEVICE, logicalDeviceIndex, sp);
-            }
-        }
-
+        /*
+         * Set profiles before setpoints, so that profile updates can be
+         * detected by an increment of the SchdId after the profiles are already
+         * set to the RTU
+         */
         for (final ProfileDto p : systemIdentifier.getProfiles()) {
             final RtuWriteCommand<ProfileDto> command = Iec61850WriteProfileCommandFactory.getInstance()
                     .getCommand(p.getNode() + p.getId());
@@ -104,6 +99,16 @@ public class Iec61850RtuSystemService implements SystemService {
                 LOGGER.warn("Unsupported profile [{}], skip set data for it.", p.getNode() + p.getId());
             } else {
                 command.executeWrite(client, connection, DEVICE, logicalDeviceIndex, p);
+            }
+        }
+
+        for (final SetPointDto sp : systemIdentifier.getSetPoints()) {
+            final RtuWriteCommand<SetPointDto> command = Iec61850SetPointCommandFactory.getInstance()
+                    .getCommand(sp.getNode() + sp.getId());
+            if (command == null) {
+                LOGGER.warn("Unsupported set point [{}], skip set data for it.", sp.getNode() + sp.getId());
+            } else {
+                command.executeWrite(client, connection, DEVICE, logicalDeviceIndex, sp);
             }
         }
 
