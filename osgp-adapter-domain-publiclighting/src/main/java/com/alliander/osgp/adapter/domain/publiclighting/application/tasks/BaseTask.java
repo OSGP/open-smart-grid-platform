@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.publiclighting.application.tasks;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -122,11 +124,26 @@ public class BaseTask {
     }
 
     /**
+     * Determine the up time of the JVM and test if the JVM was started
+     * recently.
+     */
+    protected boolean isFirstRun() {
+        final RuntimeMXBean mx = ManagementFactory.getRuntimeMXBean();
+        return mx.getUptime() < 10 * 60 * 1000;
+    }
+
+    /**
      * Filter a list of given devices to determine which devices should be
      * contacted. The filtering uses the age of the latest event in comparison
      * with 'maximumAllowedAge'.
      */
     protected List<Device> findDevicesToContact(final List<Device> devices, final int maximumAllowedAge) {
+        if (this.isFirstRun()) {
+            // Contact all devices.
+            LOGGER.info("This is the first run. Contact all devices, devices.size(): {}", devices.size());
+            return devices;
+        }
+
         List<Object> listOfObjectArrays = this.eventRepository.findLatestEventForEveryDevice(devices);
         LOGGER.info("devicesWithEventsList.size(): {}", listOfObjectArrays.size());
 
