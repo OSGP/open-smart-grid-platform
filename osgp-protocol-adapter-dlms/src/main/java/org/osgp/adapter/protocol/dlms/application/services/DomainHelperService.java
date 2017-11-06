@@ -7,15 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-
-import javax.crypto.KeyGenerator;
-
-import org.apache.commons.codec.binary.Hex;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
@@ -38,8 +30,6 @@ public class DomainHelperService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainHelperService.class);
 
     private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
-
-    public static final int AES_GMC_128_KEY_SIZE = 128;
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
@@ -92,60 +82,6 @@ public class DomainHelperService {
             dlmsDevice.setIpAddress(this.getDeviceIpAddressFromSessionProvider(dlmsDevice));
         }
         return dlmsDevice;
-    }
-
-    /**
-     * Store new key
-     *
-     * CAUTION: only call when a successful connection with the device has been
-     * made, and you are sure any existing new key data is NOT VALID.
-     *
-     * @param device
-     *            Device
-     * @param key
-     *            Key data
-     * @param securityKeyType
-     *            Type of key
-     * @return Saved device
-     */
-    public DlmsDevice storeNewKey(final DlmsDevice device, final byte[] key, final SecurityKeyType securityKeyType) {
-        // If a new key exists, delete this key.
-        final SecurityKey existingKey = device.getNewSecurityKey(securityKeyType);
-        if (existingKey != null) {
-            device.getSecurityKeys().remove(existingKey);
-        }
-
-        device.addSecurityKey(new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), null, null));
-        return this.dlmsDeviceRepository.save(device);
-    }
-
-    /**
-     * Store new key state
-     *
-     * @param device
-     *            Device
-     * @param securityKeyTypel
-     *            Type of key
-     * @return Saved device
-     */
-    public DlmsDevice storeNewKeyState(final DlmsDevice device, final SecurityKeyType securityKeyType) {
-        final Date now = new Date();
-        if (device.getValidSecurityKey(securityKeyType) != null) {
-            device.getValidSecurityKey(securityKeyType).setValidTo(now);
-        }
-
-        device.getNewSecurityKey(securityKeyType).setValidFrom(now);
-        return this.dlmsDeviceRepository.save(device);
-    }
-
-    public final byte[] generateKey() {
-        try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(AES_GMC_128_KEY_SIZE);
-            return keyGenerator.generateKey().getEncoded();
-        } catch (final NoSuchAlgorithmException e) {
-            throw new AssertionError("Expected AES algorithm to be available for key generation.", e);
-        }
     }
 
     private String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice)

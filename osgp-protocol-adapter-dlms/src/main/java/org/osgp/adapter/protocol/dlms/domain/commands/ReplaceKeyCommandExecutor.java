@@ -15,7 +15,7 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
-import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.osgp.adapter.protocol.dlms.application.services.KeyHelperService;
 import org.osgp.adapter.protocol.dlms.application.services.ReEncryptionService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
@@ -65,7 +65,7 @@ public class ReplaceKeyCommandExecutor
     private ReEncryptionService reEncryptionService;
 
     @Autowired
-    private DomainHelperService domainHelperService;
+    private KeyHelperService keyHelperService;
 
     static class KeyWrapper {
         private final byte[] bytes;
@@ -139,14 +139,14 @@ public class ReplaceKeyCommandExecutor
             throws ProtocolAdapterException, FunctionalException {
 
         // Add the new key and store in the repo
-        DlmsDevice devicePostSave = this.domainHelperService.storeNewKey(device, keyWrapper.getBytes(),
+        DlmsDevice devicePostSave = this.keyHelperService.storeNewKey(device, keyWrapper.getBytes(),
                 keyWrapper.getSecurityKeyType());
 
         // Send the key to the device.
         this.sendToDevice(conn, devicePostSave, keyWrapper);
 
         // Update key status
-        devicePostSave = this.domainHelperService.storeNewKeyState(devicePostSave, keyWrapper.getSecurityKeyType());
+        devicePostSave = this.keyHelperService.storeNewKeyState(devicePostSave, keyWrapper.getSecurityKeyType());
 
         return devicePostSave;
     }

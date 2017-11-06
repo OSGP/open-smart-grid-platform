@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.osgp.adapter.protocol.dlms.application.services.KeyHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -35,7 +35,7 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     @Autowired
-    private DomainHelperService domainHelperService;
+    private KeyHelperService keyHelperService;
 
     public GenerateAndReplaceKeyCommandExecutor() {
         super(GenerateAndReplaceKeysRequestDataDto.class);
@@ -58,8 +58,8 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     }
 
     private SetKeysRequestDto generateAndEncryptKeys() throws FunctionalException {
-        final byte[] authenticationKey = this.domainHelperService.generateKey();
-        final byte[] encryptionKey = this.domainHelperService.generateKey();
+        final byte[] authenticationKey = this.keyHelperService.generateKey();
+        final byte[] encryptionKey = this.keyHelperService.generateKey();
 
         final byte[] encryptedAuthenticationKey = this.encryptionService.encrypt(authenticationKey);
         final byte[] encryptedEncryptionKey = this.encryptionService.encrypt(encryptionKey);

@@ -9,7 +9,6 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.util.List;
 
-import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.ConfigureDefinableLoadProfileCommandExecutor;
@@ -57,7 +56,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataD
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.security.EncryptionService;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService {
@@ -114,11 +112,9 @@ public class ConfigurationService {
     private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
 
     @Autowired
-    private EncryptionService encryptionService;
+    private KeyHelperService keyHelperService;
 
     private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
-
-    public static final int AES_GMC_128_KEY_SIZE = 128;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -215,7 +211,7 @@ public class ConfigurationService {
 
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(),
-                this.getSecurityKey(gMeterDevice, SecurityKeyType.G_METER_ENCRYPTION),
+                this.keyHelperService.getSecurityKey(gMeterDevice, SecurityKeyType.G_METER_ENCRYPTION),
                 gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
@@ -335,17 +331,4 @@ public class ConfigurationService {
         }
     }
 
-    private String getSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType securityKeyType)
-            throws FunctionalException {
-        final byte[] generatedKey = this.domainHelperService.generateKey();
-        final byte[] encryptedKey = this.encryptionService.encrypt(generatedKey);
-
-        // Add the new key and store in the repo
-        DlmsDevice devicePostSave = this.domainHelperService.storeNewKey(dlmsDevice, encryptedKey, securityKeyType);
-
-        // Update key status
-        devicePostSave = this.domainHelperService.storeNewKeyState(devicePostSave, securityKeyType);
-
-        return Hex.encodeHexString(encryptedKey);
-    }
 }
