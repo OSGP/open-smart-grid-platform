@@ -30,6 +30,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmw
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
@@ -229,6 +233,24 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
         return (SetEncryptionKeyExchangeOnGMeterResponse) this.getTemplate()
                 .marshalSendAndReceive(setEncryptionKeyExchangeOnGMeterAsyncRequest);
+    }
+
+    public GetMBusEncryptionKeyStatusAsyncResponse getMBusEncryptionKeyStatus(
+            final GetMBusEncryptionKeyStatusRequest getMBusEncryptionKeyStatusRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (GetMBusEncryptionKeyStatusAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(getMBusEncryptionKeyStatusRequest);
+    }
+
+    public GetMBusEncryptionKeyStatusResponse retrieveGetMBusEncryptionKeyStatusResponse(
+            final GetMBusEncryptionKeyStatusAsyncRequest getMBusEncryptionKeyStatusAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = getMBusEncryptionKeyStatusAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (GetMBusEncryptionKeyStatusResponse) this.getTemplate()
+                .marshalSendAndReceive(getMBusEncryptionKeyStatusAsyncRequest);
     }
 
     public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest replaceKeysRequest)
