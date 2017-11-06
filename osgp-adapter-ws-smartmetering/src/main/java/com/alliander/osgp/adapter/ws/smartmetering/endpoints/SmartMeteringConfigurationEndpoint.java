@@ -30,6 +30,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.Configur
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.EncryptionKeyStatus;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncResponse;
@@ -47,6 +48,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmw
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
@@ -102,6 +107,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
@@ -474,27 +480,6 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
-            @RequestPayload final SetEncryptionKeyExchangeOnGMeterAsyncRequest request) throws OsgpException {
-
-        SetEncryptionKeyExchangeOnGMeterResponse response = null;
-        try {
-            response = new SetEncryptionKeyExchangeOnGMeterResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
-
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
     @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
@@ -524,6 +509,80 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             LOGGER.error(
                     "Exception: {} while setting Encryption Key Exchange On G-Meter on device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
+            @RequestPayload final SetEncryptionKeyExchangeOnGMeterAsyncRequest request) throws OsgpException {
+
+        SetEncryptionKeyExchangeOnGMeterResponse response = null;
+        try {
+            response = new SetEncryptionKeyExchangeOnGMeterResponse();
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "GetMBusEncryptionKeyStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetMBusEncryptionKeyStatusAsyncResponse getMBusEncryptionKeyStatus(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetMBusEncryptionKeyStatusRequest request,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
+
+        LOGGER.info("Get M-Bus encryption key status request received from organisation {} for device {}",
+                organisationIdentification, request.getDeviceIdentification());
+
+        GetMBusEncryptionKeyStatusAsyncResponse asyncResponse = null;
+        try {
+            final String correlationUid = this.configurationService.enqueueGetMBusEncryptionKeyStatusRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.configurationMapper.map(scheduleTime, Long.class));
+
+            asyncResponse = new GetMBusEncryptionKeyStatusAsyncResponse();
+
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "GetMBusEncryptionKeyStatusAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetMBusEncryptionKeyStatusResponse getGetMBusEncryptionKeyStatusResponse(
+            @RequestPayload final GetMBusEncryptionKeyStatusAsyncRequest request) throws OsgpException {
+
+        GetMBusEncryptionKeyStatusResponse response = null;
+        try {
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the M-Bus encryption key status.");
+
+            response = new GetMBusEncryptionKeyStatusResponse();
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            response.setEncryptionKeyStatus(EncryptionKeyStatus
+                    .fromValue(((EncryptionKeyStatusType) meterResponseData.getMessageData()).name()));
+
+        } catch (final Exception e) {
             this.handleException(e);
         }
         return response;
@@ -813,7 +872,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     @PayloadRoot(localPart = "GenerateAndReplaceKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public GenerateAndReplaceKeysAsyncResponse generateAndReplaceKeys(@OrganisationIdentification final String organisationIdentification,
+    public GenerateAndReplaceKeysAsyncResponse generateAndReplaceKeys(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GenerateAndReplaceKeysRequest request, @MessagePriority final String messagePriority,
             @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
@@ -842,8 +902,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     @PayloadRoot(localPart = "GenerateAndReplaceKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(@RequestPayload final GenerateAndReplaceKeysAsyncRequest request)
-            throws OsgpException {
+    public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(
+            @RequestPayload final GenerateAndReplaceKeysAsyncRequest request) throws OsgpException {
 
         GenerateAndReplaceKeysResponse response = null;
         try {

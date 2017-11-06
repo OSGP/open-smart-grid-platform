@@ -116,7 +116,7 @@ public class ConfigurationService {
      */
     public String enqueueGetFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
         LOGGER.debug("Queue get firmware request");
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -175,14 +175,14 @@ public class ConfigurationService {
 
     public String requestGetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
         return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime);
     }
 
     private String enqueueGetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -384,6 +384,34 @@ public class ConfigurationService {
         return correlationUid;
     }
 
+    public String enqueueGetMBusEncryptionKeyStatusRequest(final String organisationIdentification,
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_M_BUS_ENCRYPTION_KEY_STATUS);
+
+        LOGGER.debug("enqueueGetMBusEncryptionKeyStatusRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.GET_M_BUS_ENCRYPTION_KEY_STATUS.toString(), messagePriority,
+                scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
@@ -498,8 +526,8 @@ public class ConfigurationService {
     /**
      * Checks if the organization (identified by the organisationIdentification)
      * is allowed to execute this function. Creates a correlation id, sends the
-     * generate and replace request from the ws-adapter to the domain-adapter and
-     * returns the correlation id.
+     * generate and replace request from the ws-adapter to the domain-adapter
+     * and returns the correlation id.
      *
      * @param organisationIdentification
      *            {@link String} containing the organization identification
@@ -517,14 +545,14 @@ public class ConfigurationService {
      */
     public String enqueueGenerateAndReplaceKeysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GENERATE_AND_REPLACE_KEYS);
 
-        LOGGER.debug("Enqueue generate and replace keys request called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+        LOGGER.debug("Enqueue generate and replace keys request called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
@@ -571,5 +599,4 @@ public class ConfigurationService {
 
         return correlationUid;
     }
-
 }
