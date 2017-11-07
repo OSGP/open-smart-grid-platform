@@ -114,6 +114,7 @@ public class ConfigurationService {
     @Autowired
     private KeyHelperService keyHelperService;
 
+    @Autowired
     private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
