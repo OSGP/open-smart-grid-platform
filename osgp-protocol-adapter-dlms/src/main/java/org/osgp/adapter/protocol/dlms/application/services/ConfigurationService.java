@@ -112,9 +112,10 @@ public class ConfigurationService {
     private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
 
     @Autowired
-    private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
+    private KeyHelperService keyHelperService;
 
-    public static final int AES_GMC_128_KEY_SIZE = 128;
+    @Autowired
+    private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -211,7 +212,7 @@ public class ConfigurationService {
 
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(),
-                gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey(),
+                this.keyHelperService.getSecurityKey(gMeterDevice, SecurityKeyType.G_METER_ENCRYPTION),
                 gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
@@ -323,7 +324,6 @@ public class ConfigurationService {
     public void configureDefinableLoadProfile(final DlmsConnectionHolder conn, final DlmsDevice device,
             final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration)
             throws ProtocolAdapterException {
-
         try {
             this.configureDefinableLoadProfileCommandExecutor.execute(conn, device, definableLoadProfileConfiguration);
         } catch (final ProtocolAdapterException e) {
@@ -331,4 +331,5 @@ public class ConfigurationService {
             throw e;
         }
     }
+
 }
