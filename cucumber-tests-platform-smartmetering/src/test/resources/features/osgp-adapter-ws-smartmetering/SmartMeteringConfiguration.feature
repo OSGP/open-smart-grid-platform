@@ -98,7 +98,21 @@ Feature: SmartMetering Configuration
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario: Exchange user key on a gas device
+  Scenario: Exchange user key on a gas device with no existing user key
+    Given a dlms device
+      | DeviceIdentification | TEST2560000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And a dlms device without user key
+      | DeviceIdentification        | TESTG102411111111 |
+      | DeviceType                  | SMART_METER_G     |
+      | GatewayDeviceIdentification | TEST2560000000001 |
+      | Channel                     |                 1 |
+    When the exchange user key request is received
+      | DeviceIdentification | TESTG102411111111 |
+    Then a valid m-bus user key is stored
+      | DeviceIdentification        | TESTG102411111111 |
+
+  Scenario: Exchange user key on a gas device with existing user key
     When the exchange user key request is received
       | DeviceIdentification | TESTG102400000001 |
     Then the exchange user key response should be returned

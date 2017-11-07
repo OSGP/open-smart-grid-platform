@@ -48,10 +48,7 @@ public class SetEncryptionKeyExchangeOnGMeterSteps {
         final SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeterAsyncResponse = this.smartMeteringConfigurationClient
                 .setEncryptionKeyExchangeOnGMeter(setEncryptionKeyExchangeOnGMeterRequest);
 
-        LOGGER.info("Set encryptionKey exchange on GMeter response is received {}",
-                setEncryptionKeyExchangeOnGMeterAsyncResponse);
-
-        assertNotNull("Set encryptionKey exchange on GMeter response should not be null",
+        assertNotNull("Set encryptionKey exchange on GMeter async response should not be null",
                 setEncryptionKeyExchangeOnGMeterAsyncResponse);
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 setEncryptionKeyExchangeOnGMeterAsyncResponse.getCorrelationUid());
