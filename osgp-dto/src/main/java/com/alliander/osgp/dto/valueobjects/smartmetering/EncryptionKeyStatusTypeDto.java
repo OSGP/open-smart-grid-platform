@@ -24,4 +24,13 @@ public enum EncryptionKeyStatusTypeDto {
     public int getValue() {
         return this.value;
     }
+
+    public static EncryptionKeyStatusTypeDto fromValue(final int value) {
+        for (final EncryptionKeyStatusTypeDto dto : EncryptionKeyStatusTypeDto.values()) {
+            if (dto.value == value) {
+                return dto;
+            }
+        }
+        return null;
+    }
 }
