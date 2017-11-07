@@ -400,6 +400,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="CoupleMbusDeviceByChannelResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="sminst:CoupleMbusDeviceByChannelResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
 
   <xsd:complexType name="AllResponses">
@@ -421,6 +428,7 @@
         <xsd:element ref="tns:AssociationLnObjectsResponse" />
         <xsd:element ref="tns:GetConfigurationObjectResponse" />
         <xsd:element ref="tns:ProfileGenericDataResponse" />
+        <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse"/>
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
