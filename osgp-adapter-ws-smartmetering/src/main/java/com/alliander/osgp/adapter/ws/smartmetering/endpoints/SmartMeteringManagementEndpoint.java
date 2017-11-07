@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.validator.method.MethodConstraintViolationException;
@@ -55,13 +53,11 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 //MethodConstraintViolationException is deprecated.
@@ -127,20 +123,19 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public FindEventsResponse getFindEventsResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindEventsAsyncRequest request) throws OsgpException {
-
         LOGGER.info("Get find events response for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
-        final FindEventsResponse response = new FindEventsResponse();
+        FindEventsResponse response = null;
         try {
-            final List<MeterResponseData> meterResponseDataList = this.meterResponseDataService
-                    .dequeueMeterResponseData(request.getCorrelationUid());
+            // Create response.
+            response = new FindEventsResponse();
 
-            for (final MeterResponseData meterResponseData : meterResponseDataList) {
-                this.throwExceptionIfResultNotOk(meterResponseData, "Find Events");
-            }
+            // Get the request parameters, make sure that date time are in UTC.
+            final String correlationUid = request.getCorrelationUid();
 
-            final List<Event> events = this.getEventsFromMeterResponseData(meterResponseDataList);
+            final List<Event> events = this.managementService.findEventsByCorrelationUid(organisationIdentification,
+                    correlationUid);
 
             LOGGER.info("Get find events response: number of events: {}", events.size());
             for (final Event event : events) {
@@ -151,8 +146,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response.getEvents().addAll(this.managementMapper.mapAsList(events,
                     com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class));
 
-            response.setResult(OsgpResultType.OK);
-
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
@@ -162,36 +155,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         }
 
         return response;
-    }
-
-    private List<Event> getEventsFromMeterResponseData(final List<MeterResponseData> meterResponseDataList)
-            throws TechnicalException {
-        final List<Event> events = new ArrayList<>();
-        for (final MeterResponseData mResponseData : meterResponseDataList) {
-            final Serializable messageData = mResponseData.getMessageData();
-
-            if (messageData instanceof EventMessagesResponse) {
-                events.addAll(((EventMessagesResponse) messageData).getEvents());
-            } else {
-                /**
-                 * If the returned data is not an EventMessageContainer but a
-                 * String, there has been an exception. The exception message
-                 * has been put in the messageData.
-                 *
-                 * As there is no way of knowing what the type of the exception
-                 * was (because it is passed as a String) it is thrown as a
-                 * TechnicalException because the user is most probably not to
-                 * blame for the exception.
-                 */
-                if (messageData instanceof String) {
-                    throw new TechnicalException(ComponentType.UNKNOWN, (String) messageData);
-                }
-                LOGGER.info(
-                        "findEventsByCorrelationUid also found other type of meter response data: {} for correlation UID: {}",
-                        messageData.getClass().getName(), mResponseData.getCorrelationUid());
-            }
-        }
-        return events;
     }
 
     @PayloadRoot(localPart = "GetDevicesRequest", namespace = NAMESPACE)
