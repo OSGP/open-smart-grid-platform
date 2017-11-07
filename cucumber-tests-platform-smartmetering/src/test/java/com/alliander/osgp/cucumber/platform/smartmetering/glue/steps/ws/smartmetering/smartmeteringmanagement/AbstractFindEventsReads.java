@@ -69,9 +69,6 @@ public abstract class AbstractFindEventsReads {
                 .getResponse(findEventsAsyncRequest);
 
         assertNotNull("FindEventsRequestResponse should not be null", findEventsResponse);
-        assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT),
-                findEventsResponse.getResult().name());
-
         assertNotNull("Expected events", findEventsResponse.getEvents());
         assertEquals("Number of events should match", Integer.parseInt(settings.get(EXPECTED_NUMBER_OF_EVENTS)),
                 findEventsResponse.getEvents().size());
