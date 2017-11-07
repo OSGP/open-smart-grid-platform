@@ -252,8 +252,37 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
 
+        final ProtocolMeterInfo mbusKeyExchangeData = this.getMbusKeyExchangeData(conn, device,
+                setMbusUserKeyByChannelRequestDataDto);
+
+        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, mbusKeyExchangeData);
+
+        final DlmsDevice mbusDevice = this.domainHelperService
+                .findDlmsDevice(mbusKeyExchangeData.getDeviceIdentification());
+
+        final SecurityKey existingNewKey = mbusDevice.getNewSecurityKey(SecurityKeyType.G_METER_ENCRYPTION);
+        if (existingNewKey != null) {
+            device.getSecurityKeys().remove(existingNewKey);
+        }
+        final Date now = new Date();
+        final SecurityKey existingValidKey = mbusDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION);
+        if (existingNewKey != null) {
+            existingValidKey.setValidTo(now);
+        }
+        final String newMbusUserKey = mbusKeyExchangeData.getEncryptionKey();
+        mbusDevice
+                .addSecurityKey(new SecurityKey(mbusDevice, SecurityKeyType.G_METER_ENCRYPTION, newMbusUserKey, now, null));
+        this.dlmsDeviceRepository.save(mbusDevice);
+
+        return "Set M-Bus User Key By Channel Result is OK for device id: " + device.getDeviceIdentification();
+    }
+
+    public ProtocolMeterInfo getMbusKeyExchangeData(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData)
+            throws ProtocolAdapterException, FunctionalException {
+
         final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest = new GetMBusDeviceOnChannelRequestDataDto(
-                device.getDeviceIdentification(), setMbusUserKeyByChannelRequestDataDto.getChannel());
+                device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
         final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor.execute(conn,
                 device, mbusDeviceOnChannelRequest);
 
@@ -283,26 +312,9 @@ public class ConfigurationService {
             throw new AssertionError("Expected AES algorithm to be available for key generation.", e);
         }
         final String newHexKey = Hex.encodeHexString(this.encryptionService.encrypt(newKey));
-        final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(
-                setMbusUserKeyByChannelRequestDataDto.getChannel(), mbusDevice.getDeviceIdentification(), newHexKey,
+        return new ProtocolMeterInfo(setMbusUserKeyByChannelRequestData.getChannel(),
+                mbusDevice.getDeviceIdentification(), newHexKey,
                 mbusDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
-
-        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
-
-        final SecurityKey existingNewKey = mbusDevice.getNewSecurityKey(SecurityKeyType.G_METER_ENCRYPTION);
-        if (existingNewKey != null) {
-            device.getSecurityKeys().remove(existingNewKey);
-        }
-        final Date now = new Date();
-        final SecurityKey existingValidKey = mbusDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION);
-        if (existingNewKey != null) {
-            existingValidKey.setValidTo(now);
-        }
-        mbusDevice
-                .addSecurityKey(new SecurityKey(mbusDevice, SecurityKeyType.G_METER_ENCRYPTION, newHexKey, now, null));
-        this.dlmsDeviceRepository.save(mbusDevice);
-
-        return "Set M-Bus User Key By Channel Result is OK for device id: " + device.getDeviceIdentification();
     }
 
     public String setActivityCalendar(final DlmsConnectionHolder conn, final DlmsDevice device,
