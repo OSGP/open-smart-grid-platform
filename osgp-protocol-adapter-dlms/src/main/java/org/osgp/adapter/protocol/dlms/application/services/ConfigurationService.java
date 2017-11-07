@@ -139,9 +139,10 @@ public class ConfigurationService {
     private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
 
     @Autowired
-    private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
+    private KeyHelperService keyHelperService;
 
-    public static final int AES_GMC_128_KEY_SIZE = 128;
+    @Autowired
+    private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -238,7 +239,7 @@ public class ConfigurationService {
 
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(),
-                gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey(),
+                this.keyHelperService.getSecurityKey(gMeterDevice, SecurityKeyType.G_METER_ENCRYPTION),
                 gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
@@ -270,8 +271,8 @@ public class ConfigurationService {
             existingValidKey.setValidTo(now);
         }
         final String newMbusUserKey = mbusKeyExchangeData.getEncryptionKey();
-        mbusDevice
-                .addSecurityKey(new SecurityKey(mbusDevice, SecurityKeyType.G_METER_ENCRYPTION, newMbusUserKey, now, null));
+        mbusDevice.addSecurityKey(
+                new SecurityKey(mbusDevice, SecurityKeyType.G_METER_ENCRYPTION, newMbusUserKey, now, null));
         this.dlmsDeviceRepository.save(mbusDevice);
 
         return "Set M-Bus User Key By Channel Result is OK for device id: " + device.getDeviceIdentification();
@@ -306,7 +307,7 @@ public class ConfigurationService {
         byte[] newKey;
         try {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(AES_GMC_128_KEY_SIZE);
+            keyGenerator.init(KeyHelperService.AES_GMC_128_KEY_SIZE);
             newKey = keyGenerator.generateKey().getEncoded();
         } catch (final NoSuchAlgorithmException e) {
             throw new AssertionError("Expected AES algorithm to be available for key generation.", e);
@@ -421,7 +422,6 @@ public class ConfigurationService {
     public void configureDefinableLoadProfile(final DlmsConnectionHolder conn, final DlmsDevice device,
             final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration)
             throws ProtocolAdapterException {
-
         try {
             this.configureDefinableLoadProfileCommandExecutor.execute(conn, device, definableLoadProfileConfiguration);
         } catch (final ProtocolAdapterException e) {
@@ -429,4 +429,5 @@ public class ConfigurationService {
             throw e;
         }
     }
+
 }

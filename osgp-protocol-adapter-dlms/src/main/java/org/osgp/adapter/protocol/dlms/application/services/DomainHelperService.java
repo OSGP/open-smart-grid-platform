@@ -47,8 +47,9 @@ public class DomainHelperService {
     private int jasperGetSessionSleepBetweenRetries;
 
     /**
-     * This method can be used to find an mBusDevice. For other devices, use {@link #findDlmsDevice(MessageMetadata)}
-     * instead, as this will also set the IP address.
+     * This method can be used to find an mBusDevice. For other devices, use
+     * {@link #findDlmsDevice(MessageMetadata)} instead, as this will also set
+     * the IP address.
      */
     public DlmsDevice findDlmsDevice(final String deviceIdentification) throws FunctionalException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);

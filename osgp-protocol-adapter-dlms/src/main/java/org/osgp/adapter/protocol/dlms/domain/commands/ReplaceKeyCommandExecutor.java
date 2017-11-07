@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -16,12 +15,12 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
+import org.osgp.adapter.protocol.dlms.application.services.KeyHelperService;
 import org.osgp.adapter.protocol.dlms.application.services.ReEncryptionService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -63,10 +62,10 @@ public class ReplaceKeyCommandExecutor
     private EncryptionService encryptionService;
 
     @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
+    private ReEncryptionService reEncryptionService;
 
     @Autowired
-    ReEncryptionService reEncryptionService;
+    private KeyHelperService keyHelperService;
 
     static class KeyWrapper {
         private final byte[] bytes;
@@ -126,7 +125,6 @@ public class ReplaceKeyCommandExecutor
     }
 
     private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
-
         final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
                 .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
         final byte[] reEncryptedEncryptionKey = this.reEncryptionService
@@ -141,13 +139,14 @@ public class ReplaceKeyCommandExecutor
             throws ProtocolAdapterException, FunctionalException {
 
         // Add the new key and store in the repo
-        DlmsDevice devicePostSave = this.storeNewKey(device, keyWrapper.getBytes(), keyWrapper.getSecurityKeyType());
+        DlmsDevice devicePostSave = this.keyHelperService.storeNewKey(device, keyWrapper.getBytes(),
+                keyWrapper.getSecurityKeyType());
 
         // Send the key to the device.
         this.sendToDevice(conn, devicePostSave, keyWrapper);
 
         // Update key status
-        devicePostSave = this.storeNewKeyState(devicePostSave, keyWrapper.getSecurityKeyType());
+        devicePostSave = this.keyHelperService.storeNewKeyState(devicePostSave, keyWrapper.getSecurityKeyType());
 
         return devicePostSave;
     }
@@ -219,46 +218,5 @@ public class ReplaceKeyCommandExecutor
         } catch (final DecoderException e) {
             throw new ProtocolAdapterException("Error while decoding key hex string.", e);
         }
-    }
-
-    /**
-     * Store new key
-     *
-     * CAUTION: only call when a successful connection with the device has been
-     * made, and you are sure any existing new key data is NOT VALID.
-     *
-     * @param device
-     *            Device
-     * @param key
-     *            Key data
-     * @param securityKeyType
-     *            Type of key
-     * @return Saved device
-     */
-    private DlmsDevice storeNewKey(final DlmsDevice device, final byte[] key, final SecurityKeyType securityKeyType) {
-        // If a new key exists, delete this key.
-        final SecurityKey existingKey = device.getNewSecurityKey(securityKeyType);
-        if (existingKey != null) {
-            device.getSecurityKeys().remove(existingKey);
-        }
-
-        device.addSecurityKey(new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), null, null));
-        return this.dlmsDeviceRepository.save(device);
-    }
-
-    /**
-     * Store new key state
-     *
-     * @param device
-     *            Device
-     * @param securityKeyType
-     *            Type of key
-     * @return Saved device
-     */
-    private DlmsDevice storeNewKeyState(final DlmsDevice device, final SecurityKeyType securityKeyType) {
-        final Date now = new Date();
-        device.getValidSecurityKey(securityKeyType).setValidTo(now);
-        device.getNewSecurityKey(securityKeyType).setValidFrom(now);
-        return this.dlmsDeviceRepository.save(device);
     }
 }
