@@ -16,6 +16,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GenerateAndReplaceKeyComma
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetMBusEncryptionKeyStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
@@ -45,6 +46,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
@@ -113,6 +116,9 @@ public class ConfigurationService {
 
     @Autowired
     private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
+
+    @Autowired
+    private GetMBusEncryptionKeyStatusCommandExecutor getMBusEncryptionKeyStatusCommandExecutor;
 
     public static final int AES_GMC_128_KEY_SIZE = 128;
 
@@ -330,5 +336,12 @@ public class ConfigurationService {
             LOGGER.error("Unexpected exception while configuring definable load profile.", e);
             throw e;
         }
+    }
+
+    public GetMBusEncryptionKeyStatusResponseDto requestGetMBusEncryptionKeyStatus(final DlmsConnectionHolder conn,
+            final DlmsDevice device, final GetMBusEncryptionKeyStatusRequestDto getMbusEncryptionKeyStatusRequest)
+            throws ProtocolAdapterException {
+
+        return this.getMBusEncryptionKeyStatusCommandExecutor.execute(conn, device, getMbusEncryptionKeyStatusRequest);
     }
 }
