@@ -7,13 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.List;
 
-import javax.crypto.KeyGenerator;
-
-import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.ConfigureDefinableLoadProfileCommandExecutor;
@@ -33,10 +28,8 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandEx
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +60,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataD
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.security.EncryptionService;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService {
@@ -80,18 +72,6 @@ public class ConfigurationService {
 
     @Autowired
     private FirmwareService firmwareService;
-
-    /*
-     * TODO temporary solution for key generation
-     *
-     * Final solution should probably be the result of merging in changes for
-     * SLIM-1387. The encryptionService and dlmsDeviceRepository shouldn't be
-     * needed here anymore then.
-     */
-    @Autowired
-    private EncryptionService encryptionService;
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
 
     @Autowired
     private SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
@@ -233,14 +213,7 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
 
-        // Get G-Meter
-        DlmsDevice gMeterDevice;
-        gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo.getDeviceIdentification());
-
-        final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
-                gMeterInfo.getDeviceIdentification(),
-                this.keyHelperService.getSecurityKey(gMeterDevice, SecurityKeyType.G_METER_ENCRYPTION),
-                gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
+        final ProtocolMeterInfo protocolMeterInfo = this.getMbusKeyExchangeData(conn, device, gMeterInfo);
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -258,24 +231,17 @@ public class ConfigurationService {
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, mbusKeyExchangeData);
 
-        final DlmsDevice mbusDevice = this.domainHelperService
-                .findDlmsDevice(mbusKeyExchangeData.getDeviceIdentification());
-
-        final SecurityKey existingNewKey = mbusDevice.getNewSecurityKey(SecurityKeyType.G_METER_ENCRYPTION);
-        if (existingNewKey != null) {
-            device.getSecurityKeys().remove(existingNewKey);
-        }
-        final Date now = new Date();
-        final SecurityKey existingValidKey = mbusDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION);
-        if (existingNewKey != null) {
-            existingValidKey.setValidTo(now);
-        }
-        final String newMbusUserKey = mbusKeyExchangeData.getEncryptionKey();
-        mbusDevice.addSecurityKey(
-                new SecurityKey(mbusDevice, SecurityKeyType.G_METER_ENCRYPTION, newMbusUserKey, now, null));
-        this.dlmsDeviceRepository.save(mbusDevice);
-
         return "Set M-Bus User Key By Channel Result is OK for device id: " + device.getDeviceIdentification();
+    }
+
+    public ProtocolMeterInfo getMbusKeyExchangeData(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
+
+        final DlmsDevice gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo.getDeviceIdentification());
+
+        return new ProtocolMeterInfo(gMeterInfo.getChannel(), gMeterInfo.getDeviceIdentification(),
+                this.keyHelperService.getSecurityKey(gMeterDevice, SecurityKeyType.G_METER_ENCRYPTION),
+                gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
     }
 
     public ProtocolMeterInfo getMbusKeyExchangeData(final DlmsConnectionHolder conn, final DlmsDevice device,
@@ -291,30 +257,22 @@ public class ConfigurationService {
                 Long.valueOf(channelElementValues.getIdentificationNumber()),
                 channelElementValues.getManufacturerIdentification());
 
-        /*
-         * TODO change this with set encryption key exchange on g-meter updates.
-         *
-         * Set encryption key exchange on g-meter is being refactored because
-         * the G_METER_ENCRYPTION key should be generated and not retrieved from
-         * the database. When these changes get merged the hack in the following
-         * lines should no longer work, and the code should be updated to match
-         * the changes mentioned before.
-         *
-         * Final solution should probably be the result of merging in changes
-         * for SLIM-1387.
-         */
+        return this.getMbusKeyExchangeData(mbusDevice, setMbusUserKeyByChannelRequestData.getChannel());
+    }
 
-        byte[] newKey;
-        try {
-            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(KeyHelperService.AES_GMC_128_KEY_SIZE);
-            newKey = keyGenerator.generateKey().getEncoded();
-        } catch (final NoSuchAlgorithmException e) {
-            throw new AssertionError("Expected AES algorithm to be available for key generation.", e);
-        }
-        final String newHexKey = Hex.encodeHexString(this.encryptionService.encrypt(newKey));
-        return new ProtocolMeterInfo(setMbusUserKeyByChannelRequestData.getChannel(),
-                mbusDevice.getDeviceIdentification(), newHexKey,
+    private ProtocolMeterInfo getMbusKeyExchangeData(final DlmsDevice mbusDevice, final short channel)
+            throws FunctionalException {
+
+        /*
+         * TODO change order of exchanging and saving the new M-Bus User key
+         *
+         * Saving the device with the new key should probably only be done after
+         * exchanging the M-Bus User key has been performed successfully. Now it
+         * is saved in the method getSecurityKey (which has a somewhat
+         * misleading name).
+         */
+        return new ProtocolMeterInfo(channel, mbusDevice.getDeviceIdentification(),
+                this.keyHelperService.getSecurityKey(mbusDevice, SecurityKeyType.G_METER_ENCRYPTION),
                 mbusDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
     }
 

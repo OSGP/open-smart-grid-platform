@@ -21,9 +21,8 @@ import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.method.MBusClientMethod;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
-import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -63,32 +62,23 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     private EncryptionService encryptionService;
 
     @Autowired
-    private DomainHelperService domainHelperService;
+    private ConfigurationService configurationService;
 
     public SetEncryptionKeyExchangeOnGMeterCommandExecutor() {
         super(GMeterInfoDto.class);
     }
 
     @Override
-    public ProtocolMeterInfo fromBundleRequestInput(final ActionRequestDto bundleInput)
-            throws ProtocolAdapterException {
+    public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
 
-        this.checkActionRequestType(bundleInput);
-        final GMeterInfoDto gMeterInfoDto = (GMeterInfoDto) bundleInput;
-
-        try {
-            final DlmsDevice gMeterDevice = this.domainHelperService
-                    .findDlmsDevice(gMeterInfoDto.getDeviceIdentification());
-
-            return new ProtocolMeterInfo(gMeterInfoDto.getChannel(), gMeterInfoDto.getDeviceIdentification(),
-                    gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey(),
-                    gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
-
-        } catch (final FunctionalException e) {
-            LOGGER.error("Error looking up G-Meter " + gMeterInfoDto.getDeviceIdentification(), e);
-            throw new ProtocolAdapterException("Error looking up G-Meter " + gMeterInfoDto.getDeviceIdentification(),
-                    e);
-        }
+        this.checkActionRequestType(actionRequestDto);
+        final GMeterInfoDto gMeterInfo = (GMeterInfoDto) actionRequestDto;
+        final ProtocolMeterInfo mbusKeyExchangeData = this.configurationService.getMbusKeyExchangeData(conn, device,
+                gMeterInfo);
+        final MethodResultCode executionResult = this.execute(conn, device, mbusKeyExchangeData);
+        final ActionResponseDto bundleResponse = this.asBundleResponse(executionResult);
+        return bundleResponse;
     }
 
     @Override
@@ -96,7 +86,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
 
         this.checkMethodResultCode(executionResult);
 
-        return new ActionResponseDto("Setting encryption key exchange on Gas meter was successful");
+        return new ActionResponseDto("M-Bus User key exchange on Gas meter was successful");
     }
 
     @Override
@@ -105,7 +95,6 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
         try {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
-            // Decrypt the cipher text using the private key.
             final byte[] decryptedEncryptionKey = this.encryptionService
                     .decrypt(Hex.decode(protocolMeterInfo.getEncryptionKey()));
             final byte[] decryptedMasterKey = this.encryptionService
@@ -118,18 +107,25 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
 
             conn.getDlmsMessageListener()
                     .setDescription("SetEncryptionKeyExchangeOnGMeter for channel " + protocolMeterInfo.getChannel()
-                            + ", call method: " + JdlmsObjectToStringUtil.describeMethod(methodTransferKey));
+                            + ", call M-Bus Setup transfer_key method: "
+                            + JdlmsObjectToStringUtil.describeMethod(methodTransferKey));
 
             MethodResult methodResultCode = conn.getConnection().action(methodTransferKey);
-            this.checkMethodResultCode(methodResultCode, "getTransferKeyToMBusMethodParameter");
-            LOGGER.info("Success!: Finished calling getTransferKeyToMBusMethodParameter class_id {} obis_code {}",
-                    CLASS_ID, obisCode);
+            this.checkMethodResultCode(methodResultCode, "M-Bus Setup transfer_key");
+            LOGGER.info("Successfully invoked M-Bus Setup transfer_key method: class_id {} obis_code {}", CLASS_ID,
+                    obisCode);
+
+            conn.getDlmsMessageListener()
+                    .setDescription("SetEncryptionKeyExchangeOnGMeter for channel " + protocolMeterInfo.getChannel()
+                            + ", call M-Bus Setup set_encryption_key method: "
+                            + JdlmsObjectToStringUtil.describeMethod(methodTransferKey));
 
             final MethodParameter methodSetEncryptionKey = this.getSetEncryptionKeyMethodParameter(obisCode,
                     decryptedEncryptionKey);
             methodResultCode = conn.getConnection().action(methodSetEncryptionKey);
-            this.checkMethodResultCode(methodResultCode, "getSetEncryptionKeyMethodParameter");
-            LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
+            this.checkMethodResultCode(methodResultCode, "M-Bus Setup set_encryption_key");
+            LOGGER.info("Successfully invoked M-Bus Setup set_encryption_key method: class_id {} obis_code {}",
+                    CLASS_ID, obisCode);
 
             return MethodResultCode.SUCCESS;
         } catch (final IOException e) {
