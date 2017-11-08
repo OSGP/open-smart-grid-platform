@@ -161,24 +161,12 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="ChannelElementValues" type="tns:ChannelElementValues" />
-          <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
 
   <!-- DATATYPES -->
-
-  <xsd:complexType name="ChannelElementValues">
-    <xsd:sequence>
-      <xsd:element name="Channel" type="xsd:unsignedByte" />
-      <xsd:element name="PrimaryAddress" type="xsd:short" />
-      <xsd:element name="IdentificationNumber" type="xsd:string" />
-      <xsd:element name="ManufacturerIdentification" type="xsd:string" />
-      <xsd:element name="Version" type="xsd:unsignedByte" />
-      <xsd:element name="DeviceTypeIdentification" type="xsd:unsignedByte" />
-    </xsd:sequence>
-  </xsd:complexType>
 
   <xsd:complexType name="Device">
     <xsd:sequence>
@@ -320,6 +308,17 @@
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ChannelElementValues">
+    <xsd:sequence>
+      <xsd:element name="Channel" type="xsd:unsignedByte" />
+      <xsd:element name="PrimaryAddress" type="xsd:short" />
+      <xsd:element name="IdentificationNumber" type="xsd:string" />
+      <xsd:element name="ManufacturerIdentification" type="xsd:string" />
+      <xsd:element name="Version" type="xsd:unsignedByte" />
+      <xsd:element name="DeviceTypeIdentification" type="xsd:unsignedByte" />
+    </xsd:sequence>
   </xsd:complexType>
 
 </xsd:schema>

@@ -11,18 +11,11 @@ public class CoupleMbusDeviceByChannelResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -6470713070003127394L;
 
-    private String mbusDeviceIdentification;
     private ChannelElementValuesDto channelElementValues;
 
-    public CoupleMbusDeviceByChannelResponseDto(final String mbusDeviceIdentification,
-            final ChannelElementValuesDto channelElementValues) {
+    public CoupleMbusDeviceByChannelResponseDto(final ChannelElementValuesDto channelElementValues) {
         super();
-        this.mbusDeviceIdentification = mbusDeviceIdentification;
         this.channelElementValues = channelElementValues;
-    }
-
-    public String getMbusDeviceIdentification() {
-        return this.mbusDeviceIdentification;
     }
 
     public ChannelElementValuesDto getChannelElementValues() {
