@@ -9,16 +9,12 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
-import org.osgp.adapter.protocol.dlms.application.services.KeyHelperService;
-import org.osgp.adapter.protocol.dlms.application.services.ReEncryptionService;
+import org.osgp.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -33,7 +29,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.security.EncryptionService;
 
 /**
  * Some code may look odd, specifically in the execute() method. The reason is
@@ -59,13 +54,7 @@ public class ReplaceKeyCommandExecutor
     private static final String WAS_SUCCESFULL = " was successful";
 
     @Autowired
-    private EncryptionService encryptionService;
-
-    @Autowired
-    private ReEncryptionService reEncryptionService;
-
-    @Autowired
-    private KeyHelperService keyHelperService;
+    private SecurityKeyService securityKeyService;
 
     static class KeyWrapper {
         private final byte[] bytes;
@@ -125,9 +114,9 @@ public class ReplaceKeyCommandExecutor
     }
 
     private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
-        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
+        final byte[] reEncryptedAuthenticationKey = this.securityKeyService
                 .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
-        final byte[] reEncryptedEncryptionKey = this.reEncryptionService
+        final byte[] reEncryptedEncryptionKey = this.securityKeyService
                 .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
 
         return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
@@ -138,17 +127,10 @@ public class ReplaceKeyCommandExecutor
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
             throws ProtocolAdapterException, FunctionalException {
 
-        // Add the new key and store in the repo
-        DlmsDevice devicePostSave = this.keyHelperService.storeNewKey(device, keyWrapper.getBytes(),
+        final DlmsDevice devicePostSave = this.securityKeyService.storeNewKey(device, keyWrapper.getBytes(),
                 keyWrapper.getSecurityKeyType());
-
-        // Send the key to the device.
         this.sendToDevice(conn, devicePostSave, keyWrapper);
-
-        // Update key status
-        devicePostSave = this.keyHelperService.storeNewKeyState(devicePostSave, keyWrapper.getSecurityKeyType());
-
-        return devicePostSave;
+        return this.securityKeyService.validateNewKey(devicePostSave, keyWrapper.getSecurityKeyType());
     }
 
     /**
@@ -168,10 +150,10 @@ public class ReplaceKeyCommandExecutor
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
             throws ProtocolAdapterException, FunctionalException {
         try {
-            // Decrypt the cipher text using the private key.
-            final byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
-
-            final byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
+            final byte[] decryptedKey = this.securityKeyService.decryptKey(keyWrapper.getBytes(),
+                    keyWrapper.securityKeyType);
+            final byte[] decryptedMasterKey = this.securityKeyService
+                    .getDlmsMasterKey(device.getDeviceIdentification());
 
             final MethodParameter methodParameterAuth = SecurityUtils.keyChangeMethodParamFor(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());
@@ -187,7 +169,6 @@ public class ReplaceKeyCommandExecutor
                         "AccessResultCode for replace keys was not SUCCESS: " + methodResultCode);
             }
 
-            // Update key of current connection
             if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_AUTHENTICATION) {
                 conn.getConnection().changeClientGlobalAuthenticationKey(decryptedKey);
             } else if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_ENCRYPTION) {
@@ -199,24 +180,6 @@ public class ReplaceKeyCommandExecutor
             LOGGER.error("Unexpected exception during decryption of security keys", e);
             throw new ProtocolAdapterException(
                     "Unexpected exception during decryption of security keys, reason = " + e.getMessage());
-        }
-    }
-
-    /**
-     * Get the valid master key from the device.
-     *
-     * @param device
-     *            Device instance
-     * @return The valid master key.
-     * @throws ProtocolAdapterException
-     *             when master key can not be decoded to a valid hex value.
-     */
-    private byte[] getMasterKey(final DlmsDevice device) throws ProtocolAdapterException {
-        try {
-            final SecurityKey masterKey = device.getValidSecurityKey(SecurityKeyType.E_METER_MASTER);
-            return Hex.decodeHex(masterKey.getKey().toCharArray());
-        } catch (final DecoderException e) {
-            throw new ProtocolAdapterException("Error while decoding key hex string.", e);
         }
     }
 }

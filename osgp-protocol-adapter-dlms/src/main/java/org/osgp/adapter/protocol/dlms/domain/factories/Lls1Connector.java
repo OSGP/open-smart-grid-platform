@@ -10,15 +10,12 @@ package org.osgp.adapter.protocol.dlms.domain.factories;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.TcpConnectionBuilder;
+import org.osgp.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
@@ -28,15 +25,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.security.EncryptionService;
 
 public class Lls1Connector extends SecureDlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Lls1Connector.class);
 
     @Autowired
-    private EncryptionService encryptionService;
+    private SecurityKeyService securityKeyService;
 
     public Lls1Connector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint) {
         super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
@@ -70,21 +67,22 @@ public class Lls1Connector extends SecureDlmsConnector {
     protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
             throws TechnicalException, FunctionalException {
 
-        final SecurityKey validPassword = this.getSecurityKey(device, SecurityKeyType.PASSWORD);
-
-        // Decode the key final from Hexstring final to bytes
-        byte[] password = null;
+        final byte[] password;
         try {
-            password = Hex.decodeHex(validPassword.getKey().toCharArray());
-        } catch (final DecoderException e) {
-            throw new EncrypterException(e);
+            password = this.securityKeyService.getDlmsPassword(device.getDeviceIdentification());
+        } catch (final EncrypterException e) {
+            LOGGER.error("Error determining DLMS password setting up LLS1 connection", e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
+                    ComponentType.PROTOCOL_DLMS);
+        }
+        if (password == null) {
+            LOGGER.error("There is no password available for device " + device.getDeviceIdentification());
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
+                    ComponentType.PROTOCOL_DLMS);
         }
 
-        // Decrypt the key, discard ivBytes
-        final byte[] decryptedPassword = this.encryptionService.decrypt(password);
-
         final SecuritySuite securitySuite = SecuritySuite.builder()
-                .setAuthenticationMechanism(AuthenticationMechanism.LOW).setPassword(decryptedPassword).build();
+                .setAuthenticationMechanism(AuthenticationMechanism.LOW).setPassword(password).build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
     }

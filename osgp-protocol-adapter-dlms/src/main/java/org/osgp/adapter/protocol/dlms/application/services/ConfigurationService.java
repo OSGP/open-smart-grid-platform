@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.ConfigureDefinableLoadProfileCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GenerateAndReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
@@ -28,7 +27,6 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandEx
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -117,9 +115,6 @@ public class ConfigurationService {
 
     @Autowired
     private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
-
-    @Autowired
-    private KeyHelperService keyHelperService;
 
     @Autowired
     private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
@@ -212,11 +207,7 @@ public class ConfigurationService {
             final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
-
-        final ProtocolMeterInfo protocolMeterInfo = this.getMbusKeyExchangeData(conn, device, gMeterInfo);
-
-        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
-
+        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
         return "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + device.getDeviceIdentification();
     }
 
@@ -226,25 +217,15 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
 
-        final ProtocolMeterInfo mbusKeyExchangeData = this.getMbusKeyExchangeData(conn, device,
+        final GMeterInfoDto gMeterInfo = this.getMbusKeyExchangeData(conn, device,
                 setMbusUserKeyByChannelRequestDataDto);
 
-        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, mbusKeyExchangeData);
+        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
 
         return "Set M-Bus User Key By Channel Result is OK for device id: " + device.getDeviceIdentification();
     }
 
-    public ProtocolMeterInfo getMbusKeyExchangeData(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
-
-        final DlmsDevice gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo.getDeviceIdentification());
-
-        return new ProtocolMeterInfo(gMeterInfo.getChannel(), gMeterInfo.getDeviceIdentification(),
-                this.keyHelperService.getSecurityKey(gMeterDevice, SecurityKeyType.G_METER_ENCRYPTION),
-                gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
-    }
-
-    public ProtocolMeterInfo getMbusKeyExchangeData(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public GMeterInfoDto getMbusKeyExchangeData(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData)
             throws ProtocolAdapterException, FunctionalException {
 
@@ -257,23 +238,7 @@ public class ConfigurationService {
                 Long.valueOf(channelElementValues.getIdentificationNumber()),
                 channelElementValues.getManufacturerIdentification());
 
-        return this.getMbusKeyExchangeData(mbusDevice, setMbusUserKeyByChannelRequestData.getChannel());
-    }
-
-    private ProtocolMeterInfo getMbusKeyExchangeData(final DlmsDevice mbusDevice, final short channel)
-            throws FunctionalException {
-
-        /*
-         * TODO change order of exchanging and saving the new M-Bus User key
-         *
-         * Saving the device with the new key should probably only be done after
-         * exchanging the M-Bus User key has been performed successfully. Now it
-         * is saved in the method getSecurityKey (which has a somewhat
-         * misleading name).
-         */
-        return new ProtocolMeterInfo(channel, mbusDevice.getDeviceIdentification(),
-                this.keyHelperService.getSecurityKey(mbusDevice, SecurityKeyType.G_METER_ENCRYPTION),
-                mbusDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
+        return new GMeterInfoDto(setMbusUserKeyByChannelRequestData.getChannel(), mbusDevice.getDeviceIdentification());
     }
 
     public String setActivityCalendar(final DlmsConnectionHolder conn, final DlmsDevice device,

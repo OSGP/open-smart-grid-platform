@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import org.openmuc.jdlms.MethodResultCode;
-import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.application.services.BundleService;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -42,8 +41,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
  * in the former case it can be looked up by device identification).
  */
 @Component()
-public class SetMbusUserKeyByChannelCommandExecutor
-        extends AbstractCommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+public class SetMbusUserKeyByChannelCommandExecutor extends AbstractCommandExecutor<GMeterInfoDto, MethodResultCode> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -61,9 +59,9 @@ public class SetMbusUserKeyByChannelCommandExecutor
 
         this.checkActionRequestType(actionRequestDto);
         final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData = (SetMbusUserKeyByChannelRequestDataDto) actionRequestDto;
-        final ProtocolMeterInfo mbusKeyExchangeData = this.configurationService.getMbusKeyExchangeData(conn, device,
+        final GMeterInfoDto gMeterInfo = this.configurationService.getMbusKeyExchangeData(conn, device,
                 setMbusUserKeyByChannelRequestData);
-        final MethodResultCode executionResult = this.execute(conn, device, mbusKeyExchangeData);
+        final MethodResultCode executionResult = this.execute(conn, device, gMeterInfo);
         final ActionResponseDto bundleResponse = this.asBundleResponse(executionResult);
         return bundleResponse;
     }
@@ -76,7 +74,7 @@ public class SetMbusUserKeyByChannelCommandExecutor
 
     @Override
     public MethodResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException, FunctionalException {
-        return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
+            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
+        return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
     }
 }

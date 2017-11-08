@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.osgp.adapter.protocol.dlms.application.services.KeyHelperService;
+import org.osgp.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -20,8 +20,10 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GenerateAndReplaceKeysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.security.EncryptionService;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Component
 public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecutor<ActionRequestDto, ActionResponseDto> {
@@ -29,13 +31,10 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateAndReplaceKeyCommandExecutor.class);
 
     @Autowired
-    private EncryptionService encryptionService;
-
-    @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     @Autowired
-    private KeyHelperService keyHelperService;
+    private SecurityKeyService securityKeyService;
 
     public GenerateAndReplaceKeyCommandExecutor() {
         super(GenerateAndReplaceKeysRequestDataDto.class);
@@ -52,18 +51,20 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     public ActionResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
         LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
-        final SetKeysRequestDto setKeysRequestDto = this.generateAndEncryptKeys();
-        setKeysRequestDto.setGeneratedKeys(true);
-        return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequestDto);
+        final SetKeysRequestDto setKeysRequest = this.generateSetKeysRequest();
+        return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequest);
     }
 
-    private SetKeysRequestDto generateAndEncryptKeys() throws FunctionalException {
-        final byte[] authenticationKey = this.keyHelperService.generateKey();
-        final byte[] encryptionKey = this.keyHelperService.generateKey();
-
-        final byte[] encryptedAuthenticationKey = this.encryptionService.encrypt(authenticationKey);
-        final byte[] encryptedEncryptionKey = this.encryptionService.encrypt(encryptionKey);
-
-        return new SetKeysRequestDto(encryptedAuthenticationKey, encryptedEncryptionKey);
+    private SetKeysRequestDto generateSetKeysRequest() throws FunctionalException {
+        try {
+            final byte[] encryptedAuthenticationKey = this.securityKeyService.generateAndEncryptKey();
+            final byte[] encryptedEncryptionKey = this.securityKeyService.generateAndEncryptKey();
+            final SetKeysRequestDto setKeysRequest = new SetKeysRequestDto(encryptedAuthenticationKey,
+                    encryptedEncryptionKey);
+            setKeysRequest.setGeneratedKeys(true);
+            return setKeysRequest;
+        } catch (final EncrypterException e) {
+            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
+        }
     }
 }
