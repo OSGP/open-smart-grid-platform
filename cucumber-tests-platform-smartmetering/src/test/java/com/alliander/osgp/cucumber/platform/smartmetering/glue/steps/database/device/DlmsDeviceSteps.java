@@ -113,14 +113,6 @@ public class DlmsDeviceSteps {
 
     }
 
-    @Given("^a dlms device without user key$")
-    public void aDlmsDeviceWithoutUserKey(final Map<String, String> inputSettings) throws Throwable {
-        final Device device = this.createDeviceInCoreDatabase(inputSettings);
-        this.setScenarioContextForDevice(inputSettings, device);
-        this.createDeviceAuthorisationInCoreDatabase(device);
-        this.createDlmsDeviceWithMasterKey(inputSettings);
-    }
-
     @Then("^the dlms device with identification \"([^\"]*)\" exists$")
     public void theDlmsDeviceWithIdentificationExists(final String deviceIdentification) throws Throwable {
 
@@ -423,14 +415,6 @@ public class DlmsDeviceSteps {
             dlmsDeviceBuilder.getMasterSecurityKeyBuilder().enable();
             dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
         }
-
-        final DlmsDevice dlmsDevice = dlmsDeviceBuilder.build();
-        this.dlmsDeviceRepository.save(dlmsDevice);
-    }
-
-    private void createDlmsDeviceWithMasterKey(final Map<String, String> inputSettings) {
-        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().withSettings(inputSettings);
-        dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().enable();
 
         final DlmsDevice dlmsDevice = dlmsDeviceBuilder.build();
         this.dlmsDeviceRepository.save(dlmsDevice);
