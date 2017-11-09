@@ -371,21 +371,6 @@ public class SecurityKeyService {
         return this.dlmsDeviceRepository.save(device);
     }
 
-    // TODO remove this method
-    public String getSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType securityKeyType)
-            throws FunctionalException, ProtocolAdapterException {
-        final byte[] generatedKey = this.generateKey();
-        final byte[] encryptedKey = this.encryptionService.encrypt(generatedKey);
-
-        // Add the new key and store in the repo
-        DlmsDevice devicePostSave = this.storeNewKey(dlmsDevice, encryptedKey, securityKeyType);
-
-        // Update key status
-        devicePostSave = this.validateNewKey(devicePostSave, securityKeyType);
-
-        return Hex.encodeHexString(encryptedKey);
-    }
-
     /**
      * Generates a new key that can be used as DLMS master key, authentication
      * key, global unicast encryption key, M-Bus Default key or M-Bus User key.
