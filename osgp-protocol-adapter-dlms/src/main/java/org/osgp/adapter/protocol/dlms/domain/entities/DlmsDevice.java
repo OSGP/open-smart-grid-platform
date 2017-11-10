@@ -90,6 +90,12 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean useSn;
 
+    @Column
+    private Long mbusIdentificationNumber;
+
+    @Column(length = 3)
+    private String mbusManufacturerIdentification;
+
     // -- This comes from: Core Device.
 
     @Transient
@@ -110,9 +116,11 @@ public class DlmsDevice extends AbstractEntity {
     @Override
     public String toString() {
         return String.format(
-                "DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s]",
-                this.deviceIdentification, this.lls1Active, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress, this.port,
-                this.logicalId, this.clientId);
+                "DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s, "
+                        + "debug=%b, hdlc=%b, sn=%b, mbusIdentification=%s, mbusManufacturer=%s]",
+                this.deviceIdentification, this.lls1Active, this.hls3Active, this.hls4Active, this.hls5Active,
+                this.ipAddress, this.port, this.logicalId, this.clientId, this.inDebugMode, this.useHdlc, this.useSn,
+                this.mbusIdentificationNumber, this.mbusManufacturerIdentification);
     }
 
     @Override
@@ -285,6 +293,22 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setUseSn(final boolean useSn) {
         this.useSn = useSn;
+    }
+
+    public Long getMbusIdentificationNumber() {
+        return this.mbusIdentificationNumber;
+    }
+
+    public void setMbusIdentificationNumber(final Long mbusIdentificationNumber) {
+        this.mbusIdentificationNumber = mbusIdentificationNumber;
+    }
+
+    public String getMbusManufacturerIdentification() {
+        return this.mbusManufacturerIdentification;
+    }
+
+    public void setMbusManufacturerIdentification(final String mbusManufacturerIdentification) {
+        this.mbusManufacturerIdentification = mbusManufacturerIdentification;
     }
 
     /**
