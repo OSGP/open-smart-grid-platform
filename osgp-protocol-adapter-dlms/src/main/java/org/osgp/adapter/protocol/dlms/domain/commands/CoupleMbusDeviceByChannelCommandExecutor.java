@@ -18,31 +18,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 
 @Component
-public class GetMBusDeviceOnChannelCommandExecutor
-        extends AbstractCommandExecutor<GetMBusDeviceOnChannelRequestDataDto, ChannelElementValuesDto> {
+public class CoupleMbusDeviceByChannelCommandExecutor
+        extends AbstractCommandExecutor<CoupleMbusDeviceByChannelRequestDataDto, CoupleMbusDeviceByChannelResponseDto> {
 
     @Autowired
     private CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetMBusDeviceOnChannelCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoupleMbusDeviceByChannelCommandExecutor.class);
 
-    public GetMBusDeviceOnChannelCommandExecutor() {
-        super(GetMBusDeviceOnChannelRequestDataDto.class);
+    public CoupleMbusDeviceByChannelCommandExecutor() {
+        super(CoupleMbusDeviceByChannelRequestDataDto.class);
     }
 
     @Override
-    public ChannelElementValuesDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GetMBusDeviceOnChannelRequestDataDto requestDto) throws ProtocolAdapterException {
+    public CoupleMbusDeviceByChannelResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final CoupleMbusDeviceByChannelRequestDataDto requestDto) throws ProtocolAdapterException {
 
         LOGGER.info("Retrieving values for mbus channel {} on meter {}", requestDto.getChannel(),
-                requestDto.getGatewayDeviceIdentification());
+                device.getDeviceIdentification());
         final List<GetResult> resultList = this.coupleMBusDeviceCommandExecutor.getMBusClientAttributeValues(conn,
                 device, requestDto.getChannel());
-        return this.coupleMBusDeviceCommandExecutor.makeChannelElementValues(requestDto.getChannel(), resultList);
+
+        return new CoupleMbusDeviceByChannelResponseDto(
+                this.coupleMBusDeviceCommandExecutor.makeChannelElementValues(requestDto.getChannel(), resultList));
     }
 
 }
