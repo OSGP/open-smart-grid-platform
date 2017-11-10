@@ -13,20 +13,25 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.Map;
 
-import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
-import com.alliander.osgp.cucumber.platform.smartmetering.hooks.SimulatePushedAlarmsHooks;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ServiceEndpoint;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.CoupleMbusDeviceRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
@@ -81,16 +86,6 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
         }
     }
 
-    @When("^the \"([^\"]*)\" alarm is received from \"([^\"]*)\"$")
-    public void theAlarmIsReceivedFrom(final String alarm, final String deviceIdentification) throws Throwable {
-        try {
-            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x01, 0x00, 0x00, 0x00 },
-                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
-        } catch (final Exception e) {
-            Assert.fail("Failed to simulate a '" + alarm + "'alarm: " + e.getMessage());
-        }
-    }
-
     @Then("^the Couple response is \"([^\"]*)\"$")
     public void theCoupleResponseIs(final String status) throws WebServiceSecurityException {
 
@@ -128,5 +123,36 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
+    }
+
+    @When("^the Couple M-Bus Devicel By Channel request is received$")
+    public void theCoupleMBusDevicelByChannelRequestIsReceived(final Map<String, String> settings) throws Throwable {
+        final CoupleMbusDeviceByChannelRequest request = new CoupleMbusDeviceByChannelRequest();
+        final CoupleMbusDeviceByChannelRequestData requestData = new CoupleMbusDeviceByChannelRequestData();
+        requestData.setChannel(Short.valueOf(settings.get(PlatformKeys.KEY_CHANNEL)).shortValue());
+        request.setCoupleMbusDeviceByChannelRequestData(requestData);
+        request.setDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+
+        final CoupleMbusDeviceByChannelAsyncResponse asyncResponse = this.smartMeteringInstallationClient
+                .coupleMbusDeviceByChannel(request);
+
+        this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
+
+    }
+
+    @Then("^the Couple M-Bus Device By Channel response is \"([^\"]*)\"$")
+    public void theCoupleMBusDeviceByChannelResponseIs(final String status) throws Throwable {
+        final CoupleMbusDeviceByChannelAsyncRequest asyncRequest = new CoupleMbusDeviceByChannelAsyncRequest();
+
+        final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
+        final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromScenarioContext();
+        asyncRequest.setCorrelationUid(correlationUid);
+        asyncRequest.setDeviceIdentification(deviceIdentification);
+
+        final CoupleMbusDeviceByChannelResponse response = this.smartMeteringInstallationClient
+                .getCoupleMbusDeviceByChannelResponse(asyncRequest);
+
+        assertNotNull("Result", response.getResult());
+        assertEquals("Result", status, response.getResult().name());
     }
 }

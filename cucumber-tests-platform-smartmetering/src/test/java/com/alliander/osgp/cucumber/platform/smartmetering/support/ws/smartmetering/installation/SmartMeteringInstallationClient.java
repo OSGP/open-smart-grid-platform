@@ -17,6 +17,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDevice
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncRequest;
@@ -85,4 +89,23 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (DeCoupleMbusDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
+
+    public CoupleMbusDeviceByChannelAsyncResponse coupleMbusDeviceByChannel(
+            final CoupleMbusDeviceByChannelRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (CoupleMbusDeviceByChannelAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
+
+    public CoupleMbusDeviceByChannelResponse getCoupleMbusDeviceByChannelResponse(
+            final CoupleMbusDeviceByChannelAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+        final String correlationUid = asyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (CoupleMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+    }
+
 }
