@@ -34,6 +34,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterRead
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
@@ -64,6 +65,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GenerateAndReplaceKeysRequestDataDto;
@@ -150,6 +152,7 @@ public class ActionMapperService {
         CLASS_MAP.put(ProfileGenericDataRequestData.class, ProfileGenericDataRequestDataDto.class);
         CLASS_MAP.put(GenerateAndReplaceKeysRequestData.class, GenerateAndReplaceKeysRequestDataDto.class);
         CLASS_MAP.put(DefinableLoadProfileConfigurationData.class, DefinableLoadProfileConfigurationDto.class);
+        CLASS_MAP.put(CoupleMbusDeviceByChannelRequestData.class, CoupleMbusDeviceByChannelRequestDataDto.class);
     }
 
     /**
@@ -189,6 +192,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequestData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GenerateAndReplaceKeysRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(DefinableLoadProfileConfigurationData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelRequestData.class, this.commonMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageDataContainer,
@@ -201,7 +205,7 @@ public class ActionMapperService {
             @SuppressWarnings("unchecked")
             // suppress else the compiler will complain
             final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS
-            .get(action.getClass());
+                    .get(action.getClass());
 
             if (customValueToDtoConverter != null) {
                 actionValueObjectDtoList.add(new ActionDto(customValueToDtoConverter.convert(action, smartMeter)));

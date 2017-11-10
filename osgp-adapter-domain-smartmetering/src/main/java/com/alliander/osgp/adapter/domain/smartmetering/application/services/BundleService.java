@@ -19,7 +19,9 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -48,6 +50,9 @@ public class BundleService {
 
     @Autowired
     private ActionMapperResponseService actionMapperResponseService;
+
+    @Autowired
+    private MBusGatewayService mBusGatewayService;
 
     public BundleService() {
         // Parameterless constructor required for transactions...
@@ -78,9 +83,16 @@ public class BundleService {
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final BundleMessagesRequestDto bundleResponseMessageDataContainerDto) throws FunctionalException {
 
+        for (final ActionResponseDto action : bundleResponseMessageDataContainerDto.getAllResponses()) {
+            if (action instanceof CoupleMbusDeviceByChannelResponseDto) {
+                this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
+                        (CoupleMbusDeviceByChannelResponseDto) action);
+            }
+        }
+
         // convert bundleResponseMessageDataContainerDto back to core object
         final BundleMessagesResponse bundleResponseMessageDataContainer = this.actionMapperResponseService
-                .mapAllActions(bundleResponseMessageDataContainerDto);
+                .mapAllActions(deviceMessageMetadata, bundleResponseMessageDataContainerDto);
 
         // Send the response final containing the events final to the
         // webservice-adapter
