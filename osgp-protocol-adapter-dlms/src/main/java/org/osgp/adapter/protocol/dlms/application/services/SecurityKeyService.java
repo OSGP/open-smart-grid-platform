@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -37,6 +38,7 @@ import com.alliander.osgp.shared.security.RsaEncryptionService;
  * service to delegate all key handling to.
  */
 @Service(value = "dlmsSecurityKeyService")
+@Transactional(value = "transactionManager")
 public class SecurityKeyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityKeyService.class);
@@ -380,7 +382,7 @@ public class SecurityKeyService {
      *
      * @return a new 16-byte AES key.
      */
-    public final byte[] generateKey() {
+    public byte[] generateKey() {
         try {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
             keyGenerator.init(AES_GMC_128_KEY_SIZE);
@@ -398,7 +400,7 @@ public class SecurityKeyService {
      * @see #generateKey()
      * @return a new encrypted key.
      */
-    public final byte[] generateAndEncryptKey() {
+    public byte[] generateAndEncryptKey() {
         try {
             return this.encryptionService.encrypt(this.generateKey());
         } catch (final FunctionalException e) {
