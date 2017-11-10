@@ -10,12 +10,12 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.ConfigureDefinableLoadProfileCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GenerateAndReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetMBusDeviceOnChannelCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
@@ -27,7 +27,6 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandEx
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -39,18 +38,21 @@ import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
@@ -91,6 +93,9 @@ public class ConfigurationService {
     private SetEncryptionKeyExchangeOnGMeterCommandExecutor setEncryptionKeyExchangeOnGMeterCommandExecutor;
 
     @Autowired
+    private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
+
+    @Autowired
     private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
 
     @Autowired
@@ -110,9 +115,6 @@ public class ConfigurationService {
 
     @Autowired
     private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
-
-    @Autowired
-    private KeyHelperService keyHelperService;
 
     @Autowired
     private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
@@ -205,19 +207,38 @@ public class ConfigurationService {
             final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
-
-        // Get G-Meter
-        DlmsDevice gMeterDevice;
-        gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo.getDeviceIdentification());
-
-        final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
-                gMeterInfo.getDeviceIdentification(),
-                this.keyHelperService.getSecurityKey(gMeterDevice, SecurityKeyType.G_METER_ENCRYPTION),
-                gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
-
-        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
-
+        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
         return "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + device.getDeviceIdentification();
+    }
+
+    public String setMbusUserKeyByChannel(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestDataDto)
+            throws ProtocolAdapterException, FunctionalException {
+
+        LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
+
+        final GMeterInfoDto gMeterInfo = this.getMbusKeyExchangeData(conn, device,
+                setMbusUserKeyByChannelRequestDataDto);
+
+        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
+
+        return "Set M-Bus User Key By Channel Result is OK for device id: " + device.getDeviceIdentification();
+    }
+
+    public GMeterInfoDto getMbusKeyExchangeData(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData)
+            throws ProtocolAdapterException, FunctionalException {
+
+        final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest = new GetMBusDeviceOnChannelRequestDataDto(
+                device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
+        final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor.execute(conn,
+                device, mbusDeviceOnChannelRequest);
+
+        final DlmsDevice mbusDevice = this.domainHelperService.findMbusDevice(
+                Long.valueOf(channelElementValues.getIdentificationNumber()),
+                channelElementValues.getManufacturerIdentification());
+
+        return new GMeterInfoDto(setMbusUserKeyByChannelRequestData.getChannel(), mbusDevice.getDeviceIdentification());
     }
 
     public String setActivityCalendar(final DlmsConnectionHolder conn, final DlmsDevice device,

@@ -10,17 +10,14 @@ package org.osgp.adapter.protocol.dlms.domain.factories;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
+import org.osgp.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
@@ -32,7 +29,6 @@ import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.security.EncryptionService;
 
 public class Hls5Connector extends SecureDlmsConnector {
 
@@ -43,7 +39,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
     @Autowired
-    private EncryptionService encryptionService;
+    private SecurityKeyService securityKeyService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
             final int logicalDeviceAddress, final int clientAccessPoint) {
@@ -89,29 +85,26 @@ public class Hls5Connector extends SecureDlmsConnector {
     @Override
     protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
             throws TechnicalException, FunctionalException {
-        final SecurityKey validAuthenticationKey = this.getSecurityKey(device, SecurityKeyType.E_METER_AUTHENTICATION);
-        final SecurityKey validEncryptionKey = this.getSecurityKey(device, SecurityKeyType.E_METER_ENCRYPTION);
 
-        // Decode the key from Hexstring to bytes
-        byte[] authenticationKey = null;
-        byte[] encryptionKey = null;
+        final String deviceIdentification = device.getDeviceIdentification();
+        final byte[] dlmsAuthenticationKey;
+        final byte[] dlmsEncryptionKey;
         try {
-            authenticationKey = Hex.decodeHex(validAuthenticationKey.getKey().toCharArray());
-            encryptionKey = Hex.decodeHex(validEncryptionKey.getKey().toCharArray());
-        } catch (final DecoderException e) {
-            throw new EncrypterException(e);
+            dlmsAuthenticationKey = this.securityKeyService.getDlmsAuthenticationKey(deviceIdentification);
+            dlmsEncryptionKey = this.securityKeyService.getDlmsGlobalUnicastEncryptionKey(deviceIdentification);
+        } catch (final EncrypterException e) {
+            LOGGER.error("Error determining DLMS communication key setting up HLS5 connection", e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
+                    ComponentType.PROTOCOL_DLMS);
         }
 
-        // Decrypt the key, discard ivBytes
-        final byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
-        final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
+        // Validate keys before JDLMS does and throw a FunctionalException if
+        // necessary
+        this.validateKeys(dlmsAuthenticationKey, dlmsEncryptionKey);
 
-        // Validate keys before JDLMS does and throw a FunctionalException if necessary
-        this.validateKeys(decryptedAuthentication, decryptedEncryption);
-
-        final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(decryptedAuthentication)
+        final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(dlmsAuthenticationKey)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
-                .setGlobalUnicastEncryptionKey(decryptedEncryption)
+                .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
                 .setEncryptionMechanism(EncryptionMechanism.AES_GMC_128).build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
