@@ -219,6 +219,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element> 
+  <xsd:element name="SetMbusUserKeyByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetMbusUserKeyByChannelRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
     <xsd:element name="CoupleMbusDeviceByChannelRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -256,6 +263,7 @@
         <xsd:element ref="tns:GetProfileGenericDataRequest" />
         <xsd:element ref="tns:GenerateAndReplaceKeysRequest" />
         <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest" />
+        <xsd:element ref="tns:SetMbusUserKeyByChannelRequest" />
         <xsd:element ref="tns:CoupleMbusDeviceByChannelRequest" />
       </xsd:choice>
     </xsd:sequence>
