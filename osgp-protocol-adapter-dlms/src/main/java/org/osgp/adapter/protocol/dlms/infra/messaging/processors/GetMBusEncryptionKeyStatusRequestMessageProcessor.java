@@ -19,6 +19,7 @@ import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProvi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -38,7 +39,9 @@ public class GetMBusEncryptionKeyStatusRequestMessageProcessor extends DeviceReq
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-        return this.configurationService.requestGetAdministrativeStatus(conn, device);
+        this.assertRequestObjectType(GetMBusEncryptionKeyStatusRequestDto.class, requestObject);
+        final GetMBusEncryptionKeyStatusRequestDto request = (GetMBusEncryptionKeyStatusRequestDto) requestObject;
+        return this.configurationService.requestGetMBusEncryptionKeyStatus(conn, device, request);
     }
 
 }

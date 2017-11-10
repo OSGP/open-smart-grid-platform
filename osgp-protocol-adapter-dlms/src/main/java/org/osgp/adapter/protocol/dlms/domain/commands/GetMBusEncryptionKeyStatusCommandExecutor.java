@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -23,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EncryptionKeyStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseDto;
@@ -36,35 +36,38 @@ public class GetMBusEncryptionKeyStatusCommandExecutor
     private static final Logger LOGGER = LoggerFactory.getLogger(GetMBusEncryptionKeyStatusCommandExecutor.class);
 
     private static final int CLASS_ID = 72;
-    private static final Map<Integer, ObisCode> OBIS_CODES = new HashMap<>();
+    private static final Map<Short, ObisCode> OBIS_CODES = new HashMap<>();
     private static final int ATTRIBUTE_ID = 14;
-
-    static {
-        OBIS_CODES.put(1, new ObisCode("0.1.24.1.0.255"));
-        OBIS_CODES.put(2, new ObisCode("0.2.24.1.0.255"));
-        OBIS_CODES.put(3, new ObisCode("0.3.24.1.0.255"));
-        OBIS_CODES.put(4, new ObisCode("0.4.24.1.0.255"));
-    }
 
     public GetMBusEncryptionKeyStatusCommandExecutor() {
         super(GetMBusEncryptionKeyStatusRequestDto.class);
     }
 
-    @Override
-    public GetMBusEncryptionKeyStatusRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
-            throws ProtocolAdapterException {
-
-        this.checkActionRequestType(bundleInput);
-
-        return null;
+    @PostConstruct
+    private static void initObisCodes() {
+        OBIS_CODES.put((short) 1, new ObisCode("0.1.24.1.0.255"));
+        OBIS_CODES.put((short) 2, new ObisCode("0.2.24.1.0.255"));
+        OBIS_CODES.put((short) 3, new ObisCode("0.3.24.1.0.255"));
+        OBIS_CODES.put((short) 4, new ObisCode("0.4.24.1.0.255"));
     }
 
-    @Override
-    public ActionResponseDto asBundleResponse(final GetMBusEncryptionKeyStatusResponseDto executionResult)
-            throws ProtocolAdapterException {
-
-        return executionResult;
-    }
+    // @Override
+    // public GetMBusEncryptionKeyStatusRequestDto fromBundleRequestInput(final
+    // ActionRequestDto bundleInput)
+    // throws ProtocolAdapterException {
+    //
+    // this.checkActionRequestType(bundleInput);
+    //
+    // return (GetMBusEncryptionKeyStatusRequestDto) bundleInput;
+    // }
+    //
+    // @Override
+    // public ActionResponseDto asBundleResponse(final
+    // GetMBusEncryptionKeyStatusResponseDto executionResult)
+    // throws ProtocolAdapterException {
+    //
+    // return executionResult;
+    // }
 
     @Override
     public GetMBusEncryptionKeyStatusResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
@@ -99,7 +102,7 @@ public class GetMBusEncryptionKeyStatusCommandExecutor
 
         final EncryptionKeyStatusTypeDto encryptionKeyStatusType = EncryptionKeyStatusTypeDto
                 .fromValue((Integer) dataObject.getValue());
-        return new GetMBusEncryptionKeyStatusResponseDto(request.getMbusDeviceIdentification(),
+        return new GetMBusEncryptionKeyStatusResponseDto(request.getMBusDeviceIdentification(),
                 encryptionKeyStatusType);
     }
 }
