@@ -7,12 +7,10 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-import java.io.Serializable;
-
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class CoupleMbusDeviceByChannelRequestData implements Serializable, ActionRequest {
+public class CoupleMbusDeviceByChannelRequestData implements ActionRequest {
 
     private static final long serialVersionUID = 1522902244442651253L;
     private short channel;

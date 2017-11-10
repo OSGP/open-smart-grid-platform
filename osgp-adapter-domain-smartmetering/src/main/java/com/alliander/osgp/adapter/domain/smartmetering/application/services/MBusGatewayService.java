@@ -25,6 +25,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
@@ -171,11 +172,15 @@ public class MBusGatewayService {
             final CoupleMbusDeviceByChannelResponseDto coupleMbusDeviceByChannelResponseDto)
             throws FunctionalException {
 
+        this.checkAndHandleIfNoChannelElementValuesFound(coupleMbusDeviceByChannelResponseDto);
+
         final SmartMeter gatewayDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
         final SmartMeter mbusDevice = this.smartMeteringDeviceRepository.findByMBusIdentificationNumber(
                 Long.valueOf(coupleMbusDeviceByChannelResponseDto.getChannelElementValues().getIdentificationNumber()),
                 coupleMbusDeviceByChannelResponseDto.getChannelElementValues().getManufacturerIdentification());
+
+        this.checkAndHandleIfMbusDeviceNotFound(mbusDevice, coupleMbusDeviceByChannelResponseDto);
 
         final short channel = coupleMbusDeviceByChannelResponseDto.getChannelElementValues().getChannel();
         mbusDevice.setChannel(channel);
@@ -267,6 +272,31 @@ public class MBusGatewayService {
             throw new FunctionalException(FunctionalExceptionType.NO_MBUS_DEVICE_CHANNEL_FOUND,
                     ComponentType.DOMAIN_SMART_METERING, new MBusChannelNotFoundException(
                             String.valueOf(mbusChannelElementsResponseDto.getRetrievedChannelElements())));
+        }
+    }
+
+    private void checkAndHandleIfMbusDeviceNotFound(final SmartMeter mbusDevice,
+            final CoupleMbusDeviceByChannelResponseDto responseDto) throws FunctionalException {
+        if (mbusDevice == null) {
+            throw new FunctionalException(FunctionalExceptionType.NO_MATCHING_MBUS_DEVICE_FOUND,
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                            "No matching mbus device found with mbusIdentificationNumber: "
+                                    + responseDto.getChannelElementValues().getIdentificationNumber()
+                                    + " and mbusManufacturerIdentification: "
+                                    + responseDto.getChannelElementValues().getManufacturerIdentification()));
+        }
+    }
+
+    private void checkAndHandleIfNoChannelElementValuesFound(final CoupleMbusDeviceByChannelResponseDto responseDto)
+            throws FunctionalException {
+
+        final ChannelElementValuesDto values = responseDto.getChannelElementValues();
+
+        if (!values.hasChannel() || !values.hasDeviceTypeIdentification() || !values.hasManufacturerIdentification()) {
+            throw new FunctionalException(FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL,
+                    ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                            "No device was found on channel: " + values.getChannel()));
         }
     }
 

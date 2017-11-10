@@ -83,16 +83,11 @@ public class BundleService {
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final BundleMessagesRequestDto bundleResponseMessageDataContainerDto) throws FunctionalException {
 
-        for (final ActionResponseDto action : bundleResponseMessageDataContainerDto.getAllResponses()) {
-            if (action instanceof CoupleMbusDeviceByChannelResponseDto) {
-                this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
-                        (CoupleMbusDeviceByChannelResponseDto) action);
-            }
-        }
+        this.checkIfAdditionalActionIsNeeded(deviceMessageMetadata, bundleResponseMessageDataContainerDto);
 
         // convert bundleResponseMessageDataContainerDto back to core object
         final BundleMessagesResponse bundleResponseMessageDataContainer = this.actionMapperResponseService
-                .mapAllActions(deviceMessageMetadata, bundleResponseMessageDataContainerDto);
+                .mapAllActions(bundleResponseMessageDataContainerDto);
 
         // Send the response final containing the events final to the
         // webservice-adapter
@@ -101,5 +96,18 @@ public class BundleService {
                 responseMessageResultType, osgpException, bundleResponseMessageDataContainer,
                 deviceMessageMetadata.getMessagePriority());
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+    }
+
+    private void checkIfAdditionalActionIsNeeded(final DeviceMessageMetadata deviceMessageMetadata,
+            final BundleMessagesRequestDto bundleResponseMessageDataContainerDto) throws FunctionalException {
+
+        // For now, the only response requiring additional action is
+        // CoupleMbusDeviceByChannelResponse.
+        for (final ActionResponseDto action : bundleResponseMessageDataContainerDto.getAllResponses()) {
+            if (action instanceof CoupleMbusDeviceByChannelResponseDto) {
+                this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
+                        (CoupleMbusDeviceByChannelResponseDto) action);
+            }
+        }
     }
 }

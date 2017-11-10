@@ -157,7 +157,7 @@ public class InstallationService {
      * @param organisationIdentification
      *            the organisation requesting the coupling of devices
      * @param deviceIdentification
-     *            the identification of the gateway devicel
+     *            the identification of the gateway device
      * @param messagePriority
      *            the priority of the message
      * @param scheduleTime

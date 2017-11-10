@@ -59,7 +59,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseD
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
@@ -127,8 +126,8 @@ public class ActionMapperResponseService {
         classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
     }
 
-    public BundleMessagesResponse mapAllActions(final DeviceMessageMetadata deviceMessageMetadata,
-            final BundleMessagesRequestDto bundleMessageResponseDto) throws FunctionalException {
+    public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)
+            throws FunctionalException {
 
         final List<ActionResponse> actionResponseList = new ArrayList<>();
 
