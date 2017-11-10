@@ -79,6 +79,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncry
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequest;
@@ -103,6 +107,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalenda
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -1041,6 +1046,62 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
 
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetMbusUserKeyByChannelRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetMbusUserKeyByChannelAsyncResponse setMbusUserKeyByChannel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetMbusUserKeyByChannelRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+
+        LOGGER.info("Incoming SetMbusUserKeyByChannelRequest for gateway: {}.", request.getDeviceIdentification());
+
+        SetMbusUserKeyByChannelAsyncResponse response = null;
+        try {
+            final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData = this.configurationMapper
+                    .map(request.getSetMbusUserKeyByChannelRequestData(), SetMbusUserKeyByChannelRequestData.class);
+
+            response = new SetMbusUserKeyByChannelAsyncResponse();
+            final String deviceIdentification = request.getDeviceIdentification();
+
+            final String correlationUid = this.configurationService.enqueueSetMbusUserKeyByChannelRequest(
+                    organisationIdentification, deviceIdentification, setMbusUserKeyByChannelRequestData,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.configurationMapper.map(scheduleTime, Long.class));
+
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+
+            LOGGER.error(
+                    "Exception: {} while setting M-Bus User Key By Channel for G-Meter behind gateway: {} for organisation {}.",
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetMbusUserKeyByChannelAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetMbusUserKeyByChannelResponse getSetMbusUserKeyByChannelResponse(
+            @RequestPayload final SetMbusUserKeyByChannelAsyncRequest request) throws OsgpException {
+
+        SetMbusUserKeyByChannelResponse response = null;
+        try {
+            response = new SetMbusUserKeyByChannelResponse();
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
         } catch (final Exception e) {
             this.handleException(e);
         }

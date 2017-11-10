@@ -31,6 +31,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -566,6 +567,34 @@ public class ConfigurationService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(definableLoadProfileConfigurationData).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueSetMbusUserKeyByChannelRequest(final String organisationIdentification,
+            final String deviceIdentification,
+            final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData, final int messagePriority,
+            final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_MBUS_USER_KEY_BY_CHANNEL);
+
+        LOGGER.debug("enqueueSetMbusUserKeyByChannelRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_MBUS_USER_KEY_BY_CHANNEL.toString(), messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(setMbusUserKeyByChannelRequestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
