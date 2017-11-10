@@ -339,6 +339,22 @@
     <wsdl:part element="smconf:ConfigureDefinableLoadProfileResponse" name="ConfigureDefinableLoadProfileResponse">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="SetMbusUserKeyByChannelRequest">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelRequest" name="SetMbusUserKeyByChannelRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetMbusUserKeyByChannelAsyncResponse">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelAsyncResponse" name="SetMbusUserKeyByChannelAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetMbusUserKeyByChannelAsyncRequest">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelAsyncRequest" name="SetMbusUserKeyByChannelAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetMbusUserKeyByChannelResponse">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelResponse" name="SetMbusUserKeyByChannelResponse">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="SmartMeteringConfigurationPort">
 
     <wsdl:operation name="GetGetFirmwareVersionResponse">
@@ -609,6 +625,24 @@
       <wsdl:input message="tns:ConfigureDefinableLoadProfileAsyncRequest" name="ConfigureDefinableLoadProfileAsyncRequest">
       </wsdl:input>
       <wsdl:output message="tns:ConfigureDefinableLoadProfileResponse" name="ConfigureDefinableLoadProfileResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetMbusUserKeyByChannel">
+      <wsdl:input message="tns:SetMbusUserKeyByChannelRequest"
+        name="SetMbusUserKeyByChannelRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetMbusUserKeyByChannelAsyncResponse"
+        name="SetMbusUserKeyByChannelAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSetMbusUserKeyByChannelResponse">
+      <wsdl:input message="tns:SetMbusUserKeyByChannelAsyncRequest"
+        name="SetMbusUserKeyByChannelAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetMbusUserKeyByChannelResponse"
+        name="SetMbusUserKeyByChannelResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -1134,6 +1168,37 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="ConfigureDefinableLoadProfileResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetMbusUserKeyByChannel">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetMbusUserKeyByChannelRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetMbusUserKeyByChannelAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSetMbusUserKeyByChannelResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetMbusUserKeyByChannelAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetEncryptionKeyExchangeOnGMeterResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

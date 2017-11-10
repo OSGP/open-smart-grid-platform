@@ -74,6 +74,7 @@
       <xsd:enumeration value="GET_CONFIGURATION_OBJECT" />
       <xsd:enumeration value="GENERATE_AND_REPLACE_KEYS" />
       <xsd:enumeration value="CONFIGURE_DEFINABLE_LOAD_PROFILE" />
+      <xsd:enumeration value="SET_MBUS_USER_KEY_BY_CHANNEL" />
     </xsd:restriction>
   </xsd:simpleType>
 
