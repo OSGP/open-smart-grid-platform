@@ -148,8 +148,9 @@
       <xsd:complexContent>
         <xsd:extension base="tns:ChannelElementValues">
           <xsd:sequence>
-            <xsd:element name="MbusDeviceIdentification"
-              type="common:DeviceIdentification" />
+            <xsd:element name="Result" type="common:OsgpResultType"
+              minOccurs="1" />
+            <xsd:element name="Description" type="xsd:string"/>
           </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
