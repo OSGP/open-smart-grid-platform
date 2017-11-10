@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.builders.entities;
 
+import static com.alliander.osgp.cucumber.core.Helpers.getLong;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private Long clientId = PlatformSmartmeteringDefaults.CLIENT_ID;
     private Long logicalId = PlatformSmartmeteringDefaults.LOGICAL_ID;
     private boolean inDebugMode = PlatformSmartmeteringDefaults.IN_DEBUG_MODE;
+    private Long mbusIdentificationNumber = null;
+    private String mbusManufacturerIdentification = null;
 
     private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
             .setSecurityKeyType(SecurityKeyType.PASSWORD).setKey(PlatformSmartmeteringDefaults.PASSWORD);
@@ -149,6 +153,16 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
     public DlmsDeviceBuilder setInDebugMode(final boolean inDebugMode) {
         this.inDebugMode = inDebugMode;
+        return this;
+    }
+
+    public DlmsDeviceBuilder setMbusIdentificationNumber(final Long value) {
+        this.mbusIdentificationNumber = value;
+        return this;
+    }
+
+    public DlmsDeviceBuilder setMbusManufacturerIdentification(final String value) {
+        this.mbusManufacturerIdentification = value;
         return this;
     }
 
@@ -273,6 +287,14 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.IN_DEBUG_MODE)) {
             this.setInDebugMode(Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.IN_DEBUG_MODE)));
         }
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER)) {
+            this.setMbusIdentificationNumber(
+                    getLong(inputSettings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
+        }
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION)) {
+            this.setMbusManufacturerIdentification(
+                    inputSettings.get(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
+        }
 
         /**
          * For port/logical_id we want to be able to override the default value
@@ -318,6 +340,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         dlmsDevice.setClientId(this.clientId);
         dlmsDevice.setLogicalId(this.logicalId);
         dlmsDevice.setInDebugMode(this.inDebugMode);
+        dlmsDevice.setMbusIdentificationNumber(this.mbusIdentificationNumber);
+        dlmsDevice.setMbusManufacturerIdentification(this.mbusManufacturerIdentification);
 
         /**
          * It is not ideal that the build() method for security keys is called
