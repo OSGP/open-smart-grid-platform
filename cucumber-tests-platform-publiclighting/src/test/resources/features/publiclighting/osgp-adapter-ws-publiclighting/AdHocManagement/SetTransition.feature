@@ -1,4 +1,4 @@
-@PublicLighting @Platform @PublicLightingAdhocManagement
+@PublicLighting @Platform @PublicLightingAdhocManagement @SetTransition
 Feature: PublicLightingAdhocManagement Set Transition
   As OSGP 
   I want clients to be able to send night-day and day-night transition notifications to a device
@@ -20,8 +20,8 @@ Feature: PublicLightingAdhocManagement Set Transition
     And a set transition "<Protocol>" message is sent to device "TEST1024000000001"
       | TransitionType | <TransitionType> |
       | Time           | <Time>           |
-    And the platform buffers a set transition response message for device "TEST1024000000001"
-      | Result | OK |
+    And the platform does not buffer a set transition response message for device "TEST1024000000001"
+      | Result | NOT_FOUND |
 
     Examples: 
       | Protocol    | TransitionType | Time   |
