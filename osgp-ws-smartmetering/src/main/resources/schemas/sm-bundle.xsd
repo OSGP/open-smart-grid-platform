@@ -103,6 +103,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetMBusEncryptionKeyStatusRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetMBusEncryptionKeyStatusRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="SetAlarmNotificationsRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -229,6 +237,7 @@
         <xsd:element ref="tns:SetAdministrativeStatusRequest" />
         <xsd:element ref="tns:SetActivityCalendarRequest" />
         <xsd:element ref="tns:SetEncryptionKeyExchangeOnGMeterRequest" />
+        <xsd:element ref="tns:GetMBusEncryptionKeyStatusRequest" />
         <xsd:element ref="tns:SetAlarmNotificationsRequest" />
         <xsd:element ref="tns:SetConfigurationObjectRequest" />
         <xsd:element ref="tns:SetPushSetupAlarmRequest" />
@@ -339,6 +348,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetMBusEncryptionKeyStatusResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetMBusEncryptionKeyStatusResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="GetAllAttributeValuesResponse">
     <xsd:complexType>
       <xsd:complexContent>
@@ -402,6 +418,7 @@
         <xsd:element ref="tns:AdministrativeStatusResponse" />
         <xsd:element ref="tns:PeriodicMeterReadsResponse" />
         <xsd:element ref="tns:PeriodicMeterReadsGasResponse" />
+        <xsd:element ref="tns:GetMBusEncryptionKeyStatusResponse"/>
         <xsd:element ref="tns:GetAllAttributeValuesResponse" />
         <xsd:element ref="tns:GetSpecificAttributeValueResponse" />
         <xsd:element ref="tns:GetFirmwareVersionResponse" />

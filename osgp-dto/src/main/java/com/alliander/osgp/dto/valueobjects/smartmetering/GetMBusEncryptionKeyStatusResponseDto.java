@@ -11,21 +11,21 @@ public class GetMBusEncryptionKeyStatusResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -8661462528133418593L;
 
-    private String mbusDeviceIdentification;
-    private EncryptionKeyStatusTypeDto encryptionKeyStatusTypeDto;
+    private String mBusDeviceIdentification;
+    private EncryptionKeyStatusTypeDto encryptionKeyStatus;
 
-    public GetMBusEncryptionKeyStatusResponseDto(final String mbusDeviceIdentification,
-            final EncryptionKeyStatusTypeDto encryptionKeyStatusTypeDto) {
-        this.mbusDeviceIdentification = mbusDeviceIdentification;
-        this.encryptionKeyStatusTypeDto = encryptionKeyStatusTypeDto;
+    public GetMBusEncryptionKeyStatusResponseDto(final String mBusDeviceIdentification,
+            final EncryptionKeyStatusTypeDto encryptionKeyStatus) {
+        this.mBusDeviceIdentification = mBusDeviceIdentification;
+        this.encryptionKeyStatus = encryptionKeyStatus;
     }
 
-    public String getMbusDeviceIdentification() {
-        return this.mbusDeviceIdentification;
+    public String getMBusDeviceIdentification() {
+        return this.mBusDeviceIdentification;
     }
 
-    public EncryptionKeyStatusTypeDto getEncryptionKeyStatusTypeDto() {
-        return this.encryptionKeyStatusTypeDto;
+    public EncryptionKeyStatusTypeDto getEncryptionKeyStatus() {
+        return this.encryptionKeyStatus;
     }
 
 }

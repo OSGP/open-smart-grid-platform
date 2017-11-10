@@ -11,19 +11,19 @@ public class GetMBusEncryptionKeyStatusRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 3432576706197401825L;
 
-    private String mbusDeviceIdentification;
-    private int channel;
+    private String mBusDeviceIdentification;
+    private Short channel;
 
-    public GetMBusEncryptionKeyStatusRequestDto(final String mbusDeviceIdentification, final int channel) {
-        this.mbusDeviceIdentification = mbusDeviceIdentification;
+    public GetMBusEncryptionKeyStatusRequestDto(final String mBusDeviceIdentification, final Short channel) {
+        this.mBusDeviceIdentification = mBusDeviceIdentification;
         this.channel = channel;
     }
 
-    public String getMbusDeviceIdentification() {
-        return this.mbusDeviceIdentification;
+    public String getMBusDeviceIdentification() {
+        return this.mBusDeviceIdentification;
     }
 
-    public int getChannel() {
+    public Short getChannel() {
         return this.channel;
     }
 }

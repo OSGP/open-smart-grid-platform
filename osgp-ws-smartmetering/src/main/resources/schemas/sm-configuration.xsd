@@ -416,14 +416,25 @@
 
   <xsd:complexType name="GetMBusEncryptionKeyStatusRequestData">
     <xsd:complexContent>
-      <xsd:extension base="common:Command">
+      <xsd:extension base="common:Query">
         <xsd:sequence>
-          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+          <xsd:element name="MBusDeviceIdentification" type="common:DeviceIdentification" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="GetMBusEncryptionKeyStatusResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+      <xsd:sequence>
+        <xsd:element name="MBusDeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="EncryptionKeyStatus" type="tns:EncryptionKeyStatus" />
+      </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
   <xsd:element name="GetMBusEncryptionKeyStatusRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -447,6 +458,7 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  
   <xsd:element name="GetMBusEncryptionKeyStatusResponse">
     <xsd:complexType>
       <xsd:sequence>
