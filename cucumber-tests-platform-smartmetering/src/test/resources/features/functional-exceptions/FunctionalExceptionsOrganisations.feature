@@ -1,7 +1,6 @@
 @SmartMetering @Platform
-Feature: FunctionalExceptions regarding organisations
+Feature: SmartMetering functional exceptions regarding organisations
 
-  @Focus
   Scenario: Get administrative status on a device of an unknown organisation
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
