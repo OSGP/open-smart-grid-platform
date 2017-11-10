@@ -1198,7 +1198,7 @@
         <soap:header message="tns:ActionHeader" part="ApplicationName"
           use="literal" />
       </wsdl:input>
-      <wsdl:output name="SetEncryptionKeyExchangeOnGMeterResponse">
+      <wsdl:output name="SetMbusUserKeyByChannelResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
