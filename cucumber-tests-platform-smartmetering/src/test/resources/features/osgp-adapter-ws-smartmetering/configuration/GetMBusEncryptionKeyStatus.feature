@@ -16,6 +16,8 @@ Feature: SmartMetering - Configuration - M-Bus encryption key status
     When a get M-Bus encryption key status request is received
       | DeviceIdentification | TESTG102400000001 |
     Then the M-Bus encryption key status should be returned
+#      | Result              | OK                    |
+#      | EncryptionKeyStatus | ENCRYPTION_KEY_IN_USE |
       
 #Scenario: Get M-Bus encryption key status from decoupled M-Bus device
 #Given a dlms device

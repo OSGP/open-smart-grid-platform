@@ -55,7 +55,7 @@ public class GetMBusEncryptionKeyStatusSteps {
     }
 
     @Then("^the M-Bus encryption key status should be returned$")
-    public void theMBusEncryptionKeyStatusShouldBeReturned(final Map<String, String> responseData)
+    public void theMBusEncryptionKeyStatusShouldBeReturned()
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetMBusEncryptionKeyStatusAsyncRequest asyncRequest = GetMBusEncryptionKeyStatusRequestFactory
                 .fromScenarioContext();
