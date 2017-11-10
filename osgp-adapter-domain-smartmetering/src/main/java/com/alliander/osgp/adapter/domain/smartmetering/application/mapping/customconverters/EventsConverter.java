@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
+package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;

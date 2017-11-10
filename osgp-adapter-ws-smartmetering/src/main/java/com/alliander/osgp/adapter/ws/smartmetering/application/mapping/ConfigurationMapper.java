@@ -12,8 +12,10 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMBusEncryptionKeyStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestData;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
@@ -62,5 +64,13 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new CosemDateConverter());
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
         mapperFactory.getConverterFactory().registerConverter(new FirmwareVersionConverter());
+
+        /*
+         * This classMaps is needed because Orika (incorrectly?) expects
+         * MBusDeviceIdentification in stead of mBusDeviceIdentification in the
+         * source field name
+         */
+        mapperFactory.classMap(GetMBusEncryptionKeyStatusRequest.class, GetMBusEncryptionKeyStatusRequestData.class)
+                .field("MBusDeviceIdentification", "mBusDeviceIdentification").byDefault().register();
     }
 }

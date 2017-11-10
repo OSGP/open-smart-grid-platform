@@ -13,6 +13,10 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.DlmsMeterValueConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.ProfileEntryValueConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.ReadAlarmRegisterDataConverter;
+
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
 

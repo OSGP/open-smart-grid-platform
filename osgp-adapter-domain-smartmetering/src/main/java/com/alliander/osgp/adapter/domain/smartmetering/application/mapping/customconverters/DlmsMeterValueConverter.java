@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
+package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import java.math.BigDecimal;
 

@@ -32,6 +32,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.FaultResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -48,6 +49,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
@@ -98,6 +100,7 @@ public class ActionMapperResponseService {
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
         classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);
         classMap.put(ProfileGenericDataResponseDto.class, ProfileGenericDataResponse.class);
+        classMap.put(GetMBusEncryptionKeyStatusResponseDto.class, GetMBusEncryptionKeyStatusResponseData.class);
     }
 
     /**
@@ -120,6 +123,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetConfigurationObjectResponseDto.class, this.configurationMapper);
         classToMapperMap.put(ProfileGenericDataResponseDto.class, this.monitoringMapper);
+        classToMapperMap.put(GetMBusEncryptionKeyStatusResponseDto.class, this.configurationMapper);
     }
 
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)

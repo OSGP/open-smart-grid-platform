@@ -23,9 +23,9 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Commo
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.PeriodicReadsRequestGasDataConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.ActualMeterReadsRequestGasRequestDataConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.CustomValueToDtoConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.PeriodicReadsRequestGasDataConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.SetEncryptionKeyExchangeOnGMeterDataConverter;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
@@ -43,6 +43,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttribute
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MBusActionRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData;
@@ -72,6 +74,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
@@ -117,9 +120,12 @@ public class ActionMapperService {
     @Autowired
     private SetEncryptionKeyExchangeOnGMeterDataConverter setEncryptionKeyExchangeOnGMeterDataConverter;
 
-    private static Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
-    private static Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP = new HashMap<>();
+    @Autowired
+    private DomainHelperService domainHelperService;
+
+    private static final Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
+    private static final Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
+    private static final Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP = new HashMap<>();
 
     /**
      * Specifies to which DTO object the core object needs to be mapped.
@@ -150,6 +156,8 @@ public class ActionMapperService {
         CLASS_MAP.put(ProfileGenericDataRequestData.class, ProfileGenericDataRequestDataDto.class);
         CLASS_MAP.put(GenerateAndReplaceKeysRequestData.class, GenerateAndReplaceKeysRequestDataDto.class);
         CLASS_MAP.put(DefinableLoadProfileConfigurationData.class, DefinableLoadProfileConfigurationDto.class);
+        CLASS_MAP.put(GetMBusEncryptionKeyStatusRequestData.class, GetMBusEncryptionKeyStatusRequestDto.class);
+
     }
 
     /**
@@ -189,6 +197,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequestData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GenerateAndReplaceKeysRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(DefinableLoadProfileConfigurationData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(GetMBusEncryptionKeyStatusRequestData.class, this.configurationMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageDataContainer,
@@ -196,20 +205,24 @@ public class ActionMapperService {
 
         final List<ActionDto> actionValueObjectDtoList = new ArrayList<>();
 
-        for (final ActionRequest action : bundleMessageDataContainer.getBundleList()) {
+        for (ActionRequest action : bundleMessageDataContainer.getBundleList()) {
 
             @SuppressWarnings("unchecked")
             // suppress else the compiler will complain
             final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS
-            .get(action.getClass());
+                    .get(action.getClass());
 
             if (customValueToDtoConverter != null) {
                 actionValueObjectDtoList.add(new ActionDto(customValueToDtoConverter.convert(action, smartMeter)));
             } else {
-
                 final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(action.getClass());
                 final Class<? extends ActionRequestDto> clazz = CLASS_MAP.get(action.getClass());
                 if (mapper != null) {
+
+                    if (action instanceof MBusActionRequest) {
+                        action = this.verifyAndFindChannelForMBusRequest((MBusActionRequest) action, smartMeter);
+                    }
+
                     actionValueObjectDtoList.add(new ActionDto(this.performDefaultMapping(action, mapper, clazz)));
                 } else {
                     throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
@@ -231,6 +244,44 @@ public class ActionMapperService {
                             + " could not be converted to " + clazz.getName()));
         }
         return actionValueObjectDto;
+    }
+
+    private ActionRequest verifyAndFindChannelForMBusRequest(final MBusActionRequest action,
+            final SmartMeter smartMeter) throws FunctionalException {
+
+        final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(action.getMBusDeviceIdentification());
+
+        this.verifyMBusDeviceHasChannel(mbusDevice);
+        this.verifyMBusDeviceHasGatewayDevice(mbusDevice);
+        this.verifyMBusDeviceHasCorrectGatewayDevice(mbusDevice, smartMeter);
+
+        action.setChannel(mbusDevice.getChannel());
+
+        return action;
+    }
+
+    private void verifyMBusDeviceHasChannel(final SmartMeter mbusDevice) throws FunctionalException {
+        if (mbusDevice.getChannel() == null) {
+            throw new FunctionalException(FunctionalExceptionType.NO_MBUS_DEVICE_CHANNEL_FOUND,
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new AssertionError("M-Bus device should have a channel configured."));
+        }
+    }
+
+    private void verifyMBusDeviceHasGatewayDevice(final SmartMeter mbusDevice) throws FunctionalException {
+        if (mbusDevice.getGatewayDevice() == null) {
+            throw new FunctionalException(FunctionalExceptionType.NO_GATEWAY_DEVICE_FOUND_FOR_M_BUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING, new AssertionError("M-Bus device is not coupled."));
+        }
+    }
+
+    private void verifyMBusDeviceHasCorrectGatewayDevice(final SmartMeter mbusDevice, final SmartMeter smartMeter)
+            throws FunctionalException {
+        if (!smartMeter.getDeviceIdentification().equals(mbusDevice.getGatewayDevice().getDeviceIdentification())) {
+            throw new FunctionalException(FunctionalExceptionType.NO_GATEWAY_DEVICE_FOUND_FOR_M_BUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new AssertionError("M-Bus device is coupled to a different meter."));
+        }
     }
 
 }

@@ -41,12 +41,12 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EncryptionKeyStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
@@ -735,29 +735,41 @@ public class ConfigurationService {
         LOGGER.info("getMBusEncryptionKeyStatus for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
+        final SmartMeter mbusDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), new GetMBusEncryptionKeyStatusRequestDto()),
+        final Device gatewayDevice = mbusDevice.getGatewayDevice();
+        if (gatewayDevice == null) {
+            throw new FunctionalException(FunctionalExceptionType.NO_GATEWAY_DEVICE_FOUND_FOR_M_BUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new AssertionError("Meter for gas reads should have an energy meter as gateway device."));
+        }
+
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
+                        gatewayDevice.getIpAddress(),
+                        new GetMBusEncryptionKeyStatusRequestDto(mbusDevice.getDeviceIdentification(),
+                                mbusDevice.getChannel())),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleGetMBusEncryptionKeyStatusResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType resultType, final OsgpException exception,
-            final EncryptionKeyStatusTypeDto encryptionKeyStatusTypeDto) {
+            final GetMBusEncryptionKeyStatusResponseDto getMBusEncryptionKeyStatusResponseDto) {
 
         LOGGER.info("handleGetMBusEncryptionKeyStatusResponse for MessageType: {}",
                 deviceMessageMetadata.getMessageType());
 
-        final EncryptionKeyStatusType encryptionKeyStatusType = this.configurationMapper.map(encryptionKeyStatusTypeDto,
-                EncryptionKeyStatusType.class);
+        final String mbusDeviceIdentification = getMBusEncryptionKeyStatusResponseDto.getMBusDeviceIdentification();
+        final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType
+                .fromValue(getMBusEncryptionKeyStatusResponseDto.getEncryptionKeyStatus().getValue());
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                resultType, exception, encryptionKeyStatusType, deviceMessageMetadata.getMessagePriority()),
+        this.webServiceResponseMessageSender.send(
+                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(), mbusDeviceIdentification, resultType,
+                        exception, encryptionKeyStatusType, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
 }

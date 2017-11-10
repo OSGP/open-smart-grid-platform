@@ -12,6 +12,9 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.EventsConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.FindEventsRequestDataConverter;
+
 @Component(value = "managementMapper")
 public class ManagementMapper extends ConfigurableMapper {
     @Override

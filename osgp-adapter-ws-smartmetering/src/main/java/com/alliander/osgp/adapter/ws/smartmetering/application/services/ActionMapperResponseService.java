@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AllResponses;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMBusEncryptionKeyStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ObjectFactory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
@@ -39,6 +40,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.FaultResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -93,6 +95,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(ProfileGenericDataResponse.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetMBusEncryptionKeyStatusResponseData.class, this.configurationMapper);
     }
 
     /**
@@ -129,6 +132,7 @@ public class ActionMapperResponseService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse.class);
         CLASS_MAP.put(ProfileGenericDataResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse.class);
+        CLASS_MAP.put(GetMBusEncryptionKeyStatusResponseData.class, GetMBusEncryptionKeyStatusResponse.class);
     }
 
     public BundleResponse mapAllActions(final MeterResponseData meterResponseData) throws FunctionalException {
