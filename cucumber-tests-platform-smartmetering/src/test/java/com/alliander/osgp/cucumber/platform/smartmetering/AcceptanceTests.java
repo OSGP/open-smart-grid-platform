@@ -14,7 +14,7 @@ import cucumber.api.SnippetType;
 import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = { "classpath:features/osgp-adapter-ws-core",
+@CucumberOptions(features = { "classpath:features/functional-exceptions", "classpath:features/osgp-adapter-ws-core",
         "classpath:features/osgp-adapter-ws-smartmetering" }, tags = { "~@Skip" }, glue = {
                 "classpath:com.alliander.osgp.cucumber.platform.glue",
                 "classpath:com.alliander.osgp.cucumber.platform.common.glue",
