@@ -117,7 +117,8 @@ public class AdHocManagementService extends AbstractService {
                 .map(allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
         final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType())
-                ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name() : messageType;
+                ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name()
+                : messageType;
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), actualMessageType, device.getIpAddress());
@@ -286,15 +287,18 @@ public class AdHocManagementService extends AbstractService {
         // Check the event and the LMD.
         final Event event = eventMessageDataContainer.getEvents().get(0);
         if (event == null) {
-            LOGGER.info("No event received for light measurement device: {}", deviceIdentification);
+            LOGGER.error("No event received for light measurement device: {}", deviceIdentification);
             return;
         }
-        final LightMeasurementDevice lmd = this.lightMeasurementDeviceRepository
+        LightMeasurementDevice lmd = this.lightMeasurementDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
         if (lmd == null) {
-            LOGGER.info("No light measurement device found: {}", deviceIdentification);
+            LOGGER.error("No light measurement device found: {}", deviceIdentification);
             return;
         }
+
+        // Update last communication time for the LMD.
+        lmd = this.updateLmdLastCommunicationTime(lmd);
 
         // Determine if the event is a duplicate. If so, quit.
         if (this.isDuplicateEvent(event, lmd)) {
@@ -305,25 +309,22 @@ public class AdHocManagementService extends AbstractService {
         }
 
         // Find all SSLDs which need to receive a SET_TRANSITION message.
-        LOGGER.info("Find SSLDs for light measurement device: {}", deviceIdentification);
-        final List<Ssld> ssldsToTransition = this.ssldRepository
-                .findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
-                        lmd, DeviceLifecycleStatus.IN_USE);
-        LOGGER.info("For light measurement device: {}, {} SSLDs were found", deviceIdentification,
-                ssldsToTransition.size());
+        final List<Ssld> ssldsToTransition = this.getSsldsToTransitionForLmd(lmd);
 
         // Determine the transition type based on the event of the LMD.
-        final String transitionTypeFromLightMeasurementDevice = event.getEventType().name();
-        TransitionType transitionType;
-        if (EventType.LIGHT_SENSOR_REPORTS_DARK.name().equals(transitionTypeFromLightMeasurementDevice)) {
-            transitionType = TransitionType.DAY_NIGHT;
-        } else {
-            transitionType = TransitionType.NIGHT_DAY;
-        }
+        final TransitionType transitionType = this.determineTransitionTypeForEvent(event);
 
         // Send SET_TRANSITION messages to the SSLDs.
         this.transitionSslds(ssldsToTransition, organisationIdentification, correlationUid, transitionType,
                 DateTime.now());
+    }
+
+    private LightMeasurementDevice updateLmdLastCommunicationTime(final LightMeasurementDevice lmd) {
+        final DateTime now = DateTime.now();
+        LOGGER.info("Trying to update lastCommunicationTime for light measurement device: {} with dateTime: {}",
+                lmd.getDeviceIdentification(), now);
+        lmd.setLastCommunicationTime(now.toDate());
+        return this.lightMeasurementDeviceRepository.save(lmd);
     }
 
     private boolean isDuplicateEvent(final Event event, final LightMeasurementDevice lmd) {
@@ -339,6 +340,27 @@ public class AdHocManagementService extends AbstractService {
             }
         }
         return false;
+    }
+
+    private List<Ssld> getSsldsToTransitionForLmd(final LightMeasurementDevice lmd) {
+        LOGGER.info("Find SSLDs for light measurement device: {}", lmd.getDeviceIdentification());
+        final List<Ssld> ssldsToTransition = this.ssldRepository
+                .findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
+                        lmd, DeviceLifecycleStatus.IN_USE);
+        LOGGER.info("For light measurement device: {}, {} SSLDs were found", lmd.getDeviceIdentification(),
+                ssldsToTransition.size());
+        return ssldsToTransition;
+    }
+
+    private TransitionType determineTransitionTypeForEvent(final Event event) {
+        final String transitionTypeFromLightMeasurementDevice = event.getEventType().name();
+        TransitionType transitionType;
+        if (EventType.LIGHT_SENSOR_REPORTS_DARK.name().equals(transitionTypeFromLightMeasurementDevice)) {
+            transitionType = TransitionType.DAY_NIGHT;
+        } else {
+            transitionType = TransitionType.NIGHT_DAY;
+        }
+        return transitionType;
     }
 
     private void transitionSslds(final List<Ssld> ssldsToTransition, final String organisationIdentification,

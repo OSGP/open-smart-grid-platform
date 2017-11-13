@@ -22,14 +22,12 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AllResponses;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMBusEncryptionKeyStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ObjectFactory;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.CommonMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
@@ -135,8 +133,7 @@ public class ActionMapperResponseService {
         CLASS_MAP.put(GetMBusEncryptionKeyStatusResponseData.class, GetMBusEncryptionKeyStatusResponse.class);
     }
 
-    public BundleResponse mapAllActions(final MeterResponseData meterResponseData) throws FunctionalException {
-        final Serializable actionList = meterResponseData.getMessageData();
+    public BundleResponse mapAllActions(final Serializable actionList) throws FunctionalException {
         final BundleMessagesResponse bundleResponseMessageDataContainer = (BundleMessagesResponse) actionList;
         final AllResponses allResponses = new ObjectFactory().createAllResponses();
         final List<? extends ActionResponse> actionValueList = bundleResponseMessageDataContainer.getBundleList();
@@ -145,10 +142,6 @@ public class ActionMapperResponseService {
             final ConfigurableMapper mapper = this.getMapper(actionValueResponseObject);
             final Class<?> clazz = this.getClazz(actionValueResponseObject);
             final Response response = this.doMap(actionValueResponseObject, mapper, clazz);
-
-            if (OsgpResultType.OK == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
-                response.setResult(OsgpResultType.OK);
-            }
 
             allResponses.getResponseList().add(response);
         }
