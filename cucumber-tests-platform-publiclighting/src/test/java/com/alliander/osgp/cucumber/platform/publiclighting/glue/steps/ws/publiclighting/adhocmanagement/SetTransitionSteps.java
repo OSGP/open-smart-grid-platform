@@ -155,6 +155,30 @@ public class SetTransitionSteps {
         });
     }
 
+    @Then("^the platform does not buffer a set transition response message for device \"([^\"]*)\"$")
+    public void thePlatformDoesNotBufferASetTransitionResponseMessage(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws Throwable {
+        final SetTransitionAsyncRequest request = new SetTransitionAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid(
+                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        Wait.until(() -> {
+            SetTransitionResponse response = null;
+            try {
+                response = this.client.getSetTransitionResponse(request);
+            } catch (final Exception e) {
+                // do nothing
+            }
+            Assert.assertNotNull(response);
+            Assert.assertEquals(
+                    Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
+                    response.getResult());
+        });
+    }
+
     @Then("^the set transition async response contains a soap fault$")
     public void theSetTransitionAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.current()

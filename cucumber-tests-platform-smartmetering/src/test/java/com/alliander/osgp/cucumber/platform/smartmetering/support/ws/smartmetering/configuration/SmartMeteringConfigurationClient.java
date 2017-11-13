@@ -62,6 +62,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncry
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
@@ -251,6 +255,24 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
         return (GetMBusEncryptionKeyStatusResponse) this.getTemplate()
                 .marshalSendAndReceive(getMBusEncryptionKeyStatusAsyncRequest);
+    }
+
+    public SetMbusUserKeyByChannelAsyncResponse setMbusUserKeyByChannel(
+            final SetMbusUserKeyByChannelRequest setMbusUserKeyByChannelRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (SetMbusUserKeyByChannelAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(setMbusUserKeyByChannelRequest);
+    }
+
+    public SetMbusUserKeyByChannelResponse getSetMbusUserKeyByChannelResponse(
+            final SetMbusUserKeyByChannelAsyncRequest setMbusUserKeyByChannelAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = setMbusUserKeyByChannelAsyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        return (SetMbusUserKeyByChannelResponse) this.getTemplate()
+                .marshalSendAndReceive(setMbusUserKeyByChannelAsyncRequest);
     }
 
     public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest replaceKeysRequest)
