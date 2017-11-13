@@ -8,5 +8,6 @@ Feature: SmartMetering functional exceptions regarding organisations
     When the get administrative status request for an invalid organisation is received
       | DeviceIdentification       | TEST1024000000001    |
       | OrganizationIdentification | LianderNetManagement |
-    Then a functional exception should be returned
-      | Message              | UNKNOWN_ORGANISATION |
+    Then a SOAP fault should have been returned
+      | Code    |                  101 |
+      | Message | UNKNOWN_ORGANISATION |

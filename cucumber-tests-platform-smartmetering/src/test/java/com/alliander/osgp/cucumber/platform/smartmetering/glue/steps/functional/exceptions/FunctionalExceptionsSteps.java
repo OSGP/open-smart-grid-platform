@@ -9,14 +9,10 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.functional.exceptions;
 
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
@@ -24,7 +20,6 @@ import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetAdministrativeStatusRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
-import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class FunctionalExceptionsSteps {
@@ -46,16 +41,9 @@ public class FunctionalExceptionsSteps {
         try {
             this.smartMeteringConfigurationClient.getAdministrativeStatus(getAdministrativeStatusRequest);
         } catch (final Exception exception) {
-            ScenarioContext.current().put(PlatformKeys.EXCEPTION, exception);
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
         }
 
     }
 
-    @Then("^a functional exception should be returned$")
-    public void aFunctionalExceptionShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        final Object exception = ScenarioContext.current().get(PlatformKeys.EXCEPTION);
-        assertNotNull(exception);
-        assertTrue(exception instanceof SoapFaultClientException);
-        assertEquals(settings.get(PlatformKeys.MESSAGE), ((SoapFaultClientException) exception).getMessage());
-    }
 }
