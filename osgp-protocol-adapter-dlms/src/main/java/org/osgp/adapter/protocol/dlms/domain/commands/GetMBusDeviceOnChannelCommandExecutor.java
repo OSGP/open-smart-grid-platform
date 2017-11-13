@@ -44,5 +44,4 @@ public class GetMBusDeviceOnChannelCommandExecutor
                 device, requestDto.getChannel());
         return this.coupleMBusDeviceCommandExecutor.makeChannelElementValues(requestDto.getChannel(), resultList);
     }
-
 }

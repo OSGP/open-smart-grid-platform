@@ -19,26 +19,26 @@ import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProvi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
-public class CoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetMBusDeviceOnChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private InstallationService installationService;
 
-    protected CoupleMbusDeviceByChannelRequestMessageProcessor() {
-        super(DeviceRequestMessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL);
+    protected GetMBusDeviceOnChannelRequestMessageProcessor() {
+        super(DeviceRequestMessageType.GET_M_BUS_DEVICE_ON_CHANNEL);
     }
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-        this.assertRequestObjectType(CoupleMbusDeviceByChannelRequestDataDto.class, requestObject);
+        this.assertRequestObjectType(GetMBusDeviceOnChannelRequestDataDto.class, requestObject);
 
-        final CoupleMbusDeviceByChannelRequestDataDto requestDto = (CoupleMbusDeviceByChannelRequestDataDto) requestObject;
-        return this.installationService.coupleMbusDeviceByChannel(conn, device, requestDto);
+        final GetMBusDeviceOnChannelRequestDataDto requestDto = (GetMBusDeviceOnChannelRequestDataDto) requestObject;
+        return this.installationService.getMBusDeviceOnChannel(conn, device, requestDto);
     }
 }
