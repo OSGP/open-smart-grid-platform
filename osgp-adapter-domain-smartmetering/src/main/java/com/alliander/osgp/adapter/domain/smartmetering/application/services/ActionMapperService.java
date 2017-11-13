@@ -28,6 +28,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.custo
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.PeriodicReadsRequestGasDataConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.SetEncryptionKeyExchangeOnGMeterDataConverter;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.exceptions.MBusChannelNotFoundException;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
@@ -60,6 +61,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequ
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
+import com.alliander.osgp.domain.smartmetering.exceptions.GatewayDeviceInvalidForMBusDeviceException;
+import com.alliander.osgp.domain.smartmetering.exceptions.GatewayDeviceNotSetForMBusDeviceException;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
@@ -264,23 +267,22 @@ public class ActionMapperService {
         if (mbusDevice.getChannel() == null) {
             throw new FunctionalException(FunctionalExceptionType.NO_MBUS_DEVICE_CHANNEL_FOUND,
                     ComponentType.DOMAIN_SMART_METERING,
-                    new AssertionError("M-Bus device should have a channel configured."));
+                    new MBusChannelNotFoundException("M-Bus device should have a channel configured."));
         }
     }
 
     private void verifyMBusDeviceHasGatewayDevice(final SmartMeter mbusDevice) throws FunctionalException {
         if (mbusDevice.getGatewayDevice() == null) {
-            throw new FunctionalException(FunctionalExceptionType.NO_GATEWAY_DEVICE_FOUND_FOR_M_BUS_DEVICE,
-                    ComponentType.DOMAIN_SMART_METERING, new AssertionError("M-Bus device is not coupled."));
+            throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMBusDeviceException());
         }
     }
 
     private void verifyMBusDeviceHasCorrectGatewayDevice(final SmartMeter mbusDevice, final SmartMeter smartMeter)
             throws FunctionalException {
         if (!smartMeter.getDeviceIdentification().equals(mbusDevice.getGatewayDevice().getDeviceIdentification())) {
-            throw new FunctionalException(FunctionalExceptionType.NO_GATEWAY_DEVICE_FOUND_FOR_M_BUS_DEVICE,
-                    ComponentType.DOMAIN_SMART_METERING,
-                    new AssertionError("M-Bus device is coupled to a different meter."));
+            throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_INVALID_FOR_MBUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceInvalidForMBusDeviceException());
         }
     }
 

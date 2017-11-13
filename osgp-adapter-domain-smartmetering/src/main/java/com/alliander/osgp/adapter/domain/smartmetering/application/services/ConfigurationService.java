@@ -36,7 +36,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigu
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
-import com.alliander.osgp.domain.smartmetering.exceptions.GatewayDeviceNotSetException;
+import com.alliander.osgp.domain.smartmetering.exceptions.GatewayDeviceNotSetForMBusDeviceException;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
@@ -407,8 +407,8 @@ public class ConfigurationService {
              * scenario's with direct communication with gas meters this will
              * have to be changed.
              */
-            throw new FunctionalException(FunctionalExceptionType.NO_GATEWAY_DEVICE_FOUND_FOR_M_BUS_DEVICE,
-                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetException());
+            throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMBusDeviceException());
         }
 
         this.osgpCoreRequestMessageSender.send(
@@ -741,8 +741,8 @@ public class ConfigurationService {
 
         final Device gatewayDevice = mbusDevice.getGatewayDevice();
         if (gatewayDevice == null) {
-            throw new FunctionalException(FunctionalExceptionType.NO_GATEWAY_DEVICE_FOUND_FOR_M_BUS_DEVICE,
-                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetException());
+            throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMBusDeviceException());
         }
 
         this.osgpCoreRequestMessageSender.send(

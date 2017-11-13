@@ -11,13 +11,13 @@ package com.alliander.osgp.domain.smartmetering.exceptions;
 
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
 
-public class GatewayDeviceNotSetException extends PlatformException {
+public class GatewayDeviceNotSetForMBusDeviceException extends PlatformException {
 
     private static final long serialVersionUID = 1309508748012622409L;
 
     private static final String MESSAGE = "Meter for gas reads should have an energy meter as gateway device.";
 
-    public GatewayDeviceNotSetException() {
+    public GatewayDeviceNotSetForMBusDeviceException() {
         super(MESSAGE);
     }
 
