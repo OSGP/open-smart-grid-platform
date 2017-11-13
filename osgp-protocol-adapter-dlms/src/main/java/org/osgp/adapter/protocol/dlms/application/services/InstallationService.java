@@ -20,12 +20,10 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
@@ -98,11 +96,6 @@ public class InstallationService {
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
             final MbusChannelElementsDto mbusChannelElements) throws ProtocolAdapterException {
         return this.coupleMBusDeviceCommandExecutor.execute(conn, device, mbusChannelElements);
-    }
-
-    public ChannelElementValuesDto getMBusDeviceOnChannel(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GetMBusDeviceOnChannelRequestDataDto requestDataDto) throws ProtocolAdapterException {
-        return this.getMBusDeviceOnChannelCommandExecutor.execute(conn, device, requestDataDto);
     }
 
     public CoupleMbusDeviceByChannelResponseDto coupleMbusDeviceByChannel(final DlmsConnectionHolder conn,
