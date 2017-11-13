@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -17,6 +18,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncRequest;
@@ -24,6 +26,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusE
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetMBusEncryptionKeyStatusRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
@@ -52,9 +55,11 @@ public class GetMBusEncryptionKeyStatusSteps {
         LOGGER.info(OPERATION + ": Async response is received {}", asyncResponse);
 
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION,
+                asyncResponse.getDeviceIdentification());
     }
 
-    @Then("^the M-Bus encryption key status should be returned$")
+    @Then("^the get M-Bus encryption key status request should return an encryption key status$")
     public void theMBusEncryptionKeyStatusShouldBeReturned()
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetMBusEncryptionKeyStatusAsyncRequest asyncRequest = GetMBusEncryptionKeyStatusRequestFactory
@@ -65,5 +70,19 @@ public class GetMBusEncryptionKeyStatusSteps {
         assertNotNull(OPERATION + ": Result should not be null", response.getResult());
         assertEquals(OPERATION + ": Result should be OK", OsgpResultType.OK, response.getResult());
         assertNotNull(OPERATION + ": Encryption key status should not be null", response.getEncryptionKeyStatus());
+    }
+
+    @Then("^the get M-Bus encryption key status request should return an exception$")
+    public void theGetMBusEncryptionKeyStatusRequestShouldReturnAnException()
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final GetMBusEncryptionKeyStatusAsyncRequest asyncRequest = GetMBusEncryptionKeyStatusRequestFactory
+                .fromScenarioContext();
+        try {
+            this.smartMeterConfigurationClient.retrieveGetMBusEncryptionKeyStatusResponse(asyncRequest);
+            fail("A SoapFaultClientException should be thrown.");
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
+        }
+
     }
 }
