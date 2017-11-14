@@ -120,6 +120,21 @@ public enum SubDataAttribute {
      * net-mask.
      */
     NETMASK("netmask"),
+    /*
+     * Attribute of Property Clock, which holds the server address of the
+     * device's NTP server.
+     */
+    NTP_HOST("ntpSvrA"),
+    /*
+     * Attribute of Property Clock, which indicates if the device should
+     * synchronize with the NTP server.
+     */
+    NTP_ENABLED("enbNtpC"),
+    /*
+     * Attribute of Property Clock, which holds the NTP synchronization interval
+     * in minutes.
+     */
+    NTP_SYNC_INTERVAL("syncPer"),
     /**
      * Attribute of several Logical Nodes, for example Logical Node RbOper.Oper,
      * used to reboot the device.

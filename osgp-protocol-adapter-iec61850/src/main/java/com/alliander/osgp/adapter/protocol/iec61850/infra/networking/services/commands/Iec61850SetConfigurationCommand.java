@@ -149,11 +149,13 @@ public class Iec61850SetConfigurationCommand {
 
                 // Checking to see if all register values are null, so that we
                 // don't read the values for no reason.
-                if (!(configuration.getTimeSyncFrequency() == null
-                        && configuration.isAutomaticSummerTimingEnabled() == null
-                        && configuration.getSummerTimeDetails() == null
-                        && configuration.getWinterTimeDetails() == null)) {
+                final boolean clockConfigurationChanged = configuration.getTimeSyncFrequency() != null
+                        || configuration.isAutomaticSummerTimingEnabled() != null
+                        || configuration.getSummerTimeDetails() != null && configuration.getWinterTimeDetails() != null
+                        || configuration.getNtpEnabled() != null && configuration.getNtpHost() != null
+                        || configuration.getNtpSyncInterval() != null;
 
+                if (clockConfigurationChanged) {
                     final NodeContainer clock = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                             LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF);
                     iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
@@ -214,6 +216,33 @@ public class Iec61850SetConfigurationCommand {
 
                         deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
                                 SubDataAttribute.WINTER_TIME_DETAILS, mwdValueForEndOfDst);
+                    }
+                    if (configuration.getNtpEnabled() != null) {
+                        LOGGER.info("Updating ntpEnabled to {}", configuration.getNtpEnabled());
+
+                        clock.writeBoolean(SubDataAttribute.NTP_ENABLED, configuration.getNtpEnabled());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                                SubDataAttribute.NTP_ENABLED, Boolean.toString(configuration.getNtpEnabled()));
+                    }
+
+                    if (configuration.getNtpHost() != null) {
+                        LOGGER.info("Updating ntpHost to {}", configuration.getNtpHost());
+
+                        clock.writeString(SubDataAttribute.NTP_HOST, configuration.getNtpHost());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                                SubDataAttribute.NTP_HOST, configuration.getNtpHost());
+                    }
+
+                    if (configuration.getNtpSyncInterval() != null) {
+                        LOGGER.info("Updating ntpSyncInterval to {}", configuration.getNtpSyncInterval());
+
+                        clock.writeUnsignedShort(SubDataAttribute.NTP_SYNC_INTERVAL,
+                                configuration.getNtpSyncInterval());
+
+                        deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                                SubDataAttribute.NTP_SYNC_INTERVAL, configuration.getNtpSyncInterval().toString());
                     }
                 }
 

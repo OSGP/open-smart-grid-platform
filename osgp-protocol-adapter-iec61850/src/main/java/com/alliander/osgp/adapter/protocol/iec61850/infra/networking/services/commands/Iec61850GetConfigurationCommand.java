@@ -178,6 +178,10 @@ public class Iec61850GetConfigurationCommand {
                 final String summerTimeDetails = clock.getString(SubDataAttribute.SUMMER_TIME_DETAILS);
                 final String winterTimeDetails = clock.getString(SubDataAttribute.WINTER_TIME_DETAILS);
 
+                final String ntpHost = clock.getString(SubDataAttribute.NTP_HOST);
+                final boolean ntpEnabled = clock.getBoolean(SubDataAttribute.NTP_ENABLED).getValue();
+                final int ntpSyncInterval = clock.getUnsignedShort(SubDataAttribute.NTP_SYNC_INTERVAL).getValue();
+
                 configuration.setTimeSyncFrequency(timeSyncFrequency);
                 configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
                 configuration
@@ -186,6 +190,9 @@ public class Iec61850GetConfigurationCommand {
                 configuration
                         .setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
                                 .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                configuration.setNtpHost(ntpHost);
+                configuration.setNtpEnabled(ntpEnabled);
+                configuration.setNtpSyncInterval(ntpSyncInterval);
 
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
                         SubDataAttribute.TIME_SYNC_FREQUENCY, Integer.toString(timeSyncFrequency));
@@ -196,6 +203,12 @@ public class Iec61850GetConfigurationCommand {
                         SubDataAttribute.SUMMER_TIME_DETAILS, summerTimeDetails);
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
                         SubDataAttribute.WINTER_TIME_DETAILS, winterTimeDetails);
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                        SubDataAttribute.NTP_HOST, ntpHost);
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                        SubDataAttribute.NTP_ENABLED, String.valueOf(ntpEnabled));
+                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
+                        SubDataAttribute.NTP_SYNC_INTERVAL, String.valueOf(ntpSyncInterval));
 
                 // getting the TLS configuration values
                 // LOGGER.info("Reading the TLS configuration values");
