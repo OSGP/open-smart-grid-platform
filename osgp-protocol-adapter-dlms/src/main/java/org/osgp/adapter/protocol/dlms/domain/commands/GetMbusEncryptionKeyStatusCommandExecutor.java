@@ -26,21 +26,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.EncryptionKeyStatusTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 
 @Component()
-public class GetMBusEncryptionKeyStatusCommandExecutor
-        extends AbstractCommandExecutor<GetMBusEncryptionKeyStatusRequestDto, GetMBusEncryptionKeyStatusResponseDto> {
+public class GetMbusEncryptionKeyStatusCommandExecutor
+        extends AbstractCommandExecutor<GetMbusEncryptionKeyStatusRequestDto, GetMbusEncryptionKeyStatusResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetMBusEncryptionKeyStatusCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetMbusEncryptionKeyStatusCommandExecutor.class);
 
     private static final int CLASS_ID = 72;
     private static final Map<Short, ObisCode> OBIS_CODES = new HashMap<>();
     private static final int ATTRIBUTE_ID = 14;
 
-    public GetMBusEncryptionKeyStatusCommandExecutor() {
-        super(GetMBusEncryptionKeyStatusRequestDto.class);
+    public GetMbusEncryptionKeyStatusCommandExecutor() {
+        super(GetMbusEncryptionKeyStatusRequestDto.class);
     }
 
     @PostConstruct
@@ -51,27 +51,9 @@ public class GetMBusEncryptionKeyStatusCommandExecutor
         OBIS_CODES.put((short) 4, new ObisCode("0.4.24.1.0.255"));
     }
 
-    // @Override
-    // public GetMBusEncryptionKeyStatusRequestDto fromBundleRequestInput(final
-    // ActionRequestDto bundleInput)
-    // throws ProtocolAdapterException {
-    //
-    // this.checkActionRequestType(bundleInput);
-    //
-    // return (GetMBusEncryptionKeyStatusRequestDto) bundleInput;
-    // }
-    //
-    // @Override
-    // public ActionResponseDto asBundleResponse(final
-    // GetMBusEncryptionKeyStatusResponseDto executionResult)
-    // throws ProtocolAdapterException {
-    //
-    // return executionResult;
-    // }
-
     @Override
-    public GetMBusEncryptionKeyStatusResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GetMBusEncryptionKeyStatusRequestDto request) throws ProtocolAdapterException {
+    public GetMbusEncryptionKeyStatusResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final GetMbusEncryptionKeyStatusRequestDto request) throws ProtocolAdapterException {
 
         final ObisCode obisCode = OBIS_CODES.get(request.getChannel());
 
@@ -102,7 +84,7 @@ public class GetMBusEncryptionKeyStatusCommandExecutor
 
         final EncryptionKeyStatusTypeDto encryptionKeyStatusType = EncryptionKeyStatusTypeDto
                 .fromValue((Integer) dataObject.getValue());
-        return new GetMBusEncryptionKeyStatusResponseDto(request.getMBusDeviceIdentification(),
+        return new GetMbusEncryptionKeyStatusResponseDto(request.getMbusDeviceIdentification(),
                 encryptionKeyStatusType);
     }
 }

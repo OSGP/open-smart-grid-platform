@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -19,29 +19,29 @@ import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProvi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing the get M-Bus encryption keys status request message
  */
 @Component
-public class GetMBusEncryptionKeyStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetMbusEncryptionKeyStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public GetMBusEncryptionKeyStatusRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_M_BUS_ENCRYPTION_KEY_STATUS);
+    public GetMbusEncryptionKeyStatusRequestMessageProcessor() {
+        super(DeviceRequestMessageType.GET_MBUS_ENCRYPTION_KEY_STATUS);
     }
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-        this.assertRequestObjectType(GetMBusEncryptionKeyStatusRequestDto.class, requestObject);
-        final GetMBusEncryptionKeyStatusRequestDto request = (GetMBusEncryptionKeyStatusRequestDto) requestObject;
-        return this.configurationService.requestGetMBusEncryptionKeyStatus(conn, device, request);
+        this.assertRequestObjectType(GetMbusEncryptionKeyStatusRequestDto.class, requestObject);
+        final GetMbusEncryptionKeyStatusRequestDto request = (GetMbusEncryptionKeyStatusRequestDto) requestObject;
+        return this.configurationService.requestGetMbusEncryptionKeyStatus(conn, device, request);
     }
 
 }
