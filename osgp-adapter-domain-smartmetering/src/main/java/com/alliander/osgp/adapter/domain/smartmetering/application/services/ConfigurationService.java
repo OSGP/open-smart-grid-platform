@@ -37,7 +37,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestD
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
-import com.alliander.osgp.domain.smartmetering.exceptions.GatewayDeviceNotSetForMBusDeviceException;
+import com.alliander.osgp.domain.smartmetering.exceptions.GatewayDeviceNotSetForMbusDeviceException;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
@@ -47,8 +47,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
@@ -410,7 +410,7 @@ public class ConfigurationService {
              * have to be changed.
              */
             throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE,
-                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMBusDeviceException());
+                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMbusDeviceException());
         }
 
         this.osgpCoreRequestMessageSender.send(
@@ -766,10 +766,10 @@ public class ConfigurationService {
                 deviceMessageMetadata.getMessageType());
     }
 
-    public void getMBusEncryptionKeyStatus(final DeviceMessageMetadata deviceMessageMetadata)
+    public void getMbusEncryptionKeyStatus(final DeviceMessageMetadata deviceMessageMetadata)
             throws FunctionalException {
 
-        LOGGER.info("getMBusEncryptionKeyStatus for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("getMbusEncryptionKeyStatus for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         final SmartMeter mbusDevice = this.domainHelperService
@@ -778,29 +778,29 @@ public class ConfigurationService {
         final Device gatewayDevice = mbusDevice.getGatewayDevice();
         if (gatewayDevice == null) {
             throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE,
-                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMBusDeviceException());
+                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMbusDeviceException());
         }
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
                         gatewayDevice.getIpAddress(),
-                        new GetMBusEncryptionKeyStatusRequestDto(mbusDevice.getDeviceIdentification(),
+                        new GetMbusEncryptionKeyStatusRequestDto(mbusDevice.getDeviceIdentification(),
                                 mbusDevice.getChannel())),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
 
-    public void handleGetMBusEncryptionKeyStatusResponse(final DeviceMessageMetadata deviceMessageMetadata,
+    public void handleGetMbusEncryptionKeyStatusResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType resultType, final OsgpException exception,
-            final GetMBusEncryptionKeyStatusResponseDto getMBusEncryptionKeyStatusResponseDto) {
+            final GetMbusEncryptionKeyStatusResponseDto getMbusEncryptionKeyStatusResponseDto) {
 
-        LOGGER.info("handleGetMBusEncryptionKeyStatusResponse for MessageType: {}",
+        LOGGER.info("handleGetMbusEncryptionKeyStatusResponse for MessageType: {}",
                 deviceMessageMetadata.getMessageType());
 
-        final String mbusDeviceIdentification = getMBusEncryptionKeyStatusResponseDto.getMBusDeviceIdentification();
+        final String mbusDeviceIdentification = getMbusEncryptionKeyStatusResponseDto.getMbusDeviceIdentification();
         final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType
-                .fromValue(getMBusEncryptionKeyStatusResponseDto.getEncryptionKeyStatus().getValue());
+                .fromValue(getMbusEncryptionKeyStatusResponseDto.getEncryptionKeyStatus().getValue());
 
         this.webServiceResponseMessageSender.send(
                 new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),

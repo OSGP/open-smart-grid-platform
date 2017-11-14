@@ -48,10 +48,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmw
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
@@ -110,8 +110,8 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Configur
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
@@ -540,25 +540,25 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "GetMBusEncryptionKeyStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "GetMbusEncryptionKeyStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public GetMBusEncryptionKeyStatusAsyncResponse getMBusEncryptionKeyStatus(
+    public GetMbusEncryptionKeyStatusAsyncResponse getMbusEncryptionKeyStatus(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetMBusEncryptionKeyStatusRequest request,
+            @RequestPayload final GetMbusEncryptionKeyStatusRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("Get M-Bus encryption key status request received from organisation {} for device {}",
                 organisationIdentification, request.getDeviceIdentification());
 
-        GetMBusEncryptionKeyStatusAsyncResponse asyncResponse = null;
+        GetMbusEncryptionKeyStatusAsyncResponse asyncResponse = null;
         try {
-            final String correlationUid = this.configurationService.enqueueGetMBusEncryptionKeyStatusRequest(
+            final String correlationUid = this.configurationService.enqueueGetMbusEncryptionKeyStatusRequest(
                     organisationIdentification, request.getDeviceIdentification(),
                     MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.configurationMapper.map(scheduleTime, Long.class));
 
-            asyncResponse = new GetMBusEncryptionKeyStatusAsyncResponse();
+            asyncResponse = new GetMbusEncryptionKeyStatusAsyncResponse();
 
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
@@ -570,19 +570,19 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         return asyncResponse;
     }
 
-    @PayloadRoot(localPart = "GetMBusEncryptionKeyStatusAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "GetMbusEncryptionKeyStatusAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public GetMBusEncryptionKeyStatusResponse getGetMBusEncryptionKeyStatusResponse(
-            @RequestPayload final GetMBusEncryptionKeyStatusAsyncRequest request) throws OsgpException {
+    public GetMbusEncryptionKeyStatusResponse getGetMBusEncryptionKeyStatusResponse(
+            @RequestPayload final GetMbusEncryptionKeyStatusAsyncRequest request) throws OsgpException {
 
-        GetMBusEncryptionKeyStatusResponse response = null;
+        GetMbusEncryptionKeyStatusResponse response = null;
         try {
             final MeterResponseData meterResponseData = this.meterResponseDataService
                     .dequeue(request.getCorrelationUid());
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the M-Bus encryption key status.");
 
-            response = new GetMBusEncryptionKeyStatusResponse();
+            response = new GetMbusEncryptionKeyStatusResponse();
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             response.setEncryptionKeyStatus(EncryptionKeyStatus
                     .fromValue(((EncryptionKeyStatusType) meterResponseData.getMessageData()).name()));

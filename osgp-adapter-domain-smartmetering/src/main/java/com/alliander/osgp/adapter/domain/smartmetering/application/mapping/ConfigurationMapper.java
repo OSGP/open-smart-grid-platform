@@ -13,10 +13,6 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.custo
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.CosemDateTimeConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.FirmwareVersionConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.GetAllAttributeValuesResponseConverter;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseData;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseDto;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
@@ -33,11 +29,5 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusResponseConverter());
         mapperFactory.getConverterFactory().registerConverter(new FirmwareVersionConverter());
         mapperFactory.getConverterFactory().registerConverter(new GetAllAttributeValuesResponseConverter());
-
-        mapperFactory.classMap(GetMBusEncryptionKeyStatusRequestData.class, GetMBusEncryptionKeyStatusRequestDto.class)
-                .field("MBusDeviceIdentification", "mBusDeviceIdentification").byDefault().register();
-        mapperFactory
-                .classMap(GetMBusEncryptionKeyStatusResponseDto.class, GetMBusEncryptionKeyStatusResponseData.class)
-                .field("MBusDeviceIdentification", "mBusDeviceIdentification").byDefault().register();
     }
 }

@@ -11,13 +11,13 @@ package com.alliander.osgp.domain.smartmetering.exceptions;
 
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
 
-public class GatewayDeviceNotSetForMBusDeviceException extends PlatformException {
+public class GatewayDeviceInvalidForMbusDeviceException extends PlatformException {
 
     private static final long serialVersionUID = 1309508748012622409L;
 
-    private static final String MESSAGE = "Meter for gas reads should have an energy meter as gateway device.";
+    private static final String MESSAGE = "The M-Bus device is connected to another gateway device.";
 
-    public GatewayDeviceNotSetForMBusDeviceException() {
+    public GatewayDeviceInvalidForMbusDeviceException() {
         super(MESSAGE);
     }
 

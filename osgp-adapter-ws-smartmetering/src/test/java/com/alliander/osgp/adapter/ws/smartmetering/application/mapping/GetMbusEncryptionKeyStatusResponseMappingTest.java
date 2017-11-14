@@ -13,34 +13,34 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMBusEncryptionKeyStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
 
-public class GetMBusEncryptionKeyStatusResponseMappingTest {
+public class GetMbusEncryptionKeyStatusResponseMappingTest {
 
     private static final String MAPPED_OBJECT_NULL_MESSAGE = "Mapped object should not be null.";
     private static final String MAPPED_FIELD_VALUE_MESSAGE = "Mapped field should have the same value.";
 
-    private static final String M_BUS_DEVICE_IDENTIFICATION = "TestMBusDevice";
+    private static final String MBUS_DEVICE_IDENTIFICATION = "TestMbusDevice";
     private static final EncryptionKeyStatusType ENCRYPTION_KEY_STATUS = EncryptionKeyStatusType.ENCRYPTION_KEY_IN_USE;
 
     private final ConfigurationMapper mapper = new ConfigurationMapper();
 
     @Test
-    public void shouldConvertGetMBusEncryptionKeyStatusResponse() {
-        final GetMBusEncryptionKeyStatusResponseData source = this.makeResponse();
-        final GetMBusEncryptionKeyStatusResponse result = this.mapper.map(source,
-                GetMBusEncryptionKeyStatusResponse.class);
+    public void shouldConvertGetMbusEncryptionKeyStatusResponse() {
+        final GetMbusEncryptionKeyStatusResponseData source = this.makeResponse();
+        final GetMbusEncryptionKeyStatusResponse result = this.mapper.map(source,
+                GetMbusEncryptionKeyStatusResponse.class);
         assertNotNull(MAPPED_OBJECT_NULL_MESSAGE, result);
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getMBusDeviceIdentification(),
-                result.getMBusDeviceIdentification());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getMbusDeviceIdentification(),
+                result.getMbusDeviceIdentification());
         assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getEncryptionKeyStatus().name(),
                 result.getEncryptionKeyStatus().name());
     }
 
-    private GetMBusEncryptionKeyStatusResponseData makeResponse() {
+    private GetMbusEncryptionKeyStatusResponseData makeResponse() {
 
-        return new GetMBusEncryptionKeyStatusResponseData(M_BUS_DEVICE_IDENTIFICATION, ENCRYPTION_KEY_STATUS);
+        return new GetMbusEncryptionKeyStatusResponseData(MBUS_DEVICE_IDENTIFICATION, ENCRYPTION_KEY_STATUS);
     }
 }

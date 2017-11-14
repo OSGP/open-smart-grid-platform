@@ -7,19 +7,19 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public abstract class MBusActionRequest implements ActionRequest {
+public abstract class MbusActionRequest implements ActionRequest {
 
     private static final long serialVersionUID = 2320272681064473304L;
 
-    private String mBusDeviceIdentification;
+    private String mbusDeviceIdentification;
     private Short channel;
 
-    public MBusActionRequest(final String mBusDeviceIdentification) {
-        this.mBusDeviceIdentification = mBusDeviceIdentification;
+    public MbusActionRequest(final String mbusDeviceIdentification) {
+        this.mbusDeviceIdentification = mbusDeviceIdentification;
     }
 
-    public String getMBusDeviceIdentification() {
-        return this.mBusDeviceIdentification;
+    public String getMbusDeviceIdentification() {
+        return this.mbusDeviceIdentification;
     }
 
     public Short getChannel() {

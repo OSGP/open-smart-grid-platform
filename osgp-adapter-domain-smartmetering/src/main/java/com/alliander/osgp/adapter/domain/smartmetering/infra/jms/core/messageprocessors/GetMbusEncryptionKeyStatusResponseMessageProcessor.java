@@ -13,33 +13,33 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusEncryptionKeyStatusResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Component
-public class GetMBusEncryptionKeyStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class GetMbusEncryptionKeyStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public GetMBusEncryptionKeyStatusResponseMessageProcessor() {
-        super(DeviceFunction.GET_M_BUS_ENCRYPTION_KEY_STATUS);
+    public GetMbusEncryptionKeyStatusResponseMessageProcessor() {
+        super(DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS);
     }
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof GetMBusEncryptionKeyStatusResponseDto;
+        return responseMessage.getDataObject() instanceof GetMbusEncryptionKeyStatusResponseDto;
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
 
-        final GetMBusEncryptionKeyStatusResponseDto getMBusEncryptionKeyStatusResponseDto = (GetMBusEncryptionKeyStatusResponseDto) responseMessage
+        final GetMbusEncryptionKeyStatusResponseDto getMbusEncryptionKeyStatusResponseDto = (GetMbusEncryptionKeyStatusResponseDto) responseMessage
                 .getDataObject();
-        this.configurationService.handleGetMBusEncryptionKeyStatusResponse(deviceMessageMetadata,
-                responseMessage.getResult(), osgpException, getMBusEncryptionKeyStatusResponseDto);
+        this.configurationService.handleGetMbusEncryptionKeyStatusResponse(deviceMessageMetadata,
+                responseMessage.getResult(), osgpException, getMbusEncryptionKeyStatusResponseDto);
     }
 }

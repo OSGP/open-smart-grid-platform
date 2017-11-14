@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
 @Component
-public class GetMBusEncryptionKeyStatusResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class GetMbusEncryptionKeyStatusResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    protected GetMBusEncryptionKeyStatusResponseMessageProcessor() {
-        super(DeviceFunction.GET_M_BUS_ENCRYPTION_KEY_STATUS);
+    protected GetMbusEncryptionKeyStatusResponseMessageProcessor() {
+        super(DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS);
     }
 }

@@ -10,12 +10,12 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class GetMBusEncryptionKeyStatusRequestData extends MBusActionRequest {
+public class GetMbusEncryptionKeyStatusRequestData extends MbusActionRequest {
 
     private static final long serialVersionUID = 3636769765482239443L;
 
-    public GetMBusEncryptionKeyStatusRequestData(final String mBusDeviceIdentification) {
-        super(mBusDeviceIdentification);
+    public GetMbusEncryptionKeyStatusRequestData(final String mbusDeviceIdentification) {
+        super(mbusDeviceIdentification);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class GetMBusEncryptionKeyStatusRequestData extends MBusActionRequest {
 
     @Override
     public DeviceFunction getDeviceFunction() {
-        return DeviceFunction.GET_M_BUS_ENCRYPTION_KEY_STATUS;
+        return DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS;
     }
 
 }

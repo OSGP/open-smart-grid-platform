@@ -9,21 +9,21 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class GetMBusEncryptionKeyStatusResponseData extends ActionResponse implements Serializable {
+public class GetMbusEncryptionKeyStatusResponseData extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = 3636769765482239443L;
 
-    private String mBusDeviceIdentification;
+    private String mbusDeviceIdentification;
     private EncryptionKeyStatusType encryptionKeyStatus;
 
-    public GetMBusEncryptionKeyStatusResponseData(final String mBusDeviceIdentification,
+    public GetMbusEncryptionKeyStatusResponseData(final String mbusDeviceIdentification,
             final EncryptionKeyStatusType encryptionKeyStatus) {
         this.encryptionKeyStatus = encryptionKeyStatus;
-        this.mBusDeviceIdentification = mBusDeviceIdentification;
+        this.mbusDeviceIdentification = mbusDeviceIdentification;
     }
 
-    public String getMBusDeviceIdentification() {
-        return this.mBusDeviceIdentification;
+    public String getMbusDeviceIdentification() {
+        return this.mbusDeviceIdentification;
     }
 
     public EncryptionKeyStatusType getEncryptionKeyStatus() {

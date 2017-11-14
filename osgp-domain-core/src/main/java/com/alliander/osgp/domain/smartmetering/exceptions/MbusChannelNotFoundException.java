@@ -5,13 +5,13 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.domain.core.exceptions;
+package com.alliander.osgp.domain.smartmetering.exceptions;
 
-public class MBusChannelNotFoundException extends Exception {
+public class MbusChannelNotFoundException extends Exception {
 
     private static final long serialVersionUID = 7847147074103429934L;
 
-    public MBusChannelNotFoundException(final String message) {
+    public MbusChannelNotFoundException(final String message) {
         super(message);
     }
 

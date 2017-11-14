@@ -18,20 +18,20 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component
-public class GetMBusEncryptionKeyStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class GetMbusEncryptionKeyStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringConfigurationService")
     private ConfigurationService configurationService;
 
-    protected GetMBusEncryptionKeyStatusRequestMessageProcessor() {
-        super(DeviceFunction.GET_M_BUS_ENCRYPTION_KEY_STATUS);
+    protected GetMbusEncryptionKeyStatusRequestMessageProcessor() {
+        super(DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS);
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        this.configurationService.getMBusEncryptionKeyStatus(deviceMessageMetadata);
+        this.configurationService.getMbusEncryptionKeyStatus(deviceMessageMetadata);
     }
 }
