@@ -15,17 +15,25 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetAdministrativeStatusRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.AddDeviceRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 
+import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class FunctionalExceptionsSteps {
 
     @Autowired
     private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
+
+    @Autowired
+    private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
     @When("^the get administrative status request for an invalid organisation is received$")
     public void theRetrieveAdministrativeStatusRequestForAnInvalidOrganisationIsReceived(
@@ -46,4 +54,31 @@ public class FunctionalExceptionsSteps {
 
     }
 
+    @When("^the get administrative status request for an invalid device is received$")
+    public void theGetAdministrativeStatusRequestForAnInvalidDeviceIsReceived(final Map<String, String> requestData)
+            throws Throwable {
+        final GetAdministrativeStatusRequest getAdministrativeStatusRequest = GetAdministrativeStatusRequestFactory
+                .fromParameterMap(requestData);
+        try {
+            this.smartMeteringConfigurationClient.getAdministrativeStatus(getAdministrativeStatusRequest);
+        } catch (final Exception exception) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
+        }
+    }
+
+    @Then("^the add device response for an existing device is received$")
+    public void theAddDeviceResponseForAnExistingDeviceIsReceived(final Map<String, String> responseParameters)
+            throws Throwable {
+        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+        final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
+                PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+
+        final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestFactory
+                .fromParameterMapAsync(extendedParameters);
+        try {
+            this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
+        } catch (final Exception exception) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
+        }
+    }
 }
