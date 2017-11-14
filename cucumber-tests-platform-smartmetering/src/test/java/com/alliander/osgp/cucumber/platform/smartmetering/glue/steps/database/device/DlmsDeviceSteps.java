@@ -96,7 +96,7 @@ public class DlmsDeviceSteps {
     }
 
     @Given("^all mbus channels are occupied for E-meter \"([^\"]*)\"$")
-    public void allMBusChannelsAreOccupiedForEMeter(final String eMeter) throws Throwable {
+    public void allMbusChannelsAreOccupiedForEMeter(final String eMeter) throws Throwable {
         /**
          * A smart meter has 4 M-Bus channels available, so make sure that for
          * each channel an M-Bus device is created

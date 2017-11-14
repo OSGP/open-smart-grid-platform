@@ -30,10 +30,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmw
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
@@ -239,22 +239,22 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
                 .marshalSendAndReceive(setEncryptionKeyExchangeOnGMeterAsyncRequest);
     }
 
-    public GetMBusEncryptionKeyStatusAsyncResponse getMBusEncryptionKeyStatus(
-            final GetMBusEncryptionKeyStatusRequest getMBusEncryptionKeyStatusRequest)
+    public GetMbusEncryptionKeyStatusAsyncResponse getMbusEncryptionKeyStatus(
+            final GetMbusEncryptionKeyStatusRequest getMbusEncryptionKeyStatusRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        return (GetMBusEncryptionKeyStatusAsyncResponse) this.getTemplate()
-                .marshalSendAndReceive(getMBusEncryptionKeyStatusRequest);
+        return (GetMbusEncryptionKeyStatusAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(getMbusEncryptionKeyStatusRequest);
     }
 
-    public GetMBusEncryptionKeyStatusResponse retrieveGetMBusEncryptionKeyStatusResponse(
-            final GetMBusEncryptionKeyStatusAsyncRequest getMBusEncryptionKeyStatusAsyncRequest)
+    public GetMbusEncryptionKeyStatusResponse retrieveGetMbusEncryptionKeyStatusResponse(
+            final GetMbusEncryptionKeyStatusAsyncRequest getMbusEncryptionKeyStatusAsyncRequest)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        final String correlationUid = getMBusEncryptionKeyStatusAsyncRequest.getCorrelationUid();
+        final String correlationUid = getMbusEncryptionKeyStatusAsyncRequest.getCorrelationUid();
         this.waitForDlmsResponseData(correlationUid);
 
-        return (GetMBusEncryptionKeyStatusResponse) this.getTemplate()
-                .marshalSendAndReceive(getMBusEncryptionKeyStatusAsyncRequest);
+        return (GetMbusEncryptionKeyStatusResponse) this.getTemplate()
+                .marshalSendAndReceive(getMbusEncryptionKeyStatusAsyncRequest);
     }
 
     public SetMbusUserKeyByChannelAsyncResponse setMbusUserKeyByChannel(

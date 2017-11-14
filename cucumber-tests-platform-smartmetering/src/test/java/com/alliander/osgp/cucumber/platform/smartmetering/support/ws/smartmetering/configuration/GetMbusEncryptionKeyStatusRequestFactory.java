@@ -9,24 +9,24 @@ package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeter
 
 import java.util.Map;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMBusEncryptionKeyStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusRequest;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
-public class GetMBusEncryptionKeyStatusRequestFactory {
-    private GetMBusEncryptionKeyStatusRequestFactory() {
+public class GetMbusEncryptionKeyStatusRequestFactory {
+    private GetMbusEncryptionKeyStatusRequestFactory() {
         // Private constructor for utility class
     }
 
-    public static GetMBusEncryptionKeyStatusRequest fromParameterMap(final Map<String, String> requestParameters) {
-        final GetMBusEncryptionKeyStatusRequest request = new GetMBusEncryptionKeyStatusRequest();
+    public static GetMbusEncryptionKeyStatusRequest fromParameterMap(final Map<String, String> requestParameters) {
+        final GetMbusEncryptionKeyStatusRequest request = new GetMbusEncryptionKeyStatusRequest();
         request.setDeviceIdentification(requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
         return request;
     }
 
-    public static GetMBusEncryptionKeyStatusAsyncRequest fromScenarioContext() {
-        final GetMBusEncryptionKeyStatusAsyncRequest asyncRequest = new GetMBusEncryptionKeyStatusAsyncRequest();
+    public static GetMbusEncryptionKeyStatusAsyncRequest fromScenarioContext() {
+        final GetMbusEncryptionKeyStatusAsyncRequest asyncRequest = new GetMbusEncryptionKeyStatusAsyncRequest();
         asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
         asyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
         return asyncRequest;

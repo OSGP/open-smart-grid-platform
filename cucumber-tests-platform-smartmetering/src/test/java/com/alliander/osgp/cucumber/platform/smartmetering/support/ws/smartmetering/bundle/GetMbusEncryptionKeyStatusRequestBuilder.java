@@ -10,32 +10,32 @@ package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeter
 import java.util.Collections;
 import java.util.Map;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMBusEncryptionKeyStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusRequest;
 import com.alliander.osgp.cucumber.platform.core.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
-public class GetMBusEncryptionKeyStatusRequestBuilder {
+public class GetMbusEncryptionKeyStatusRequestBuilder {
 
     private static final String DEFAULT_MBUS_DEVICE_IDENTIFICATION = "TESTG102400000001";
 
     private String mbusDeviceIdentification;
 
-    public GetMBusEncryptionKeyStatusRequestBuilder withDefaults() {
+    public GetMbusEncryptionKeyStatusRequestBuilder withDefaults() {
         return this.fromParameterMap(Collections.emptyMap());
     }
 
-    public GetMBusEncryptionKeyStatusRequestBuilder fromParameterMap(final Map<String, String> parameters) {
-        this.mbusDeviceIdentification = this.getMBusDeviceIdentification(parameters);
+    public GetMbusEncryptionKeyStatusRequestBuilder fromParameterMap(final Map<String, String> parameters) {
+        this.mbusDeviceIdentification = this.getMbusDeviceIdentification(parameters);
         return this;
     }
 
-    public GetMBusEncryptionKeyStatusRequest build() {
-        final GetMBusEncryptionKeyStatusRequest request = new GetMBusEncryptionKeyStatusRequest();
-        request.setMBusDeviceIdentification(this.mbusDeviceIdentification);
+    public GetMbusEncryptionKeyStatusRequest build() {
+        final GetMbusEncryptionKeyStatusRequest request = new GetMbusEncryptionKeyStatusRequest();
+        request.setMbusDeviceIdentification(this.mbusDeviceIdentification);
         return request;
     }
 
-    private String getMBusDeviceIdentification(final Map<String, String> parameters) {
+    private String getMbusDeviceIdentification(final Map<String, String> parameters) {
         return Helpers.getString(parameters, PlatformSmartmeteringKeys.MBUS_DEVICE_IDENTIFICATION,
                 DEFAULT_MBUS_DEVICE_IDENTIFICATION);
     }
