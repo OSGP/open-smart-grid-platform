@@ -65,7 +65,6 @@ public class OslpGetConfigurationResponseToConfigurationConverter
                         ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
                         : null;
 
-        // Create an Configuration instance.
         final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration, relayConfiguration,
                 shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
                 longTermIntervalType);
