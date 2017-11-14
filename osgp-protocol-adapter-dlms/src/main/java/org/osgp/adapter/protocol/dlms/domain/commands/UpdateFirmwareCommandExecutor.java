@@ -117,7 +117,6 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
             transfer.activateImage();
             return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
         } else {
-            // Image data is not correct.
             throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
         }
     }
