@@ -103,11 +103,11 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="GetMBusEncryptionKeyStatusRequest">
+  <xsd:element name="GetMbusEncryptionKeyStatusRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="smconf:GetMBusEncryptionKeyStatusRequestData"></xsd:extension>
+          base="smconf:GetMbusEncryptionKeyStatusRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -244,7 +244,7 @@
         <xsd:element ref="tns:SetAdministrativeStatusRequest" />
         <xsd:element ref="tns:SetActivityCalendarRequest" />
         <xsd:element ref="tns:SetEncryptionKeyExchangeOnGMeterRequest" />
-        <xsd:element ref="tns:GetMBusEncryptionKeyStatusRequest" />
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusRequest" />
         <xsd:element ref="tns:SetAlarmNotificationsRequest" />
         <xsd:element ref="tns:SetConfigurationObjectRequest" />
         <xsd:element ref="tns:SetPushSetupAlarmRequest" />
@@ -356,10 +356,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="GetMBusEncryptionKeyStatusResponse">
+  <xsd:element name="GetMbusEncryptionKeyStatusResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="smconf:GetMBusEncryptionKeyStatusResponseData"></xsd:extension>
+        <xsd:extension base="smconf:GetMbusEncryptionKeyStatusResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -426,7 +426,7 @@
         <xsd:element ref="tns:AdministrativeStatusResponse" />
         <xsd:element ref="tns:PeriodicMeterReadsResponse" />
         <xsd:element ref="tns:PeriodicMeterReadsGasResponse" />
-        <xsd:element ref="tns:GetMBusEncryptionKeyStatusResponse"/>
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusResponse"/>
         <xsd:element ref="tns:GetAllAttributeValuesResponse" />
         <xsd:element ref="tns:GetSpecificAttributeValueResponse" />
         <xsd:element ref="tns:GetFirmwareVersionResponse" />

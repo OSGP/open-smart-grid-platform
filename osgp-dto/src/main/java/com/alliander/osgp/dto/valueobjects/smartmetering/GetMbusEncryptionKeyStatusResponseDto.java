@@ -7,21 +7,21 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public class GetMBusEncryptionKeyStatusResponseDto extends ActionResponseDto {
+public class GetMbusEncryptionKeyStatusResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -8661462528133418593L;
 
-    private String mBusDeviceIdentification;
+    private String mbusDeviceIdentification;
     private EncryptionKeyStatusTypeDto encryptionKeyStatus;
 
-    public GetMBusEncryptionKeyStatusResponseDto(final String mBusDeviceIdentification,
+    public GetMbusEncryptionKeyStatusResponseDto(final String mbusDeviceIdentification,
             final EncryptionKeyStatusTypeDto encryptionKeyStatus) {
-        this.mBusDeviceIdentification = mBusDeviceIdentification;
+        this.mbusDeviceIdentification = mbusDeviceIdentification;
         this.encryptionKeyStatus = encryptionKeyStatus;
     }
 
-    public String getMBusDeviceIdentification() {
-        return this.mBusDeviceIdentification;
+    public String getMbusDeviceIdentification() {
+        return this.mbusDeviceIdentification;
     }
 
     public EncryptionKeyStatusTypeDto getEncryptionKeyStatus() {

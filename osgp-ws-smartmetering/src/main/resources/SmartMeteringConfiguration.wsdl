@@ -141,25 +141,25 @@
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="GetMBusEncryptionKeyStatusRequest">
-    <wsdl:part element="smconf:GetMBusEncryptionKeyStatusRequest"
-      name="GetMBusEncryptionKeyStatusRequest">
+  <wsdl:message name="GetMbusEncryptionKeyStatusRequest">
+    <wsdl:part element="smconf:GetMbusEncryptionKeyStatusRequest"
+      name="GetMbusEncryptionKeyStatusRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="GetMBusEncryptionKeyStatusAsyncResponse">
-    <wsdl:part element="smconf:GetMBusEncryptionKeyStatusAsyncResponse"
-      name="GetMBusEncryptionKeyStatusAsyncResponse">
+  <wsdl:message name="GetMbusEncryptionKeyStatusAsyncResponse">
+    <wsdl:part element="smconf:GetMbusEncryptionKeyStatusAsyncResponse"
+      name="GetMbusEncryptionKeyStatusAsyncResponse">
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="GetMBusEncryptionKeyStatusAsyncRequest">
-    <wsdl:part element="smconf:GetMBusEncryptionKeyStatusAsyncRequest"
-      name="GetMBusEncryptionKeyStatusAsyncRequest">
+  <wsdl:message name="GetMbusEncryptionKeyStatusAsyncRequest">
+    <wsdl:part element="smconf:GetMbusEncryptionKeyStatusAsyncRequest"
+      name="GetMbusEncryptionKeyStatusAsyncRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="GetMBusEncryptionKeyStatusResponse">
-    <wsdl:part element="smconf:GetMBusEncryptionKeyStatusResponse"
-      name="GetMBusEncryptionKeyStatusResponse">
+  <wsdl:message name="GetMbusEncryptionKeyStatusResponse">
+    <wsdl:part element="smconf:GetMbusEncryptionKeyStatusResponse"
+      name="GetMbusEncryptionKeyStatusResponse">
     </wsdl:part>
   </wsdl:message>
 
@@ -540,21 +540,21 @@
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="GetMBusEncryptionKeyStatus">
-      <wsdl:input message="tns:GetMBusEncryptionKeyStatusRequest"
-        name="GetMBusEncryptionKeyStatusRequest">
+    <wsdl:operation name="GetMbusEncryptionKeyStatus">
+      <wsdl:input message="tns:GetMbusEncryptionKeyStatusRequest"
+        name="GetMbusEncryptionKeyStatusRequest">
       </wsdl:input>
-      <wsdl:output message="tns:GetMBusEncryptionKeyStatusAsyncResponse"
-        name="GetMBusEncryptionKeyStatusAsyncResponse">
+      <wsdl:output message="tns:GetMbusEncryptionKeyStatusAsyncResponse"
+        name="GetMbusEncryptionKeyStatusAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="GetGetMBusEncryptionKeyStatusResponse">
-      <wsdl:input message="tns:GetMBusEncryptionKeyStatusAsyncRequest"
-        name="GetMBusEncryptionKeyStatusAsyncRequest">
+    <wsdl:operation name="GetGetMbusEncryptionKeyStatusResponse">
+      <wsdl:input message="tns:GetMbusEncryptionKeyStatusAsyncRequest"
+        name="GetMbusEncryptionKeyStatusAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:GetMBusEncryptionKeyStatusResponse"
-        name="GetMBusEncryptionKeyStatusResponse">
+      <wsdl:output message="tns:GetMbusEncryptionKeyStatusResponse"
+        name="GetMbusEncryptionKeyStatusResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -996,9 +996,9 @@
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="GetMBusEncryptionKeyStatus">
+    <wsdl:operation name="GetMbusEncryptionKeyStatus">
       <soap:operation soapAction="" />
-      <wsdl:input name="GetMBusEncryptionKeyStatusRequest">
+      <wsdl:input name="GetMbusEncryptionKeyStatusRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
           use="literal" />
         <soap:header message="tns:ActionHeader" part="UserName"
@@ -1007,14 +1007,14 @@
           use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="GetMBusEncryptionKeyStatusAsyncResponse">
+      <wsdl:output name="GetMbusEncryptionKeyStatusAsyncResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="GetGetMBusEncryptionKeyStatusResponse">
+    <wsdl:operation name="GetGetMbusEncryptionKeyStatusResponse">
       <soap:operation soapAction="" />
-      <wsdl:input name="GetMBusEncryptionKeyStatusAsyncRequest">
+      <wsdl:input name="GetMbusEncryptionKeyStatusAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
           use="literal" />
         <soap:header message="tns:ActionHeader" part="UserName"
@@ -1022,7 +1022,7 @@
         <soap:header message="tns:ActionHeader" part="ApplicationName"
           use="literal" />
       </wsdl:input>
-      <wsdl:output name="GetMBusEncryptionKeyStatusResponse">
+      <wsdl:output name="GetMbusEncryptionKeyStatusResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
