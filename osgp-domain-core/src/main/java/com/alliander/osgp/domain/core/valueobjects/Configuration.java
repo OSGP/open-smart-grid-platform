@@ -73,6 +73,12 @@ public class Configuration implements Serializable {
 
     private Integer osgpPortNumber;
 
+    private String ntpHost;
+
+    private Boolean ntpEnabled;
+
+    private Integer ntpSyncInterval;
+
     private Boolean testButtonEnabled;
 
     private Boolean automaticSummerTimingEnabled;
@@ -224,6 +230,30 @@ public class Configuration implements Serializable {
 
     public void setOsgpPortNumber(final Integer osgpPortNumber) {
         this.osgpPortNumber = osgpPortNumber;
+    }
+
+    public String getNtpHost() {
+        return this.ntpHost;
+    }
+
+    public void setNtpHost(final String ntpHost) {
+        this.ntpHost = ntpHost;
+    }
+
+    public Boolean getNtpEnabled() {
+        return this.ntpEnabled;
+    }
+
+    public void setNtpEnabled(final Boolean ntpEnabled) {
+        this.ntpEnabled = ntpEnabled;
+    }
+
+    public Integer getNtpSyncInterval() {
+        return this.ntpSyncInterval;
+    }
+
+    public void setNtpSyncInterval(final Integer ntpSyncInterval) {
+        this.ntpSyncInterval = ntpSyncInterval;
     }
 
     public Boolean isTestButtonEnabled() {
