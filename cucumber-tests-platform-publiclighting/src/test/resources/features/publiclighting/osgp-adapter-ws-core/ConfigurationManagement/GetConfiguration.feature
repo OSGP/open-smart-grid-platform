@@ -20,6 +20,8 @@ Feature: CoreConfigurationManagement GetConfiguration
       | ShortInterval     | <ShortInterval>     |
       | LongInterval      | <LongInterval>      |
       | IntervalType      | <IntervalType>      |
+      | OsgpIpAddress     | <OsgpIpAddress>     |
+      | OsgpPort          | <OsgpPort>          |
     When receiving a get configuration request
       | DeviceIdentification | TEST1024000000001 |
     Then the get configuration async response contains
@@ -37,37 +39,39 @@ Feature: CoreConfigurationManagement GetConfiguration
       | ShortInterval     | <ShortInterval>     |
       | LongInterval      | <LongInterval>      |
       | IntervalType      | <IntervalType>      |
+      | OsgpIpAddress     | <OsgpIpAddress>     |
+      | OsgpPort          | <OsgpPort>          |
 
     Examples: 
-      | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType |
-      | OSLP        | RELAY                   |          |         |            |                   | AUX       |               |              |              |
-      | OSLP        | RELAY                   |          |         | 1,1,TARIFF |                   |           |               |              |              |
-      | OSLP        | ONE_TO_TEN_VOLT         |          |         |            |                   |           |               |              |              |
-      | OSLP        | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   |           |               |              |              |
-      | OSLP        | DALI                    |        2 | 1,2;2,1 |            |                   |           |               |              |              |
-      | OSLP        |                         |          |         |            |                   |           |            30 |              |              |
-      | OSLP        |                         |          |         |            | GPRS              |           |               |              |              |
-      | OSLP        | DALI                    |          |         |            |                   |           |               |              |              |
-      | OSLP        |                         |          |         |            |                   |           |               |              |              |
-      | OSLP        |                         |          |         |            |                   | P1        |               |              |              |
-      | OSLP        |                         |          |         |            |                   |           |               |           10 | DAYS         |
-      | OSLP        |                         |          |         |            |                   |           |               |           10 | MONTHS       |
-      | OSLP        | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | PULSE     |            15 |           30 | DAYS         |
-      | OSLP        | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | P1        |            15 |            1 | DAYS         |
-      | OSLP ELSTER | RELAY                   |          |         |            |                   | AUX       |               |              |              |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   |           |               |              |              |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   |           |               |              |              |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   |           |               |              |              |
-      | OSLP ELSTER | DALI                    |        2 | 1,2;2,1 |            |                   |           |               |              |              |
-      | OSLP ELSTER |                         |          |         |            |                   |           |            30 |              |              |
-      | OSLP ELSTER |                         |          |         |            | GPRS              |           |               |              |              |
-      | OSLP ELSTER | DALI                    |          |         |            |                   |           |               |              |              |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               |              |              |
-      | OSLP ELSTER |                         |          |         |            |                   | P1        |               |              |              |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               |           10 | DAYS         |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               |           10 | MONTHS       |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | PULSE     |            15 |           30 | DAYS         |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | P1        |            15 |            1 | DAYS         |
+      | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType | OsgpIpAddress | OsgpPort |
+      | OSLP        | RELAY                   |          |         |            |                   | AUX       |               |              |              |               |          |
+      | OSLP        | RELAY                   |          |         | 1,1,TARIFF |                   |           |               |              |              |               |          |
+      | OSLP        | ONE_TO_TEN_VOLT         |          |         |            |                   |           |               |              |              |               |          |
+      | OSLP        | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   |           |               |              |              |               |          |
+      | OSLP        | DALI                    |        2 | 1,2;2,1 |            |                   |           |               |              |              |               |          |
+      | OSLP        |                         |          |         |            |                   |           |            30 |              |              |               |          |
+      | OSLP        |                         |          |         |            | GPRS              |           |               |              |              |               |          |
+      | OSLP        | DALI                    |          |         |            |                   |           |               |              |              |               |          |
+      | OSLP        |                         |          |         |            |                   |           |               |              |              |               |          |
+      | OSLP        |                         |          |         |            |                   | P1        |               |              |              |               |          |
+      | OSLP        |                         |          |         |            |                   |           |               |           10 | DAYS         |               |          |
+      | OSLP        |                         |          |         |            |                   |           |               |           10 | MONTHS       |               |          |
+      | OSLP        | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | PULSE     |            15 |           30 | DAYS         |               |          |
+      | OSLP        | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | P1        |            15 |            1 | DAYS         |               |          |
+      | OSLP ELSTER | RELAY                   |          |         |            |                   | AUX       |               |              |              | 10.20.30.40   |    12122 |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   |           |               |              |              | 10.20.30.40   |    12122 |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   |           |               |              |              | 10.20.30.40   |    12122 |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   |           |               |              |              | 10.20.30.40   |    12123 |
+      | OSLP ELSTER | DALI                    |        2 | 1,2;2,1 |            |                   |           |               |              |              | 10.20.30.40   |    12123 |
+      | OSLP ELSTER |                         |          |         |            |                   |           |            30 |              |              | 10.20.30.40   |    12123 |
+      | OSLP ELSTER |                         |          |         |            | GPRS              |           |               |              |              | 10.20.30.50   |    12122 |
+      | OSLP ELSTER | DALI                    |          |         |            |                   |           |               |              |              | 10.20.30.50   |    12122 |
+      | OSLP ELSTER |                         |          |         |            |                   |           |               |              |              | 10.20.30.50   |    12122 |
+      | OSLP ELSTER |                         |          |         |            |                   | P1        |               |              |              | 10.20.30.50   |    12122 |
+      | OSLP ELSTER |                         |          |         |            |                   |           |               |           10 | DAYS         | 10.20.30.50   |    12123 |
+      | OSLP ELSTER |                         |          |         |            |                   |           |               |           10 | MONTHS       | 10.20.30.50   |    12123 |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | PULSE     |            15 |           30 | DAYS         | 10.20.30.50   |    12123 |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | P1        |            15 |            1 | DAYS         | 10.20.30.50   |    12123 |
 
   Scenario: Get configuration data with unknown device
     When receiving a get configuration request

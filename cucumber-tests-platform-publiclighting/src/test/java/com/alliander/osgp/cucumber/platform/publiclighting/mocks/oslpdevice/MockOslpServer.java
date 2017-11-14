@@ -8,7 +8,9 @@
 package com.alliander.osgp.cucumber.platform.publiclighting.mocks.oslpdevice;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
@@ -22,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -288,7 +291,8 @@ public class MockOslpServer {
     public void mockGetConfigurationResponse(final Oslp.Status oslpStatus, final LightType lightType,
             final String dcLights, final String dcMap, final String rcMap, final LinkType preferredLinkType,
             final MeterType meterType, final Integer shortInterval, final Integer longInterval,
-            final LongTermIntervalType intervalType) {
+            final LongTermIntervalType intervalType, final String osgpIpAddress, final Integer osgpPort)
+            throws UnknownHostException {
 
         final String[] dcMapArray;
         final String[] rcMapArray;
@@ -363,6 +367,14 @@ public class MockOslpServer {
 
         if (intervalType != null && intervalType != LongTermIntervalType.LT_INT_NOT_SET) {
             builder.setLongTermHistoryIntervalType(intervalType);
+        }
+
+        if (StringUtils.isNotEmpty(osgpIpAddress)) {
+            builder.setOspgIpAddress(ByteString.copyFrom(InetAddress.getByName(osgpIpAddress).getAddress()));
+        }
+
+        if (osgpPort != null) {
+            builder.setOsgpPortNumber(osgpPort);
         }
 
         this.mockResponses.put(DeviceRequestMessageType.GET_CONFIGURATION,
