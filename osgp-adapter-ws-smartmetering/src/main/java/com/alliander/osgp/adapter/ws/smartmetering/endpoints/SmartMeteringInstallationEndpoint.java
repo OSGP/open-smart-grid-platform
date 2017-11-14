@@ -294,10 +294,10 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
     /**
      * @param organisationIdentification
-     *            the organisation requesting the coupling of devices
+     *            the organization requesting the coupling of devices
      * @param request
-     *            the CoupleMbusDeviceRequest containing the
-     *            deviceIdentification, mbusDeviceIdentification and channel
+     *            the CoupleMbusDeviceByChannelRequest containing the
+     *            gatewayDeviceIdentification and channel
      * @param messagePriority
      *            the priority of the message
      * @param scheduleTime
@@ -316,7 +316,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final short channel = request.getCoupleMbusDeviceByChannelRequestData().getChannel();
-        LOGGER.info("Incoming CoupleMbusDeviceByChannellRequest for meter: {} and channel {}.", deviceIdentification,
+        LOGGER.info("Incoming CoupleMbusDeviceByChannelRequest for device: {} and channel {}.", deviceIdentification,
                 channel);
 
         CoupleMbusDeviceByChannelAsyncResponse response = null;

@@ -219,7 +219,6 @@ public class InstallationService {
         final CoupleMbusDeviceByChannelResponse response = this.commonMapper.map(dataObject,
                 CoupleMbusDeviceByChannelResponse.class);
 
-        // Send the response to the webservice-adapter
         final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 responseMessageResultType, osgpException, response, deviceMessageMetadata.getMessagePriority());

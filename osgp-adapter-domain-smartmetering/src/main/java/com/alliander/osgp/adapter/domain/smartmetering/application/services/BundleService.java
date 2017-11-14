@@ -101,8 +101,6 @@ public class BundleService {
     private void checkIfAdditionalActionIsNeeded(final DeviceMessageMetadata deviceMessageMetadata,
             final BundleMessagesRequestDto bundleResponseMessageDataContainerDto) throws FunctionalException {
 
-        // For now, the only response requiring additional action is
-        // CoupleMbusDeviceByChannelResponse.
         for (final ActionResponseDto action : bundleResponseMessageDataContainerDto.getAllResponses()) {
             if (action instanceof CoupleMbusDeviceByChannelResponseDto) {
                 this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
