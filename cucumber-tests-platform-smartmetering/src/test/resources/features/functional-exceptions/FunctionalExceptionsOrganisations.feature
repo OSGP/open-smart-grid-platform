@@ -19,7 +19,8 @@ Feature: SmartMetering functional exceptions regarding organisations
     When the get administrative status request for an invalid device is received
       | DeviceIdentification | TEST1024000000011 |
     Then a SOAP fault should have been returned
-      | Code | 201 |
+      | Code    |            201 |
+      | Message | UNKNOWN_DEVICE |
 
   Scenario: Add an already existing device to OSGP
     Given a dlms device
