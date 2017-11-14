@@ -14,7 +14,6 @@ public class CoupleMbusDeviceByChannelResponseDto extends ActionResponseDto {
     private ChannelElementValuesDto channelElementValues;
 
     public CoupleMbusDeviceByChannelResponseDto(final ChannelElementValuesDto channelElementValues) {
-        super();
         this.channelElementValues = channelElementValues;
     }
 
