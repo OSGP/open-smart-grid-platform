@@ -38,7 +38,7 @@ public class CoupleMbusDeviceByChannelCommandExecutor
     public CoupleMbusDeviceByChannelResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final CoupleMbusDeviceByChannelRequestDataDto requestDto) throws ProtocolAdapterException {
 
-        LOGGER.info("Retrieving values for mbus channel {} on meter {}", requestDto.getChannel(),
+        LOGGER.info("Retrieving values for mbus channel {} on device {}", requestDto.getChannel(),
                 device.getDeviceIdentification());
         final List<GetResult> resultList = this.coupleMBusDeviceCommandExecutor.getMBusClientAttributeValues(conn,
                 device, requestDto.getChannel());
