@@ -117,6 +117,51 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="CoupleMbusDeviceByChannelRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="CoupleMbusDeviceByChannelRequestData"
+          type="tns:CoupleMbusDeviceByChannelRequestData" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CoupleMbusDeviceByChannelAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CoupleMbusDeviceByChannelAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CoupleMbusDeviceByChannelResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:CoupleMbusDeviceByChannelResponseData">
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="CoupleMbusDeviceByChannelResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="ChannelElementValues" type="tns:ChannelElementValues" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <!-- DATATYPES -->
 
   <xsd:complexType name="Device">
@@ -206,8 +251,8 @@
         </xsd:simpleType>
       </xsd:element>
 
-      <xsd:element name="Mbus_version"
-        minOccurs="0" type="xsd:unsignedByte" />
+      <xsd:element name="Mbus_version" minOccurs="0"
+        type="xsd:unsignedByte" />
 
       <xsd:element name="Mbus_device_type_identification"
         minOccurs="0" type="xsd:unsignedByte" />
@@ -243,4 +288,33 @@
       <xsd:pattern value="[a-zA-Z0-9 ]+" />
     </xsd:restriction>
   </xsd:simpleType>
+
+  <xsd:complexType name="CoupleMbusDeviceByChannelRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+          <xsd:element name="Channel">
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:unsignedByte">
+                <xsd:minInclusive value="1" />
+                <xsd:maxInclusive value="4" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ChannelElementValues">
+    <xsd:sequence>
+      <xsd:element name="Channel" type="xsd:unsignedByte" />
+      <xsd:element name="PrimaryAddress" type="xsd:short" />
+      <xsd:element name="IdentificationNumber" type="xsd:string" />
+      <xsd:element name="ManufacturerIdentification" type="xsd:string" />
+      <xsd:element name="Version" type="xsd:unsignedByte" />
+      <xsd:element name="DeviceTypeIdentification" type="xsd:unsignedByte" />
+    </xsd:sequence>
+  </xsd:complexType>
+
 </xsd:schema>
