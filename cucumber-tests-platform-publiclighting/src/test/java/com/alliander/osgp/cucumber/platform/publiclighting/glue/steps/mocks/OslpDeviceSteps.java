@@ -16,6 +16,7 @@ import static com.alliander.osgp.cucumber.core.Helpers.getString;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,12 +26,10 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.common.util.CollectionUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
@@ -88,8 +87,6 @@ import cucumber.api.java.en.When;
  * mock behave correctly for the automatic test.
  */
 public class OslpDeviceSteps {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OslpDeviceSteps.class);
 
     @Autowired
     private CoreDeviceConfiguration configuration;
@@ -371,6 +368,17 @@ public class OslpDeviceSteps {
             Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class),
                     receivedConfiguration.getLongTermHistoryIntervalType());
         }
+
+        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS))) {
+            Assert.assertEquals(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS),
+                    this.convertIpAddress(receivedConfiguration.getOspgIpAddress()));
+        }
+
+        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.OSGP_PORT))) {
+            Assert.assertEquals(Integer.parseInt(expectedResponseData.get(PlatformKeys.OSGP_PORT)),
+                    receivedConfiguration.getOsgpPortNumber());
+        }
+
     }
 
     /**
@@ -542,7 +550,7 @@ public class OslpDeviceSteps {
      */
     @Then("^a stop device \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aStopDeviceOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        // TODO: Sent an OSLP start device message to device
+        // TODO: Send an OSLP start device message to device
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.STOP_SELF_TEST);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasStopSelfTestRequest());
@@ -698,7 +706,7 @@ public class OslpDeviceSteps {
 
     @Given("^the device returns a get configuration status over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final String protocol,
-            final Map<String, String> requestParameters) {
+            final Map<String, String> requestParameters) throws UnknownHostException {
         this.theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_STATUS, Status.class, Status.OK).name(),
                 protocol, requestParameters);
@@ -710,10 +718,11 @@ public class OslpDeviceSteps {
      *
      * @param status
      *            The status to respond.
+     * @throws UnknownHostException
      */
     @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result, final String protocol,
-            final Map<String, String> requestParameters) {
+            final Map<String, String> requestParameters) throws UnknownHostException {
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
         // values the same. Some with underscore and some without.
@@ -724,6 +733,14 @@ public class OslpDeviceSteps {
             meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
         } else {
             meterType = getEnum(requestParameters, PlatformPubliclightingKeys.METER_TYPE, MeterType.class);
+        }
+
+        final String osgpIpAddress = getString(requestParameters, PlatformPubliclightingKeys.OSGP_IP_ADDRESS);
+        String osgpIpAddressMock;
+        if (StringUtils.isEmpty(osgpIpAddress)) {
+            osgpIpAddressMock = null;
+        } else {
+            osgpIpAddressMock = osgpIpAddress;
         }
 
         this.oslpMockServer.mockGetConfigurationResponse(Enum.valueOf(Status.class, result),
@@ -738,7 +755,8 @@ public class OslpDeviceSteps {
                         PlatformPubliclightingDefaults.SHORT_INTERVAL),
                 getInteger(requestParameters, PlatformPubliclightingKeys.LONG_INTERVAL,
                         PlatformPubliclightingDefaults.LONG_INTERVAL),
-                getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE, LongTermIntervalType.class));
+                getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE, LongTermIntervalType.class),
+                osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT));
     }
 
     /**
@@ -1243,5 +1261,23 @@ public class OslpDeviceSteps {
                 PlatformPubliclightingDefaults.FIRMARE_DOMAIN), request.getFirmwareDomain());
         Assert.assertEquals(getString(expectedParameters, PlatformPubliclightingKeys.FIRMWARE_URL,
                 PlatformPubliclightingDefaults.FIRMWARE_URL), request.getFirmwareUrl());
+    }
+
+    private String convertIpAddress(final ByteString byteString) {
+        if (byteString == null || byteString.isEmpty()) {
+            return "";
+        }
+
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (final byte number : byteString.toByteArray()) {
+            int convertedNumber = number;
+            if (number < 0) {
+                convertedNumber = 256 + number;
+            }
+            final String str = String.valueOf(convertedNumber);
+            stringBuilder.append(str).append(".");
+        }
+        final String ipValue = stringBuilder.toString();
+        return ipValue.substring(0, ipValue.length() - 1);
     }
 }

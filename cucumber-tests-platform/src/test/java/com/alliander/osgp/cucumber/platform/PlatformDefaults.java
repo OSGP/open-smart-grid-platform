@@ -19,6 +19,7 @@ import com.alliander.osgp.domain.core.valueobjects.RelayType;
 public class PlatformDefaults {
 
     public static final Boolean DEFAULT_ACTIVATED = true;
+    public static final Boolean DEFAULT_ACTIVE = true;
     public static final DeviceLifecycleStatus DEFAULT_DEVICE_LIFECYCLE_STATUS = DeviceLifecycleStatus.IN_USE;
     public static final Integer DEFAULT_ACTUAL_CONSUMED_ENERGY = 96;
     public static final Integer DEFAULT_ACTUAL_CONSUMED_POWER = 48;

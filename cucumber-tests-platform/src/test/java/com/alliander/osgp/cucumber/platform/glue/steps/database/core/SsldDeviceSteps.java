@@ -113,8 +113,6 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
                     .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
             Assert.assertEquals(getBoolean(expectedEntity, PlatformKeys.KEY_HAS_SCHEDULE), ssld.getHasSchedule());
-            // Assert.assertEquals(getBoolean(expectedEntity,
-            // Keys.KEY_PUBLICKEYPRESENT), ssld.isPublicKeyPresent());
         });
 
         this.deviceSteps.theDeviceContains(expectedEntity);

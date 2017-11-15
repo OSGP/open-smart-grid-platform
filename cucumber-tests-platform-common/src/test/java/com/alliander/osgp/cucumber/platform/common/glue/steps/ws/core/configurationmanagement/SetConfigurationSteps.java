@@ -186,6 +186,16 @@ public class SetConfigurationSteps {
             }
         }
 
+        if (requestParameters.containsKey(PlatformKeys.OSGP_IP_ADDRESS)
+                && StringUtils.isNotEmpty(requestParameters.get(PlatformKeys.OSGP_IP_ADDRESS))) {
+            config.setOsgpIpAddress(requestParameters.get(PlatformKeys.OSGP_IP_ADDRESS));
+        }
+
+        if (requestParameters.containsKey(PlatformKeys.OSGP_PORT)
+                && StringUtils.isNotEmpty(requestParameters.get(PlatformKeys.OSGP_PORT))) {
+            config.setOsgpPortNumber(getInteger(requestParameters, PlatformKeys.OSGP_PORT));
+        }
+
         request.setConfiguration(config);
 
         try {
