@@ -45,21 +45,27 @@ public class OslpGetConfigurationResponseToConfigurationConverter
         // @formatter:off
         // Convert the required values for the constructor of Configuration.
         final LightTypeDto lightType = source.hasLightType()
-                ? this.mapperFacade.map(source.getLightType(), LightTypeDto.class) : null;
+                ? this.mapperFacade.map(source.getLightType(), LightTypeDto.class)
+                : null;
         final DaliConfigurationDto daliConfiguration = source.hasDaliConfiguration()
-                ? this.mapperFacade.map(source.getDaliConfiguration(), DaliConfigurationDto.class) : null;
+                ? this.mapperFacade.map(source.getDaliConfiguration(), DaliConfigurationDto.class)
+                : null;
         final Integer shortTermHistoryIntervalMinutes = source.hasShortTermHistoryIntervalMinutes()
-                ? this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class) : null;
+                ? this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class)
+                : null;
         final RelayConfigurationDto relayConfiguration = source.hasRelayConfiguration()
                 ? this.mapperFacade.map(source.getRelayConfiguration(), RelayConfigurationDto.class)
                 : new RelayConfigurationDto(new ArrayList<RelayMapDto>());
         final LinkTypeDto preferredLinkType = source.hasPreferredLinkType()
                 && !source.getPreferredLinkType().equals(Oslp.LinkType.LINK_NOT_SET)
-                        ? this.mapperFacade.map(source.getPreferredLinkType(), LinkTypeDto.class) : null;
+                        ? this.mapperFacade.map(source.getPreferredLinkType(), LinkTypeDto.class)
+                        : null;
         final MeterTypeDto meterType = source.hasMeterType() && !source.getMeterType().equals(Oslp.MeterType.MT_NOT_SET)
-                ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class) : null;
+                ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class)
+                : null;
         final Integer longTermHistoryInterval = source.hasLongTermHistoryInterval()
-                ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class) : null;
+                ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class)
+                : null;
         final LongTermIntervalTypeDto longTermIntervalType = source.hasLongTermHistoryIntervalType()
                 && !source.getLongTermHistoryIntervalType().equals(Oslp.LongTermIntervalType.LT_INT_NOT_SET)
                         ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
@@ -94,7 +100,9 @@ public class OslpGetConfigurationResponseToConfigurationConverter
         if (source.getOspgIpAddress() != null && !source.getOspgIpAddress().isEmpty()) {
             configuration.setOsgpIpAddress(this.convertIpAddress(source.getOspgIpAddress()));
         }
-        configuration.setOsgpPortNumber(source.getOsgpPortNumber());
+        if (source.getOsgpPortNumber() > 0 && source.getOsgpPortNumber() < 65536) {
+            configuration.setOsgpPortNumber(source.getOsgpPortNumber());
+        }
         configuration.setTestButtonEnabled(source.getIsTestButtonEnabled());
         configuration.setAutomaticSummerTimingEnabled(source.getIsAutomaticSummerTimingEnabled());
         configuration.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
