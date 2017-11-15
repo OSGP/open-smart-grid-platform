@@ -360,7 +360,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             this.throwExceptionIfResultNotOk(meterResponseData, "Couple Mbus Device By Channel");
 
             if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+                response.setResultString((String) meterResponseData.getMessageData());
             }
             response = this.installationMapper.map(meterResponseData.getMessageData(),
                     CoupleMbusDeviceByChannelResponse.class);
