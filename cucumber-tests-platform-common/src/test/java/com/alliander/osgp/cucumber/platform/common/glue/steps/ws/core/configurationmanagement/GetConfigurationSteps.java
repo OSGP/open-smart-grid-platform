@@ -119,7 +119,7 @@ public class GetConfigurationSteps {
     }
 
     @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\"$")
-    public void thePlatformBufferesAGetConfigurationResponseMessageForDevice(final String deviceIdentification,
+    public void thePlatformBuffersAGetConfigurationResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResponseData) throws Throwable {
         final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
@@ -246,10 +246,22 @@ public class GetConfigurationSteps {
             Assert.assertEquals(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class),
                     configuration.getLongTermHistoryIntervalType());
         }
+
+        if (expectedResponseData.containsKey(PlatformKeys.OSGP_IP_ADDRESS)
+                && !expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS).isEmpty()) {
+            Assert.assertEquals(getString(expectedResponseData, PlatformKeys.OSGP_IP_ADDRESS),
+                    configuration.getOsgpIpAddress());
+        }
+
+        if (expectedResponseData.containsKey(PlatformKeys.OSGP_PORT)
+                && !expectedResponseData.get(PlatformKeys.OSGP_PORT).isEmpty()) {
+            Assert.assertEquals(getInteger(expectedResponseData, PlatformKeys.OSGP_PORT),
+                    configuration.getOsgpPortNumber());
+        }
     }
 
     @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\" contains soap fault$")
-    public void thePlatformBufferesAGetConfigurationResponseMessageForDeviceContainsSoapFault(
+    public void thePlatformBuffersAGetConfigurationResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
         final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();

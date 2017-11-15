@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -402,7 +403,7 @@ public class Helpers {
      * @return
      */
     public static Integer getInteger(final Map<String, String> settings, final String key) {
-        if (settings.get(key) == null) {
+        if (StringUtils.isEmpty(settings.get(key))) {
             return null;
         }
         return Integer.parseInt(settings.get(key));

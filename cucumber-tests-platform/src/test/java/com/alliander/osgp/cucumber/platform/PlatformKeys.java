@@ -222,6 +222,8 @@ public class PlatformKeys extends Keys {
     public static final String MANUFACTURER_USE_PREFIX = "ManufacturerUsePrefix";
     public static final String METER_TYPE = "MeterType";
     public static final String ORGANIZATION_NAME = "Name";
+    public static final String OSGP_IP_ADDRESS = "OsgpIpAddress";
+    public static final String OSGP_PORT = "OsgpPort";
     public static final String PHONE_NUMBER = "PhoneNumber";
     public static final String PLATFORM_DOMAINS = "PlatformDomains";
     public static final String RELAY_CONF = "RelayConf";
