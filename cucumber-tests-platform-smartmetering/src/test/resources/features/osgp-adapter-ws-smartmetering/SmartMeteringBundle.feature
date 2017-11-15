@@ -8,6 +8,11 @@ Feature: SmartMetering Bundle
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
+    And a dlms device
+      | DeviceIdentification        | TESTG102400000001 |
+      | DeviceType                  | SMART_METER_G     |
+      | GatewayDeviceIdentification | TEST1024000000001 |
+      | Channel                     |                 1 |      
 
   Scenario: Handle a bundle of operations
     Given a bundle request
@@ -20,6 +25,7 @@ Feature: SmartMetering Bundle
     And the bundle request contains a get actual meter reads action
     And the bundle request contains a get administrative status action
     And the bundle request contains a get periodic meter reads action
+    And the bundle request contains a get M-Bus encryption key status action
     And the bundle request contains a set activity calendar action
     And the bundle request contains a get configuration object action
     And the bundle request contains a set alarm notifications action
