@@ -14,6 +14,10 @@ import org.joda.time.DateTime;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 public class CommonRequestMessage extends RequestMessage {
+    /**
+     * Generated serial version
+     */
+    private static final long serialVersionUID = 6094774737635965756L;
     private final CommonRequestMessageType messageType;
     private final DateTime scheduleTime;
 
