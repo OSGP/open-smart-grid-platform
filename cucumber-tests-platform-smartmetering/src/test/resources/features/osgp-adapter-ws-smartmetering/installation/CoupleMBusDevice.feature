@@ -430,7 +430,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    When the Couple M-Bus Devicel By Channel request is received
+    When the Couple M-Bus Device By Channel request is received
       | DeviceIdentification | TEST1024000000001 |
       | Channel              |                 1 |
     Then the Couple M-Bus Device By Channel response is "OK"

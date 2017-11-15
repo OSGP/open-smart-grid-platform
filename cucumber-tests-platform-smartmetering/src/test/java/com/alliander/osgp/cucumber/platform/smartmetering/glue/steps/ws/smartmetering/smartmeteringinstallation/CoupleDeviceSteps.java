@@ -23,15 +23,13 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbu
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
-import com.alliander.osgp.cucumber.platform.smartmetering.support.ServiceEndpoint;
-import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.CoupleMbusDeviceByChannelRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.CoupleMbusDeviceRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
@@ -43,9 +41,6 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
 
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
-
-    @Autowired
-    private ServiceEndpoint serviceEndpoint;
 
     @When("^the Couple G-meter \"([^\"]*)\" request is received for E-meter \"([^\"]*)\"$")
     public void theCoupleGMeterRequestIsReceivedForEMeter(final String gasMeter, final String eMeter)
@@ -125,29 +120,20 @@ public class CoupleDeviceSteps extends AbstractSmartMeteringSteps {
         }
     }
 
-    @When("^the Couple M-Bus Devicel By Channel request is received$")
-    public void theCoupleMBusDevicelByChannelRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        final CoupleMbusDeviceByChannelRequest request = new CoupleMbusDeviceByChannelRequest();
-        final CoupleMbusDeviceByChannelRequestData requestData = new CoupleMbusDeviceByChannelRequestData();
-        requestData.setChannel(Short.valueOf(settings.get(PlatformKeys.KEY_CHANNEL)).shortValue());
-        request.setCoupleMbusDeviceByChannelRequestData(requestData);
-        request.setDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+    @When("^the Couple M-Bus Device By Channel request is received$")
+    public void theCoupleMBusDeviceByChannelRequestIsReceived(final Map<String, String> settings) throws Throwable {
+        final CoupleMbusDeviceByChannelRequest request = CoupleMbusDeviceByChannelRequestFactory.fromSettings(settings);
 
         final CoupleMbusDeviceByChannelAsyncResponse asyncResponse = this.smartMeteringInstallationClient
                 .coupleMbusDeviceByChannel(request);
 
         this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
-
     }
 
     @Then("^the Couple M-Bus Device By Channel response is \"([^\"]*)\"$")
     public void theCoupleMBusDeviceByChannelResponseIs(final String status) throws Throwable {
-        final CoupleMbusDeviceByChannelAsyncRequest asyncRequest = new CoupleMbusDeviceByChannelAsyncRequest();
-
-        final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
-        final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromScenarioContext();
-        asyncRequest.setCorrelationUid(correlationUid);
-        asyncRequest.setDeviceIdentification(deviceIdentification);
+        final CoupleMbusDeviceByChannelAsyncRequest asyncRequest = CoupleMbusDeviceByChannelRequestFactory
+                .fromScenarioContext();
 
         final CoupleMbusDeviceByChannelResponse response = this.smartMeteringInstallationClient
                 .getCoupleMbusDeviceByChannelResponse(asyncRequest);
