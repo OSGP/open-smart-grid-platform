@@ -29,6 +29,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAllAttribute
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAssociationLnObjectsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetProfileGenericDataRequest;
@@ -68,8 +69,10 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttribute
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
@@ -225,6 +228,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
                 this.installationMapper);
+        CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusRequest.class, this.configurationMapper);
     }
 
     /**
@@ -328,11 +332,11 @@ public class ActionMapperService {
         CLASS_MAP.put(GetSpecificAttributeValueRequest.class, SpecificAttributeValueRequestData.class);
         CLASS_MAP.put(SetClockConfigurationRequest.class, SetClockConfigurationRequestData.class);
         CLASS_MAP.put(GetConfigurationObjectRequest.class, GetConfigurationObjectRequestData.class);
-        CLASS_MAP.put(GetProfileGenericDataRequest.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData.class);
+        CLASS_MAP.put(GetProfileGenericDataRequest.class, ProfileGenericDataRequestData.class);
         CLASS_MAP.put(GenerateAndReplaceKeysRequest.class, GenerateAndReplaceKeysRequestData.class);
         CLASS_MAP.put(ConfigureDefinableLoadProfileRequest.class, DefinableLoadProfileConfigurationData.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelRequest.class, CoupleMbusDeviceByChannelRequestData.class);
+        CLASS_MAP.put(GetMbusEncryptionKeyStatusRequest.class, GetMbusEncryptionKeyStatusRequestData.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {

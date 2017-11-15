@@ -19,12 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
-import com.alliander.osgp.domain.core.exceptions.MBusChannelNotFoundException;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
+import com.alliander.osgp.domain.smartmetering.exceptions.MbusChannelNotFoundException;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
@@ -270,7 +270,7 @@ public class MBusGatewayService {
             throws FunctionalException {
         if (!mbusChannelElementsResponseDto.isChannelFound()) {
             throw new FunctionalException(FunctionalExceptionType.NO_MBUS_DEVICE_CHANNEL_FOUND,
-                    ComponentType.DOMAIN_SMART_METERING, new MBusChannelNotFoundException(
+                    ComponentType.DOMAIN_SMART_METERING, new MbusChannelNotFoundException(
                             String.valueOf(mbusChannelElementsResponseDto.getRetrievedChannelElements())));
         }
     }

@@ -9,6 +9,8 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.AdministrativeStatusResponseConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.CosemDateTimeConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.FirmwareVersionConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.GetAllAttributeValuesResponseConverter;
 

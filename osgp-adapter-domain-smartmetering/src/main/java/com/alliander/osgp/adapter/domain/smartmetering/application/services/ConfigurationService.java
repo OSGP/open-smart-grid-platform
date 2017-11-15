@@ -27,6 +27,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalenda
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
@@ -36,6 +37,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestD
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
+import com.alliander.osgp.domain.smartmetering.exceptions.GatewayDeviceNotSetForMbusDeviceException;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
@@ -45,6 +47,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
@@ -92,7 +96,7 @@ public class ConfigurationService {
 
     public void setSpecialDays(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("setSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -111,7 +115,7 @@ public class ConfigurationService {
 
     public void setConfigurationObject(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest setConfigurationObjectRequestValueObject)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -131,7 +135,7 @@ public class ConfigurationService {
 
     public void setPushSetupAlarm(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("setPushSetupAlarm for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -150,7 +154,7 @@ public class ConfigurationService {
 
     public void setPushSetupSms(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSms)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("setPushSetupSms for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -405,8 +409,8 @@ public class ConfigurationService {
              * scenario's with direct communication with gas meters this will
              * have to be changed.
              */
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
-                    new AssertionError("Meter for gas reads should have an energy meter as gateway device."));
+            throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMbusDeviceException());
         }
 
         this.osgpCoreRequestMessageSender.send(
@@ -504,8 +508,7 @@ public class ConfigurationService {
                 deviceMessageMetadata.getMessageType());
     }
 
-    public void generateAndReplaceKeys(final DeviceMessageMetadata deviceMessageMetadata)
-            throws FunctionalException {
+    public void generateAndReplaceKeys(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
         LOGGER.info("Generate and replace keys for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
@@ -515,8 +518,7 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), null),
+                        deviceMessageMetadata.getDeviceIdentification(), smartMeteringDevice.getIpAddress(), null),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -524,7 +526,8 @@ public class ConfigurationService {
     public void handleGenerateAndReplaceKeysResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("Handle generate and replace keys response for MessageType: {}", deviceMessageMetadata.getMessageType());
+        LOGGER.info("Handle generate and replace keys response for MessageType: {}",
+                deviceMessageMetadata.getMessageType());
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
@@ -614,12 +617,10 @@ public class ConfigurationService {
         final String firmwareFileIdentifier = this.firmwareService.determineFirmwareFileIdentifier(smartMeter,
                 updateFirmwareRequestData.getVersionByModuleType());
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(), smartMeter.getIpAddress(), firmwareFileIdentifier),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeter.getIpAddress(), firmwareFileIdentifier), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleUpdateFirmwareResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -762,6 +763,49 @@ public class ConfigurationService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 result, exception, null, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+    }
+
+    public void getMbusEncryptionKeyStatus(final DeviceMessageMetadata deviceMessageMetadata)
+            throws FunctionalException {
+
+        LOGGER.info("getMbusEncryptionKeyStatus for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SmartMeter mbusDevice = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+        final Device gatewayDevice = mbusDevice.getGatewayDevice();
+        if (gatewayDevice == null) {
+            throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMbusDeviceException());
+        }
+
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
+                        gatewayDevice.getIpAddress(),
+                        new GetMbusEncryptionKeyStatusRequestDto(mbusDevice.getDeviceIdentification(),
+                                mbusDevice.getChannel())),
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                deviceMessageMetadata.getScheduleTime());
+    }
+
+    public void handleGetMbusEncryptionKeyStatusResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType resultType, final OsgpException exception,
+            final GetMbusEncryptionKeyStatusResponseDto getMbusEncryptionKeyStatusResponseDto) {
+
+        LOGGER.info("handleGetMbusEncryptionKeyStatusResponse for MessageType: {}",
+                deviceMessageMetadata.getMessageType());
+
+        final String mbusDeviceIdentification = getMbusEncryptionKeyStatusResponseDto.getMbusDeviceIdentification();
+        final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType
+                .valueOf(getMbusEncryptionKeyStatusResponseDto.getEncryptionKeyStatus().name());
+
+        this.webServiceResponseMessageSender.send(
+                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(), mbusDeviceIdentification, resultType,
+                        exception, encryptionKeyStatusType, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
 }

@@ -5,14 +5,12 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.domain.core.exceptions;
+package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public class MBusChannelNotFoundException extends Exception {
-
-    private static final long serialVersionUID = 7847147074103429934L;
-
-    public MBusChannelNotFoundException(final String message) {
-        super(message);
-    }
-
+public enum EncryptionKeyStatusType {
+    NO_ENCRYPTION_KEY,
+    ENCRYPTION_KEY_SET,
+    ENCRYPTION_KEY_TRANSFERED,
+    ENCRYPTION_KEY_SET_AND_TRANSFERRED,
+    ENCRYPTION_KEY_IN_USE;
 }

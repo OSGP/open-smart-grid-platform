@@ -5,12 +5,11 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
+package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.CustomValueToDtoConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.DomainHelperService;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
