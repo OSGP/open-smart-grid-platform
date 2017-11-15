@@ -54,6 +54,13 @@
         name="com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
+  
+    <jxb:bindings schemaLocation="sm-installation.xsd">
+    <jxb:schemaBindings>
+      <jxb:package
+        name="com.alliander.osgp.adapter.ws.schema.smartmetering.installation"></jxb:package>
+    </jxb:schemaBindings>
+  </jxb:bindings>
 
   <jxb:bindings schemaLocation="sm-bundle.xsd"
     node="/xs:schema/xs:complexType[@name='Actions']/xs:sequence/xs:choice">
