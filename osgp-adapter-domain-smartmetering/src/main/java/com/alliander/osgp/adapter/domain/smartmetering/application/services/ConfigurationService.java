@@ -800,7 +800,7 @@ public class ConfigurationService {
 
         final String mbusDeviceIdentification = getMbusEncryptionKeyStatusResponseDto.getMbusDeviceIdentification();
         final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType
-                .fromValue(getMbusEncryptionKeyStatusResponseDto.getEncryptionKeyStatus().getValue());
+                .valueOf(getMbusEncryptionKeyStatusResponseDto.getEncryptionKeyStatus().name());
 
         this.webServiceResponseMessageSender.send(
                 new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),

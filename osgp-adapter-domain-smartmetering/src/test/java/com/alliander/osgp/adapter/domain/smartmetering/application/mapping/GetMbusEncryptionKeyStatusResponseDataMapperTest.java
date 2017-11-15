@@ -35,8 +35,8 @@ public class GetMbusEncryptionKeyStatusResponseDataMapperTest {
         assertNotNull(MAPPED_OBJECT_VALUE_MESSAGE, result);
         assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getMbusDeviceIdentification(),
                 result.getMbusDeviceIdentification());
-        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getEncryptionKeyStatus().getValue(),
-                result.getEncryptionKeyStatus().getValue());
+        assertEquals(MAPPED_FIELD_VALUE_MESSAGE, source.getEncryptionKeyStatus().name(),
+                result.getEncryptionKeyStatus().name());
     }
 
     private GetMbusEncryptionKeyStatusResponseDto makeResponse() {
