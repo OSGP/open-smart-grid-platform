@@ -60,7 +60,7 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, obisCode, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener().setDescription("GetMBusEncryptionKeyStatus, retrieve attribute: "
+        conn.getDlmsMessageListener().setDescription("GetMbusEncryptionKeyStatus, retrieve attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(getParameter));
 
         LOGGER.info(
