@@ -19,6 +19,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.osgp.adapter.protocol.dlms.domain.valueobjects.EncryptionKeyStatusType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -83,7 +84,7 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
         }
 
         final EncryptionKeyStatusTypeDto encryptionKeyStatusType = EncryptionKeyStatusTypeDto
-                .fromValue((Integer) dataObject.getValue());
+                .valueOf(EncryptionKeyStatusType.fromValue((Integer) dataObject.getValue()).name());
         return new GetMbusEncryptionKeyStatusResponseDto(request.getMbusDeviceIdentification(),
                 encryptionKeyStatusType);
     }
