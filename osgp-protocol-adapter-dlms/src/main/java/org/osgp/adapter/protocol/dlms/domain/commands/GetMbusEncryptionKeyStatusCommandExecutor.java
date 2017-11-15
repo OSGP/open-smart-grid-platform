@@ -11,12 +11,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.interfaceclass.InterfaceClass;
+import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.domain.valueobjects.EncryptionKeyStatusType;
@@ -36,20 +36,19 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetMbusEncryptionKeyStatusCommandExecutor.class);
 
-    private static final int CLASS_ID = 72;
+    private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
     private static final Map<Short, ObisCode> OBIS_CODES = new HashMap<>();
-    private static final int ATTRIBUTE_ID = 14;
+    private static final int ATTRIBUTE_ID = MbusClientAttribute.ENCRYPTION_KEY_STATUS.attributeId();
 
-    public GetMbusEncryptionKeyStatusCommandExecutor() {
-        super(GetMbusEncryptionKeyStatusRequestDto.class);
-    }
-
-    @PostConstruct
-    private static void initObisCodes() {
+    static {
         OBIS_CODES.put((short) 1, new ObisCode("0.1.24.1.0.255"));
         OBIS_CODES.put((short) 2, new ObisCode("0.2.24.1.0.255"));
         OBIS_CODES.put((short) 3, new ObisCode("0.3.24.1.0.255"));
         OBIS_CODES.put((short) 4, new ObisCode("0.4.24.1.0.255"));
+    }
+
+    public GetMbusEncryptionKeyStatusCommandExecutor() {
+        super(GetMbusEncryptionKeyStatusRequestDto.class);
     }
 
     @Override
