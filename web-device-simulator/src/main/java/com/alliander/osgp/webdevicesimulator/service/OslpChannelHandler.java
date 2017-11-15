@@ -25,8 +25,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.codec.binary.Base64;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
@@ -136,14 +134,17 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     @Autowired
     private PrivateKey privateKey;
 
-    @Resource
+    @Autowired
     private String oslpSignatureProvider;
 
-    @Resource
+    @Autowired
     private String oslpSignature;
 
-    @Resource
+    @Autowired
     private int connectionTimeout;
+
+    @Autowired
+    private String firmwareVersion;
 
     @Autowired
     private ClientBootstrap bootstrap;
@@ -494,7 +495,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
             response = createUpdateFirmwareResponse();
         } else if (request.hasGetFirmwareVersionRequest()) {
-            response = createGetFirmwareVersionResponse();
+            response = createGetFirmwareVersionResponse(this.firmwareVersion);
         } else if (request.hasSwitchFirmwareRequest()) {
             response = createSwitchFirmwareResponse();
         } else if (request.hasUpdateDeviceSslCertificationRequest()) {
@@ -590,10 +591,9 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .setUpdateFirmwareResponse(UpdateFirmwareResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
-    private static Message createGetFirmwareVersionResponse() {
-        return Oslp.Message.newBuilder()
-                .setGetFirmwareVersionResponse(GetFirmwareVersionResponse.newBuilder().setFirmwareVersion("R01"))
-                .build();
+    private static Message createGetFirmwareVersionResponse(final String firmwareVersion) {
+        return Oslp.Message.newBuilder().setGetFirmwareVersionResponse(
+                GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(firmwareVersion)).build();
     }
 
     private static Message createSwitchFirmwareResponse() {

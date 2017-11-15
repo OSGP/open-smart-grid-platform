@@ -74,10 +74,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @ComponentScan(basePackages = { "com.alliander.osgp.webdevicesimulator" })
 @EnableWebMvc
 @ImportResource("classpath:applicationContext.xml")
-@PropertySources({
-    @PropertySource("classpath:web-device-simulator.properties"),
-    @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:web-device-simulator.properties"),
+        @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext {
 
     private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";
@@ -130,6 +128,8 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_CHECKBOX_TARIFF_SWITCHING_VALUE = "checkbox.tariff.switching.value";
     private static final String PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE = "checkbox.event.notification.value";
 
+    private static final String PROPERTY_NAME_FIRMWARE_VERSION = "firmware.version";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
     @Resource
@@ -151,10 +151,10 @@ public class ApplicationContext {
             hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
             hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
 
-            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
-            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+            hikariConfig.setMaximumPoolSize(
+                    Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
+            hikariConfig.setAutoCommit(
+                    Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
 
             this.dataSource = new HikariDataSource(hikariConfig);
         }
@@ -207,8 +207,8 @@ public class ApplicationContext {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSPG_DEVICESIMULATOR_WEB");
         entityManagerFactoryBean.setDataSource(this.getDataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.environment
-                .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean
+                .setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();
@@ -236,8 +236,8 @@ public class ApplicationContext {
         final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 
         messageSource.setBasename(this.environment.getRequiredProperty(PROPERTY_NAME_MESSAGESOURCE_BASENAME));
-        messageSource.setUseCodeAsDefaultMessage(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MESSAGESOURCE_USE_CODE_AS_DEFAULT_MESSAGE)));
+        messageSource.setUseCodeAsDefaultMessage(Boolean.parseBoolean(
+                this.environment.getRequiredProperty(PROPERTY_NAME_MESSAGESOURCE_USE_CODE_AS_DEFAULT_MESSAGE)));
 
         return messageSource;
     }
@@ -265,8 +265,8 @@ public class ApplicationContext {
 
         final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
-            public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+            public ChannelPipeline getPipeline()
+                    throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
                 final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
 
                 LOGGER.info("Created new client pipeline");
@@ -295,8 +295,8 @@ public class ApplicationContext {
 
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
-            public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+            public ChannelPipeline getPipeline()
+                    throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
                 final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
                 LOGGER.info("Created new server pipeline");
 
@@ -321,8 +321,8 @@ public class ApplicationContext {
 
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
-            public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+            public ChannelPipeline getPipeline()
+                    throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
                 final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
                 LOGGER.info("Created new server pipeline");
 
@@ -338,8 +338,8 @@ public class ApplicationContext {
         return bootstrap;
     }
 
-    private ChannelPipeline createPipeLine() throws NoSuchAlgorithmException, InvalidKeySpecException,
-    NoSuchProviderException, IOException {
+    private ChannelPipeline createPipeLine()
+            throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, IOException {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("oslpEncoder", new OslpEncoder());
@@ -356,14 +356,14 @@ public class ApplicationContext {
     }
 
     @Bean
-    public OslpDecoder oslpDecoder() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-    NoSuchProviderException {
+    public OslpDecoder oslpDecoder()
+            throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
         return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
     }
 
     @Bean
-    public PublicKey publicKey() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException,
-    NoSuchProviderException {
+    public PublicKey publicKey()
+            throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, NoSuchProviderException {
         return CertificateHelper.createPublicKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_VERIFYKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
@@ -371,8 +371,8 @@ public class ApplicationContext {
     }
 
     @Bean
-    public PrivateKey privateKey() throws IOException, InvalidKeySpecException, NoSuchAlgorithmException,
-    NoSuchProviderException {
+    public PrivateKey privateKey()
+            throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
         return CertificateHelper.createPrivateKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
@@ -483,8 +483,8 @@ public class ApplicationContext {
 
     @Bean
     public Boolean checkboxDeviceRegistrationValue() {
-        return Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_CHECKBOX_DEVICE_REGISTRATION_VALUE));
+        return Boolean
+                .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_DEVICE_REGISTRATION_VALUE));
     }
 
     @Bean
@@ -505,8 +505,13 @@ public class ApplicationContext {
 
     @Bean
     public Boolean checkboxEventNotificationValue() {
-        return Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE));
+        return Boolean
+                .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE));
+    }
+
+    @Bean
+    public String firmwareVersion() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_VERSION);
     }
 
     @PreDestroy
