@@ -197,29 +197,6 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And the M-Bus device "TESTG102400000001" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
     And the M-Bus device "TESTG102400000002" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "9"
 
-  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
-  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  Scenario: Couple a connected and bound G-meter "TESTG100261510717" to E-meter "TEST1024000000001" after an alarm on channel 1
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 |         3 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
-    And a dlms device
-      | DeviceIdentification           | TESTG101205673117 |
-      | DeviceType                     | SMART_METER_G     |
-      | MbusIdentificationNumber       |          12056731 |
-      | MbusPrimaryAddress             |                 9 |
-      | MbusManufacturerIdentification | LGB               |
-      | MbusVersion                    |                66 |
-      | MbusDeviceTypeIdentification   |                 3 |
-    When the "New M-Bus device discovered on channel 1" alarm is received from "TEST1024000000001"
-    And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
-
   Scenario: Couple unknown G-meter to an E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -296,7 +273,6 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | 8 |        66 |
       | 9 |         3 |
 
-
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: ITG corresponds with the device attributeID 7: 9863
   Scenario: Couple unbound G-meter "TESTG101205673101" without a primary address to E-meter "TEST1024000000001" on a channel 1
@@ -318,7 +294,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusDeviceTypeIdentification   |                 3 |
     When the Couple G-meter "TESTG101205673101" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
-    And the M-Bus device "TESTG101205673101" is coupled to device "TEST1024000000001" on M-Bus channel "1" 
+    And the M-Bus device "TESTG101205673101" is coupled to device "TEST1024000000001" on M-Bus channel "1"
     And the values for classid 72 obiscode "0-1:24.1.255" on device simulator "TEST1024000000001" are
       | 6 | 302343985 |
       | 7 |      9863 |
@@ -433,3 +409,29 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | 7 |     12514 |
       | 8 |        66 |
       | 9 |         3 |
+
+  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
+  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
+  Scenario: Couple a connected and bound G-meter "TESTG100261510717" to E-meter "TEST1024000000001" on channel 1
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
+      | 5 |         3 |
+      | 6 | 302343985 |
+      | 7 |     12514 |
+      | 8 |        66 |
+      | 9 |         3 |
+    And a dlms device
+      | DeviceIdentification           | TESTG101205673117 |
+      | DeviceType                     | SMART_METER_G     |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusPrimaryAddress             |                 9 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
+    When the Couple M-Bus Device By Channel request is received
+      | DeviceIdentification | TEST1024000000001 |
+      | Channel              |                 1 |
+    Then the Couple M-Bus Device By Channel response is "OK"
+    And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
