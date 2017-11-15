@@ -25,7 +25,7 @@ Feature: SmartMetering - Configuration - M-Bus encryption key status
       | DeviceIdentification | TESTG102400000001 |
     Then the get M-Bus encryption key status request should return an exception
     And a SOAP fault should have been returned
-      | Code         |                                                                218 |
+      | Code         |                                                                220 |
       | Component    | DOMAIN_SMART_METERING                                              |
       | Message      | GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE                             |
       | InnerMessage | Meter for gas reads should have an energy meter as gateway device. |
