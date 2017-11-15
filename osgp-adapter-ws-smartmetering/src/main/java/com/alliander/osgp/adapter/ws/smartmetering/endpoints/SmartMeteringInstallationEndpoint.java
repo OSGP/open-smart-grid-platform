@@ -27,6 +27,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDevice
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncRequest;
@@ -281,6 +285,87 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    /**
+     * @param organisationIdentification
+     *            the organization requesting the coupling of devices
+     * @param request
+     *            the CoupleMbusDeviceByChannelRequest containing the
+     *            gatewayDeviceIdentification and channel
+     * @param messagePriority
+     *            the priority of the message
+     * @param scheduleTime
+     *            the time the request is scheduled for
+     * @return a response containing a correlationUid and the
+     *         deviceIdentification
+     * @throws OsgpException
+     */
+    @PayloadRoot(localPart = "CoupleMbusDeviceByChannelRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public CoupleMbusDeviceByChannelAsyncResponse coupleMbusDeviceByChannel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final CoupleMbusDeviceByChannelRequest request,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
+
+        final String deviceIdentification = request.getDeviceIdentification();
+        final short channel = request.getCoupleMbusDeviceByChannelRequestData().getChannel();
+        LOGGER.info("Incoming CoupleMbusDeviceByChannelRequest for device: {} and channel {}.", deviceIdentification,
+                channel);
+
+        CoupleMbusDeviceByChannelAsyncResponse response = null;
+        try {
+            response = new CoupleMbusDeviceByChannelAsyncResponse();
+
+            final String correlationUid = this.installationService.enqueueCoupleMbusDeviceByChannelRequest(
+                    organisationIdentification, deviceIdentification,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class), channel);
+
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(deviceIdentification);
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            LOGGER.error("Exception while coupling on channel: {} for device: {} for organisation {}.", channel,
+                    deviceIdentification, organisationIdentification, e);
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    /**
+     * @param request
+     *            the request message containing the correlationUid
+     * @return the response message containing the OsgpResultType and optional a
+     *         message
+     * @throws OsgpException
+     */
+    @PayloadRoot(localPart = "CoupleMbusDeviceByChannelAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public CoupleMbusDeviceByChannelResponse getCoupleMbusDeviceByChannelResponse(
+            @RequestPayload final CoupleMbusDeviceByChannelAsyncRequest request) throws OsgpException {
+
+        CoupleMbusDeviceByChannelResponse response = null;
+        try {
+            response = new CoupleMbusDeviceByChannelResponse();
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "Couple Mbus Device By Channel");
+
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setResultString((String) meterResponseData.getMessageData());
+            }
+            response = this.installationMapper.map(meterResponseData.getMessageData(),
+                    CoupleMbusDeviceByChannelResponse.class);
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
 
         } catch (final Exception e) {
             this.handleException(e);

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GenerateAndReplaceKeysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsGasRequest;
@@ -50,6 +51,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
@@ -57,6 +59,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalenda
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GenerateAndReplaceKeysRequestData;
@@ -101,6 +104,9 @@ public class ActionMapperService {
 
     @Autowired
     private MonitoringMapper monitoringMapper;
+
+    @Autowired
+    private InstallationMapper installationMapper;
 
     private static Map<Class<?>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
     private static Map<Class<?>, Class<? extends ActionRequest>> CLASS_MAP = new HashMap<>();
@@ -215,6 +221,10 @@ public class ActionMapperService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(ConfigureDefinableLoadProfileRequest.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelRequest.class, this.installationMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
+                this.installationMapper);
     }
 
     /**
@@ -288,6 +298,9 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData.class,
                 DefinableLoadProfileConfigurationData.class);
+        CLASS_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
+                CoupleMbusDeviceByChannelRequestData.class);
 
         CLASS_MAP.put(SetSpecialDaysRequest.class, SpecialDaysRequestData.class);
         CLASS_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterData.class);
@@ -319,6 +332,7 @@ public class ActionMapperService {
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData.class);
         CLASS_MAP.put(GenerateAndReplaceKeysRequest.class, GenerateAndReplaceKeysRequestData.class);
         CLASS_MAP.put(ConfigureDefinableLoadProfileRequest.class, DefinableLoadProfileConfigurationData.class);
+        CLASS_MAP.put(CoupleMbusDeviceByChannelRequest.class, CoupleMbusDeviceByChannelRequestData.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {

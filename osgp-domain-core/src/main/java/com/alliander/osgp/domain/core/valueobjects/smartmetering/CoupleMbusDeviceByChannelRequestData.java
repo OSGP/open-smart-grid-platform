@@ -7,25 +7,16 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-import java.io.Serializable;
-
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class GetMBusDeviceOnChannelRequestData implements Serializable, ActionRequest {
+public class CoupleMbusDeviceByChannelRequestData implements ActionRequest {
 
-    private static final long serialVersionUID = -1330890838864967863L;
+    private static final long serialVersionUID = 1522902244442651253L;
+    private short channel;
 
-    private final String gatewayDeviceIdentification;
-    private final short channel;
-
-    public GetMBusDeviceOnChannelRequestData(final String gatewayDeviceIdentification, final short channel) {
-        this.gatewayDeviceIdentification = gatewayDeviceIdentification;
+    public CoupleMbusDeviceByChannelRequestData(final short channel) {
         this.channel = channel;
-    }
-
-    public String getGatewayDeviceIdentification() {
-        return this.gatewayDeviceIdentification;
     }
 
     public short getChannel() {
@@ -39,7 +30,7 @@ public class GetMBusDeviceOnChannelRequestData implements Serializable, ActionRe
 
     @Override
     public DeviceFunction getDeviceFunction() {
-        return DeviceFunction.GET_M_BUS_DEVICE_ON_CHANNEL;
+        return DeviceFunction.COUPLE_MBUS_DEVICE_BY_CHANNEL;
     }
 
 }

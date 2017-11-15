@@ -27,6 +27,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FaultResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
@@ -43,6 +44,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
@@ -98,6 +100,7 @@ public class ActionMapperResponseService {
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
         classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);
         classMap.put(ProfileGenericDataResponseDto.class, ProfileGenericDataResponse.class);
+        classMap.put(CoupleMbusDeviceByChannelResponseDto.class, CoupleMbusDeviceByChannelResponse.class);
     }
 
     /**
@@ -120,6 +123,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetConfigurationObjectResponseDto.class, this.configurationMapper);
         classToMapperMap.put(ProfileGenericDataResponseDto.class, this.monitoringMapper);
+        classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
     }
 
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)
