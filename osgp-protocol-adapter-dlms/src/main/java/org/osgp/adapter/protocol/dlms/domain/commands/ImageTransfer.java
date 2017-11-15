@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +43,9 @@ class ImageTransfer {
     private static final String EXCEPTION_MSG_IMAGE_TRANSFER_STATUS_NOT_READ = "Image transfer status could not be read.";
     private static final String EXCEPTION_MSG_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER_NOT_READ = "Image first not transferred block number could not be read.";
     private static final String EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED = "Image transfer has not been initiated.";
-    private static final String EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK = "Properties of image to activate or not as excepted.";
+    private static final String EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_CALLED = "Image activate could not be called.";
+    private static final String EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK = "Properties of image to activate are not as excepted.";
+    private static final String EXCEPTION_MSG_IMAGE_ACTIVATION_FAILED = "Image activation failed.";
     private static final String EXCEPTION_MSG_ACTIVATION_TAKING_TOO_LONG = "Activation is taking too long.";
     private static final String EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_SUCCESS = "Image activate could not be called successfully.";
 
@@ -129,7 +132,7 @@ class ImageTransfer {
      */
     public void initiateImageTransfer() throws ProtocolAdapterException {
         final List<DataObject> params = new ArrayList<>();
-        params.add(DataObject.newOctetStringData(this.imageIdentifier.getBytes()));
+        params.add(DataObject.newOctetStringData(this.imageIdentifier.getBytes(StandardCharsets.UTF_8)));
         params.add(DataObject.newUInteger32Data(this.getImageSize()));
 
         this.connector.getDlmsMessageListener().setDescription("ImageTransfer call image_transfer_initiate "
@@ -225,31 +228,51 @@ class ImageTransfer {
                         + JdlmsObjectToStringUtil.describeAttributes(
                                 this.imageTransferCosem.createAttributeAddress(Attribute.IMAGE_TO_ACTIVATE_INFO)));
 
-        final DataObject imageTransferStatusData = this.imageTransferCosem
+        final DataObject imageToActivateInfoData = this.imageTransferCosem
                 .readAttribute(Attribute.IMAGE_TO_ACTIVATE_INFO);
 
-        if (imageTransferStatusData.getType() != Type.ARRAY) {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
+        if (imageToActivateInfoData.getType() != Type.ARRAY) {
+            /*
+             * This is an optional check, so only log an error about the
+             * situation encountered, leaving the flow to continue, since image
+             * verification should already have been successful.
+             */
+            LOGGER.error(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
+            return true;
         }
 
-        boolean imageWasReturned = false;
-        @SuppressWarnings("unchecked")
-        final List<DataObject> images = (List<DataObject>) imageTransferStatusData.getValue();
-        for (final DataObject image : images) {
-            @SuppressWarnings("unchecked")
-            final List<DataObject> imageDetails = (List<DataObject>) image.getValue();
+        final List<DataObject> imageToActivateInfo = imageToActivateInfoData.getValue();
+        for (final DataObject imageToActivateInfoElement : imageToActivateInfo) {
+            final List<DataObject> imageToActivateDetails = imageToActivateInfoElement.getValue();
 
-            // Match image by signature.
-            if (this.isSignature((byte[]) imageDetails.get(2).getValue())) {
-                imageWasReturned = true;
-                // Check image_size
-                if ((Long) imageDetails.get(0).getValue() != this.imageData.length) {
-                    return false;
-                }
+            final long imageToActivateSize = imageToActivateDetails.get(0).getValue();
+            final byte[] imageToActivateIdentificationBytes = imageToActivateDetails.get(1).getValue();
+            final byte[] imageSignature = imageToActivateDetails.get(2).getValue();
+            final String imageToActivateIdentification = new String(imageToActivateIdentificationBytes,
+                    StandardCharsets.UTF_8);
+            if (imageToActivateIdentification.equals(this.imageIdentifier) && this.isSignature(imageSignature)
+                    && imageToActivateSize == this.imageData.length) {
+                LOGGER.info("Found matching image to activate info element (size=" + imageToActivateSize
+                        + ", identification=" + imageToActivateIdentification + ", signature="
+                        + Arrays.toString(imageSignature) + ")");
+                return true;
+            } else {
+                LOGGER.info(
+                        "Retrieved an image to activate info element (size=" + imageToActivateSize + ", identification="
+                                + imageToActivateIdentification + ", signature=" + Arrays.toString(imageSignature)
+                                + ") with value not matching the image being transferred (size=" + this.imageData.length
+                                + ", identification=" + this.imageIdentifier + ", signature="
+                                + Arrays.toString(Arrays.copyOf(this.imageData, imageSignature.length)) + ").");
             }
         }
 
-        return imageWasReturned;
+        /*
+         * This is an optional check, so just return true, leaving the flow to
+         * continue, since image verification should already have been
+         * successful.
+         */
+        LOGGER.warn("No image to activate info element matched the firmware image being transferred.");
+        return true;
     }
 
     /**
@@ -266,7 +289,7 @@ class ImageTransfer {
         final MethodResultCode imageActivate = this.imageTransferCosem.callMethod(Method.IMAGE_ACTIVATE,
                 DataObject.newInteger8Data((byte) 0));
         if (imageActivate == null) {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
+            throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_CALLED);
         }
 
         if (imageActivate == MethodResultCode.TEMPORARY_FAILURE) {
@@ -311,7 +334,7 @@ class ImageTransfer {
         }
 
         if (status == ImageTransferStatus.ACTIVATION_FAILED.getValue()) {
-            throw new ImageTransferException(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
+            throw new ImageTransferException(EXCEPTION_MSG_IMAGE_ACTIVATION_FAILED);
         }
 
         if (status == ImageTransferStatus.ACTIVATION_INITIATED.getValue()) {
