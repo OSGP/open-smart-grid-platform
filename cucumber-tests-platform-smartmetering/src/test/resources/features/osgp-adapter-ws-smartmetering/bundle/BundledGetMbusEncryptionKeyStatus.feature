@@ -1,4 +1,4 @@
-@SmartMetering @Platform @TestThis
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - GetMbusEncryptionKeyStatus
   As a grid operator 
   I want to retrieve the encryption key status for an M-Bus device from a meter via a bundle request
