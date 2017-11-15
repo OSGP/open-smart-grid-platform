@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import org.osgp.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.osgp.adapter.protocol.dlms.domain.commands.CoupleMBusDeviceCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.CoupleMbusDeviceByChannelCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.DeCoupleMBusDeviceCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetMBusDeviceOnChannelCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -19,10 +20,10 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
@@ -47,6 +48,9 @@ public class InstallationService {
 
     @Autowired
     private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
+
+    @Autowired
+    private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
     // === ADD METER ===
     public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
@@ -94,9 +98,10 @@ public class InstallationService {
         return this.coupleMBusDeviceCommandExecutor.execute(conn, device, mbusChannelElements);
     }
 
-    public ChannelElementValuesDto getMBusDeviceOnChannel(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GetMBusDeviceOnChannelRequestDataDto requestDataDto) throws ProtocolAdapterException {
-        return this.getMBusDeviceOnChannelCommandExecutor.execute(conn, device, requestDataDto);
+    public CoupleMbusDeviceByChannelResponseDto coupleMbusDeviceByChannel(final DlmsConnectionHolder conn,
+            final DlmsDevice device, final CoupleMbusDeviceByChannelRequestDataDto requestDto)
+            throws ProtocolAdapterException {
+        return this.coupleMbusDeviceByChannelCommandExecutor.execute(conn, device, requestDto);
     }
 
     public DeCoupleMbusDeviceResponseDto deCoupleMbusDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
