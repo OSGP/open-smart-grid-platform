@@ -149,8 +149,26 @@
         type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="OsgpIpAddress" type="tns:IPType"
         minOccurs="0" maxOccurs="1" />
-      <xsd:element name="OsgpPortNumber" type="xsd:int"
+      <xsd:element name="OsgpPortNumber" minOccurs="0" maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="1"/>
+              <xsd:maxInclusive value="65535"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>        
+      <xsd:element name="NtpHost" type="xsd:string"
         minOccurs="0" maxOccurs="1" />
+      <xsd:element name="NtpEnabled" type="xsd:boolean"
+        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="NtpSyncInterval" minOccurs="0" maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="1"/>
+              <xsd:maxInclusive value="65535"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>        
       <xsd:element name="TestButtonEnabled" type="xsd:boolean"
         minOccurs="0" maxOccurs="1" />
       <xsd:element name="AutomaticSummerTimingEnabled" type="xsd:boolean"

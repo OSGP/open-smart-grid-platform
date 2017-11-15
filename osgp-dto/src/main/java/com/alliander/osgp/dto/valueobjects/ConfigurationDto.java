@@ -23,7 +23,7 @@ public class ConfigurationDto implements Serializable {
 
     private final DaliConfigurationDto daliConfiguration;
 
-    private final RelayConfigurationDto relayConfiguration;
+    private RelayConfigurationDto relayConfiguration;
 
     private final Integer shortTermHistoryIntervalMinutes;
 
@@ -56,6 +56,12 @@ public class ConfigurationDto implements Serializable {
     private String osgpIpAddress;
 
     private Integer osgpPortNumber;
+
+    private String ntpHost;
+
+    private Boolean ntpEnabled;
+
+    private Integer ntpSyncInterval;
 
     private Boolean testButtonEnabled;
 
@@ -103,6 +109,10 @@ public class ConfigurationDto implements Serializable {
 
     public RelayConfigurationDto getRelayConfiguration() {
         return this.relayConfiguration;
+    }
+
+    public void setRelayConfiguration(final RelayConfigurationDto relayConfiguration) {
+        this.relayConfiguration = relayConfiguration;
     }
 
     public Integer getShortTermHistoryIntervalMinutes() {
@@ -208,6 +218,30 @@ public class ConfigurationDto implements Serializable {
 
     public void setOsgpPortNumber(final Integer osgpPortNumber) {
         this.osgpPortNumber = osgpPortNumber;
+    }
+
+    public String getNtpHost() {
+        return this.ntpHost;
+    }
+
+    public void setNtpHost(final String ntpHost) {
+        this.ntpHost = ntpHost;
+    }
+
+    public Boolean getNtpEnabled() {
+        return this.ntpEnabled;
+    }
+
+    public void setNtpEnabled(final Boolean ntpEnabled) {
+        this.ntpEnabled = ntpEnabled;
+    }
+
+    public Integer getNtpSyncInterval() {
+        return this.ntpSyncInterval;
+    }
+
+    public void setNtpSyncInterval(final Integer ntpSyncInterval) {
+        this.ntpSyncInterval = ntpSyncInterval;
     }
 
     public Boolean isTestButtonEnabled() {
