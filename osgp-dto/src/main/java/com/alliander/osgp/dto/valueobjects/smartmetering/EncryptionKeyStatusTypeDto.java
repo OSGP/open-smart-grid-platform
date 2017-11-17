@@ -10,7 +10,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 public enum EncryptionKeyStatusTypeDto {
     NO_ENCRYPTION_KEY,
     ENCRYPTION_KEY_SET,
-    ENCRYPTION_KEY_TRANSFERED,
+    ENCRYPTION_KEY_TRANSFERRED,
     ENCRYPTION_KEY_SET_AND_TRANSFERRED,
     ENCRYPTION_KEY_IN_USE;
 }
