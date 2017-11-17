@@ -1110,8 +1110,8 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="NO_ENCRYPTION_KEY" />
       <xsd:enumeration value="ENCRYPTION_KEY_SET" />
-      <xsd:enumeration value="ENCRYPTION_KEY_TRANSFERED" />
-      <xsd:enumeration value="ENCRYPTION_KEY_SET_AND_TRANSFERED" />
+      <xsd:enumeration value="ENCRYPTION_KEY_TRANSFERRED" />
+      <xsd:enumeration value="ENCRYPTION_KEY_SET_AND_TRANSFERRED" />
       <xsd:enumeration value="ENCRYPTION_KEY_IN_USE" />
     </xsd:restriction>
   </xsd:simpleType>
