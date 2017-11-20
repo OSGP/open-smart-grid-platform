@@ -7,10 +7,10 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ public final class Iec61850EngineCommandFactory implements RtuReadCommandFactory
     private static final int SCHEDULE_ID_END = 4;
 
     private static final Map<String, RtuReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
-    private static final List<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new ArrayList<>();
+    private static final Set<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new HashSet<>();
 
     static {
         initializeRtuCommandMap();
