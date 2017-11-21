@@ -165,7 +165,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final NotificationType notificationType) {
 
-        LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType);
+        LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType, e);
         this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
                 correlationUid, e.getMessage(), notificationType);
     }
