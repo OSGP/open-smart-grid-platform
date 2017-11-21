@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.core.GlueBase;
@@ -50,12 +51,20 @@ public class DeviceFirmwareFileSteps extends GlueBase {
     public void aDeviceFirmware(final Map<String, String> settings) throws Throwable {
 
         // Get the device
-        final Device device = this.deviceRepository.findByDeviceIdentification(
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        
-        // Get the latest firmware
-        final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findAll();
-        final FirmwareFile firmwareFile = firmwareFiles.get(firmwareFiles.size() - 1);
+        final Device device = this.deviceRepository.findByDeviceIdentification(getString(settings,
+                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        // Get the firmware file
+        FirmwareFile firmwareFile;
+        final String firmwareFileName = getString(settings, PlatformKeys.FIRMWARE_FILENAME);
+        if (StringUtils.isEmpty(firmwareFileName)) {
+            final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findAll();
+            firmwareFile = firmwareFiles.get(firmwareFiles.size() - 1);
+        } else {
+            final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findByFilename(firmwareFileName);
+            firmwareFile = firmwareFiles.get(0);
+        }
+
         final Date installationDate = getDateTime(getString(settings, PlatformKeys.FIRMWARE_INSTALLATION_DATE,
                 PlatformDefaults.FIRMWARE_INSTALLATION_DATE)).toDate();
         final String installedBy = getString(settings, PlatformKeys.FIRMWARE_INSTALLED_BY,
