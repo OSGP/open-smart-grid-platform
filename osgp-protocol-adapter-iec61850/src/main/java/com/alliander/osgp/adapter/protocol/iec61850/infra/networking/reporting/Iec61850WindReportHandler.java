@@ -9,7 +9,9 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,8 +31,8 @@ public class Iec61850WindReportHandler implements Iec61850ReportHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850WindReportHandler.class);
 
     private static final String SYSTEM_TYPE = "WIND";
-    private static final List<String> NODES_USING_ID_LIST = new ArrayList<>();
-    private static final List<String> COMPOSITE_NODES = Arrays.asList(new String[] { "W" });
+    private static final Set<String> NODES_USING_ID_LIST = new HashSet<>();
+    private static final Set<String> COMPOSITE_NODES = new HashSet<>(Arrays.asList(new String[] { "W" }));
 
     private static final Pattern NODE_PATTERN = Pattern
             .compile("\\A(.*)WIND([1-9]\\d*+)/(LLN0|DRCC|DGEN|MMXU|GGIO)([1-9]\\d*+)?\\.(.*)\\Z");

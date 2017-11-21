@@ -8,7 +8,9 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,7 @@ public class Iec61850GasFurnaceReportHandler implements Iec61850ReportHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850GasFurnaceReportHandler.class);
 
     private static final String SYSTEM_TYPE = "GAS_FURNACE";
-    private static final List<String> NODES_USING_ID_LIST = new ArrayList<>();
+    private static final Set<String> NODES_USING_ID_LIST = new HashSet<>();
 
     static {
         intializeNodesUsingIdList();
