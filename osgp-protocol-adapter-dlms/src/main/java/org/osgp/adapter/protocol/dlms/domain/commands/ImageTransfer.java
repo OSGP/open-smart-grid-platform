@@ -139,7 +139,12 @@ class ImageTransfer {
                 + params.toString() + ", call method: " + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
                         .createMethodParameter(Method.IMAGE_TRANSFER_INITIATE, DataObject.newStructureData(params))));
 
-        this.imageTransferCosem.callMethod(Method.IMAGE_TRANSFER_INITIATE, DataObject.newStructureData(params));
+        final MethodResultCode resultCode = this.imageTransferCosem.callMethod(Method.IMAGE_TRANSFER_INITIATE,
+                DataObject.newStructureData(params));
+
+        if (resultCode != MethodResultCode.SUCCESS) {
+            LOGGER.warn("Method IMAGE_TRANSFER_INITIATE gave result {}", resultCode.name());
+        }
     }
 
     /**
