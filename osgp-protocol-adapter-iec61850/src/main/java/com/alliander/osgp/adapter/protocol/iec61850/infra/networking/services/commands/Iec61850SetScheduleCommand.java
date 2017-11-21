@@ -86,12 +86,25 @@ public class Iec61850SetScheduleCommand {
                                     + MAX_NUMBER_OF_SCHEDULE_ENTRIES + " is not possible.");
                         }
 
+                        // Get the logical node for the relay index.
                         final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(relayIndex);
+                        // Check if the relay can be operated, if not, enable
+                        // operation for the current relay. This is needed to
+                        // ensure that the switch schedule which will be written
+                        // to the device can be executed.
+                        Iec61850SetScheduleCommand.this.enableOperationOfRelay(deviceConnection, iec61850Client,
+                                deviceMessageLog, logicalNode, relayIndex);
+
+                        // Get the logical node and read all the values for the
+                        // schedule of the current relay.
                         final NodeContainer schedule = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                                 logicalNode, DataAttribute.SCHEDULE, Fc.CF);
                         iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
                                 schedule.getFcmodelNode());
 
+                        // Write the schedule entries of the switch schedule to
+                        // the logical node of the schedule for the current
+                        // relay.
                         for (int i = 0; i < numberOfScheduleEntries; i++) {
 
                             LOGGER.info("Writing {} schedule entry {} for relay {}", tariffOrLight, i + 1, relayIndex);
@@ -444,6 +457,30 @@ public class Iec61850SetScheduleCommand {
                             SubDataAttribute.SCHEDULE_ENABLE, Boolean.toString(false));
                 }
             }
+        }
+    }
+
+    private void enableOperationOfRelay(final DeviceConnection deviceConnection, final Iec61850Client iec61850Client,
+            final DeviceMessageLog deviceMessageLog, final LogicalNode logicalNode, final Integer index)
+            throws NodeException {
+        // Check if CfSt.enbOper [CF] is set to true. If it is
+        // not set to true, the relay can not be operated.
+        final NodeContainer masterControl = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING, logicalNode,
+                DataAttribute.MASTER_CONTROL, Fc.CF);
+        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                masterControl.getFcmodelNode());
+
+        final BdaBoolean enbOper = masterControl.getBoolean(SubDataAttribute.ENABLE_OPERATION);
+        if (enbOper.getValue()) {
+            LOGGER.info("masterControl.enbOper is true, switching of relay {} is enabled", index);
+        } else {
+            LOGGER.info("masterControl.enbOper is false, switching of relay {} is disabled", index);
+            // Set the value to true.
+            masterControl.writeBoolean(SubDataAttribute.ENABLE_OPERATION, true);
+            LOGGER.info("set masterControl.enbOper to true to enable switching of relay {}", index);
+
+            deviceMessageLog.addVariable(logicalNode, DataAttribute.MASTER_CONTROL, Fc.CF,
+                    SubDataAttribute.ENABLE_OPERATION, Boolean.toString(true));
         }
     }
 }
