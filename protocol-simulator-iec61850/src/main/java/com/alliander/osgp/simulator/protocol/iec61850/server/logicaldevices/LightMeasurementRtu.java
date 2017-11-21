@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public class LightMeasurementRtu extends LogicalDevice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LightMeasurementRtu.class);
-    private static final String SPGGIO1_IND_D = "SPGGIO1.Ind.d";
 
     public LightMeasurementRtu(final String physicalDeviceName, final String logicalDeviceName,
             final ServerModel serverModel) {
@@ -39,17 +38,17 @@ public class LightMeasurementRtu extends LogicalDevice {
     }
 
     @Override
-    public BasicDataAttribute getAttributeAndSetValue(final String node, final String value) {
+    public BasicDataAttribute getAttributeAndSetValue(final Node node, final String value) {
         // Not needed for the light measurement RTU
         return null;
     }
 
     @Override
-    public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final String node,
+    public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final Node node,
             final BasicDataAttribute value) {
         final List<BasicDataAttribute> values = new ArrayList<>();
 
-        if (SPGGIO1_IND_D.equals(node)) {
+        if (Node.SPGGIO1_IND_D.equals(node)) {
             LOGGER.info("Update the values for the light sensors");
 
             final byte[] newValue = ((BdaVisibleString) value).getValue();
@@ -67,7 +66,7 @@ public class LightMeasurementRtu extends LogicalDevice {
     }
 
     @Override
-    protected Fc getFunctionalConstraint(final String node) {
+    protected Fc getFunctionalConstraint(final Node node) {
         // Not needed for the light measurement RTU
         return null;
     }
@@ -86,15 +85,19 @@ public class LightMeasurementRtu extends LogicalDevice {
     private List<BasicDataAttribute> setGeneralIO(final byte[] bdaValue) {
         final List<BasicDataAttribute> values = new ArrayList<>();
 
-        for (short lmIndex = 1; lmIndex <= 4; lmIndex++) {
-            boolean stVal = false;
-            if (bdaValue != null && bdaValue.length >= lmIndex) {
-                stVal = bdaValue[lmIndex - 1] - 48 > 0;
-            }
-            final BasicDataAttribute bda = this.setBoolean("SPGGIO" + lmIndex + ".Ind.stVal", Fc.ST, stVal);
-            values.add(bda);
-        }
-
+        values.add(this.setBoolean(Node.SPGGIO1_IND_STVAL, Fc.ST, this.getStVal(bdaValue, 1)));
+        values.add(this.setBoolean(Node.SPGGIO2_IND_STVAL, Fc.ST, this.getStVal(bdaValue, 2)));
+        values.add(this.setBoolean(Node.SPGGIO3_IND_STVAL, Fc.ST, this.getStVal(bdaValue, 3)));
+        values.add(this.setBoolean(Node.SPGGIO4_IND_STVAL, Fc.ST, this.getStVal(bdaValue, 4)));
         return values;
+    }
+
+    private boolean getStVal(final byte[] bdaValue, final int lmIndex) {
+
+        boolean stVal = false;
+        if (bdaValue != null && bdaValue.length >= lmIndex) {
+            stVal = bdaValue[lmIndex - 1] - 48 > 0;
+        }
+        return stVal;
     }
 }
