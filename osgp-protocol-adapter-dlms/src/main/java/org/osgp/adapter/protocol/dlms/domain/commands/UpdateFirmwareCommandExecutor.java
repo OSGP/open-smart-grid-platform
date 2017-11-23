@@ -96,10 +96,8 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         if (!transfer.imageTransferEnabled()) {
             transfer.setImageTransferEnabled(true);
         }
-
-        if (transfer.shouldInitiateTransfer()) {
-            transfer.initiateImageTransfer();
-        }
+        
+        transfer.initiateImageTransfer();
     }
 
     private void transfer(final ImageTransfer transfer) throws ProtocolAdapterException {
