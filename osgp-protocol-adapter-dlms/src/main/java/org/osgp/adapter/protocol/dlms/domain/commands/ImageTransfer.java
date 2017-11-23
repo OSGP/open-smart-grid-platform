@@ -517,13 +517,13 @@ class ImageTransfer {
             this.activationStatusCheckTimeout = activationStatusCheckTimeout;
         }
 
-		public int getInitiationStatusCheckInterval() {
-			return this.initiationStatusCheckInterval;
-		}
+        public int getInitiationStatusCheckInterval() {
+            return this.initiationStatusCheckInterval;
+        }
 
-		public void setInitiationStatusCheckInterval(int initiationStatusCheckInterval) {
-			this.initiationStatusCheckInterval = initiationStatusCheckInterval;
-		}
+        public void setInitiationStatusCheckInterval(int initiationStatusCheckInterval) {
+            this.initiationStatusCheckInterval = initiationStatusCheckInterval;
+        }
     
         public int getInitiationStatusCheckTimeout() {
         	return this.initiationStatusCheckTimeout;
