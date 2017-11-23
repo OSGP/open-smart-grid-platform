@@ -436,7 +436,11 @@ class ImageTransfer {
                 + params.toString() + ", call method: " + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
                         .createMethodParameter(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params))));
 
-        this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params));
+        final MethodResultCode resultCode = this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params));
+
+        if (resultCode != MethodResultCode.SUCCESS) {
+            LOGGER.info("Method IMAGE_BLOCK_TRANSFER gave result {} for block {}", resultCode.name(), blockNumber);
+        }
     }
 
     private void logUploadPercentage(final int block, final int totalBlocks) {
