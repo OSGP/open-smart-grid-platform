@@ -100,7 +100,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         transfer.initiateImageTransfer();
     }
 
-    private void transfer(final ImageTransfer transfer) throws ProtocolAdapterException {
+    private void transfer(final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
         if (transfer.shouldTransferImage()) {
             transfer.transferImageBlocks();
             transfer.transferMissingImageBlocks();

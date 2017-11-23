@@ -78,16 +78,16 @@ class ImageTransfer {
      * @return Should initiate transfer
      * @throws ProtocolAdapterException
      */
-    public boolean shouldInitiateTransfer() throws ProtocolAdapterException {
+    public boolean shouldInitiateTransfer() throws ProtocolAdapterException, ImageTransferException {
         return !this.isImageTransferStatusIn(ImageTransferStatus.INITIATED, ImageTransferStatus.VERIFICATION_INITIATED,
                 ImageTransferStatus.ACTIVATION_INITIATED);
     }
 
-    public boolean shouldTransferImage() throws ProtocolAdapterException {
+    public boolean shouldTransferImage() throws ProtocolAdapterException, ImageTransferException {
         return this.isImageTransferStatusIn(ImageTransferStatus.INITIATED);
     }
 
-    public boolean imageIsVerified() throws ProtocolAdapterException {
+    public boolean imageIsVerified() throws ProtocolAdapterException, ImageTransferException {
         return this.isImageTransferStatusIn(ImageTransferStatus.VERIFICATION_SUCCESSFUL,
                 ImageTransferStatus.ACTIVATION_INITIATED, ImageTransferStatus.ACTIVATION_SUCCESSFUL,
                 ImageTransferStatus.ACTIVATION_FAILED);
@@ -156,7 +156,7 @@ class ImageTransfer {
      *
      * @throws ProtocolAdapterException
      */
-    public void transferImageBlocks() throws ProtocolAdapterException {
+    public void transferImageBlocks() throws ProtocolAdapterException, ImageTransferException {
         if (!this.shouldTransferImage()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED);
         }
@@ -307,6 +307,25 @@ class ImageTransfer {
         }
     }
 
+    private void waitForImageInitiation() throws ProtocolAdapterException, ImageTransferException {
+        final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
+                ImageTransferStatus.INITIATED, this.properties.getInitiationStatusCheckInterval(),
+                this.properties.getInitiationStatusCheckTimeout()));
+
+        int status;
+        try {
+            status = newStatus.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ProtocolAdapterException("", e);
+        }
+
+        if (status == ImageTransferStatus.NOT_INITIATED.getValue()) {
+            throw new ImageTransferException(EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED);
+        }
+
+        return;
+    }
+    
     private void waitForImageVerification() throws ProtocolAdapterException, ImageTransferException {
         final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
                 ImageTransferStatus.VERIFICATION_INITIATED, this.properties.getVerificationStatusCheckInterval(),
@@ -394,9 +413,12 @@ class ImageTransfer {
         return ((Long) imageFirstNotReadBlockNumberData.getValue()).intValue();
     }
 
-    private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws ProtocolAdapterException {
+    private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws ProtocolAdapterException, ImageTransferException {
         final int currentStatus = this.getImageTransferStatus();
         for (final ImageTransferStatus status : statuses) {
+        	if(status == ImageTransferStatus.INITIATED) {
+        		this.waitForImageInitiation();
+        	}
             if (currentStatus == status.getValue()) {
                 return true;
             }
@@ -473,12 +495,14 @@ class ImageTransfer {
         private int verificationStatusCheckTimeout;
         private int activationStatusCheckInterval;
         private int activationStatusCheckTimeout;
+        private int initiationStatusCheckInterval;
+        private int initiationStatusCheckTimeout;
 
         public int getVerificationStatusCheckInterval() {
             return this.verificationStatusCheckInterval;
         }
 
-        public void setVerificationStatusCheckInterval(final int verificationStatusCheckInterval) {
+		public void setVerificationStatusCheckInterval(final int verificationStatusCheckInterval) {
             this.verificationStatusCheckInterval = verificationStatusCheckInterval;
         }
 
@@ -505,6 +529,22 @@ class ImageTransfer {
         public void setActivationStatusCheckTimeout(final int activationStatusCheckTimeout) {
             this.activationStatusCheckTimeout = activationStatusCheckTimeout;
         }
+
+		public int getInitiationStatusCheckInterval() {
+			return this.initiationStatusCheckInterval;
+		}
+
+		public void setInitiationStatusCheckInterval(int initiationStatusCheckInterval) {
+			this.initiationStatusCheckInterval = initiationStatusCheckInterval;
+		}
+    
+        public int getInitiationStatusCheckTimeout() {
+        	return this.initiationStatusCheckTimeout;
+		}
+        
+        public void setInitiationStatusCheckTimeout(int initiationStatusCheckTimeout) {
+			this.initiationStatusCheckTimeout = initiationStatusCheckTimeout;
+		}
     }
 
     private class ImageTransferStatusChangeWatcher implements Callable<Integer> {
