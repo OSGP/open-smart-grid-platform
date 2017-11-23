@@ -71,18 +71,6 @@ class ImageTransfer {
         this.imageTransferCosem = new CosemObjectAccessor(connector, OBIS_CODE, CLASS_ID);
     }
 
-    /**
-     * Call before initiating transfer to make sure the process is not already
-     * enabled and might be resumed.
-     *
-     * @return Should initiate transfer
-     * @throws ProtocolAdapterException
-     */
-    public boolean shouldInitiateTransfer() throws ProtocolAdapterException, ImageTransferException {
-        return !this.isImageTransferStatusIn(ImageTransferStatus.INITIATED, ImageTransferStatus.VERIFICATION_INITIATED,
-                ImageTransferStatus.ACTIVATION_INITIATED);
-    }
-
     public boolean shouldTransferImage() throws ProtocolAdapterException, ImageTransferException {
         return this.isImageTransferStatusIn(ImageTransferStatus.INITIATED);
     }
