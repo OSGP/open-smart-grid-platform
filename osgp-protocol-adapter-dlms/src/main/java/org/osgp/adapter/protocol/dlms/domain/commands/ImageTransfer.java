@@ -297,8 +297,8 @@ class ImageTransfer {
 
     private void waitForImageInitiation() throws ProtocolAdapterException, ImageTransferException {
         final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
-                ImageTransferStatus.INITIATED, this.properties.getInitiationStatusCheckInterval(),
-                this.properties.getInitiationStatusCheckTimeout()));
+                ImageTransferStatus.NOT_INITIATED, this.properties.getInitiationStatusCheckInterval(),
+                this.properties.getInitiationStatusCheckTimeout(), true));
 
         int status;
         try {
@@ -307,7 +307,7 @@ class ImageTransfer {
             throw new ProtocolAdapterException("", e);
         }
 
-        if (status == ImageTransferStatus.NOT_INITIATED.getValue()) {
+        if (status != ImageTransferStatus.INITIATED.getValue()) {
             throw new ImageTransferException(EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED);
         }
 
@@ -402,12 +402,11 @@ class ImageTransfer {
     }
 
     private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws ProtocolAdapterException, ImageTransferException {
-        final int currentStatus = this.getImageTransferStatus();
         for (final ImageTransferStatus status : statuses) {
         	if(status == ImageTransferStatus.INITIATED) {
         		this.waitForImageInitiation();
         	}
-            if (currentStatus == status.getValue()) {
+            if ((this.getImageTransferStatus()) == status.getValue()) {
                 return true;
             }
         }
