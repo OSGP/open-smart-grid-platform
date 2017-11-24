@@ -355,10 +355,11 @@ public class RtuSimulator implements ServerEventListener {
             final String node = matcher.group(2);
 
             final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
-            final List<BasicDataAttribute> updatedAttributes = logicalDevice
-                    .writeValueAndUpdateRelatedAttributes(Node.fromDescription(node), bda);
+            final List<BasicDataAttribute> updatedAttributes = logicalDevice.writeValueAndUpdateRelatedAttributes(node,
+                    bda);
             this.server.setValues(updatedAttributes);
         }
+
     }
 
     @Override

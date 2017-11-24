@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.BdaVisibleString;
-import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.ServerModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +43,11 @@ public class LightMeasurementRtu extends LogicalDevice {
     }
 
     @Override
-    public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final Node node,
+    public List<BasicDataAttribute> writeValueAndUpdateRelatedAttributes(final String node,
             final BasicDataAttribute value) {
         final List<BasicDataAttribute> values = new ArrayList<>();
 
-        if (Node.SPGGIO1_IND_D.equals(node)) {
+        if (Node.SPGGIO1_IND_D.getDescription().equals(node)) {
             LOGGER.info("Update the values for the light sensors");
 
             final byte[] newValue = ((BdaVisibleString) value).getValue();
@@ -65,12 +64,6 @@ public class LightMeasurementRtu extends LogicalDevice {
         return values;
     }
 
-    @Override
-    protected Fc getFunctionalConstraint(final Node node) {
-        // Not needed for the light measurement RTU
-        return null;
-    }
-
     /**
      * Updates the value for the status of the 4 light sensors.
      *
@@ -85,19 +78,16 @@ public class LightMeasurementRtu extends LogicalDevice {
     private List<BasicDataAttribute> setGeneralIO(final byte[] bdaValue) {
         final List<BasicDataAttribute> values = new ArrayList<>();
 
-        values.add(this.setBoolean(Node.SPGGIO1_IND_STVAL, Fc.ST, this.getStVal(bdaValue, 1)));
-        values.add(this.setBoolean(Node.SPGGIO2_IND_STVAL, Fc.ST, this.getStVal(bdaValue, 2)));
-        values.add(this.setBoolean(Node.SPGGIO3_IND_STVAL, Fc.ST, this.getStVal(bdaValue, 3)));
-        values.add(this.setBoolean(Node.SPGGIO4_IND_STVAL, Fc.ST, this.getStVal(bdaValue, 4)));
-        return values;
-    }
-
-    private boolean getStVal(final byte[] bdaValue, final int lmIndex) {
-
-        boolean stVal = false;
-        if (bdaValue != null && bdaValue.length >= lmIndex) {
-            stVal = bdaValue[lmIndex - 1] - 48 > 0;
+        for (short lmIndex = 1; lmIndex <= 4; lmIndex++) {
+            boolean stVal = false;
+            if (bdaValue != null && bdaValue.length >= lmIndex) {
+                stVal = bdaValue[lmIndex - 1] - 48 > 0;
+            }
+            final BasicDataAttribute bda = this.setBoolean(Node.fromDescription("SPGGIO" + lmIndex + ".Ind.stVal"),
+                    stVal);
+            values.add(bda);
         }
-        return stVal;
+
+        return values;
     }
 }
