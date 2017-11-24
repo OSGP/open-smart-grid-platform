@@ -71,23 +71,11 @@ class ImageTransfer {
         this.imageTransferCosem = new CosemObjectAccessor(connector, OBIS_CODE, CLASS_ID);
     }
 
-    /**
-     * Call before initiating transfer to make sure the process is not already
-     * enabled and might be resumed.
-     *
-     * @return Should initiate transfer
-     * @throws ProtocolAdapterException
-     */
-    public boolean shouldInitiateTransfer() throws ProtocolAdapterException {
-        return !this.isImageTransferStatusIn(ImageTransferStatus.INITIATED, ImageTransferStatus.VERIFICATION_INITIATED,
-                ImageTransferStatus.ACTIVATION_INITIATED);
-    }
-
-    public boolean shouldTransferImage() throws ProtocolAdapterException {
+    public boolean shouldTransferImage() throws ProtocolAdapterException, ImageTransferException {
         return this.isImageTransferStatusIn(ImageTransferStatus.INITIATED);
     }
 
-    public boolean imageIsVerified() throws ProtocolAdapterException {
+    public boolean imageIsVerified() throws ProtocolAdapterException, ImageTransferException {
         return this.isImageTransferStatusIn(ImageTransferStatus.VERIFICATION_SUCCESSFUL,
                 ImageTransferStatus.ACTIVATION_INITIATED, ImageTransferStatus.ACTIVATION_SUCCESSFUL,
                 ImageTransferStatus.ACTIVATION_FAILED);
@@ -156,7 +144,7 @@ class ImageTransfer {
      *
      * @throws ProtocolAdapterException
      */
-    public void transferImageBlocks() throws ProtocolAdapterException {
+    public void transferImageBlocks() throws ProtocolAdapterException, ImageTransferException {
         if (!this.shouldTransferImage()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED);
         }
@@ -307,6 +295,25 @@ class ImageTransfer {
         }
     }
 
+    private void waitForImageInitiation() throws ProtocolAdapterException, ImageTransferException {
+        final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
+                ImageTransferStatus.NOT_INITIATED, this.properties.getInitiationStatusCheckInterval(),
+                this.properties.getInitiationStatusCheckTimeout(), true));
+
+        int status;
+        try {
+            status = newStatus.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ProtocolAdapterException("", e);
+        }
+
+        if (status != ImageTransferStatus.INITIATED.getValue()) {
+            throw new ImageTransferException(EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED);
+        }
+
+        return;
+    }
+    
     private void waitForImageVerification() throws ProtocolAdapterException, ImageTransferException {
         final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
                 ImageTransferStatus.VERIFICATION_INITIATED, this.properties.getVerificationStatusCheckInterval(),
@@ -394,10 +401,12 @@ class ImageTransfer {
         return ((Long) imageFirstNotReadBlockNumberData.getValue()).intValue();
     }
 
-    private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws ProtocolAdapterException {
-        final int currentStatus = this.getImageTransferStatus();
+    private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws ProtocolAdapterException, ImageTransferException {
         for (final ImageTransferStatus status : statuses) {
-            if (currentStatus == status.getValue()) {
+        	if(status == ImageTransferStatus.INITIATED) {
+        		this.waitForImageInitiation();
+        	}
+            if ((this.getImageTransferStatus()) == status.getValue()) {
                 return true;
             }
         }
@@ -436,7 +445,11 @@ class ImageTransfer {
                 + params.toString() + ", call method: " + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
                         .createMethodParameter(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params))));
 
-        this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params));
+        final MethodResultCode resultCode = this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params));
+
+        if (resultCode != MethodResultCode.SUCCESS) {
+            LOGGER.info("Method IMAGE_BLOCK_TRANSFER gave result {} for block {}", resultCode.name(), blockNumber);
+        }
     }
 
     private void logUploadPercentage(final int block, final int totalBlocks) {
@@ -469,12 +482,14 @@ class ImageTransfer {
         private int verificationStatusCheckTimeout;
         private int activationStatusCheckInterval;
         private int activationStatusCheckTimeout;
+        private int initiationStatusCheckInterval;
+        private int initiationStatusCheckTimeout;
 
         public int getVerificationStatusCheckInterval() {
             return this.verificationStatusCheckInterval;
         }
 
-        public void setVerificationStatusCheckInterval(final int verificationStatusCheckInterval) {
+		public void setVerificationStatusCheckInterval(final int verificationStatusCheckInterval) {
             this.verificationStatusCheckInterval = verificationStatusCheckInterval;
         }
 
@@ -501,10 +516,26 @@ class ImageTransfer {
         public void setActivationStatusCheckTimeout(final int activationStatusCheckTimeout) {
             this.activationStatusCheckTimeout = activationStatusCheckTimeout;
         }
+
+        public int getInitiationStatusCheckInterval() {
+            return this.initiationStatusCheckInterval;
+        }
+
+        public void setInitiationStatusCheckInterval(int initiationStatusCheckInterval) {
+            this.initiationStatusCheckInterval = initiationStatusCheckInterval;
+        }
+    
+        public int getInitiationStatusCheckTimeout() {
+        	return this.initiationStatusCheckTimeout;
+		}
+        
+        public void setInitiationStatusCheckTimeout(int initiationStatusCheckTimeout) {
+			this.initiationStatusCheckTimeout = initiationStatusCheckTimeout;
+		}
     }
 
     private class ImageTransferStatusChangeWatcher implements Callable<Integer> {
-        private final ImageTransferStatus imageTransferStatusWaitingFor;
+        private final ImageTransferStatus imageTransferStatusWaitingToChange;
         private final int pollingInterval;
         private final int timeout;
         private final boolean disconnectWhileWaiting;
@@ -515,9 +546,9 @@ class ImageTransfer {
             this(imageTransferStatus, pollingInterval, timeout, false);
         }
 
-        public ImageTransferStatusChangeWatcher(final ImageTransferStatus imageTransferStatusWaitingFor,
+        public ImageTransferStatusChangeWatcher(final ImageTransferStatus imageTransferStatusWaitingToChange,
                 final int pollingInterval, final int timeout, final boolean disconnectWhileWaiting) {
-            this.imageTransferStatusWaitingFor = imageTransferStatusWaitingFor;
+            this.imageTransferStatusWaitingToChange = imageTransferStatusWaitingToChange;
             this.pollingInterval = pollingInterval;
             this.timeout = timeout;
             this.disconnectWhileWaiting = disconnectWhileWaiting;
@@ -528,7 +559,7 @@ class ImageTransfer {
             int status = 0;
             while (this.slept < this.timeout) {
                 status = ImageTransfer.this.getImageTransferStatus();
-                if (status != this.imageTransferStatusWaitingFor.getValue()) {
+                if (status != this.imageTransferStatusWaitingToChange.getValue()) {
                     return status;
                 }
 

@@ -55,6 +55,12 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
     private int verificationStatusCheckTimeout;
 
+    @Value("${command.updatefirmware.initiationstatuscheck.interval}")
+    private int initiationStatusCheckInterval;
+
+    @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
+    private int initiationStatusCheckTimeout;
+    
     private ImageTransfer.ImageTranferProperties imageTransferProperties;
 
     public UpdateFirmwareCommandExecutor() {
@@ -69,6 +75,8 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         this.imageTransferProperties.setActivationStatusCheckTimeout(this.activationStatusCheckTimeout);
         this.imageTransferProperties.setVerificationStatusCheckInterval(this.verificationStatusCheckInterval);
         this.imageTransferProperties.setVerificationStatusCheckTimeout(this.verificationStatusCheckTimeout);
+        this.imageTransferProperties.setInitiationStatusCheckInterval(this.initiationStatusCheckInterval);
+        this.imageTransferProperties.setInitiationStatusCheckTimeout(this.initiationStatusCheckTimeout);
 
         super.init();
     }
@@ -96,13 +104,11 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         if (!transfer.imageTransferEnabled()) {
             transfer.setImageTransferEnabled(true);
         }
-
-        if (transfer.shouldInitiateTransfer()) {
-            transfer.initiateImageTransfer();
-        }
+        
+        transfer.initiateImageTransfer();
     }
 
-    private void transfer(final ImageTransfer transfer) throws ProtocolAdapterException {
+    private void transfer(final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
         if (transfer.shouldTransferImage()) {
             transfer.transferImageBlocks();
             transfer.transferMissingImageBlocks();
