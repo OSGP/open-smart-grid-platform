@@ -535,7 +535,7 @@ class ImageTransfer {
     }
 
     private class ImageTransferStatusChangeWatcher implements Callable<Integer> {
-        private final ImageTransferStatus imageTransferStatusWaitingFor;
+        private final ImageTransferStatus imageTransferStatusWaitingToChange;
         private final int pollingInterval;
         private final int timeout;
         private final boolean disconnectWhileWaiting;
@@ -546,9 +546,9 @@ class ImageTransfer {
             this(imageTransferStatus, pollingInterval, timeout, false);
         }
 
-        public ImageTransferStatusChangeWatcher(final ImageTransferStatus imageTransferStatusWaitingFor,
+        public ImageTransferStatusChangeWatcher(final ImageTransferStatus imageTransferStatusWaitingToChange,
                 final int pollingInterval, final int timeout, final boolean disconnectWhileWaiting) {
-            this.imageTransferStatusWaitingFor = imageTransferStatusWaitingFor;
+            this.imageTransferStatusWaitingToChange = imageTransferStatusWaitingToChange;
             this.pollingInterval = pollingInterval;
             this.timeout = timeout;
             this.disconnectWhileWaiting = disconnectWhileWaiting;
@@ -559,7 +559,7 @@ class ImageTransfer {
             int status = 0;
             while (this.slept < this.timeout) {
                 status = ImageTransfer.this.getImageTransferStatus();
-                if (status != this.imageTransferStatusWaitingFor.getValue()) {
+                if (status != this.imageTransferStatusWaitingToChange.getValue()) {
                     return status;
                 }
 
