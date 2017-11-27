@@ -27,71 +27,71 @@ public class HeatBuffer extends LogicalDevice {
 
         final List<BasicDataAttribute> values = new ArrayList<>();
 
-        values.add(this.setFixedFloat(Node.TTMP1_TMPSV_INSTMAG_F, 314));
-        values.add(this.setQuality(Node.TTMP1_TMPSV_Q, QualityType.INACCURATE));
-        values.add(this.setTime(Node.TTMP1_TMPSV_T, timestamp));
+        values.add(this.setFixedFloat(LogicalDeviceNode.TTMP1_TMPSV_INSTMAG_F, 314));
+        values.add(this.setQuality(LogicalDeviceNode.TTMP1_TMPSV_Q, QualityType.INACCURATE));
+        values.add(this.setTime(LogicalDeviceNode.TTMP1_TMPSV_T, timestamp));
 
-        values.add(this.setFixedFloat(Node.TTMP2_TMPSV_INSTMAG_F, 324));
-        values.add(this.setQuality(Node.TTMP2_TMPSV_Q, QualityType.VALIDITY_INVALID));
-        values.add(this.setTime(Node.TTMP2_TMPSV_T, timestamp));
+        values.add(this.setFixedFloat(LogicalDeviceNode.TTMP2_TMPSV_INSTMAG_F, 324));
+        values.add(this.setQuality(LogicalDeviceNode.TTMP2_TMPSV_Q, QualityType.VALIDITY_INVALID));
+        values.add(this.setTime(LogicalDeviceNode.TTMP2_TMPSV_T, timestamp));
 
-        values.add(this.setFixedFloat(Node.TTMP3_TMPSV_INSTMAG_F, 334));
-        values.add(this.setQuality(Node.TTMP3_TMPSV_Q, QualityType.VALIDITY_QUESTIONABLE));
-        values.add(this.setTime(Node.TTMP3_TMPSV_T, timestamp));
+        values.add(this.setFixedFloat(LogicalDeviceNode.TTMP3_TMPSV_INSTMAG_F, 334));
+        values.add(this.setQuality(LogicalDeviceNode.TTMP3_TMPSV_Q, QualityType.VALIDITY_QUESTIONABLE));
+        values.add(this.setTime(LogicalDeviceNode.TTMP3_TMPSV_T, timestamp));
 
-        values.add(this.setFixedFloat(Node.KTNK1_VLMCAP_SETMAG_F, 1313));
+        values.add(this.setFixedFloat(LogicalDeviceNode.KTNK1_VLMCAP_SETMAG_F, 1313));
 
-        values.add(this.setRandomByte(Node.LLN0_HEALTH_STVAL, 1, 2));
-        values.add(this.setQuality(Node.LLN0_HEALTH_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.LLN0_HEALTH_T, timestamp));
+        values.add(this.setRandomByte(LogicalDeviceNode.LLN0_HEALTH_STVAL, 1, 2));
+        values.add(this.setQuality(LogicalDeviceNode.LLN0_HEALTH_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.LLN0_HEALTH_T, timestamp));
 
-        values.add(this.setRandomByte(Node.LLN0_BEH_STVAL, 1, 2));
-        values.add(this.setQuality(Node.LLN0_BEH_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.LLN0_BEH_T, timestamp));
+        values.add(this.setRandomByte(LogicalDeviceNode.LLN0_BEH_STVAL, 1, 2));
+        values.add(this.setQuality(LogicalDeviceNode.LLN0_BEH_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.LLN0_BEH_T, timestamp));
 
-        values.add(this.setRandomByte(Node.LLN0_MOD_STVAL, 1, 2));
-        values.add(this.setQuality(Node.LLN0_MOD_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.LLN0_MOD_T, timestamp));
+        values.add(this.setRandomByte(LogicalDeviceNode.LLN0_MOD_STVAL, 1, 2));
+        values.add(this.setQuality(LogicalDeviceNode.LLN0_MOD_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.LLN0_MOD_T, timestamp));
 
-        values.add(this.setBoolean(Node.GGIO1_ALM1_STVAL, false));
-        values.add(this.setQuality(Node.GGIO1_ALM1_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_ALM1_T, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_ALM1_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_ALM1_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_ALM1_T, timestamp));
 
-        values.add(this.setBoolean(Node.GGIO1_ALM2_STVAL, false));
-        values.add(this.setQuality(Node.GGIO1_ALM2_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_ALM2_T, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_ALM2_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_ALM2_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_ALM2_T, timestamp));
 
-        values.add(this.setBoolean(Node.GGIO1_ALM3_STVAL, false));
-        values.add(this.setQuality(Node.GGIO1_ALM3_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_ALM3_T, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_ALM3_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_ALM3_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_ALM3_T, timestamp));
 
-        values.add(this.setBoolean(Node.GGIO1_ALM4_STVAL, false));
-        values.add(this.setQuality(Node.GGIO1_ALM4_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_ALM4_T, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_ALM4_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_ALM4_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_ALM4_T, timestamp));
 
-        values.add(this.setRandomInt(Node.GGIO1_INTIN1_STVAL, 1, 100));
-        values.add(this.setQuality(Node.GGIO1_INTIN1_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_INTIN1_T, timestamp));
+        values.add(this.setRandomInt(LogicalDeviceNode.GGIO1_INTIN1_STVAL, 1, 100));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_INTIN1_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_INTIN1_T, timestamp));
 
-        values.add(this.setBoolean(Node.GGIO1_WRN1_STVAL, false));
-        values.add(this.setQuality(Node.GGIO1_WRN1_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_WRN1_T, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_WRN1_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_WRN1_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_WRN1_T, timestamp));
 
-        values.add(this.setBoolean(Node.GGIO1_WRN2_STVAL, false));
-        values.add(this.setQuality(Node.GGIO1_WRN2_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_WRN2_T, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_WRN2_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_WRN2_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_WRN2_T, timestamp));
 
-        values.add(this.setBoolean(Node.GGIO1_WRN3_STVAL, false));
-        values.add(this.setQuality(Node.GGIO1_WRN3_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_WRN3_T, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_WRN3_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_WRN3_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_WRN3_T, timestamp));
 
-        values.add(this.setBoolean(Node.GGIO1_WRN4_STVAL, false));
-        values.add(this.setQuality(Node.GGIO1_WRN4_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_WRN4_T, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_WRN4_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_WRN4_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_WRN4_T, timestamp));
 
-        values.add(this.setRandomInt(Node.GGIO1_INTIN2_STVAL, 1, 100));
-        values.add(this.setQuality(Node.GGIO1_INTIN2_Q, QualityType.VALIDITY_GOOD));
-        values.add(this.setTime(Node.GGIO1_INTIN2_T, timestamp));
+        values.add(this.setRandomInt(LogicalDeviceNode.GGIO1_INTIN2_STVAL, 1, 100));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_INTIN2_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_INTIN2_T, timestamp));
 
         return values;
     }

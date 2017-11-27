@@ -42,7 +42,7 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Heat
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LightMeasurementRtu;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Load;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LogicalDevice;
-import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Node;
+import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LogicalDeviceNode;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Pv;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Rtu;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Wind;
@@ -371,7 +371,7 @@ public class RtuSimulator implements ServerEventListener {
         final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
         // Get a new model copy to see values that have been set on the server.
         logicalDevice.refreshServerModel(this.server.getModelCopy());
-        final ModelNode actual = logicalDevice.getBasicDataAttribute(Node.fromDescription(node));
+        final ModelNode actual = logicalDevice.getBasicDataAttribute(LogicalDeviceNode.fromDescription(node));
         if (actual == null) {
             throw new AssertionError("RTU Simulator does not have expected node \"" + node + "\" on logical device \""
                     + logicalDeviceName + "\".");
@@ -403,7 +403,7 @@ public class RtuSimulator implements ServerEventListener {
             this.ensurePeriodicDataGenerationIsStopped();
         }
         final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
-        final BasicDataAttribute basicDataAttribute = logicalDevice.getAttributeAndSetValue(Node.fromDescription(node),
+        final BasicDataAttribute basicDataAttribute = logicalDevice.getAttributeAndSetValue(LogicalDeviceNode.fromDescription(node),
                 value);
         this.server.setValues(Arrays.asList(basicDataAttribute));
     }

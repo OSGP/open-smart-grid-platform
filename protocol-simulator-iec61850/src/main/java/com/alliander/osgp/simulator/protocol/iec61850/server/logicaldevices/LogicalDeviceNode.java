@@ -12,7 +12,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public enum Node {
+public enum LogicalDeviceNode {
 
     DSCH1_SCHDID_SETVAL("DSCH1.SchdId.setVal", BdaType.INT32, Fc.SP),
     DSCH1_SCHDTYP_SETVAL("DSCH1.SchdTyp.setVal", BdaType.INT32, Fc.SP),
@@ -231,13 +231,13 @@ public enum Node {
     LLN0_REPORTSTATUS_01_RPT_ENA("LLN0.ReportStatus01.RptEna", BdaType.BOOLEAN, Fc.ST),
     LLN0_REPORTSTATUS_02_RPT_ENA("LLN0.ReportStatus02.RptEna", BdaType.BOOLEAN, Fc.ST);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Node.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogicalDeviceNode.class);
 
     private String description;
     private BdaType type;
     private Fc fc;
 
-    Node(final String description, final BdaType type, final Fc fc) {
+    LogicalDeviceNode(final String description, final BdaType type, final Fc fc) {
         this.description = description;
         this.type = type;
         this.fc = fc;
@@ -255,8 +255,8 @@ public enum Node {
         return this.fc;
     }
 
-    public static Node fromDescription(final String description) {
-        for (final Node node : Node.values()) {
+    public static LogicalDeviceNode fromDescription(final String description) {
+        for (final LogicalDeviceNode node : LogicalDeviceNode.values()) {
             if (node.description.equals(description)) {
                 return node;
             }
