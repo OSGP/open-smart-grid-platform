@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.BdaVisibleString;
-import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.ServerModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,6 @@ import org.slf4j.LoggerFactory;
 public class LightMeasurementRtu extends LogicalDevice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LightMeasurementRtu.class);
-    private static final String SPGGIO1_IND_D = "SPGGIO1.Ind.d";
 
     public LightMeasurementRtu(final String physicalDeviceName, final String logicalDeviceName,
             final ServerModel serverModel) {
@@ -39,7 +37,7 @@ public class LightMeasurementRtu extends LogicalDevice {
     }
 
     @Override
-    public BasicDataAttribute getAttributeAndSetValue(final String node, final String value) {
+    public BasicDataAttribute getAttributeAndSetValue(final LogicalDeviceNode node, final String value) {
         // Not needed for the light measurement RTU
         return null;
     }
@@ -49,7 +47,7 @@ public class LightMeasurementRtu extends LogicalDevice {
             final BasicDataAttribute value) {
         final List<BasicDataAttribute> values = new ArrayList<>();
 
-        if (SPGGIO1_IND_D.equals(node)) {
+        if (LogicalDeviceNode.SPGGIO1_IND_D.getDescription().equals(node)) {
             LOGGER.info("Update the values for the light sensors");
 
             final byte[] newValue = ((BdaVisibleString) value).getValue();
@@ -64,12 +62,6 @@ public class LightMeasurementRtu extends LogicalDevice {
         }
 
         return values;
-    }
-
-    @Override
-    protected Fc getFunctionalConstraint(final String node) {
-        // Not needed for the light measurement RTU
-        return null;
     }
 
     /**
@@ -91,7 +83,8 @@ public class LightMeasurementRtu extends LogicalDevice {
             if (bdaValue != null && bdaValue.length >= lmIndex) {
                 stVal = bdaValue[lmIndex - 1] - 48 > 0;
             }
-            final BasicDataAttribute bda = this.setBoolean("SPGGIO" + lmIndex + ".Ind.stVal", Fc.ST, stVal);
+            final BasicDataAttribute bda = this.setBoolean(LogicalDeviceNode.fromDescription("SPGGIO" + lmIndex + ".Ind.stVal"),
+                    stVal);
             values.add(bda);
         }
 

@@ -8,46 +8,15 @@
 package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
-import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.ServerModel;
 
 import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 
 public class Pv extends LogicalDevice {
-
-    private static final String LLN0_HEALTH_STVAL = "LLN0.Health.stVal";
-    private static final String LLN0_HEALTH_Q = "LLN0.Health.q";
-    private static final String LLN0_HEALTH_T = "LLN0.Health.t";
-
-    private static final Set<String> INT8_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_STVAL)));
-
-    private static final Set<String> QUALITY_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q)));
-
-    private static final Set<String> TIMESTAMP_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T)));
-
-    private static final Map<String, Fc> FC_BY_NODE;
-    static {
-        final Map<String, Fc> fcByNode = new TreeMap<>();
-
-        fcByNode.put(LLN0_HEALTH_STVAL, Fc.ST);
-        fcByNode.put(LLN0_HEALTH_Q, Fc.ST);
-        fcByNode.put(LLN0_HEALTH_T, Fc.ST);
-
-        FC_BY_NODE = Collections.unmodifiableMap(fcByNode);
-    }
 
     public Pv(final String physicalDeviceName, final String logicalDeviceName, final ServerModel serverModel) {
         super(physicalDeviceName, logicalDeviceName, serverModel);
@@ -57,112 +26,85 @@ public class Pv extends LogicalDevice {
     public List<BasicDataAttribute> getAttributesAndSetValues(final Date timestamp) {
         final List<BasicDataAttribute> values = new ArrayList<>();
 
-        values.add(this.setRandomByte(LLN0_HEALTH_STVAL, Fc.ST, 1, 2));
-        values.add(this.setQuality(LLN0_HEALTH_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(LLN0_HEALTH_T, Fc.ST, timestamp));
+        values.add(this.setRandomByte(LogicalDeviceNode.LLN0_HEALTH_STVAL, 1, 2));
+        values.add(this.setQuality(LogicalDeviceNode.LLN0_HEALTH_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.LLN0_HEALTH_T, timestamp));
 
-        values.add(this.setRandomByte("LLN0.Beh.stVal", Fc.ST, 1, 2));
-        values.add(this.setQuality("LLN0.Beh.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("LLN0.Beh.t", Fc.ST, timestamp));
+        values.add(this.setRandomByte(LogicalDeviceNode.LLN0_BEH_STVAL, 1, 2));
+        values.add(this.setQuality(LogicalDeviceNode.LLN0_BEH_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.LLN0_BEH_T, timestamp));
 
-        values.add(this.setRandomByte("LLN0.Mod.stVal", Fc.ST, 1, 2));
-        values.add(this.setQuality("LLN0.Mod.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("LLN0.Mod.t", Fc.ST, timestamp));
+        values.add(this.setRandomByte(LogicalDeviceNode.LLN0_MOD_STVAL, 1, 2));
+        values.add(this.setQuality(LogicalDeviceNode.LLN0_MOD_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.LLN0_MOD_T, timestamp));
 
-        values.add(this.setRandomFloat("MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
-        values.add(this.setQuality("MMXU1.MaxWPhs.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("MMXU1.MaxWPhs.t", Fc.MX, timestamp));
+        values.add(this.setRandomFloat(LogicalDeviceNode.MMXU1_MAXWPHS_MAG_F, 500, 1000));
+        values.add(this.setQuality(LogicalDeviceNode.MMXU1_MAXWPHS_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.MMXU1_MAXWPHS_T, timestamp));
 
-        values.add(this.setRandomFloat("MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
-        values.add(this.setQuality("MMXU1.MinWPhs.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("MMXU1.MinWPhs.t", Fc.MX, timestamp));
+        values.add(this.setRandomFloat(LogicalDeviceNode.MMXU1_MINWPHS_MAG_F, 0, 500));
+        values.add(this.setQuality(LogicalDeviceNode.MMXU1_MINWPHS_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.MMXU1_MINWPHS_T, timestamp));
 
-        values.add(this.setRandomFloat("MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
-        values.add(this.setQuality("MMXU1.TotW.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("MMXU1.TotW.t", Fc.MX, timestamp));
+        values.add(this.setRandomFloat(LogicalDeviceNode.MMXU1_TOTW_MAG_F, 0, 1000));
+        values.add(this.setQuality(LogicalDeviceNode.MMXU1_TOTW_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.MMXU1_TOTW_T, timestamp));
 
-        values.add(this.setRandomFloat("DRCC1.OutWSet.subVal.f", Fc.SV, 0, 1000));
-        values.add(this.setQuality("DRCC1.OutWSet.subQ", Fc.SV, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setRandomFloat(LogicalDeviceNode.DRCC1_OUTWSET_SUBVAL_F, 0, 1000));
+        values.add(this.setQuality(LogicalDeviceNode.DRCC1_OUTWSET_SUBQ, QualityType.VALIDITY_GOOD));
 
-        values.add(this.setRandomFloat("DGEN1.TotWh.mag.f", Fc.MX, 0, 1000));
-        values.add(this.setQuality("DGEN1.TotWh.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("DGEN1.TotWh.t", Fc.MX, timestamp));
+        values.add(this.setRandomFloat(LogicalDeviceNode.DGEN1_TOTWH_MAG_F, 0, 1000));
+        values.add(this.setQuality(LogicalDeviceNode.DGEN1_TOTWH_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.DGEN1_TOTWH_T, timestamp));
 
-        values.add(this.setRandomByte("DGEN1.GnOpSt.stVal", Fc.ST, 1, 2));
-        values.add(this.setQuality("DGEN1.GnOpSt.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("DGEN1.GnOpSt.t", Fc.ST, timestamp));
+        values.add(this.setRandomByte(LogicalDeviceNode.DGEN1_GNOPST_STVAL, 1, 2));
+        values.add(this.setQuality(LogicalDeviceNode.DGEN1_GNOPST_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.DGEN1_GNOPST_T, timestamp));
 
-        values.add(this.incrementInt("DGEN1.OpTmsRs.stVal", Fc.ST));
-        values.add(this.setQuality("DGEN1.OpTmsRs.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("DGEN1.OpTmsRs.t", Fc.ST, timestamp));
+        values.add(this.incrementInt(LogicalDeviceNode.DGEN1_OPTMSRS_STVAL));
+        values.add(this.setQuality(LogicalDeviceNode.DGEN1_OPTMSRS_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.DGEN1_OPTMSRS_T, timestamp));
 
-        values.add(this.setBoolean("GGIO1.Alm1.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Alm1.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Alm1.t", Fc.ST, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_ALM1_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_ALM1_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_ALM1_T, timestamp));
 
-        values.add(this.setBoolean("GGIO1.Alm2.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Alm2.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Alm2.t", Fc.ST, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_ALM2_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_ALM2_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_ALM2_T, timestamp));
 
-        values.add(this.setBoolean("GGIO1.Alm3.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Alm3.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Alm3.t", Fc.ST, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_ALM3_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_ALM3_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_ALM3_T, timestamp));
 
-        values.add(this.setBoolean("GGIO1.Alm4.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Alm4.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Alm4.t", Fc.ST, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_ALM4_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_ALM4_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_ALM4_T, timestamp));
 
-        values.add(this.setRandomInt("GGIO1.IntIn1.stVal", Fc.ST, 1, 100));
-        values.add(this.setQuality("GGIO1.IntIn1.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.IntIn1.t", Fc.ST, timestamp));
+        values.add(this.setRandomInt(LogicalDeviceNode.GGIO1_INTIN1_STVAL, 1, 100));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_INTIN1_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_INTIN1_T, timestamp));
 
-        values.add(this.setBoolean("GGIO1.Wrn1.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Wrn1.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Wrn1.t", Fc.ST, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_WRN1_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_WRN1_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_WRN1_T, timestamp));
 
-        values.add(this.setBoolean("GGIO1.Wrn2.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Wrn2.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Wrn2.t", Fc.ST, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_WRN2_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_WRN2_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_WRN2_T, timestamp));
 
-        values.add(this.setBoolean("GGIO1.Wrn3.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Wrn3.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Wrn3.t", Fc.ST, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_WRN3_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_WRN3_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_WRN3_T, timestamp));
 
-        values.add(this.setBoolean("GGIO1.Wrn4.stVal", Fc.ST, false));
-        values.add(this.setQuality("GGIO1.Wrn4.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.Wrn4.t", Fc.ST, timestamp));
+        values.add(this.setBoolean(LogicalDeviceNode.GGIO1_WRN4_STVAL, false));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_WRN4_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_WRN4_T, timestamp));
 
-        values.add(this.setRandomInt("GGIO1.IntIn2.stVal", Fc.ST, 1, 100));
-        values.add(this.setQuality("GGIO1.IntIn2.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("GGIO1.IntIn2.t", Fc.ST, timestamp));
+        values.add(this.setRandomInt(LogicalDeviceNode.GGIO1_INTIN2_STVAL, 1, 100));
+        values.add(this.setQuality(LogicalDeviceNode.GGIO1_INTIN2_Q, QualityType.VALIDITY_GOOD));
+        values.add(this.setTime(LogicalDeviceNode.GGIO1_INTIN2_T, timestamp));
 
         return values;
-    }
-
-    @Override
-    public BasicDataAttribute getAttributeAndSetValue(final String node, final String value) {
-        final Fc fc = this.getFunctionalConstraint(node);
-        if (fc == null) {
-            throw this.illegalNodeException(node);
-        }
-
-        if (INT8_NODES.contains(node)) {
-            return this.setByte(node, fc, Byte.parseByte(value));
-        }
-
-        if (QUALITY_NODES.contains(node)) {
-            return this.setQuality(node, fc, QualityType.valueOf(value).getValue());
-        }
-
-        if (TIMESTAMP_NODES.contains(node)) {
-            return this.setTime(node, fc, this.parseDate(value));
-        }
-
-        throw this.nodeTypeNotConfiguredException(node);
-    }
-
-    @Override
-    public Fc getFunctionalConstraint(final String node) {
-        return FC_BY_NODE.get(node);
     }
 }
