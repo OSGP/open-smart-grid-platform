@@ -24,6 +24,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestList;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 
 @Service(value = "dlmsManagementService")
 public class ManagementService {
@@ -45,7 +47,8 @@ public class ManagementService {
 
         LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 
-        for (final FindEventsRequestDto findEventsQuery : findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
+        for (final FindEventsRequestDto findEventsQuery : findEventsQueryMessageDataContainer
+                .getFindEventsQueryList()) {
             LOGGER.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
                     findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
                     findEventsQuery.getUntil());
@@ -58,6 +61,26 @@ public class ManagementService {
 
     public void changeInDebugMode(final DlmsDevice device, final boolean debugMode) {
         device.setInDebugMode(debugMode);
-        dlmsDeviceRepository.save(device);
+        this.dlmsDeviceRepository.save(device);
     }
+
+    public void setDeviceCommunicationSettings(final DlmsDevice device,
+            final SetDeviceCommunicationSettingsRequestDto deviceCommunicationSettings) {
+
+        this.dlmsDeviceRepository.save(this.setDeviceCommunicationSettings(device,
+                deviceCommunicationSettings.getSetDeviceCommunicationSettingsData()));
+    }
+
+    private DlmsDevice setDeviceCommunicationSettings(final DlmsDevice device,
+            final SetDeviceCommunicationSettingsRequestDataDto setCommunicationSettingsDataDto) {
+        device.setChallengeLength(setCommunicationSettingsDataDto.getChallengeLength());
+        device.setWithListSupported(setCommunicationSettingsDataDto.isWithListSupported());
+        device.setSelectiveAccessSupported(setCommunicationSettingsDataDto.isSelectiveAccessSupported());
+        device.setIpAddressIsStatic(setCommunicationSettingsDataDto.isIpAddressIsStatic());
+        device.setUseSn(setCommunicationSettingsDataDto.isUseSn());
+        device.setUseHdlc(setCommunicationSettingsDataDto.isUseHdlc());
+
+        return device;
+    }
+
 }
