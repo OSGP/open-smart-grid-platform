@@ -298,7 +298,7 @@ class ImageTransfer {
     private void waitForImageInitiation() throws ProtocolAdapterException, ImageTransferException {
         final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
                 ImageTransferStatus.NOT_INITIATED, this.properties.getInitiationStatusCheckInterval(),
-                this.properties.getInitiationStatusCheckTimeout(), true));
+                this.properties.getInitiationStatusCheckTimeout()));
 
         int status;
         try {
