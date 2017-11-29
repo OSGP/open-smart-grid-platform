@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
-import com.alliander.osgp.domain.core.entities.DeviceFirmwareFile;
+import com.alliander.osgp.domain.core.entities.DeviceCurrentFirmwareModuleVersion;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -224,7 +224,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     }
 
     @Override
-    public Specification<Device> isInMaintetance(final Boolean inMaintenance) throws ArgumentNullOrEmptyException {
+    public Specification<Device> isInMaintenance(final Boolean inMaintenance) throws ArgumentNullOrEmptyException {
         if (inMaintenance == null) {
             throw new ArgumentNullOrEmptyException("inMaintenance");
         }
@@ -329,37 +329,18 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
-                String moduleFieldName = "";
-                switch (firmwareModuleFilterType) {
-                case COMMUNICATION:
-                    moduleFieldName = "moduleVersionComm";
-                    break;
-                case FUNCTIONAL:
-                    moduleFieldName = "moduleVersionFunc";
-                    break;
-                case SECURITY:
-                    moduleFieldName = "moduleVersionSec";
-                    break;
-                case M_BUS:
-                    moduleFieldName = "moduleVersionMbus";
-                    break;
-                case MODULE_ACTIVE:
-                    moduleFieldName = "moduleVersionMa";
-                    break;
-                case ACTIVE_FIRMWARE:
-                    break;
-
-                default:
-                    break;
-                }
+                final String moduleDescription = firmwareModuleFilterType.getDescription();
 
                 final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceFirmwareFile> deviceFirmwareRoot = subquery.from(DeviceFirmwareFile.class);
-                subquery.select(deviceFirmwareRoot.get("device").get("id").as(Long.class));
-                subquery.where(cb.and(
-                        cb.like(cb.upper(deviceFirmwareRoot.get("firmware").<String> get(moduleFieldName)),
-                                firmwareModuleVersion.toUpperCase()),
-                        cb.equal(deviceFirmwareRoot.<Boolean> get("active"), true)));
+                final Root<DeviceCurrentFirmwareModuleVersion> moduleVersionRoot = subquery
+                        .from(DeviceCurrentFirmwareModuleVersion.class);
+                subquery.select(moduleVersionRoot.get("deviceId").as(Long.class));
+                final Predicate moduleTypePredicate = cb
+                        .equal(moduleVersionRoot.get("moduleDescription").as(String.class), moduleDescription);
+                final Predicate moduleVersionPredicate = cb
+                        .like(moduleVersionRoot.get("moduleVersion").as(String.class), firmwareModuleVersion);
+                subquery.where(cb.and(moduleTypePredicate, moduleVersionPredicate));
+
                 return cb.in(deviceRoot.get("id").as(Long.class)).value(subquery);
             }
         };

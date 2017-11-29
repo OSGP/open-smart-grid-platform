@@ -39,7 +39,7 @@ public interface DeviceSpecifications {
 
     Specification<Device> isActived(final Boolean activated) throws ArgumentNullOrEmptyException;
 
-    Specification<Device> isInMaintetance(final Boolean inMaintenance) throws ArgumentNullOrEmptyException;
+    Specification<Device> isInMaintenance(final Boolean inMaintenance) throws ArgumentNullOrEmptyException;
 
     Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException;
 

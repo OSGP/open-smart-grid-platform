@@ -372,7 +372,7 @@ public class DeviceManagementService {
                 if (deviceFilter.getDeviceInMaintenance() != null
                         && !DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
                     specifications = specifications.and(this.deviceSpecifications
-                            .isInMaintetance(deviceFilter.getDeviceInMaintenance().getValue()));
+                            .isInMaintenance(deviceFilter.getDeviceInMaintenance().getValue()));
                 }
                 if (deviceFilter.isHasTechnicalInstallation()) {
                     specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
