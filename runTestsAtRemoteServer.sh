@@ -33,7 +33,7 @@ CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo c
 echo "  [${CMD}]"
 ${CMD}
 
-echo "- Copy over nesseccary files to ${SERVER} ..."
+echo "- Copy over necessary files to ${SERVER} ..."
 CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} certificates/* ${USER}@${SERVER}:/data/software/certificates"
 echo "  [${CMD}]"
 ${CMD}
