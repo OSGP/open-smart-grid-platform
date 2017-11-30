@@ -84,7 +84,7 @@ public class DomainHelperService {
         return dlmsDevice;
     }
 
-    private String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice)
+    public String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice)
             throws ProtocolAdapterException, FunctionalException {
 
         final SessionProvider sessionProvider = this.sessionProviderService

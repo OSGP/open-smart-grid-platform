@@ -12,15 +12,17 @@ import java.io.IOException;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.RawMessageData;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 public class DlmsConnectionHolder implements AutoCloseable {
-
-    private static final DlmsMessageListener DO_NOTHING_LISTENER = new DlmsMessageListener() {
+	
+	private static final DlmsMessageListener DO_NOTHING_LISTENER = new DlmsMessageListener() {
 
         @Override
         public void messageCaptured(final RawMessageData rawMessageData) {
@@ -41,22 +43,20 @@ public class DlmsConnectionHolder implements AutoCloseable {
     private final DlmsConnector connector;
     private final DlmsDevice device;
     private final DlmsMessageListener dlmsMessageListener;
-
+    private final DomainHelperService domainHelperService;
+    
     private DlmsConnection dlmsConnection;
 
     public DlmsConnectionHolder(final DlmsConnector connector, final DlmsDevice device,
-            final DlmsMessageListener dlmsMessageListener) {
+            final DlmsMessageListener dlmsMessageListener, final DomainHelperService domainHelperService) {
         this.connector = connector;
         this.device = device;
+        this.domainHelperService = domainHelperService;
         if (dlmsMessageListener == null) {
             this.dlmsMessageListener = DO_NOTHING_LISTENER;
         } else {
             this.dlmsMessageListener = dlmsMessageListener;
         }
-    }
-
-    public DlmsConnectionHolder(final DlmsConnector connector, final DlmsDevice device) {
-        this(connector, device, null);
     }
 
     /**
@@ -99,7 +99,7 @@ public class DlmsConnectionHolder implements AutoCloseable {
     }
 
     /**
-     * Obtains a new connection with a device. A connection should be obtained before {@link #getConnection()
+     * Obtains a connection with a device. A connection should be obtained before {@link #getConnection()
      * getConnection} is called.
      *
      * @Throws IllegalStateException When there is already a connection set.
@@ -115,6 +115,28 @@ public class DlmsConnectionHolder implements AutoCloseable {
         this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
     }
 
+    /**
+     * Obtains a new connection with a device. A connection should be obtained before {@link #getConnection()
+     * getConnection} is called.
+     *
+     * @Throws IllegalStateException When there is already a connection set.
+     * @throws TechnicalException
+     *             When an exceptions occurs while creating the exception.
+     * @throws FunctionalException
+     * @throws ProtocolAdapterException 
+     */
+    public void reconnect() throws TechnicalException, FunctionalException, ProtocolAdapterException {
+        if (this.dlmsConnection != null) {
+            throw new IllegalStateException("Cannot create a new connection because a connection already exists.");
+        }
+
+        if(!this.device.isIpAddressIsStatic()) {
+        	this.device.setIpAddress(this.domainHelperService.getDeviceIpAddressFromSessionProvider(this.device));
+        }
+        this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
+    }
+
+    
     /**
      * Closes the connection with the device and releases the internal connection reference. The connection will be
      * closed, but no disconnection message will be sent to the device.

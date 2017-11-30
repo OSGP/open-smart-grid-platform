@@ -575,19 +575,19 @@ class ImageTransfer {
 
                 if (this.disconnectWhileWaiting) {
                     // Always return in connected state.
-                    this.connect();
+                    this.reconnect();
                 }
             }
 
             return status;
         }
 
-        private void connect() throws TechnicalException, FunctionalException {
-            ImageTransfer.this.connector.connect();
-        }
-
         private void disconnect() throws IOException {
             ImageTransfer.this.connector.disconnect();
+        }
+        
+        private void reconnect() throws TechnicalException, FunctionalException, ProtocolAdapterException {
+            ImageTransfer.this.connector.reconnect();
         }
     }
 
