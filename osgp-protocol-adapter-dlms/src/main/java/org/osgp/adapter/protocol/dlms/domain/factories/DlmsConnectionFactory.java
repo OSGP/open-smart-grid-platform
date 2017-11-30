@@ -13,6 +13,7 @@ import javax.inject.Provider;
 import javax.naming.OperationNotSupportedException;
 
 import org.openmuc.jdlms.DlmsConnection;
+import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
@@ -46,6 +47,9 @@ public class DlmsConnectionFactory {
     @Qualifier("lls0Connector")
     private Provider<DlmsConnector> lls0ConnectorProvider;
 
+    @Autowired
+    private DomainHelperService domainHelperService;
+    
     /**
      * Returns an open connection using the appropriate security settings for
      * the device.
@@ -81,7 +85,7 @@ public class DlmsConnectionFactory {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_COMMUNICATION_SETTING, ComponentType.PROTOCOL_DLMS);
         }
 
-        final DlmsConnectionHolder holder = new DlmsConnectionHolder(connector, device, dlmsMessageListener);
+        final DlmsConnectionHolder holder = new DlmsConnectionHolder(connector, device, dlmsMessageListener, domainHelperService);
         holder.connect();
         return holder;
     }
