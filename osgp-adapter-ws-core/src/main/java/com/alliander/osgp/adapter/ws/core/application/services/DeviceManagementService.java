@@ -12,6 +12,7 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
@@ -141,6 +143,9 @@ public class DeviceManagementService {
     @Autowired
     @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
     private String netManagementOrganisation;
+
+    @Resource
+    private Integer scheduledTaskPageSize;
 
     /**
      * Constructor
@@ -476,7 +481,7 @@ public class DeviceManagementService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.FIND_SCHEDULED_TASKS);
 
-        return this.scheduledTaskRepository.findByDeviceIdentification(deviceIdentification);
+        return this.getScheduledTasksByDeviceIdentification(deviceIdentification);
     }
 
     @Transactional(value = "transactionManager")
@@ -485,7 +490,8 @@ public class DeviceManagementService {
             throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_SCHEDULED_TASKS);
-        return this.scheduledTaskRepository.findByOrganisationIdentification(organisationIdentification);
+
+        return this.getScheduledTasksByOrganisationIdentification(organisationIdentification);
     }
 
     @Transactional(value = "writableTransactionManager")
@@ -724,4 +730,38 @@ public class DeviceManagementService {
     public ResponseMessage dequeueSetDeviceLifecycleStatusResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
+
+    private List<ScheduledTask> getScheduledTasksByDeviceIdentification(final String deviceIdentification) {
+        final List<ScheduledTask> allScheduledTasks = new ArrayList<>();
+        // configurable page size for scheduled tasks
+        final Pageable pageable = new PageRequest(0, this.scheduledTaskPageSize);
+
+        List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
+                .findByDeviceIdentification(deviceIdentification, pageable);
+
+        while (scheduledTasks.size() > 0) {
+            allScheduledTasks.addAll(scheduledTasks);
+            scheduledTasks = this.scheduledTaskRepository.findByDeviceIdentification(deviceIdentification, pageable);
+        }
+
+        return allScheduledTasks;
+    }
+
+    private List<ScheduledTask> getScheduledTasksByOrganisationIdentification(final String organisationIdentification) {
+        final List<ScheduledTask> allScheduledTasks = new ArrayList<>();
+        // configurable page size for scheduled tasks
+        final Pageable pageable = new PageRequest(0, this.scheduledTaskPageSize);
+
+        List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
+                .findByOrganisationIdentification(organisationIdentification, pageable);
+
+        while (scheduledTasks.size() > 0) {
+            allScheduledTasks.addAll(scheduledTasks);
+            scheduledTasks = this.scheduledTaskRepository.findByOrganisationIdentification(organisationIdentification,
+                    pageable);
+        }
+
+        return allScheduledTasks;
+    }
+
 }

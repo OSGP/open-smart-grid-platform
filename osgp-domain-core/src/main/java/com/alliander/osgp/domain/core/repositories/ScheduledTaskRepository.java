@@ -10,7 +10,6 @@ package com.alliander.osgp.domain.core.repositories;
 import java.sql.Timestamp;
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -20,23 +19,12 @@ import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
 
 @Repository
 public interface ScheduledTaskRepository extends JpaRepository<ScheduledTask, Long> {
+    List<ScheduledTask> findByStatusAndScheduledTimeLessThan(ScheduledTaskStatusType status, Timestamp currentTimestamp,
+            Pageable pageable);
 
-    List<ScheduledTask> findByScheduledTimeLessThan(Timestamp currentTimestamp);
+    List<ScheduledTask> findByDeviceIdentification(String deviceIdentification, Pageable pageable);
 
-    List<ScheduledTask> findByStatusAndScheduledTimeLessThan(ScheduledTaskStatusType status,
-            Timestamp currentTimestamp);
-
-    Page<ScheduledTask> findByStatusAndScheduledTimeLessThan(ScheduledTaskStatusType status, Timestamp currentTimestamp,
-            Pageable pagable);
-
-    List<ScheduledTask> findAllByStatus(ScheduledTaskStatusType status);
-
-    List<ScheduledTask> findByStatusNot(ScheduledTaskStatusType status);
-
-    List<ScheduledTask> findByDeviceIdentification(String deviceIdentification);
-
-    List<ScheduledTask> findByOrganisationIdentification(String organisationIdentification);
+    List<ScheduledTask> findByOrganisationIdentification(String organisationIdentification, Pageable pageable);
 
     ScheduledTask findByCorrelationUid(String correlationUid);
-
 }

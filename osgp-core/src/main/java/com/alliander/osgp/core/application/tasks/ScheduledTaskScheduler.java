@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -72,8 +71,8 @@ public class ScheduledTaskScheduler implements Runnable {
                     LOGGER.error("Processing scheduled task failed.", e);
                     this.scheduledTaskRepository.delete(scheduledTask);
                 }
+                scheduledTasks = this.getScheduledTasks(type);
             }
-            scheduledTasks = this.getScheduledTasks(type);
         }
     }
 
@@ -83,10 +82,10 @@ public class ScheduledTaskScheduler implements Runnable {
         // configurable page size for scheduled tasks
         final Pageable pageable = new PageRequest(0, this.scheduledTaskPageSize);
 
-        final Page<ScheduledTask> scheduledTasksPage = this.scheduledTaskRepository
+        final List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
                 .findByStatusAndScheduledTimeLessThan(type, timestamp, pageable);
 
-        return scheduledTasksPage.getContent();
+        return scheduledTasks;
     }
 
     private ProtocolRequestMessage createProtocolRequestMessage(final ScheduledTask scheduledTask) {

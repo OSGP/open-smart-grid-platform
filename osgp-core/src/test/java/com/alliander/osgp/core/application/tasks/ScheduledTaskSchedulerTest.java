@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.domain.Pageable;
 
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -72,13 +73,14 @@ public class ScheduledTaskSchedulerTest {
      */
     @Test
     public void testRunFunctionalException() throws FunctionalException, UnknownHostException {
-        final List<ScheduledTask> scheduledTasks = new ArrayList<ScheduledTask>();
+        final List<ScheduledTask> scheduledTasks = new ArrayList<>();
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
         scheduledTasks.add(scheduledTask);
 
         when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(any(ScheduledTaskStatusType.class),
-                any(Timestamp.class))).thenReturn(scheduledTasks).thenReturn(new ArrayList<ScheduledTask>());
+                any(Timestamp.class), any(Pageable.class))).thenReturn(scheduledTasks)
+                        .thenReturn(new ArrayList<ScheduledTask>());
 
         final Device device = new Device();
         device.updateRegistrationData(InetAddress.getByName("127.0.0.1"), "deviceType");
