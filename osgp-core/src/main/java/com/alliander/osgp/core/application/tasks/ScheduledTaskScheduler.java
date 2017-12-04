@@ -56,8 +56,6 @@ public class ScheduledTaskScheduler implements Runnable {
     }
 
     private void processScheduledTasks(final ScheduledTaskStatusType type) {
-        LOGGER.info("Processing scheduled task");
-
         List<ScheduledTask> scheduledTasks = this.getScheduledTasks(type);
         while (scheduledTasks.size() > 0) {
             for (ScheduledTask scheduledTask : scheduledTasks) {
