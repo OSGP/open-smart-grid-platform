@@ -18,7 +18,6 @@ import com.alliander.osgp.core.domain.model.protocol.ProtocolRequestService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -39,9 +38,6 @@ public class DeviceRequestMessageService {
 
     @Autowired
     private ProtocolRequestService protocolRequestService;
-
-    @Autowired
-    private SmartMeterRepository smartMeteringDeviceRepository;
 
     public void processMessage(final ProtocolRequestMessage message) throws FunctionalException {
 
@@ -71,8 +67,8 @@ public class DeviceRequestMessageService {
             LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
                     protocolInfo.getProtocolVersion());
 
-            final Organisation organisation = this.domainHelperService.findOrganisation(message
-                    .getOrganisationIdentification());
+            final Organisation organisation = this.domainHelperService
+                    .findOrganisation(message.getOrganisationIdentification());
 
             this.domainHelperService.isAllowed(organisation, device,
                     Enum.valueOf(DeviceFunction.class, message.getMessageType()));

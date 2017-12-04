@@ -12,7 +12,6 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
@@ -32,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.core.application.config.ApplicationContext;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessage;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
@@ -144,8 +144,8 @@ public class DeviceManagementService {
     @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
     private String netManagementOrganisation;
 
-    @Resource
-    private Integer scheduledTaskPageSize;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /**
      * Constructor
@@ -734,7 +734,7 @@ public class DeviceManagementService {
     private List<ScheduledTask> getScheduledTasksByDeviceIdentification(final String deviceIdentification) {
         final List<ScheduledTask> allScheduledTasks = new ArrayList<>();
         // configurable page size for scheduled tasks
-        final Pageable pageable = new PageRequest(0, this.scheduledTaskPageSize);
+        final Pageable pageable = new PageRequest(0, this.applicationContext.scheduledTaskPageSize());
 
         List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
@@ -750,7 +750,7 @@ public class DeviceManagementService {
     private List<ScheduledTask> getScheduledTasksByOrganisationIdentification(final String organisationIdentification) {
         final List<ScheduledTask> allScheduledTasks = new ArrayList<>();
         // configurable page size for scheduled tasks
-        final Pageable pageable = new PageRequest(0, this.scheduledTaskPageSize);
+        final Pageable pageable = new PageRequest(0, this.applicationContext.scheduledTaskPageSize());
 
         List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
                 .findByOrganisationIdentification(organisationIdentification, pageable);

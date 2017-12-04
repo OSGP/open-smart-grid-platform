@@ -10,8 +10,6 @@ package com.alliander.osgp.core.application.tasks;
 import java.sql.Timestamp;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.core.application.config.SchedulingConfig;
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
@@ -43,8 +42,8 @@ public class ScheduledTaskScheduler implements Runnable {
     @Autowired
     private DeviceRepository deviceRepository;
 
-    @Resource
-    private Integer scheduledTaskPageSize;
+    @Autowired
+    private SchedulingConfig schedulingConfig;
 
     @Override
     public void run() {
@@ -80,7 +79,7 @@ public class ScheduledTaskScheduler implements Runnable {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         // configurable page size for scheduled tasks
-        final Pageable pageable = new PageRequest(0, this.scheduledTaskPageSize);
+        final Pageable pageable = new PageRequest(0, this.schedulingConfig.scheduledTaskPageSize());
 
         final List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
                 .findByStatusAndScheduledTimeLessThan(type, timestamp, pageable);

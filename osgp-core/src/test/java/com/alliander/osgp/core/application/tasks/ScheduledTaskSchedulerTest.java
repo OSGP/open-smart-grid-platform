@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.domain.Pageable;
 
+import com.alliander.osgp.core.application.config.SchedulingConfig;
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
@@ -58,6 +59,9 @@ public class ScheduledTaskSchedulerTest {
     @InjectMocks
     private ScheduledTaskScheduler scheduler;
 
+    @Mock
+    private SchedulingConfig schedulingConfig;
+
     private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata("deviceId",
             "organisationId", "correlationId", "messageType", 4);
     private static final String DOMAIN = "Domain";
@@ -86,6 +90,7 @@ public class ScheduledTaskSchedulerTest {
         device.updateRegistrationData(InetAddress.getByName("127.0.0.1"), "deviceType");
         when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
         when(this.scheduledTaskRepository.save(any(ScheduledTask.class))).thenReturn(scheduledTask);
+        when(this.schedulingConfig.scheduledTaskPageSize()).thenReturn(30);
         doThrow(new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.OSGP_CORE))
                 .when(this.deviceRequestMessageService).processMessage(any(ProtocolRequestMessage.class));
 

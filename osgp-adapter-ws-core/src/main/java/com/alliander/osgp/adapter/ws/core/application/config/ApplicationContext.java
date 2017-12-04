@@ -97,8 +97,8 @@ public class ApplicationContext extends AbstractConfig {
     }
 
     @Bean
-    public String scheduledTaskPageSize() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_PAGE_SIZE);
+    public Integer scheduledTaskPageSize() {
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_PAGE_SIZE));
     }
 
     @Bean
