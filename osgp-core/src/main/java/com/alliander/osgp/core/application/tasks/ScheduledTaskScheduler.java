@@ -56,7 +56,7 @@ public class ScheduledTaskScheduler implements Runnable {
     private void processScheduledTasks(final ScheduledTaskStatusType type) {
         List<ScheduledTask> scheduledTasks = this.getScheduledTasks(type);
 
-        while (scheduledTasks.size() > 0) {
+        while (!scheduledTasks.isEmpty()) {
             for (ScheduledTask scheduledTask : scheduledTasks) {
                 LOGGER.info("Processing scheduled task for device [{}] to perform [{}]  ",
                         scheduledTask.getDeviceIdentification(), scheduledTask.getMessageType());
@@ -81,10 +81,7 @@ public class ScheduledTaskScheduler implements Runnable {
         // configurable page size for scheduled tasks
         final Pageable pageable = new PageRequest(0, this.schedulingConfig.scheduledTaskPageSize());
 
-        final List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
-                .findByStatusAndScheduledTimeLessThan(type, timestamp, pageable);
-
-        return scheduledTasks;
+        return this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(type, timestamp, pageable);
     }
 
     private ProtocolRequestMessage createProtocolRequestMessage(final ScheduledTask scheduledTask) {

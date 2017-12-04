@@ -739,7 +739,7 @@ public class DeviceManagementService {
         List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
                 .findByDeviceIdentification(deviceIdentification, pageable);
 
-        while (scheduledTasks.size() > 0) {
+        while (!scheduledTasks.isEmpty()) {
             allScheduledTasks.addAll(scheduledTasks);
             scheduledTasks = this.scheduledTaskRepository.findByDeviceIdentification(deviceIdentification, pageable);
         }
@@ -755,7 +755,7 @@ public class DeviceManagementService {
         List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
                 .findByOrganisationIdentification(organisationIdentification, pageable);
 
-        while (scheduledTasks.size() > 0) {
+        while (!scheduledTasks.isEmpty()) {
             allScheduledTasks.addAll(scheduledTasks);
             scheduledTasks = this.scheduledTaskRepository.findByOrganisationIdentification(organisationIdentification,
                     pageable);
