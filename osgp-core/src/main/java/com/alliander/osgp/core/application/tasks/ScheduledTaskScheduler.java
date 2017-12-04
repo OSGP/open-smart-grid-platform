@@ -10,9 +10,14 @@ package com.alliander.osgp.core.application.tasks;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
@@ -39,6 +44,9 @@ public class ScheduledTaskScheduler implements Runnable {
     @Autowired
     private DeviceRepository deviceRepository;
 
+    @Resource
+    private Integer scheduledTaskPageSize;
+
     @Override
     public void run() {
         LOGGER.info("Processing scheduled tasks");
@@ -48,24 +56,38 @@ public class ScheduledTaskScheduler implements Runnable {
     }
 
     private void processScheduledTasks(final ScheduledTaskStatusType type) {
+        LOGGER.info("Processing scheduled task");
+
+        List<ScheduledTask> scheduledTasks = this.getScheduledTasks(type);
+        while (scheduledTasks.size() > 0) {
+            for (ScheduledTask scheduledTask : scheduledTasks) {
+                LOGGER.info("Processing scheduled task for device [{}] to perform [{}]  ",
+                        scheduledTask.getDeviceIdentification(), scheduledTask.getMessageType());
+                try {
+                    scheduledTask.setPending();
+                    scheduledTask = this.scheduledTaskRepository.save(scheduledTask);
+                    final ProtocolRequestMessage protocolRequestMessage = this
+                            .createProtocolRequestMessage(scheduledTask);
+                    this.deviceRequestMessageService.processMessage(protocolRequestMessage);
+                } catch (final FunctionalException e) {
+                    LOGGER.error("Processing scheduled task failed.", e);
+                    this.scheduledTaskRepository.delete(scheduledTask);
+                }
+            }
+            scheduledTasks = this.getScheduledTasks(type);
+        }
+    }
+
+    private List<ScheduledTask> getScheduledTasks(final ScheduledTaskStatusType type) {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        final List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
-                .findByStatusAndScheduledTimeLessThan(type, timestamp);
+        // configurable page size for scheduled tasks
+        final Pageable pageable = new PageRequest(0, this.scheduledTaskPageSize);
 
-        for (ScheduledTask scheduledTask : scheduledTasks) {
-            LOGGER.info("Processing scheduled task for device [{}] to perform [{}]  ",
-                    scheduledTask.getDeviceIdentification(), scheduledTask.getMessageType());
-            try {
-                scheduledTask.setPending();
-                scheduledTask = this.scheduledTaskRepository.save(scheduledTask);
-                final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(scheduledTask);
-                this.deviceRequestMessageService.processMessage(protocolRequestMessage);
-            } catch (final FunctionalException e) {
-                LOGGER.error("Processing scheduled task failed.", e);
-                this.scheduledTaskRepository.delete(scheduledTask);
-            }
-        }
+        final Page<ScheduledTask> scheduledTasksPage = this.scheduledTaskRepository
+                .findByStatusAndScheduledTimeLessThan(type, timestamp, pageable);
+
+        return scheduledTasksPage.getContent();
     }
 
     private ProtocolRequestMessage createProtocolRequestMessage(final ScheduledTask scheduledTask) {

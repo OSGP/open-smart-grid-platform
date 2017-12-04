@@ -31,6 +31,8 @@ public class SchedulingConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_SCHEDULING_TASK_SCHEDULER_POOL_SIZE = "scheduling.task.scheduler.pool.size";
     private static final String PROPERTY_NAME_SCHEDULING_TASK_SCHEDULER_THREAD_NAME_PREFIX = "scheduling.task.scheduler.thread.name.prefix";
 
+    private static final String PROPERTY_NAME_SCHEDULING_TASK_PAGE_SIZE = "scheduling.task.page.size";
+
     @Autowired
     private ScheduledTaskScheduler scheduledTaskScheduler;
 
@@ -53,6 +55,11 @@ public class SchedulingConfig extends AbstractConfig {
         taskScheduler.initialize();
         taskScheduler.schedule(this.scheduledTaskScheduler, this.scheduledTasksCronTrigger());
         return taskScheduler;
+    }
+
+    @Bean
+    public String scheduledTaskPageSize() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_PAGE_SIZE);
     }
 
 }

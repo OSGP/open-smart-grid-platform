@@ -10,6 +10,8 @@ package com.alliander.osgp.domain.core.repositories;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,7 +23,11 @@ public interface ScheduledTaskRepository extends JpaRepository<ScheduledTask, Lo
 
     List<ScheduledTask> findByScheduledTimeLessThan(Timestamp currentTimestamp);
 
-    List<ScheduledTask> findByStatusAndScheduledTimeLessThan(ScheduledTaskStatusType status, Timestamp currentTimestamp);
+    List<ScheduledTask> findByStatusAndScheduledTimeLessThan(ScheduledTaskStatusType status,
+            Timestamp currentTimestamp);
+
+    Page<ScheduledTask> findByStatusAndScheduledTimeLessThan(ScheduledTaskStatusType status, Timestamp currentTimestamp,
+            Pageable pagable);
 
     List<ScheduledTask> findAllByStatus(ScheduledTaskStatusType status);
 
