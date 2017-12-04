@@ -732,36 +732,49 @@ public class DeviceManagementService {
     }
 
     private List<ScheduledTask> getScheduledTasksByDeviceIdentification(final String deviceIdentification) {
+        int scheduledTaskPageSize = this.applicationContext.scheduledTaskPageSize();
+        Pageable pageable = new PageRequest(0, scheduledTaskPageSize);
+
+        List<ScheduledTask> scheduledTasks = this.getScheduledTasksByDeviceIdentification(deviceIdentification,
+                pageable);
+
         final List<ScheduledTask> allScheduledTasks = new ArrayList<>();
-        // configurable page size for scheduled tasks
-        final Pageable pageable = new PageRequest(0, this.applicationContext.scheduledTaskPageSize());
-
-        List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
-                .findByDeviceIdentification(deviceIdentification, pageable);
-
         while (!scheduledTasks.isEmpty()) {
             allScheduledTasks.addAll(scheduledTasks);
-            scheduledTasks = this.scheduledTaskRepository.findByDeviceIdentification(deviceIdentification, pageable);
+            pageable = new PageRequest(scheduledTaskPageSize + 1,
+                    scheduledTaskPageSize + this.applicationContext.scheduledTaskPageSize());
+            scheduledTasks = this.getScheduledTasksByDeviceIdentification(deviceIdentification, pageable);
+            scheduledTaskPageSize += this.applicationContext.scheduledTaskPageSize();
         }
-
         return allScheduledTasks;
     }
 
     private List<ScheduledTask> getScheduledTasksByOrganisationIdentification(final String organisationIdentification) {
+        int scheduledTaskPageSize = this.applicationContext.scheduledTaskPageSize();
+        Pageable pageable = new PageRequest(0, scheduledTaskPageSize);
+
+        List<ScheduledTask> scheduledTasks = this
+                .getScheduledTasksByOrganisationIdentification(organisationIdentification, pageable);
+
         final List<ScheduledTask> allScheduledTasks = new ArrayList<>();
-        // configurable page size for scheduled tasks
-        final Pageable pageable = new PageRequest(0, this.applicationContext.scheduledTaskPageSize());
-
-        List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
-                .findByOrganisationIdentification(organisationIdentification, pageable);
-
         while (!scheduledTasks.isEmpty()) {
             allScheduledTasks.addAll(scheduledTasks);
-            scheduledTasks = this.scheduledTaskRepository.findByOrganisationIdentification(organisationIdentification,
-                    pageable);
+            pageable = new PageRequest(scheduledTaskPageSize + 1,
+                    scheduledTaskPageSize + this.applicationContext.scheduledTaskPageSize());
+            scheduledTasks = this.getScheduledTasksByOrganisationIdentification(organisationIdentification, pageable);
+            scheduledTaskPageSize += this.applicationContext.scheduledTaskPageSize();
         }
-
         return allScheduledTasks;
+    }
+
+    private List<ScheduledTask> getScheduledTasksByOrganisationIdentification(final String organisationIdentification,
+            final Pageable pageable) {
+        return this.scheduledTaskRepository.findByOrganisationIdentification(organisationIdentification, pageable);
+    }
+
+    private List<ScheduledTask> getScheduledTasksByDeviceIdentification(final String deviceIdentification,
+            final Pageable pageable) {
+        return this.scheduledTaskRepository.findByDeviceIdentification(deviceIdentification, pageable);
     }
 
 }

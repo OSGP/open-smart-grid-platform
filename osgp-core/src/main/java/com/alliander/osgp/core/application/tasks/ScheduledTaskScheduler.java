@@ -70,8 +70,8 @@ public class ScheduledTaskScheduler implements Runnable {
                     LOGGER.error("Processing scheduled task failed.", e);
                     this.scheduledTaskRepository.delete(scheduledTask);
                 }
-                scheduledTasks = this.getScheduledTasks(type);
             }
+            scheduledTasks = this.getScheduledTasks(type);
         }
     }
 
