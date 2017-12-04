@@ -56,9 +56,8 @@ public class ScheduledTaskScheduler implements Runnable {
     }
 
     private void processScheduledTasks(final ScheduledTaskStatusType type) {
-        List<ScheduledTask> scheduledTasks = this.getScheduledTasks(type);
-        while (scheduledTasks.size() > 0) {
-            for (ScheduledTask scheduledTask : scheduledTasks) {
+        while (this.getScheduledTasks(type).size() > 0) {
+            for (ScheduledTask scheduledTask : this.getScheduledTasks(type)) {
                 LOGGER.info("Processing scheduled task for device [{}] to perform [{}]  ",
                         scheduledTask.getDeviceIdentification(), scheduledTask.getMessageType());
                 try {
@@ -72,7 +71,6 @@ public class ScheduledTaskScheduler implements Runnable {
                     this.scheduledTaskRepository.delete(scheduledTask);
                 }
             }
-            scheduledTasks = this.getScheduledTasks(type);
         }
     }
 
