@@ -31,7 +31,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetDeviceCommunicationSettings {
+public class SetDeviceCommunicationSettingsSteps {
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
