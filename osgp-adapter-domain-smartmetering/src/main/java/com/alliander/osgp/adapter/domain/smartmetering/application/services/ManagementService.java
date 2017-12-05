@@ -64,7 +64,7 @@ public class ManagementService {
         final SmartMeter smartMeter = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        LOGGER.info("Sending request message to core.");
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeter.getIpAddress(),
