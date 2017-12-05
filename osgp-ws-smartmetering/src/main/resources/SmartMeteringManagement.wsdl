@@ -361,6 +361,22 @@
       </wsdl:output>
     </wsdl:operation>
 
+    <wsdl:operation name="GetFindMessageLogsResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="FindMessageLogsAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindMessageLogsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
     <wsdl:operation name="SetDeviceCommunicationSettings">
       <soap:operation soapAction="" />
       <wsdl:input name="SetDeviceCommunicationSettingsRequest">
