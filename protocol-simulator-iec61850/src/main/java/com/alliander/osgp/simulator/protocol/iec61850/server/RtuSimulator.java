@@ -43,6 +43,7 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Ligh
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Load;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LogicalDevice;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LogicalDeviceNode;
+import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Pq;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Pv;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Rtu;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Wind;
@@ -148,6 +149,7 @@ public class RtuSimulator implements ServerEventListener {
         this.addBoilerDevices(serverModel);
         this.addWindDevices(serverModel);
         this.addLightMeasurementDevice(serverModel);
+        this.addPqDevices(serverModel);
     }
 
     private void addRtuDevices(final ServerModel serverModel) {
@@ -304,6 +306,19 @@ public class RtuSimulator implements ServerEventListener {
         }
     }
 
+    private void addPqDevices(final ServerModel serverModel) {
+        final String pqPrefix = "PQ";
+        int i = 1;
+        String logicalDeviceName = pqPrefix + i;
+        ModelNode pqNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        while (pqNode != null) {
+            this.logicalDevices.add(new Pq(this.getDeviceName(), logicalDeviceName, serverModel));
+            i += 1;
+            logicalDeviceName = pqPrefix + i;
+            pqNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        }
+    }
+
     public void start() throws IOException {
         if (this.isStarted) {
             throw new IOException("Server is already started");
@@ -403,8 +418,8 @@ public class RtuSimulator implements ServerEventListener {
             this.ensurePeriodicDataGenerationIsStopped();
         }
         final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
-        final BasicDataAttribute basicDataAttribute = logicalDevice.getAttributeAndSetValue(LogicalDeviceNode.fromDescription(node),
-                value);
+        final BasicDataAttribute basicDataAttribute = logicalDevice
+                .getAttributeAndSetValue(LogicalDeviceNode.fromDescription(node), value);
         this.server.setValues(Arrays.asList(basicDataAttribute));
     }
 

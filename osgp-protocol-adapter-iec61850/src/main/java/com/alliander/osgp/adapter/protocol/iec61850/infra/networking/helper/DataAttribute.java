@@ -281,7 +281,21 @@ public enum DataAttribute {
     /**
      * Active Power Phase C
      */
-    ACTIVE_POWER_PHASE_C("W.phsC");
+    ACTIVE_POWER_PHASE_C("W.phsC"),
+    FREQUENCY("Hz"),
+    PHASE_TO_NEUTRAL_VOLTAGE("PNV"),
+    PHASE_TO_NEUTRAL_VOLTAGE_PHASE_A("PNV.phsA"),
+    PHASE_TO_NEUTRAL_VOLTAGE_PHASE_B("PNV.phsB"),
+    PHASE_TO_NEUTRAL_VOLTAGE_PHASE_C("PNV.phsC"),
+    POWER_FACTOR("PF"),
+    POWER_FACTOR_PHASE_A("PF.phsA"),
+    POWER_FACTOR_PHASE_B("PF.phsB"),
+    POWER_FACTOR_PHASE_C("PF.phsC"),
+    IMPEDANCE("Z"),
+    IMPEDANCE_PHASE_A("Z.phsA"),
+    IMPEDANCE_PHASE_B("Z.phsB"),
+    IMPEDANCE_PHASE_C("Z.phsC"),
+    VOLTAGE_DIPS("OpCntRs");
 
     private String description;
 

@@ -320,7 +320,8 @@ public enum SubDataAttribute {
     /**
      * C Value
      */
-    C_VALUES("cVal");
+    C_VALUES("cVal"),
+    CTL_MODEL("ctlModel");
 
     private String description;
 
