@@ -184,8 +184,8 @@ public class DeviceResponseMessageService {
             final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(message);
             this.deviceRequestMessageService.processMessage(protocolRequestMessage);
         } else {
-            LOGGER.info("Sending domain response message for message of type {} for device {}.",
-                    message.getMessageType(), message.getDeviceIdentification());
+            LOGGER.info("Sending domain response message for message of type {} for device {} with correlationUid {}.",
+                    message.getMessageType(), message.getDeviceIdentification(), message.getCorrelationUid());
             this.domainResponseMessageSender.send(message);
         }
     }

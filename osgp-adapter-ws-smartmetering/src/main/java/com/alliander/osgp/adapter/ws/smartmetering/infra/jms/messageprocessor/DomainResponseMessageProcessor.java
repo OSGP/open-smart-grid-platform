@@ -117,7 +117,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
         }
 
         try {
-            LOGGER.info("Calling application service function to handle response: {}", messageType);
+            LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}", messageType, correlationUid);
 
             this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid,
                     resultType, resultDescription, dataObject);
@@ -165,7 +165,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final NotificationType notificationType) {
 
-        LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType, e);
+        LOGGER.info("handeling error: {} for notification type: {} with correlationUid: {}", e.getMessage(), notificationType, correlationUid, e);
         this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
                 correlationUid, e.getMessage(), notificationType);
     }
