@@ -237,4 +237,32 @@ public class ManagementService {
         return correlationUid;
     }
 
+    public String enqueueSetDeviceCommunicationSettingsRequest(final String organisationIdentification,
+            final String deviceIdentification,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequest dataRequest,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DEVICE_COMMUNICATION_SETTINGS);
+
+        LOGGER.info("SetDeviceCommunicationSettings called with organisation {}", organisationIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_DEVICE_COMMUNICATION_SETTINGS.toString(), messagePriority,
+                scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(dataRequest).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
 }
