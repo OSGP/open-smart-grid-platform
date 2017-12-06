@@ -77,6 +77,7 @@
       <xsd:enumeration value="SET_MBUS_USER_KEY_BY_CHANNEL" />
       <xsd:enumeration value="COUPLE_MBUS_DEVICE_BY_CHANNEL" />
       <xsd:enumeration value="GET_MBUS_ENCRYPTION_KEY_STATUS" />
+      <xsd:enumeration value="SET_DEVICE_COMMUNICATION_SETTINGS" />
     </xsd:restriction>
   </xsd:simpleType>
 
