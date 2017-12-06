@@ -65,7 +65,7 @@ public class FirmwareFileSteps {
      * @throws IOException
      * @throws Throwable
      */
-    @Given("^a firmware")
+    @Given("^a firmware$")
     public void aFirmware(final Map<String, String> settings) throws IOException {
 
         /*
