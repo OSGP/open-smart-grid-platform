@@ -65,81 +65,105 @@ public class CoupleMBusDeviceCommandExecutor
             final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
 
         LOGGER.debug("retrieving mbus info on e-meter");
-        ChannelElementValuesDto bestMatch = null;
-        final List<ChannelElementValuesDto> channelElements = new ArrayList<>();
+
+        final List<ChannelElementValuesDto> candidateChannelElementValues = this.findCandidateChannelsForDevice(conn,
+                device, requestDto);
+
+        final ChannelElementValuesDto lastChannelElementValuesRetrieved = candidateChannelElementValues
+                .get(candidateChannelElementValues.size() - 1);
+
+        if (FindMatchingChannelHelper.matches(requestDto, lastChannelElementValuesRetrieved)) {
+            /*
+             * Match found, indicating device is already coupled on this
+             * channel: return it.
+             */
+            return new MbusChannelElementsResponseDto(requestDto, lastChannelElementValuesRetrieved.getChannel(),
+                    candidateChannelElementValues);
+        }
+
+        final ChannelElementValuesDto bestMatch = FindMatchingChannelHelper.bestMatch(requestDto,
+                candidateChannelElementValues);
+        if (bestMatch != null) {
+            /*
+             * Good enough match found indicating a channel the device is
+             * already coupled on: return it.
+             */
+            return new MbusChannelElementsResponseDto(requestDto, bestMatch.getChannel(),
+                    candidateChannelElementValues);
+        }
+
+        final ChannelElementValuesDto emptyChannelMatch = this.findEmptyChannel(candidateChannelElementValues);
+        if (emptyChannelMatch == null) {
+            /*
+             * No channel free, all are occupied by M-Bus devices not matching
+             * the one to be coupled here. Return null for the channel.
+             */
+            return new MbusChannelElementsResponseDto(requestDto, null, candidateChannelElementValues);
+        }
+
+        /*
+         * If a free channel is found, write the attribute values from the
+         * request to the M-Bus Client Setup for this channel.
+         *
+         * Note that this will not work for wired M-Bus devices. In order to
+         * properly couple a wired M-Bus device the M-Bus Client Setup
+         * slave_install method needs to be invoked so a primary_address is set
+         * and its value is transferred to the M-Bus slave device.
+         */
+        final ChannelElementValuesDto updatedChannelElementValues = this.writeUpdatedMbus(conn, requestDto,
+                emptyChannelMatch.getChannel());
+
+        /*
+         * Also update the entry in the candidateChannelElementValues list.
+         * Because the List is 0-based, while the channels are incremented from
+         * FIRST_CHANNEL it is needed to subtract FIRST_CHANNEL to get the
+         * correct index to replace the correct element from the candidates.
+         */
+        candidateChannelElementValues.set(emptyChannelMatch.getChannel() - FIRST_CHANNEL, updatedChannelElementValues);
+
+        return new MbusChannelElementsResponseDto(requestDto, updatedChannelElementValues.getChannel(),
+                candidateChannelElementValues);
+    }
+
+    private List<ChannelElementValuesDto> findCandidateChannelsForDevice(final DlmsConnectionHolder conn,
+            final DlmsDevice device, final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
+
+        final List<ChannelElementValuesDto> channelElementValuesList = new ArrayList<>();
         for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
             final List<GetResult> resultList = this.getMBusClientAttributeValues(conn, device, channel);
-            final ChannelElementValuesDto channelValues = this.makeChannelElementValues(channel, resultList);
-            channelElements.add(channelValues);
-            if (FindMatchingChannelHelper.matches(requestDto, channelValues)) {
+            final ChannelElementValuesDto channelElementValues = this.makeChannelElementValues(channel, resultList);
+            channelElementValuesList.add(channelElementValues);
+            if (FindMatchingChannelHelper.matches(requestDto, channelElementValues)) {
                 /*
                  * A complete match for all attributes from the request has been
                  * found. Stop retrieving M-Bus Client Setup attributes for
-                 * other channels.
+                 * other channels. Return a list returning the values retrieved
+                 * so far and don't retrieve any additional M-Bus Client Setup
+                 * data from the device.
                  */
-                bestMatch = channelValues;
-                break;
+                return channelElementValuesList;
             }
         }
-        if (bestMatch == null) {
-            /*
-             * A complete match for all attributes from the request has not been
-             * found. Select the best partial match that has no conflicting
-             * attribute values.
-             */
-            bestMatch = FindMatchingChannelHelper.bestMatch(requestDto, channelElements);
-        }
-        if (bestMatch == null) {
-            /*
-             * A partial match for all attributes from the request has also not
-             * been found. Select the first available free Mbus channel to
-             * couple the unbound Mbus device.
-             */
-
-            bestMatch = this.findEmptyChannel(conn, device, requestDto, bestMatch);
-            if (bestMatch != null) {
-                /*
-                 * If a free channel is found, write the attribute values from
-                 * the request to this channel.
-                 */
-                final ChannelElementValuesDto updatedChannel = this.writeUpdatedMbus(conn, requestDto,
-                        bestMatch.getChannel());
-                /*
-                 * Also update the entry in the channelElements list. Because
-                 * the List is 0-based, it is needed to subtract 1 to set the
-                 * ChannelElements to the desired channel.
-                 */
-                channelElements.set(bestMatch.getChannel() - 1, updatedChannel);
-            }
-        }
-
-        return new MbusChannelElementsResponseDto(requestDto, bestMatch == null ? null : bestMatch.getChannel(),
-                channelElements);
+        /*
+         * A complete match for all attributes from the request has not been
+         * found. The best partial match that has no conflicting attribute
+         * values, or the first free channel has to be picked from this list.
+         */
+        return channelElementValuesList;
     }
 
-    private ChannelElementValuesDto findEmptyChannel(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final MbusChannelElementsDto requestDto, final ChannelElementValuesDto bestMatch)
-            throws ProtocolAdapterException {
-        ChannelElementValuesDto availableChannel = bestMatch;
-        for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS
-                && availableChannel == null; channel++) {
-            final List<GetResult> resultList = this.getMBusClientAttributeValues(conn, device, channel);
-            /*
-             * Check if all mbus attributes are empty for a channel, if so,
-             * there is a match for coupling the mbus device to the gateway
-             * device to this channel.
-             */
-            if ((long) resultList.get(INDEX_IDENTIFICATION_NUMBER).getResultData().getValue() == 0L
-                    && (int) resultList.get(INDEX_MANUFACTURER_ID).getResultData().getValue() == 0
-                    && (short) resultList.get(INDEX_VERSION).getResultData().getValue() == 0
-                    && (short) resultList.get(INDEX_DEVICE_TYPE).getResultData().getValue() == 0
-                    && (short) resultList.get(INDEX_PRIMARY_ADDRESS).getResultData().getValue() == 0) {
-                availableChannel = new ChannelElementValuesDto(channel, requestDto.getPrimaryAddress(),
-                        requestDto.getMbusIdentificationNumber(), requestDto.getMbusManufacturerIdentification(),
-                        requestDto.getMbusVersion(), requestDto.getMbusDeviceTypeIdentification());
+    private ChannelElementValuesDto findEmptyChannel(final List<ChannelElementValuesDto> channelElementValuesList) {
+        for (final ChannelElementValuesDto channelElementValues : channelElementValuesList) {
+            if ((channelElementValues.getIdentificationNumber() == null
+                    || "00000000".equals(channelElementValues.getIdentificationNumber())
+                            && channelElementValues.getManufacturerIdentification() == null)
+                    && (channelElementValues.getVersion() == 0)
+                    && (channelElementValues.getDeviceTypeIdentification() == 0)
+                    && (channelElementValues.getPrimaryAddress() == 0)) {
+                return channelElementValues;
             }
         }
-        return availableChannel;
+        return null;
     }
 
     private ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,
