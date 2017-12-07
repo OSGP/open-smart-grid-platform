@@ -75,6 +75,16 @@ public class ScheduledTaskScheduler implements Runnable {
         }
     }
 
+    /**
+     * Fetch scheduled tasks for given scheduledTaskStatusTypes: NEW and RETRY.
+     * The processed tasks are set to PENDING, so they will not be fetched by
+     * this method.
+     *
+     * @param type
+     *            ScheduledTaskStatusType (NEW, PENDING, COMPLETE, FAILED,
+     *            RETRY)
+     * @return
+     */
     private List<ScheduledTask> getScheduledTasks(final ScheduledTaskStatusType type) {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
