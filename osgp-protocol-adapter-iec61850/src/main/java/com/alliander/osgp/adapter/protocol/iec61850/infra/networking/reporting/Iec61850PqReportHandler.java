@@ -37,7 +37,7 @@ public class Iec61850PqReportHandler implements Iec61850ReportHandler {
     private static final Set<String> COMPOSITE_NODES = new HashSet<>(Arrays.asList(new String[] { "PNV", "PF", "Z" }));
 
     private static final Pattern NODE_PATTERN = Pattern
-            .compile("\\A(.*)WIND([1-9]\\d*+)/(LLN0|DRCC|DGEN|MMXU|GGIO|QVVR)([1-9]\\d*+)?\\.(.*)\\Z");
+            .compile("\\A(.*)PQ([1-9]\\d*+)/(LLN0|DRCC|DGEN|MMXU|GGIO|QVVR)([1-9]\\d*+)?\\.(.*)\\Z");
 
     static {
         intializeNodesUsingIdList();
