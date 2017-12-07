@@ -22,9 +22,9 @@ public interface ScheduledTaskRepository extends JpaRepository<ScheduledTask, Lo
     List<ScheduledTask> findByStatusAndScheduledTimeLessThan(ScheduledTaskStatusType status, Timestamp currentTimestamp,
             Pageable pageable);
 
-    List<ScheduledTask> findByDeviceIdentification(String deviceIdentification, Pageable pageable);
+    List<ScheduledTask> findByDeviceIdentification(String deviceIdentification);
 
-    List<ScheduledTask> findByOrganisationIdentification(String organisationIdentification, Pageable pageable);
+    List<ScheduledTask> findByOrganisationIdentification(String organisationIdentification);
 
     ScheduledTask findByCorrelationUid(String correlationUid);
 }

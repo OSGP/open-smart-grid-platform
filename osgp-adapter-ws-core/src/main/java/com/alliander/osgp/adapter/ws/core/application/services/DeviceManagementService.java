@@ -24,14 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.ws.core.application.config.ApplicationContext;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessage;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
@@ -143,9 +141,6 @@ public class DeviceManagementService {
     @Autowired
     @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
     private String netManagementOrganisation;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     /**
      * Constructor
@@ -481,7 +476,7 @@ public class DeviceManagementService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.FIND_SCHEDULED_TASKS);
 
-        return this.getScheduledTasksByDeviceIdentification(deviceIdentification);
+        return this.scheduledTaskRepository.findByDeviceIdentification(deviceIdentification);
     }
 
     @Transactional(value = "transactionManager")
@@ -490,8 +485,7 @@ public class DeviceManagementService {
             throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_SCHEDULED_TASKS);
-
-        return this.getScheduledTasksByOrganisationIdentification(organisationIdentification);
+        return this.scheduledTaskRepository.findByOrganisationIdentification(organisationIdentification);
     }
 
     @Transactional(value = "writableTransactionManager")
@@ -730,51 +724,4 @@ public class DeviceManagementService {
     public ResponseMessage dequeueSetDeviceLifecycleStatusResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
-
-    private List<ScheduledTask> getScheduledTasksByDeviceIdentification(final String deviceIdentification) {
-        int scheduledTaskPageSize = this.applicationContext.scheduledTaskPageSize();
-        Pageable pageable = new PageRequest(0, scheduledTaskPageSize);
-
-        List<ScheduledTask> scheduledTasks = this.getScheduledTasksByDeviceIdentification(deviceIdentification,
-                pageable);
-
-        final List<ScheduledTask> allScheduledTasks = new ArrayList<>();
-        while (!scheduledTasks.isEmpty()) {
-            allScheduledTasks.addAll(scheduledTasks);
-            pageable = new PageRequest(scheduledTaskPageSize + 1,
-                    scheduledTaskPageSize + this.applicationContext.scheduledTaskPageSize());
-            scheduledTasks = this.getScheduledTasksByDeviceIdentification(deviceIdentification, pageable);
-            scheduledTaskPageSize += this.applicationContext.scheduledTaskPageSize();
-        }
-        return allScheduledTasks;
-    }
-
-    private List<ScheduledTask> getScheduledTasksByOrganisationIdentification(final String organisationIdentification) {
-        int scheduledTaskPageSize = this.applicationContext.scheduledTaskPageSize();
-        Pageable pageable = new PageRequest(0, scheduledTaskPageSize);
-
-        List<ScheduledTask> scheduledTasks = this
-                .getScheduledTasksByOrganisationIdentification(organisationIdentification, pageable);
-
-        final List<ScheduledTask> allScheduledTasks = new ArrayList<>();
-        while (!scheduledTasks.isEmpty()) {
-            allScheduledTasks.addAll(scheduledTasks);
-            pageable = new PageRequest(scheduledTaskPageSize + 1,
-                    scheduledTaskPageSize + this.applicationContext.scheduledTaskPageSize());
-            scheduledTasks = this.getScheduledTasksByOrganisationIdentification(organisationIdentification, pageable);
-            scheduledTaskPageSize += this.applicationContext.scheduledTaskPageSize();
-        }
-        return allScheduledTasks;
-    }
-
-    private List<ScheduledTask> getScheduledTasksByOrganisationIdentification(final String organisationIdentification,
-            final Pageable pageable) {
-        return this.scheduledTaskRepository.findByOrganisationIdentification(organisationIdentification, pageable);
-    }
-
-    private List<ScheduledTask> getScheduledTasksByDeviceIdentification(final String deviceIdentification,
-            final Pageable pageable) {
-        return this.scheduledTaskRepository.findByDeviceIdentification(deviceIdentification, pageable);
-    }
-
 }
