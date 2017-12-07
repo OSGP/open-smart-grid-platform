@@ -29,6 +29,26 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     /**
      * @deprecated Use builder in stead
+     * @param domain
+     *            the domain of the message
+     * @param domainVersion
+     *            the version of the domain
+     * @param messageType
+     *            the message type
+     * @param correlationUid
+     *            the correlation uid
+     * @param organisationIdentification
+     *            the identification of the organisation
+     * @param deviceIdentification
+     *            the identification of the device
+     * @param result
+     *            the response message result
+     * @param osgpException
+     *            the optional exception
+     * @param dataObject
+     *            the contents of the response
+     * @param retryCount
+     *            the number of times the message is retried
      */
     @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
@@ -43,6 +63,24 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     /**
      * @deprecated Use builder in stead
+     * @param domain
+     *            the domain of the message
+     * @param domainVersion
+     *            the version of the domain
+     * @param messageType
+     *            the message type
+     * @param correlationUid
+     *            the correlation uid
+     * @param organisationIdentification
+     *            the identification of the organisation
+     * @param deviceIdentification
+     *            the identification of the device
+     * @param result
+     *            the response message result
+     * @param osgpException
+     *            the optional exception
+     * @param dataObject
+     *            the contents of the response
      */
     @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
@@ -55,6 +93,26 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     /**
      * @deprecated Use builder in stead
+     * @param domain
+     *            the domain of the message
+     * @param domainVersion
+     *            the version of the domain
+     * @param messageType
+     *            the message type
+     * @param correlationUid
+     *            the correlation uid
+     * @param organisationIdentification
+     *            the identification of the organisation
+     * @param deviceIdentification
+     *            the identification of the device
+     * @param result
+     *            the response message result
+     * @param osgpException
+     *            the optional exception
+     * @param dataObject
+     *            the contents of the response
+     * @param scheduled
+     *            the time the response is scheduled for
      */
     @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
@@ -69,6 +127,28 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     /**
      * @deprecated Use builder in stead
+     * @param domain
+     *            the domain of the message
+     * @param domainVersion
+     *            the version of the domain
+     * @param messageType
+     *            the message type
+     * @param correlationUid
+     *            the correlation uid
+     * @param organisationIdentification
+     *            the identification of the organisation
+     * @param deviceIdentification
+     *            the identification of the device
+     * @param result
+     *            the response message result
+     * @param osgpException
+     *            the optional exception
+     * @param dataObject
+     *            the contents of the response
+     * @param scheduled
+     *            the time the response is scheduled for
+     * @param retryCount
+     *            the number of times the message is retried
      */
     @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
@@ -82,6 +162,32 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     /**
      * @deprecated Use builder in stead
+     * @param domain
+     *            the domain of the message
+     * @param domainVersion
+     *            the version of the domain
+     * @param messageType
+     *            the message type
+     * @param correlationUid
+     *            the correlation uid
+     * @param organisationIdentification
+     *            the identification of the organisation
+     * @param deviceIdentification
+     *            the identification of the device
+     * @param result
+     *            the response message result
+     * @param osgpException
+     *            the optional exception
+     * @param dataObject
+     *            the contents of the response
+     * @param scheduled
+     *            the time the response is scheduled for
+     * @param retryCount
+     *            the number of times the message is retried
+     * @param messagePriority
+     *            the priority of the message for the queue
+     * @param bypassRetry
+     *            indicates whether or not a message should be retried
      */
     @Deprecated
     private ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,

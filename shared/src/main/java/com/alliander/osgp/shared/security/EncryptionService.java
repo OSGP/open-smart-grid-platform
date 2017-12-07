@@ -98,8 +98,7 @@ public class EncryptionService {
                     this.keyPath);
             LOGGER.error(errorMessage);
 
-            throw new FunctionalException(FunctionalExceptionType.READING_KEY_EXCEPTION,
-                    ComponentType.SHARED, e);
+            throw new FunctionalException(FunctionalExceptionType.READING_KEY_EXCEPTION, ComponentType.SHARED, e);
         }
     }
 
@@ -107,7 +106,14 @@ public class EncryptionService {
      * Decrypts the data using the key, Strips off iv bytes when they are there
      * (first 16 0 bytes).
      *
+     * @param inputData
+     *            the data to be decrypted
+     * @return the decrypted version of the inputData
      * @throws FunctionalException
+     *             in case of a NoSuchAlgorithmException,
+     *             NoSuchPaddingException, InvalidKeyException,
+     *             IllegalBlockSizeException, BadPaddingException,
+     *             NoSuchProviderException or InvalidAlgorithmParameterException
      */
     public byte[] decrypt(final byte[] inputData) throws FunctionalException {
 
@@ -125,8 +131,7 @@ public class EncryptionService {
                 | InvalidAlgorithmParameterException e) {
             LOGGER.error("Unexpected exception during decryption", e);
 
-            throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION,
-                    ComponentType.SHARED, e);
+            throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.SHARED, e);
         }
     }
 
@@ -139,7 +144,8 @@ public class EncryptionService {
      * </pre>
      *
      * @param bytes
-     * @return
+     *            the array to check
+     * @return true if the array is prepended with 0 bytes, false otherwise
      */
     private boolean checkNullBytesPrepended(final byte[] bytes) {
         if (bytes.length > IVBYTES.length) {
@@ -160,7 +166,14 @@ public class EncryptionService {
     /**
      * Encrypts the data using the key
      *
+     * @param inputData
+     *            the data to be encrypted
+     * @return the encrypted version of the inputData
      * @throws FunctionalException
+     *             in case of a NoSuchAlgorithmException,
+     *             NoSuchPaddingException, InvalidKeyException,
+     *             IllegalBlockSizeException, BadPaddingException,
+     *             NoSuchProviderException or InvalidAlgorithmParameterException
      */
     public byte[] encrypt(final byte[] inputData) throws FunctionalException {
         try {
@@ -171,8 +184,7 @@ public class EncryptionService {
                 | BadPaddingException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
             LOGGER.error("Unexpected exception during encryption", e);
 
-            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION,
-                    ComponentType.SHARED, e);
+            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.SHARED, e);
         }
     }
 

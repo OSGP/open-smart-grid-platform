@@ -40,11 +40,17 @@ public final class CertificateHelper {
      *            path to key
      * @param keyType
      *            type of key
+     * @param provider
+     *            the signature provider of the key
      * @return instance of public key
      * @throws NoSuchAlgorithmException
+     *             thrown when the given algorithm does not exist
      * @throws InvalidKeySpecException
+     *             thrown when the key specification is invalid
      * @throws IOException
+     *             thrown when IO difficulties occur
      * @throws NoSuchProviderException
+     *             thrown when the given provider is not found
      */
     public static PrivateKey createPrivateKey(final String keyPath, final String keyType, final String provider)
             throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchProviderException {
@@ -63,11 +69,17 @@ public final class CertificateHelper {
      *            path to key
      * @param keyType
      *            type of key
+     * @param provider
+     *            the signature provider of the key
      * @return instance of public key
      * @throws NoSuchAlgorithmException
+     *             thrown when the given algorithm does not exist
      * @throws InvalidKeySpecException
+     *             thrown when the key specification is invalid
      * @throws IOException
+     *             thrown when IO difficulties occur
      * @throws NoSuchProviderException
+     *             thrown when the given provider is not found
      */
     public static PublicKey createPublicKey(final String keyPath, final String keyType, final String provider)
             throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchProviderException {
@@ -79,8 +91,8 @@ public final class CertificateHelper {
     }
 
     public static PrivateKey createPrivateKeyFromBase64(final String keyBase64, final String keyType,
-            final String provider) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException,
-            NoSuchProviderException {
+            final String provider)
+            throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchProviderException {
         final byte[] key = Base64.decodeBase64(keyBase64);
 
         final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
@@ -90,8 +102,8 @@ public final class CertificateHelper {
     }
 
     public static PublicKey createPublicKeyFromBase64(final String keyBase64, final String keyType,
-            final String provider) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException,
-            NoSuchProviderException {
+            final String provider)
+            throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchProviderException {
         final byte[] key = Base64.decodeBase64(keyBase64);
 
         final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(key);
