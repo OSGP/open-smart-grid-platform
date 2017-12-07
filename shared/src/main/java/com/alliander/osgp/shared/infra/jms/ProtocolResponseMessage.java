@@ -27,9 +27,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
     private final int retryCount;
     private final RetryHeader retryHeader;
 
-    /**
-     * @deprecated Use builder in stead
-     */
+    // @deprecated Use builder in stead
     @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
@@ -41,9 +39,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     }
 
-    /**
-     * @deprecated Use builder in stead
-     */
+    // @deprecated Use builder in stead
     @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
@@ -53,9 +49,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
                 DEFAULT_BYPASS_RETRY);
     }
 
-    /**
-     * @deprecated Use builder in stead
-     */
+    // @deprecated Use builder in stead
     @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
@@ -67,9 +61,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     }
 
-    /**
-     * @deprecated Use builder in stead
-     */
+    // @deprecated Use builder in stead
     @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
@@ -80,9 +72,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
                 DEFAULT_BYPASS_RETRY);
     }
 
-    /**
-     * @deprecated Use builder in stead
-     */
+    // @deprecated Use builder in stead
     @Deprecated
     private ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
