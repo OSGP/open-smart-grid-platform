@@ -69,6 +69,8 @@ public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_NET_MANAGEMENT_ORGANISATION = "net.management.organisation";
 
+    private static final String PROPERTY_NAME_SCHEDULING_TASK_PAGE_SIZE = "scheduling.task.page.size";
+
     @Resource
     private Environment environment;
 
@@ -92,6 +94,11 @@ public class ApplicationContext extends AbstractConfig {
         return new PagingSettings(
                 Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)),
                 Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
+    }
+
+    @Bean
+    public Integer scheduledTaskPageSize() {
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_PAGE_SIZE));
     }
 
     @Bean

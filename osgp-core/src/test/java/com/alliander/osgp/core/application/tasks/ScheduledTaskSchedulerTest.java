@@ -26,7 +26,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.domain.Pageable;
 
+import com.alliander.osgp.core.application.config.SchedulingConfig;
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
@@ -57,6 +59,9 @@ public class ScheduledTaskSchedulerTest {
     @InjectMocks
     private ScheduledTaskScheduler scheduler;
 
+    @Mock
+    private SchedulingConfig schedulingConfig;
+
     private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata("deviceId",
             "organisationId", "correlationId", "messageType", 4);
     private static final String DOMAIN = "Domain";
@@ -72,18 +77,20 @@ public class ScheduledTaskSchedulerTest {
      */
     @Test
     public void testRunFunctionalException() throws FunctionalException, UnknownHostException {
-        final List<ScheduledTask> scheduledTasks = new ArrayList<ScheduledTask>();
+        final List<ScheduledTask> scheduledTasks = new ArrayList<>();
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
         scheduledTasks.add(scheduledTask);
 
         when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(any(ScheduledTaskStatusType.class),
-                any(Timestamp.class))).thenReturn(scheduledTasks).thenReturn(new ArrayList<ScheduledTask>());
+                any(Timestamp.class), any(Pageable.class))).thenReturn(scheduledTasks)
+                        .thenReturn(new ArrayList<ScheduledTask>());
 
         final Device device = new Device();
         device.updateRegistrationData(InetAddress.getByName("127.0.0.1"), "deviceType");
         when(this.deviceRepository.findByDeviceIdentification(anyString())).thenReturn(device);
         when(this.scheduledTaskRepository.save(any(ScheduledTask.class))).thenReturn(scheduledTask);
+        when(this.schedulingConfig.scheduledTaskPageSize()).thenReturn(30);
         doThrow(new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.OSGP_CORE))
                 .when(this.deviceRequestMessageService).processMessage(any(ProtocolRequestMessage.class));
 
