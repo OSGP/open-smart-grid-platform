@@ -62,7 +62,11 @@ public enum LogicalDevice {
     /**
      * Logical Device Wind
      */
-    WIND("WIND");
+    WIND("WIND"),
+    /**
+     * Logical Device Pq
+     */
+    PQ("PQ");
 
     private String description;
 

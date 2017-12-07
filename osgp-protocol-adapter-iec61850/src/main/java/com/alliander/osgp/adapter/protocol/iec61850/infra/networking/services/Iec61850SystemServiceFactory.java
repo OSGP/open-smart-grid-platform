@@ -56,6 +56,9 @@ public class Iec61850SystemServiceFactory {
     @Autowired
     private Iec61850WindSystemService iec61850WindSystemService;
 
+    @Autowired
+    private Iec61850PqSystemService iec61850PqSystemService;
+
     private Map<String, SystemService> systemServices;
 
     public SystemService getSystemService(final SystemFilterDto systemFilter) throws OsgpException {
@@ -86,6 +89,7 @@ public class Iec61850SystemServiceFactory {
             this.systemServices.put(LogicalDevice.BOILER.name(), this.iec61850BoilerSystemService);
             this.systemServices.put(LogicalDevice.HEAT_PUMP.name(), this.iec61850HeatPumpSystemService);
             this.systemServices.put(LogicalDevice.WIND.name(), this.iec61850WindSystemService);
+            this.systemServices.put(LogicalDevice.PQ.name(), this.iec61850PqSystemService);
         }
         return this.systemServices;
     }

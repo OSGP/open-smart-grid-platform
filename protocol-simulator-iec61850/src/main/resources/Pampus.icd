@@ -4,7 +4,7 @@
   <Private type="ServerInterval">T#50ms</Private>
   <Private type="SCLPrivateTagEnable">False</Private>
   <Header id="WAGO61850Server" nameStructure="IEDName" />
-  <!--Create on WAGO Kontakttechnik GmbH Co KG with Configurator Version 3.1.9 at 28-9-2017 16:19:45-->
+  <!--Create on WAGO Kontakttechnik GmbH Co KG with Configurator Version 3.1.9 at 11/16/2017 3:23:04 PM-->
   <Communication>
     <SubNetwork name="node">
       <ConnectedAP iedName="WAGO61850Server" apName="W1">
@@ -22,7 +22,7 @@
       </ConnectedAP>
     </SubNetwork>
   </Communication>
-  <IED name="WAGO61850Server" type="Telecontrol application" manufacturer="WAGO Kontakttechnik GmbH Co KG" configVersion="3.1.9" desc="Version 0.6.1" engRight="full" owner="">
+  <IED name="WAGO61850Server" type="Telecontrol application" manufacturer="WAGO Kontakttechnik GmbH Co KG" configVersion="3.1.9" desc="Version 0.7.0" engRight="full" owner="">
     <Services nameLength="64">
       <ClientServices bufReport="true" sv="true" />
       <DynAssociation />
@@ -32,10 +32,10 @@
       <GetDataSetValue />
       <SetDataSetValue />
       <DataSetDirectory />
-      <ConfDataSet max="29" />
+      <ConfDataSet max="31" />
       <ReadWrite />
       <TimerActivatedControl />
-      <ConfReportControl max="39" />
+      <ConfReportControl max="41" />
       <GetCBValues />
       <ReportSettings cbName="Fix" datSet="Fix" rptID="Dyn" optFields="Dyn" bufTime="Dyn" trgOps="Dyn" intgPd="Dyn" />
       <ConfLNs fixPrefix="true" fixLnInst="true" />
@@ -2447,6 +2447,163 @@
             </DOI>
           </LN>
         </LDevice>
+        <LDevice inst="PQ1">
+          <LN0 lnType="LLN0_5" lnClass="LLN0" inst="">
+            <DataSet name="Measurements">
+              <FCDA ldInst="PQ1" prefix="" lnClass="MMXU" lnInst="1" doName="Hz" fc="MX" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="MMXU" lnInst="1" doName="PNV" fc="MX" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="MMXU" lnInst="1" doName="PF" fc="MX" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="MMXU" lnInst="1" doName="Z" fc="MX" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="MMXU" lnInst="2" doName="Hz" fc="MX" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="MMXU" lnInst="2" doName="PNV" fc="MX" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="MMXU" lnInst="2" doName="PF" fc="MX" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="MMXU" lnInst="3" doName="Hz" fc="MX" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="MMXU" lnInst="3" doName="PNV" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="PQ1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+              <FCDA ldInst="PQ1" prefix="" lnClass="QVVR" lnInst="1" doName="OpCntRs" fc="CF" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="PQ1_Measurements" datSet="Measurements" intgPd="60000" confRev="1" buffered="true" bufTime="0">
+              <TrgOps period="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="PQ1_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0">
+              <TrgOps dchg="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007B</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_4" lnClass="MMXU" inst="1" prefix="">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Hz" desc="Average over a period of 1 minute" />
+            <DOI name="PNV" desc="Average over a period of 1 minute per phase" />
+            <DOI name="PF" desc="Cos Phi per Phase" />
+            <DOI name="Z" desc="Total Harmonic Distortion (THD) per Phase" />
+          </LN>
+          <LN lnType="MMXU_5" lnClass="MMXU" inst="2" prefix="">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Hz" desc="Minimum during a period of 1 minute" />
+            <DOI name="PNV" desc="Minimum during a period of 1 minute per phase" />
+            <DOI name="PF" desc="Power Factor LF per Phase" />
+          </LN>
+          <LN lnType="MMXU_6" lnClass="MMXU" inst="3" prefix="">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Hz" desc="Maximum during a period of 1 minute" />
+            <DOI name="PNV" desc="Maximum during a period of 1 minute per phase" />
+          </LN>
+          <LN lnType="QVVR_0" lnClass="QVVR" inst="1" prefix="">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="VarStr">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OpCntRs" desc="Total number of voltage dips">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
       </Server>
     </AccessPoint>
   </IED>
@@ -2564,6 +2721,29 @@
       <DO name="Beh" type="ENS_0" />
       <DO name="W" type="WYE_0" />
     </LNodeType>
+    <LNodeType id="MMXU_4" lnClass="MMXU">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Hz" type="MV_0" />
+      <DO name="PNV" type="WYE_0" />
+      <DO name="PF" type="WYE_0" />
+      <DO name="Z" type="WYE_0" />
+    </LNodeType>
+    <LNodeType id="MMXU_5" lnClass="MMXU">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Hz" type="MV_0" />
+      <DO name="PNV" type="WYE_0" />
+      <DO name="PF" type="WYE_0" />
+    </LNodeType>
+    <LNodeType id="MMXU_6" lnClass="MMXU">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Hz" type="MV_0" />
+      <DO name="PNV" type="WYE_0" />
+    </LNodeType>
+    <LNodeType id="QVVR_0" lnClass="QVVR">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="VarStr" type="SPS_0" />
+      <DO name="OpCntRs" type="INC_0" />
+    </LNodeType>
     <DOType id="APC_0" cdc="APC">
       <DA name="subEna" fc="SV" bType="BOOLEAN" />
       <DA name="subVal" fc="SV" bType="Struct" type="AnalogueValue_0" />
@@ -2609,6 +2789,12 @@
       <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="GnOpStKind" />
       <DA name="q" fc="ST" qchg="true" bType="Quality" />
       <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="INC_0" cdc="INC">
+      <DA name="stVal" fc="ST" dchg="true" bType="INT32" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+      <DA name="ctlModel" fc="CF" dchg="true" bType="Enum" type="CtlModelsKind" />
     </DOType>
     <DOType id="ING_0" cdc="ING">
       <DA name="setVal" fc="SP" dchg="true" bType="INT32" />

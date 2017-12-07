@@ -151,7 +151,11 @@ public enum LogicalNode {
      * MFLW2, Type of material set to value 6 (Natural gas) and MatStat 8State
      * of material) to value 2 (Liquid)
      */
-    MAT_FLOW_TWO("MFLW2");
+    MAT_FLOW_TWO("MFLW2"),
+    /**
+     * QVVR1, Voltage variation
+     */
+    QVVR1("QVVR1");
 
     private final String description;
 

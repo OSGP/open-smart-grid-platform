@@ -226,10 +226,79 @@ public enum LogicalDeviceNode {
     SPGGIO3_IND_STVAL("SPGGIO3.Ind.stVal", BdaType.BOOLEAN, Fc.ST),
     SPGGIO4_IND_STVAL("SPGGIO4.Ind.stVal", BdaType.BOOLEAN, Fc.ST),
 
-    LLN0_REPORTMEASUREMENTS_01_RPT_ENA("LLN0.ReportMeasurements01.RptEna", BdaType.BOOLEAN, Fc.ST),
-    LLN0_REPORTMEASUREMENTS_02_RPT_ENA("LLN0.ReportMeasurements02.RptEna", BdaType.BOOLEAN, Fc.ST),
-    LLN0_REPORTSTATUS_01_RPT_ENA("LLN0.ReportStatus01.RptEna", BdaType.BOOLEAN, Fc.ST),
-    LLN0_REPORTSTATUS_02_RPT_ENA("LLN0.ReportStatus02.RptEna", BdaType.BOOLEAN, Fc.ST);
+    MMXU1_HZ_MAG_F("MMXU1.Hz.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_HZ_Q("MMXU1.Hz.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_HZ_T("MMXU1.Hz.t", BdaType.TIMESTAMP, Fc.MX),
+
+    MMXU1_PNV_PHSA_CVAL_MAG_F("MMXU1.PNV.phsA.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_PNV_PHSA_CVAL_Q("MMXU1.PNV.phsA.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_PNV_PHSA_CVAL_T("MMXU1.PNV.phsA.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU1_PNV_PHSB_CVAL_MAG_F("MMXU1.PNV.phsB.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_PNV_PHSB_CVAL_Q("MMXU1.PNV.phsB.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_PNV_PHSB_CVAL_T("MMXU1.PNV.phsB.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU1_PNV_PHSC_CVAL_MAG_F("MMXU1.PNV.phsC.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_PNV_PHSC_CVAL_Q("MMXU1.PNV.phsC.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_PNV_PHSC_CVAL_T("MMXU1.PNV.phsC.t", BdaType.TIMESTAMP, Fc.MX),
+
+    MMXU1_PF_PHSA_CVAL_MAG_F("MMXU1.PF.phsA.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_PF_PHSA_CVAL_Q("MMXU1.PF.phsA.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_PF_PHSA_CVAL_T("MMXU1.PF.phsA.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU1_PF_PHSB_CVAL_MAG_F("MMXU1.PF.phsB.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_PF_PHSB_CVAL_Q("MMXU1.PF.phsB.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_PF_PHSB_CVAL_T("MMXU1.PF.phsB.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU1_PF_PHSC_CVAL_MAG_F("MMXU1.PF.phsC.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_PF_PHSC_CVAL_Q("MMXU1.PF.phsC.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_PF_PHSC_CVAL_T("MMXU1.PF.phsC.t", BdaType.TIMESTAMP, Fc.MX),
+
+    MMXU1_Z_PHSA_CVAL_MAG_F("MMXU1.Z.phsA.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_Z_PHSA_CVAL_Q("MMXU1.Z.phsA.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_Z_PHSA_CVAL_T("MMXU1.Z.phsA.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU1_Z_PHSB_CVAL_MAG_F("MMXU1.Z.phsB.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_Z_PHSB_CVAL_Q("MMXU1.Z.phsB.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_Z_PHSB_CVAL_T("MMXU1.Z.phsB.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU1_Z_PHSC_CVAL_MAG_F("MMXU1.Z.phsC.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU1_Z_PHSC_CVAL_Q("MMXU1.Z.phsC.q", BdaType.QUALITY, Fc.MX),
+    MMXU1_Z_PHSC_CVAL_T("MMXU1.Z.phsC.t", BdaType.TIMESTAMP, Fc.MX),
+
+    MMXU2_HZ_MAG_F("MMXU2.Hz.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU2_HZ_Q("MMXU2.Hz.q", BdaType.QUALITY, Fc.MX),
+    MMXU2_HZ_T("MMXU2.Hz.t", BdaType.TIMESTAMP, Fc.MX),
+
+    MMXU2_PNV_PHSA_CVAL_MAG_F("MMXU2.PNV.phsA.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU2_PNV_PHSA_CVAL_Q("MMXU2.PNV.phsA.q", BdaType.QUALITY, Fc.MX),
+    MMXU2_PNV_PHSA_CVAL_T("MMXU2.PNV.phsA.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU2_PNV_PHSB_CVAL_MAG_F("MMXU2.PNV.phsB.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU2_PNV_PHSB_CVAL_Q("MMXU2.PNV.phsB.q", BdaType.QUALITY, Fc.MX),
+    MMXU2_PNV_PHSB_CVAL_T("MMXU2.PNV.phsB.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU2_PNV_PHSC_CVAL_MAG_F("MMXU2.PNV.phsC.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU2_PNV_PHSC_CVAL_Q("MMXU2.PNV.phsC.q", BdaType.QUALITY, Fc.MX),
+    MMXU2_PNV_PHSC_CVAL_T("MMXU2.PNV.phsC.t", BdaType.TIMESTAMP, Fc.MX),
+
+    MMXU2_PF_PHSA_CVAL_MAG_F("MMXU2.PF.phsA.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU2_PF_PHSA_CVAL_Q("MMXU2.PF.phsA.q", BdaType.QUALITY, Fc.MX),
+    MMXU2_PF_PHSA_CVAL_T("MMXU2.PF.phsA.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU2_PF_PHSB_CVAL_MAG_F("MMXU2.PF.phsB.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU2_PF_PHSB_CVAL_Q("MMXU2.PF.phsB.q", BdaType.QUALITY, Fc.MX),
+    MMXU2_PF_PHSB_CVAL_T("MMXU2.PF.phsB.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU2_PF_PHSC_CVAL_MAG_F("MMXU2.PF.phsC.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU2_PF_PHSC_CVAL_Q("MMXU2.PF.phsC.q", BdaType.QUALITY, Fc.MX),
+    MMXU2_PF_PHSC_CVAL_T("MMXU2.PF.phsC.t", BdaType.TIMESTAMP, Fc.MX),
+
+    MMXU3_HZ_MAG_F("MMXU3.Hz.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU3_HZ_Q("MMXU3.Hz.q", BdaType.QUALITY, Fc.MX),
+    MMXU3_HZ_T("MMXU3.Hz.t", BdaType.TIMESTAMP, Fc.MX),
+
+    MMXU3_PNV_PHSA_CVAL_MAG_F("MMXU3.PNV.phsA.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU3_PNV_PHSA_CVAL_Q("MMXU3.PNV.phsA.q", BdaType.QUALITY, Fc.MX),
+    MMXU3_PNV_PHSA_CVAL_T("MMXU3.PNV.phsA.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU3_PNV_PHSB_CVAL_MAG_F("MMXU3.PNV.phsB.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU3_PNV_PHSB_CVAL_Q("MMXU3.PNV.phsB.q", BdaType.QUALITY, Fc.MX),
+    MMXU3_PNV_PHSB_CVAL_T("MMXU3.PNV.phsB.t", BdaType.TIMESTAMP, Fc.MX),
+    MMXU3_PNV_PHSC_CVAL_MAG_F("MMXU3.PNV.phsC.cVal.mag.f", BdaType.FLOAT32, Fc.MX),
+    MMXU3_PNV_PHSC_CVAL_Q("MMXU3.PNV.phsC.q", BdaType.QUALITY, Fc.MX),
+    MMXU3_PNV_PHSC_CVAL_T("MMXU3.PNV.phsC.t", BdaType.TIMESTAMP, Fc.MX),
+
+    QVVR1_OPCNTRS_CTLMODEL("QVVR1.OpCntRs.ctlModel", BdaType.INT8, Fc.CF);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogicalDeviceNode.class);
 
