@@ -34,6 +34,8 @@ public abstract class BaseResponseMessageFinder {
      * @param correlationUid
      *            The correlation UID of the message to find.
      * @return A response message.
+     * @throws OsgpException
+     *             In case an error message is present in the response message.
      */
     public ResponseMessage findMessage(final String correlationUid) throws OsgpException {
         LOGGER.info("Trying to find message with correlationUID: {}", correlationUid);
@@ -86,7 +88,7 @@ public abstract class BaseResponseMessageFinder {
      *
      * @param responseMessage
      *            The response message to check.
-     * @throws ResponseMessageException
+     * @throws OsgpException
      *             In case an error message is present in the response message.
      */
     protected void checkResponseMessage(final ResponseMessage responseMessage) throws OsgpException {

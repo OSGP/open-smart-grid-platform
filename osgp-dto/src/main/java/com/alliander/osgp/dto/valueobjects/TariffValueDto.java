@@ -21,9 +21,9 @@ public class TariffValueDto implements Serializable {
 
     /**
      * Gets the value of the index property.
-     * 
+     *
      * @return possible object is {@link Integer }
-     * 
+     *
      */
     public Integer getIndex() {
         return this.index;
@@ -31,26 +31,26 @@ public class TariffValueDto implements Serializable {
 
     /**
      * Sets the value of the index property.
-     * 
+     *
      * @param value
      *            allowed object is {@link Integer }
-     * 
+     *
      */
     public void setIndex(final Integer value) {
         this.index = value;
     }
 
     /**
-     * Gets the value of the high property.
-     * 
+     * @return the value of the high property.
+     *
      */
     public boolean isHigh() {
         return this.high;
     }
 
     /**
-     * Sets the value of the high property.
-     * 
+     * @param value
+     *            the value of the high property to set
      */
     public void setHigh(final boolean value) {
         this.high = value;

@@ -28,6 +28,24 @@ public class ProtocolRequestMessage extends RequestMessage {
      * Constructor with no scheduled flag and no messagePriority
      *
      * @deprecated use the Builder in stead. Too many arguments in constructor
+     * @param domain
+     *            the domain of the message
+     * @param domainVersion
+     *            the version of the domain
+     * @param messageType
+     *            the message type
+     * @param correlationUid
+     *            the correlation uid
+     * @param organisationIdentification
+     *            the identification of the organisation
+     * @param deviceIdentification
+     *            the identificatino of the device
+     * @param ipAddress
+     *            the ip address used
+     * @param request
+     *            the request
+     * @param retryCount
+     *            the number of times the message is retried
      */
     @Deprecated
     public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
@@ -41,6 +59,26 @@ public class ProtocolRequestMessage extends RequestMessage {
      * Constructor with scheduled flag and no messagePriority
      *
      * @deprecated use the Builder in stead. Too many arguments in constructor
+     * @param domain
+     *            the domain of the message
+     * @param domainVersion
+     *            the version of the domain
+     * @param messageType
+     *            the message type
+     * @param correlationUid
+     *            the correlation uid
+     * @param organisationIdentification
+     *            the identification of the organisation
+     * @param deviceIdentification
+     *            the identificatino of the device
+     * @param ipAddress
+     *            the ip address used
+     * @param request
+     *            the request
+     * @param scheduled
+     *            when the message is scheduled
+     * @param retryCount
+     *            the number of times the message is retried
      */
     @Deprecated
     public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
@@ -58,6 +96,19 @@ public class ProtocolRequestMessage extends RequestMessage {
     /**
      * Constructor with both a scheduled flag and a messagePriority. Only called
      * from Builder
+     * 
+     * @param deviceMessageMetadata
+     *            the metadata of the message the domain of the message
+     * @param domainVersion
+     *            the version of the domain
+     * @param ipAddress
+     *            the ip address used
+     * @param request
+     *            the request
+     * @param scheduled
+     *            when the message is scheduled
+     * @param retryCount
+     *            the number of times the message is retried
      */
     private ProtocolRequestMessage(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
             final String domainVersion, final String ipAddress, final Serializable request, final boolean scheduled,

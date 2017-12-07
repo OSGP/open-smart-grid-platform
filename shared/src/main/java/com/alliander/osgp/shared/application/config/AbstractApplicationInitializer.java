@@ -29,16 +29,20 @@ import ch.qos.logback.ext.spring.LogbackConfigurer;
  * Web application Java configuration class.
  */
 public abstract class AbstractApplicationInitializer {
-    
+
     protected final Logger logger;
     private Class<?> contextClass;
     private String logConfig;
     protected AnnotationConfigWebApplicationContext rootContext;
 
     /**
-     * Constructs instance of ApplicationInitializer 
-     * @param contextClass the class holding application specific Spring ApplicationContext
-     * @param logConfig jndi property which points to logback configuration
+     * Constructs instance of ApplicationInitializer
+     * 
+     * @param contextClass
+     *            the class holding application specific Spring
+     *            ApplicationContext
+     * @param logConfig
+     *            jndi property which points to logback configuration
      */
     public AbstractApplicationInitializer(final Class<?> contextClass, final String logConfig) {
         this.contextClass = contextClass;
@@ -48,22 +52,25 @@ public abstract class AbstractApplicationInitializer {
     }
 
     /**
-     * Default startup of application context which:
-     * - Forces timezone to UTC
-     * - Initializes the application logging
-     * - Registers the application context with ServletContext
-     * @param servletContext Java servlet context as supplied by application server
+     * Default startup of application context which: - Forces timezone to UTC -
+     * Initializes the application logging - Registers the application context
+     * with ServletContext
+     * 
+     * @param servletContext
+     *            Java servlet context as supplied by application server
      * @throws ServletException
+     *             thrown when a servlet encounters difficulty
      */
     protected void startUp(final ServletContext servletContext) throws ServletException {
-        // Force the timezone of application to UTC (required for Hibernate/JDBC)
+        // Force the timezone of application to UTC (required for
+        // Hibernate/JDBC)
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-        initializeLogging();
+        this.initializeLogging();
 
-        rootContext.register(this.contextClass);
+        this.rootContext.register(this.contextClass);
 
-        servletContext.addListener(new ContextLoaderListener(rootContext));
+        servletContext.addListener(new ContextLoaderListener(this.rootContext));
     }
 
     private void initializeLogging() throws ServletException {
@@ -72,13 +79,14 @@ public abstract class AbstractApplicationInitializer {
             initialContext = new InitialContext();
             final String logLocation = (String) initialContext.lookup(this.logConfig);
 
-            // Load specific logback configuration, otherwise fallback to classpath logback.xml
+            // Load specific logback configuration, otherwise fallback to
+            // classpath logback.xml
             if (new File(logLocation).exists()) {
                 LogbackConfigurer.initLogging(logLocation);
-                logger.info("Initialized logging using {}", this.logConfig);
+                this.logger.info("Initialized logging using {}", this.logConfig);
             }
         } catch (final NamingException | FileNotFoundException | JoranException e) {
-            logger.info("Failed to initialize logging using {}", this.logConfig, e);
+            this.logger.info("Failed to initialize logging using {}", this.logConfig, e);
             throw new ServletException(e);
         }
     }

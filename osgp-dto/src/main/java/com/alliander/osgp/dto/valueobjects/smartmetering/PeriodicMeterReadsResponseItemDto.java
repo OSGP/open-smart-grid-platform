@@ -20,20 +20,28 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
      * need to be copied.
      *
      * @param logTime
+     *            the time the meter reads are logged on the device
      * @param activeEnergyImport
+     *            the value of activeEnergyImport
      * @param activeEnergyExport
+     *            the value of activeEnergyExport
      * @param activeEnergyImportTariffOne
+     *            the value of activeEnergyImportTariffOne
      * @param activeEnergyImportTariffTwo
+     *            the value of activeEnergyImportTariffTwo
      * @param activeEnergyExportTariffOne
+     *            the value of activeEnergyExportTariffOne
      * @param activeEnergyExportTariffTwo
+     *            the value of activeEnergyExportTariffTwo
      * @param amrProfileStatusCode
+     *            the value of amrProfileStatusCode
      */
     public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
             final DlmsMeterValueDto activeEnergyExport, final DlmsMeterValueDto activeEnergyImportTariffOne,
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo, final AmrProfileStatusCodeDto amrProfileStatusCode) {
-        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
-                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
+                activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
 
         this.amrProfileStatusCode = amrProfileStatusCode;
     }
@@ -42,43 +50,58 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
      * Constructor for monthly reads. Does not hold a AMR profile status.
      *
      * @param logTime
+     *            the time the meter reads are logged on the device
      * @param activeEnergyImportTariffOne
+     *            the value of activeEnergyImportTariffOne
      * @param activeEnergyImportTariffTwo
+     *            the value of activeEnergyImportTariffTwo
      * @param activeEnergyExportTariffOne
+     *            the value of activeEnergyExportTariffOne
      * @param activeEnergyExportTariffTwo
+     *            the value of activeEnergyExportTariffTwo
      */
     public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImportTariffOne,
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo) {
 
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, null);
+        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
+                activeEnergyExportTariffTwo, null);
     }
 
     /**
      * Constructor for daily reads. Holds tariff values and AMR profile status.
      *
      * @param logTime
+     *            the time the meter reads are logged on the device
      * @param activeEnergyImportTariffOne
+     *            the value of activeEnergyImportTariffOne
      * @param activeEnergyImportTariffTwo
+     *            the value of activeEnergyImportTariffTwo
      * @param activeEnergyExportTariffOne
+     *            the value of activeEnergyExportTariffOne
      * @param activeEnergyExportTariffTwo
+     *            the value of activeEnergyExportTariffTwo
      * @param amrProfileStatusCode
+     *            the value of amrProfileStatusCode
      */
     public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImportTariffOne,
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo, final AmrProfileStatusCodeDto amrProfileStatusCode) {
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, amrProfileStatusCode);
+        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
+                activeEnergyExportTariffTwo, amrProfileStatusCode);
     }
 
     /**
      * Constructor for interval reads.
      *
      * @param logTime
+     *            the time the meter reads are logged on the device
      * @param activeEnergyImport
+     *            the value of activeEnergyImport
      * @param activeEnergyExport
+     *            the value of activeEnergyExport
      * @param amrProfileStatusCode
+     *            the value of amrProfileStatusCode
      */
     public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
             final DlmsMeterValueDto activeEnergyExport, final AmrProfileStatusCodeDto amrProfileStatusCode) {
