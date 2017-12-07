@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.WebServiceTransportException;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.WebserviceTemplateFactory;
@@ -44,7 +45,7 @@ public abstract class AbstractNotificationServiceWs {
             final WebServiceTemplate wsTemplate = wsTemplateFactory.getTemplate(this.notificationOrganisation, userName,
                     notificationURL);
             wsTemplate.marshalSendAndReceive(notification);
-        } catch (WebServiceTransportException | WebServiceSecurityException e) {
+        } catch (WebServiceTransportException | WebServiceSecurityException | SoapFaultClientException e) {
             final String msg = String.format(
                     "error sending notification message org=%s, user=%s, to org=%s, notifyUrl=%s, errmsg=%s",
                     this.notificationOrganisation, userName, organisationIdentification, notificationURL,

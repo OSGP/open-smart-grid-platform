@@ -47,6 +47,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetDevicesR
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetDevicesResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.MessageLog;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.MessageLogPage;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ManagementService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -407,4 +411,71 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
+
+    @PayloadRoot(localPart = "SetDeviceCommunicationSettingsRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SetDeviceCommunicationSettingsAsyncResponse setDeviceCommunicationSettingsRequest(
+            @OrganisationIdentification final String organisationIdentification,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl, @RequestPayload final SetDeviceCommunicationSettingsRequest request)
+            throws OsgpException {
+
+        LOGGER.info("Set device communication settings request for organisation: {} and device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        final SetDeviceCommunicationSettingsAsyncResponse response = new SetDeviceCommunicationSettingsAsyncResponse();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequest dataRequest = this.managementMapper
+                .map(request,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequest.class);
+
+        try {
+            final String deviceIdentification = request.getDeviceIdentification();
+
+            final String correlationUid = this.managementService.enqueueSetDeviceCommunicationSettingsRequest(
+                    organisationIdentification, deviceIdentification, dataRequest,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.managementMapper.map(scheduleTime, Long.class));
+
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetDeviceCommunicationSettingsAsyncRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SetDeviceCommunicationSettingsResponse setDeviceCommunicationSettingsResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetDeviceCommunicationSettingsAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("Set device communication settings response for organisation: {} and device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        SetDeviceCommunicationSettingsResponse response = null;
+        try {
+            response = new SetDeviceCommunicationSettingsResponse();
+
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "Set device communication settings");
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("SetDeviceCommunicationSettingsResponse Exception", e.getMessage(), e.getStackTrace(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
 }

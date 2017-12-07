@@ -59,8 +59,8 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
             final String deviceIdentification, final String result, final String correlationUid, final String message,
             final Object notificationType) {
 
-        LOGGER.debug("creating SendNotificationRequestwith {},{},{},{},{},{},{} ", organisationIdentification,
-                deviceIdentification, correlationUid, notificationType, notificationType, message, result);
+        LOGGER.debug("creating SendNotificationRequest with {},{},{},{},{},{} ", organisationIdentification,
+                deviceIdentification, correlationUid, notificationType, message, result);
 
         final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
         final Notification notification = new Notification();

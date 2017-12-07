@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestList;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -60,14 +61,14 @@ public class ManagementService {
         LOGGER.info("findEvents for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
-                .getDeviceIdentification());
+        final SmartMeter smartMeter = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        LOGGER.info("Sending request message to core.");
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeter.getIpAddress(), this.managementMapper.map(findEventsQueryMessageDataContainer,
-                        FindEventsRequestList.class));
+                smartMeter.getIpAddress(),
+                this.managementMapper.map(findEventsQueryMessageDataContainer, FindEventsRequestList.class));
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
@@ -119,9 +120,37 @@ public class ManagementService {
         this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
     }
 
-    private void sendMetadataOnlyRequestMessage(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
-        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
-                .getDeviceIdentification());
+    public void setDeviceCommunicationSettings(final DeviceMessageMetadata deviceMessageMetadata,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequest setDeviceCommunicationSettingsRequest)
+            throws FunctionalException {
+        LOGGER.info("Set device communication settings for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SetDeviceCommunicationSettingsRequestDto setDeviceCommunicationSettingsRequestDto = this.managementMapper
+                .map(setDeviceCommunicationSettingsRequest, SetDeviceCommunicationSettingsRequestDto.class);
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), setDeviceCommunicationSettingsRequestDto),
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                deviceMessageMetadata.getScheduleTime());
+    }
+
+    public void handleSetDeviceCommunicationSettingsResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+        LOGGER.info("Set device communication settings for messageType: {}, with result: {}",
+                deviceMessageMetadata.getMessageType(), deviceResult.toString());
+
+        this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
+    }
+
+    private void sendMetadataOnlyRequestMessage(final DeviceMessageMetadata deviceMessageMetadata)
+            throws FunctionalException {
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
@@ -142,7 +171,7 @@ public class ManagementService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
-                .getMessageType());
+                result, exception, null, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
     }
 }
