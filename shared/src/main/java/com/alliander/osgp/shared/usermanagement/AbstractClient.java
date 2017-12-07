@@ -51,12 +51,12 @@ public class AbstractClient {
      * @param token
      *            The authentication token.
      *
-     * @return A MultivaluedMap<String, String> containing the headers for the
-     *         request.
+     * @return A MultivaluedMap containing the headers for the request.
      */
-    protected MultivaluedMap<String, String> createHeaders(final String organisationIdentification, final String token) {
+    protected MultivaluedMap<String, String> createHeaders(final String organisationIdentification,
+            final String token) {
 
-        final MultivaluedMap<String, String> headers = new MultivaluedHashMap<String, String>(2);
+        final MultivaluedMap<String, String> headers = new MultivaluedHashMap<>(2);
         headers.add(HEADER_PARAM_REQUESTING_ORGANISATION_IDENTIFICATION, organisationIdentification);
         headers.add(HEADER_PARAM_TOKEN, token);
         return headers;
