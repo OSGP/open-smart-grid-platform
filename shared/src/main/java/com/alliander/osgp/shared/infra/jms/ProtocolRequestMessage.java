@@ -39,7 +39,7 @@ public class ProtocolRequestMessage extends RequestMessage {
      * @param organisationIdentification
      *            the identification of the organisation
      * @param deviceIdentification
-     *            the identificatino of the device
+     *            the identification of the device
      * @param ipAddress
      *            the ip address used
      * @param request
@@ -70,7 +70,7 @@ public class ProtocolRequestMessage extends RequestMessage {
      * @param organisationIdentification
      *            the identification of the organisation
      * @param deviceIdentification
-     *            the identificatino of the device
+     *            the identification of the device
      * @param ipAddress
      *            the ip address used
      * @param request
@@ -96,7 +96,7 @@ public class ProtocolRequestMessage extends RequestMessage {
     /**
      * Constructor with both a scheduled flag and a messagePriority. Only called
      * from Builder
-     * 
+     *
      * @param deviceMessageMetadata
      *            the metadata of the message the domain of the message
      * @param domainVersion
