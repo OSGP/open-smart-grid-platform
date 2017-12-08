@@ -43,7 +43,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientRTUEventListener.class);
 
-    private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER|WIND)";
+    private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER|WIND|PQ)";
     private static final Pattern REPORT_PATTERN = Pattern
             .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\$(Status|Measurements|Heartbeat)\\Z");
 
@@ -62,6 +62,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         REPORT_HANDLERS_MAP.put("HEAT_PUMP", Iec61850HeatPumpReportHandler.class);
         REPORT_HANDLERS_MAP.put("BOILER", Iec61850BoilerReportHandler.class);
         REPORT_HANDLERS_MAP.put("WIND", Iec61850WindReportHandler.class);
+        REPORT_HANDLERS_MAP.put("PQ", Iec61850PqReportHandler.class);
     }
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
