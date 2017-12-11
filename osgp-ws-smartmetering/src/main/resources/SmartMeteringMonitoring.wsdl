@@ -126,6 +126,28 @@
     <wsdl:part element="smmon:ReadAlarmRegisterResponse" name="RetrieveAlarmRegisterResponse" />
   </wsdl:message>
 
+
+
+  <!-- CLEAR ALARM REGISTER  -->
+  <wsdl:message name="ClearAlarmRegisterRequest">
+    <wsdl:part element="smmon:ClearAlarmRegisterRequest" name="ClearAlarmRegisterRequest" />
+  </wsdl:message>
+  <wsdl:message name="ClearAlarmRegisterAsyncResponse">
+    <wsdl:part element="smmon:ClearAlarmRegisterAsyncResponse"
+      name="AlarmRegisterResponse" />
+  </wsdl:message>
+
+  <wsdl:message name="ClearAlarmRegisterAsyncRequest">
+    <wsdl:part element="smmon:ClearAlarmRegisterAsyncRequest"
+      name="ClearAlarmRegisterRequest" />
+  </wsdl:message>
+  <wsdl:message name="ClearAlarmRegisterResponse">
+    <wsdl:part element="smmon:ClearAlarmRegisterResponse" name="ClearAlarmRegisterResponse" />
+  </wsdl:message>
+
+
+
+
   <!-- PUSH NOTIFICATION ALARM -->
   <wsdl:message name="RetrievePushNotificationAlarmRequest">
     <wsdl:part element="smmon:RetrievePushNotificationAlarmRequest"
@@ -254,6 +276,23 @@
       <wsdl:output message="tns:ReadAlarmRegisterResponse"
         name="ReadAlarmRegisterResponse" />
     </wsdl:operation>
+
+
+
+    <wsdl:operation name="ClearAlarmRegister">
+      <wsdl:input message="tns:ClearAlarmRegisterRequest"
+        name="ClearAlarmRegisterRequest" />
+      <wsdl:output message="tns:ClearAlarmRegisterAsyncResponse"
+        name="ClearAlarmRegisterAsyncResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="GetClearAlarmRegisterResponse">
+      <wsdl:input message="tns:ClearAlarmRegisterAsyncRequest"
+        name="ClearAlarmRegisterAsyncRequest" />
+      <wsdl:output message="tns:ClearAlarmRegisterResponse"
+        name="ClearAlarmRegisterResponse" />
+    </wsdl:operation>
+
+
 
     <wsdl:operation name="RetrievePushNotificationAlarm">
       <wsdl:input message="tns:RetrievePushNotificationAlarmRequest"
@@ -412,6 +451,7 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    
     <wsdl:operation name="ReadAlarmRegister">
       <soap:operation soapAction="" />
       <wsdl:input name="ReadAlarmRegisterRequest">
@@ -442,6 +482,41 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+
+
+
+
+    <wsdl:operation name="ClearAlarmRegister">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ClearAlarmRegisterRequest">
+        <soap:header message="tns:SoapHeaders" part="org"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="user"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="app"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ClearAlarmRegisterAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetClearAlarmRegisterResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ClearAlarmRegisterAsyncRequest">
+        <soap:header message="tns:SoapHeaders" part="org"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="user"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="app"
+          use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ClearAlarmRegisterResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+
 
     <wsdl:operation name="RetrievePushNotificationAlarm">
       <soap:operation soapAction="" />
