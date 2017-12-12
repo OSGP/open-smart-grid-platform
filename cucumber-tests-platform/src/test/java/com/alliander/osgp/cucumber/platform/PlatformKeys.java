@@ -46,7 +46,7 @@ public class PlatformKeys extends Keys {
     public static final String FAILED_LOGIN_ATTEMP_TIME_STAMP = "FailedLoginAttemptTimeStamp";
     public static final String FIRMWARE_DESCRIPTION = "FirmwareDescription";
     public static final String FIRMWARE_FILE = "FirmwareFile";
-    public static final String FIRMWARE_FILENAME = "FirmwareFilename";
+    public static final String FIRMWARE_FILE_FILENAME = "FirmwareFilename";
     public static final String FIRMWARE_FILE_EXISTS = "FirmwareFileExists";
     public static final String FIRMWARE_FILE_IDENTIFICATION = "FirmwareFileIdentification";
     public static final String FIRMWARE_HASH = "FirmwareHash";
