@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.method.MBusClientMethod;
 import org.osgp.adapter.protocol.dlms.application.services.SecurityKeyService;
@@ -140,22 +138,15 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
         }
     }
 
-    private MethodParameter getTransferKeyToMBusMethodParameter(final ObisCode obisCode, final byte[] defaultMBusKey,
-            final byte[] encryptionKey) throws ProtocolAdapterException {
-        byte[] encryptedEncryptionkey;
-        try {
-            encryptedEncryptionkey = SecurityUtils.cipherWithAes128(defaultMBusKey, encryptionKey);
-        } catch (final GeneralSecurityException e) {
-            LOGGER.error("Unexpected exception during getTransferKeyToMBusMethodParameter", e);
-            throw new ProtocolAdapterException(e.getMessage());
-        }
+    private MethodParameter getTransferKeyToMBusMethodParameter(final ObisCode obisCode, final byte[] mbusDefaultKey,
+            final byte[] mbusUserKey) throws ProtocolAdapterException {
 
-        final DataObject methodParameter = DataObject.newOctetStringData(encryptedEncryptionkey);
+        final byte[] encryptedUserKey = this.securityKeyService.encryptMbusUserKey(mbusDefaultKey, mbusUserKey);
+        final DataObject methodParameter = DataObject.newOctetStringData(encryptedUserKey);
         return new MethodParameter(MBusClientMethod.TRANSFER_KEY, obisCode, methodParameter);
     }
 
-    private MethodParameter getSetEncryptionKeyMethodParameter(final ObisCode obisCode, final byte[] encryptionKey)
-            throws IOException {
+    private MethodParameter getSetEncryptionKeyMethodParameter(final ObisCode obisCode, final byte[] encryptionKey) {
         final DataObject methodParameter = DataObject.newOctetStringData(encryptionKey);
         return new MethodParameter(MBusClientMethod.SET_ENCRYPTION_KEY, obisCode, methodParameter);
     }
