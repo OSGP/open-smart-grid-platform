@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
@@ -70,7 +71,7 @@ public class MonitoringService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -99,7 +100,7 @@ public class MonitoringService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -128,7 +129,7 @@ public class MonitoringService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -167,4 +168,34 @@ public class MonitoringService {
             throws CorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid, ProfileGenericDataResponse.class);
     }
+
+    public String enqueueClearAlarmRegisterRequestData(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final ClearAlarmRegisterRequest requestData,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.CLEAR_ALARM_REGISTER);
+
+        LOGGER.debug("Enqueue clear alarm register request data called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.CLEAR_ALARM_REGISTER.toString(), messagePriority, scheduleTime);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        // @formatter:on
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
 }
