@@ -328,7 +328,7 @@ public class GetProfileGenericDataCommandExecutor
     private ProfileEntryValueDto makeDateProfileEntryValueDto(final DataObject dataObject)
             throws ProtocolAdapterException {
         final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.convertDataObjectToDateTime(dataObject);
-        return new ProfileEntryValueDto(cosemDateTime.asDateTime());
+        return new ProfileEntryValueDto(cosemDateTime.asDateTime().toDate());
     }
 
     private ProfileEntryValueDto makeNumericProfileEntryValueDto(final DataObject dataObject,
