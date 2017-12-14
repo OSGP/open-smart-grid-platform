@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 
+import org.osgp.adapter.protocol.dlms.domain.commands.ClearAlarmRegisterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
@@ -47,6 +49,9 @@ public class MonitoringService {
 
     @Autowired
     private GetProfileGenericDataCommandExecutor getProfileGenericDataCommandExecutor;
+
+    @Autowired
+    private ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
 
     // === REQUEST PERIODIC METER DATA ===
 
@@ -87,6 +92,14 @@ public class MonitoringService {
             final ProfileGenericDataRequestDto profileGenericDataRequest) throws ProtocolAdapterException {
 
         return this.getProfileGenericDataCommandExecutor.execute(conn, device, profileGenericDataRequest);
+    }
+
+    public String setClearAlarmRegister(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto) throws ProtocolAdapterException {
+
+        this.clearAlarmRegisterCommandExecutor.execute(conn, device, clearAlarmRegisterRequestDto);
+
+        return "Clear alarm register result is OK for device id: " + device.getDeviceIdentification();
     }
 
 }
