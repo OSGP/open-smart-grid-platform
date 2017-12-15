@@ -60,6 +60,8 @@ public class DlmsConnectionHolder implements AutoCloseable {
     /**
      * @return the current connection, obtained by calling {@link #connect()
      *         connect}.
+     * @throws IllegalStateException
+     *             when there is no connection available.
      */
     public DlmsConnection getConnection() {
         if (!this.isConnected()) {
@@ -98,8 +100,11 @@ public class DlmsConnectionHolder implements AutoCloseable {
      * Obtains a connection with a device. A connection should be obtained
      * before {@link #getConnection() getConnection} is called.
      *
-     * @Throws OsgpException in case of a TechnicalException (When an exceptions
-     *         occurs while creating the exception) or a FunctionalException
+     * @throws IllegalStateException
+     *             When there is already a connection set.
+     * @throws OsgpException
+     *             in case of a TechnicalException (When an exceptions occurs
+     *             while creating the exception) or a FunctionalException
      */
     public void connect() throws OsgpException {
         if (this.dlmsConnection != null) {
