@@ -11,14 +11,8 @@ public class ClearAlarmRegisterRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 8564943872758612188L;
 
-    private long alarmCode = 0;
-
-    public ClearAlarmRegisterRequestDto(final int alarmCode) {
-        this.alarmCode = alarmCode;
-    }
-
-    public long getAlarmCode() {
-        return this.alarmCode;
+    public ClearAlarmRegisterRequestDto() {
+        // default constructor
     }
 
 }
