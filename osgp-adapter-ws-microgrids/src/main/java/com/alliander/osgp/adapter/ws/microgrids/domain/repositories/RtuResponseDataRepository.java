@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.ws.microgrids.domain.repositories;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +27,6 @@ public interface RtuResponseDataRepository extends JpaRepository<RtuResponseData
     List<RtuResponseData> findByCorrelationUid(String correlationUid);
 
     RtuResponseData findSingleResultByCorrelationUid(String correlationUid);
+
+    void removeByCreationTimeBefore(Date date);
 }

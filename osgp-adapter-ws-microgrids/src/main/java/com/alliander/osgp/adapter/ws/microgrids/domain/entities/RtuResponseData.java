@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.ws.microgrids.domain.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -85,5 +86,10 @@ public class RtuResponseData extends AbstractEntity {
 
     public ResponseMessageResultType getResultType() {
         return this.resultType;
+    }
+
+    // For testing purposes
+    protected void updateCreationTime(final Date creationTime) {
+        this.creationTime = creationTime;
     }
 }
