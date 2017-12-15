@@ -7,29 +7,19 @@
  */
 package org.osgp.adapter.protocol.dlms.exceptions;
 
-public class ImageTransferException extends Exception {
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+
+public class ImageTransferException extends OsgpException {
 
     private static final long serialVersionUID = -3723899623610781058L;
 
-    public ImageTransferException() {
-        super();
-    }
-
-    public ImageTransferException(final String message, final Throwable cause, final boolean enableSuppression,
-            final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
     public ImageTransferException(final String message, final Throwable cause) {
-        super(message, cause);
+        super(ComponentType.PROTOCOL_DLMS, message, cause);
     }
 
     public ImageTransferException(final String message) {
-        super(message);
-    }
-
-    public ImageTransferException(final Throwable cause) {
-        super(cause);
+        super(ComponentType.PROTOCOL_DLMS, message);
     }
 
 }

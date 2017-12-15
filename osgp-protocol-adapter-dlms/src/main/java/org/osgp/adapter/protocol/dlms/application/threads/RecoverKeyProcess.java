@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class RecoverKeyProcess implements Runnable {
 
@@ -88,7 +89,7 @@ public class RecoverKeyProcess implements Runnable {
         }
     }
 
-    private void initDevice() throws FunctionalException {
+    private void initDevice() throws OsgpException {
         try {
             this.device = this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
         } catch (final ProtocolAdapterException e) {
@@ -151,8 +152,8 @@ public class RecoverKeyProcess implements Runnable {
 
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
                 InetAddress.getByName(this.device.getIpAddress())).setSecuritySuite(securitySuite)
-                .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
-                .setClientId(this.clientAccessPoint);
+                        .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
+                        .setClientId(this.clientAccessPoint);
 
         final Integer challengeLength = this.device.getChallengeLength();
 
@@ -162,7 +163,8 @@ public class RecoverKeyProcess implements Runnable {
             }
         } catch (final IllegalArgumentException e) {
             LOGGER.error("Exception occurred: Invalid key format");
-            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
+            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS,
+                    e);
         }
 
         return tcpConnectionBuilder.build();

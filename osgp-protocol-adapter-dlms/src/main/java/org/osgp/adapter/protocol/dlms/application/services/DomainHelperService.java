@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 @Service(value = "dlmsDomainHelperService")
@@ -60,13 +61,11 @@ public class DomainHelperService {
         return dlmsDevice;
     }
 
-    public DlmsDevice findDlmsDevice(final MessageMetadata messageMetadata)
-            throws ProtocolAdapterException, FunctionalException {
+    public DlmsDevice findDlmsDevice(final MessageMetadata messageMetadata) throws OsgpException {
         return this.findDlmsDevice(messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
     }
 
-    public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress)
-            throws ProtocolAdapterException, FunctionalException {
+    public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress) throws OsgpException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
             final String errorMessage = String.format("Unable to communicate with unknown device: %s",
@@ -84,8 +83,7 @@ public class DomainHelperService {
         return dlmsDevice;
     }
 
-    public String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice)
-            throws ProtocolAdapterException, FunctionalException {
+    public String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice) throws OsgpException {
 
         final SessionProvider sessionProvider = this.sessionProviderService
                 .getSessionProvider(dlmsDevice.getCommunicationProvider());
@@ -116,7 +114,7 @@ public class DomainHelperService {
     }
 
     private String pollForSession(final SessionProvider sessionProvider, final DlmsDevice dlmsDevice)
-            throws ProtocolAdapterException, FunctionalException {
+            throws OsgpException {
 
         String deviceIpAddress = null;
         try {

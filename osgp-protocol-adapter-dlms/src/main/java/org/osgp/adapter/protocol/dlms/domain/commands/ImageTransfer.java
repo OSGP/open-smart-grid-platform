@@ -28,12 +28,11 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 class ImageTransfer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageTransfer.class);
-    private static final int LOGGER_PERCENTAGE_STEP = 5;
+    private static final double LOGGER_PERCENTAGE_STEP = 5.0;
 
     private static final String EXCEPTION_MSG_WAITING_FOR_IMAGE_ACTIVATION = "An error occurred while waiting for image activation status to change.";
     private static final String EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED = "Image verify could not be called.";
@@ -62,7 +61,7 @@ class ImageTransfer {
     private boolean imageBlockSizeReadFlag;
 
     public ImageTransfer(final DlmsConnectionHolder connector, final ImageTranferProperties properties,
-            final String imageIdentifier, final byte[] imageData) throws ProtocolAdapterException {
+            final String imageIdentifier, final byte[] imageData) {
         this.properties = properties;
         this.imageIdentifier = imageIdentifier;
         this.imageData = imageData;
@@ -71,11 +70,11 @@ class ImageTransfer {
         this.imageTransferCosem = new CosemObjectAccessor(connector, OBIS_CODE, CLASS_ID);
     }
 
-    public boolean shouldTransferImage() throws ProtocolAdapterException, ImageTransferException {
+    public boolean shouldTransferImage() throws OsgpException {
         return this.isImageTransferStatusIn(ImageTransferStatus.INITIATED);
     }
 
-    public boolean imageIsVerified() throws ProtocolAdapterException, ImageTransferException {
+    public boolean imageIsVerified() throws OsgpException {
         return this.isImageTransferStatusIn(ImageTransferStatus.VERIFICATION_SUCCESSFUL,
                 ImageTransferStatus.ACTIVATION_INITIATED, ImageTransferStatus.ACTIVATION_SUCCESSFUL,
                 ImageTransferStatus.ACTIVATION_FAILED);
@@ -142,9 +141,9 @@ class ImageTransfer {
      * transfer process has been successfully initiated. Other servers silently
      * discard any ImageBlocks received.
      *
-     * @throws ProtocolAdapterException
+     * @throws OsgpException
      */
-    public void transferImageBlocks() throws ProtocolAdapterException, ImageTransferException {
+    public void transferImageBlocks() throws OsgpException {
         if (!this.shouldTransferImage()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED);
         }
@@ -176,9 +175,9 @@ class ImageTransfer {
      * The Image is verified. This is done by invoking the image_verify method
      * by the client and testing the image transfer status.
      *
-     * @throws ImageTransferException
+     * @throws OsgpException
      */
-    public void verifyImage() throws ProtocolAdapterException, ImageTransferException {
+    public void verifyImage() throws OsgpException {
         this.connector.getDlmsMessageListener()
                 .setDescription("ImageTransfer call image_verify " + ", call method: "
                         + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
@@ -271,9 +270,9 @@ class ImageTransfer {
     /**
      * The image is activated.
      *
-     * @throws ProtocolAdapterException
+     * @throws OsgpException
      */
-    public void activateImage() throws ProtocolAdapterException, ImageTransferException {
+    public void activateImage() throws OsgpException {
         this.connector.getDlmsMessageListener()
                 .setDescription("ImageTransfer call image_activate " + ", call method: "
                         + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
@@ -295,7 +294,7 @@ class ImageTransfer {
         }
     }
 
-    private void waitForImageInitiation() throws ProtocolAdapterException, ImageTransferException {
+    private void waitForImageInitiation() throws OsgpException {
         final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
                 ImageTransferStatus.NOT_INITIATED, this.properties.getInitiationStatusCheckInterval(),
                 this.properties.getInitiationStatusCheckTimeout()));
@@ -313,8 +312,8 @@ class ImageTransfer {
 
         return;
     }
-    
-    private void waitForImageVerification() throws ProtocolAdapterException, ImageTransferException {
+
+    private void waitForImageVerification() throws OsgpException {
         final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
                 ImageTransferStatus.VERIFICATION_INITIATED, this.properties.getVerificationStatusCheckInterval(),
                 this.properties.getVerificationStatusCheckTimeout()));
@@ -333,7 +332,7 @@ class ImageTransfer {
         return;
     }
 
-    private void waitForImageActivation() throws ProtocolAdapterException, ImageTransferException {
+    private void waitForImageActivation() throws OsgpException {
         final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
                 ImageTransferStatus.ACTIVATION_INITIATED, this.properties.getActivationStatusCheckInterval(),
                 this.properties.getActivationStatusCheckTimeout(), true));
@@ -401,11 +400,11 @@ class ImageTransfer {
         return ((Long) imageFirstNotReadBlockNumberData.getValue()).intValue();
     }
 
-    private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws ProtocolAdapterException, ImageTransferException {
+    private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws OsgpException {
         for (final ImageTransferStatus status : statuses) {
-        	if(status == ImageTransferStatus.INITIATED) {
-        		this.waitForImageInitiation();
-        	}
+            if (status == ImageTransferStatus.INITIATED) {
+                this.waitForImageInitiation();
+            }
             if ((this.getImageTransferStatus()) == status.getValue()) {
                 return true;
             }
@@ -445,7 +444,8 @@ class ImageTransfer {
                 + params.toString() + ", call method: " + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
                         .createMethodParameter(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params))));
 
-        final MethodResultCode resultCode = this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params));
+        final MethodResultCode resultCode = this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER,
+                DataObject.newStructureData(params));
 
         if (resultCode != MethodResultCode.SUCCESS) {
             LOGGER.info("Method IMAGE_BLOCK_TRANSFER gave result {} for block {}", resultCode.name(), blockNumber);
@@ -453,7 +453,7 @@ class ImageTransfer {
     }
 
     private void logUploadPercentage(final int block, final int totalBlocks) {
-        final int step = (int) Math.round((double) totalBlocks / (100 / LOGGER_PERCENTAGE_STEP));
+        final int step = (int) Math.round(totalBlocks / (100 / LOGGER_PERCENTAGE_STEP));
         if (step != 0 && block % step == 0) {
             LOGGER.info("Firmware upload progress {}%. ({} / {})", (block / step) * LOGGER_PERCENTAGE_STEP, block,
                     totalBlocks);
@@ -489,7 +489,7 @@ class ImageTransfer {
             return this.verificationStatusCheckInterval;
         }
 
-		public void setVerificationStatusCheckInterval(final int verificationStatusCheckInterval) {
+        public void setVerificationStatusCheckInterval(final int verificationStatusCheckInterval) {
             this.verificationStatusCheckInterval = verificationStatusCheckInterval;
         }
 
@@ -521,17 +521,17 @@ class ImageTransfer {
             return this.initiationStatusCheckInterval;
         }
 
-        public void setInitiationStatusCheckInterval(int initiationStatusCheckInterval) {
+        public void setInitiationStatusCheckInterval(final int initiationStatusCheckInterval) {
             this.initiationStatusCheckInterval = initiationStatusCheckInterval;
         }
-    
+
         public int getInitiationStatusCheckTimeout() {
-        	return this.initiationStatusCheckTimeout;
-		}
-        
-        public void setInitiationStatusCheckTimeout(int initiationStatusCheckTimeout) {
-			this.initiationStatusCheckTimeout = initiationStatusCheckTimeout;
-		}
+            return this.initiationStatusCheckTimeout;
+        }
+
+        public void setInitiationStatusCheckTimeout(final int initiationStatusCheckTimeout) {
+            this.initiationStatusCheckTimeout = initiationStatusCheckTimeout;
+        }
     }
 
     private class ImageTransferStatusChangeWatcher implements Callable<Integer> {
@@ -585,8 +585,8 @@ class ImageTransfer {
         private void disconnect() throws IOException {
             ImageTransfer.this.connector.disconnect();
         }
-        
-        private void reconnect() throws TechnicalException, FunctionalException, ProtocolAdapterException {
+
+        private void reconnect() throws OsgpException {
             ImageTransfer.this.connector.reconnect();
         }
     }

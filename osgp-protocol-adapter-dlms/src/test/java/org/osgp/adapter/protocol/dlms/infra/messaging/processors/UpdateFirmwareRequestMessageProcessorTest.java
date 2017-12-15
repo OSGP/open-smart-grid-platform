@@ -28,15 +28,13 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.osgp.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ObjectMessageBuilder;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -83,7 +81,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     private UpdateFirmwareRequestMessageProcessor processor;
 
     @Before
-    public void setup() throws FunctionalException, ProtocolAdapterException, TechnicalException {
+    public void setup() throws OsgpException {
         MockitoAnnotations.initMocks(this);
 
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDeviceMock);
@@ -123,8 +121,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     }
 
     @Test
-    public void processMessageShouldUpdateFirmwareWhenFirmwareFileAvailable()
-            throws JMSException, ProtocolAdapterException, FunctionalException, TechnicalException {
+    public void processMessageShouldUpdateFirmwareWhenFirmwareFileAvailable() throws JMSException, OsgpException {
         // Arrange
         final String firmwareIdentification = "available";
         final ObjectMessage message = new ObjectMessageBuilder().withObject(firmwareIdentification).build();
@@ -139,8 +136,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     }
 
     @Test
-    public void processMessageShouldNotUpdateFirmwareWhenFirmwareFileNotAvailable()
-            throws JMSException, ProtocolAdapterException, FunctionalException, TechnicalException {
+    public void processMessageShouldNotUpdateFirmwareWhenFirmwareFileNotAvailable() throws JMSException, OsgpException {
         // Arrange
         final String firmwareIdentification = "unavailable";
         final ObjectMessage message = new ObjectMessageBuilder().withObject(firmwareIdentification).build();

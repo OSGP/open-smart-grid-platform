@@ -24,6 +24,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsAdhocService")
 public class AdhocService {
@@ -52,8 +53,7 @@ public class AdhocService {
         }
     }
 
-    public String getAllAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device)
-            throws ProtocolAdapterException, FunctionalException {
+    public String getAllAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device) throws OsgpException {
 
         return this.getAllAttributeValuesCommandExecutor.execute(conn, device, null);
     }
@@ -64,8 +64,7 @@ public class AdhocService {
     }
 
     public Serializable getSpecificAttributeValue(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto)
-                    throws FunctionalException {
+            final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto) throws FunctionalException {
         return this.getSpecificAttributeValueCommandExecutor.execute(conn, device,
                 specificAttributeValueRequestDataDto);
     }
