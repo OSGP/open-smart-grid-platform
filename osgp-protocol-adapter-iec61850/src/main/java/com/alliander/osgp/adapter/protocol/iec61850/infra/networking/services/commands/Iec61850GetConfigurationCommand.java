@@ -211,27 +211,6 @@ public class Iec61850GetConfigurationCommand {
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF,
                         SubDataAttribute.NTP_SYNC_INTERVAL, String.valueOf(ntpSyncInterval));
 
-                // getting the TLS configuration values
-                // LOGGER.info("Reading the TLS configuration values");
-                // final NodeContainer tls =
-                // deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                // LogicalNode.STREET_LIGHT_CONFIGURATION,
-                // DataAttribute.TLS_CONFIGURATION, Fc.CF);
-                //
-                // iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                // tls.getFcmodelNode());
-                //
-                // final int tlsPortNumber = (int)
-                // tls.getUnsignedInteger(SubDataAttribute.TLS_PORT_NUMBER).getValue();
-                // final boolean tlsEnabled =
-                // tls.getBoolean(SubDataAttribute.TLS_ENABLED).getValue();
-                // final String commonName =
-                // tls.getString(SubDataAttribute.TLS_COMMON_NAME);
-                //
-                // configuration.setTlsPortNumber(tlsPortNumber);
-                // configuration.setTlsEnabled(tlsEnabled);
-                // configuration.setCommonNameString(commonName);
-
                 DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
                         deviceConnection.getOrganisationIdentification(), false);
 
