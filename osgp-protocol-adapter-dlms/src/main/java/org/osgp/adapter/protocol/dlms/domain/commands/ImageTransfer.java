@@ -455,8 +455,8 @@ class ImageTransfer {
     private void logUploadPercentage(final int block, final int totalBlocks) {
         final int step = (int) Math.round(totalBlocks / (100 / LOGGER_PERCENTAGE_STEP));
         if (step != 0 && block % step == 0) {
-            LOGGER.info("Firmware upload progress {}%. ({} / {})", (block / step) * LOGGER_PERCENTAGE_STEP, block,
-                    totalBlocks);
+            LOGGER.info("Firmware upload progress {}%. ({} / {})", ((double) block / step) * LOGGER_PERCENTAGE_STEP,
+                    block, totalBlocks);
         }
     }
 
