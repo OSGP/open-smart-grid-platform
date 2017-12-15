@@ -40,11 +40,16 @@ public class OsgpExceptionConverter {
      *         instance.
      */
     public OsgpException ensureOsgpOrTechnicalException(final Exception e) {
-        if (e instanceof OsgpException) {
+
+        final boolean osgpExceptionNotSupportedByShared = e instanceof ImageTransferException
+                || e instanceof ProtocolAdapterException;
+
+        if (e instanceof OsgpException && !osgpExceptionNotSupportedByShared) {
             return (OsgpException) e;
         }
         if (e instanceof ConnectionException) {
-            return new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS, new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
+            return new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS,
+                    new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
         }
 
         return new TechnicalException(ComponentType.PROTOCOL_DLMS,

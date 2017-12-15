@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T, R> {
 
@@ -60,7 +60,7 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
 
     @Override
     public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
+            final ActionRequestDto actionRequestDto) throws OsgpException {
 
         if (this.bundleExecutorMapKey == null) {
             throw new ProtocolAdapterException(

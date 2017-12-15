@@ -60,7 +60,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService {
@@ -210,7 +210,7 @@ public class ConfigurationService {
     }
 
     public String setEncryptionKeyExchangeOnGMeter(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
+            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
@@ -218,8 +218,7 @@ public class ConfigurationService {
     }
 
     public String setMbusUserKeyByChannel(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestDataDto)
-            throws ProtocolAdapterException, FunctionalException {
+            final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestDataDto) throws OsgpException {
 
         LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
 
@@ -232,8 +231,7 @@ public class ConfigurationService {
     }
 
     public GMeterInfoDto getMbusKeyExchangeData(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData)
-            throws ProtocolAdapterException, FunctionalException {
+            final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData) throws OsgpException {
 
         final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest = new GetMBusDeviceOnChannelRequestDataDto(
                 device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
@@ -294,8 +292,7 @@ public class ConfigurationService {
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
     }
 
-    public void generateAndEncrypt(final DlmsConnectionHolder conn, final DlmsDevice device)
-            throws ProtocolAdapterException, FunctionalException {
+    public void generateAndEncrypt(final DlmsConnectionHolder conn, final DlmsDevice device) throws OsgpException {
         try {
 
             this.generateAndReplaceKeyCommandExecutor.executeBundleAction(conn, device, null);
@@ -306,7 +303,7 @@ public class ConfigurationService {
     }
 
     public void replaceKeys(final DlmsConnectionHolder conn, final DlmsDevice device, final SetKeysRequestDto keySet)
-            throws ProtocolAdapterException, FunctionalException {
+            throws OsgpException {
 
         try {
             /*
@@ -335,7 +332,7 @@ public class ConfigurationService {
     }
 
     public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final String firmwareIdentifier) throws ProtocolAdapterException {
+            final String firmwareIdentifier) throws OsgpException {
         LOGGER.info("Updating firmware of device {} to firmware with identifier {}", device, firmwareIdentifier);
 
         return this.firmwareService.updateFirmware(conn, device, firmwareIdentifier);

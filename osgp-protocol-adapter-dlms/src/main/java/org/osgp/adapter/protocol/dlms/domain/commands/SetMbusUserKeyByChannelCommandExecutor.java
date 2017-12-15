@@ -21,6 +21,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Executor that sets the M-Bus User key for an M-Bus device on a given channel
@@ -55,15 +56,14 @@ public class SetMbusUserKeyByChannelCommandExecutor extends AbstractCommandExecu
 
     @Override
     public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
+            final ActionRequestDto actionRequestDto) throws OsgpException {
 
         this.checkActionRequestType(actionRequestDto);
         final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData = (SetMbusUserKeyByChannelRequestDataDto) actionRequestDto;
         final GMeterInfoDto gMeterInfo = this.configurationService.getMbusKeyExchangeData(conn, device,
                 setMbusUserKeyByChannelRequestData);
         final MethodResultCode executionResult = this.execute(conn, device, gMeterInfo);
-        final ActionResponseDto bundleResponse = this.asBundleResponse(executionResult);
-        return bundleResponse;
+        return this.asBundleResponse(executionResult);
     }
 
     @Override

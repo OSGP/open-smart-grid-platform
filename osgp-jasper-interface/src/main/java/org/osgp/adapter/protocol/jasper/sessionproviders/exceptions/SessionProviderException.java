@@ -8,7 +8,10 @@
 
 package org.osgp.adapter.protocol.jasper.sessionproviders.exceptions;
 
-public class SessionProviderException extends Exception {
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+
+public class SessionProviderException extends OsgpException {
 
     /**
      * Serial Version UID.
@@ -16,10 +19,10 @@ public class SessionProviderException extends Exception {
     private static final long serialVersionUID = -5449632007365870329L;
 
     public SessionProviderException(final String message) {
-        super(message);
+        super(ComponentType.PROTOCOL_DLMS, message);
     }
 
     public SessionProviderException(final String message, final Throwable throwable) {
-        super(message, throwable);
+        super(ComponentType.PROTOCOL_DLMS, message, throwable);
     }
 }

@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public abstract class DlmsConnector {
     static final int DLMS_PUBLIC_CLIENT_ID = 16;
@@ -25,7 +25,7 @@ public abstract class DlmsConnector {
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnector.class);
 
     public abstract DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws TechnicalException, FunctionalException;
+            throws OsgpException;
 
     protected void checkDevice(final DlmsDevice device) {
         if (device == null) {
@@ -33,7 +33,7 @@ public abstract class DlmsConnector {
         }
     }
 
-    protected void checkIpAddress(final DlmsDevice device) throws TechnicalException, FunctionalException {
+    protected void checkIpAddress(final DlmsDevice device) throws FunctionalException {
         if (device.getIpAddress() == null) {
             final String errorMessage = String.format(
                     "Unable to get connection for device %s, because the IP address:%s is not valid or empty",

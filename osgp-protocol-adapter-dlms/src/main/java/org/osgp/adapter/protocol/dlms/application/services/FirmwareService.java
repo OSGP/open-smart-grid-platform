@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsFirmwareService")
 public class FirmwareService {
@@ -48,7 +49,7 @@ public class FirmwareService {
     }
 
     public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final String firmwareIdentification) throws ProtocolAdapterException {
+            final String firmwareIdentification) throws OsgpException {
         LOGGER.info("Updating firmware of device {} to firmware with identification {}", device,
                 firmwareIdentification);
 
@@ -56,7 +57,7 @@ public class FirmwareService {
     }
 
     public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final FirmwareFileDto firmwareFileDto) throws ProtocolAdapterException {
+            final FirmwareFileDto firmwareFileDto) throws OsgpException {
         LOGGER.info("Updating firmware of device {} to firmware with identification {} using included firmware file",
                 device, firmwareFileDto.getFirmwareIdentification());
 
@@ -73,7 +74,7 @@ public class FirmwareService {
     }
 
     private UpdateFirmwareResponseDto executeFirmwareUpdate(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final String firmwareIdentification) throws ProtocolAdapterException {
+            final String firmwareIdentification) throws OsgpException {
         if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
             return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentification);
         } else {

@@ -11,18 +11,16 @@ import java.io.IOException;
 
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.RawMessageData;
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 public class DlmsConnectionHolder implements AutoCloseable {
-	
-	private static final DlmsMessageListener DO_NOTHING_LISTENER = new DlmsMessageListener() {
+
+    private static final DlmsMessageListener DO_NOTHING_LISTENER = new DlmsMessageListener() {
 
         @Override
         public void messageCaptured(final RawMessageData rawMessageData) {
@@ -44,7 +42,7 @@ public class DlmsConnectionHolder implements AutoCloseable {
     private final DlmsDevice device;
     private final DlmsMessageListener dlmsMessageListener;
     private final DomainHelperService domainHelperService;
-    
+
     private DlmsConnection dlmsConnection;
 
     public DlmsConnectionHolder(final DlmsConnector connector, final DlmsDevice device,
@@ -60,11 +58,10 @@ public class DlmsConnectionHolder implements AutoCloseable {
     }
 
     /**
-     * Returns the current connection, obtained by calling {@link #connect() connect}.
-     *
+     * @return the current connection, obtained by calling {@link #connect()
+     *         connect}.
      * @throws IllegalStateException
      *             when there is no connection available.
-     * @return
      */
     public DlmsConnection getConnection() {
         if (!this.isConnected()) {
@@ -82,7 +79,8 @@ public class DlmsConnectionHolder implements AutoCloseable {
     }
 
     /**
-     * Disconnects from the device, and releases the internal connection reference.
+     * Disconnects from the device, and releases the internal connection
+     * reference.
      *
      * @throws IOException
      *             When an exception occurs while disconnecting.
@@ -99,15 +97,16 @@ public class DlmsConnectionHolder implements AutoCloseable {
     }
 
     /**
-     * Obtains a connection with a device. A connection should be obtained before {@link #getConnection()
-     * getConnection} is called.
+     * Obtains a connection with a device. A connection should be obtained
+     * before {@link #getConnection() getConnection} is called.
      *
-     * @Throws IllegalStateException When there is already a connection set.
-     * @throws TechnicalException
-     *             When an exceptions occurs while creating the exception.
-     * @throws FunctionalException
+     * @throws IllegalStateException
+     *             When there is already a connection set.
+     * @throws OsgpException
+     *             in case of a TechnicalException (When an exceptions occurs
+     *             while creating the exception) or a FunctionalException
      */
-    public void connect() throws TechnicalException, FunctionalException {
+    public void connect() throws OsgpException {
         if (this.dlmsConnection != null) {
             throw new IllegalStateException("Cannot create a new connection because a connection already exists.");
         }
@@ -116,30 +115,28 @@ public class DlmsConnectionHolder implements AutoCloseable {
     }
 
     /**
-     * Obtains a new connection with a device. A connection should be obtained before {@link #getConnection()
-     * getConnection} is called.
+     * Obtains a new connection with a device. A connection should be obtained
+     * before {@link #getConnection() getConnection} is called.
      *
-     * @Throws IllegalStateException When there is already a connection set.
-     * @throws TechnicalException
-     *             When an exceptions occurs while creating the exception.
-     * @throws FunctionalException
-     * @throws ProtocolAdapterException 
+     * @Throws OsgpException in case of a TechnicalException (When an exceptions
+     *         occurs while creating the exception), a FunctionalException or a
+     *         ProtocolAdapterException
      */
-    public void reconnect() throws TechnicalException, FunctionalException, ProtocolAdapterException {
+    public void reconnect() throws OsgpException {
         if (this.dlmsConnection != null) {
             throw new IllegalStateException("Cannot create a new connection because a connection already exists.");
         }
 
-        if(!this.device.isIpAddressIsStatic()) {
-        	this.device.setIpAddress(this.domainHelperService.getDeviceIpAddressFromSessionProvider(this.device));
+        if (!this.device.isIpAddressIsStatic()) {
+            this.device.setIpAddress(this.domainHelperService.getDeviceIpAddressFromSessionProvider(this.device));
         }
         this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
     }
 
-    
     /**
-     * Closes the connection with the device and releases the internal connection reference. The connection will be
-     * closed, but no disconnection message will be sent to the device.
+     * Closes the connection with the device and releases the internal
+     * connection reference. The connection will be closed, but no disconnection
+     * message will be sent to the device.
      */
     @Override
     public void close() throws Exception {

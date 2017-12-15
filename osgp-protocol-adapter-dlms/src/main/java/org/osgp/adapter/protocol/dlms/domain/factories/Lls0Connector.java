@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public class Lls0Connector extends DlmsConnector {
@@ -46,7 +46,7 @@ public class Lls0Connector extends DlmsConnector {
 
     @Override
     public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws TechnicalException, FunctionalException {
+            throws OsgpException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice(device);
@@ -80,13 +80,10 @@ public class Lls0Connector extends DlmsConnector {
         try {
             return tcpConnectionBuilder.build();
         } catch (final IOException e) {
-            final String msg = String.format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b Message:%s",
-                    device.getDeviceIdentification(),
-                    device.getIpAddress(),
-                    device.getPort(),
-                    device.isUseHdlc(),
-                    device.isUseSn(),
-                    e.getMessage());
+            final String msg = String.format(
+                    "Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b Message:%s",
+                    device.getDeviceIdentification(), device.getIpAddress(), device.getPort(), device.isUseHdlc(),
+                    device.isUseSn(), e.getMessage());
             LOGGER.error(msg);
             throw new ConnectionException(msg, e);
         }
