@@ -35,6 +35,8 @@ public class ClearAlarmRegisterCommandExecutor
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.97.98.0.255");
     private static final int ATTRIBUTE_ID = 2;
 
+    private static final int ALARM_CODE = 0;
+
     public ClearAlarmRegisterCommandExecutor() {
         super(ClearAlarmRegisterRequestDto.class);
     }
@@ -54,10 +56,10 @@ public class ClearAlarmRegisterCommandExecutor
         LOGGER.info("Clear alarm register by request for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        final SetParameter setParameter = this.getSetParameter(clearAlarmRegisterRequestDto);
+        final SetParameter setParameter = this.getSetParameter();
 
-        conn.getDlmsMessageListener().setDescription("ClearAlarmRegister, with alarm code = "
-                + clearAlarmRegisterRequestDto.getAlarmCode() + "and set attribute: "
+        conn.getDlmsMessageListener().setDescription("ClearAlarmRegister, with alarm code = " + ALARM_CODE
+                + "and set attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID)));
 
         AccessResultCode resultCode;
@@ -73,12 +75,9 @@ public class ClearAlarmRegisterCommandExecutor
         }
     }
 
-    private SetParameter getSetParameter(final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto)
-            throws ProtocolAdapterException {
-
+    private SetParameter getSetParameter() throws ProtocolAdapterException {
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-
-        final DataObject value = DataObject.newUInteger32Data(clearAlarmRegisterRequestDto.getAlarmCode());
+        final DataObject value = DataObject.newUInteger32Data(ALARM_CODE);
 
         return new SetParameter(alarmRegisterValue, value);
     }
