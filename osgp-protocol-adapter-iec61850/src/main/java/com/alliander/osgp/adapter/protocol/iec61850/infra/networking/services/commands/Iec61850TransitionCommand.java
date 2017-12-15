@@ -26,6 +26,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubD
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.TransitionTypeDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850TransitionCommand {
 
@@ -45,7 +46,7 @@ public class Iec61850TransitionCommand {
 
         final Function<Void> function = new Function<Void>() {
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
 
                 final NodeContainer sensorNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SENSOR, Fc.CO);

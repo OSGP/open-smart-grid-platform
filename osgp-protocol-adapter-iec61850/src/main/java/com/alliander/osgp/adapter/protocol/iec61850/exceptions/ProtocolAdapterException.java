@@ -7,7 +7,10 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.exceptions;
 
-public class ProtocolAdapterException extends Exception {
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+
+public class ProtocolAdapterException extends OsgpException {
 
     /**
      * Serial Version UID.
@@ -15,10 +18,10 @@ public class ProtocolAdapterException extends Exception {
     private static final long serialVersionUID = 916943696172403469L;
 
     public ProtocolAdapterException(final String message) {
-        super(message);
+        super(ComponentType.PROTOCOL_IEC61850, message);
     }
 
     public ProtocolAdapterException(final String message, final Throwable throwable) {
-        super(message, throwable);
+        super(ComponentType.PROTOCOL_IEC61850, message, throwable);
     }
 }

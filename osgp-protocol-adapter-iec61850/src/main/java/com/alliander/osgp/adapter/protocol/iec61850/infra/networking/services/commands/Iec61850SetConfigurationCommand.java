@@ -31,6 +31,7 @@ import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.DeviceFixedIpDto;
 import com.alliander.osgp.dto.valueobjects.RelayMapDto;
 import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850SetConfigurationCommand {
 
@@ -44,7 +45,7 @@ public class Iec61850SetConfigurationCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
 
                 if (configuration.getRelayConfiguration() != null
                         && configuration.getRelayConfiguration().getRelayMap() != null) {

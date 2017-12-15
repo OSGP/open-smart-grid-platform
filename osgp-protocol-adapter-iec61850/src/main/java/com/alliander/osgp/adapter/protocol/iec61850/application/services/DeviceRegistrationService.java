@@ -32,6 +32,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850SetGpsCoordinatesCommand;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "iec61850DeviceRegistrationService")
 public class DeviceRegistrationService {
@@ -84,7 +85,7 @@ public class DeviceRegistrationService {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
                 DeviceRegistrationService.this.disableRegistration(deviceConnection);
                 DeviceRegistrationService.this.setLocationInformation(deviceConnection);
                 if (DeviceRegistrationService.this.isReportingAfterDeviceRegistrationEnabled) {

@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850SetEventNotificationFilterCommand {
 
@@ -32,7 +33,7 @@ public class Iec61850SetEventNotificationFilterCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
 
                 LOGGER.info("Setting the event notification filter");
 

@@ -40,6 +40,7 @@ import com.alliander.osgp.dto.valueobjects.LongTermIntervalTypeDto;
 import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
 import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.RelayMapDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850GetConfigurationCommand {
 
@@ -55,7 +56,7 @@ public class Iec61850GetConfigurationCommand {
         final Function<ConfigurationDto> function = new Function<ConfigurationDto>() {
 
             @Override
-            public ConfigurationDto apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public ConfigurationDto apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
                 // Keeping the hardcoded values and values that aren't fetched
                 // from the device out of the Function.
 

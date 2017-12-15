@@ -46,6 +46,7 @@ import com.alliander.osgp.dto.valueobjects.WindowTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850SetScheduleCommand {
 
@@ -70,7 +71,7 @@ public class Iec61850SetScheduleCommand {
             final Function<Void> function = new Function<Void>() {
 
                 @Override
-                public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+                public Void apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
 
                     Iec61850SetScheduleCommand.this.disableScheduleEntries(relayType, deviceConnection, iec61850Client,
                             deviceMessageLog, ssld, ssldDataService);

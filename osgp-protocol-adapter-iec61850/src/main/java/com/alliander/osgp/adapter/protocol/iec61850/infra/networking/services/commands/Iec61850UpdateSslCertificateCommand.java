@@ -27,6 +27,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Node
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.dto.valueobjects.CertificationDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850UpdateSslCertificateCommand {
 
@@ -39,7 +40,7 @@ public class Iec61850UpdateSslCertificateCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
 
                 LOGGER.info("Reading the certificate authority url");
                 final NodeContainer sslConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,

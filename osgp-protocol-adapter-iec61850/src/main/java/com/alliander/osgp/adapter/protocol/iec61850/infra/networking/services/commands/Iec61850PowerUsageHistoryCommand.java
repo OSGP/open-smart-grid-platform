@@ -35,6 +35,7 @@ import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer
 import com.alliander.osgp.dto.valueobjects.RelayDataDto;
 import com.alliander.osgp.dto.valueobjects.SsldDataDto;
 import com.alliander.osgp.dto.valueobjects.TimePeriodDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850PowerUsageHistoryCommand {
 
@@ -47,7 +48,7 @@ public class Iec61850PowerUsageHistoryCommand {
         final Function<List<PowerUsageDataDto>> function = new Function<List<PowerUsageDataDto>>() {
 
             @Override
-            public List<PowerUsageDataDto> apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public List<PowerUsageDataDto> apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
                 final HistoryTermTypeDto historyTermType = powerUsageHistoryContainer.getHistoryTermType();
                 if (historyTermType != null) {
                     LOGGER.info("device: {}, ignoring HistoryTermType ({}) determining power usage history",
