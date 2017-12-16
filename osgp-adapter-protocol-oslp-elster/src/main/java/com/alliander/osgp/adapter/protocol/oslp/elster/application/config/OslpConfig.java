@@ -78,8 +78,8 @@ public class OslpConfig extends AbstractConfig {
         final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws ProtocolAdapterException {
-                final ChannelPipeline pipeline = OslpConfig.this.createChannelPipeline(OslpConfig.this
-                        .oslpChannelHandlerClient());
+                final ChannelPipeline pipeline = OslpConfig.this
+                        .createChannelPipeline(OslpConfig.this.oslpChannelHandlerClient());
 
                 LOGGER.info("Created client new pipeline");
 
@@ -108,8 +108,8 @@ public class OslpConfig extends AbstractConfig {
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws ProtocolAdapterException {
-                final ChannelPipeline pipeline = OslpConfig.this.createChannelPipeline(OslpConfig.this
-                        .oslpChannelHandlerServer());
+                final ChannelPipeline pipeline = OslpConfig.this
+                        .createChannelPipeline(OslpConfig.this.oslpChannelHandlerServer());
 
                 LOGGER.info("Created server new pipeline");
 
@@ -210,8 +210,8 @@ public class OslpConfig extends AbstractConfig {
 
     @Bean
     public boolean executeResumeScheduleAfterSetLight() {
-        return Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT));
+        return Boolean.parseBoolean(
+                this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT));
     }
 
     @Bean
@@ -222,19 +222,5 @@ public class OslpConfig extends AbstractConfig {
     @Bean
     public Float defaultLongitude() {
         return Float.parseFloat(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE));
-    }
-
-    @Bean
-    public String testDeviceId() {
-        final String testDeviceId = this.environment.getProperty("test.device.id");
-        LOGGER.info("testDeviceId: {}", testDeviceId);
-        return testDeviceId;
-    }
-
-    @Bean
-    public String testDeviceIp() {
-        final String testDeviceIp = this.environment.getProperty("test.device.ip");
-        LOGGER.info("testDeviceIp: {}", testDeviceIp);
-        return testDeviceIp;
     }
 }
