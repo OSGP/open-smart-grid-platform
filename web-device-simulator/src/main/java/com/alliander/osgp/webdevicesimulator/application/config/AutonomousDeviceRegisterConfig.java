@@ -17,18 +17,19 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.CronTask;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 
 import com.alliander.osgp.webdevicesimulator.application.tasks.AutonomousDeviceRegister;
 
 @Configuration
 @EnableScheduling
-@PropertySources({
-    @PropertySource("classpath:web-device-simulator.properties"),
-    @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true),
-})
-public class AutonomousDeviceRegisterConfig {
+@PropertySources({ @PropertySource("classpath:web-device-simulator.properties"),
+        @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true), })
+public class AutonomousDeviceRegisterConfig implements SchedulingConfigurer {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_CRON_EXPRESSION = "autonomous.tasks.device.registration.cron.expression";
     private static final String PROPERTY_NAME_AUTONOMOUS_POOL_SIZE = "autonomous.task.device.registration.pool.size";
@@ -40,7 +41,12 @@ public class AutonomousDeviceRegisterConfig {
     @Autowired
     private AutonomousDeviceRegister autonomousDeviceRegister;
 
-    @Bean
+    @Override
+    public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setScheduler(this.deviceRegistrationTaskScheduler());
+        taskRegistrar.addCronTask(new CronTask(this.autonomousDeviceRegister, this.autonomousDeviceRegisterTrigger()));
+    }
+
     public CronTrigger autonomousDeviceRegisterTrigger() {
         final String cron = this.environment.getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_TASKS_CRON_EXPRESSION);
         return new CronTrigger(cron);
@@ -49,15 +55,11 @@ public class AutonomousDeviceRegisterConfig {
     @Bean(destroyMethod = "shutdown")
     public TaskScheduler deviceRegistrationTaskScheduler() {
         final ThreadPoolTaskScheduler deviceRegistrationTaskScheduler = new ThreadPoolTaskScheduler();
-        deviceRegistrationTaskScheduler.setPoolSize(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_POOL_SIZE)));
-        deviceRegistrationTaskScheduler.setThreadNamePrefix(this.environment
-                .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_THREAD_NAME_PREFIX));
+        deviceRegistrationTaskScheduler.setPoolSize(
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_POOL_SIZE)));
+        deviceRegistrationTaskScheduler
+                .setThreadNamePrefix(this.environment.getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_THREAD_NAME_PREFIX));
         deviceRegistrationTaskScheduler.setWaitForTasksToCompleteOnShutdown(false);
-        deviceRegistrationTaskScheduler.setAwaitTerminationSeconds(10);
-        deviceRegistrationTaskScheduler.initialize();
-        deviceRegistrationTaskScheduler.schedule(this.autonomousDeviceRegister, this.autonomousDeviceRegisterTrigger());
         return deviceRegistrationTaskScheduler;
     }
-
 }

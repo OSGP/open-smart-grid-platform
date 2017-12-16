@@ -10,18 +10,19 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.CronTask;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 
 import com.alliander.osgp.webdevicesimulator.application.tasks.EventNotificationTransition;
 
 @Configuration
 @EnableScheduling
-@PropertySources({
-    @PropertySource("classpath:web-device-simulator.properties"),
-    @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true),
-})
-public class EventNotificationTransitionConfig {
+@PropertySources({ @PropertySource("classpath:web-device-simulator.properties"),
+        @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true), })
+public class EventNotificationTransitionConfig implements SchedulingConfigurer {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_EVENTNOTIFICATION_CRON_EXPRESSION = "autonomous.tasks.eventnotification.cron.expression";
     private static final String PROPERTY_NAME_AUTONOMOUS_EVENTNOTIFICATION_POOL_SIZE = "autonomous.tasks.eventnotification.pool.size";
@@ -33,7 +34,12 @@ public class EventNotificationTransitionConfig {
     @Autowired
     private EventNotificationTransition eventNotificationTransition;
 
-    @Bean
+    @Override
+    public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setScheduler(this.eventNotificationTaskScheduler());
+        taskRegistrar.addCronTask(new CronTask(this.eventNotificationTransition, this.eventNotificationTrigger()));
+    }
+
     public CronTrigger eventNotificationTrigger() {
         final String cron = this.environment
                 .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_TASKS_EVENTNOTIFICATION_CRON_EXPRESSION);
@@ -43,15 +49,11 @@ public class EventNotificationTransitionConfig {
     @Bean(destroyMethod = "shutdown")
     public TaskScheduler eventNotificationTaskScheduler() {
         final ThreadPoolTaskScheduler eventNotificationTaskScheduler = new ThreadPoolTaskScheduler();
-        eventNotificationTaskScheduler.setPoolSize(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_EVENTNOTIFICATION_POOL_SIZE)));
-        eventNotificationTaskScheduler.setThreadNamePrefix(this.environment
-                .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_EVENTNOTIFICATION_THREAD_NAME_PREFIX));
+        eventNotificationTaskScheduler.setPoolSize(Integer
+                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_EVENTNOTIFICATION_POOL_SIZE)));
+        eventNotificationTaskScheduler.setThreadNamePrefix(
+                this.environment.getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_EVENTNOTIFICATION_THREAD_NAME_PREFIX));
         eventNotificationTaskScheduler.setWaitForTasksToCompleteOnShutdown(false);
-        eventNotificationTaskScheduler.setAwaitTerminationSeconds(10);
-        eventNotificationTaskScheduler.initialize();
-        eventNotificationTaskScheduler.schedule(this.eventNotificationTransition, this.eventNotificationTrigger());
         return eventNotificationTaskScheduler;
     }
-
 }

@@ -17,18 +17,19 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.CronTask;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
 
 import com.alliander.osgp.webdevicesimulator.application.tasks.AutonomousDeviceReboot;
 
 @Configuration
 @EnableScheduling
-@PropertySources({
-    @PropertySource("classpath:web-device-simulator.properties"),
-    @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true),
-})
-public class AutonomousDeviceRebootConfig {
+@PropertySources({ @PropertySource("classpath:web-device-simulator.properties"),
+        @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true), })
+public class AutonomousDeviceRebootConfig implements SchedulingConfigurer {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_DEVICE_REBOOT_CRON_EXPRESSION = "autonomous.tasks.device.reboot.cron.expression";
     private static final String PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_POOL_SIZE = "autonomous.task.device.reboot.pool.size";
@@ -40,7 +41,12 @@ public class AutonomousDeviceRebootConfig {
     @Autowired
     private AutonomousDeviceReboot autonomousDeviceReboot;
 
-    @Bean
+    @Override
+    public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setScheduler(this.deviceRebootTaskScheduler());
+        taskRegistrar.addCronTask(new CronTask(this.autonomousDeviceReboot, this.autonomousDeviceRebootTrigger()));
+    }
+
     public CronTrigger autonomousDeviceRebootTrigger() {
         final String cron = this.environment
                 .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_TASKS_DEVICE_REBOOT_CRON_EXPRESSION);
@@ -50,15 +56,11 @@ public class AutonomousDeviceRebootConfig {
     @Bean(destroyMethod = "shutdown")
     public TaskScheduler deviceRebootTaskScheduler() {
         final ThreadPoolTaskScheduler deviceRebootTaskScheduler = new ThreadPoolTaskScheduler();
-        deviceRebootTaskScheduler.setPoolSize(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_POOL_SIZE)));
-        deviceRebootTaskScheduler.setThreadNamePrefix(this.environment
-                .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_THREAD_NAME_PREFIX));
+        deviceRebootTaskScheduler.setPoolSize(Integer
+                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_POOL_SIZE)));
+        deviceRebootTaskScheduler.setThreadNamePrefix(
+                this.environment.getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_THREAD_NAME_PREFIX));
         deviceRebootTaskScheduler.setWaitForTasksToCompleteOnShutdown(false);
-        deviceRebootTaskScheduler.setAwaitTerminationSeconds(10);
-        deviceRebootTaskScheduler.initialize();
-        deviceRebootTaskScheduler.schedule(this.autonomousDeviceReboot, this.autonomousDeviceRebootTrigger());
         return deviceRebootTaskScheduler;
     }
-
 }
