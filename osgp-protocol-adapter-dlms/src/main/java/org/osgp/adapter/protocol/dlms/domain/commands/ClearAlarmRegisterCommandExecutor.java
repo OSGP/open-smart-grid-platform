@@ -81,15 +81,15 @@ public class ClearAlarmRegisterCommandExecutor
         if (resultCode != null) {
             return resultCode;
         } else {
-            throw new ProtocolAdapterException("Error clear alarm register.");
+            throw new ProtocolAdapterException("Error occurred for clear alarm register.");
         }
     }
 
     private SetParameter getSetParameter() throws ProtocolAdapterException {
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-        final DataObject value = DataObject.newUInteger32Data(ALARM_CODE);
+        final DataObject data = DataObject.newUInteger32Data(ALARM_CODE);
 
-        return new SetParameter(alarmRegisterValue, value);
+        return new SetParameter(alarmRegisterValue, data);
     }
 
 }

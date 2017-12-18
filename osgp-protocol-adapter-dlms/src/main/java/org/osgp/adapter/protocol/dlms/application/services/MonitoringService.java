@@ -99,7 +99,7 @@ public class MonitoringService {
 
         this.clearAlarmRegisterCommandExecutor.execute(conn, device, clearAlarmRegisterRequestDto);
 
-        return "Clear alarm register result is OK for device id: " + device.getDeviceIdentification();
+        return "Clear alarm register result is OK for device: " + device.getDeviceIdentification();
     }
 
 }
