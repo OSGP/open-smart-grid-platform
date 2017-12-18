@@ -73,6 +73,12 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     @Autowired
     private OslpSigningService oslpSigningService;
 
+    /**
+     * Convert list in property files to {@code Map}.
+     *
+     * See the SpEL documentation for more information:
+     * https://docs.spring.io/spring/docs/3.0.x/reference/expressions.html
+     */
     @Value("#{${test.device.ips}}")
     private Map<String, String> testDeviceIps;
 
@@ -183,14 +189,19 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             final Oslp.RegisterDeviceRequest registerRequest) throws UnknownHostException {
 
         final String deviceIdentification = registerRequest.getDeviceIdentification();
-        InetAddress inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
+        final String deviceType = registerRequest.getDeviceType().toString();
+        final boolean hasSchedule = registerRequest.getHasSchedule();
+        InetAddress inetAddress;
+
+        // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
+        // set, the values will be used to set an IP address for a device.
         if (this.testDeviceIps != null && this.testDeviceIps.containsKey(deviceIdentification)) {
             final String testDeviceIp = this.testDeviceIps.get(deviceIdentification);
             LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", deviceIdentification, testDeviceIp);
             inetAddress = InetAddress.getByName(testDeviceIp);
+        } else {
+            inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
         }
-        final String deviceType = registerRequest.getDeviceType().toString();
-        final boolean hasSchedule = registerRequest.getHasSchedule();
 
         // Send message to OSGP-CORE to save IP Address, device type and has
         // schedule values in OSGP-CORE database.
