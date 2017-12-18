@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.protocol.oslp.elster.infra.networking;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -22,6 +23,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
@@ -63,12 +65,6 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     private Float defaultLongitude;
 
     @Autowired
-    private String testDeviceId;
-
-    @Autowired
-    private String testDeviceIp;
-
-    @Autowired
     private OslpDeviceSettingsService oslpDeviceSettingsService;
 
     @Autowired
@@ -76,6 +72,15 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
     @Autowired
     private OslpSigningService oslpSigningService;
+
+    /**
+     * Convert list in property files to {@code Map}.
+     *
+     * See the SpEL documentation for more information:
+     * https://docs.spring.io/spring/docs/3.0.x/reference/expressions.html
+     */
+    @Value("#{${test.device.ips}}")
+    private Map<String, String> testDeviceIps;
 
     private final ConcurrentMap<Integer, Channel> channelMap = new ConcurrentHashMap<>();
 
@@ -135,8 +140,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     payload = this.handleEventNotificationRequest(message.getDeviceId(), message.getSequenceNumber(),
                             message.getPayloadMessage().getEventNotificationRequest());
                 } else {
-                    LOGGER.warn("{} Received unknown payload. Received: {}.", channelId, message.getPayloadMessage()
-                            .toString());
+                    LOGGER.warn("{} Received unknown payload. Received: {}.", channelId,
+                            message.getPayloadMessage().toString());
                     // Optional extra: return error code to device.
                     return;
                 }
@@ -164,8 +169,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     public void processSignedOslpEnvelope(final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 
         // Try to find the channel.
-        final Integer channelId = Integer.parseInt(signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto()
-                .getCorrelationUid());
+        final Integer channelId = Integer
+                .parseInt(signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto().getCorrelationUid());
         final Channel channel = this.findChannel(channelId);
         if (channel == null) {
             LOGGER.error("Unable to find channel for channelId: {}. Can't send response message to device.", channelId);
@@ -184,21 +189,27 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             final Oslp.RegisterDeviceRequest registerRequest) throws UnknownHostException {
 
         final String deviceIdentification = registerRequest.getDeviceIdentification();
-        InetAddress inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
-        if (this.testDeviceId != null && this.testDeviceIp != null && deviceIdentification.equals(this.testDeviceId)) {
-            LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", this.testDeviceId, this.testDeviceIp);
-            inetAddress = InetAddress.getByName(this.testDeviceIp);
-        }
         final String deviceType = registerRequest.getDeviceType().toString();
         final boolean hasSchedule = registerRequest.getHasSchedule();
+        InetAddress inetAddress;
+
+        // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
+        // set, the values will be used to set an IP address for a device.
+        if (this.testDeviceIps != null && this.testDeviceIps.containsKey(deviceIdentification)) {
+            final String testDeviceIp = this.testDeviceIps.get(deviceIdentification);
+            LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", deviceIdentification, testDeviceIp);
+            inetAddress = InetAddress.getByName(testDeviceIp);
+        } else {
+            inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
+        }
 
         // Send message to OSGP-CORE to save IP Address, device type and has
         // schedule values in OSGP-CORE database.
         this.deviceRegistrationService.sendDeviceRegisterRequest(inetAddress, deviceType, hasSchedule,
                 deviceIdentification);
 
-        OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(registerRequest
-                .getDeviceIdentification());
+        OslpDevice oslpDevice = this.oslpDeviceSettingsService
+                .getDeviceByDeviceIdentification(registerRequest.getDeviceIdentification());
 
         // Save the security related values in the OSLP database.
         oslpDevice.updateRegistrationData(deviceUid, registerRequest.getDeviceType().toString(),
@@ -222,11 +233,11 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         if (gpsCoordinates != null && gpsCoordinates.getLatitude() != null && gpsCoordinates.getLongitude() != null) {
             // Add GPS information when available in meta data.
             locationInfo.setLatitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLatitude()))
-            .setLongitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLongitude()));
+                    .setLongitude(this.convertGpsCoordinateFromFloatToInt(gpsCoordinates.getLongitude()));
         } else {
             // Otherwise use default GPS information.
-            locationInfo.setLatitude(this.convertGpsCoordinateFromFloatToInt(this.defaultLatitude)).setLongitude(
-                    this.convertGpsCoordinateFromFloatToInt(this.defaultLongitude));
+            locationInfo.setLatitude(this.convertGpsCoordinateFromFloatToInt(this.defaultLatitude))
+                    .setLongitude(this.convertGpsCoordinateFromFloatToInt(this.defaultLongitude));
         }
 
         responseBuilder.setLocationInfo(locationInfo);
@@ -250,13 +261,12 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             throw new ProtocolAdapterException("ConfirmRegisterDevice failed", e);
         }
 
-        return Oslp.Message
-                .newBuilder()
-                .setConfirmRegisterDeviceResponse(
-                        Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+        return Oslp.Message.newBuilder()
+                .setConfirmRegisterDeviceResponse(Oslp.ConfirmRegisterDeviceResponse.newBuilder()
+                        .setStatus(Oslp.Status.OK).setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
                         .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                        .setSequenceWindow(this.sequenceNumberWindow)).build();
+                        .setSequenceWindow(this.sequenceNumberWindow))
+                .build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,
@@ -268,10 +278,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     SequenceNumberUtils.convertByteArrayToInteger(sequenceNumber));
         } catch (final ProtocolAdapterException ex) {
             LOGGER.error("handle event notification request exception", ex);
-            return Oslp.Message
-                    .newBuilder()
-                    .setEventNotificationResponse(
-                            Oslp.EventNotificationResponse.newBuilder().setStatus(Oslp.Status.REJECTED)).build();
+            return Oslp.Message.newBuilder().setEventNotificationResponse(
+                    Oslp.EventNotificationResponse.newBuilder().setStatus(Oslp.Status.REJECTED)).build();
         }
 
         final Oslp.Status oslpStatus = Oslp.Status.OK;
