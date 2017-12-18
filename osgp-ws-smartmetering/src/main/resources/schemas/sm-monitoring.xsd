@@ -305,6 +305,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:complexType name="ClearAlarmRegisterData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
   <xsd:element name="ClearAlarmRegisterAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
