@@ -289,8 +289,6 @@
     </xsd:complexType>
   </xsd:element>
 
-
-
   <xsd:element name="ClearAlarmRegisterRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -329,11 +327,6 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
-
-
-
-
 
   <!-- DATATYPES -->
   <xsd:complexType name="AlarmRegister">
