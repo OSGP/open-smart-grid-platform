@@ -13,7 +13,7 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Interface for executing a command on a smart meter over a client connection,
@@ -26,21 +26,20 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
  */
 public interface CommandExecutor<T, R> {
 
-    R execute(DlmsConnectionHolder conn, DlmsDevice device, T object)
-            throws ProtocolAdapterException, FunctionalException;
+    R execute(DlmsConnectionHolder conn, DlmsDevice device, T object) throws OsgpException;
 
     /**
      * If a CommandExecutor gets called from an action that is part of a bundle,
      * the result should always be returned as an object that is assignable to
      * ActionResponseDto from an input that is an ActionRequestDto.
      *
-     * @throws FunctionalException
+     * @throws OsgpException
      *
      * @see #fromBundleRequestInput(ActionRequestDto)
      * @see #asBundleResponse(Object)
      */
     ActionResponseDto executeBundleAction(DlmsConnectionHolder conn, DlmsDevice device,
-            ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException;
+            ActionRequestDto actionRequestDto) throws OsgpException;
 
     T fromBundleRequestInput(ActionRequestDto bundleInput) throws ProtocolAdapterException;
 

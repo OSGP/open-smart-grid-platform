@@ -7,10 +7,19 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -405,6 +414,44 @@ public class SecurityKeyService {
             return this.encryptionService.encrypt(this.generateKey());
         } catch (final FunctionalException e) {
             throw new EncrypterException("Error encrypting freshly generated key", e);
+        }
+    }
+
+    /**
+     * Encrypts a new M-Bus User key with the M-Bus Default key for use as M-Bus
+     * Client Setup transfer_key parameter.
+     * <p>
+     * Note that the specifics of the encryption of the M-Bus User key depend on
+     * the M-Bus version the devices support. This method should be appropriate
+     * for use with DSMR 4 M-Bus devices.
+     * <p>
+     * The encryption is performed by applying an AES/CBC/NoPadding cipher
+     * initialized for encryption with the given mbusDefaultKey and an
+     * initialization vector of 16 zero-bytes to the given mbusUserKey.
+     *
+     * @param mbusDefaultKey
+     * @param mbusUserKey
+     * @return the properly wrapped User key for a DSMR 4 M-Bus User key change.
+     */
+    public byte[] encryptMbusUserKey(final byte[] mbusDefaultKey, final byte[] mbusUserKey)
+            throws ProtocolAdapterException {
+
+        final Key secretkeySpec = new SecretKeySpec(mbusDefaultKey, "AES");
+
+        try {
+
+            final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+
+            final IvParameterSpec params = new IvParameterSpec(new byte[16]);
+            cipher.init(Cipher.ENCRYPT_MODE, secretkeySpec, params);
+
+            return cipher.doFinal(mbusUserKey);
+
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            final String message = "Error encrypting M-Bus User key with M-Bus Default key for transfer.";
+            LOGGER.error(message, e);
+            throw new ProtocolAdapterException(message);
         }
     }
 }

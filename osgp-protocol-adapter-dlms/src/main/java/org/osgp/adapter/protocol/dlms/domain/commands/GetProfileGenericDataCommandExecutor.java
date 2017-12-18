@@ -18,7 +18,6 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
-import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.ClockAttribute;
@@ -36,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
@@ -313,7 +313,7 @@ public class GetProfileGenericDataCommandExecutor
     }
 
     private ProfileEntryValueDto makeProfileEntryValueDto(final DataObject dataObject,
-            final ScalerUnitInfo scalerUnitInfo) {
+            final ScalerUnitInfo scalerUnitInfo) throws ProtocolAdapterException {
         if (InterfaceClass.CLOCK.id() == scalerUnitInfo.getClassId()) {
             return this.makeDateProfileEntryValueDto(dataObject);
         } else if (dataObject.isNumber()) {
@@ -325,9 +325,10 @@ public class GetProfileGenericDataCommandExecutor
         }
     }
 
-    private ProfileEntryValueDto makeDateProfileEntryValueDto(final DataObject dataObject) {
-        final CosemDateTime cosemDateTime = CosemDateTime.decode((byte[]) dataObject.getValue());
-        return new ProfileEntryValueDto(cosemDateTime.toCalendar().getTime());
+    private ProfileEntryValueDto makeDateProfileEntryValueDto(final DataObject dataObject)
+            throws ProtocolAdapterException {
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.convertDataObjectToDateTime(dataObject);
+        return new ProfileEntryValueDto(cosemDateTime.asDateTime().toDate());
     }
 
     private ProfileEntryValueDto makeNumericProfileEntryValueDto(final DataObject dataObject,

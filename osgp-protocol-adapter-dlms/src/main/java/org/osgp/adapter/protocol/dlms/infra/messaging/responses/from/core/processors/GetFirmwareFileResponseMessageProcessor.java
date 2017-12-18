@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -51,7 +52,8 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         DlmsDevice device = null;
 
         try {
-            // Get metadata from message and update message type to update firmware
+            // Get metadata from message and update message type to update
+            // firmware
             messageMetadata = new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
                     .withMessageType(DeviceFunctionDto.UPDATE_FIRMWARE.name()).build();
 
@@ -100,7 +102,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final Serializable response) throws ProtocolAdapterException {
+            final Serializable response) throws OsgpException {
 
         if (!(response instanceof ResponseMessage)) {
             throw new ProtocolAdapterException("Invalid response type, expected ResponseMessage object.");

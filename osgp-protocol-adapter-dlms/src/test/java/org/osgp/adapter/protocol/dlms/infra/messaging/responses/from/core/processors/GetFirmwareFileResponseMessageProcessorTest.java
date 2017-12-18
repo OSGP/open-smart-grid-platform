@@ -41,9 +41,7 @@ import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProvi
 
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ObjectMessageBuilder;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -91,7 +89,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
     @Test
     public void processMessageShouldSendOkResponseMessageContainingFirmwareVersions()
-            throws ProtocolAdapterException, JMSException, FunctionalException, TechnicalException {
+            throws OsgpException, JMSException {
         // arrange
         final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);

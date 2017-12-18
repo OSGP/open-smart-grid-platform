@@ -27,6 +27,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
 public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<String, UpdateFirmwareResponseDto> {
@@ -60,7 +61,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
 
     @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
     private int initiationStatusCheckTimeout;
-    
+
     private ImageTransfer.ImageTranferProperties imageTransferProperties;
 
     public UpdateFirmwareCommandExecutor() {
@@ -83,7 +84,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
 
     @Override
     public UpdateFirmwareResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final String firmwareIdentification) throws ProtocolAdapterException {
+            final String firmwareIdentification) throws OsgpException {
         final ImageTransfer transfer = new ImageTransfer(conn, this.imageTransferProperties, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
 
@@ -104,11 +105,11 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         if (!transfer.imageTransferEnabled()) {
             transfer.setImageTransferEnabled(true);
         }
-        
+
         transfer.initiateImageTransfer();
     }
 
-    private void transfer(final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
+    private void transfer(final ImageTransfer transfer) throws OsgpException {
         if (transfer.shouldTransferImage()) {
             transfer.transferImageBlocks();
             transfer.transferMissingImageBlocks();
@@ -117,14 +118,14 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         }
     }
 
-    private void verify(final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
+    private void verify(final ImageTransfer transfer) throws OsgpException {
         if (!transfer.imageIsVerified()) {
             transfer.verifyImage();
         }
     }
 
     private List<FirmwareVersionDto> activate(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
+            final ImageTransfer transfer) throws OsgpException {
         if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
             transfer.activateImage();
             return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);

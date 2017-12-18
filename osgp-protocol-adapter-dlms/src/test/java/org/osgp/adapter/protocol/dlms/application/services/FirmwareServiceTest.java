@@ -26,6 +26,7 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRep
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareFileDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class FirmwareServiceTest {
 
@@ -66,7 +67,7 @@ public class FirmwareServiceTest {
     }
 
     @Test
-    public void updateFirmwareShouldCallExecutorWhenFirmwareFileInCache() throws ProtocolAdapterException {
+    public void updateFirmwareShouldCallExecutorWhenFirmwareFileInCache() throws OsgpException {
         // Arrange
         final String firmwareIdentification = "fw";
         final byte[] firmwareFile = firmwareIdentification.getBytes();
@@ -82,7 +83,7 @@ public class FirmwareServiceTest {
     }
 
     @Test(expected = ProtocolAdapterException.class)
-    public void updateFirmwareShouldThrowExceptionWhenFirmwareFileNotInCache() throws ProtocolAdapterException {
+    public void updateFirmwareShouldThrowExceptionWhenFirmwareFileNotInCache() throws OsgpException {
         // Arrange
         final String firmwareIdentification = "fw";
         when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
@@ -95,7 +96,7 @@ public class FirmwareServiceTest {
     }
 
     @Test
-    public void updateFirmwareShouldNotCallExecutorWhenFirmwareFileNotInCache() throws ProtocolAdapterException {
+    public void updateFirmwareShouldNotCallExecutorWhenFirmwareFileNotInCache() throws OsgpException {
         // Arrange
         final String firmwareIdentification = "fw";
         when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
@@ -114,8 +115,7 @@ public class FirmwareServiceTest {
     }
 
     @Test
-    public void updateFirmwareUsingFirmwareFileShouldStoreFirmwareFileAndCallExecutor()
-            throws ProtocolAdapterException {
+    public void updateFirmwareUsingFirmwareFileShouldStoreFirmwareFileAndCallExecutor() throws OsgpException {
         // Arrange
         final String firmwareIdentification = "fw";
         final byte[] firmwareFile = firmwareIdentification.getBytes();
