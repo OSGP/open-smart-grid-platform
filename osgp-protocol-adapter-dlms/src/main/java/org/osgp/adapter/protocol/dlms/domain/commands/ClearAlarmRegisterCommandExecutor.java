@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 
@@ -47,6 +48,15 @@ public class ClearAlarmRegisterCommandExecutor
         this.checkAccessResultCode(executionResult);
 
         return new ActionResponseDto("Clear alarm register was successful");
+    }
+
+    @Override
+    public ClearAlarmRegisterRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+
+        return (ClearAlarmRegisterRequestDto) bundleInput;
     }
 
     @Override
