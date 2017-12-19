@@ -85,7 +85,7 @@ public class ClearAlarmRegisterCommandExecutor
         }
     }
 
-    private SetParameter getSetParameter() throws ProtocolAdapterException {
+    private SetParameter getSetParameter() {
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final DataObject data = DataObject.newUInteger32Data(ALARM_CODE);
 

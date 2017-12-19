@@ -94,12 +94,10 @@ public class MonitoringService {
         return this.getProfileGenericDataCommandExecutor.execute(conn, device, profileGenericDataRequest);
     }
 
-    public String setClearAlarmRegister(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public void setClearAlarmRegister(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto) throws ProtocolAdapterException {
 
         this.clearAlarmRegisterCommandExecutor.execute(conn, device, clearAlarmRegisterRequestDto);
-
-        return "Clear alarm register result is OK for device: " + device.getDeviceIdentification();
     }
 
 }
