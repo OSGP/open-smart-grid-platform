@@ -92,6 +92,7 @@ public class GetDataSteps extends GlueBase {
         for (int i = 0; i < expectedNumberOfSystems; i++) {
             this.assertSystemResponse(responseParameters, systemIdentifiers, i);
         }
+
     }
 
     private void assertSystemResponse(final Map<String, String> responseParameters,
