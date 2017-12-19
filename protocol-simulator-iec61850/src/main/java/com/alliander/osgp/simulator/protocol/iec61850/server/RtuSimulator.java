@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.simulator.protocol.iec61850.server;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -18,6 +20,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.PreDestroy;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.ModelNode;
@@ -30,6 +45,10 @@ import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.alliander.osgp.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Battery;
@@ -79,8 +98,7 @@ public class RtuSimulator implements ServerEventListener {
     public RtuSimulator(final int port, final InputStream sclFile, final String serverName,
             final ServerSapEventProducer serverSapEventProducer, final Long updateValuesDelay,
             final Long updateValuesPeriod) throws SclParseException {
-        final List<ServerSap> serverSaps = ServerSap.getSapsFromSclFile(sclFile);
-        this.server = serverSaps.get(0);
+        this.server = ServerSap.getSapsFromSclFile(this.convertReportsForTesting(sclFile)).get(0);
         this.server.setPort(port);
         this.serverName = serverName;
         this.serverSapEventProducer = serverSapEventProducer;
@@ -474,4 +492,93 @@ public class RtuSimulator implements ServerEventListener {
             return PHYSICAL_DEVICE;
         }
     }
+
+    private InputStream convertReportsForTesting(final InputStream inputStream) {
+
+        Document doc = null;
+        try {
+            doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
+        } catch (final SAXException | IOException | ParserConfigurationException e) {
+            LOGGER.error("Error while creating document", e.getMessage());
+        }
+
+        final XPath xPath = XPathFactory.newInstance().newXPath();
+
+        this.disableBufferedReports(xPath, doc);
+        this.disablePeriodicReports(xPath, doc);
+        this.enableReportOnQualityChange(xPath, doc);
+        this.setIntegrityPeriodToZero(xPath, doc);
+
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Transformer transformer = null;
+        try {
+            transformer = TransformerFactory.newInstance().newTransformer();
+            final Result result = new StreamResult(baos);
+            final Source source = new DOMSource(doc);
+            transformer.transform(source, result);
+        } catch (final TransformerException e) {
+            LOGGER.error("Exception while transforming", e.getMessage());
+        }
+
+        return new ByteArrayInputStream(baos.toByteArray());
+    }
+
+    private void setIntegrityPeriodToZero(final XPath xPath, final Document doc) {
+
+        try {
+            final NodeList nodeList = (NodeList) xPath.evaluate("//ReportControl[@intgPd='60000']", doc,
+                    XPathConstants.NODESET);
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                final org.w3c.dom.Node value = nodeList.item(i).getAttributes().getNamedItem("intgPd");
+                value.setNodeValue("0");
+            }
+        } catch (final XPathExpressionException e) {
+            LOGGER.error("Unable to set Integrity Period to zero", e.getMessage());
+        }
+    }
+
+    private void enableReportOnQualityChange(final XPath xPath, final Document doc) {
+
+        try {
+            final NodeList nodeList = (NodeList) xPath.evaluate("//TrgOps[@*]", doc, XPathConstants.NODESET);
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                final Element e = ((Element) nodeList.item(i));
+                e.setAttribute("qchg", "true");
+            }
+        } catch (final XPathExpressionException e) {
+            LOGGER.error("Unable to enable reporting on quality change", e.getMessage());
+        }
+
+    }
+
+    private void disablePeriodicReports(final XPath xPath, final Document doc) {
+
+        try {
+            final NodeList nodeList = (NodeList) xPath.evaluate("//TrgOps[@period='true']", doc,
+                    XPathConstants.NODESET);
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                final org.w3c.dom.Node value = nodeList.item(i).getAttributes().getNamedItem("period");
+                value.setNodeValue("false");
+            }
+        } catch (final XPathExpressionException e) {
+            LOGGER.error("Unable to disable periodic reports", e.getMessage());
+        }
+
+    }
+
+    private void disableBufferedReports(final XPath xPath, final Document doc) {
+
+        try {
+            final NodeList nodeList = (NodeList) xPath.evaluate("//ReportControl[@buffered='true']", doc,
+                    XPathConstants.NODESET);
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                final org.w3c.dom.Node value = nodeList.item(i).getAttributes().getNamedItem("buffered");
+                value.setNodeValue("false");
+            }
+        } catch (final XPathExpressionException e) {
+            LOGGER.error("Unable to disable buffered reports", e.getMessage());
+        }
+
+    }
+
 }
