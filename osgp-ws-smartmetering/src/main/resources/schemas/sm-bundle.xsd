@@ -241,7 +241,6 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  
   <xsd:element name="ClearAlarmRegisterRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -249,8 +248,8 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  
-     
+
+
   <xsd:complexType name="Actions">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">

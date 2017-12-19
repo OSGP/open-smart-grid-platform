@@ -485,6 +485,7 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+
     <wsdl:operation name="GetClearAlarmRegisterResponse">
       <soap:operation soapAction="" />
       <wsdl:input name="ClearAlarmRegisterAsyncRequest">
