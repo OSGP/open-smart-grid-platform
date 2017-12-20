@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
-public class LoggingDlmsMessageListener implements DlmsMessageListener {
+public class LoggingDlmsMessageListener extends InvocationCountingDlmsMessageListener implements DlmsMessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingDlmsMessageListener.class);
 
@@ -40,6 +40,8 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
 
     @Override
     public void messageCaptured(final RawMessageData rawMessageData) {
+
+        super.messageCaptured(rawMessageData);
 
         final int sequenceNumber = this.numberOfCapturedMessages.incrementAndGet();
 

@@ -30,6 +30,8 @@ public class DlmsDevice extends AbstractEntity {
      */
     private static final long serialVersionUID = 3899692163578950343L;
 
+    private static final int KEMA_CODE_LENGTH = 5;
+
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
 
@@ -111,6 +113,11 @@ public class DlmsDevice extends AbstractEntity {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public long getDeviceId() {
+        final String twelveDigits = this.deviceIdentification.substring(KEMA_CODE_LENGTH);
+        return Long.parseLong(twelveDigits);
     }
 
     @Override
@@ -301,6 +308,14 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setMbusIdentificationNumber(final Long mbusIdentificationNumber) {
         this.mbusIdentificationNumber = mbusIdentificationNumber;
+    }
+
+    public String getManufacturerId() {
+        /*
+         * MbusManufacturerIdentification holds ManufacturerId for non M-Bus
+         * devices.
+         */
+        return this.mbusManufacturerIdentification;
     }
 
     public String getMbusManufacturerIdentification() {

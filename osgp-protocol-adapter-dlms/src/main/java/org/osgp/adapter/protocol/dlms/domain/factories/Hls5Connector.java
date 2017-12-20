@@ -18,6 +18,7 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
@@ -101,6 +102,23 @@ public class Hls5Connector extends SecureDlmsConnector {
         // Validate keys before JDLMS does and throw a FunctionalException if
         // necessary
         this.validateKeys(dlmsAuthenticationKey, dlmsEncryptionKey);
+
+        /*
+         * HLS5 communication needs an IV (initialization vector) that is unique
+         * per encrypted message.
+         *
+         * This is taken care of by setting up a fixed 8 byte part which is
+         * unique per device (the system title) and an invocation counter that
+         * is incremented on each communication, and should never be used with
+         * the same value for the same encryption key on the device.
+         *
+         * By setting the system title and frame counter on the connection
+         * builder the library is enabled to meet the IV requirements of DLMS
+         * HLS5 communication.
+         */
+        tcpConnectionBuilder.setSystemTitle(device.getManufacturerId(), device.getDeviceId());
+        tcpConnectionBuilder.setFrameCounter(
+                device.getValidSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getInvocationCounter() + 1);
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(dlmsAuthenticationKey)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)

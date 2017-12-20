@@ -46,6 +46,9 @@ public class SecurityKey extends AbstractEntity {
     @Column(name = "security_key")
     private String key;
 
+    @Column(nullable = true)
+    private Integer invocationCounter;
+
     public SecurityKey() {
         // Default constructor
     }
@@ -113,10 +116,23 @@ public class SecurityKey extends AbstractEntity {
         return this.key;
     }
 
+    public int getInvocationCounter() {
+        return this.invocationCounter == null ? 0 : this.invocationCounter;
+    }
+
+    public void setInvocationCounter(final Integer invocationCounter) {
+        this.invocationCounter = invocationCounter;
+    }
+
     @Override
     public String toString() {
-        return "SecurityKey [securityKeyType=" + this.securityKeyType + ", validFrom=" + this.validFrom + ", validTo="
-                + this.validTo + ", key=" + this.key + "]";
+        final StringBuilder sb = new StringBuilder("SecurityKey[type=");
+        sb.append(this.securityKeyType).append(", validFrom=").append(this.validFrom).append(", validTo=")
+                .append(this.validTo).append(", key=").append(this.key);
+        if (this.invocationCounter != null) {
+            sb.append(", ic=").append(this.invocationCounter);
+        }
+        return sb.append(']').toString();
     }
 
 }
