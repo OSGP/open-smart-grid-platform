@@ -11,7 +11,6 @@ import org.osgp.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.osgp.adapter.protocol.dlms.domain.commands.CoupleMBusDeviceCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.CoupleMbusDeviceByChannelCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.DeCoupleMBusDeviceCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetMBusDeviceOnChannelCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -45,9 +44,6 @@ public class InstallationService {
 
     @Autowired
     private DeCoupleMBusDeviceCommandExecutor deCoupleMBusDeviceCommandExecutor;
-
-    @Autowired
-    private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
 
     @Autowired
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
