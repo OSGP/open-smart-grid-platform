@@ -31,7 +31,7 @@ public class PushServiceSteps {
     Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Autowired
-    private AdHocManagementClient client;
+    private AdHocManagementClient adHocManagementClient;
 
     @Autowired
     private Iec61850MockServer iec61850MockServerPampus;
@@ -73,14 +73,17 @@ public class PushServiceSteps {
 
         final GetDataRequest getDataRequest = new GetDataRequest();
         getDataRequest.setDeviceIdentification(settings.get(PlatformMicrogridsKeys.KEY_DEVICE_IDENTIFICATION));
+
         GetDataAsyncResponse asyncResponse;
-        asyncResponse = this.client.getDataAsync(getDataRequest);
+        asyncResponse = this.adHocManagementClient.getDataAsync(getDataRequest);
+
         final GetDataAsyncRequest getDataAsyncRequest = new GetDataAsyncRequest();
         final AsyncRequest value = new AsyncRequest();
         value.setCorrelationUid(asyncResponse.getAsyncResponse().getCorrelationUid());
         value.setDeviceId(asyncResponse.getAsyncResponse().getDeviceId());
         getDataAsyncRequest.setAsyncRequest(value);
-        this.client.getData(getDataAsyncRequest);
+
+        this.adHocManagementClient.getData(getDataAsyncRequest);
     }
 
 }
