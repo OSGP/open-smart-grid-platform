@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
@@ -32,6 +33,7 @@ import com.alliander.osgp.ws.microgrids.config.MicroGridsWebServiceConfig;
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
         @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
         @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+@EnableTransactionManagement
 public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_STUB_RESPONSES = "stub.responses";
