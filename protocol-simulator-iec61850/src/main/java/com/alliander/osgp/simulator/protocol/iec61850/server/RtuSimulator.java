@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -509,18 +510,18 @@ public class RtuSimulator implements ServerEventListener {
         this.enableReportOnQualityChange(xPath, doc);
         this.setIntegrityPeriodToZero(xPath, doc);
 
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Transformer transformer = null;
         try {
             transformer = TransformerFactory.newInstance().newTransformer();
-            final Result result = new StreamResult(baos);
+            final Result result = new StreamResult(byteArrayOutputStream);
             final Source source = new DOMSource(doc);
             transformer.transform(source, result);
         } catch (final TransformerException e) {
             LOGGER.error("Exception occurred while transforming", e);
         }
 
-        return new ByteArrayInputStream(baos.toByteArray());
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
     private void setIntegrityPeriodToZero(final XPath xPath, final Document doc) {
@@ -529,7 +530,7 @@ public class RtuSimulator implements ServerEventListener {
             final NodeList nodeList = (NodeList) xPath.evaluate("//ReportControl[@intgPd='60000']", doc,
                     XPathConstants.NODESET);
             for (int i = 0; i < nodeList.getLength(); i++) {
-                final org.w3c.dom.Node value = nodeList.item(i).getAttributes().getNamedItem("intgPd");
+                final Node value = nodeList.item(i).getAttributes().getNamedItem("intgPd");
                 value.setNodeValue("0");
             }
         } catch (final XPathExpressionException e) {
@@ -542,8 +543,8 @@ public class RtuSimulator implements ServerEventListener {
         try {
             final NodeList nodeList = (NodeList) xPath.evaluate("//TrgOps[@*]", doc, XPathConstants.NODESET);
             for (int i = 0; i < nodeList.getLength(); i++) {
-                final Element e = ((Element) nodeList.item(i));
-                e.setAttribute("qchg", "true");
+                final Element element = ((Element) nodeList.item(i));
+                element.setAttribute("qchg", "true");
             }
         } catch (final XPathExpressionException e) {
             LOGGER.error("Exception occurred: Unable to enable reporting on quality change", e);
@@ -557,7 +558,7 @@ public class RtuSimulator implements ServerEventListener {
             final NodeList nodeList = (NodeList) xPath.evaluate("//TrgOps[@period='true']", doc,
                     XPathConstants.NODESET);
             for (int i = 0; i < nodeList.getLength(); i++) {
-                final org.w3c.dom.Node value = nodeList.item(i).getAttributes().getNamedItem("period");
+                final Node value = nodeList.item(i).getAttributes().getNamedItem("period");
                 value.setNodeValue("false");
             }
         } catch (final XPathExpressionException e) {
@@ -572,7 +573,7 @@ public class RtuSimulator implements ServerEventListener {
             final NodeList nodeList = (NodeList) xPath.evaluate("//ReportControl[@buffered='true']", doc,
                     XPathConstants.NODESET);
             for (int i = 0; i < nodeList.getLength(); i++) {
-                final org.w3c.dom.Node value = nodeList.item(i).getAttributes().getNamedItem("buffered");
+                final Node value = nodeList.item(i).getAttributes().getNamedItem("buffered");
                 value.setNodeValue("false");
             }
         } catch (final XPathExpressionException e) {
