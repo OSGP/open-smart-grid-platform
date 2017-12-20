@@ -234,13 +234,22 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-    <xsd:element name="CoupleMbusDeviceByChannelRequest">
+  <xsd:element name="CoupleMbusDeviceByChannelRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="sminst:CoupleMbusDeviceByChannelRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
-  </xsd:element>   
+  </xsd:element>
+  <xsd:element name="ClearAlarmRegisterRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ClearAlarmRegisterData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+
   <xsd:complexType name="Actions">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">
@@ -274,6 +283,7 @@
         <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest" />
         <xsd:element ref="tns:SetMbusUserKeyByChannelRequest" />
         <xsd:element ref="tns:CoupleMbusDeviceByChannelRequest" />
+        <xsd:element ref="tns:ClearAlarmRegisterRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
@@ -431,7 +441,6 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-
 
   <xsd:complexType name="AllResponses">
     <xsd:sequence>
