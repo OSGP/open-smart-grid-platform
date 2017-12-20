@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ClearAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
@@ -213,7 +214,6 @@ public class ActionMapperService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequestData.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequest.class, this.configurationMapper);
-
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectRequest.class,
                 this.configurationMapper);
@@ -229,6 +229,10 @@ public class ActionMapperService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
                 this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusRequest.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterData.class,
+                this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(ClearAlarmRegisterRequest.class, this.monitoringMapper);
     }
 
     /**
@@ -305,9 +309,7 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
                 CoupleMbusDeviceByChannelRequestData.class);
-
         CLASS_MAP.put(SetSpecialDaysRequest.class, SpecialDaysRequestData.class);
-        CLASS_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterData.class);
         CLASS_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterData.class);
         CLASS_MAP.put(FindEventsRequest.class, FindEventsRequestData.class);
         CLASS_MAP.put(GetAdministrativeStatusRequest.class, GetAdministrativeStatusData.class);
@@ -337,6 +339,8 @@ public class ActionMapperService {
         CLASS_MAP.put(ConfigureDefinableLoadProfileRequest.class, DefinableLoadProfileConfigurationData.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelRequest.class, CoupleMbusDeviceByChannelRequestData.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusRequest.class, GetMbusEncryptionKeyStatusRequestData.class);
+        CLASS_MAP.put(ClearAlarmRegisterRequest.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.ClearAlarmRegisterData.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {

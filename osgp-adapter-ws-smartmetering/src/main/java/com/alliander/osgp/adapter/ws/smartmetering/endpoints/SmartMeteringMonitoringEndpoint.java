@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasAsyncRequest;
@@ -29,6 +30,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeter
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncRequest;
@@ -448,4 +453,71 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
+
+    @PayloadRoot(localPart = "ClearAlarmRegisterRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public ClearAlarmRegisterAsyncResponse clearAlarmRegister(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ClearAlarmRegisterRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+
+        LOGGER.info("Incoming ClearAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
+
+        ClearAlarmRegisterAsyncResponse response = null;
+        try {
+
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest requestValueObject = this.monitoringMapper
+                    .map(request,
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest.class);
+
+            final String correlationUid = this.monitoringService.enqueueClearAlarmRegisterRequestData(
+                    organisationIdentification, request.getDeviceIdentification(), requestValueObject,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.monitoringMapper.map(scheduleTime, Long.class));
+
+            response = new ClearAlarmRegisterAsyncResponse();
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while requesting clear alarm register for device: {} for organisation {}.",
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
+
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "ClearAlarmRegisterAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public ClearAlarmRegisterResponse getClearAlarmRegisterResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ClearAlarmRegisterAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming clear alarm register request for meter: {}", request.getDeviceIdentification());
+
+        ClearAlarmRegisterResponse response = null;
+        try {
+            response = new ClearAlarmRegisterResponse();
+
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "Retrieving clear alarm register");
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final FunctionalException e) {
+            throw e;
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while sending clear alarm register request of device: {} for organisation {}.",
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification);
+
+            this.handleException(e);
+        }
+        return response;
+    }
+
 }
