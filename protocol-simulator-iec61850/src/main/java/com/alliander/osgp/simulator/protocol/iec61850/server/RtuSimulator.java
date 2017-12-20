@@ -499,7 +499,7 @@ public class RtuSimulator implements ServerEventListener {
         try {
             doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
         } catch (final SAXException | IOException | ParserConfigurationException e) {
-            LOGGER.error("Error while creating document", e.getMessage());
+            LOGGER.error("Exception occurred while creating document", e);
         }
 
         final XPath xPath = XPathFactory.newInstance().newXPath();
@@ -517,7 +517,7 @@ public class RtuSimulator implements ServerEventListener {
             final Source source = new DOMSource(doc);
             transformer.transform(source, result);
         } catch (final TransformerException e) {
-            LOGGER.error("Exception while transforming", e.getMessage());
+            LOGGER.error("Exception occurred while transforming", e);
         }
 
         return new ByteArrayInputStream(baos.toByteArray());
@@ -533,7 +533,7 @@ public class RtuSimulator implements ServerEventListener {
                 value.setNodeValue("0");
             }
         } catch (final XPathExpressionException e) {
-            LOGGER.error("Unable to set Integrity Period to zero", e.getMessage());
+            LOGGER.error("Exception occurred: Unable to set Integrity Period to zero", e);
         }
     }
 
@@ -546,7 +546,7 @@ public class RtuSimulator implements ServerEventListener {
                 e.setAttribute("qchg", "true");
             }
         } catch (final XPathExpressionException e) {
-            LOGGER.error("Unable to enable reporting on quality change", e.getMessage());
+            LOGGER.error("Exception occurred: Unable to enable reporting on quality change", e);
         }
 
     }
@@ -561,7 +561,7 @@ public class RtuSimulator implements ServerEventListener {
                 value.setNodeValue("false");
             }
         } catch (final XPathExpressionException e) {
-            LOGGER.error("Unable to disable periodic reports", e.getMessage());
+            LOGGER.error("Exception occurred: Unable to disable periodic reports", e);
         }
 
     }
@@ -576,7 +576,7 @@ public class RtuSimulator implements ServerEventListener {
                 value.setNodeValue("false");
             }
         } catch (final XPathExpressionException e) {
-            LOGGER.error("Unable to disable buffered reports", e.getMessage());
+            LOGGER.error("Exception occurred: Unable to disable buffered reports", e);
         }
 
     }
