@@ -501,14 +501,14 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         try {
             response = new ClearAlarmRegisterResponse();
 
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "Retrieving clear alarm register");
+            this.throwExceptionIfResultNotOk(responseData, "Retrieving clear alarm register");
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final FunctionalException e) {
             throw e;
