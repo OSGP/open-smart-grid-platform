@@ -20,6 +20,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -53,7 +54,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCo
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ManagementService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
@@ -234,14 +234,14 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         try {
             response = new EnableDebuggingResponse();
 
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "Enable Debugging");
+            this.throwExceptionIfResultNotOk(responseData, "Enable Debugging");
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("EnableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
@@ -298,14 +298,14 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         try {
             response = new DisableDebuggingResponse();
 
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "Disable Debugging");
+            this.throwExceptionIfResultNotOk(responseData, "Disable Debugging");
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("DisableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
@@ -393,8 +393,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response = new FindMessageLogsResponse();
 
             @SuppressWarnings("unchecked")
-            final Page<DeviceLogItem> page = (Page<DeviceLogItem>) this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid(), Page.class).getMessageData();
+            final Page<DeviceLogItem> page = (Page<DeviceLogItem>) this.responseDataService
+                    .dequeue(request.getCorrelationUid(), Page.class, ComponentType.WS_SMART_METERING).getMessageData();
 
             // Map to output
             final MessageLogPage logPage = new MessageLogPage();
@@ -459,14 +459,14 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         try {
             response = new SetDeviceCommunicationSettingsResponse();
 
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "Set device communication settings");
+            this.throwExceptionIfResultNotOk(responseData, "Set device communication settings");
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("SetDeviceCommunicationSettingsResponse Exception", e.getMessage(), e.getStackTrace(), e);

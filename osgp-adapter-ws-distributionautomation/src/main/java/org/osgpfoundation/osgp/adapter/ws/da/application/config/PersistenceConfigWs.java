@@ -7,10 +7,8 @@
  */
 package org.osgpfoundation.osgp.adapter.ws.da.application.config;
 
-import com.alliander.osgp.domain.core.exceptions.PlatformException;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
-import org.osgpfoundation.osgp.adapter.ws.da.domain.repositories.RtuResponseDataRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -20,12 +18,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
+import com.alliander.osgp.domain.core.exceptions.PlatformException;
 
-@EnableJpaRepositories(transactionManagerRef = "wsTransactionManager", entityManagerFactoryRef = "wsEntityManagerFactory", basePackageClasses = { RtuResponseDataRepository.class })
+@EnableJpaRepositories(transactionManagerRef = "transactionManager", entityManagerFactoryRef = "wsEntityManagerFactory", basePackageClasses = {
+        ResponseDataRepository.class })
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true), })
 public class PersistenceConfigWs extends AbstractPersistenceConfigBase {
 
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
@@ -47,7 +48,7 @@ public class PersistenceConfigWs extends AbstractPersistenceConfigBase {
                 PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN, PersistenceConfigWs.class);
     }
 
-    @Bean(name = "wsTransactionManager")
+    @Bean(name = "transactionManager")
     public JpaTransactionManager wsTransactionManager() throws PlatformException {
         return this.createTransactionManager();
     }

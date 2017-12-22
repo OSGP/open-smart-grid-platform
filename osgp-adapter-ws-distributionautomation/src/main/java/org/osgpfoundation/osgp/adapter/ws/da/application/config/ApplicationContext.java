@@ -7,7 +7,6 @@
  */
 package org.osgpfoundation.osgp.adapter.ws.da.application.config;
 
-import com.alliander.osgp.shared.application.config.AbstractConfig;
 import org.osgpfoundation.osgp.ws.da.config.DistributionAutomationWebServiceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -15,25 +14,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = {
-    "org.osgpfoundation.osgp.domain.da",
-    "org.osgpfoundation.osgp.adapter.ws.da",
-    "com.alliander.osgp.domain.logging",
-    "com.alliander.osgp.domain.core.services" })
+@ComponentScan(basePackages = { "org.osgpfoundation.osgp.domain.da", "org.osgpfoundation.osgp.adapter.ws.da",
+        "com.alliander.osgp.domain.logging", "com.alliander.osgp.domain.core.services",
+        "com.alliander.osgp.adapter.ws.shared.services" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ DistributionAutomationWebServiceConfig.class })
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"), @PropertySource(value = "file:${osgp/Global/config}",
-        ignoreResourceNotFound = true), @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}",
-        ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     @Bean
@@ -44,7 +42,7 @@ public class ApplicationContext extends AbstractConfig {
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
         final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
-        m.setValidatorFactory( this.validator() );
+        m.setValidatorFactory(this.validator());
         return m;
     }
 }

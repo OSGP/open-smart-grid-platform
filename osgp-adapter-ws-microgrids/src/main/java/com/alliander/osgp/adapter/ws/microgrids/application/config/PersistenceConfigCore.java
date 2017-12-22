@@ -10,7 +10,6 @@ package com.alliander.osgp.adapter.ws.microgrids.application.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -21,9 +20,9 @@ import com.alliander.osgp.domain.core.exceptions.PlatformException;
         com.alliander.osgp.domain.core.repositories.DeviceRepository.class,
         com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository.class })
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)
 public class PersistenceConfigCore extends AbstractPersistenceConfigBase {
 
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username.core";

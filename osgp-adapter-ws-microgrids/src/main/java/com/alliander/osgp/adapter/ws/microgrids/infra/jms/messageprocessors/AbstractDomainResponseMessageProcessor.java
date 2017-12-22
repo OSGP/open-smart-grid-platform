@@ -17,10 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationService;
-import com.alliander.osgp.adapter.ws.microgrids.application.services.RtuResponseDataService;
-import com.alliander.osgp.adapter.ws.microgrids.domain.entities.RtuResponseData;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.shared.services.ResponseDataService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
@@ -51,7 +51,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     private NotificationService notificationService;
 
     @Autowired
-    private RtuResponseDataService rtuResponseDataService;
+    private ResponseDataService responseDataService;
 
     /**
      * The message type that a message processor implementation can handle.
@@ -135,16 +135,16 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
             final String resultDescription, final Serializable dataObject) {
 
-        Serializable meterResponseObject;
+        Serializable responseDataObject;
         if (dataObject == null) {
-            meterResponseObject = resultDescription;
+            responseDataObject = resultDescription;
         } else {
-            meterResponseObject = dataObject;
+            responseDataObject = dataObject;
         }
 
-        final RtuResponseData responseData = new RtuResponseData(organisationIdentification, messageType,
-                deviceIdentification, correlationUid, resultType, meterResponseObject);
-        this.rtuResponseDataService.enqueue(responseData);
+        final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
+                deviceIdentification, correlationUid, resultType, responseDataObject);
+        this.responseDataService.enqueue(responseData);
     }
 
     /**

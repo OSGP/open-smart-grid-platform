@@ -12,10 +12,10 @@ import java.io.Serializable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.shared.services.ResponseDataService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
@@ -37,7 +37,7 @@ public abstract class SyncRequestExecutor {
     private NotificationService notificationService;
 
     @Autowired
-    private MeterResponseDataService meterResponseDataService;
+    private ResponseDataService responseDataService;
 
     final DeviceFunction messageType;
 
@@ -99,9 +99,9 @@ public abstract class SyncRequestExecutor {
 
     private void storeMeterResponseData(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final ResponseMessageResultType resultType, final Serializable data) {
-        final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, this
-                .getMessageType().name(), deviceIdentification, correlationUid, resultType, data);
-        this.meterResponseDataService.enqueue(meterResponseData);
+        final ResponseData meterResponseData = new ResponseData(organisationIdentification,
+                this.getMessageType().name(), deviceIdentification, correlationUid, resultType, data);
+        this.responseDataService.enqueue(meterResponseData);
     }
 
     private void sendNotification(final String organisationIdentification, final String deviceIdentification,

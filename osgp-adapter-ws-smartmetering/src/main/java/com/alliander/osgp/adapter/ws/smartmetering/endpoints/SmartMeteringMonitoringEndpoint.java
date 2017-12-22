@@ -15,6 +15,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -50,13 +51,13 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePus
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePushNotificationAlarmResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
@@ -141,12 +142,12 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         PeriodicMeterReadsResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid(), PeriodicMeterReadsContainer.class);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    PeriodicMeterReadsContainer.class, ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the periodic meter reads");
 
-            response = this.monitoringMapper.map(meterResponseData.getMessageData(),
+            response = this.monitoringMapper.map(responseData.getMessageData(),
                     com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse.class);
         } catch (final Exception e) {
             this.handleRetrieveException(e, request, organisationIdentification);
@@ -164,12 +165,12 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         PeriodicMeterReadsGasResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid(), PeriodicMeterReadsContainerGas.class);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    PeriodicMeterReadsContainerGas.class, ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads for gas");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the periodic meter reads for gas");
 
-            response = this.monitoringMapper.map(meterResponseData.getMessageData(),
+            response = this.monitoringMapper.map(responseData.getMessageData(),
                     com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse.class);
         } catch (final Exception e) {
             this.handleRetrieveException(e, request, organisationIdentification);
@@ -259,12 +260,12 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ActualMeterReadsResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid(), MeterReads.class);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    MeterReads.class, ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the actual meter reads");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the actual meter reads");
 
-            response = this.monitoringMapper.map(meterResponseData.getMessageData(), ActualMeterReadsResponse.class);
+            response = this.monitoringMapper.map(responseData.getMessageData(), ActualMeterReadsResponse.class);
         } catch (final Exception e) {
             this.handleRetrieveException(e, request, organisationIdentification);
         }
@@ -281,12 +282,12 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ActualMeterReadsGasResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid(), MeterReadsGas.class);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    MeterReadsGas.class, ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the actual meter reads for gas");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the actual meter reads for gas");
 
-            response = this.monitoringMapper.map(meterResponseData.getMessageData(), ActualMeterReadsGasResponse.class);
+            response = this.monitoringMapper.map(responseData.getMessageData(), ActualMeterReadsGasResponse.class);
         } catch (final Exception e) {
             this.handleRetrieveException(e, request, organisationIdentification);
         }
@@ -337,12 +338,12 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ReadAlarmRegisterResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid(), AlarmRegister.class);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    AlarmRegister.class, ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the alarm register");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the alarm register");
 
-            response = this.monitoringMapper.map(meterResponseData.getMessageData(), ReadAlarmRegisterResponse.class);
+            response = this.monitoringMapper.map(responseData.getMessageData(), ReadAlarmRegisterResponse.class);
 
         } catch (final FunctionalException e) {
             throw e;
@@ -367,12 +368,12 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         RetrievePushNotificationAlarmResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid(), PushNotificationAlarm.class);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    PushNotificationAlarm.class, ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the push notification alarm");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the push notification alarm");
 
-            response = this.monitoringMapper.map((PushNotificationAlarm) meterResponseData.getMessageData(),
+            response = this.monitoringMapper.map((PushNotificationAlarm) responseData.getMessageData(),
                     RetrievePushNotificationAlarmResponse.class);
 
         } catch (final FunctionalException e) {
@@ -432,12 +433,12 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ProfileGenericDataResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.monitoringService
+            final ResponseData responseData = this.monitoringService
                     .dequeueProfileGenericDataResponse(request.getCorrelationUid());
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving profile generic data");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving profile generic data");
 
-            response = this.monitoringMapper.map(meterResponseData.getMessageData(), ProfileGenericDataResponse.class);
+            response = this.monitoringMapper.map(responseData.getMessageData(), ProfileGenericDataResponse.class);
 
         } catch (final Exception e) {
             LOGGER.error(

@@ -1,7 +1,7 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  */
-package com.alliander.osgp.adapter.ws.microgrids.application.config;
+package com.alliander.osgp.adapter.ws.smartmetering.application.config;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -16,9 +16,9 @@ import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
 
 @EnableScheduling
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
+@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
 public class SchedulingConfig extends AbstractSchedulingConfig {
 
     private static final String KEY_CLEANUP_JOB_CRON_EXPRESSION = "scheduling.job.cleanup.cron.expression";

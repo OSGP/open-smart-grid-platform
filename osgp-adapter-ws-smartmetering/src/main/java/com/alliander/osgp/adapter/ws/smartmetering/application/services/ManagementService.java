@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.adapter.ws.smartmetering.application.syncrequest.FindMessageLogsSyncRequestExecutor;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -60,7 +60,7 @@ public class ManagementService {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private ResponseDataRepository responseDataRepository;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -127,12 +127,12 @@ public class ManagementService {
 
         this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final List<MeterResponseData> meterResponseDataList = this.meterResponseDataRepository
+        final List<ResponseData> meterResponseDataList = this.responseDataRepository
                 .findByCorrelationUid(correlationUid);
         final List<Event> events = new ArrayList<>();
-        final List<MeterResponseData> meterResponseDataToDeleteList = new ArrayList<>();
+        final List<ResponseData> meterResponseDataToDeleteList = new ArrayList<>();
 
-        for (final MeterResponseData meterResponseData : meterResponseDataList) {
+        for (final ResponseData meterResponseData : meterResponseDataList) {
             final Serializable messageData = meterResponseData.getMessageData();
 
             if (messageData instanceof EventMessagesResponse) {
@@ -159,7 +159,7 @@ public class ManagementService {
         }
 
         LOGGER.info("deleting {} MeterResponseData rows", meterResponseDataToDeleteList.size());
-        this.meterResponseDataRepository.delete(meterResponseDataToDeleteList);
+        this.responseDataRepository.delete(meterResponseDataToDeleteList);
 
         LOGGER.info("returning a list containing {} events", events.size());
         return events;

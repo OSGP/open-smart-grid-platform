@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -34,14 +33,14 @@ import com.alliander.osgp.ws.smartmetering.config.SmartmeteringWebServiceConfig;
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.smartmetering",
-        "com.alliander.osgp.logging.domain" })
+        "com.alliander.osgp.logging.domain", "com.alliander.osgp.adapter.ws.shared.services" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, CorePersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class,
+@Import({ PersistenceConfigWs.class, PersistenceConfigCore.class, MessagingConfig.class, WebServiceConfig.class,
         SmartmeteringWebServiceConfig.class })
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);

@@ -7,22 +7,24 @@
  */
 package org.osgpfoundation.osgp.adapter.ws.da.infra.jms.messageprocessors;
 
-import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.infra.jms.Constants;
-import com.alliander.osgp.shared.infra.jms.MessageProcessor;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import java.io.Serializable;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+
 import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationService;
-import org.osgpfoundation.osgp.adapter.ws.da.application.services.RtuResponseDataService;
-import org.osgpfoundation.osgp.adapter.ws.da.domain.entities.RtuResponseData;
 import org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.notification.NotificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-import java.io.Serializable;
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
+import com.alliander.osgp.adapter.ws.shared.services.ResponseDataService;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageProcessor;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -51,7 +53,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     @Autowired
     private NotificationService notificationService;
     @Autowired
-    private RtuResponseDataService rtuResponseDataService;
+    private ResponseDataService responseDataService;
 
     /**
      * Construct a message processor instance by passing in the message type.
@@ -71,7 +73,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
      */
     @PostConstruct
     public void init() {
-        this.domainResponseMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(), this.deviceFunction.name(), this);
+        this.domainResponseMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(),
+                this.deviceFunction.name(), this);
     }
 
     @Override
@@ -113,21 +116,21 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid, resultType, resultDescription,
-                    dataObject);
+            this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid,
+                    resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
-            this.notificationService
-                    .sendNotification(organisationIdentification, deviceIdentification, resultType.name(), correlationUid, notificationMessage,
-                            notificationType);
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
+                    resultType.name(), correlationUid, notificationMessage, notificationType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }
     }
 
-    protected void handleMessage(final String organisationIdentification, final String messageType, final String deviceIdentification,
-                                 final String correlationUid, final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
+    protected void handleMessage(final String organisationIdentification, final String messageType,
+            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
+            final String resultDescription, final Serializable dataObject) {
 
         Serializable meterResponseObject;
         if (dataObject == null) {
@@ -136,26 +139,31 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             meterResponseObject = dataObject;
         }
 
-        final RtuResponseData responseData = new RtuResponseData(organisationIdentification, messageType, deviceIdentification, correlationUid,
-                resultType, meterResponseObject);
-        this.rtuResponseDataService.enqueue(responseData);
+        final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
+                deviceIdentification, correlationUid, resultType, meterResponseObject);
+        this.responseDataService.enqueue(responseData);
     }
 
     /**
      * In case of an error, this function can be used to send a response
      * containing the exception to the web-service-adapter.
      *
-     * @param e The exception.
-     * @param correlationUid The correlation UID.
-     * @param organisationIdentification The organisation identification.
-     * @param deviceIdentification The device identification.
-     * @param notificationType The message type.
+     * @param e
+     *            The exception.
+     * @param correlationUid
+     *            The correlation UID.
+     * @param organisationIdentification
+     *            The organisation identification.
+     * @param deviceIdentification
+     *            The device identification.
+     * @param notificationType
+     *            The message type.
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-                               final String deviceIdentification, final NotificationType notificationType) {
+            final String deviceIdentification, final NotificationType notificationType) {
 
         LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType);
-        this.notificationService
-                .sendNotification(organisationIdentification, deviceIdentification, "NOT_OK", correlationUid, e.getMessage(), notificationType);
+        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
+                correlationUid, e.getMessage(), notificationType);
     }
 }

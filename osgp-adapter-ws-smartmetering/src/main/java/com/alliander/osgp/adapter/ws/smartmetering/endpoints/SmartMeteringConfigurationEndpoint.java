@@ -19,6 +19,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -107,7 +108,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFi
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ConfigurationService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
@@ -116,6 +116,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificatio
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -209,14 +210,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
 
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
-            if (meterResponseData != null) {
-                response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
+            if (responseData != null) {
+                response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
-                if (meterResponseData.getMessageData() != null) {
+                if (responseData.getMessageData() != null) {
                     final List<FirmwareVersion> target = response.getFirmwareVersion();
-                    final FirmwareVersionResponse firmwareVersionResponse = (FirmwareVersionResponse) meterResponseData
+                    final FirmwareVersionResponse firmwareVersionResponse = (FirmwareVersionResponse) responseData
                             .getMessageData();
                     target.addAll(this.configurationMapper.mapAsList(firmwareVersionResponse.getFirmwareVersions(),
                             FirmwareVersion.class));
@@ -275,17 +276,17 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse response = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse();
 
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "updating firmware");
+            this.throwExceptionIfResultNotOk(responseData, "updating firmware");
 
-            if (meterResponseData != null) {
-                response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (responseData != null) {
+                response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
-                if (meterResponseData.getMessageData() != null) {
+                if (responseData.getMessageData() != null) {
                     final List<FirmwareVersion> target = response.getFirmwareVersion();
-                    final UpdateFirmwareResponse updateFirmwareResponse = (UpdateFirmwareResponse) meterResponseData
+                    final UpdateFirmwareResponse updateFirmwareResponse = (UpdateFirmwareResponse) responseData
                             .getMessageData();
                     target.addAll(this.configurationMapper.mapAsList(updateFirmwareResponse.getFirmwareVersions(),
                             FirmwareVersion.class));
@@ -334,12 +335,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetAdministrativeStatusResponse response = null;
         try {
             response = new SetAdministrativeStatusResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);
@@ -376,14 +377,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GetAdministrativeStatusResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the administrative status");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the administrative status");
 
             response = new GetAdministrativeStatusResponse();
-            final AdministrativeStatusType dataRequest = this.configurationMapper
-                    .map(meterResponseData.getMessageData(), AdministrativeStatusType.class);
+            final AdministrativeStatusType dataRequest = this.configurationMapper.map(responseData.getMessageData(),
+                    AdministrativeStatusType.class);
             response.setEnabled(dataRequest);
 
         } catch (final Exception e) {
@@ -425,12 +426,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetSpecialDaysResponse response = null;
         try {
             response = new SetSpecialDaysResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);
@@ -472,12 +473,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetConfigurationObjectResponse response = null;
         try {
             response = new SetConfigurationObjectResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);
@@ -527,12 +528,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetEncryptionKeyExchangeOnGMeterResponse response = null;
         try {
             response = new SetEncryptionKeyExchangeOnGMeterResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);
@@ -577,15 +578,15 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GetMbusEncryptionKeyStatusResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the M-Bus encryption key status.");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the M-Bus encryption key status.");
 
             response = new GetMbusEncryptionKeyStatusResponse();
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            response.setEncryptionKeyStatus(EncryptionKeyStatus
-                    .fromValue(((EncryptionKeyStatusType) meterResponseData.getMessageData()).name()));
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            response.setEncryptionKeyStatus(
+                    EncryptionKeyStatus.fromValue(((EncryptionKeyStatusType) responseData.getMessageData()).name()));
 
         } catch (final Exception e) {
             this.handleException(e);
@@ -636,12 +637,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetPushSetupAlarmResponse response = null;
         try {
             response = new SetPushSetupAlarmResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);
@@ -692,8 +693,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetPushSetupSmsResponse response = null;
         try {
             response = new SetPushSetupSmsResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData meterResponseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -751,12 +752,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetActivityCalendarResponse response = null;
         try {
             response = new SetActivityCalendarResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);
@@ -810,12 +811,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetAlarmNotificationsResponse response = null;
         try {
             response = new SetAlarmNotificationsResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);
@@ -860,13 +861,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         ReplaceKeysResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             response = new ReplaceKeysResponse();
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
 
         } catch (final Exception e) {
@@ -912,13 +913,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GenerateAndReplaceKeysResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             response = new GenerateAndReplaceKeysResponse();
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
 
         } catch (final Exception e) {
@@ -939,12 +940,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final GetPushNotificationAlarmResponse response = new GetPushNotificationAlarmResponse();
 
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData != null) {
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData != null) {
 
-                final PushNotificationAlarm p = (PushNotificationAlarm) meterResponseData.getMessageData();
+                final PushNotificationAlarm p = (PushNotificationAlarm) responseData.getMessageData();
 
                 response.setDecodedMessage(p.toString());
                 response.setEncodedMessage(p.getAlarmBytes());
@@ -997,13 +998,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         SetClockConfigurationResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             response = new SetClockConfigurationResponse();
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
 
         } catch (final Exception e) {
@@ -1045,13 +1046,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         GetConfigurationObjectResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(),
-                    com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse.class);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse.class,
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the configuration object");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the configuration object");
 
-            response = this.configurationMapper.map(meterResponseData.getMessageData(),
+            response = this.configurationMapper.map(responseData.getMessageData(),
                     GetConfigurationObjectResponse.class);
         } catch (final Exception e) {
             this.handleException(e);
@@ -1097,13 +1098,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         ConfigureDefinableLoadProfileResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             response = new ConfigureDefinableLoadProfileResponse();
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
 
         } catch (final Exception e) {
@@ -1155,12 +1156,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         SetMbusUserKeyByChannelResponse response = null;
         try {
             response = new SetMbusUserKeyByChannelResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);
