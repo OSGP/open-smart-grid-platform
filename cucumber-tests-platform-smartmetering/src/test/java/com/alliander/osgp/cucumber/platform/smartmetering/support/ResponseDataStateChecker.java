@@ -1,7 +1,7 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  */
-package com.alliander.osgp.cucumber.platform.microgrids.support;
+package com.alliander.osgp.cucumber.platform.smartmetering.support;
 
 import static org.junit.Assert.fail;
 
@@ -21,7 +21,7 @@ public class ResponseDataStateChecker {
     @Autowired
     private ResponseDataRepository responseDataRepository;
 
-    public void waitForRtuResponseDataToBeRemoved(final String correlationUid, final int timeout, final int maxtime) {
+    public void waitForResponseDataToBeRemoved(final String correlationUid, final int timeout, final int maxtime) {
 
         try {
             for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
@@ -37,11 +37,11 @@ public class ResponseDataStateChecker {
         } catch (final InterruptedException e) {
             LOGGER.error("Thread sleep interrupted ", e.getMessage());
         }
-        fail("Rtu response data with correlation uid " + correlationUid + " should be removed within: " + maxtime
+        fail("Meter response data with correlation uid " + correlationUid + " should be removed within: " + maxtime
                 + "sec.");
     }
 
-    public void waitToMakeSureRtuResponseDataIsNotRemoved(final String correlationUid, final int timeout,
+    public void waitToMakeSureResponseDataIsNotRemoved(final String correlationUid, final int timeout,
             final int maxtime) {
 
         try {
@@ -51,7 +51,7 @@ public class ResponseDataStateChecker {
                 final ResponseData responseData = this.responseDataRepository
                         .findSingleResultByCorrelationUid(correlationUid);
                 if (responseData == null) {
-                    fail("Rtu response data with correlation uid " + correlationUid + " should not be removed.");
+                    fail("Meter response data with correlation uid " + correlationUid + " should not be removed.");
                 }
 
             }
