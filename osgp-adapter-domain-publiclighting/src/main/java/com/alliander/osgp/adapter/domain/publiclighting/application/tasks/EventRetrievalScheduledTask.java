@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.publiclighting.application.config.SchedulingConfig;
+import com.alliander.osgp.adapter.domain.publiclighting.application.config.SchedulingConfigForEventRetrievalScheduledTask;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
@@ -24,9 +24,10 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 /**
  * Periodic task to fetch events from devices of a manufacturer in case the
  * devices only have events older than X hours. This ensures all devices are
- * contacted, and are allowed to send any new events in their buffers.
- * {@link SchedulingConfig#eventRetrievalScheduledTaskCronTrigger()} and
- * {@link SchedulingConfig#eventRetrievalScheduler()}.
+ * contacted, and are allowed to send any new events in their buffers. See
+ * {@link SchedulingConfigForEventRetrievalScheduledTask#eventRetrievalScheduledTaskCronTrigger()}
+ * and
+ * {@link SchedulingConfigForEventRetrievalScheduledTask#eventRetrievalScheduler()}.
  */
 @Component
 public class EventRetrievalScheduledTask extends BaseTask implements Runnable {

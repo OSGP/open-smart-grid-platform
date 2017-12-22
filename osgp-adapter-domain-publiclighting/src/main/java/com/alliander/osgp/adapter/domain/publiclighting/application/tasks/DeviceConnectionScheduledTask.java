@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.publiclighting.application.config.SchedulingConfig;
+import com.alliander.osgp.adapter.domain.publiclighting.application.config.SchedulingConfigForDeviceConnectionScheduledTask;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
@@ -23,8 +23,10 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
 /**
  * Periodic task to ensure active connection to devices of a given manufacturer.
- * See {@link SchedulingConfig#deviceConnectionScheduledTaskCronTrigger()} and
- * {@link SchedulingConfig#deviceConnectionTaskScheduler()}.
+ * See
+ * {@link SchedulingConfigForDeviceConnectionScheduledTask#deviceConnectionScheduledTaskCronTrigger()}
+ * and
+ * {@link SchedulingConfigForDeviceConnectionScheduledTask#deviceConnectionTaskScheduler()}.
  */
 @Component
 public class DeviceConnectionScheduledTask extends BaseTask implements Runnable {
