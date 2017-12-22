@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.domain.factories;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
@@ -18,6 +19,7 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
@@ -102,12 +104,42 @@ public class Hls5Connector extends SecureDlmsConnector {
         // necessary
         this.validateKeys(dlmsAuthenticationKey, dlmsEncryptionKey);
 
+        this.configureIvData(tcpConnectionBuilder, device);
+
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(dlmsAuthenticationKey)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
                 .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
                 .setEncryptionMechanism(EncryptionMechanism.AES_GMC_128).build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
+    }
+
+    private void configureIvData(final TcpConnectionBuilder tcpConnectionBuilder, final DlmsDevice device) {
+        /*
+         * HLS5 communication needs an IV (initialization vector) that is unique
+         * per encrypted message.
+         *
+         * This is taken care of by setting up a fixed 8 byte part which is
+         * unique per device (the system title) and an invocation counter that
+         * is incremented on each communication, and should never be used with
+         * the same value for the same encryption key on the device.
+         *
+         * By setting the system title and frame counter on the connection
+         * builder the library is enabled to meet the IV requirements of DLMS
+         * HLS5 communication.
+         */
+        String manufacturerId;
+        if (StringUtils.isEmpty(device.getManufacturerId())) {
+            LOGGER.warn("Device {} does not have its manufacturer ID stored in the database. "
+                    + "Using a default value which makes the system title (part of the IV in HLS 5) less unique.",
+                    device.getDeviceIdentification());
+            manufacturerId = "   ";
+        } else {
+            manufacturerId = device.getManufacturerId();
+        }
+        tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
+        tcpConnectionBuilder.setFrameCounter(
+                device.getValidSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getInvocationCounter() + 1);
     }
 
     private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey)
@@ -130,17 +162,11 @@ public class Hls5Connector extends SecureDlmsConnector {
     }
 
     private boolean checkEmptyKey(final byte[] key) {
-        if (key == null) {
-            return true;
-        }
-        return false;
+        return key == null;
     }
 
     private boolean checkLenghtKey(final byte[] key) {
-        if (key.length * 8 != AES_GMC_128) {
-            return true;
-        }
-        return false;
+        return key.length * 8 != AES_GMC_128;
     }
 
     private void throwFunctionalException(final String msg, final FunctionalExceptionType type) throws FunctionalException {

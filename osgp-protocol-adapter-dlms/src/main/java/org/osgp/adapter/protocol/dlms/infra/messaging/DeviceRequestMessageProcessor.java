@@ -15,12 +15,10 @@ import javax.jms.ObjectMessage;
 
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
-import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +39,7 @@ import com.alliander.osgp.shared.infra.jms.RetryHeader;
  * construction. The Singleton instance is added to the HashMap of MessageProcessors after dependency injection has
  * completed.
  */
-public abstract class DeviceRequestMessageProcessor implements MessageProcessor {
+public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessageProcessor implements MessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessor.class);
 
@@ -53,16 +51,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected MessageProcessorMap dlmsRequestMessageProcessorMap;
 
     @Autowired
-    protected DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
-
-    @Autowired
     protected OsgpExceptionConverter osgpExceptionConverter;
 
     @Autowired
     protected DomainHelperService domainHelperService;
-
-    @Autowired
-    protected DlmsConnectionFactory dlmsConnectionFactory;
 
     @Autowired
     private RetryHeaderFactory retryHeaderFactory;
@@ -119,7 +111,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing {} request message", this.deviceRequestMessageType.name());
+        LOGGER.debug("Processing {} request message", this.deviceRequestMessageType);
 
         MessageMetadata messageMetadata = null;
         DlmsConnectionHolder conn = null;
@@ -142,16 +134,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
             Serializable response = null;
             if (this.usesDeviceConnection()) {
-                final LoggingDlmsMessageListener dlmsMessageListener;
-                if (device.isInDebugMode()) {
-                    dlmsMessageListener = new LoggingDlmsMessageListener(device.getDeviceIdentification(),
-                            this.dlmsLogItemRequestMessageSender);
-                    dlmsMessageListener.setMessageMetadata(messageMetadata);
-                    dlmsMessageListener.setDescription("Create connection");
-                } else {
-                    dlmsMessageListener = null;
-                }
-                conn = this.dlmsConnectionFactory.getConnection(device, dlmsMessageListener);
+                conn = this.createConnectionForDevice(device, messageMetadata);
                 response = this.handleMessage(conn, device, message.getObject());
             } else {
                 response = this.handleMessage(device, message.getObject());
@@ -169,15 +152,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, message.getObject());
         } finally {
-            if (conn != null) {
-                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
-                conn.getDlmsMessageListener().setDescription("Close connection");
-                try {
-                    conn.close();
-                } catch (final Exception e) {
-                    LOGGER.error("Error while closing connection", e);
-                }
-            }
+            this.doConnectionPostProcessing(device, conn);
         }
     }
 
@@ -199,17 +174,15 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      *            Request data object.
      * @return A serializable object to be put on the response queue.
      * @throws OsgpException
-     * @throws ProtocolAdapterException
-     * @throws SessionProviderException
      */
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+            final Serializable requestObject) throws OsgpException {
         throw new UnsupportedOperationException(
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
     }
 
     protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
-            throws OsgpException, ProtocolAdapterException {
+            throws OsgpException {
         throw new UnsupportedOperationException(
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }

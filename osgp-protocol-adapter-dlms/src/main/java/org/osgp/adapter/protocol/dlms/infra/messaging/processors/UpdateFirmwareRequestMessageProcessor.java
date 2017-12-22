@@ -19,7 +19,6 @@ import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.osgp.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
@@ -97,18 +96,10 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
 
         try {
             Serializable response = null;
-            final LoggingDlmsMessageListener dlmsMessageListener;
-            device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
-            if (device.isInDebugMode()) {
-                dlmsMessageListener = new LoggingDlmsMessageListener(device.getDeviceIdentification(),
-                        this.dlmsLogItemRequestMessageSender);
-                dlmsMessageListener.setMessageMetadata(messageMetadata);
-                dlmsMessageListener.setDescription("Create connection");
-            } else {
-                dlmsMessageListener = null;
-            }
-            conn = this.dlmsConnectionFactory.getConnection(device, dlmsMessageListener);
+            device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            conn = this.createConnectionForDevice(device, messageMetadata);
+
             response = this.handleMessage(conn, device, firmwareIdentification);
 
             // Send response
@@ -121,15 +112,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, firmwareIdentification);
         } finally {
-            if (conn != null) {
-                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
-                conn.getDlmsMessageListener().setDescription("Close connection");
-                try {
-                    conn.close();
-                } catch (final Exception e) {
-                    LOGGER.error("Error while closing connection", e);
-                }
-            }
+            this.doConnectionPostProcessing(device, conn);
         }
     }
 

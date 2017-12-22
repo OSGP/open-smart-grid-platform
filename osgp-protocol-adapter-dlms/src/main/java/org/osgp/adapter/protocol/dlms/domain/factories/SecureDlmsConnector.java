@@ -17,6 +17,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
+import org.osgp.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +81,7 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
         this.setSecurity(device, tcpConnectionBuilder);
         this.setOptionalValues(device, tcpConnectionBuilder);
 
-        if (device.isInDebugMode()) {
+        if (device.isInDebugMode() || dlmsMessageListener instanceof InvocationCountingDlmsMessageListener) {
             tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
         }
 

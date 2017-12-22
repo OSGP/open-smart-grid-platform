@@ -264,15 +264,15 @@ public class SecurityKeyService {
 
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
-            LOGGER.warn("No DlmsDevice found for identification " + deviceIdentification + " - returning null as "
-                    + securityKeyType + " key.");
+            LOGGER.warn("No DlmsDevice found for identification {} - returning null as {} key.", deviceIdentification,
+                    securityKeyType);
             return null;
         }
 
         final SecurityKey securityKey = dlmsDevice.getValidSecurityKey(securityKeyType);
         if (securityKey == null) {
-            LOGGER.warn("No valid " + securityKeyType + " key found with device " + deviceIdentification
-                    + " - returning null.");
+            LOGGER.warn("No valid {} key found with device {} - returning null.", securityKeyType,
+                    deviceIdentification);
             return null;
         }
 
@@ -453,5 +453,38 @@ public class SecurityKeyService {
             LOGGER.error(message, e);
             throw new ProtocolAdapterException(message);
         }
+    }
+
+    /**
+     * Increments the invocation counter for the {@link SecurityKey} of the
+     * given {@code keyType} with the device with the given
+     * {@code deviceIdentification} based on a number of sent messages with a
+     * DLMS client.
+     *
+     * @param deviceIdentification
+     * @param keyType
+     * @param numberOfSentMessages
+     */
+    public void incrementInvocationCounter(final String deviceIdentification, final SecurityKeyType keyType,
+            final int numberOfSentMessages) {
+
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        if (dlmsDevice == null) {
+            LOGGER.error("No DlmsDevice found for identification {} - unable to update invocation counter for {} key.",
+                    deviceIdentification, keyType);
+            return;
+        }
+
+        final SecurityKey securityKey = dlmsDevice.getValidSecurityKey(keyType);
+        if (securityKey == null) {
+            LOGGER.error("No valid {} key found with device {} - unable to update invocation counter.", keyType,
+                    deviceIdentification);
+            return;
+        }
+
+        final int newInvocationCounter = securityKey.getInvocationCounter() + numberOfSentMessages;
+        securityKey.setInvocationCounter(newInvocationCounter);
+
+        this.dlmsDeviceRepository.save(dlmsDevice);
     }
 }

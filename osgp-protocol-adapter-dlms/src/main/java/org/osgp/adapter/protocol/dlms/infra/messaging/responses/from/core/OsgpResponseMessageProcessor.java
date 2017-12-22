@@ -16,14 +16,12 @@ import javax.jms.ObjectMessage;
 
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
-import org.osgp.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsConnectionMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
@@ -47,7 +45,7 @@ import com.alliander.osgp.shared.infra.jms.RetryHeader;
  * construction. The Singleton instance is added to the HashMap of MessageProcessors after dependency injection has
  * completed.
  */
-public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
+public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessageProcessor implements MessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponseMessageProcessor.class);
 
@@ -59,16 +57,10 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
     protected MessageProcessorMap osgpResponseMessageProcessorMap;
 
     @Autowired
-    protected DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
-
-    @Autowired
     protected OsgpExceptionConverter osgpExceptionConverter;
 
     @Autowired
     protected DomainHelperService domainHelperService;
-
-    @Autowired
-    protected DlmsConnectionFactory dlmsConnectionFactory;
 
     @Autowired
     private RetryHeaderFactory retryHeaderFactory;
@@ -125,7 +117,7 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing {} request message", this.osgpRequestMessageType.name());
+        LOGGER.debug("Processing {} request message", this.osgpRequestMessageType);
         MessageMetadata messageMetadata = null;
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
@@ -139,16 +131,7 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
             if (this.usesDeviceConnection()) {
-                final LoggingDlmsMessageListener dlmsMessageListener;
-                if (device.isInDebugMode()) {
-                    dlmsMessageListener = new LoggingDlmsMessageListener(device.getDeviceIdentification(),
-                            this.dlmsLogItemRequestMessageSender);
-                    dlmsMessageListener.setMessageMetadata(messageMetadata);
-                    dlmsMessageListener.setDescription("Create connection");
-                } else {
-                    dlmsMessageListener = null;
-                }
-                conn = this.dlmsConnectionFactory.getConnection(device, dlmsMessageListener);
+                conn = this.createConnectionForDevice(device, messageMetadata);
                 this.handleMessage(conn, device, message.getObject());
             } else {
                 this.handleMessage(device, message);
@@ -162,15 +145,7 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, message.getObject());
         } finally {
-            if (conn != null) {
-                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
-                conn.getDlmsMessageListener().setDescription("Close connection");
-                try {
-                    conn.close();
-                } catch (final Exception e) {
-                    LOGGER.error("Error while closing connection", e);
-                }
-            }
+            this.doConnectionPostProcessing(device, conn);
         }
     }
 
@@ -195,13 +170,12 @@ public abstract class OsgpResponseMessageProcessor implements MessageProcessor {
      * @throws SessionProviderException
      */
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+            final Serializable requestObject) throws OsgpException {
         throw new UnsupportedOperationException(
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
     }
 
-    protected Serializable handleMessage(final DlmsDevice device, final ObjectMessage message)
-            throws OsgpException, ProtocolAdapterException {
+    protected Serializable handleMessage(final DlmsDevice device, final ObjectMessage message) throws OsgpException {
         throw new UnsupportedOperationException(
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }
