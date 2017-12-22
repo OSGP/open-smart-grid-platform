@@ -151,17 +151,21 @@ public class GetDataSteps extends GlueBase {
         final String expectedNode = responseParameters.get(PlatformKeys.KEY_MEASUREMENT_NODE.concat(indexPostfix));
         assertEquals(measurementDescription + " node", expectedNode, measurement.getNode());
 
-        final int expectedQualifier = Integer
-                .parseInt(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix)));
-        assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
+        if (responseParameters.containsKey(PlatformKeys.KEY_MEASUREMENT_QUALIFIER)) {
+            final int expectedQualifier = Integer
+                    .parseInt(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix)));
+            assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
+        }
 
         assertNotNull(measurementDescription + " Time", measurement.getTime());
         assertTimeFormat(measurement.getTime());
 
-        final double expectedValue = Double
-                .parseDouble(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_VALUE.concat(indexPostfix)));
-        assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
-                DELTA_FOR_MEASUREMENT_VALUE);
+        if (responseParameters.containsKey(PlatformKeys.KEY_MEASUREMENT_VALUE)) {
+            final double expectedValue = Double
+                    .parseDouble(responseParameters.get(PlatformKeys.KEY_MEASUREMENT_VALUE.concat(indexPostfix)));
+            assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
+                    DELTA_FOR_MEASUREMENT_VALUE);
+        }
     }
 
     private void assertProfiles(final Map<String, String> responseParameters, final List<Profile> profiles,

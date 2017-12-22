@@ -10,14 +10,10 @@ package com.alliander.osgp.cucumber.platform.microgrids.mocks.iec61850;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.openmuc.openiec61850.Report;
 import org.openmuc.openiec61850.SclParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientRTUEventListener;
 import com.alliander.osgp.simulator.protocol.iec61850.server.RtuSimulator;
 
 public class Iec61850MockServer {
@@ -126,15 +122,6 @@ public class Iec61850MockServer {
                     this.mockedDevice);
             throw new AssertionError("Expected IEC61850 Mock configuration allowing simulator startup.", e);
         }
-    }
-
-    public void sendReportNotification(final Report report) throws ProtocolAdapterException {
-
-        final Iec61850ClientRTUEventListener listener = new Iec61850ClientRTUEventListener(this.icdFilename,
-                new DeviceManagementService());
-
-        listener.newReport(report);
-
     }
 
 }
