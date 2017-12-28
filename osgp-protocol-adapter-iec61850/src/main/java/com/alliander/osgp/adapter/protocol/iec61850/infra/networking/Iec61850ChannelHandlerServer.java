@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.UUID;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -15,9 +16,9 @@ import org.jboss.netty.channel.MessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceRegistrationService;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
@@ -36,14 +37,14 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
     @Autowired
     private DeviceRegistrationService deviceRegistrationService;
 
-    @Autowired
-    private String testDeviceId;
-
-    @Autowired
-    private String testDeviceIp;
-
-    @Autowired
-    private Iec61850DeviceRepository iec61850DeviceRepository;
+    /**
+     * Convert list in property files to {@code Map}.
+     *
+     * See the SpEL documentation for more information:
+     * https://docs.spring.io/spring/docs/3.0.x/reference/expressions.html
+     */
+    @Value("#{${test.device.ips}}")
+    private Map<String, String> testDeviceIps;
 
     public Iec61850ChannelHandlerServer() {
         super(LOGGER);
@@ -63,25 +64,25 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
         this.logMessage(message);
 
-        String deviceIdentification = message.getDeviceIdentification();
-        String deviceType = Ssld.SSLD_TYPE;
+        final String deviceIdentification = message.getDeviceIdentification();
         final IED ied = IED.FLEX_OVL;
-        String ipAddress = message.getIpAddress();
+        String ipAddress;
 
         // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
         // set, the values will be used to set an IP address for a device.
-        if (this.testDeviceId != null && this.testDeviceId.equals(deviceIdentification) && this.testDeviceIp != null) {
-            LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", this.testDeviceId, this.testDeviceIp);
-            deviceIdentification = this.testDeviceId;
-            deviceType = Ssld.SSLD_TYPE;
-            ipAddress = this.testDeviceIp;
+        if (this.testDeviceIps != null && this.testDeviceIps.containsKey(deviceIdentification)) {
+            final String testDeviceIp = this.testDeviceIps.get(deviceIdentification);
+            LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", deviceIdentification, testDeviceIp);
+            ipAddress = testDeviceIp;
+        } else {
+            ipAddress = message.getIpAddress();
         }
 
-        final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(ipAddress, deviceType,
-                true);
+        final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(ipAddress,
+                Ssld.SSLD_TYPE, true);
 
-        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
-                deviceIdentification, ipAddress, deviceRegistrationData);
+        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation", deviceIdentification,
+                ipAddress, deviceRegistrationData);
 
         LOGGER.info("Sending register device request to OSGP with correlation ID: " + correlationId);
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.REGISTER_DEVICE.name());
