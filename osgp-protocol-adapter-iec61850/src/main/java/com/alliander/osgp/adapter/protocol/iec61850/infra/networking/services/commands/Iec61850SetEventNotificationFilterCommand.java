@@ -32,7 +32,7 @@ public class Iec61850SetEventNotificationFilterCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
                 LOGGER.info("Setting the event notification filter");
 

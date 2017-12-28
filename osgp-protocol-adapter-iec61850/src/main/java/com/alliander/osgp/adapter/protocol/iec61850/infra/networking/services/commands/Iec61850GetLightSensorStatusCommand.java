@@ -68,7 +68,7 @@ public class Iec61850GetLightSensorStatusCommand {
          * valueobjects .DeviceMessageLog)
          */
         @Override
-        public DeviceStatusDto apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+        public DeviceStatusDto apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
             // Use digital input number as index for SPPGIO node.
             final int index = this.lmd.getDigitalInput();
 

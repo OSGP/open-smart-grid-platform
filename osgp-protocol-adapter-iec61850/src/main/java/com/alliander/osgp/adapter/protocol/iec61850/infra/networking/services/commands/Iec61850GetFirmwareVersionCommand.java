@@ -37,7 +37,8 @@ public class Iec61850GetFirmwareVersionCommand {
         final Function<List<FirmwareVersionDto>> function = new Function<List<FirmwareVersionDto>>() {
 
             @Override
-            public List<FirmwareVersionDto> apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public List<FirmwareVersionDto> apply(final DeviceMessageLog deviceMessageLog)
+                    throws ProtocolAdapterException {
                 final List<FirmwareVersionDto> output = new ArrayList<>();
 
                 // Getting the functional firmware version

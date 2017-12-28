@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 
 public abstract class Iec61850ClientBaseEventListener implements ClientEventListener {
 
@@ -33,8 +32,7 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
     protected static final long IEC61850_ENTRY_TIME_OFFSET = 441763200000L;
 
     public Iec61850ClientBaseEventListener(final String deviceIdentification,
-            final DeviceManagementService deviceManagementService, final Class<?> loggerClass)
-            throws ProtocolAdapterException {
+            final DeviceManagementService deviceManagementService, final Class<?> loggerClass) {
         this.deviceManagementService = deviceManagementService;
         this.deviceIdentification = deviceIdentification;
         this.logger = LoggerFactory.getLogger(loggerClass);

@@ -84,7 +84,7 @@ public class DeviceRegistrationService {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
                 DeviceRegistrationService.this.disableRegistration(deviceConnection);
                 DeviceRegistrationService.this.setLocationInformation(deviceConnection);
                 if (DeviceRegistrationService.this.isReportingAfterDeviceRegistrationEnabled) {

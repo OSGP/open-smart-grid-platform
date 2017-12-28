@@ -47,7 +47,8 @@ public class Iec61850PowerUsageHistoryCommand {
         final Function<List<PowerUsageDataDto>> function = new Function<List<PowerUsageDataDto>>() {
 
             @Override
-            public List<PowerUsageDataDto> apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public List<PowerUsageDataDto> apply(final DeviceMessageLog deviceMessageLog)
+                    throws ProtocolAdapterException {
                 final HistoryTermTypeDto historyTermType = powerUsageHistoryContainer.getHistoryTermType();
                 if (historyTermType != null) {
                     LOGGER.info("device: {}, ignoring HistoryTermType ({}) determining power usage history",

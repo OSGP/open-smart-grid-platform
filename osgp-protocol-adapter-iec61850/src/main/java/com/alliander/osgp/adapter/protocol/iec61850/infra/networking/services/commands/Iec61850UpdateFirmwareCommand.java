@@ -41,7 +41,7 @@ public class Iec61850UpdateFirmwareCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
                 final int count = firmwareModuleData.countNumberOfModules();
                 if (count != 1) {
                     throw new ProtocolAdapterException(

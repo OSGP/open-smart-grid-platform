@@ -56,7 +56,7 @@ public class Iec61850SetLightCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
                 for (final LightValueDto relayWithInternalIdToSwitch : relaysWithInternalIdToSwitch) {
                     final int index = relayWithInternalIdToSwitch.getIndex();

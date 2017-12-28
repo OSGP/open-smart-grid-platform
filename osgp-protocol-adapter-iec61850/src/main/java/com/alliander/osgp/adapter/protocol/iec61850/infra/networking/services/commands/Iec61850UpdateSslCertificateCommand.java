@@ -39,7 +39,7 @@ public class Iec61850UpdateSslCertificateCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
                 LOGGER.info("Reading the certificate authority url");
                 final NodeContainer sslConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
