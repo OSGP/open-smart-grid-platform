@@ -10,16 +10,16 @@ package com.alliander.osgp.shared.security;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+
+import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 
 /**
  * Helper routines for certificate operations.
@@ -37,78 +37,119 @@ public final class CertificateHelper {
      * Create private key from private key file on disk
      *
      * @param keyPath
-     *            path to key
+     *            path to key, encoded according to the PKCS #8 standard
      * @param keyType
-     *            type of key
+     *            the name of the key algorithm
      * @param provider
-     *            the signature provider of the key
-     * @return instance of public key
-     * @throws NoSuchAlgorithmException
-     *             thrown when the given algorithm does not exist
-     * @throws InvalidKeySpecException
-     *             thrown when the key specification is invalid
+     *            the name of the provider
+     * @return instance of private key
+     * @throws EncrypterException
+     *             when creating the private key results in a
+     *             NoSuchAlgorithmException, NoSuchProviderException or
+     *             InvalidKeySpecException
      * @throws IOException
      *             thrown when IO difficulties occur
-     * @throws NoSuchProviderException
-     *             thrown when the given provider is not found
      */
     public static PrivateKey createPrivateKey(final String keyPath, final String keyType, final String provider)
-            throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchProviderException {
-        final byte[] key = readKeyFromDisk(keyPath);
+            throws IOException {
 
-        final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
-        KeyFactory privateKeyFactory;
-        privateKeyFactory = KeyFactory.getInstance(keyType, provider);
-        return privateKeyFactory.generatePrivate(privateKeySpec);
+        final byte[] key = readKeyFromDisk(keyPath);
+        return createPrivateKey(key, keyType, provider);
+    }
+
+    /**
+     * Create private key from Base64 text
+     *
+     * @param keyBase64
+     *            Base64 encoded key according to the PKCS #8 standard
+     * @param keyType
+     *            the name of the key algorithm
+     * @param provider
+     *            the name of the provider
+     * @return instance of private key
+     * @throws EncrypterException
+     *             when creating the private key results in a
+     *             NoSuchAlgorithmException, NoSuchProviderException or
+     *             InvalidKeySpecException
+     */
+    public static PrivateKey createPrivateKeyFromBase64(final String keyBase64, final String keyType,
+            final String provider) {
+
+        final byte[] key = Base64.decodeBase64(keyBase64);
+        return createPrivateKey(key, keyType, provider);
+    }
+
+    private static PrivateKey createPrivateKey(final byte[] key, final String algorithm, final String provider) {
+        try {
+            final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
+            KeyFactory privateKeyFactory;
+            privateKeyFactory = KeyFactory.getInstance(algorithm, provider);
+            return privateKeyFactory.generatePrivate(privateKeySpec);
+        } catch (final GeneralSecurityException e) {
+            throw new EncrypterException(
+                    String.format("Security exception creating private key for algorithm \"%s\" by provider \"%s\"",
+                            algorithm, provider),
+                    e);
+        }
     }
 
     /**
      * Create public key from public key file on disk
      *
      * @param keyPath
-     *            path to key
+     *            path to key, encoded according to the X.509 standard
      * @param keyType
-     *            type of key
+     *            the name of the key algorithm
      * @param provider
-     *            the signature provider of the key
+     *            the name of the provider
      * @return instance of public key
-     * @throws NoSuchAlgorithmException
-     *             thrown when the given algorithm does not exist
-     * @throws InvalidKeySpecException
-     *             thrown when the key specification is invalid
+     * @throws EncrypterException
+     *             when creating the public key results in a
+     *             NoSuchAlgorithmException, NoSuchProviderException or
+     *             InvalidKeySpecException
      * @throws IOException
      *             thrown when IO difficulties occur
-     * @throws NoSuchProviderException
-     *             thrown when the given provider is not found
      */
     public static PublicKey createPublicKey(final String keyPath, final String keyType, final String provider)
-            throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchProviderException {
+            throws IOException {
+
         final byte[] key = readKeyFromDisk(keyPath);
-
-        final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(key);
-        final KeyFactory publicKeyFactory = KeyFactory.getInstance(keyType, provider);
-        return publicKeyFactory.generatePublic(publicKeySpec);
+        return createPublicKey(key, keyType, provider);
     }
 
-    public static PrivateKey createPrivateKeyFromBase64(final String keyBase64, final String keyType,
-            final String provider)
-            throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchProviderException {
-        final byte[] key = Base64.decodeBase64(keyBase64);
-
-        final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
-        KeyFactory privateKeyFactory;
-        privateKeyFactory = KeyFactory.getInstance(keyType, provider);
-        return privateKeyFactory.generatePrivate(privateKeySpec);
-    }
-
+    /**
+     * Create public key from Base64 text
+     *
+     * @param keyBase64
+     *            Base64 encoded key according to the X.509 standard
+     * @param keyType
+     *            the name of the key algorithm
+     * @param provider
+     *            the name of the provider
+     * @return instance of private key
+     * @throws EncrypterException
+     *             when creating the private key results in a
+     *             NoSuchAlgorithmException, NoSuchProviderException or
+     *             InvalidKeySpecException
+     */
     public static PublicKey createPublicKeyFromBase64(final String keyBase64, final String keyType,
-            final String provider)
-            throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, NoSuchProviderException {
-        final byte[] key = Base64.decodeBase64(keyBase64);
+            final String provider) {
 
-        final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(key);
-        final KeyFactory publicKeyFactory = KeyFactory.getInstance(keyType, provider);
-        return publicKeyFactory.generatePublic(publicKeySpec);
+        final byte[] key = Base64.decodeBase64(keyBase64);
+        return createPublicKey(key, keyType, provider);
+    }
+
+    private static PublicKey createPublicKey(final byte[] key, final String algorithm, final String provider) {
+        try {
+            final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(key);
+            final KeyFactory publicKeyFactory = KeyFactory.getInstance(algorithm, provider);
+            return publicKeyFactory.generatePublic(publicKeySpec);
+        } catch (final GeneralSecurityException e) {
+            throw new EncrypterException(
+                    String.format("Security exception creating public key for algorithm \"%s\" by provider \"%s\"",
+                            algorithm, provider),
+                    e);
+        }
     }
 
     /**
