@@ -9,11 +9,8 @@ package com.alliander.osgp.webdevicesimulator.application.config;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 
@@ -263,16 +260,10 @@ public class ApplicationContext {
         final ChannelFactory factory = new NioClientSocketChannelFactory(Executors.newCachedThreadPool(),
                 Executors.newCachedThreadPool());
 
-        final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
-            @Override
-            public ChannelPipeline getPipeline()
-                    throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
-                final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
-
-                LOGGER.info("Created new client pipeline");
-
-                return pipeline;
-            }
+        final ChannelPipelineFactory pipelineFactory = () -> {
+            final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
+            LOGGER.info("Created new client pipeline");
+            return pipeline;
         };
 
         final ClientBootstrap bootstrap = new ClientBootstrap(factory);
@@ -293,15 +284,10 @@ public class ApplicationContext {
 
         final ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            @Override
-            public ChannelPipeline getPipeline()
-                    throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
-                final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
-                LOGGER.info("Created new server pipeline");
-
-                return pipeline;
-            }
+        bootstrap.setPipelineFactory(() -> {
+            final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
+            LOGGER.info("Created new server pipeline");
+            return pipeline;
         });
 
         bootstrap.setOption("child.tcpNoDelay", true);
@@ -319,15 +305,10 @@ public class ApplicationContext {
 
         final ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            @Override
-            public ChannelPipeline getPipeline()
-                    throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
-                final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
-                LOGGER.info("Created new server pipeline");
-
-                return pipeline;
-            }
+        bootstrap.setPipelineFactory(() -> {
+            final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
+            LOGGER.info("Created new server pipeline");
+            return pipeline;
         });
 
         bootstrap.setOption("child.tcpNoDelay", true);
@@ -338,8 +319,7 @@ public class ApplicationContext {
         return bootstrap;
     }
 
-    private ChannelPipeline createPipeLine()
-            throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, IOException {
+    private ChannelPipeline createPipeLine() {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("oslpEncoder", new OslpEncoder());
@@ -356,14 +336,12 @@ public class ApplicationContext {
     }
 
     @Bean
-    public OslpDecoder oslpDecoder()
-            throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
+    public OslpDecoder oslpDecoder() {
         return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
     }
 
     @Bean
-    public PublicKey publicKey()
-            throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, NoSuchProviderException {
+    public PublicKey publicKey() throws IOException {
         return CertificateHelper.createPublicKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_VERIFYKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
@@ -371,8 +349,7 @@ public class ApplicationContext {
     }
 
     @Bean
-    public PrivateKey privateKey()
-            throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
+    public PrivateKey privateKey() throws IOException {
         return CertificateHelper.createPrivateKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),

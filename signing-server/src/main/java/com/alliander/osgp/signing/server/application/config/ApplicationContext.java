@@ -8,10 +8,7 @@
 package com.alliander.osgp.signing.server.application.config;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
-import java.security.spec.InvalidKeySpecException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +20,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.security.CertificateHelper;
 import com.alliander.osgp.signing.server.domain.exceptions.SigningServerException;
 
@@ -51,7 +49,7 @@ public class ApplicationContext extends AbstractConfig {
                     this.environment.getRequiredProperty(PROPERTY_NAME_SIGNING_SERVER_SECURITY_SIGNKEY_PATH),
                     this.environment.getRequiredProperty(PROPERTY_NAME_SIGNING_SERVER_SECURITY_KEYTYPE),
                     this.environment.getRequiredProperty(PROPERTY_NAME_SIGNING_SERVER_SECURITY_PROVIDER));
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException | NoSuchProviderException e) {
+        } catch (EncrypterException | IOException e) {
             final String msg = "Error creating private key bean";
             LOGGER.error(msg, e);
             throw new SigningServerException(msg, e);
