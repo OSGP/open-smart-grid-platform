@@ -79,7 +79,7 @@ public class ApplicationContext {
     private static final String VIEW_RESOLVER_SUFFIX = ".jsp";
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
-    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
+    private static final String PROPERTY_NAME_DATABASE_PW = "db.password";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
 
@@ -146,7 +146,7 @@ public class ApplicationContext {
             hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
             hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
             hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PW));
 
             hikariConfig.setMaximumPoolSize(
                     Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
@@ -199,7 +199,7 @@ public class ApplicationContext {
      */
     @Bean
     @DependsOn("flyway")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSPG_DEVICESIMULATOR_WEB");
