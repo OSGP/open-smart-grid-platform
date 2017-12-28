@@ -15,7 +15,6 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.Fc;
-import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +60,7 @@ public class Iec61850SetScheduleCommand {
 
     public void setScheduleOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final RelayTypeDto relayType, final List<ScheduleDto> scheduleList, final Ssld ssld,
-            final SsldDataService ssldDataService) throws ProtocolAdapterException, ServiceError {
+            final SsldDataService ssldDataService) throws ProtocolAdapterException {
 
         final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
 
