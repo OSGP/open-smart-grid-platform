@@ -147,6 +147,24 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     private String firmwareVersion;
 
     @Autowired
+    private String configurationIpConfigFixedIpAddress;
+
+    @Autowired
+    private String configurationIpConfigNetmask;
+
+    @Autowired
+    private String configurationIpConfigGateway;
+
+    @Autowired
+    private String configurationOsgpIpAddress;
+
+    @Autowired
+    private Integer configurationOsgpPortNumber;
+
+    @Autowired
+    private String statusInternalIpAddress;
+
+    @Autowired
     private ClientBootstrap bootstrap;
 
     @Autowired
@@ -525,7 +543,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
             response = createGetPowerUsageHistoryWithDatesResponse(request.getGetPowerUsageHistoryRequest());
         } else if (request.hasGetStatusRequest()) {
-            response = createGetStatusResponse(device);
+            response = this.createGetStatusResponse(device);
         } else if (request.hasResumeScheduleRequest()) {
             response = createResumeScheduleResponse();
         } else if (request.hasSetRebootRequest()) {
@@ -780,19 +798,19 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 configuration.setLongTermHistoryIntervalType(LongTermIntervalType.DAYS);
                 configuration.setLongTermHistoryInterval(1);
                 configuration.setTimeSyncFrequency(86400);
-                configuration
-                        .setDeviceFixIpValue(ByteString.copyFrom(InetAddress.getByName("192.168.0.100").getAddress()));
-                configuration.setNetMask(ByteString.copyFrom(InetAddress.getByName("255.255.255.0").getAddress()));
-                configuration.setGateWay(ByteString.copyFrom(InetAddress.getByName("192.168.0.1").getAddress()));
+                configuration.setDeviceFixIpValue(ByteString
+                        .copyFrom(InetAddress.getByName(this.configurationIpConfigFixedIpAddress).getAddress()));
+                configuration.setNetMask(
+                        ByteString.copyFrom(InetAddress.getByName(this.configurationIpConfigNetmask).getAddress()));
+                configuration.setGateWay(
+                        ByteString.copyFrom(InetAddress.getByName(this.configurationIpConfigGateway).getAddress()));
                 configuration.setIsDhcpEnabled(false);
-                // configuration.setIsTlsEnabled(true);
-                // configuration.setOslpBindPortNumber(1234);
-                // configuration.setCommonNameString("TLS Test");
                 configuration.setCommunicationTimeout(30);
                 configuration.setCommunicationNumberOfRetries(5);
                 configuration.setCommunicationPauseTimeBetweenConnectionTrials(120);
-                configuration.setOspgIpAddress(ByteString.copyFrom(InetAddress.getByName("168.63.97.65").getAddress()));
-                configuration.setOsgpPortNumber(12122);
+                configuration.setOspgIpAddress(
+                        ByteString.copyFrom(InetAddress.getByName(this.configurationOsgpIpAddress).getAddress()));
+                configuration.setOsgpPortNumber(this.configurationOsgpPortNumber);
                 configuration.setIsTestButtonEnabled(false);
                 configuration.setIsAutomaticSummerTimingEnabled(false);
                 configuration.setAstroGateSunRiseOffset(-15);
@@ -855,7 +873,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         return configuration.build();
     }
 
-    private static Message createGetStatusResponse(final Device device) {
+    private Message createGetStatusResponse(final Device device) {
 
         final List<LightValue> outputValues = new ArrayList<>();
         for (final DeviceOutputSetting dos : device.getOutputSettings()) {
@@ -922,7 +940,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             builder.setBootLoaderVersion("1.1.1").setFirmwareVersion("2.8.5");
             builder.setCurrentConfigurationBackUsed(ByteString.copyFrom(new byte[] { 0 }));
             builder.setName("ELS_DEV-SIM-DEVICE").setCurrentTime("20251231155959");
-            builder.setCurrentIp("127.0.0.1");
+            builder.setCurrentIp(this.statusInternalIpAddress);
         }
 
         return Oslp.Message.newBuilder().setGetStatusResponse(builder.build()).build();

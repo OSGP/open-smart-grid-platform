@@ -127,6 +127,14 @@ public class ApplicationContext {
 
     private static final String PROPERTY_NAME_FIRMWARE_VERSION = "firmware.version";
 
+    private static final String PROPERTY_NAME_CONFIGURATION_IP_CONFIG_FIXED_IP_ADDRESS = "configuration.ip.config.fixed.ip.address";
+    private static final String PROPERTY_NAME_CONFIGURATION_IP_CONFIG_NETMASK = "configuration.ip.config.netmask";
+    private static final String PROPERTY_NAME_CONFIGURATION_IP_CONFIG_GATEWAY = "configuration.ip.config.gateway";
+    private static final String PROPERTY_NAME_CONFIGURATION_OSGP_IP_ADDRESS = "configuration.osgp.ip.address";
+    private static final String PROPERTY_NAME_CONFIGURATION_OSGP_PORT_NUMBER = "configuration.osgp.port.number";
+
+    private static final String PROPERTY_NAME_STATUS_INTERNAL_IP_ADDRESS = "status.internal.ip.address";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
     @Resource
@@ -485,6 +493,36 @@ public class ApplicationContext {
     @Bean
     public String firmwareVersion() {
         return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_VERSION);
+    }
+
+    @Bean
+    public String configurationIpConfigFixedIpAddress() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_IP_CONFIG_FIXED_IP_ADDRESS);
+    }
+
+    @Bean
+    public String configurationIpConfigNetmask() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_IP_CONFIG_NETMASK);
+    }
+
+    @Bean
+    public String configurationIpConfigGateway() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_IP_CONFIG_GATEWAY);
+    }
+
+    @Bean
+    public String configurationOsgpIpAddress() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_OSGP_IP_ADDRESS);
+    }
+
+    @Bean
+    public Integer configurationOsgpPortNumber() {
+        return Integer.valueOf(this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_OSGP_PORT_NUMBER));
+    }
+
+    @Bean
+    public String statusInternalIpAddress() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_STATUS_INTERNAL_IP_ADDRESS);
     }
 
     @PreDestroy
