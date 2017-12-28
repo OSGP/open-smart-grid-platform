@@ -28,7 +28,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Node
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.dto.valueobjects.LightValueDto;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850SetLightCommand {
 
@@ -57,7 +56,7 @@ public class Iec61850SetLightCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
                 for (final LightValueDto relayWithInternalIdToSwitch : relaysWithInternalIdToSwitch) {
                     final int index = relayWithInternalIdToSwitch.getIndex();

@@ -27,7 +27,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubD
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import com.alliander.osgp.dto.valueobjects.FirmwareModuleType;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850GetFirmwareVersionCommand {
 
@@ -38,7 +37,8 @@ public class Iec61850GetFirmwareVersionCommand {
         final Function<List<FirmwareVersionDto>> function = new Function<List<FirmwareVersionDto>>() {
 
             @Override
-            public List<FirmwareVersionDto> apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
+            public List<FirmwareVersionDto> apply(final DeviceMessageLog deviceMessageLog)
+                    throws ProtocolAdapterException {
                 final List<FirmwareVersionDto> output = new ArrayList<>();
 
                 // Getting the functional firmware version

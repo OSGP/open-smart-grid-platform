@@ -8,7 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 
 /**
  * An interface, containing a function that can be applied. <R> is the given
@@ -19,5 +19,5 @@ public interface Function<R> {
     /**
      * The function, containing the business logic of the Function
      */
-    R apply(DeviceMessageLog deviceMessageLog) throws OsgpException;
+    R apply(DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException;
 }

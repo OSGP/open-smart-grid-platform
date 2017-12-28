@@ -46,7 +46,6 @@ import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
 public class Iec61850RtuDeviceService implements RtuDeviceService {
@@ -167,7 +166,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
         final Function<GetDataResponseDto> function = new Function<GetDataResponseDto>() {
 
             @Override
-            public GetDataResponseDto apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
+            public GetDataResponseDto apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
                 final List<GetDataSystemIdentifierDto> identifiers = new ArrayList<>();
                 for (final SystemFilterDto systemFilter : requestedData.getSystemFilters()) {
@@ -192,7 +191,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
         final Function<Void> function = new Function<Void>() {
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
                 for (final SetDataSystemIdentifierDto identifier : setDataRequest.getSetDataSystemIdentifiers()) {
 

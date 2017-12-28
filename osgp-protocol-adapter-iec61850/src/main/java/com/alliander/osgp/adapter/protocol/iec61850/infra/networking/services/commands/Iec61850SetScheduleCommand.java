@@ -15,6 +15,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.Fc;
+import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,6 @@ import com.alliander.osgp.dto.valueobjects.WindowTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850SetScheduleCommand {
 
@@ -61,7 +61,8 @@ public class Iec61850SetScheduleCommand {
 
     public void setScheduleOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final RelayTypeDto relayType, final List<ScheduleDto> scheduleList, final Ssld ssld,
-            final SsldDataService ssldDataService) throws ProtocolAdapterException {
+            final SsldDataService ssldDataService) throws ProtocolAdapterException, ServiceError {
+
         final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
 
         try {
@@ -72,7 +73,7 @@ public class Iec61850SetScheduleCommand {
             final Function<Void> function = new Function<Void>() {
 
                 @Override
-                public Void apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
+                public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
                     Iec61850SetScheduleCommand.this.disableScheduleEntries(relayType, deviceConnection, iec61850Client,
                             deviceMessageLog, ssld, ssldDataService);
@@ -109,8 +110,8 @@ public class Iec61850SetScheduleCommand {
                         // relay.
                         for (int i = 0; i < numberOfScheduleEntries; i++) {
 
-                            writeScheduleEntryForRelay(tariffOrLight, deviceMessageLog, relayIndex, scheduleEntries,
-                                    logicalNode, schedule, i);
+                            this.writeScheduleEntryForRelay(tariffOrLight, deviceMessageLog, relayIndex,
+                                    scheduleEntries, logicalNode, schedule, i);
                         }
                     }
                     DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
@@ -121,7 +122,7 @@ public class Iec61850SetScheduleCommand {
                 private void writeScheduleEntryForRelay(final String tariffOrLight,
                         final DeviceMessageLog deviceMessageLog, final Integer relayIndex,
                         final List<ScheduleEntry> scheduleEntries, final LogicalNode logicalNode,
-                        final NodeContainer schedule, int i) throws NodeWriteException {
+                        final NodeContainer schedule, final int i) throws NodeWriteException {
                     LOGGER.info("Writing {} schedule entry {} for relay {}", tariffOrLight, i + 1, relayIndex);
 
                     final ScheduleEntry scheduleEntry = scheduleEntries.get(i);
@@ -133,29 +134,26 @@ public class Iec61850SetScheduleCommand {
                     if (enabled.getValue() != scheduleEntry.isEnabled()) {
                         scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, scheduleEntry.isEnabled());
 
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                scheduleEntryName, SubDataAttribute.SCHEDULE_ENABLE,
-                                Boolean.toString(scheduleEntry.isEnabled()));
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                                SubDataAttribute.SCHEDULE_ENABLE, Boolean.toString(scheduleEntry.isEnabled()));
                     }
 
                     final Integer day = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_DAY).getValue();
                     if (day != scheduleEntry.getDay()) {
                         scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_DAY, scheduleEntry.getDay());
 
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                scheduleEntryName, SubDataAttribute.SCHEDULE_DAY,
-                                Integer.toString(scheduleEntry.getDay()));
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                                SubDataAttribute.SCHEDULE_DAY, Integer.toString(scheduleEntry.getDay()));
                     }
 
                     /*
-                     * A schedule entry on the platform is about
-                     * switching on a certain time, or on a certain
-                     * trigger. The schedule entries on the device are
-                     * about a period with a time on and a time off. To
-                     * bridge these different approaches, either the on
-                     * or the off values on the device are set to a
-                     * certain default to indicate they are not relevant
-                     * to the schedule entry.
+                     * A schedule entry on the platform is about switching on a
+                     * certain time, or on a certain trigger. The schedule
+                     * entries on the device are about a period with a time on
+                     * and a time off. To bridge these different approaches,
+                     * either the on or the off values on the device are set to
+                     * a certain default to indicate they are not relevant to
+                     * the schedule entry.
                      */
                     int timeOnValue = DEFAULT_SCHEDULE_VALUE;
                     byte timeOnTypeValue = DEFAULT_SCHEDULE_VALUE;
@@ -170,14 +168,12 @@ public class Iec61850SetScheduleCommand {
                         timeOffTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
                     }
 
-                    final Integer timeOn = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_ON)
-                            .getValue();
+                    final Integer timeOn = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_ON).getValue();
                     if (timeOn != timeOnValue) {
                         scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_TIME_ON, timeOnValue);
 
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                scheduleEntryName, SubDataAttribute.SCHEDULE_TIME_ON,
-                                Integer.toString(timeOnValue));
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                                SubDataAttribute.SCHEDULE_TIME_ON, Integer.toString(timeOnValue));
                     }
 
                     final Byte timeOnActionTime = scheduleNode.getByte(SubDataAttribute.SCHEDULE_TIME_ON_TYPE)
@@ -185,19 +181,16 @@ public class Iec61850SetScheduleCommand {
                     if (timeOnActionTime != timeOnTypeValue) {
                         scheduleNode.writeByte(SubDataAttribute.SCHEDULE_TIME_ON_TYPE, timeOnTypeValue);
 
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                scheduleEntryName, SubDataAttribute.SCHEDULE_TIME_ON_TYPE,
-                                Byte.toString(timeOnTypeValue));
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                                SubDataAttribute.SCHEDULE_TIME_ON_TYPE, Byte.toString(timeOnTypeValue));
                     }
 
-                    final Integer timeOff = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_OFF)
-                            .getValue();
+                    final Integer timeOff = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_OFF).getValue();
                     if (timeOff != timeOffValue) {
                         scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_TIME_OFF, timeOffValue);
 
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                scheduleEntryName, SubDataAttribute.SCHEDULE_TIME_OFF,
-                                Integer.toString(timeOffValue));
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                                SubDataAttribute.SCHEDULE_TIME_OFF, Integer.toString(timeOffValue));
                     }
 
                     final Byte timeOffActionTime = scheduleNode.getByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE)
@@ -205,20 +198,18 @@ public class Iec61850SetScheduleCommand {
                     if (timeOffActionTime != timeOffTypeValue) {
                         scheduleNode.writeByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE, timeOffTypeValue);
 
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                scheduleEntryName, SubDataAttribute.SCHEDULE_TIME_OFF_TYPE,
-                                Byte.toString(timeOffTypeValue));
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                                SubDataAttribute.SCHEDULE_TIME_OFF_TYPE, Byte.toString(timeOffTypeValue));
                     }
 
-                    final Integer minimumTimeOn = scheduleNode
-                            .getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON).getValue();
+                    final Integer minimumTimeOn = scheduleNode.getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON)
+                            .getValue();
                     final Integer newMinimumTimeOn = scheduleEntry.getMinimumLightsOn() / 60;
                     if (minimumTimeOn != newMinimumTimeOn) {
                         scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON, newMinimumTimeOn);
 
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                scheduleEntryName, SubDataAttribute.MINIMUM_TIME_ON,
-                                Integer.toString(newMinimumTimeOn));
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                                SubDataAttribute.MINIMUM_TIME_ON, Integer.toString(newMinimumTimeOn));
                     }
 
                     final Integer triggerMinutesBefore = scheduleNode
@@ -227,8 +218,8 @@ public class Iec61850SetScheduleCommand {
                         scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
                                 scheduleEntry.getTriggerWindowMinutesBefore());
 
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                scheduleEntryName, SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                                SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
                                 Integer.toString(scheduleEntry.getTriggerWindowMinutesBefore()));
                     }
 
@@ -238,8 +229,8 @@ public class Iec61850SetScheduleCommand {
                         scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
                                 scheduleEntry.getTriggerWindowMinutesAfter());
 
-                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF,
-                                scheduleEntryName, SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
+                        deviceMessageLog.addVariable(logicalNode, DataAttribute.SCHEDULE, Fc.CF, scheduleEntryName,
+                                SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
                                 Integer.toString(scheduleEntry.getTriggerWindowMinutesAfter()));
                     }
                 }

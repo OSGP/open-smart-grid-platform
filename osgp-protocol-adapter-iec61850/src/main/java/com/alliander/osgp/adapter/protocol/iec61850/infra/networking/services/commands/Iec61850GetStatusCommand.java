@@ -35,7 +35,6 @@ import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.dto.valueobjects.LightTypeDto;
 import com.alliander.osgp.dto.valueobjects.LightValueDto;
 import com.alliander.osgp.dto.valueobjects.LinkTypeDto;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public class Iec61850GetStatusCommand {
 
@@ -46,7 +45,7 @@ public class Iec61850GetStatusCommand {
         final Function<DeviceStatusDto> function = new Function<DeviceStatusDto>() {
 
             @Override
-            public DeviceStatusDto apply(final DeviceMessageLog deviceMessageLog) throws OsgpException {
+            public DeviceStatusDto apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
                 // getting the light relay values
                 final List<LightValueDto> lightValues = new ArrayList<>();
 
