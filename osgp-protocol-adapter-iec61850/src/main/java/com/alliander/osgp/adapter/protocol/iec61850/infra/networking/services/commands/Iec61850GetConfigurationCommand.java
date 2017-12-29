@@ -112,9 +112,12 @@ public class Iec61850GetConfigurationCommand {
                         DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET,
                         Short.toString(astroGateSunSetOffset));
 
-                final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration,
-                        relayConfiguration, shortTermHistoryIntervalMinutes, preferredLinkType, meterType,
-                        longTermHistoryInterval, longTermHistoryIntervalType);
+                final ConfigurationDto configuration = ConfigurationDto.newBuilder().withLightType(lightType)
+                        .withDaliConfiguration(daliConfiguration).withRelayConfiguration(relayConfiguration)
+                        .withShortTermHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
+                        .withPreferredLinkType(preferredLinkType).withMeterType(meterType)
+                        .withLongTermHistoryInterval(longTermHistoryInterval)
+                        .withLongTermHysteryIntervalType(longTermHistoryIntervalType).build();
 
                 // getting the registration configuration values
                 LOGGER.info("Reading the registration configuration values");
