@@ -117,9 +117,13 @@ public class ConfigurationConverter
                 .map(source.getLongTermHistoryIntervalType(),
                         com.alliander.osgp.dto.valueobjects.LongTermIntervalTypeDto.class);
 
-        final com.alliander.osgp.dto.valueobjects.ConfigurationDto configuration = new com.alliander.osgp.dto.valueobjects.ConfigurationDto(
-                lightType, daliConfiguration, relayConfiguration, shortTermHistoryIntervalMinutes, preferredLinkType,
-                meterType, longTermHistoryInterval, longTermHistoryIntervalType);
+        final com.alliander.osgp.dto.valueobjects.ConfigurationDto configuration = com.alliander.osgp.dto.valueobjects.ConfigurationDto
+                .newBuilder().withLightType(lightType).withDaliConfiguration(daliConfiguration)
+                .withRelayConfiguration(relayConfiguration)
+                .withShortTermHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
+                .withPreferredLinkType(preferredLinkType).withMeterType(meterType)
+                .withLongTermHistoryInterval(longTermHistoryInterval)
+                .withLongTermHysteryIntervalType(longTermHistoryIntervalType).build();
 
         configuration.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
         configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());

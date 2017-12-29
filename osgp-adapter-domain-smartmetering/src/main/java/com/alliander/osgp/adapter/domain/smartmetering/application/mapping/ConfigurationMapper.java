@@ -13,6 +13,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.custo
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.CosemDateTimeConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.FirmwareVersionConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.GetAllAttributeValuesResponseConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.WeekProfileConverter;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
@@ -29,5 +30,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusResponseConverter());
         mapperFactory.getConverterFactory().registerConverter(new FirmwareVersionConverter());
         mapperFactory.getConverterFactory().registerConverter(new GetAllAttributeValuesResponseConverter());
+        mapperFactory.getConverterFactory().registerConverter(new WeekProfileConverter(this));
     }
 }
