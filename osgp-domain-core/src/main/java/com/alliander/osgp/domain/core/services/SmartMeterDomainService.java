@@ -18,6 +18,9 @@ import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service
 @Validated
@@ -43,18 +46,22 @@ public class SmartMeterDomainService {
      * @param deviceIdentification
      *            the identification of the active device we're looking for
      * @return the active device for the given identification
-     * @throws InactiveDeviceException
-     *             the device is not active
-     * @throws UnknownEntityException
-     *             the device is not in the database
+     * @throws FunctionalException
+     *             when the device is not in the database or is not in use
      */
-    public SmartMeter searchActiveSmartMeter(@Identification final String deviceIdentification)
-            throws InactiveDeviceException, UnknownEntityException {
+    public SmartMeter searchActiveSmartMeter(@Identification final String deviceIdentification,
+            final ComponentType osgpComponent) throws FunctionalException {
 
-        final SmartMeter smartMeter = this.searchSmartMeter(deviceIdentification);
+        final SmartMeter smartMeter = this.smartMeterRepository.findByDeviceIdentification(deviceIdentification);
+
+        if (smartMeter == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, osgpComponent,
+                    new UnknownEntityException(SmartMeter.class, deviceIdentification));
+        }
 
         if (!smartMeter.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)) {
-            throw new InactiveDeviceException(deviceIdentification);
+            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, osgpComponent,
+                    new InactiveDeviceException(deviceIdentification));
         }
 
         return smartMeter;

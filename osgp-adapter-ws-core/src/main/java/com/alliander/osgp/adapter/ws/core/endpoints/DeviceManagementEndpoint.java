@@ -63,7 +63,6 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSs
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
-import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.Certification;
@@ -271,12 +270,6 @@ public class DeviceManagementEndpoint {
                             .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
                 }
             }
-        } catch (final ArgumentNullOrEmptyException ane) {
-            // TODO: Instead of using this exception, a different solution
-            // should be found to avoid using Exceptions.
-            LOGGER.error("No results found when finding devices", ane);
-            response.setArgument(ane.getArgument());
-            response.setMessage(ane.getMessage());
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,

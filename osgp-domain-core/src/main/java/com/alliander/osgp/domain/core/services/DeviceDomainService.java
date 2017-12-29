@@ -55,20 +55,22 @@ public class DeviceDomainService {
         return device;
     }
 
-    public Device searchActiveDevice(@Identification final String deviceIdentification)
-            throws UnregisteredDeviceException, InactiveDeviceException, FunctionalException {
+    public Device searchActiveDevice(@Identification final String deviceIdentification, final ComponentType osgpComponent)
+            throws FunctionalException {
 
         final Device device = this.searchDevice(deviceIdentification);
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
 
         if (!device.isActivated() || !device.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)) {
-            throw new InactiveDeviceException(deviceIdentification);
+            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, osgpComponent,
+                    new InactiveDeviceException(deviceIdentification));
         }
 
         // Note: since this code is still specific for SSLD / PSLD, this null
         // check is needed.
         if (ssld != null && !ssld.isPublicKeyPresent()) {
-            throw new UnregisteredDeviceException(deviceIdentification);
+            throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, osgpComponent,
+                    new UnregisteredDeviceException(deviceIdentification));
         }
 
         return device;

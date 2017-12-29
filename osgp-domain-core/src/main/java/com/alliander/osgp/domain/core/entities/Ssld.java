@@ -101,6 +101,31 @@ public class Ssld extends Device {
         this.gpsLongitude = longitude;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        /*
+         * Code quality checks indicate that equals should be overridden because
+         * this class extends Device (which overrides equals) and adds fields.
+         *
+         * The equals implementation of Device however is perfectly OK, since it
+         * is based on the deviceIdentification, which is a natural key for
+         * Device as well as its subclasses.
+         *
+         * So, just call super here.
+         */
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        /*
+         * Override hashCode, because equals is overridden as well. This should
+         * get rid of a reported bug by the code quality checks, but the super
+         * implementation is just fine here, like with equals.
+         */
+        return super.hashCode();
+    }
+
     public boolean isPublicKeyPresent() {
         return this.hasPublicKey;
     }
