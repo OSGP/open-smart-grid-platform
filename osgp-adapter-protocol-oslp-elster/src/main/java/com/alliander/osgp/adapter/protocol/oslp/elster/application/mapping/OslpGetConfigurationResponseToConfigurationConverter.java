@@ -66,14 +66,17 @@ public class OslpGetConfigurationResponseToConfigurationConverter
         final Integer longTermHistoryInterval = source.hasLongTermHistoryInterval()
                 ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class)
                 : null;
-        final LongTermIntervalTypeDto longTermIntervalType = source.hasLongTermHistoryIntervalType()
+        final LongTermIntervalTypeDto longTermHistoryIntervalType = source.hasLongTermHistoryIntervalType()
                 && !source.getLongTermHistoryIntervalType().equals(Oslp.LongTermIntervalType.LT_INT_NOT_SET)
                         ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
                         : null;
 
-        final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration, relayConfiguration,
-                shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
-                longTermIntervalType);
+        final ConfigurationDto configuration = ConfigurationDto.newBuilder().withLightType(lightType)
+                .withDaliConfiguration(daliConfiguration).withRelayConfiguration(relayConfiguration)
+                .withShortTermHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
+                .withPreferredLinkType(preferredLinkType).withMeterType(meterType)
+                .withLongTermHistoryInterval(longTermHistoryInterval)
+                .withLongTermHysteryIntervalType(longTermHistoryIntervalType).build();
 
         // Set the optional values using the set() functions.
         configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
@@ -84,15 +87,6 @@ public class OslpGetConfigurationResponseToConfigurationConverter
             configuration.setDeviceFixedIp(new DeviceFixedIpDto(ipAddress, netMask, gateWay));
         }
         configuration.setDhcpEnabled(source.getIsDhcpEnabled());
-        // if (source.hasIsTlsEnabled()) {
-        // configuration.setTlsEnabled(source.getIsTlsEnabled());
-        // }
-        // if (source.hasOslpBindPortNumber()) {
-        // configuration.setTlsPortNumber(source.getOslpBindPortNumber());
-        // }
-        // if (source.hasCommonNameString()) {
-        // configuration.setCommonNameString(source.getCommonNameString());
-        // }
         configuration.setCommunicationTimeout(source.getCommunicationTimeout());
         configuration.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
         configuration.setCommunicationPauseTimeBetweenConnectionTrials(

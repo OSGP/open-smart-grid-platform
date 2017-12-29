@@ -26,11 +26,13 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -99,9 +101,12 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             ex = e;
         }
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, ex, null, retryCount);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getCorrelationUid(), messageType, MessagePriorityEnum.DEFAULT.getPriority());
+        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
+                .osgpException(ex).retryCount(retryCount).build();
 
         responseMessageSender.send(responseMessage);
     }
@@ -122,9 +127,12 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             ex = e;
         }
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, ex, null, isScheduled, retryCount);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getCorrelationUid(), messageType, MessagePriorityEnum.DEFAULT.getPriority());
+        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
+                .osgpException(ex).scheduled(isScheduled).retryCount(retryCount).build();
 
         responseMessageSender.send(responseMessage);
     }
@@ -135,9 +143,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         LOGGER.error("Error while processing message", e);
         final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, e);
 
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
-                messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ResponseMessageResultType.NOT_OK, ex, null, retryCount);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, messageType, MessagePriorityEnum.DEFAULT.getPriority());
+        final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata)
+                .result(ResponseMessageResultType.NOT_OK).osgpException(ex).retryCount(retryCount).build();
 
         this.responseMessageSender.send(protocolResponseMessage);
     }
@@ -148,9 +158,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         LOGGER.error("Error while processing message", e);
         final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, e);
 
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
-                messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ResponseMessageResultType.NOT_OK, ex, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, messageType, MessagePriorityEnum.DEFAULT.getPriority());
+        final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata)
+                .result(ResponseMessageResultType.NOT_OK).osgpException(ex).build();
 
         this.responseMessageSender.send(protocolResponseMessage);
     }
@@ -162,9 +174,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         final FunctionalException ex = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                 ComponentType.PROTOCOL_OSLP, e);
 
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
-                messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ResponseMessageResultType.NOT_OK, ex, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, messageType, MessagePriorityEnum.DEFAULT.getPriority());
+        final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata)
+                .result(ResponseMessageResultType.NOT_OK).osgpException(ex).build();
 
         this.responseMessageSender.send(protocolResponseMessage);
     }
@@ -178,9 +192,12 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP,
                 StringUtils.isBlank(t.getMessage()) ? UNEXPECTED_EXCEPTION : t.getMessage(), t);
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, ex, messageData, isScheduled, retryCount);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getCorrelationUid(), messageType, MessagePriorityEnum.DEFAULT.getPriority());
+        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
+                .osgpException(ex).dataObject(messageData).scheduled(isScheduled).retryCount(retryCount).build();
 
         this.responseMessageSender.send(responseMessage);
     }

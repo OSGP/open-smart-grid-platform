@@ -31,9 +31,11 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common get configuration request messages
@@ -168,9 +170,12 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
             osgpException = new TechnicalException(ComponentType.UNKNOWN, exception, e);
         }
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, osgpException, configuration, retryCount);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getCorrelationUid(), messageType, MessagePriorityEnum.DEFAULT.getPriority());
+        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
+                .osgpException(osgpException).dataObject(configuration).retryCount(retryCount).build();
 
         responseMessageSender.send(responseMessage);
     }

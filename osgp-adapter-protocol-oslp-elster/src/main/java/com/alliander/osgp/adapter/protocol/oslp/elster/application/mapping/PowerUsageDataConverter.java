@@ -117,11 +117,14 @@ public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDa
 
             // Construct SsldData instance using the RelayData list and the
             // other values.
-            final SsldDataDto ssldData = new SsldDataDto(oslpSsldData.getActualCurrent1(),
-                    oslpSsldData.getActualCurrent2(), oslpSsldData.getActualCurrent3(), oslpSsldData.getActualPower1(),
-                    oslpSsldData.getActualPower2(), oslpSsldData.getActualPower3(),
-                    oslpSsldData.getAveragePowerFactor1(), oslpSsldData.getAveragePowerFactor2(),
-                    oslpSsldData.getAveragePowerFactor3(), list);
+            final SsldDataDto ssldData = SsldDataDto.newBuilder().withActualCurrent1(oslpSsldData.getActualCurrent1())
+                    .withActualCurrent2(oslpSsldData.getActualCurrent2())
+                    .withActualCurrent3(oslpSsldData.getActualCurrent3())
+                    .withActualPower1(oslpSsldData.getActualPower1()).withActualPower2(oslpSsldData.getActualPower2())
+                    .withActualPower3(oslpSsldData.getActualPower3())
+                    .withAveragePowerFactor1(oslpSsldData.getAveragePowerFactor1())
+                    .withAveragePowerFactor2(oslpSsldData.getAveragePowerFactor2())
+                    .withAveragePowerFactor3(oslpSsldData.getAveragePowerFactor3()).withRelayData(list).build();
             // Set SsldData instance in the PowerUsageData instance.
             powerUsageData.setSsldData(ssldData);
         }

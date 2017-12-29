@@ -34,9 +34,11 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Service(value = "oslpDeviceManagementService")
 @Transactional(value = "transactionManager")
@@ -212,8 +214,11 @@ public class DeviceManagementService {
             final ResponseMessageResultType result, final OsgpException osgpException,
             final DeviceResponseMessageSender responseMessageSender) {
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, messageType, MessagePriorityEnum.DEFAULT.getPriority());
+        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
+                .osgpException(osgpException).build();
 
         responseMessageSender.send(responseMessage);
     }

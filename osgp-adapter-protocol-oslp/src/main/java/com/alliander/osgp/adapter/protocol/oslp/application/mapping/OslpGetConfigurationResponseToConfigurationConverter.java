@@ -25,21 +25,35 @@ public class OslpGetConfigurationResponseToConfigurationConverter
     @Override
     public ConfigurationDto convert(final Oslp.GetConfigurationResponse source,
             final Type<? extends ConfigurationDto> destinationType, final MappingContext context) {
-        return new ConfigurationDto(
-                source.hasLightType() ? this.mapperFacade.map(source.getLightType(), LightTypeDto.class) : null,
-                source.hasDaliConfiguration()
-                        ? this.mapperFacade.map(source.getDaliConfiguration(), DaliConfigurationDto.class) : null,
-                source.hasRelayConfiguration()
-                        ? this.mapperFacade.map(source.getRelayConfiguration(), RelayConfigurationDto.class) : null,
-                source.hasShortTermHistoryIntervalMinutes()
-                        ? this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
-                source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkTypeDto.class)
-                        : null,
-                source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class) : null,
-                source.hasLongTermHistoryInterval()
-                        ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class) : null,
-                source.hasLongTermHistoryIntervalType()
-                        ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
-                        : null);
+        final LightTypeDto lightType = source.hasLightType()
+                ? this.mapperFacade.map(source.getLightType(), LightTypeDto.class)
+                : null;
+        final DaliConfigurationDto daliConfiguration = source.hasDaliConfiguration()
+                ? this.mapperFacade.map(source.getDaliConfiguration(), DaliConfigurationDto.class)
+                : null;
+        final RelayConfigurationDto relayConfiguration = source.hasRelayConfiguration()
+                ? this.mapperFacade.map(source.getRelayConfiguration(), RelayConfigurationDto.class)
+                : null;
+        final Integer shortTermHistoryIntervalMinutes = source.hasShortTermHistoryIntervalMinutes()
+                ? this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class)
+                : null;
+        final LinkTypeDto preferredLinkType = source.hasPreferredLinkType()
+                ? this.mapperFacade.map(source.getPreferredLinkType(), LinkTypeDto.class)
+                : null;
+        final MeterTypeDto meterType = source.hasMeterType()
+                ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class)
+                : null;
+        final Integer longTermHistoryInterval = source.hasLongTermHistoryInterval()
+                ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class)
+                : null;
+        final LongTermIntervalTypeDto longTermHistoryIntervalType = source.hasLongTermHistoryIntervalType()
+                ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
+                : null;
+        return ConfigurationDto.newBuilder().withLightType(lightType).withDaliConfiguration(daliConfiguration)
+                .withRelayConfiguration(relayConfiguration)
+                .withShortTermHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
+                .withPreferredLinkType(preferredLinkType).withMeterType(meterType)
+                .withLongTermHistoryInterval(longTermHistoryInterval)
+                .withLongTermHysteryIntervalType(longTermHistoryIntervalType).build();
     }
 }

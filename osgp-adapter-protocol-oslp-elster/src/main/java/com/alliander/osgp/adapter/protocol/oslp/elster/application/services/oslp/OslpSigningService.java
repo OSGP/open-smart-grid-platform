@@ -25,9 +25,11 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Service
 public class OslpSigningService {
@@ -176,12 +178,14 @@ public class OslpSigningService {
 
         final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = (UnsignedOslpEnvelopeDto) responseMessage
                 .getDataObject();
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(
-                unsignedOslpEnvelopeDto.getDomain(), unsignedOslpEnvelopeDto.getDomainVersion(),
-                unsignedOslpEnvelopeDto.getMessageType(), unsignedOslpEnvelopeDto.getCorrelationUid(),
-                unsignedOslpEnvelopeDto.getOrganisationIdentification(), deviceIdentification,
-                responseMessage.getResult(), responseMessage.getOsgpException(), null,
-                unsignedOslpEnvelopeDto.isScheduled());
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                unsignedOslpEnvelopeDto.getOrganisationIdentification(), unsignedOslpEnvelopeDto.getCorrelationUid(),
+                unsignedOslpEnvelopeDto.getMessageType(), MessagePriorityEnum.DEFAULT.getPriority());
+        final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder()
+                .domain(unsignedOslpEnvelopeDto.getDomain()).domainVersion(unsignedOslpEnvelopeDto.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata).result(responseMessage.getResult())
+                .osgpException(responseMessage.getOsgpException()).scheduled(unsignedOslpEnvelopeDto.isScheduled())
+                .build();
         this.deviceResponseMessageSender.send(protocolResponseMessage);
     }
 }
