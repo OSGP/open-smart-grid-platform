@@ -27,21 +27,91 @@ public class SsldDataDto implements Serializable {
     private int averagePowerFactor1;
     private int averagePowerFactor2;
     private int averagePowerFactor3;
-    private List<RelayDataDto> relayData = new ArrayList<RelayDataDto>();
+    private List<RelayDataDto> relayData = new ArrayList<>();
 
-    public SsldDataDto(final int actualCurrent1, final int actualCurrent2, final int actualCurrent3,
-            final int actualPower1, final int actualPower2, final int actualPower3, final int averagePowerFactor1,
-            final int averagePowerFactor2, final int averagePowerFactor3, final List<RelayDataDto> relayData) {
-        this.actualCurrent1 = actualCurrent1;
-        this.actualCurrent2 = actualCurrent2;
-        this.actualCurrent3 = actualCurrent3;
-        this.actualPower1 = actualPower1;
-        this.actualPower2 = actualPower2;
-        this.actualPower3 = actualPower3;
-        this.averagePowerFactor1 = averagePowerFactor1;
-        this.averagePowerFactor2 = averagePowerFactor2;
-        this.averagePowerFactor3 = averagePowerFactor3;
-        this.relayData = relayData;
+    private SsldDataDto(final Builder builder) {
+        this.actualCurrent1 = builder.actualCurrent1;
+        this.actualCurrent2 = builder.actualCurrent2;
+        this.actualCurrent3 = builder.actualCurrent3;
+        this.actualPower1 = builder.actualPower1;
+        this.actualPower2 = builder.actualPower2;
+        this.actualPower3 = builder.actualPower3;
+        this.averagePowerFactor1 = builder.averagePowerFactor1;
+        this.averagePowerFactor2 = builder.averagePowerFactor2;
+        this.averagePowerFactor3 = builder.averagePowerFactor3;
+        this.relayData = builder.relayData;
+    }
+
+    public static class Builder {
+
+        private int actualCurrent1;
+        private int actualCurrent2;
+        private int actualCurrent3;
+        private int actualPower1;
+        private int actualPower2;
+        private int actualPower3;
+        private int averagePowerFactor1;
+        private int averagePowerFactor2;
+        private int averagePowerFactor3;
+        private List<RelayDataDto> relayData = new ArrayList<>();
+
+        public SsldDataDto build() {
+            return new SsldDataDto(this);
+        }
+
+        public Builder withActualCurrent1(final int actualCurrent1) {
+            this.actualCurrent1 = actualCurrent1;
+            return this;
+        }
+
+        public Builder withActualCurrent2(final int actualCurrent2) {
+            this.actualCurrent2 = actualCurrent2;
+            return this;
+        }
+
+        public Builder withActualCurrent3(final int actualCurrent3) {
+            this.actualCurrent3 = actualCurrent3;
+            return this;
+        }
+
+        public Builder withActualPower1(final int actualPower1) {
+            this.actualPower1 = actualPower1;
+            return this;
+        }
+
+        public Builder withActualPower2(final int actualPower2) {
+            this.actualPower2 = actualPower2;
+            return this;
+        }
+
+        public Builder withActualPower3(final int actualPower3) {
+            this.actualPower3 = actualPower3;
+            return this;
+        }
+
+        public Builder withAveragePowerFactor1(final int averagePowerFactor1) {
+            this.averagePowerFactor1 = averagePowerFactor1;
+            return this;
+        }
+
+        public Builder withAveragePowerFactor2(final int averagePowerFactor2) {
+            this.averagePowerFactor2 = averagePowerFactor2;
+            return this;
+        }
+
+        public Builder withAveragePowerFactor3(final int averagePowerFactor3) {
+            this.averagePowerFactor3 = averagePowerFactor3;
+            return this;
+        }
+
+        public Builder withRelayData(final List<RelayDataDto> relayData) {
+            this.relayData = relayData;
+            return this;
+        }
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public int getActualCurrent1() {

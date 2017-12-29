@@ -81,18 +81,75 @@ public class ConfigurationDto implements Serializable {
 
     private DateTime winterTimeDetails;
 
-    public ConfigurationDto(final LightTypeDto lightType, final DaliConfigurationDto daliConfiguration,
-            final RelayConfigurationDto relayConfiguration, final Integer shortTermHistoryIntervalMinutes,
-            final LinkTypeDto preferredLinkType, final MeterTypeDto meterType, final Integer longTermHistoryInterval,
-            final LongTermIntervalTypeDto longTermHistoryIntervalType) {
-        this.lightType = lightType;
-        this.daliConfiguration = daliConfiguration;
-        this.relayConfiguration = relayConfiguration;
-        this.shortTermHistoryIntervalMinutes = shortTermHistoryIntervalMinutes;
-        this.preferredLinkType = preferredLinkType;
-        this.meterType = meterType;
-        this.longTermHistoryInterval = longTermHistoryInterval;
-        this.longTermHistoryIntervalType = longTermHistoryIntervalType;
+    private ConfigurationDto(final Builder builder) {
+        this.lightType = builder.lightType;
+        this.daliConfiguration = builder.daliConfiguration;
+        this.relayConfiguration = builder.relayConfiguration;
+        this.shortTermHistoryIntervalMinutes = builder.shortTermHistoryIntervalMinutes;
+        this.preferredLinkType = builder.preferredLinkType;
+        this.meterType = builder.meterType;
+        this.longTermHistoryInterval = builder.longTermHistoryInterval;
+        this.longTermHistoryIntervalType = builder.longTermHistoryIntervalType;
+    }
+
+    public static class Builder {
+
+        private LightTypeDto lightType;
+        private DaliConfigurationDto daliConfiguration;
+        private RelayConfigurationDto relayConfiguration;
+        private Integer shortTermHistoryIntervalMinutes;
+        private LinkTypeDto preferredLinkType;
+        private MeterTypeDto meterType;
+        private Integer longTermHistoryInterval;
+        private LongTermIntervalTypeDto longTermHistoryIntervalType;
+
+        public ConfigurationDto build() {
+            return new ConfigurationDto(this);
+        }
+
+        public Builder withLightType(final LightTypeDto lightType) {
+            this.lightType = lightType;
+            return this;
+        }
+
+        public Builder withDaliConfiguration(final DaliConfigurationDto daliConfiguration) {
+            this.daliConfiguration = daliConfiguration;
+            return this;
+        }
+
+        public Builder withRelayConfiguration(final RelayConfigurationDto relayConfiguration) {
+            this.relayConfiguration = relayConfiguration;
+            return this;
+        }
+
+        public Builder withShortTermHistoryIntervalMinutes(final Integer shortTermHistoryIntervalMinutes) {
+            this.shortTermHistoryIntervalMinutes = shortTermHistoryIntervalMinutes;
+            return this;
+        }
+
+        public Builder withPreferredLinkType(final LinkTypeDto preferredLinkType) {
+            this.preferredLinkType = preferredLinkType;
+            return this;
+        }
+
+        public Builder withMeterType(final MeterTypeDto meterType) {
+            this.meterType = meterType;
+            return this;
+        }
+
+        public Builder withLongTermHistoryInterval(final Integer longTermHistoryInterval) {
+            this.longTermHistoryInterval = longTermHistoryInterval;
+            return this;
+        }
+
+        public Builder withLongTermHysteryIntervalType(final LongTermIntervalTypeDto longTermHistoryIntervalType) {
+            this.longTermHistoryIntervalType = longTermHistoryIntervalType;
+            return this;
+        }
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public MeterTypeDto getMeterType() {

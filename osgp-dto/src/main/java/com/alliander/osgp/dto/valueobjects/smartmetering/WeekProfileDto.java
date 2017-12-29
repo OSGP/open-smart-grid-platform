@@ -31,17 +31,75 @@ public class WeekProfileDto implements Comparable<WeekProfileDto>, Serializable 
 
     private DayProfileDto sunday;
 
-    public WeekProfileDto(final String weekProfileName, final DayProfileDto monday, final DayProfileDto tuesday,
-            final DayProfileDto wednesday, final DayProfileDto thursday, final DayProfileDto friday, final DayProfileDto saturday,
-            final DayProfileDto sunday) {
-        this.weekProfileName = weekProfileName;
-        this.monday = monday;
-        this.tuesday = tuesday;
-        this.wednesday = wednesday;
-        this.thursday = thursday;
-        this.friday = friday;
-        this.saturday = saturday;
-        this.sunday = sunday;
+    private WeekProfileDto(final Builder builder) {
+        this.weekProfileName = builder.weekProfileName;
+        this.monday = builder.monday;
+        this.tuesday = builder.tuesday;
+        this.wednesday = builder.wednesday;
+        this.thursday = builder.thursday;
+        this.friday = builder.friday;
+        this.saturday = builder.saturday;
+        this.sunday = builder.sunday;
+    }
+
+    public static class Builder {
+
+        private String weekProfileName;
+        private DayProfileDto monday;
+        private DayProfileDto tuesday;
+        private DayProfileDto wednesday;
+        private DayProfileDto thursday;
+        private DayProfileDto friday;
+        private DayProfileDto saturday;
+        private DayProfileDto sunday;
+
+        public WeekProfileDto build() {
+            return new WeekProfileDto(this);
+        }
+
+        public Builder withWeekProfileName(final String weekProfileName) {
+            this.weekProfileName = weekProfileName;
+            return this;
+        }
+
+        public Builder withMonday(final DayProfileDto monday) {
+            this.monday = monday;
+            return this;
+        }
+
+        public Builder withTuesday(final DayProfileDto tuesday) {
+            this.tuesday = tuesday;
+            return this;
+        }
+
+        public Builder withWednesday(final DayProfileDto wednesday) {
+            this.wednesday = wednesday;
+            return this;
+        }
+
+        public Builder withThursday(final DayProfileDto thursday) {
+            this.thursday = thursday;
+            return this;
+        }
+
+        public Builder withFriday(final DayProfileDto friday) {
+            this.friday = friday;
+            return this;
+        }
+
+        public Builder withSaturday(final DayProfileDto saturday) {
+            this.saturday = saturday;
+            return this;
+        }
+
+        public Builder withSunday(final DayProfileDto sunday) {
+            this.sunday = sunday;
+            return this;
+        }
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public List<DayProfileDto> getAllDaysAsList() {

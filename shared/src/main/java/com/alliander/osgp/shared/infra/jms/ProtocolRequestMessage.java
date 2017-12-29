@@ -24,107 +24,20 @@ public class ProtocolRequestMessage extends RequestMessage {
     private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
     private boolean bypassRetry;
 
-    /**
-     * Constructor with no scheduled flag and no messagePriority
-     *
-     * @deprecated use the Builder in stead. Too many arguments in constructor
-     * @param domain
-     *            the domain of the message
-     * @param domainVersion
-     *            the version of the domain
-     * @param messageType
-     *            the message type
-     * @param correlationUid
-     *            the correlation uid
-     * @param organisationIdentification
-     *            the identification of the organisation
-     * @param deviceIdentification
-     *            the identification of the device
-     * @param ipAddress
-     *            the ip address used
-     * @param request
-     *            the request
-     * @param retryCount
-     *            the number of times the message is retried
-     */
-    @Deprecated
-    public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
-            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final String ipAddress, final Serializable request, final int retryCount) {
-        this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ipAddress, request, false, retryCount);
-    }
+    private ProtocolRequestMessage(final Builder builder) {
+        super(builder.deviceMessageMetadata.getCorrelationUid(),
+                builder.deviceMessageMetadata.getOrganisationIdentification(),
+                builder.deviceMessageMetadata.getDeviceIdentification(), builder.ipAddress, builder.request);
 
-    /**
-     * Constructor with scheduled flag and no messagePriority
-     *
-     * @deprecated use the Builder in stead. Too many arguments in constructor
-     * @param domain
-     *            the domain of the message
-     * @param domainVersion
-     *            the version of the domain
-     * @param messageType
-     *            the message type
-     * @param correlationUid
-     *            the correlation uid
-     * @param organisationIdentification
-     *            the identification of the organisation
-     * @param deviceIdentification
-     *            the identification of the device
-     * @param ipAddress
-     *            the ip address used
-     * @param request
-     *            the request
-     * @param scheduled
-     *            when the message is scheduled
-     * @param retryCount
-     *            the number of times the message is retried
-     */
-    @Deprecated
-    public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
-            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final String ipAddress, final Serializable request, final boolean scheduled, final int retryCount) {
-        super(correlationUid, organisationIdentification, deviceIdentification, ipAddress, request);
-        this.domain = domain;
-        this.domainVersion = domainVersion;
-        this.messageType = messageType;
-        this.messageData = request;
-        this.scheduled = scheduled;
-        this.retryCount = retryCount;
-    }
+        this.domain = builder.domain;
+        this.domainVersion = builder.domainVersion;
+        this.messageData = builder.request;
+        this.scheduled = builder.scheduled;
+        this.retryCount = builder.retryCount;
 
-    /**
-     * Constructor with both a scheduled flag and a messagePriority. Only called
-     * from Builder
-     *
-     * @param deviceMessageMetadata
-     *            the metadata of the message the domain of the message
-     * @param domainVersion
-     *            the version of the domain
-     * @param ipAddress
-     *            the ip address used
-     * @param request
-     *            the request
-     * @param scheduled
-     *            when the message is scheduled
-     * @param retryCount
-     *            the number of times the message is retried
-     */
-    private ProtocolRequestMessage(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
-            final String domainVersion, final String ipAddress, final Serializable request, final boolean scheduled,
-            final int retryCount) {
-        super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
-                deviceMessageMetadata.getDeviceIdentification(), ipAddress, request);
-
-        this.domain = domain;
-        this.domainVersion = domainVersion;
-        this.messageData = request;
-        this.scheduled = scheduled;
-        this.retryCount = retryCount;
-
-        this.messageType = deviceMessageMetadata.getMessageType();
-        this.messagePriority = deviceMessageMetadata.getMessagePriority();
-        this.bypassRetry = deviceMessageMetadata.bypassRetry();
+        this.messageType = builder.deviceMessageMetadata.getMessageType();
+        this.messagePriority = builder.deviceMessageMetadata.getMessagePriority();
+        this.bypassRetry = builder.deviceMessageMetadata.bypassRetry();
     }
 
     public static class Builder {
@@ -173,8 +86,7 @@ public class ProtocolRequestMessage extends RequestMessage {
         }
 
         public ProtocolRequestMessage build() {
-            return new ProtocolRequestMessage(this.deviceMessageMetadata, this.domain, this.domainVersion,
-                    this.ipAddress, this.request, this.scheduled, this.retryCount);
+            return new ProtocolRequestMessage(this);
         }
     }
 
