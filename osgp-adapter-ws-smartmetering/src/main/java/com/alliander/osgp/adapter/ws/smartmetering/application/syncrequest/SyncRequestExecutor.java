@@ -61,7 +61,7 @@ public abstract class SyncRequestExecutor {
      */
     void postExecute(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Serializable data) {
-        this.storeMeterResponseData(organisationIdentification, deviceIdentification, correlationUid,
+        this.storeResponseData(organisationIdentification, deviceIdentification, correlationUid,
                 ResponseMessageResultType.OK, data);
 
         // Delay execution so the notification will not arrive before the
@@ -87,7 +87,7 @@ public abstract class SyncRequestExecutor {
      */
     void handleException(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Exception exception) {
-        this.storeMeterResponseData(organisationIdentification, deviceIdentification, correlationUid,
+        this.storeResponseData(organisationIdentification, deviceIdentification, correlationUid,
                 ResponseMessageResultType.NOT_OK, exception.getMessage());
         this.sendNotification(organisationIdentification, deviceIdentification, correlationUid,
                 ResponseMessageResultType.NOT_OK);
@@ -97,11 +97,11 @@ public abstract class SyncRequestExecutor {
         return this.messageType;
     }
 
-    private void storeMeterResponseData(final String organisationIdentification, final String deviceIdentification,
+    private void storeResponseData(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final ResponseMessageResultType resultType, final Serializable data) {
-        final ResponseData meterResponseData = new ResponseData(organisationIdentification,
+        final ResponseData responseData = new ResponseData(organisationIdentification,
                 this.getMessageType().name(), deviceIdentification, correlationUid, resultType, data);
-        this.responseDataService.enqueue(meterResponseData);
+        this.responseDataService.enqueue(responseData);
     }
 
     private void sendNotification(final String organisationIdentification, final String deviceIdentification,

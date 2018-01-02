@@ -129,15 +129,14 @@ public class ManagementService {
 
         final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
         final List<Event> events = new ArrayList<>();
-        final List<ResponseData> meterResponseDataToDeleteList = new ArrayList<>();
 
         final Serializable messageData = responseData.getMessageData();
 
         if (messageData instanceof EventMessagesResponse) {
             events.addAll(((EventMessagesResponse) messageData).getEvents());
 
-            LOGGER.info("deleting {} MeterResponseData rows", meterResponseDataToDeleteList.size());
-            this.responseDataRepository.delete(meterResponseDataToDeleteList);
+            LOGGER.info("deleting ResponseData for correlation uid {}.", correlationUid);
+            this.responseDataRepository.delete(responseData);
 
         } else {
             /**
@@ -218,7 +217,7 @@ public class ManagementService {
             final int pageNumber) throws FunctionalException {
 
         LOGGER.debug("findMessageLogs called with organisation {}, device {} and pagenumber {}",
-                new Object[] { organisationIdentification, deviceIdentification, pageNumber });
+                organisationIdentification, deviceIdentification, pageNumber);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

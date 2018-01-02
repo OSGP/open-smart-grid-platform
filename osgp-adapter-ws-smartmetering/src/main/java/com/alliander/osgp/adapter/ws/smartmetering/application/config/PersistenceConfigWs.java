@@ -116,11 +116,9 @@ public class PersistenceConfigWs extends AbstractConfig {
      * Method for creating the Transaction Manager.
      *
      * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean(name = "transactionManager")
-    public JpaTransactionManager transactionManager() throws ClassNotFoundException {
+    public JpaTransactionManager transactionManager() {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         transactionManager.setEntityManagerFactory(this.entityManagerFactory().getObject());
@@ -154,7 +152,7 @@ public class PersistenceConfigWs extends AbstractConfig {
      */
     @Bean
     @DependsOn("flyway")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_ADAPTER_WS_SMARTMETERING");
