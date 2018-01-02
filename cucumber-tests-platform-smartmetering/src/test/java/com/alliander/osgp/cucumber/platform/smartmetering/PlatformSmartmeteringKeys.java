@@ -80,6 +80,7 @@ public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platf
     public static final String SECURITY_TYPE_A = "SecurityKeyTypeAuthentication";
     public static final String SECURITY_TYPE_E = "SecurityKeyTypeEncryption";
     public static final String SECURITY_TYPE_M = "SecurityKeyTypeMaster";
+    public static final String INVOCATION_COUNTER = "InvocationCounter";
     public static final String NETWORK_ADDRESS = "NetworkAddress";
     public static final String PORT = "Port";
     public static final Object PROTOCOL = "Protocol";

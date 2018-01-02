@@ -117,9 +117,7 @@ public class DlmsDeviceSteps {
     public void theDlmsDeviceWithIdentificationExists(final String deviceIdentification) throws Throwable {
 
         this.deviceSteps.theDeviceWithIdExists(deviceIdentification);
-
-        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        assertNotNull("DLMS device with identification " + deviceIdentification + " in protocol database", dlmsDevice);
+        this.findExistingDlmsDevice(deviceIdentification);
     }
 
     @Then("^the dlms device with identification \"([^\"]*)\" exists with device model$")
@@ -171,10 +169,7 @@ public class DlmsDeviceSteps {
         assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
                 deviceIdentification);
 
-        final String deviceDescription = "DLMS device with identification " + deviceIdentification;
-        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
-
+        final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
         final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
 
         /*
@@ -214,10 +209,7 @@ public class DlmsDeviceSteps {
         assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
                 deviceIdentification);
 
-        final String deviceDescription = "DLMS device with identification " + deviceIdentification;
-        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
-
+        final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
         final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
 
         /*
@@ -257,29 +249,25 @@ public class DlmsDeviceSteps {
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
         assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
                 deviceIdentification);
-
         final String deviceDescription = "DLMS device with identification " + deviceIdentification;
-        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
+        final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
 
-        final SecurityKey masterKey = dlmsDevice.getValidSecurityKey(SecurityKeyType.E_METER_MASTER);
-        assertNotNull("Master key for " + deviceDescription + " must be stored", masterKey);
-
+        final SecurityKey masterKey = this.findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER,
+                "Master key");
         final String receivedMasterKey = (String) ScenarioContext.current()
                 .get(PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY);
         assertNotEquals("Stored master key for " + deviceDescription + " must be different from received key",
                 receivedMasterKey, masterKey.getKey());
-        final SecurityKey authenticationKey = dlmsDevice.getValidSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
-        assertNotNull("Authentication key for " + deviceDescription, authenticationKey);
 
+        final SecurityKey authenticationKey = this.findExistingSecurityKey(dlmsDevice,
+                SecurityKeyType.E_METER_AUTHENTICATION, "Authentication key");
         final String receivedAuthenticationKey = (String) ScenarioContext.current()
                 .get(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY);
         assertNotEquals("Stored authentication key for " + deviceDescription + " must be different from received key",
                 receivedAuthenticationKey, authenticationKey.getKey());
 
-        final SecurityKey encryptionKey = dlmsDevice.getValidSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
-        assertNotNull("Encryption key for " + deviceDescription, encryptionKey);
-
+        final SecurityKey encryptionKey = this.findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION,
+                "Encryption key");
         final String receivedEncryptionKey = (String) ScenarioContext.current()
                 .get(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY);
         assertNotEquals("Stored encryption key for " + deviceDescription + " must be different from received key",
@@ -294,12 +282,10 @@ public class DlmsDeviceSteps {
                 deviceIdentification);
 
         final String deviceDescription = "DLMS device with identification " + deviceIdentification;
-        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
+        final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
 
-        final SecurityKey mbusDefaultKey = dlmsDevice.getValidSecurityKey(SecurityKeyType.G_METER_MASTER);
-        assertNotNull("M-Bus Default key for " + deviceDescription + " must be stored", mbusDefaultKey);
-
+        final SecurityKey mbusDefaultKey = this.findExistingSecurityKey(dlmsDevice, SecurityKeyType.G_METER_MASTER,
+                "M-Bus Default key");
         final String receivedMbusDefaultKey = (String) ScenarioContext.current()
                 .get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY);
         assertNotEquals("Stored M-Bus Default key for " + deviceDescription + " must be different from received key",
@@ -345,6 +331,40 @@ public class DlmsDeviceSteps {
         assertEquals("Number of M-Bus Default keys stored", 1, numberOfMbusDefaultKeys);
         assertTrue("At least one M-Bus User key must be stored", numberOfMbusUserKeys > 0);
         assertEquals("Number of valid M-Bus User keys stored", 1, numberOfValidMbusUserKeys);
+    }
+
+    @Then("^the invocation counter for the encryption key of \"([^\"]*)\" should be greater than (\\d++)$")
+    public void theInvocationCounterForTheEncryptionKeyOfShouldBeGreaterThan(final String deviceIdentification,
+            final Integer invocationCounterLowerBound) throws Throwable {
+
+        final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
+        final SecurityKey encryptionKey = this.findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION,
+                "Encryption key");
+        final Integer invocationCounter = encryptionKey.getInvocationCounter();
+
+        assertNotNull("The invocation counter for the encryption key of DLMS device with identification "
+                + dlmsDevice.getDeviceIdentification() + " must not be null", invocationCounter);
+
+        assertTrue(
+                "The invocation counter for the encryption key of DLMS device with identification "
+                        + dlmsDevice.getDeviceIdentification() + " (which is " + invocationCounter
+                        + ") must be greater than " + invocationCounterLowerBound,
+                invocationCounter > invocationCounterLowerBound);
+    }
+
+    private DlmsDevice findExistingDlmsDevice(final String deviceIdentification) {
+        final String deviceDescription = "DLMS device with identification " + deviceIdentification;
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
+        return dlmsDevice;
+    }
+
+    private SecurityKey findExistingSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType keyType,
+            final String keyDescription) {
+        final SecurityKey securityKey = dlmsDevice.getValidSecurityKey(keyType);
+        assertNotNull(keyDescription + " for DLMS device with identification " + dlmsDevice.getDeviceIdentification()
+                + " must be stored", securityKey);
+        return securityKey;
     }
 
     private void setScenarioContextForDevice(final Map<String, String> inputSettings, final Device device) {
@@ -394,8 +414,13 @@ public class DlmsDeviceSteps {
     }
 
     private void createDlmsDeviceInProtocolAdapterDatabase(final Map<String, String> inputSettings) {
-        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().withSettings(inputSettings);
-
+        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder();
+        /*
+         * Enable the necessary security key builders in the DLMS device builder
+         * before calling withSettings. This allows the withSettings to be
+         * called transitively on the enabled security key builders inside the
+         * DLMS device builder.
+         */
         final String deviceType = inputSettings.getOrDefault(PlatformSmartmeteringKeys.DEVICE_TYPE, SMART_METER_E);
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE)
                 && "true".equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
@@ -416,7 +441,7 @@ public class DlmsDeviceSteps {
             dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
         }
 
-        final DlmsDevice dlmsDevice = dlmsDeviceBuilder.build();
+        final DlmsDevice dlmsDevice = dlmsDeviceBuilder.withSettings(inputSettings).build();
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 

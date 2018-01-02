@@ -181,3 +181,10 @@ Feature: SmartMetering Monitoring
       | CaptureObject_DataIndex_3      |                 0 |
       | CaptureObject_Unit_3           | KWH               |
       | NumberOfProfileEntries         |                 7 |
+
+  Scenario: Clear alarm register
+    When the Clear Alarm Code request is received
+      | DeviceIdentification | TEST1024000000001 |
+    Then the Clear Alarm Code response should be returned
+      | DeviceIdentification | TEST1024000000001 |
+      | Result               | OK                |
