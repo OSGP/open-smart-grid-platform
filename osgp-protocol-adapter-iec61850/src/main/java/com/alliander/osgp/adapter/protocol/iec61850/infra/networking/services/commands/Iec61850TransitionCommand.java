@@ -45,7 +45,7 @@ public class Iec61850TransitionCommand {
 
         final Function<Void> function = new Function<Void>() {
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
 
                 final NodeContainer sensorNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SENSOR, Fc.CO);

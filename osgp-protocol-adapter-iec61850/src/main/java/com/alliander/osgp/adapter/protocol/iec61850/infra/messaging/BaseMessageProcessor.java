@@ -12,14 +12,17 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.support.JmsUtils;
+import org.springframework.util.StringUtils;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceResponseService;
@@ -36,6 +39,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 public abstract class BaseMessageProcessor implements MessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseMessageProcessor.class);
+
+    private static final String NO_EXCEPTION_SPECIFIED = "no exception specified";
 
     @Autowired
     protected int maxRedeliveriesForIec61850Requests;
@@ -110,8 +115,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
             final String messageType, final int retryCount) {
         final int messagePriority = 0;
         final Long scheduleTime = null;
-        this.handleDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType,
-                retryCount, messagePriority, scheduleTime);
+        this.handleDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType, retryCount,
+                messagePriority, scheduleTime);
     }
 
     /**
@@ -161,12 +166,24 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     }
 
     protected OsgpException ensureOsgpException(final Throwable t) {
-        if (t instanceof OsgpException) {
+        if (t instanceof OsgpException && !(t instanceof ProtocolAdapterException)) {
             return (OsgpException) t;
         }
 
-        return new TechnicalException(ComponentType.PROTOCOL_IEC61850, t == null ? "no exception specified"
-                : t.getMessage());
+        if (t instanceof ServiceError) {
+            String message;
+            if (StringUtils.isEmpty(t.getMessage())) {
+                message = "no specific service error code";
+            } else if ("Error code=22".equals(t.getMessage())) {
+                message = "Device communication failure";
+            } else {
+                message = t.getMessage();
+            }
+            return new TechnicalException(ComponentType.PROTOCOL_IEC61850, message);
+        }
+
+        return new TechnicalException(ComponentType.PROTOCOL_IEC61850,
+                t == null ? NO_EXCEPTION_SPECIFIED : t.getMessage());
     }
 
     public void handleExpectedError(final OsgpException e, final String correlationUid,

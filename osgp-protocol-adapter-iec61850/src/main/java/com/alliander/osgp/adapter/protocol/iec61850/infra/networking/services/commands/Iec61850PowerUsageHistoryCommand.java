@@ -47,7 +47,8 @@ public class Iec61850PowerUsageHistoryCommand {
         final Function<List<PowerUsageDataDto>> function = new Function<List<PowerUsageDataDto>>() {
 
             @Override
-            public List<PowerUsageDataDto> apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public List<PowerUsageDataDto> apply(final DeviceMessageLog deviceMessageLog)
+                    throws ProtocolAdapterException {
                 final HistoryTermTypeDto historyTermType = powerUsageHistoryContainer.getHistoryTermType();
                 if (historyTermType != null) {
                     LOGGER.info("device: {}, ignoring HistoryTermType ({}) determining power usage history",
@@ -152,7 +153,10 @@ public class Iec61850PowerUsageHistoryCommand {
             final List<RelayDataDto> relayDataList = new ArrayList<>();
             final RelayDataDto relayData = new RelayDataDto(relayIndex, totalMinutesOnForDate);
             relayDataList.add(relayData);
-            final SsldDataDto ssldData = new SsldDataDto(0, 0, 0, 0, 0, 0, 0, 0, 0, relayDataList);
+            final SsldDataDto ssldData = SsldDataDto.newBuilder().withActualCurrent1(0).withActualCurrent2(0)
+                    .withActualCurrent3(0).withActualPower1(0).withActualPower2(0).withActualPower3(0)
+                    .withAveragePowerFactor1(0).withAveragePowerFactor2(0).withAveragePowerFactor3(0)
+                    .withRelayData(relayDataList).build();
             powerUsageData.setSsldData(ssldData);
             powerUsageHistoryDataFromRelay.add(powerUsageData);
         }

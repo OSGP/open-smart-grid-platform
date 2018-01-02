@@ -248,7 +248,7 @@ public class Iec61850Client {
             } else {
                 LOGGER.error("Caught IOException, connection with device is broken.", e);
             }
-        } catch (final ConnectionFailureException e) {
+        } catch (final ProtocolAdapterException e) {
             throw e;
         } catch (final Exception e) {
             throw new ProtocolAdapterException(e.getMessage() == null ? COULD_NOT_EXECUTE_COMMAND : e.getMessage(), e);
@@ -278,7 +278,7 @@ public class Iec61850Client {
             } else {
                 LOGGER.error("Caught IOException, connection with device is broken.", e);
             }
-        } catch (final ConnectionFailureException e) {
+        } catch (final ProtocolAdapterException e) {
             throw e;
         } catch (final Exception e) {
             throw new ProtocolAdapterException(e.getMessage() == null ? COULD_NOT_EXECUTE_COMMAND : e.getMessage(), e);

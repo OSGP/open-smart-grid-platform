@@ -114,8 +114,8 @@ public class Iec61850Config extends AbstractConfig {
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws ProtocolAdapterException {
-                final ChannelPipeline pipeline = Iec61850Config.this.createChannelPipeline(Iec61850Config.this
-                        .iec61850ChannelHandlerServer());
+                final ChannelPipeline pipeline = Iec61850Config.this
+                        .createChannelPipeline(Iec61850Config.this.iec61850ChannelHandlerServer());
 
                 LOGGER.info("Created new IEC61850 handler pipeline for server");
 
@@ -131,7 +131,7 @@ public class Iec61850Config extends AbstractConfig {
         return bootstrap;
     }
 
-    private ChannelPipeline createChannelPipeline(final ChannelHandler handler) throws ProtocolAdapterException {
+    private ChannelPipeline createChannelPipeline(final ChannelHandler handler) {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, true));
@@ -258,8 +258,8 @@ public class Iec61850Config extends AbstractConfig {
 
     @Bean
     public Boolean isBufferedReportingEnabled() {
-        final Boolean isBufferedReportingEnabled = Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_IEC61850_IS_BUFFERED_REPORTING_ENABLED));
+        final Boolean isBufferedReportingEnabled = Boolean.parseBoolean(
+                this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_IS_BUFFERED_REPORTING_ENABLED));
         LOGGER.info("{} = {}", PROPERTY_NAME_IEC61850_IS_BUFFERED_REPORTING_ENABLED, isBufferedReportingEnabled);
         return isBufferedReportingEnabled;
     }
@@ -272,19 +272,5 @@ public class Iec61850Config extends AbstractConfig {
     @Bean
     public Float defaultLongitude() {
         return Float.parseFloat(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE));
-    }
-
-    @Bean
-    public String testDeviceId() {
-        final String testDeviceId = this.environment.getProperty("test.device.id");
-        LOGGER.info("testDeviceId: {}", testDeviceId);
-        return testDeviceId;
-    }
-
-    @Bean
-    public String testDeviceIp() {
-        final String testDeviceIp = this.environment.getProperty("test.device.ip");
-        LOGGER.info("testDeviceIp: {}", testDeviceIp);
-        return testDeviceIp;
     }
 }

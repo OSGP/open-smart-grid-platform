@@ -23,6 +23,12 @@ public class DeviceResponseService {
     /**
      * Processes the given {@link DeviceMessageStatus} and throws appropriate
      * exceptions if the status is not OK.
+     *
+     * @param status
+     *            The {@link DeviceMessageStatus} to check.
+     *
+     * @throws TechnicalException
+     *             In case the status equals FAILURE or REJECTED.
      */
     public void handleDeviceMessageStatus(final DeviceMessageStatus status) throws TechnicalException {
         switch (status) {

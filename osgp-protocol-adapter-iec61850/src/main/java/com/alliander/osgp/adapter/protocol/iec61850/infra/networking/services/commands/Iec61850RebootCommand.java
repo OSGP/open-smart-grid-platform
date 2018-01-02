@@ -33,7 +33,7 @@ public class Iec61850RebootCommand {
         final Function<Void> function = new Function<Void>() {
 
             @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws Exception {
+            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
                 final NodeContainer rebootOperationNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REBOOT_OPERATION, Fc.CO);
                 iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),

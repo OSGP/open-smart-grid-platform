@@ -38,16 +38,15 @@ public class DistributionAutomationGetHealthStatusRequestMessageProcessor extend
             final DeviceConnection connection, final DaDeviceRequest deviceRequest) {
         return (final DeviceMessageLog deviceMessageLog) -> {
             final int logicalDeviceIndex = 1;
-            final NodeContainer containingNode = connection
-                    .getFcModelNode(
-                            com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice.RTU,
-                            logicalDeviceIndex,
-                            com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode.PHYSICAL_DEVICE_ONE,
-                            DataAttribute.PHYSICAL_HEALTH, Fc.ST);
+            final NodeContainer containingNode = connection.getFcModelNode(
+                    com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice.RTU,
+                    logicalDeviceIndex,
+                    com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode.PHYSICAL_DEVICE_ONE,
+                    DataAttribute.PHYSICAL_HEALTH, Fc.ST);
             client.readNodeDataValues(connection.getConnection().getClientAssociation(),
                     containingNode.getFcmodelNode());
-            return new GetHealthStatusResponseDto(Health.fromByte(containingNode.getByte(SubDataAttribute.STATE)
-                    .getValue()));
+            return new GetHealthStatusResponseDto(
+                    Health.fromByte(containingNode.getByte(SubDataAttribute.STATE).getValue()));
         };
     }
 }

@@ -14,11 +14,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.SystemService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
 public class Iec61850SystemServiceFactory {
@@ -61,17 +60,17 @@ public class Iec61850SystemServiceFactory {
 
     private Map<String, SystemService> systemServices;
 
-    public SystemService getSystemService(final SystemFilterDto systemFilter) throws OsgpException {
+    public SystemService getSystemService(final SystemFilterDto systemFilter) throws ProtocolAdapterException {
         return this.getSystemService(systemFilter.getSystemType());
     }
 
-    public SystemService getSystemService(final String systemType) throws OsgpException {
+    public SystemService getSystemService(final String systemType) throws ProtocolAdapterException {
         final String key = systemType.toUpperCase(Locale.ENGLISH);
         if (this.getSystemServices().containsKey(key)) {
             return this.getSystemServices().get(key);
         }
 
-        throw new OsgpException(ComponentType.PROTOCOL_IEC61850, "Invalid System Type in System Filter: [" + key + "]");
+        throw new ProtocolAdapterException("Invalid System Type in System Filter: [" + key + "]");
     }
 
     private Map<String, SystemService> getSystemServices() {
