@@ -37,7 +37,7 @@ public class ResponseDataService {
      * @param responseData
      */
     public void enqueue(final ResponseData responseData) {
-        if (this.responseDataRepository.findSingleResultByCorrelationUid(responseData.getCorrelationUid()) == null) {
+        if (this.responseDataRepository.findByCorrelationUid(responseData.getCorrelationUid()) == null) {
             this.responseDataRepository.save(responseData);
         } else {
             LOGGER.warn("Response data with correlation uid {} already exists. Skipping save action",
@@ -62,7 +62,7 @@ public class ResponseDataService {
     public ResponseData dequeue(final String correlationUid, final Class<?> expectedClassType,
             final ComponentType componentType) throws CorrelationUidException {
 
-        final ResponseData responseData = this.responseDataRepository.findSingleResultByCorrelationUid(correlationUid);
+        final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
 
         if (responseData == null) {
             LOGGER.warn("No response data for correlation UID {}", correlationUid);
@@ -94,7 +94,7 @@ public class ResponseDataService {
 
     public ResponseData dequeue(final String correlationUid, final ComponentType componentType)
             throws UnknownCorrelationUidException {
-        final ResponseData responseData = this.responseDataRepository.findSingleResultByCorrelationUid(correlationUid);
+        final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
 
         if (responseData == null) {
             LOGGER.warn("No response data for correlation UID {}", correlationUid);

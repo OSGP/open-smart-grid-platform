@@ -127,39 +127,36 @@ public class ManagementService {
 
         this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final List<ResponseData> meterResponseDataList = this.responseDataRepository
-                .findByCorrelationUid(correlationUid);
+        final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
         final List<Event> events = new ArrayList<>();
         final List<ResponseData> meterResponseDataToDeleteList = new ArrayList<>();
 
-        for (final ResponseData meterResponseData : meterResponseDataList) {
-            final Serializable messageData = meterResponseData.getMessageData();
+        final Serializable messageData = responseData.getMessageData();
 
-            if (messageData instanceof EventMessagesResponse) {
-                events.addAll(((EventMessagesResponse) messageData).getEvents());
-                meterResponseDataToDeleteList.add(meterResponseData);
-            } else {
-                /**
-                 * If the returned data is not an EventMessageContainer but a
-                 * String, there has been an exception. The exception message
-                 * has been put in the messageData.
-                 *
-                 * As there is no way of knowing what the type of the exception
-                 * was (because it is passed as a String) it is thrown as a
-                 * TechnicalException because the user is most probably not to
-                 * blame for the exception.
-                 */
-                if (messageData instanceof String) {
-                    throw new TechnicalException(ComponentType.UNKNOWN, (String) messageData);
-                }
-                LOGGER.info(
-                        "findEventsByCorrelationUid also found other type of meter response data: {} for correlation UID: {}",
-                        messageData.getClass().getName(), correlationUid);
+        if (messageData instanceof EventMessagesResponse) {
+            events.addAll(((EventMessagesResponse) messageData).getEvents());
+
+            LOGGER.info("deleting {} MeterResponseData rows", meterResponseDataToDeleteList.size());
+            this.responseDataRepository.delete(meterResponseDataToDeleteList);
+
+        } else {
+            /**
+             * If the returned data is not an EventMessageContainer but a
+             * String, there has been an exception. The exception message has
+             * been put in the messageData.
+             *
+             * As there is no way of knowing what the type of the exception was
+             * (because it is passed as a String) it is thrown as a
+             * TechnicalException because the user is most probably not to blame
+             * for the exception.
+             */
+            if (messageData instanceof String) {
+                throw new TechnicalException(ComponentType.UNKNOWN, (String) messageData);
             }
+            LOGGER.info(
+                    "findEventsByCorrelationUid found other type of meter response data: {} for correlation UID: {}",
+                    messageData.getClass().getName(), correlationUid);
         }
-
-        LOGGER.info("deleting {} MeterResponseData rows", meterResponseDataToDeleteList.size());
-        this.responseDataRepository.delete(meterResponseDataToDeleteList);
 
         LOGGER.info("returning a list containing {} events", events.size());
         return events;

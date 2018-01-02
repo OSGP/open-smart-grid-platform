@@ -24,9 +24,7 @@ public interface ResponseDataRepository extends JpaRepository<ResponseData, Long
 
     List<ResponseData> findByDeviceIdentification(String deviceIdentification);
 
-    List<ResponseData> findByCorrelationUid(String correlationUid);
-
-    ResponseData findSingleResultByCorrelationUid(String correlationUid);
+    ResponseData findByCorrelationUid(String correlationUid);
 
     void removeByCreationTimeBefore(Date date);
 }
