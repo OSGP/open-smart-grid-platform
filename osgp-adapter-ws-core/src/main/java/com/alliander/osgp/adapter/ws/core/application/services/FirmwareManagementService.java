@@ -482,7 +482,7 @@ public class FirmwareManagementService {
     @Transactional(value = "writableTransactionManager")
     public void addFirmware(@Identification final String organisationIdentification, final String description,
             final byte[] file, final String fileName, final String manufacturer, final String modelCode,
-            final FirmwareModuleData firmwareModuleData, final boolean pushToNewDevices) throws Exception {
+            final FirmwareModuleData firmwareModuleData, final boolean pushToNewDevices) throws OsgpException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_FIRMWARE);
@@ -562,7 +562,7 @@ public class FirmwareManagementService {
      * Saves a {@link DeviceFirmwareFile} instance.
      */
     @Transactional(value = "writableTransactionManager")
-    public void saveCurrentDeviceFirmwareFile(final DeviceFirmwareFile deviceFirmwareFile) throws Exception {
+    public void saveCurrentDeviceFirmwareFile(final DeviceFirmwareFile deviceFirmwareFile) {
         this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
     }
 
@@ -650,7 +650,7 @@ public class FirmwareManagementService {
      */
     @Transactional(value = "writableTransactionManager")
     public void removeFirmware(@Identification final String organisationIdentification,
-            @Valid final int firmwareIdentification) throws Exception {
+            @Valid final int firmwareIdentification) throws OsgpException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_FIRMWARE);
@@ -756,7 +756,7 @@ public class FirmwareManagementService {
             }
         } catch (final NoSuchAlgorithmException e) {
             LOGGER.error("RuntimeException while creating MD5 hash for firmware file.", e);
-            throw new RuntimeException(e);
+            throw new AssertionError("Expected MD5 to be present as algorithm", e);
         }
         return md5Hash;
     }

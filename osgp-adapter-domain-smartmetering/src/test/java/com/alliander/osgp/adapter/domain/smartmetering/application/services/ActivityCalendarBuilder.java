@@ -24,7 +24,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 public class ActivityCalendarBuilder {
 
     private String calendarName;
-    private List<SeasonProfile> seasonProfileList = new ArrayList<SeasonProfile>();
+    private List<SeasonProfile> seasonProfileList = new ArrayList<>();
     private CosemDateTime activatePassiveCalendarTime;
 
     public ActivityCalendarBuilder withCosemDateTime(final CosemDate cosemDate, final CosemTime cosemTime,
@@ -50,12 +50,13 @@ public class ActivityCalendarBuilder {
 
         final CosemTime startTime = time;
         final DayProfileAction dayProfileAction = new DayProfileAction(new Integer(10), startTime);
-        final List<DayProfileAction> dayProfileActionList = new ArrayList<DayProfileAction>();
+        final List<DayProfileAction> dayProfileActionList = new ArrayList<>();
         dayProfileActionList.add(dayProfileAction);
         final DayProfile dayProfile = new DayProfile(new Integer(10), dayProfileActionList);
 
-        final WeekProfile weekProfile = new WeekProfile("weekProfile1", dayProfile, dayProfile, dayProfile, dayProfile,
-                dayProfile, dayProfile, dayProfile);
+        final WeekProfile weekProfile = WeekProfile.newBuilder().withWeekProfileName("weekProfile1")
+                .withMonday(dayProfile).withTuesday(dayProfile).withWednesday(dayProfile).withThursday(dayProfile)
+                .withFriday(dayProfile).withSaturday(dayProfile).withSunday(dayProfile).build();
 
         final SeasonProfile seasonProfile = new SeasonProfile("profile1", seasonStart, weekProfile);
         this.seasonProfileList.add(seasonProfile);

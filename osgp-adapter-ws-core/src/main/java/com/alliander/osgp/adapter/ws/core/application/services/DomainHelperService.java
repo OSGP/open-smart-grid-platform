@@ -12,10 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
 import com.alliander.osgp.domain.core.services.SecurityService;
@@ -44,15 +42,7 @@ public class DomainHelperService {
     }
 
     public Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
-        Device device;
-        try {
-            device = this.deviceDomainService.searchActiveDevice(deviceIdentification);
-        } catch (final UnregisteredDeviceException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, COMPONENT_TYPE, e);
-        } catch (final InactiveDeviceException e) {
-            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, COMPONENT_TYPE, e);
-        }
-        return device;
+        return this.deviceDomainService.searchActiveDevice(deviceIdentification, COMPONENT_TYPE);
     }
 
     public Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {

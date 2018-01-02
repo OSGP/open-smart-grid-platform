@@ -15,9 +15,7 @@ import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.OsgpCoreReque
 import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
@@ -51,16 +49,7 @@ public class BaseService {
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
-        Device device;
-        try {
-            device = this.deviceDomainService.searchActiveDevice(deviceIdentification);
-        } catch (final UnregisteredDeviceException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_MICROGRIDS,
-                    e);
-        } catch (final InactiveDeviceException e) {
-            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_MICROGRIDS, e);
-        }
-        return device;
+        return this.deviceDomainService.searchActiveDevice(deviceIdentification, ComponentType.DOMAIN_MICROGRIDS);
     }
 
     protected Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {

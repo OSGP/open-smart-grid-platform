@@ -255,12 +255,10 @@ public class DeviceManagementService {
      * @return A page with devices
      *
      * @throws FunctionalException
-     * @throws ArgumentNullOrEmptyException
      */
     @Transactional(value = "transactionManager")
     public Page<Device> findDevices(@Identification final String organisationIdentification, final Integer pageSize,
-            final Integer pageNumber, final DeviceFilter deviceFilter)
-            throws FunctionalException, ArgumentNullOrEmptyException {
+            final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_DEVICES);
         this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
@@ -278,21 +276,7 @@ public class DeviceManagementService {
         final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), sortDir, sortedBy);
 
-        Page<Device> devices = null;
-        if (!this.netManagementOrganisation.equals(organisationIdentification)) {
-            if (deviceFilter == null) {
-                final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null, null,
-                        null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null,
-                        false, null, null);
-                devices = this.applyFilter(df, organisation, request);
-            } else {
-                deviceFilter.updateOrganisationIdentification(organisationIdentification);
-                devices = this.applyFilter(deviceFilter, organisation, request);
-            }
-        } else {
-            devices = this.applyFilter(deviceFilter, organisation, request);
-        }
+        final Page<Device> devices = this.findDevices(organisationIdentification, deviceFilter, organisation, request);
 
         if (devices == null) {
             LOGGER.info("No devices found");
@@ -305,6 +289,37 @@ public class DeviceManagementService {
             }
         }
 
+        return devices;
+    }
+
+    private Page<Device> findDevices(final String organisationIdentification, final DeviceFilter deviceFilter,
+            final Organisation organisation, final PageRequest request) {
+        Page<Device> devices = null;
+        try {
+            if (!this.netManagementOrganisation.equals(organisationIdentification)) {
+                if (deviceFilter == null) {
+                    final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
+                            null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
+                            DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null,
+                            false, null, null);
+                    devices = this.applyFilter(df, organisation, request);
+                } else {
+                    deviceFilter.updateOrganisationIdentification(organisationIdentification);
+                    devices = this.applyFilter(deviceFilter, organisation, request);
+                }
+            } else {
+                devices = this.applyFilter(deviceFilter, organisation, request);
+            }
+        } catch (final ArgumentNullOrEmptyException e) {
+            /*
+             * The implementation of applyFilter should check everything passed
+             * on to DeviceSpecifications for not being empty, thus avoiding
+             * ArgumentNullOrEmptyException. If something is missed (which
+             * should not occur) pass it on as IllegalArgumentException to avoid
+             * multiple checked exceptions being thrown.
+             */
+            throw new IllegalArgumentException("Null or empty input provided to DeviceSpecifications", e);
+        }
         return devices;
     }
 

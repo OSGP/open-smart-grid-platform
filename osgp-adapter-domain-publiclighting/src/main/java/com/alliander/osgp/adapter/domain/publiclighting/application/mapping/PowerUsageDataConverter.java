@@ -124,9 +124,12 @@ public class PowerUsageDataConverter
                         com.alliander.osgp.dto.valueobjects.RelayDataDto.class);
             }
 
-            ssldDataCopy = new com.alliander.osgp.dto.valueobjects.SsldDataDto(actualCurrent1, actualCurrent2,
-                    actualCurrent3, actualPower1, actualPower2, actualPower3, averagePowerFactor1, averagePowerFactor2,
-                    averagePowerFactor3, relayData);
+            ssldDataCopy = com.alliander.osgp.dto.valueobjects.SsldDataDto.newBuilder()
+                    .withActualCurrent1(actualCurrent1).withActualCurrent2(actualCurrent2)
+                    .withActualCurrent3(actualCurrent3).withActualPower1(actualPower1).withActualPower2(actualPower2)
+                    .withActualPower3(actualPower3).withAveragePowerFactor1(averagePowerFactor1)
+                    .withAveragePowerFactor2(averagePowerFactor2).withAveragePowerFactor3(averagePowerFactor3)
+                    .withRelayData(relayData).build();
         }
 
         com.alliander.osgp.dto.valueobjects.PsldDataDto psldDataCopy = null;

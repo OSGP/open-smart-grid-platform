@@ -63,10 +63,14 @@ public class ActivityCalendarConverter extends
     }
 
     private WeekProfile processWeekProfile(final WeekType weekProfile) {
-        return new WeekProfile(weekProfile.getWeekProfileName(), this.processDayProfile(weekProfile.getMonday()),
-                this.processDayProfile(weekProfile.getTuesday()), this.processDayProfile(weekProfile.getWednesday()),
-                this.processDayProfile(weekProfile.getThursday()), this.processDayProfile(weekProfile.getFriday()),
-                this.processDayProfile(weekProfile.getSaturday()), this.processDayProfile(weekProfile.getSunday()));
+        return WeekProfile.newBuilder().withWeekProfileName(weekProfile.getWeekProfileName())
+                .withMonday(this.processDayProfile(weekProfile.getMonday()))
+                .withTuesday(this.processDayProfile(weekProfile.getTuesday()))
+                .withWednesday(this.processDayProfile(weekProfile.getWednesday()))
+                .withThursday(this.processDayProfile(weekProfile.getThursday()))
+                .withFriday(this.processDayProfile(weekProfile.getFriday()))
+                .withSaturday(this.processDayProfile(weekProfile.getSaturday()))
+                .withSunday(this.processDayProfile(weekProfile.getSunday())).build();
     }
 
     private DayProfile processDayProfile(final DayType day) {

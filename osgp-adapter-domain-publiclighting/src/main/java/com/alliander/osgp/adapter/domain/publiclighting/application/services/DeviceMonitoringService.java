@@ -84,15 +84,20 @@ public class DeviceMonitoringService extends AbstractService {
 
             actualPowerUsageData = this.domainCoreMapper.map(actualPowerUsageDataDto, PowerUsageData.class);
 
+        } catch (final OsgpException e) {
+            /*
+             * Since the domainCoreMapper does not throw OsgpExceptions, this
+             * exception has already been logged in the corresponding try-block.
+             */
+            osgpException = e;
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Exception occurred while getting device actual power usage", e);
+        }
+
+        if (osgpException != null) {
             result = ResponseMessageResultType.NOT_OK;
-            if (e instanceof OsgpException) {
-                osgpException = (OsgpException) e;
-            } else {
-                osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                        "Exception occurred while getting device actual power usage", e);
-            }
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
