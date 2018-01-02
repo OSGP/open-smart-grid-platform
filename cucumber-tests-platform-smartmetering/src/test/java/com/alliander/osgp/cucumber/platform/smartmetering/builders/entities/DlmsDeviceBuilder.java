@@ -12,6 +12,7 @@ import static com.alliander.osgp.cucumber.core.Helpers.getLong;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -315,6 +316,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
             }
         }
 
+        this.getEnabledKeyBuilders().forEach(skb -> skb.withSettings(inputSettings));
+
         return this;
     }
 
@@ -349,15 +352,16 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
          * order to be created. This seems to be the only way to work around
          * this circular dependency.
          */
-        final List<SecurityKeyBuilder> keyBuilders = Arrays.asList(this.authenticationSecurityKeyBuilder,
-                this.encryptionSecurityKeyBuilder, this.masterSecurityKeyBuilder, this.mbusEncryptionSecurityKeyBuilder,
-                this.mbusMasterSecurityKeyBuilder, this.passwordBuilder);
-        for (final SecurityKeyBuilder keyBuilder : keyBuilders) {
-            if (keyBuilder.enabled()) {
-                dlmsDevice.addSecurityKey(keyBuilder.setDlmsDevice(dlmsDevice).build());
-            }
-        }
+        this.getEnabledKeyBuilders().forEach(skb -> dlmsDevice.addSecurityKey(skb.setDlmsDevice(dlmsDevice).build()));
 
         return dlmsDevice;
+    }
+
+    private List<SecurityKeyBuilder> getEnabledKeyBuilders() {
+        return Arrays
+                .asList(this.authenticationSecurityKeyBuilder, this.encryptionSecurityKeyBuilder,
+                        this.masterSecurityKeyBuilder, this.mbusEncryptionSecurityKeyBuilder,
+                        this.mbusMasterSecurityKeyBuilder, this.passwordBuilder)
+                .stream().filter(skb -> skb.enabled()).collect(Collectors.toList());
     }
 }
