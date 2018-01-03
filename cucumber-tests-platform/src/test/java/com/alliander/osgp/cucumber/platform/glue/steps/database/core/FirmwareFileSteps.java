@@ -13,6 +13,7 @@ import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -21,16 +22,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.domain.core.entities.DeviceFirmwareFile;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.FirmwareFile;
 import com.alliander.osgp.domain.core.entities.FirmwareModule;
+import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.repositories.DeviceFirmwareFileRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareFileRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareModuleRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleData;
 import com.google.common.io.Files;
 
@@ -43,6 +49,9 @@ import cucumber.api.java.en.Then;
 public class FirmwareFileSteps {
 
     @Autowired
+    private SsldRepository ssldRepository;
+
+    @Autowired
     private DeviceModelRepository deviceModelRepository;
 
     @Autowired
@@ -50,6 +59,9 @@ public class FirmwareFileSteps {
 
     @Autowired
     private FirmwareModuleRepository firmwareModuleRepository;
+
+    @Autowired
+    private DeviceFirmwareFileRepository deviceFirmwareFileRepository;
 
     @Value("${firmware.file.path}")
     private String firmwareFilePath;
@@ -176,6 +188,26 @@ public class FirmwareFileSteps {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Given("^an installed firmware file for an ssld$")
+    @Transactional("txMgrCore")
+    public void anInstalledFirmwareFileForAnSsld(final Map<String, String> settings) {
+
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(getString(settings,
+                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        final FirmwareFile firmware = this.firmwareFileRepository.findByIdentification(
+                getString(settings, PlatformKeys.FIRMWARE_FILENAME, PlatformDefaults.FIRMWARE_FILENAME));
+
+        final Date installationDate = new Date();
+
+        final String installedByUser = "installed by test code";
+
+        final DeviceFirmwareFile deviceFirmwareFile = new DeviceFirmwareFile(ssld, firmware, installationDate,
+                installedByUser);
+
+        this.deviceFirmwareFileRepository.save(deviceFirmwareFile);
     }
 
     /**
