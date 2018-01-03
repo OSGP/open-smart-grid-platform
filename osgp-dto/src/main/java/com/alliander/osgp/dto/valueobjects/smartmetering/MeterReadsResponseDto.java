@@ -27,7 +27,7 @@ public class MeterReadsResponseDto extends ActionResponseDto {
             final DlmsMeterValueDto activeEnergyExport, final DlmsMeterValueDto activeEnergyImportTariffOne,
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo) {
-        super();
+
         this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
@@ -35,6 +35,14 @@ public class MeterReadsResponseDto extends ActionResponseDto {
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
         this.activeEnergyImport = activeEnergyImport;
         this.activeEnergyExport = activeEnergyExport;
+    }
+
+    public MeterReadsResponseDto(final Date logTime, final ActiveEnergyValuesDto activeEnergyValues) {
+        this(logTime, activeEnergyValues.getActiveEnergyImport(), activeEnergyValues.getActiveEnergyExport(),
+                activeEnergyValues.getActiveEnergyImportTariffOne(),
+                activeEnergyValues.getActiveEnergyImportTariffTwo(),
+                activeEnergyValues.getActiveEnergyExportTariffOne(),
+                activeEnergyValues.getActiveEnergyExportTariffTwo());
     }
 
     public Date getLogTime() {
@@ -63,6 +71,12 @@ public class MeterReadsResponseDto extends ActionResponseDto {
 
     public DlmsMeterValueDto getActiveEnergyExport() {
         return this.activeEnergyExport;
+    }
+
+    public ActiveEnergyValuesDto getActiveEnergyValues() {
+        return new ActiveEnergyValuesDto(this.activeEnergyImport, this.activeEnergyExport,
+                this.activeEnergyImportTariffOne, this.activeEnergyImportTariffTwo, this.activeEnergyExportTariffOne,
+                this.activeEnergyExportTariffTwo);
     }
 
     @Override
