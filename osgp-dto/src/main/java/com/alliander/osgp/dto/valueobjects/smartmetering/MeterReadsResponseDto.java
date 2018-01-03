@@ -14,27 +14,11 @@ public class MeterReadsResponseDto extends ActionResponseDto {
 
     private final Date logTime;
 
-    private final DlmsMeterValueDto activeEnergyImport;
-    private final DlmsMeterValueDto activeEnergyExport;
-    private final DlmsMeterValueDto activeEnergyImportTariffOne;
-    // may be null
-    private final DlmsMeterValueDto activeEnergyImportTariffTwo;
-    private final DlmsMeterValueDto activeEnergyExportTariffOne;
-    // may be null
-    private final DlmsMeterValueDto activeEnergyExportTariffTwo;
+    private final ActiveEnergyValuesDto activeEnergyValues;
 
-    public MeterReadsResponseDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
-            final DlmsMeterValueDto activeEnergyExport, final DlmsMeterValueDto activeEnergyImportTariffOne,
-            final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
-            final DlmsMeterValueDto activeEnergyExportTariffTwo) {
-        super();
+    public MeterReadsResponseDto(final Date logTime, final ActiveEnergyValuesDto activeEnergyValues) {
         this.logTime = new Date(logTime.getTime());
-        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
-        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
-        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
-        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
-        this.activeEnergyImport = activeEnergyImport;
-        this.activeEnergyExport = activeEnergyExport;
+        this.activeEnergyValues = activeEnergyValues;
     }
 
     public Date getLogTime() {
@@ -42,37 +26,41 @@ public class MeterReadsResponseDto extends ActionResponseDto {
     }
 
     public DlmsMeterValueDto getActiveEnergyImportTariffOne() {
-        return this.activeEnergyImportTariffOne;
+        return this.activeEnergyValues.getActiveEnergyImportTariffOne();
     }
 
     public DlmsMeterValueDto getActiveEnergyImportTariffTwo() {
-        return this.activeEnergyImportTariffTwo;
+        return this.activeEnergyValues.getActiveEnergyImportTariffTwo();
     }
 
     public DlmsMeterValueDto getActiveEnergyExportTariffOne() {
-        return this.activeEnergyExportTariffOne;
+        return this.activeEnergyValues.getActiveEnergyExportTariffOne();
     }
 
     public DlmsMeterValueDto getActiveEnergyExportTariffTwo() {
-        return this.activeEnergyExportTariffTwo;
+        return this.activeEnergyValues.getActiveEnergyExportTariffTwo();
     }
 
     public DlmsMeterValueDto getActiveEnergyImport() {
-        return this.activeEnergyImport;
+        return this.activeEnergyValues.getActiveEnergyImport();
     }
 
     public DlmsMeterValueDto getActiveEnergyExport() {
-        return this.activeEnergyExport;
+        return this.activeEnergyValues.getActiveEnergyExport();
+    }
+
+    public ActiveEnergyValuesDto getActiveEnergyValues() {
+        return this.activeEnergyValues;
     }
 
     @Override
     public String toString() {
-        return "MeterReads [logTime=" + this.logTime + ", activeEnergyImport=" + this.activeEnergyImport
-                + ", activeEnergyExport=" + this.activeEnergyExport + ", activeEnergyImportTariffOne="
-                + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo="
-                + this.activeEnergyImportTariffTwo + ", activeEnergyExportTariffOne="
-                + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
-                + this.activeEnergyExportTariffTwo + "]";
+        return "MeterReads[logTime=" + this.logTime + ", " + this.activeEnergyValues + ", activeEnergyExport="
+                + this.getActiveEnergyExport() + ", activeEnergyImportTariffOne="
+                + this.getActiveEnergyImportTariffOne() + ", activeEnergyImportTariffTwo="
+                + this.getActiveEnergyImportTariffTwo() + ", activeEnergyExportTariffOne="
+                + this.getActiveEnergyExportTariffOne() + ", activeEnergyExportTariffTwo="
+                + this.getActiveEnergyExportTariffTwo() + "]";
     }
 
 }

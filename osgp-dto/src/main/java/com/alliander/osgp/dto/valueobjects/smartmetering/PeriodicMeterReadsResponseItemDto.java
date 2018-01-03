@@ -21,27 +21,15 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
      *
      * @param logTime
      *            the time the meter reads are logged on the device
-     * @param activeEnergyImport
-     *            the value of activeEnergyImport
-     * @param activeEnergyExport
-     *            the value of activeEnergyExport
-     * @param activeEnergyImportTariffOne
-     *            the value of activeEnergyImportTariffOne
-     * @param activeEnergyImportTariffTwo
-     *            the value of activeEnergyImportTariffTwo
-     * @param activeEnergyExportTariffOne
-     *            the value of activeEnergyExportTariffOne
-     * @param activeEnergyExportTariffTwo
-     *            the value of activeEnergyExportTariffTwo
+     * @param activeEnergyValues
+     *            the active energy values
      * @param amrProfileStatusCode
      *            the value of amrProfileStatusCode
      */
-    public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
-            final DlmsMeterValueDto activeEnergyExport, final DlmsMeterValueDto activeEnergyImportTariffOne,
-            final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
-            final DlmsMeterValueDto activeEnergyExportTariffTwo, final AmrProfileStatusCodeDto amrProfileStatusCode) {
-        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+    public PeriodicMeterReadsResponseItemDto(final Date logTime, final ActiveEnergyValuesDto activeEnergyValues,
+            final AmrProfileStatusCodeDto amrProfileStatusCode) {
+
+        super(logTime, activeEnergyValues);
 
         this.amrProfileStatusCode = amrProfileStatusCode;
     }
@@ -64,8 +52,8 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo) {
 
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
-                activeEnergyExportTariffTwo, null);
+        this(logTime, new ActiveEnergyValuesDto(null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
+                activeEnergyExportTariffOne, activeEnergyExportTariffTwo), null);
     }
 
     /**
@@ -87,8 +75,8 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
     public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImportTariffOne,
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo, final AmrProfileStatusCodeDto amrProfileStatusCode) {
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
-                activeEnergyExportTariffTwo, amrProfileStatusCode);
+        this(logTime, new ActiveEnergyValuesDto(null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
+                activeEnergyExportTariffOne, activeEnergyExportTariffTwo), amrProfileStatusCode);
     }
 
     /**
@@ -105,7 +93,8 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
      */
     public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
             final DlmsMeterValueDto activeEnergyExport, final AmrProfileStatusCodeDto amrProfileStatusCode) {
-        super(logTime, activeEnergyImport, activeEnergyExport, null, null, null, null);
+
+        super(logTime, new ActiveEnergyValuesDto(activeEnergyImport, activeEnergyExport, null, null, null, null));
 
         this.amrProfileStatusCode = amrProfileStatusCode;
     }
