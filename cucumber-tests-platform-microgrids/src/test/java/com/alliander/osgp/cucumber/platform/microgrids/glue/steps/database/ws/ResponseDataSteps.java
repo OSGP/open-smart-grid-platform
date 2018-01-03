@@ -26,7 +26,7 @@ public class ResponseDataSteps extends BaseDeviceSteps {
     @Autowired
     private ResponseDataRepository responseDataRespository;
 
-    @Given("^a microgrids response data record$")
+    @Given("^a response data record$")
     @Transactional("txMgrWsMicrogrids")
     public ResponseData aResponseDataRecord(final Map<String, String> settings) throws Throwable {
 
@@ -38,7 +38,7 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         if (settings.containsKey(PlatformKeys.KEY_CREATION_TIME)) {
             final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
             fld.setAccessible(true);
-            fld.set(responseData, Helpers.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)));
+            fld.set(responseData, Helpers.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
             this.responseDataRespository.save(responseData);
         }
 

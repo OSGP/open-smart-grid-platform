@@ -26,9 +26,9 @@ public class ResponseDataSteps extends BaseDeviceSteps {
     @Autowired
     private ResponseDataRepository responseDataRespository;
 
-    @Given("^a smartmetering response data record$")
+    @Given("^a response data record$")
     @Transactional("txMgrRespData")
-    public ResponseData aMeterResponseDataRecord(final Map<String, String> settings) throws Throwable {
+    public ResponseData aResponseDataRecord(final Map<String, String> settings) throws Throwable {
 
         ResponseData responseData = new ResponseDataBuilder().fromSettings(settings).build();
         responseData = this.responseDataRespository.save(responseData);
@@ -38,7 +38,7 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         if (settings.containsKey(PlatformKeys.KEY_CREATION_TIME)) {
             final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
             fld.setAccessible(true);
-            fld.set(responseData, Helpers.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)));
+            fld.set(responseData, Helpers.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
             this.responseDataRespository.save(responseData);
         }
 

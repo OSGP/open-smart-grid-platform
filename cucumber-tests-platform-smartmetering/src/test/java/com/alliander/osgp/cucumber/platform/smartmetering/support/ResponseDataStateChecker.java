@@ -40,7 +40,7 @@ public class ResponseDataStateChecker {
         } catch (final InterruptedException e) {
             LOGGER.error("Thread sleep interrupted ", e.getMessage());
         }
-        fail("Meter response data with correlation uid " + correlationUid + " should be removed within: " + maxtime
+        fail("Response data with correlation uid " + correlationUid + " should be removed within: " + maxtime
                 + "sec.");
     }
 
@@ -53,7 +53,7 @@ public class ResponseDataStateChecker {
 
                 final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
                 if (responseData == null) {
-                    fail("Meter response data with correlation uid " + correlationUid + " should not be removed.");
+                    fail("Response data with correlation uid " + correlationUid + " should not be removed.");
                 }
 
             }

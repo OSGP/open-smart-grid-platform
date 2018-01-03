@@ -40,8 +40,7 @@ public class ResponseDataStateChecker {
         } catch (final InterruptedException e) {
             LOGGER.error("Thread sleep interrupted ", e.getMessage());
         }
-        fail("Rtu response data with correlation uid " + correlationUid + " should be removed within: " + maxtime
-                + "sec.");
+        fail("Response data with correlation uid " + correlationUid + " should be removed within: " + maxtime + "sec.");
     }
 
     public void waitToMakeSureResponseDataIsNotRemoved(final String correlationUid, final int timeout,
@@ -53,7 +52,7 @@ public class ResponseDataStateChecker {
 
                 final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
                 if (responseData == null) {
-                    fail("Rtu response data with correlation uid " + correlationUid + " should not be removed.");
+                    fail("Response data with correlation uid " + correlationUid + " should not be removed.");
                 }
 
             }

@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering;
+package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.housekeeping;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ResponseDataSt
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class CleanupJobSteps {
+public class ResponseDataCleanupJobSteps {
 
     @Autowired
     private ResponseDataStateChecker responseDataStateChecker;
@@ -25,20 +25,20 @@ public class CleanupJobSteps {
     @Value("${smartmetering.response.wait.fail.duration:30000}")
     private int waitFailMillis;
 
-    @When("^the smart metering response data cleanup job runs$")
-    public void theSmartMeteringResponseDataCleanupJobRuns() {
+    @When("^the response data cleanup job runs$")
+    public void theResponseDataCleanupJobRuns() {
         // Do nothing - scheduled task runs automatically
     }
 
-    @Then("^the response data with correlation uid \"(.*)\" should be deleted$")
-    public void theResponseDataShouldBeDeleted(final String correlationUid) {
+    @Then("^the cleanup job should have removed the response data with correlation uid \"(.*)\"$")
+    public void theCleanupJobShouldHaveRemovedTheResponseData(final String correlationUid) {
 
         this.responseDataStateChecker.waitForResponseDataToBeRemoved(correlationUid, this.waitCheckIntervalMillis,
                 this.waitFailMillis);
     }
 
-    @Then("^the response data with correlation uid \"(.*)\" should not be deleted$")
-    public void theResponseDataShouldNotBeDeleted(final String correlationUid) {
+    @Then("^the cleanup job should not have removed the response data with correlation uid \"(.*)\"$")
+    public void theCleanupJobShouldNotHaveRemovedTheResponseData(final String correlationUid) {
 
         this.responseDataStateChecker.waitToMakeSureResponseDataIsNotRemoved(correlationUid,
                 this.waitCheckIntervalMillis, this.waitFailMillis);
