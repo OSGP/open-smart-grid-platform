@@ -66,7 +66,7 @@ public class Lls1Connector extends SecureDlmsConnector {
 
     @Override
     protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-            throws TechnicalException, FunctionalException {
+            throws OsgpException {
 
         final byte[] password;
         try {

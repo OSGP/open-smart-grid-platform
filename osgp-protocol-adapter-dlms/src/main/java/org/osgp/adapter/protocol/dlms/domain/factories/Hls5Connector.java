@@ -87,7 +87,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     @Override
     protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-            throws TechnicalException, FunctionalException {
+            throws OsgpException {
 
         final String deviceIdentification = device.getDeviceIdentification();
         final byte[] dlmsAuthenticationKey;
