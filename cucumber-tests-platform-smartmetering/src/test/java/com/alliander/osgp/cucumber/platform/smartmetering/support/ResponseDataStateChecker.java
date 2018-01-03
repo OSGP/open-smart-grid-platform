@@ -1,5 +1,9 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support;
 
@@ -27,8 +31,7 @@ public class ResponseDataStateChecker {
             for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
                 Thread.sleep(timeout);
 
-                final ResponseData responseData = this.responseDataRepository
-                        .findSingleResultByCorrelationUid(correlationUid);
+                final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
 
                 if (responseData == null) {
                     return;
@@ -48,8 +51,7 @@ public class ResponseDataStateChecker {
             for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
                 Thread.sleep(timeout);
 
-                final ResponseData responseData = this.responseDataRepository
-                        .findSingleResultByCorrelationUid(correlationUid);
+                final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
                 if (responseData == null) {
                     fail("Meter response data with correlation uid " + correlationUid + " should not be removed.");
                 }

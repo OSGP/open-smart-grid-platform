@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.database.ws;
 
 import java.io.Serializable;
@@ -17,9 +24,8 @@ public class ResponseDataBuilder {
     private ResponseMessageResultType resultType = ResponseMessageResultType.OK;
 
     public ResponseData build() {
-        final ResponseData rtuResponseData = new ResponseData(this.organisationIdentification, this.messageType,
-                this.deviceIdentification, this.correlationUid, this.resultType, this.messageData);
-        return rtuResponseData;
+        return new ResponseData(this.organisationIdentification, this.messageType, this.deviceIdentification,
+                this.correlationUid, this.resultType, this.messageData);
     }
 
     public ResponseDataBuilder fromSettings(final Map<String, String> settings) {

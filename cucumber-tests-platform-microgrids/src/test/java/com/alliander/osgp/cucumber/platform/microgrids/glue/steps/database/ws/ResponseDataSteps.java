@@ -8,15 +8,14 @@
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.database.ws;
 
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
+import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 
@@ -29,7 +28,7 @@ public class ResponseDataSteps extends BaseDeviceSteps {
 
     @Given("^a microgrids response data record$")
     @Transactional("txMgrWsMicrogrids")
-    public ResponseData anRtuResponseDataRecord(final Map<String, String> settings) throws Throwable {
+    public ResponseData aResponseDataRecord(final Map<String, String> settings) throws Throwable {
 
         ResponseData responseData = new ResponseDataBuilder().fromSettings(settings).build();
         responseData = this.responseDataRespository.save(responseData);
@@ -39,19 +38,10 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         if (settings.containsKey(PlatformKeys.KEY_CREATION_TIME)) {
             final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
             fld.setAccessible(true);
-            fld.set(responseData, this.parseCreationTime(settings.get(PlatformKeys.KEY_CREATION_TIME)));
+            fld.set(responseData, Helpers.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)));
             this.responseDataRespository.save(responseData);
         }
 
         return responseData;
     }
-
-    private Date parseCreationTime(final String creationTime) {
-        if ("NOW".equalsIgnoreCase(creationTime)) {
-            return DateTime.now().toDate();
-        } else {
-            return DateTime.parse(creationTime).toDate();
-        }
-    }
-
 }

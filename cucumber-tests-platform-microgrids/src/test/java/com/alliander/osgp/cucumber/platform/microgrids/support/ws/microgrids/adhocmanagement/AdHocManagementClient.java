@@ -84,7 +84,7 @@ public class AdHocManagementClient extends BaseClient {
         try {
             for (int timeSpentWaiting = 0; timeSpentWaiting < this.waitFailMillis; timeSpentWaiting += this.waitCheckIntervalMillis) {
                 Thread.sleep(this.waitCheckIntervalMillis);
-                if (this.responseDataRepository.findSingleResultByCorrelationUid(correlationUid) != null) {
+                if (this.responseDataRepository.findByCorrelationUid(correlationUid) != null) {
                     return;
                 }
             }

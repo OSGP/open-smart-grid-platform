@@ -105,9 +105,9 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     private PollResult pollMeterResponseDatabase(final String correlationUid) {
         PollResult pollResult = PollResult.NOT_OK;
         try {
-            final List<ResponseData> responseDataByCorrelationUid = this.responseDataRepository
+            final ResponseData responseDataByCorrelationUid = this.responseDataRepository
                     .findByCorrelationUid(correlationUid);
-            if (!responseDataByCorrelationUid.isEmpty()) {
+            if (responseDataByCorrelationUid != null) {
                 pollResult = PollResult.OK;
             }
         } catch (final Exception e) {
