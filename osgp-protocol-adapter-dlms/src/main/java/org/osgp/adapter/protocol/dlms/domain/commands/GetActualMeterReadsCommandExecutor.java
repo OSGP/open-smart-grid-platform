@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActiveEnergyValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -139,8 +140,9 @@ public class GetActualMeterReadsCommandExecutor extends
                 getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2),
                 getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2_SCALER_UNIT), "Actual Energy Reads -A rate 2");
 
-        return new MeterReadsResponseDto(time.toDate(), activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
-                activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2);
+        return new MeterReadsResponseDto(time.toDate(),
+                new ActiveEnergyValuesDto(activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
+                        activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2));
     }
 
 }
