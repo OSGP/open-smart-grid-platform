@@ -1,3 +1,4 @@
+@MicroGrids @Platform
 Feature: Microgrids Get Data Alternative Scenarios
   In order to make OSGP more robust
   As an OSGP client
