@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.database.ws;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.lang.reflect.Field;
 import java.util.Map;
 
@@ -20,6 +23,7 @@ import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class ResponseDataSteps extends BaseDeviceSteps {
 
@@ -43,5 +47,19 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         }
 
         return responseData;
+    }
+
+    @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted$")
+    public void theResponseDataRecordShouldBeDeleted(final String correlationUid) {
+        final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+
+        assertNull("Response data should be deleted", responseData);
+    }
+
+    @Then("^the response data record with correlation uid \\\"(.*)\\\" should not be deleted$")
+    public void theResponseDataRecordShouldNotBeDeleted(final String correlationUid) {
+        final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+
+        assertNotNull("Response data should not be deleted", responseData);
     }
 }
