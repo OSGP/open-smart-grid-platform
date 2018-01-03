@@ -7,7 +7,11 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public class ActiveEnergyValuesDto {
+import java.io.Serializable;
+
+public class ActiveEnergyValuesDto implements Serializable {
+
+    private static final long serialVersionUID = 5775074609152210861L;
 
     private final DlmsMeterValueDto activeEnergyImport;
     private final DlmsMeterValueDto activeEnergyExport;

@@ -93,7 +93,8 @@ public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
      */
     public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
             final DlmsMeterValueDto activeEnergyExport, final AmrProfileStatusCodeDto amrProfileStatusCode) {
-        super(logTime, activeEnergyImport, activeEnergyExport, null, null, null, null);
+
+        super(logTime, new ActiveEnergyValuesDto(activeEnergyImport, activeEnergyExport, null, null, null, null));
 
         this.amrProfileStatusCode = amrProfileStatusCode;
     }
