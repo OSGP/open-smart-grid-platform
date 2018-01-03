@@ -436,8 +436,6 @@ public class DeviceManagementService {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-        // TODO: refactor device creation with owner authorization and default
-        // protocol and move to domain adapter project!
         if (device == null) {
             // Device not found, create new device
             LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
@@ -584,8 +582,6 @@ public class DeviceManagementService {
 
     public String enqueueDeactivateDeviceRequest(final String organisationIdentification,
             final String deviceIdentification) {
-
-        // TODO: bypassing authorization logic for now, needs to be fixed.
 
         LOGGER.debug("enqueueDeactivateDevice called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);

@@ -76,11 +76,6 @@ public class ProtocolRequestMessageListener implements MessageListener {
      */
     private void sendMessageToDomainAdapter(final RequestMessage requestMessage, final String messageType) {
 
-        //
-        // TODO: CHOOSE THE RIGHT DOMAIN INFO, PERHAPS BY USING LOOKUP
-        // TABLE?? MAP MESSAGETYPE/FUNCTION TO DOMAIN??
-        //
-
         String domain;
         final String domainVersion;
         if (DeviceFunction.PUSH_NOTIFICATION_ALARM.name().equals(messageType)) {
