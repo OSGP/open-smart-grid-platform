@@ -144,11 +144,10 @@ public class ReplaceKeyCommandExecutor
      *            Key data
      * @throws IOException
      * @throws ProtocolAdapterException
-     * @throws FunctionalException
      */
     private void sendToDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
-            throws ProtocolAdapterException, FunctionalException {
+            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
+
         try {
             final byte[] decryptedKey = this.securityKeyService.decryptKey(keyWrapper.getBytes(),
                     keyWrapper.securityKeyType);

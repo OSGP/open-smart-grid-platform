@@ -96,12 +96,11 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
      * @param securityKeyType
      *            The type of key to return.
      * @return SecurityKey
-     * @throws TechnicalException
-     *             when there is no valid key of the given type.
      * @throws FunctionalException
+     *             when there is no valid key of the given type.
      */
     protected SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType)
-            throws TechnicalException, FunctionalException {
+            throws FunctionalException {
         final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
         if (securityKey == null) {
             final String errorMessage = String.format("There is no valid key for device %s of type %s",
