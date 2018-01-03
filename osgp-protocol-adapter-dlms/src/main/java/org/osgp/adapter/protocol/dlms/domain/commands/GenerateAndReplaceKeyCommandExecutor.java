@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import org.osgp.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
 public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecutor<ActionRequestDto, ActionResponseDto> {
@@ -42,14 +42,14 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
 
     @Override
     public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
+            final ActionRequestDto actionRequestDto) throws OsgpException {
 
         return this.execute(conn, device, actionRequestDto);
     }
 
     @Override
     public ActionResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
+            final ActionRequestDto actionRequestDto) throws OsgpException {
         LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
         final SetKeysRequestDto setKeysRequest = this.generateSetKeysRequest();
         return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequest);

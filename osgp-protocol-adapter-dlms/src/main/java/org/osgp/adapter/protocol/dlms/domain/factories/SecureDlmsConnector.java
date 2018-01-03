@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 public abstract class SecureDlmsConnector extends Lls0Connector {
 
@@ -41,11 +41,10 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
      *            The device to connect with.
      * @param tcpConnectionBuilder
      *            The connection builder instance.
-     * @throws TechnicalException
-     * @throws FunctionalException
+     * @throws OsgpException
      */
     protected abstract void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-            throws TechnicalException, FunctionalException;
+            throws OsgpException;
 
     /**
      * Create a connection with the device.
@@ -59,13 +58,12 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
      * @throws IOException
      *             When there are problems in connecting to or communicating
      *             with the device.
-     * @throws TechnicalException
+     * @throws OsgpException
      *             When there are problems reading the security and
      *             authorization keys.
-     * @throws FunctionalException
      */
     protected DlmsConnection createConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws IOException, TechnicalException, FunctionalException {
+            throws IOException, OsgpException {
 
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
