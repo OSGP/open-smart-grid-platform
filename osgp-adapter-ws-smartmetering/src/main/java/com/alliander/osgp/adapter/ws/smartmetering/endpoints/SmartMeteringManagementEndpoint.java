@@ -325,9 +325,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
      * requests and notifications, the ws-admin implementation will replace this
      * one and this method can be removed.
      *
-     * @TODO remove this method once it is implemented in a asynchronous manner
-     *       in the ws-admin project.
-     *
      * @param organisationIdentification
      * @param messagePriority
      *            unused because this request fakes asynchronous behavior.
@@ -370,9 +367,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
      * Retrieve the result of the
      * {@link #findMessageLogsRequest(String, String, String, FindMessageLogsRequest)}
      * method.
-     *
-     * @TODO remove this method once it is implemented in a asynchronous manner
-     *       in the ws-admin project.
      *
      * @param organisationIdentification
      * @param request

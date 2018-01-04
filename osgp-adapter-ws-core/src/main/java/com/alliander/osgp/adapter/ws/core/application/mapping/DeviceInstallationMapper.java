@@ -86,7 +86,6 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
                         .findByModelCode(source.getDeviceModel().getModelCode());
 
                 if (deviceModels.size() > 1) {
-                    // TODO update code to deal with non-unique model code.
                     throw new AssertionError("Model code \"" + source.getDeviceModel().getModelCode()
                             + "\" does not uniquely identify a device model.");
                 }
