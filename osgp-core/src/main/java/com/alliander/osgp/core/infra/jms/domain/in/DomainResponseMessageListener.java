@@ -46,13 +46,10 @@ public class DomainResponseMessageListener implements MessageListener {
 
             final Object dataObject = objectMessage.getObject();
 
-            LOGGER.info("Received domain incoming response message off type [{}]", messageType);
+            LOGGER.info("Received domain incoming response message of type [{}]", messageType);
 
             ProtocolInfo protocolInfo = null;
 
-            //
-            // TODO: MAKE SURE THE PROTOCOL INFO IS CHOSEN!!!
-            //
             for (final ProtocolInfo pi : this.protocolInfos) {
                 if ("OSLP".equals(pi.getProtocol()) && "1.0".equals(pi.getProtocolVersion())) {
                     protocolInfo = pi;

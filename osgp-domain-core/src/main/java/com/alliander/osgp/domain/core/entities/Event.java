@@ -46,19 +46,6 @@ public class Event extends AbstractEntity {
         // Default constructor
     }
 
-    /**
-     * Earlier constructor without the Date the event occurred. For lack of a
-     * better default this will use {@code new Date()} as the moment registered
-     * with the event.
-     *
-     * @deprecated Use {@link #Event(String, Date, EventType, String, Integer)}
-     *             if the time the event occurred is known.
-     */
-    @Deprecated
-    public Event(final Device device, final EventType eventType, final String description, final Integer index) {
-        this(device, new Date(), eventType, description, index);
-    }
-
     public Event(final Device device, final Date dateTime, final EventType eventType, final String description,
             final Integer index) {
         this.device = device;
