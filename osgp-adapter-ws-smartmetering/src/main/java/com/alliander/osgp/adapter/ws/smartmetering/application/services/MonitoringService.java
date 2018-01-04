@@ -13,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
+import com.alliander.osgp.adapter.ws.shared.services.ResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -28,6 +29,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -48,7 +50,7 @@ public class MonitoringService {
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
     @Autowired
-    private MeterResponseDataService meterResponseDataService;
+    private ResponseDataService responseDataService;
 
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData,
@@ -164,9 +166,9 @@ public class MonitoringService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeueProfileGenericDataResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, ProfileGenericDataResponse.class);
+    public ResponseData dequeueProfileGenericDataResponse(final String correlationUid) throws CorrelationUidException {
+        return this.responseDataService.dequeue(correlationUid, ProfileGenericDataResponse.class,
+                ComponentType.WS_SMART_METERING);
     }
 
     public String enqueueClearAlarmRegisterRequestData(@Identification final String organisationIdentification,

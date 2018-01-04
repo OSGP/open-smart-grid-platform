@@ -16,6 +16,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -39,7 +40,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleM
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.DeviceModel;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
@@ -120,14 +120,14 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         AddDeviceResponse response = null;
         try {
             response = new AddDeviceResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "Add Device");
+            this.throwExceptionIfResultNotOk(responseData, "Add Device");
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
 
         } catch (final Exception e) {
@@ -197,14 +197,14 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         CoupleMbusDeviceResponse response = null;
         try {
             response = new CoupleMbusDeviceResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "Couple Mbus Device");
+            this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device");
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
 
         } catch (final Exception e) {
@@ -276,14 +276,14 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         DeCoupleMbusDeviceResponse response = null;
         try {
             response = new DeCoupleMbusDeviceResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "DeCouple Mbus Device");
+            this.throwExceptionIfResultNotOk(responseData, "DeCouple Mbus Device");
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
 
         } catch (final Exception e) {
@@ -354,18 +354,18 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         CoupleMbusDeviceByChannelResponse response = null;
         try {
             response = new CoupleMbusDeviceByChannelResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "Couple Mbus Device By Channel");
+            this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device By Channel");
 
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setResultString((String) meterResponseData.getMessageData());
+            if (responseData.getMessageData() instanceof String) {
+                response.setResultString((String) responseData.getMessageData());
             }
-            response = this.installationMapper.map(meterResponseData.getMessageData(),
+            response = this.installationMapper.map(responseData.getMessageData(),
                     CoupleMbusDeviceByChannelResponse.class);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
         } catch (final Exception e) {
             this.handleException(e);

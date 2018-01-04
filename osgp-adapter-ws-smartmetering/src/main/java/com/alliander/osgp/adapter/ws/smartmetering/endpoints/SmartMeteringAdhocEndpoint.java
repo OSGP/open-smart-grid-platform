@@ -15,6 +15,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -38,7 +39,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeR
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnListType;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -91,12 +91,12 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         SynchronizeTimeResponse response = null;
         try {
             response = new SynchronizeTimeResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setDescription((String) responseData.getMessageData());
             }
 
         } catch (final Exception e) {
@@ -138,12 +138,12 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         GetAllAttributeValuesResponse response = null;
         try {
             response = new GetAllAttributeValuesResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setOutput((String) meterResponseData.getMessageData());
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof String) {
+                response.setOutput((String) responseData.getMessageData());
             }
 
         } catch (final Exception e) {
@@ -187,17 +187,18 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         GetSpecificAttributeValueResponse response = null;
         try {
             response = new GetSpecificAttributeValueResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (ResponseMessageResultType.OK == meterResponseData.getResultType()) {
-                response.setAttributeValueData((String) meterResponseData.getMessageData());
-            } else if (meterResponseData.getMessageData() instanceof OsgpException) {
-                throw (OsgpException) meterResponseData.getMessageData();
-            } else if (meterResponseData.getMessageData() instanceof Exception) {
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (ResponseMessageResultType.OK == responseData.getResultType()) {
+                response.setAttributeValueData((String) responseData.getMessageData());
+            } else if (responseData.getMessageData() instanceof OsgpException) {
+                throw (OsgpException) responseData.getMessageData();
+            } else if (responseData.getMessageData() instanceof Exception) {
                 throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                        "An exception occurred: Get specific attribute value", (Exception) meterResponseData.getMessageData());
+                        "An exception occurred: Get specific attribute value",
+                        (Exception) responseData.getMessageData());
             } else {
                 throw new TechnicalException(ComponentType.WS_SMART_METERING,
                         "An exception occurred: Get specific attribute value", null);
@@ -242,12 +243,12 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         GetAssociationLnObjectsResponse response = null;
         try {
             response = new GetAssociationLnObjectsResponse();
-            final MeterResponseData meterResponseData = this.meterResponseDataService
-                    .dequeue(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof AssociationLnListType) {
-                response.setAssociationLnList(this.adhocMapper.map(meterResponseData.getMessageData(),
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            if (responseData.getMessageData() instanceof AssociationLnListType) {
+                response.setAssociationLnList(this.adhocMapper.map(responseData.getMessageData(),
                         com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.AssociationLnListType.class));
             }
 

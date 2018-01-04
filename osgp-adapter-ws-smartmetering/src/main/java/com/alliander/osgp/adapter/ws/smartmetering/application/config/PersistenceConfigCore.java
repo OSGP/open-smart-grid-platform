@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -29,12 +28,13 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = { DeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = {
+        DeviceRepository.class })
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
-public class CorePersistenceConfig extends AbstractConfig {
+@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
+public class PersistenceConfigCore extends AbstractConfig {
     private static final String PROPERTY_NAME_DATABASE_USERNAME_CORE = "db.username.core";
     private static final String PROPERTY_NAME_DATABASE_PW_CORE = "db.password.core";
 
@@ -57,7 +57,7 @@ public class CorePersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN_ROOT = "entitymanager.packages.to.scan.core";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CorePersistenceConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceConfigCore.class);
 
     private HikariDataSource dataSource;
 
@@ -76,24 +76,24 @@ public class CorePersistenceConfig extends AbstractConfig {
             final String databaseProtocol = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PROTOCOL);
 
             final String databaseHost = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_HOST_CORE);
-            final int databasePort = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_PORT_CORE));
+            final int databasePort = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PORT_CORE));
             final String databaseName = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME_CORE);
 
-            final int minPoolSize = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
-            final int maxPoolSize = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
-            final boolean isAutoCommit = Boolean.parseBoolean(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
-            final int idleTimeout = Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
+            final int minPoolSize = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
+            final int maxPoolSize = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
+            final boolean isAutoCommit = Boolean
+                    .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
+            final int idleTimeout = Integer
+                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
-            .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
-            .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
-            .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
-            .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
+                    .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
+                    .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
+                    .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
+                    .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSource = factory.getDefaultConnectionPool();
         }
@@ -137,8 +137,8 @@ public class CorePersistenceConfig extends AbstractConfig {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_WS_ADAPTER_SMARTMETERING");
         entityManagerFactoryBean.setDataSource(this.getDataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.environment
-                .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN_ROOT));
+        entityManagerFactoryBean.setPackagesToScan(
+                this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN_ROOT));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();

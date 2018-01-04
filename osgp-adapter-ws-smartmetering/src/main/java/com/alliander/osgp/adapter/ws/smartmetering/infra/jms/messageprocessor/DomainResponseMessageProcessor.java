@@ -17,10 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.shared.services.ResponseDataService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
@@ -51,7 +51,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     private NotificationService notificationService;
 
     @Autowired
-    private MeterResponseDataService meterResponseDataService;
+    private ResponseDataService responseDataService;
 
     /**
      * The message type that a message processor implementation can handle.
@@ -117,7 +117,8 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
         }
 
         try {
-            LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}", messageType, correlationUid);
+            LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}",
+                    messageType, correlationUid);
 
             this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid,
                     resultType, resultDescription, dataObject);
@@ -142,9 +143,9 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             meterResponseObject = dataObject;
         }
 
-        final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+        final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
                 deviceIdentification, correlationUid, resultType, meterResponseObject);
-        this.meterResponseDataService.enqueue(meterResponseData);
+        this.responseDataService.enqueue(responseData);
     }
 
     /**
@@ -165,7 +166,8 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final NotificationType notificationType) {
 
-        LOGGER.info("handeling error: {} for notification type: {} with correlationUid: {}", e.getMessage(), notificationType, correlationUid, e);
+        LOGGER.info("handeling error: {} for notification type: {} with correlationUid: {}", e.getMessage(),
+                notificationType, correlationUid, e);
         this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
                 correlationUid, e.getMessage(), notificationType);
     }

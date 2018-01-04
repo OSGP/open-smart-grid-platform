@@ -13,18 +13,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
 
-@EnableJpaRepositories(transactionManagerRef = "wsTransactionManager", entityManagerFactoryRef = "wsEntityManagerFactory", basePackageClasses = { com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository.class })
+@EnableJpaRepositories(transactionManagerRef = "transactionManager", entityManagerFactoryRef = "wsEntityManagerFactory", basePackageClasses = {
+        com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository.class })
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)
 public class PersistenceConfigWs extends AbstractPersistenceConfigBase {
 
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
@@ -46,8 +46,8 @@ public class PersistenceConfigWs extends AbstractPersistenceConfigBase {
                 PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN, PersistenceConfigWs.class);
     }
 
-    @Bean(name = "wsTransactionManager")
-    public JpaTransactionManager wsTransactionManager() throws PlatformException {
+    @Bean(name = "transactionManager")
+    public JpaTransactionManager transactionManager() throws PlatformException {
         return this.createTransactionManager();
     }
 

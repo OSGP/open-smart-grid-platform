@@ -18,6 +18,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.BypassRetry;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -31,9 +32,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMapperResponseService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMapperService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.BundleService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -101,12 +102,12 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("Get bundle response for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
-        final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(request.getCorrelationUid(),
-                BundleMessagesResponse.class);
+        final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                BundleMessagesResponse.class, ComponentType.WS_SMART_METERING);
 
-        this.throwExceptionIfResultNotOk(meterResponseData, "get bundle response");
+        this.throwExceptionIfResultNotOk(responseData, "get bundle response");
 
         // Create response.
-        return this.actionMapperResponseService.mapAllActions(meterResponseData.getMessageData());
+        return this.actionMapperResponseService.mapAllActions(responseData.getMessageData());
     }
 }

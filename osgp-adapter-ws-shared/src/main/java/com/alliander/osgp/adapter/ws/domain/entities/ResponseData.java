@@ -1,11 +1,11 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.ws.microgrids.domain.entities;
+package com.alliander.osgp.adapter.ws.domain.entities;
 
 import java.io.Serializable;
 
@@ -21,8 +21,8 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Entity
-@Table(name = "rtu_response_data")
-public class RtuResponseData extends AbstractEntity {
+@Table(name = "response_data")
+public class ResponseData extends AbstractEntity {
 
     /**
      * Serial Version UID.
@@ -48,11 +48,11 @@ public class RtuResponseData extends AbstractEntity {
     private Serializable messageData;
 
     @SuppressWarnings("unused")
-    private RtuResponseData() {
+    private ResponseData() {
 
     }
 
-    public RtuResponseData(final String organisationIdentification, final String messageType,
+    public ResponseData(final String organisationIdentification, final String messageType,
             final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
             final Serializable messageData) {
         this.organisationIdentification = organisationIdentification;
@@ -86,4 +86,5 @@ public class RtuResponseData extends AbstractEntity {
     public ResponseMessageResultType getResultType() {
         return this.resultType;
     }
+
 }

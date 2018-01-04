@@ -16,11 +16,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.ResponseNotFoundException;
-import com.alliander.osgp.adapter.ws.microgrids.domain.entities.RtuResponseData;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessage;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageSender;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageType;
+import com.alliander.osgp.adapter.ws.shared.services.ResponseDataService;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
@@ -37,7 +38,7 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service
-@Transactional(value = "wsTransactionManager")
+@Transactional(value = "transactionManager")
 @Validated
 public class MicrogridsService {
 
@@ -53,7 +54,7 @@ public class MicrogridsService {
     private MicrogridsRequestMessageSender requestMessageSender;
 
     @Autowired
-    private RtuResponseDataService responseDataService;
+    private ResponseDataService responseDataService;
 
     public MicrogridsService() {
         // Parameterless constructor required for transactions
@@ -90,26 +91,27 @@ public class MicrogridsService {
 
         LOGGER.debug("dequeueGetDataRequest called with correlation uid {}", correlationUid);
 
-        final RtuResponseData responseData = this.responseDataService.dequeue(correlationUid, ResponseMessage.class);
+        final ResponseData responseData = this.responseDataService.dequeue(correlationUid, ResponseMessage.class,
+                ComponentType.WS_MICROGRIDS);
         final ResponseMessage response = (ResponseMessage) responseData.getMessageData();
 
         switch (response.getResult()) {
-            case NOT_FOUND:
-                throw new ResponseNotFoundException(ComponentType.WS_MICROGRIDS, "Response message not found.");
-            case NOT_OK:
-                if (response.getOsgpException() != null) {
-                    throw response.getOsgpException();
-                }
-                throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
-            case OK:
-                if (response.getDataObject() != null) {
-                    return (GetDataResponse) response.getDataObject();
-                }
-                // Should not get here
-                throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains no data.");
-            default:
-                // Should not get here
-                throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
+        case NOT_FOUND:
+            throw new ResponseNotFoundException(ComponentType.WS_MICROGRIDS, "Response message not found.");
+        case NOT_OK:
+            if (response.getOsgpException() != null) {
+                throw response.getOsgpException();
+            }
+            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
+        case OK:
+            if (response.getDataObject() != null) {
+                return (GetDataResponse) response.getDataObject();
+            }
+            // Should not get here
+            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains no data.");
+        default:
+            // Should not get here
+            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
         }
 
     }
@@ -144,22 +146,23 @@ public class MicrogridsService {
 
         LOGGER.debug("dequeueSetDataRequest called with correlation uid {}", correlationUid);
 
-        final RtuResponseData responseData = this.responseDataService.dequeue(correlationUid, ResponseMessage.class);
+        final ResponseData responseData = this.responseDataService.dequeue(correlationUid, ResponseMessage.class,
+                ComponentType.WS_MICROGRIDS);
         final ResponseMessage response = (ResponseMessage) responseData.getMessageData();
 
         switch (response.getResult()) {
-            case NOT_FOUND:
-                throw new ResponseNotFoundException(ComponentType.WS_MICROGRIDS, "Response message not found.");
-            case NOT_OK:
-                if (response.getOsgpException() != null) {
-                    throw response.getOsgpException();
-                }
-                throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
-            case OK:
-                return new EmptyResponse();
-            default:
-                // Should not get here
-                throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
+        case NOT_FOUND:
+            throw new ResponseNotFoundException(ComponentType.WS_MICROGRIDS, "Response message not found.");
+        case NOT_OK:
+            if (response.getOsgpException() != null) {
+                throw response.getOsgpException();
+            }
+            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
+        case OK:
+            return new EmptyResponse();
+        default:
+            // Should not get here
+            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
         }
 
     }

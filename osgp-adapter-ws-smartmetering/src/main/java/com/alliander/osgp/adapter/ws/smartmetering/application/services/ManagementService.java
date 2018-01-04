@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.adapter.ws.smartmetering.application.syncrequest.FindMessageLogsSyncRequestExecutor;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -60,7 +60,7 @@ public class ManagementService {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private ResponseDataRepository responseDataRepository;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -127,39 +127,35 @@ public class ManagementService {
 
         this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final List<MeterResponseData> meterResponseDataList = this.meterResponseDataRepository
-                .findByCorrelationUid(correlationUid);
+        final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
         final List<Event> events = new ArrayList<>();
-        final List<MeterResponseData> meterResponseDataToDeleteList = new ArrayList<>();
 
-        for (final MeterResponseData meterResponseData : meterResponseDataList) {
-            final Serializable messageData = meterResponseData.getMessageData();
+        final Serializable messageData = responseData.getMessageData();
 
-            if (messageData instanceof EventMessagesResponse) {
-                events.addAll(((EventMessagesResponse) messageData).getEvents());
-                meterResponseDataToDeleteList.add(meterResponseData);
-            } else {
-                /**
-                 * If the returned data is not an EventMessageContainer but a
-                 * String, there has been an exception. The exception message
-                 * has been put in the messageData.
-                 *
-                 * As there is no way of knowing what the type of the exception
-                 * was (because it is passed as a String) it is thrown as a
-                 * TechnicalException because the user is most probably not to
-                 * blame for the exception.
-                 */
-                if (messageData instanceof String) {
-                    throw new TechnicalException(ComponentType.UNKNOWN, (String) messageData);
-                }
-                LOGGER.info(
-                        "findEventsByCorrelationUid also found other type of meter response data: {} for correlation UID: {}",
-                        messageData.getClass().getName(), correlationUid);
+        if (messageData instanceof EventMessagesResponse) {
+            events.addAll(((EventMessagesResponse) messageData).getEvents());
+
+            LOGGER.info("deleting ResponseData for correlation uid {}.", correlationUid);
+            this.responseDataRepository.delete(responseData);
+
+        } else {
+            /**
+             * If the returned data is not an EventMessageContainer but a
+             * String, there has been an exception. The exception message has
+             * been put in the messageData.
+             *
+             * As there is no way of knowing what the type of the exception was
+             * (because it is passed as a String) it is thrown as a
+             * TechnicalException because the user is most probably not to blame
+             * for the exception.
+             */
+            if (messageData instanceof String) {
+                throw new TechnicalException(ComponentType.UNKNOWN, (String) messageData);
             }
+            LOGGER.info(
+                    "findEventsByCorrelationUid found other type of meter response data: {} for correlation UID: {}",
+                    messageData.getClass().getName(), correlationUid);
         }
-
-        LOGGER.info("deleting {} MeterResponseData rows", meterResponseDataToDeleteList.size());
-        this.meterResponseDataRepository.delete(meterResponseDataToDeleteList);
 
         LOGGER.info("returning a list containing {} events", events.size());
         return events;
@@ -221,7 +217,7 @@ public class ManagementService {
             final int pageNumber) throws FunctionalException {
 
         LOGGER.debug("findMessageLogs called with organisation {}, device {} and pagenumber {}",
-                new Object[] { organisationIdentification, deviceIdentification, pageNumber });
+                organisationIdentification, deviceIdentification, pageNumber);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

@@ -30,7 +30,6 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringInstallationService")
 @Validated
-// @Transactional(value = "coreTransactionManager")
 public class InstallationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);

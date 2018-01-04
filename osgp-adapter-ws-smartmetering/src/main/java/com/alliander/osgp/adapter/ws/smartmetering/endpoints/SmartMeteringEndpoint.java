@@ -13,11 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.endpoint.WebserviceEndpoint;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.shared.services.ResponseDataService;
 import com.alliander.osgp.adapter.ws.shared.services.ResponseUrlService;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -31,7 +31,7 @@ abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
     protected ResponseUrlService responseUrlService;
 
     @Autowired
-    protected MeterResponseDataService meterResponseDataService;
+    protected ResponseDataService responseDataService;
 
     /**
      * Rethrow exception if it already is a functional or technical exception,
@@ -56,7 +56,7 @@ abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
         }
     }
 
-    protected void throwExceptionIfResultNotOk(final MeterResponseData meterResponseData, final String exceptionContext)
+    protected void throwExceptionIfResultNotOk(final ResponseData meterResponseData, final String exceptionContext)
             throws OsgpException {
         if (OsgpResultType.NOT_OK == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
             if (meterResponseData.getMessageData() instanceof String) {
