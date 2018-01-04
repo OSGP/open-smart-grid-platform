@@ -74,6 +74,7 @@ public class PlatformKeys extends Keys {
 
     public static final String KEY_COMM_METHOD = "CommunicationMethod";
     public static final String KEY_CORRELATION_UID = "CorrelationUid";
+    public static final String KEY_CREATION_TIME = "CreationTime";
     public static final String KEY_DESCRIPTION = "Description";
     public static final String KEY_DEVICE_ACTIVATED = "DeviceActivated";
     public static final String KEY_DEVICE_COMMUNICATIONMETHOD = "CommunicationMethod";
@@ -150,6 +151,8 @@ public class PlatformKeys extends Keys {
     public static final String KEY_MEASUREMENT_QUALIFIER = "MeasurementQualifier";
     public static final String KEY_MEASUREMENT_VALUE = "MeasurementValue";
     public static final String KEY_MESSAGE = "Message";
+    public static final String KEY_MESSAGE_DATA = "MessageData";
+    public static final String KEY_MESSAGE_TYPE = "MessageType";
     public static final String KEY_MUNICIPALITY = "containerMunicipality";
     public static final String KEY_NAME = "Name";
     public static final String KEY_NETWORKADDRESS = "NetworkAddress";
@@ -190,6 +193,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";
     public static final String KEY_RELAY_TYPE = "RelayType";
     public static final String KEY_RESULT = "Result";
+    public static final String KEY_RESULT_TYPE = "ResultType";
     public static final String KEY_SETPOINT_END_TIME = "SetPointEndTime";
 
     public static final String KEY_SETPOINT_ID = "SetPointId";

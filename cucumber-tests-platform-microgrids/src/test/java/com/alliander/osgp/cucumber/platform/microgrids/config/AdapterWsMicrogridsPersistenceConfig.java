@@ -18,12 +18,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.cucumber.platform.config.ApplicationPersistenceConfiguration;
 
 @Configuration
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactWsMicrogrids", transactionManagerRef = "txMgrWsMicrogrids", basePackageClasses = {
-        RtuResponseDataRepository.class })
+        ResponseDataRepository.class })
 public class AdapterWsMicrogridsPersistenceConfig extends ApplicationPersistenceConfiguration {
 
     public AdapterWsMicrogridsPersistenceConfig() {

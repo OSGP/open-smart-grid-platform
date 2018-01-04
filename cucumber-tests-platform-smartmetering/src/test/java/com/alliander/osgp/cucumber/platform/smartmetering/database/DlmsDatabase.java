@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 
 /**
  * DLMS related database steps.
@@ -28,7 +28,7 @@ public class DlmsDatabase {
     private DlmsSecurityKeyRepository dlmsDSecurityKeyRepo;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepo;
+    private ResponseDataRepository responseDataRepo;
 
     /**
      * This method is used to create default data not directly related to the
@@ -46,7 +46,7 @@ public class DlmsDatabase {
 
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();
         this.dlmsDeviceRepo.deleteAllInBatch();
-        this.meterResponseDataRepo.deleteAllInBatch();
+        this.responseDataRepo.deleteAllInBatch();
 
         this.insertDefaultData();
     }

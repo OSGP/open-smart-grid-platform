@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
-import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 import com.alliander.osgp.domain.microgrids.repositories.TaskRepository;
 
@@ -23,7 +23,7 @@ public class Database {
     private Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Autowired
-    private RtuResponseDataRepository rtuResponseDataRepository;
+    private ResponseDataRepository responseDataRepository;
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
@@ -41,7 +41,7 @@ public class Database {
         this.iec61850DeviceRepository.deleteAll();
 
         // Then remove stuff from the osgp_adapter_ws_microgrids
-        this.rtuResponseDataRepository.deleteAll();
+        this.responseDataRepository.deleteAll();
 
         // Now remove all from the core.
         this.taskRepository.deleteAll();

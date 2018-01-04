@@ -18,12 +18,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
 import com.alliander.osgp.cucumber.platform.config.ApplicationPersistenceConfiguration;
 
 @Configuration
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrRespData", transactionManagerRef = "txMgrRespData", basePackageClasses = {
-        MeterResponseDataRepository.class })
+        ResponseUrlDataRepository.class, ResponseDataRepository.class })
 public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationPersistenceConfiguration {
 
     @Value("${db.name.osgp_adapter_ws_smartmetering}")
