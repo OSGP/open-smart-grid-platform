@@ -34,9 +34,7 @@ public class Iec61850MaximumPowerLimitCommand implements RtuReadCommand<Measurem
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
 
-        return new MeasurementDto(1, DataAttribute.MAXIMUM_POWER_LIMIT.getDescription(), 0,
-                // TODO - Implement when available
-                new DateTime(), 1);
+        return new MeasurementDto(1, DataAttribute.MAXIMUM_POWER_LIMIT.getDescription(), 0, new DateTime(), 1);
     }
 
 }
