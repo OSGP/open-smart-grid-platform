@@ -373,7 +373,6 @@ public class DeviceManagementEndpoint {
         return new SetOwnerResponse();
     }
 
-    // TODO: this function should be converted to async.
     @PayloadRoot(localPart = "UpdateKeyRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
     public UpdateKeyResponse updateKey(@OrganisationIdentification final String organisationIdentification,
@@ -396,7 +395,6 @@ public class DeviceManagementEndpoint {
         return new UpdateKeyResponse();
     }
 
-    // TODO: this function should be converted to async.
     @PayloadRoot(localPart = "RevokeKeyRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
     public RevokeKeyResponse revokeKey(@OrganisationIdentification final String organisationIdentification,

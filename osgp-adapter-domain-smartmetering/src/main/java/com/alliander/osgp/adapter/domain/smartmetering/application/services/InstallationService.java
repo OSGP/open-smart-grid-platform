@@ -107,10 +107,6 @@ public class InstallationService {
 
         if (device == null) {
 
-            /*
-             * TODO see what needs to be done to have the IP address added to
-             * smartMeteringDeviceValueObject (and mapped)
-             */
             device = this.mapperFactory.getMapperFacade().map(smartMeteringDeviceValueObject, SmartMeter.class);
 
             final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion("DSMR",

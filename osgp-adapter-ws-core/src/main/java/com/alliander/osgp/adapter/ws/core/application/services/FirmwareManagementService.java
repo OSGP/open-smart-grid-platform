@@ -299,7 +299,6 @@ public class FirmwareManagementService {
             return null;
         }
         if (deviceModels.size() > 1) {
-            // TODO update code to deal with non-unique model code.
             throw new AssertionError(
                     "Model code \"" + deviceModelCode + "\" does not uniquely identify a device model.");
         }
@@ -311,7 +310,7 @@ public class FirmwareManagementService {
      * Returns a devicemodel in the Platform
      */
     @Transactional(value = "writableTransactionManager")
-    public DeviceModel findDeviceModel(final String modelCode) throws FunctionalException {
+    public DeviceModel findDeviceModel(final String modelCode) {
         /*
          * Model code does not uniquely identify a device model, which is why
          * deviceModelRepository is changed to return a list of device models.
@@ -326,7 +325,6 @@ public class FirmwareManagementService {
             return null;
         }
         if (deviceModels.size() > 1) {
-            // TODO update code to deal with non-unique model code.
             throw new AssertionError("Model code \"" + modelCode + "\" does not uniquely identify a device model.");
         }
 
