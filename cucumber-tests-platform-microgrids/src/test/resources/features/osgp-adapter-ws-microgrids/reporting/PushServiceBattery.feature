@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServerPampus
-Feature: MicroGrids Receive reports for Battery
+@Microgrids @Platform @Iec61850MockServerPampus
+Feature: Microgrids Receive reports for Battery
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 

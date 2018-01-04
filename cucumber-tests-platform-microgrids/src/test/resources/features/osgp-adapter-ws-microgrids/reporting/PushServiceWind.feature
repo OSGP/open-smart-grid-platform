@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServerPampus
-Feature: MicroGrids Receive reports for Wind
+@Microgrids @Platform @Iec61850MockServerPampus
+Feature: Microgrids Receive reports for Wind
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 
@@ -51,7 +51,7 @@ Feature: MicroGrids Receive reports for Wind
       | MeasurementId_1_13     |                        3 |
       | MeasurementNode_1_13   | W.phsC                   |
 
-  Scenario: Receive a PQ status report
+  Scenario: Receive a Wind status report
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUSREPORT |
       | Port                 |            62102 |

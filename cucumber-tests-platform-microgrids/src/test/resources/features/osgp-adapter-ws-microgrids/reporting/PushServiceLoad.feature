@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServerPampus
-Feature: MicroGrids Receive reports for Load
+@Microgrids @Platform @Iec61850MockServerPampus
+Feature: Microgrids Receive reports for Load
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 

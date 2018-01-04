@@ -1,4 +1,5 @@
-Feature: MicroGrids Receive reports for Chp
+@Microgrids @Platform @Iec61850MockServerSchoteroog
+Feature: Microgrids Receive reports for Chp
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 

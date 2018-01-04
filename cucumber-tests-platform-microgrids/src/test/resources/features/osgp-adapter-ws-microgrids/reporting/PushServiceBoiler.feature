@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServerMarkerWadden
-Feature: MicroGrids Receive reports for Boiler
+@Microgrids @Platform @Iec61850MockServerMarkerWadden
+Feature: Microgrids Receive reports for Boiler
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 

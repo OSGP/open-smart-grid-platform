@@ -1,4 +1,4 @@
-@MicroGrids @Platform @Iec61850MockServerSchoteroog
+@Microgrids @Platform @Iec61850MockServerSchoteroog
 Feature: Microgrids Get CHP Data
   As an OSGP client
   I want to get CHP data from an RTU

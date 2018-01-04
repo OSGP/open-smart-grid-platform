@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServerSchoteroog
-Feature: MicroGrids Receive reports for Gas Furnace
+@Microgrids @Platform @Iec61850MockServerSchoteroog
+Feature: Microgrids Receive reports for Gas Furnace
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 
