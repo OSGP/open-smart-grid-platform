@@ -14,6 +14,12 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.cucumber.platform.microgrids.PlatformMicrogridsKeys;
 
+/**
+ * The ReportTriggerNodeMappingService class is used to determine the node for
+ * which the value will be changed in order to trigger a specific report for a
+ * specific logical device
+ *
+ */
 @Component
 public class ReportTriggerNodeMappingService {
 
