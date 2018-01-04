@@ -25,8 +25,8 @@ import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
 @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)
 public class SchedulingConfig extends AbstractSchedulingConfig {
 
-    private static final String KEY_CLEANUP_JOB_CRON_EXPRESSION = "scheduling.job.cleanup.cron.expression";
-    private static final String KEY_CLEANUP_JOB_THREAD_COUNT = "scheduling.job.cleanup.thread.count";
+    private static final String KEY_CLEANUP_JOB_CRON_EXPRESSION = "microgrids.scheduling.job.cleanup.response.data.cron.expression";
+    private static final String KEY_CLEANUP_JOB_THREAD_COUNT = "microgrids.scheduling.job.cleanup.response.data.thread.count";
 
     @Value("${db.driver}")
     private String databaseDriver;
@@ -49,7 +49,7 @@ public class SchedulingConfig extends AbstractSchedulingConfig {
     @Value("${db.username}")
     private String databaseUsername;
 
-    @Value("${scheduling.cleanupjob.retention.time.in.days}")
+    @Value("${microgrids.scheduling.job.cleanup.response.data.retention.time.in.days}")
     private int cleanupJobRetentionTimeInDays;
 
     @Bean
