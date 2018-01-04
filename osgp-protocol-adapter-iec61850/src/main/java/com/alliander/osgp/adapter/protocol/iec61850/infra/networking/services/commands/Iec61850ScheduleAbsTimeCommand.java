@@ -36,8 +36,6 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
     private static final DataAttribute DATA_ATTRIBUTE = DataAttribute.SCHEDULE_ABS_TIME;
     private static final Fc FC = Fc.SP;
 
-    // TODO - Refactor to determine the size by reading the number of points
-    // (numPts) from the device
     private static final int ARRAY_SIZE = 50;
 
     private static final float DEFAULT_VALUE = 0F;
