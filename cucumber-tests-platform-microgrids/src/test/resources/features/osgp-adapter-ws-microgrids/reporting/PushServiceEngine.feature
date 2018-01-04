@@ -1,77 +1,59 @@
-@MicroGrids @Platform @Iec61850MockServerPampus
-Feature: Receive reports for Wind
+@MicroGrids @Platform @Iec61850MockServerMarkerWadden
+Feature: MicroGrids Receive reports for Engine
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 
-  Scenario: Receive a Wind measurements report
+  Scenario: Receive an Engine measurements report
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU-PAMPUSREPORT |
-      | Port                 |            62102 |
-      | EnableAllReports     | true             |
-    And OSGP is connected to the Pampus RTU
-      | DeviceIdentification | RTU-PAMPUSREPORT |
-    When the Pampus RTU pushes a report
-      | LogicalDevice | WIND1        |
+      | DeviceIdentification | RTU-MARKER-WADDENREPORT |
+      | Port                 |                   62103 |
+      | EnableAllReports     | true                    |
+    And OSGP is connected to the Marker Wadden RTU
+      | DeviceIdentification | RTU-MARKER-WADDENREPORT |
+    When the Marker Wadden RTU pushes a report
+      | LogicalDevice | ENGINE1      |
       | ReportType    | Measurements |
     Then I should receive a notification
     And the get data response should be returned
-      | DeviceIdentification   | RTU-PAMPUSREPORT         |
+      | DeviceIdentification   | RTU-MARKER-WADDENREPORT  |
       | Result                 | OK                       |
-      | ReportId               | WIND1_Measurements       |
+      | ReportId               | ENGINE1_Measurements     |
       | NumberOfSystems        |                        1 |
       | ReportSequenceNumber   |                        1 |
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
-      | SystemType_1           | WIND                     |
-      | NumberOfMeasurements_1 |                       13 |
+      | SystemType_1           | ENGINE                   |
+      | NumberOfMeasurements_1 |                        4 |
       | MeasurementId_1_1      |                        1 |
       | MeasurementNode_1_1    | TotW                     |
       | MeasurementId_1_2      |                        1 |
-      | MeasurementNode_1_2    | TotPF                    |
+      | MeasurementNode_1_2    | TotWh                    |
       | MeasurementId_1_3      |                        1 |
-      | MeasurementNode_1_3    | W.phsA                   |
+      | MeasurementNode_1_3    | MaxWPhs                  |
       | MeasurementId_1_4      |                        1 |
-      | MeasurementNode_1_4    | W.phsB                   |
-      | MeasurementId_1_5      |                        1 |
-      | MeasurementNode_1_5    | W.phsC                   |
-      | MeasurementId_1_6      |                        1 |
-      | MeasurementNode_1_6    | MaxWPhs                  |
-      | MeasurementId_1_7      |                        1 |
-      | MeasurementNode_1_7    | MinWPhs                  |
-      | MeasurementId_1_8      |                        2 |
-      | MeasurementNode_1_8    | W.phsA                   |
-      | MeasurementId_1_9      |                        2 |
-      | MeasurementNode_1_9    | W.phsB                   |
-      | MeasurementId_1_10     |                        2 |
-      | MeasurementNode_1_10   | W.phsC                   |
-      | MeasurementId_1_11     |                        3 |
-      | MeasurementNode_1_11   | W.phsA                   |
-      | MeasurementId_1_12     |                        3 |
-      | MeasurementNode_1_12   | W.phsB                   |
-      | MeasurementId_1_13     |                        3 |
-      | MeasurementNode_1_13   | W.phsC                   |
+      | MeasurementNode_1_4    | MinWPhs                  |
 
-  Scenario: Receive a PQ status report
+  Scenario: Receive an Engine status report
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU-PAMPUSREPORT |
-      | Port                 |            62102 |
-      | EnableAllReports     | true             |
-    And OSGP is connected to the Pampus RTU
-      | DeviceIdentification | RTU-PAMPUSREPORT |
-    When the Pampus RTU pushes a report
-      | LogicalDevice | WIND1  |
-      | ReportType    | Status |
+      | DeviceIdentification | RTU-MARKER-WADDENREPORT |
+      | Port                 |                   62103 |
+      | EnableAllReports     | true                    |
+    And OSGP is connected to the Marker Wadden RTU
+      | DeviceIdentification | RTU-MARKER-WADDENREPORT |
+    When the Marker Wadden RTU pushes a report
+      | LogicalDevice | ENGINE1 |
+      | ReportType    | Status  |
     Then I should receive a notification
     And the get data response should be returned
-      | DeviceIdentification   | RTU-PAMPUSREPORT         |
+      | DeviceIdentification   | RTU-MARKER-WADDENREPORT  |
       | Result                 | OK                       |
-      | ReportId               | WIND1_Status             |
+      | ReportId               | ENGINE1_Status           |
       | NumberOfSystems        |                        1 |
       | ReportSequenceNumber   |                        1 |
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
-      | SystemType_1           | WIND                     |
-      | NumberOfMeasurements_1 |                       15 |
+      | SystemType_1           | ENGINE                   |
+      | NumberOfMeasurements_1 |                       19 |
       | MeasurementId_1_1      |                        1 |
       | MeasurementNode_1_1    | Beh                      |
       | MeasurementId_1_2      |                        1 |
@@ -102,3 +84,11 @@ Feature: Receive reports for Wind
       | MeasurementNode_1_14   | Wrn3                     |
       | MeasurementId_1_15     |                        1 |
       | MeasurementNode_1_15   | Wrn4                     |
+      | MeasurementId_1_16     |                        1 |
+      | MeasurementNode_1_16   | SchdId                   |
+      | MeasurementId_1_17     |                        2 |
+      | MeasurementNode_1_17   | SchdId                   |
+      | MeasurementId_1_18     |                        3 |
+      | MeasurementNode_1_18   | SchdId                   |
+      | MeasurementId_1_19     |                        4 |
+      | MeasurementNode_1_19   | SchdId                   |

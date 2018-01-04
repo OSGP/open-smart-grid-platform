@@ -1,59 +1,61 @@
-@MicroGrids @Platform @Iec61850MockServerMarkerWadden
-Feature: Receive reports for Engine
+@MicroGrids @Platform @Iec61850MockServerPampus
+Feature: MicroGrids Receive reports for Battery
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 
-  Scenario: Receive an Engine measurements report
+  Scenario: Receive a Battery measurements report
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU-MARKER-WADDENREPORT |
-      | Port                 |                   62103 |
-      | EnableAllReports     | true                    |
-    And OSGP is connected to the Marker Wadden RTU
-      | DeviceIdentification | RTU-MARKER-WADDENREPORT |
-    When the Marker Wadden RTU pushes a report
-      | LogicalDevice | ENGINE1      |
+      | DeviceIdentification | RTU-PAMPUSREPORT |
+      | Port                 |            62102 |
+      | EnableAllReports     | true             |
+    And OSGP is connected to the Pampus RTU
+      | DeviceIdentification | RTU-PAMPUSREPORT |
+    When the Pampus RTU pushes a report
+      | LogicalDevice | BATTERY1     |
       | ReportType    | Measurements |
     Then I should receive a notification
     And the get data response should be returned
-      | DeviceIdentification   | RTU-MARKER-WADDENREPORT  |
+      | DeviceIdentification   | RTU-PAMPUSREPORT         |
       | Result                 | OK                       |
-      | ReportId               | ENGINE1_Measurements     |
+      | ReportId               | BATTERY1_Measurements    |
       | NumberOfSystems        |                        1 |
       | ReportSequenceNumber   |                        1 |
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
-      | SystemType_1           | ENGINE                   |
-      | NumberOfMeasurements_1 |                        4 |
+      | SystemType_1           | BATTERY                  |
+      | NumberOfMeasurements_1 |                        5 |
       | MeasurementId_1_1      |                        1 |
       | MeasurementNode_1_1    | TotW                     |
       | MeasurementId_1_2      |                        1 |
-      | MeasurementNode_1_2    | TotWh                    |
+      | MeasurementNode_1_2    | TotPF                    |
       | MeasurementId_1_3      |                        1 |
-      | MeasurementNode_1_3    | MaxWPhs                  |
+      | MeasurementNode_1_3    | TotWh                    |
       | MeasurementId_1_4      |                        1 |
-      | MeasurementNode_1_4    | MinWPhs                  |
+      | MeasurementNode_1_4    | MaxWPhs                  |
+      | MeasurementId_1_5      |                        1 |
+      | MeasurementNode_1_5    | MinWPhs                  |
 
-  Scenario: Receive an Engine status report
+  Scenario: Receive a Battery status report
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU-MARKER-WADDENREPORT |
-      | Port                 |                   62103 |
-      | EnableAllReports     | true                    |
-    And OSGP is connected to the Marker Wadden RTU
-      | DeviceIdentification | RTU-MARKER-WADDENREPORT |
-    When the Marker Wadden RTU pushes a report
-      | LogicalDevice | ENGINE1 |
-      | ReportType    | Status  |
+      | DeviceIdentification | RTU-PAMPUSREPORT |
+      | Port                 |            62102 |
+      | EnableAllReports     | true             |
+    And OSGP is connected to the Pampus RTU
+      | DeviceIdentification | RTU-PAMPUSREPORT |
+    When the Pampus RTU pushes a report
+      | LogicalDevice | BATTERY1 |
+      | ReportType    | Status   |
     Then I should receive a notification
     And the get data response should be returned
-      | DeviceIdentification   | RTU-MARKER-WADDENREPORT  |
+      | DeviceIdentification   | RTU-PAMPUSREPORT         |
       | Result                 | OK                       |
-      | ReportId               | ENGINE1_Status           |
+      | ReportId               | BATTERY1_Status          |
       | NumberOfSystems        |                        1 |
       | ReportSequenceNumber   |                        1 |
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
-      | SystemType_1           | ENGINE                   |
-      | NumberOfMeasurements_1 |                       19 |
+      | SystemType_1           | BATTERY                  |
+      | NumberOfMeasurements_1 |                       15 |
       | MeasurementId_1_1      |                        1 |
       | MeasurementNode_1_1    | Beh                      |
       | MeasurementId_1_2      |                        1 |
@@ -84,11 +86,3 @@ Feature: Receive reports for Engine
       | MeasurementNode_1_14   | Wrn3                     |
       | MeasurementId_1_15     |                        1 |
       | MeasurementNode_1_15   | Wrn4                     |
-      | MeasurementId_1_16     |                        1 |
-      | MeasurementNode_1_16   | SchdId                   |
-      | MeasurementId_1_17     |                        2 |
-      | MeasurementNode_1_17   | SchdId                   |
-      | MeasurementId_1_18     |                        3 |
-      | MeasurementNode_1_18   | SchdId                   |
-      | MeasurementId_1_19     |                        4 |
-      | MeasurementNode_1_19   | SchdId                   |

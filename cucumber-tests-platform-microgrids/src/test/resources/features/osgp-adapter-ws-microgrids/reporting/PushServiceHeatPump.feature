@@ -1,5 +1,5 @@
 @MicroGrids @Platform @Iec61850MockServerMarkerWadden
-Feature: Receive reports for Heat Pump
+Feature: MicroGrids Receive reports for Heat Pump
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 

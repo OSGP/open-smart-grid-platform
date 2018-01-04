@@ -1,9 +1,9 @@
 @MicroGrids @Platform @Iec61850MockServerPampus
-Feature: Receive reports for Battery
+Feature: MicroGrids Receive reports for PV
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 
-  Scenario: Receive a Battery measurements report
+  Scenario: Receive a PV measurements report
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUSREPORT |
       | Port                 |            62102 |
@@ -11,31 +11,29 @@ Feature: Receive reports for Battery
     And OSGP is connected to the Pampus RTU
       | DeviceIdentification | RTU-PAMPUSREPORT |
     When the Pampus RTU pushes a report
-      | LogicalDevice | BATTERY1     |
+      | LogicalDevice | PV1          |
       | ReportType    | Measurements |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-PAMPUSREPORT         |
       | Result                 | OK                       |
-      | ReportId               | BATTERY1_Measurements    |
+      | ReportId               | PV1_Measurements         |
       | NumberOfSystems        |                        1 |
       | ReportSequenceNumber   |                        1 |
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
-      | SystemType_1           | BATTERY                  |
-      | NumberOfMeasurements_1 |                        5 |
+      | SystemType_1           | PV                       |
+      | NumberOfMeasurements_1 |                        4 |
       | MeasurementId_1_1      |                        1 |
       | MeasurementNode_1_1    | TotW                     |
       | MeasurementId_1_2      |                        1 |
-      | MeasurementNode_1_2    | TotPF                    |
+      | MeasurementNode_1_2    | TotWh                    |
       | MeasurementId_1_3      |                        1 |
-      | MeasurementNode_1_3    | TotWh                    |
+      | MeasurementNode_1_3    | MaxWPhs                  |
       | MeasurementId_1_4      |                        1 |
-      | MeasurementNode_1_4    | MaxWPhs                  |
-      | MeasurementId_1_5      |                        1 |
-      | MeasurementNode_1_5    | MinWPhs                  |
+      | MeasurementNode_1_4    | MinWPhs                  |
 
-  Scenario: Receive a Battery status report
+  Scenario: Receive a PV status report
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUSREPORT |
       | Port                 |            62102 |
@@ -43,18 +41,18 @@ Feature: Receive reports for Battery
     And OSGP is connected to the Pampus RTU
       | DeviceIdentification | RTU-PAMPUSREPORT |
     When the Pampus RTU pushes a report
-      | LogicalDevice | BATTERY1 |
-      | ReportType    | Status   |
+      | LogicalDevice | PV1    |
+      | ReportType    | Status |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-PAMPUSREPORT         |
       | Result                 | OK                       |
-      | ReportId               | BATTERY1_Status          |
+      | ReportId               | PV1_Status               |
       | NumberOfSystems        |                        1 |
       | ReportSequenceNumber   |                        1 |
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
-      | SystemType_1           | BATTERY                  |
+      | SystemType_1           | PV                       |
       | NumberOfMeasurements_1 |                       15 |
       | MeasurementId_1_1      |                        1 |
       | MeasurementNode_1_1    | Beh                      |

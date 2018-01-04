@@ -12,12 +12,14 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.cucumber.platform.microgrids.PlatformMicrogridsKeys;
+
 @Component
-public class ReportToNodeMappingService {
+public class ReportTriggerNodeMappingService {
 
     private Map<String, String> reportNodeMap = new HashMap<>();
 
-    public ReportToNodeMappingService() {
+    public ReportTriggerNodeMappingService() {
         this.reportNodeMap.put("BATTERY1_Measurements", "MMXU1.TotW.q");
         this.reportNodeMap.put("BATTERY1_Status", "LLN0.Health.q");
         this.reportNodeMap.put("BOILER1_Measurements", "MMXU1.TotW.q");
@@ -42,8 +44,9 @@ public class ReportToNodeMappingService {
         this.reportNodeMap.put("WIND1_Status", "LLN0.Health.q");
     }
 
-    public String getReportNodeMapKey(final Map<String, String> settings) {
-        return this.reportNodeMap.get(settings.get("LogicalDevice") + "_" + settings.get("ReportType"));
+    public String getReportTriggerNode(final Map<String, String> settings) {
+        return this.reportNodeMap.get(settings.get(PlatformMicrogridsKeys.LOGICAL_DEVICE) + "_"
+                + settings.get(PlatformMicrogridsKeys.REPORT_TYPE));
     }
 
 }

@@ -12,9 +12,10 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncRequest;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.platform.microgrids.PlatformMicrogridsKeys;
 import com.alliander.osgp.cucumber.platform.microgrids.mocks.iec61850.Iec61850MockServer;
-import com.alliander.osgp.cucumber.platform.microgrids.support.ReportToNodeMappingService;
+import com.alliander.osgp.cucumber.platform.microgrids.support.ReportTriggerNodeMappingService;
 import com.alliander.osgp.cucumber.platform.microgrids.support.ws.microgrids.NotificationService;
 import com.alliander.osgp.cucumber.platform.microgrids.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
+import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -41,7 +42,7 @@ public class ReportingSteps extends GlueBase {
     private NotificationService mockNotificationService;
 
     @Autowired
-    private ReportToNodeMappingService reportToNodeMappingService;
+    private ReportTriggerNodeMappingService reportTriggerNodeMappingService;
 
     @Given("^all reports are disabled on the rtu$")
     public void allReportsAreDisabled() {
@@ -55,7 +56,6 @@ public class ReportingSteps extends GlueBase {
 
     @Then("^all reports should be enabled$")
     public void allReportsShouldBeEnabled() throws Throwable {
-        // Thread.sleep(5000);
         this.iec61850MockServerPampus.assertReportsEnabled();
     }
 
@@ -77,22 +77,6 @@ public class ReportingSteps extends GlueBase {
         this.connectOsgpToRtuDevice(this.iec61850MockServerSchoteroog, settings);
     }
 
-    private void connectOsgpToRtuDevice(final Iec61850MockServer iec61850MockServer, final Map<String, String> settings)
-            throws Throwable {
-
-        // Restart the simulator to avoid problems with cached connections.
-        iec61850MockServer.stop();
-        iec61850MockServer.start();
-
-        // Do a GetDataRequest to get a connection with OSGP
-        this.doGetDataRequest(settings);
-
-        // Make sure the notifications queue is empty, so that when the
-        // reportNotification arrives it's the only one in the queue.
-        this.mockNotificationService.clearAllNotifications();
-
-    }
-
     @When("^the Pampus RTU pushes a report$")
     public void thePampusRTUPushesAReport(final Map<String, String> settings) throws Throwable {
 
@@ -109,15 +93,30 @@ public class ReportingSteps extends GlueBase {
     public void theSchoteroogRTUPushesAReport(final Map<String, String> settings) throws Throwable {
 
         this.pushAReport(this.iec61850MockServerSchoteroog, settings);
+    }
 
+    private void connectOsgpToRtuDevice(final Iec61850MockServer iec61850MockServer, final Map<String, String> settings)
+            throws Throwable {
+
+        // Restart the simulator to avoid problems with cached connections.
+        iec61850MockServer.stop();
+        iec61850MockServer.start();
+
+        // Do a GetDataRequest to get a connection with OSGP
+        this.doGetDataRequest(settings);
+
+        // Make sure the notifications queue is empty, so that when the
+        // reportNotification arrives it's the only one in the queue.
+        this.mockNotificationService.clearAllNotifications();
     }
 
     private void pushAReport(final Iec61850MockServer iec61850MockServer, final Map<String, String> settings)
             throws Throwable {
 
-        // Change a value, that will trigger sending of a report.
-        iec61850MockServer.mockValue(settings.get("LogicalDevice"),
-                this.reportToNodeMappingService.getReportNodeMapKey(settings), "OLD_DATA");
+        // Change a quality attribute value to trigger sending of a report.
+        final String triggerNode = this.reportTriggerNodeMappingService.getReportTriggerNode(settings);
+        iec61850MockServer.mockValue(settings.get(PlatformMicrogridsKeys.LOGICAL_DEVICE), triggerNode,
+                QualityType.OLD_DATA.name());
     }
 
     private void doGetDataRequest(final Map<String, String> settings) throws Throwable {
