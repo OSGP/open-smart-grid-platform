@@ -79,8 +79,7 @@ public class RtuSimulator implements ServerEventListener {
     public RtuSimulator(final int port, final InputStream sclFile, final String serverName,
             final ServerSapEventProducer serverSapEventProducer, final Long updateValuesDelay,
             final Long updateValuesPeriod) throws SclParseException {
-        final List<ServerSap> serverSaps = ServerSap.getSapsFromSclFile(sclFile);
-        this.server = serverSaps.get(0);
+        this.server = ServerSap.getSapsFromSclFile(IcdFileConverter.convertReportsForTesting(sclFile)).get(0);
         this.server.setPort(port);
         this.serverName = serverName;
         this.serverSapEventProducer = serverSapEventProducer;
@@ -474,4 +473,5 @@ public class RtuSimulator implements ServerEventListener {
             return PHYSICAL_DEVICE;
         }
     }
+
 }
