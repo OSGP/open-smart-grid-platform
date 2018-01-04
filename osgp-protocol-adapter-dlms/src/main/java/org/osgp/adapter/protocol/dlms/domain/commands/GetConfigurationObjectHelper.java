@@ -9,7 +9,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -51,13 +50,13 @@ public class GetConfigurationObjectHelper {
 
         try {
             return this.retrieveConfigurationObject(conn);
-        } catch (IOException | TimeoutException e) {
+        } catch (final IOException e) {
             throw new ConnectionException(e);
         }
     }
 
     private ConfigurationObjectDto retrieveConfigurationObject(final DlmsConnectionHolder conn)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+            throws IOException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -102,9 +101,10 @@ public class GetConfigurationObjectHelper {
                     "Expected Gprs operation mode data in result while retrieving current configuration object, but got nothing");
         }
         GprsOperationModeTypeDto gprsOperationMode = null;
-        if (((Number) gprsOperationModeData.getValue()).longValue() == 1) {
+        final Number number = gprsOperationModeData.getValue();
+        if (number.longValue() == 1) {
             gprsOperationMode = GprsOperationModeTypeDto.ALWAYS_ON;
-        } else if (((Number) gprsOperationModeData.getValue()).longValue() == 2) {
+        } else if (number.longValue() == 2) {
             gprsOperationMode = GprsOperationModeTypeDto.TRIGGERED;
         }
 
@@ -123,7 +123,8 @@ public class GetConfigurationObjectHelper {
             throw new ProtocolAdapterException(
                     "Value in DataObject is not a BitString: " + resultData.getValue().getClass().getName());
         }
-        final byte[] flagByteArray = ((BitString) flagsData.getValue()).getBitString();
+        final BitString bitString = flagsData.getValue();
+        final byte[] flagByteArray = bitString.getBitString();
 
         final List<ConfigurationFlagDto> listConfigurationFlag = this.configurationObjectHelperService
                 .toConfigurationFlags(flagByteArray);

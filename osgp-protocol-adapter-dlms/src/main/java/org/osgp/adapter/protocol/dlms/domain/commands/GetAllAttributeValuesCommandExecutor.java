@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -28,7 +27,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
 public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
@@ -70,7 +69,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
 
     @Override
     public String execute(final DlmsConnectionHolder conn, final DlmsDevice device, final DataObject object)
-            throws ProtocolAdapterException, FunctionalException {
+            throws OsgpException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -96,7 +95,7 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
             LOGGER.debug("Total output is: {}", output);
 
             return output;
-        } catch (final IOException | TimeoutException e) {
+        } catch (final IOException e) {
             throw new ConnectionException(e);
         }
     }
@@ -111,35 +110,35 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
     }
 
     private String createOutput(final DlmsConnectionHolder conn, final List<ClassIdObisAttr> allObisCodes)
-            throws ProtocolAdapterException, IOException, TimeoutException {
-        String output = "";
+            throws ProtocolAdapterException, IOException {
+
+        final StringBuilder output = new StringBuilder();
         int index = 1;
         for (final ClassIdObisAttr obisAttr : allObisCodes) {
             LOGGER.debug("Creating output for {} {}/{}", obisAttr.getObisCode().getValue(), index++,
                     allObisCodes.size());
-            output += this.getAllDataFromObisCode(conn, obisAttr);
+            output.append(this.getAllDataFromObisCode(conn, obisAttr));
             LOGGER.debug("Length of output is now: {}", output.length());
         }
-        return output;
+        return output.toString();
     }
 
     private String getAllDataFromObisCode(final DlmsConnectionHolder conn, final ClassIdObisAttr obisAttr)
-            throws ProtocolAdapterException, IOException, TimeoutException {
-        String output = "";
+            throws ProtocolAdapterException, IOException {
 
+        final StringBuilder output = new StringBuilder();
         final int noOfAttr = obisAttr.getNoAttr();
         for (int attributeValue = 1; attributeValue <= noOfAttr; attributeValue++) {
             LOGGER.debug("Creating output for {} attr: {}/{}", obisAttr.getObisCode().getValue(), attributeValue,
                     noOfAttr);
-            output += this.getAllDataFromAttribute(conn, obisAttr.getClassNumber(), obisAttr.getObisCode(),
-                    attributeValue);
+            output.append(this.getAllDataFromAttribute(conn, obisAttr.getClassNumber(), obisAttr.getObisCode(),
+                    attributeValue));
         }
-        return output;
+        return output.toString();
     }
 
     private String getAllDataFromAttribute(final DlmsConnectionHolder conn, final int classNumber,
-            final DataObject obisCode, final int attributeValue)
-                    throws ProtocolAdapterException, IOException, TimeoutException {
+            final DataObject obisCode, final int attributeValue) throws ProtocolAdapterException, IOException {
 
         if (!obisCode.isByteArray()) {
             this.throwUnexpectedTypeProtocolAdapterException();
@@ -183,7 +182,8 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
         if (DataObject.Type.LONG_UNSIGNED != dataObject.getType()) {
             this.throwUnexpectedTypeProtocolAdapterException();
         }
-        return ((Number) dataObject.getValue()).intValue();
+        final Number number = dataObject.getValue();
+        return number.intValue();
     }
 
     private void throwUnexpectedTypeProtocolAdapterException() throws ProtocolAdapterException {

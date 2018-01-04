@@ -28,7 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Some code may look odd, specifically in the execute() method. The reason is
@@ -90,7 +90,7 @@ public class ReplaceKeyCommandExecutor
 
     @Override
     public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException, FunctionalException {
+            final ActionRequestDto actionRequestDto) throws OsgpException {
 
         this.checkActionRequestType(actionRequestDto);
 
@@ -124,8 +124,7 @@ public class ReplaceKeyCommandExecutor
 
     @Override
     public DlmsDevice execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
-            throws ProtocolAdapterException, FunctionalException {
+            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws OsgpException {
 
         final DlmsDevice devicePostSave = this.securityKeyService.storeNewKey(device, keyWrapper.getBytes(),
                 keyWrapper.getSecurityKeyType());
@@ -144,11 +143,10 @@ public class ReplaceKeyCommandExecutor
      *            Key data
      * @throws IOException
      * @throws ProtocolAdapterException
-     * @throws FunctionalException
      */
     private void sendToDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper)
-            throws ProtocolAdapterException, FunctionalException {
+            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
+
         try {
             final byte[] decryptedKey = this.securityKeyService.decryptKey(keyWrapper.getBytes(),
                     keyWrapper.securityKeyType);

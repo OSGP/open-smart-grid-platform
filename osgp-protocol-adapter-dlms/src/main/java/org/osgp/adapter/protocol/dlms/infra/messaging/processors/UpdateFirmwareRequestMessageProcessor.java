@@ -16,12 +16,10 @@ import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.application.services.FirmwareService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
-import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +79,8 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+            final Serializable requestObject) throws OsgpException {
+
         this.assertRequestObjectType(String.class, requestObject);
 
         final String firmwareIdentification = (String) requestObject;

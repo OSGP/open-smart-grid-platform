@@ -30,6 +30,7 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public class Hls5Connector extends SecureDlmsConnector {
@@ -51,7 +52,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     @Override
     public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws TechnicalException, FunctionalException {
+            throws OsgpException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice(device);
@@ -86,7 +87,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     @Override
     protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-            throws TechnicalException, FunctionalException {
+            throws OsgpException {
 
         final String deviceIdentification = device.getDeviceIdentification();
         final byte[] dlmsAuthenticationKey;

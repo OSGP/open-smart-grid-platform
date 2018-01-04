@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -176,7 +175,7 @@ public class DlmsHelperService {
             } else {
                 return this.getWithListWorkaround(conn, params);
             }
-        } catch (IOException | TimeoutException e) {
+        } catch (final IOException e) {
             throw new ConnectionException(e);
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Error retrieving values with-list.", e);
@@ -242,12 +241,11 @@ public class DlmsHelperService {
      * not support the actual functionality from DLMS.
      *
      * @throws IOException
-     * @throws TimeoutException
      *
      * @see #getWithList(DlmsConnectionHolder, DlmsDevice, AttributeAddress...)
      */
     private List<GetResult> getWithListWorkaround(final DlmsConnectionHolder conn, final AttributeAddress... params)
-            throws IOException, TimeoutException {
+            throws IOException {
         final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress param : params) {
             getResultList.add(conn.getConnection().get(param));
@@ -257,7 +255,7 @@ public class DlmsHelperService {
 
     private void checkResultCode(final GetResult getResult, final String description) throws ProtocolAdapterException {
         final AccessResultCode resultCode = getResult.getResultCode();
-        LOGGER.debug(description + " - AccessResultCode: {}", resultCode);
+        LOGGER.debug("{} - AccessResultCode: {}", description, resultCode);
         if (resultCode != AccessResultCode.SUCCESS) {
             throw new ProtocolAdapterException(
                     "No success retrieving " + description + ": AccessResultCode = " + resultCode);
@@ -310,9 +308,6 @@ public class DlmsHelperService {
 
     public String readString(final DataObject resultData, final String description) throws ProtocolAdapterException {
         final byte[] bytes = this.readByteArray(resultData, description, "String");
-        if (bytes == null) {
-            return null;
-        }
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
@@ -331,7 +326,8 @@ public class DlmsHelperService {
         if (resultData.isByteArray()) {
             return this.fromDateTimeValue((byte[]) resultData.getValue());
         } else if (resultData.isCosemDateFormat()) {
-            return this.fromDateTimeValue(((CosemDateTime) resultData.getValue()).encode());
+            final CosemDateTime cosemDateTime = resultData.getValue();
+            return this.fromDateTimeValue(cosemDateTime.encode());
         } else {
             LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
             throw new ProtocolAdapterException(
@@ -344,14 +340,15 @@ public class DlmsHelperService {
         if (object.isByteArray()) {
             dateTime = this.fromDateTimeValue((byte[]) object.getValue());
         } else if (object.isCosemDateFormat()) {
-            dateTime = this.fromDateTimeValue(((CosemDateTime) object.getValue()).encode());
+            final CosemDateTime cosemDateTime = object.getValue();
+            dateTime = this.fromDateTimeValue(cosemDateTime.encode());
         } else {
             this.logAndThrowExceptionForUnexpectedResultData(object, "ByteArray or CosemDateFormat");
         }
         return dateTime;
     }
 
-    public CosemDateTimeDto fromDateTimeValue(final byte[] dateTimeValue) throws ProtocolAdapterException {
+    public CosemDateTimeDto fromDateTimeValue(final byte[] dateTimeValue) {
 
         final ByteBuffer bb = ByteBuffer.wrap(dateTimeValue);
 
@@ -509,9 +506,6 @@ public class DlmsHelperService {
     public CosemObisCodeDto readLogicalName(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         final byte[] bytes = this.readByteArray(resultData, description, "Logical Name");
-        if (bytes == null) {
-            return null;
-        }
         return new CosemObisCodeDto(bytes);
     }
 
@@ -658,9 +652,11 @@ public class DlmsHelperService {
         } else if (dataObject.isByteArray()) {
             objectText = this.getDebugInfoByteArray((byte[]) dataObject.getValue());
         } else if (dataObject.isBitString()) {
-            objectText = this.getDebugInfoBitStringBytes(((BitString) dataObject.getValue()).getBitString());
+            final BitString bitString = dataObject.getValue();
+            objectText = this.getDebugInfoBitStringBytes(bitString.getBitString());
         } else if (dataObject.isCosemDateFormat() && dataObject.getValue() instanceof CosemDateTime) {
-            objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.getValue()).encode());
+            final CosemDateTime cosemDateTime = dataObject.getValue();
+            objectText = this.getDebugInfoDateTimeBytes(cosemDateTime.encode());
         } else {
             objectText = String.valueOf(dataObject.getRawValue());
         }
@@ -790,6 +786,10 @@ public class DlmsHelperService {
     }
 
     public String getDebugInfoBitStringBytes(final byte[] bitStringValue) {
+        if (bitStringValue == null) {
+            return null;
+        }
+
         final BigInteger bigValue = this.byteArrayToBigInteger(bitStringValue);
         final String stringValue = this.byteArrayToString(bitStringValue);
 
@@ -870,7 +870,7 @@ public class DlmsHelperService {
     }
 
     private void logDebugResultData(final DataObject resultData, final String description) {
-        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        LOGGER.debug("{} - ResultData: {}", description, this.getDebugInfo(resultData));
     }
 
     private void logAndThrowExceptionForUnexpectedResultData(final DataObject resultData, final String expectedType)

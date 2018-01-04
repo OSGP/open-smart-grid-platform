@@ -11,7 +11,6 @@ import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.ManagementService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,8 @@ public class DisableDebuggingRequestMessageProcessor extends DeviceRequestMessag
 
     @Override
     protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
-            throws OsgpException, ProtocolAdapterException {
+            throws OsgpException {
+
         this.managementService.changeInDebugMode(device, false);
 
         // No response data
