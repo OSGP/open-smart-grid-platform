@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServerPampus
-Feature: MicroGrids Get PQ Data
+@Microgrids @Platform @Iec61850MockServerPampus
+Feature: Microgrids Get PQ Data
   As an OSGP client
   I want to get PQ data from an RTU
   So this data can be used by other processes

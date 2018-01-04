@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServerSchoteroog
-Feature: MicroGrids Get Gas Furnace Data
+@Microgrids @Platform @Iec61850MockServerSchoteroog
+Feature: Microgrids Get Gas Furnace Data
   In order to be able to know data of a gas furnace with a remote terminal unit
   As an OSGP client
   I want to get Gas Furnace data from an RTU

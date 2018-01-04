@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServer @Iec61850MockServerPampus
-Feature: MicroGrids Enable Reporting
+@Microgrids @Platform @Iec61850MockServer @Iec61850MockServerPampus
+Feature: Microgrids Enable Reporting
   In order to be able to receive data from a RTU
   As an OSGP client
   I want to enable all reporting on the RTU when a connection is established

@@ -1,4 +1,4 @@
-@MicroGrids @Platform @Iec61850MockServerMarkerWadden
+@Microgrids @Platform @Iec61850MockServerMarkerWadden
 Feature: Microgrids Get Load Data
   As an OSGP client
   I want to get Load data from an RTU
