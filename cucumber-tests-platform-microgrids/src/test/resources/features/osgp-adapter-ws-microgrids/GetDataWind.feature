@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServer @Iec61850MockServerPampus
-Feature: MicroGrids Get Wind Data
+@Microgrids @Platform @Iec61850MockServer @Iec61850MockServerPampus
+Feature: Microgrids Get Wind Data
   As an OSGP client
   I want to get Wind data from an RTU
   So this data can be used by other processes

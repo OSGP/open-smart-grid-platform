@@ -11,7 +11,7 @@ package com.alliander.osgp.cucumber.platform.microgrids;
 
 public class PlatformMicrogridsDefaults extends com.alliander.osgp.cucumber.platform.PlatformDefaults {
 
-    public static final Boolean ENABLE_ALL_REPORTS = true;
+    public static final Boolean ENABLE_ALL_REPORTS = false;
     public static final Boolean USE_COMBINED_LOAD = false;
 
 }
