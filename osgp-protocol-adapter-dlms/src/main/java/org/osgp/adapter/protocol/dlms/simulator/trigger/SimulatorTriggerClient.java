@@ -27,6 +27,7 @@ import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
+import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,14 +188,13 @@ public class SimulatorTriggerClient extends AbstractClient {
         }
     }
 
-    public void setDlmsAttributeValues(final int classId, final String obisCode, final Map<String, String> settings)
+    public void setDlmsAttributeValues(final int classId, final ObisCode obisCode, final Map<String, String> settings)
             throws SimulatorTriggerClientException {
 
-        final String key = this.buildKeyPathSegment(classId, obisCode);
         final String properties = this.buildPropertiesPathSegment(settings);
 
-        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(key).path(properties)
-                .put(null);
+        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(classId)
+                .path(obisCode.asDecimalString()).path(properties).put(null);
 
         try {
             this.checkResponseStatus(response);
@@ -203,12 +203,11 @@ public class SimulatorTriggerClient extends AbstractClient {
         }
     }
 
-    public final Properties getDlmsAttributeValues(final int classId, final String obisCode)
+    public final Properties getDlmsAttributeValues(final int classId, final ObisCode obisCode)
             throws SimulatorTriggerClientException {
 
-        final String key = this.buildKeyPathSegment(classId, obisCode);
-
-        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(key).get();
+        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(classId)
+                .path(obisCode.asDecimalString()).get();
 
         try {
             this.checkResponseStatus(response);
@@ -216,10 +215,6 @@ public class SimulatorTriggerClient extends AbstractClient {
             throw new SimulatorTriggerClientException("getDlmsAttributeValues response exception", e);
         }
         return response.readEntity(Properties.class);
-    }
-
-    private String buildKeyPathSegment(final int classId, final String obisCode) {
-        return String.format("%d_%s", classId, obisCode);
     }
 
     private String buildPropertiesPathSegment(final Map<String, String> settings) {
