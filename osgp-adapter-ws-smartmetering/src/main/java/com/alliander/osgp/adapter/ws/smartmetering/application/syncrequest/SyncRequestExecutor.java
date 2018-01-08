@@ -100,7 +100,7 @@ public abstract class SyncRequestExecutor {
     private void storeResponseData(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final ResponseMessageResultType resultType, final Serializable data) {
         final ResponseData responseData = new ResponseData(organisationIdentification,
-                this.getMessageType().name(), deviceIdentification, correlationUid, resultType, data);
+                this.getMessageType().name(), deviceIdentification, correlationUid, resultType, data, 0);
         this.responseDataService.enqueue(responseData);
     }
 

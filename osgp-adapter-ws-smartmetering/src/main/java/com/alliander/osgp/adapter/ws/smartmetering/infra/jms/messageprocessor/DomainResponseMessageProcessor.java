@@ -144,7 +144,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
         }
 
         final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
-                deviceIdentification, correlationUid, resultType, meterResponseObject);
+                deviceIdentification, correlationUid, resultType, meterResponseObject, 0);
         this.responseDataService.enqueue(responseData);
     }
 

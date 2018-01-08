@@ -40,8 +40,11 @@ public class ResponseData extends AbstractEntity {
 
     @Column(length = 255)
     private String correlationUid;
+    
+    @Column(length = 255)
+    private Integer numberOfNotificationsSend;
 
-    @Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.STRING)
     private ResponseMessageResultType resultType;
 
     @Type(type = "java.io.Serializable")
@@ -54,13 +57,14 @@ public class ResponseData extends AbstractEntity {
 
     public ResponseData(final String organisationIdentification, final String messageType,
             final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
-            final Serializable messageData) {
+            final Serializable messageData, Integer numberOfNotificationsSend) {
         this.organisationIdentification = organisationIdentification;
         this.messageType = messageType;
         this.deviceIdentification = deviceIdentification;
         this.correlationUid = correlationUid;
         this.resultType = resultType;
         this.messageData = messageData;
+        this.numberOfNotificationsSend = numberOfNotificationsSend;
     }
 
     public String getCorrelationUid() {
@@ -86,5 +90,12 @@ public class ResponseData extends AbstractEntity {
     public ResponseMessageResultType getResultType() {
         return this.resultType;
     }
+    
+    public Integer getNumberOfNotificationsSend() {
+		return numberOfNotificationsSend;
+	}
 
+	public void setNumberOfNotificationsSend(Integer numberOfNotificationsSend) {
+		this.numberOfNotificationsSend = numberOfNotificationsSend;
+	}
 }

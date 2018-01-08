@@ -18,11 +18,13 @@ import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 @Repository
 public interface ResponseDataRepository extends JpaRepository<ResponseData, Long> {
 
-    List<ResponseData> findByOrganisationIdentification(String organisationIdentification);
+	List<ResponseData> findByOrganisationIdentification(String organisationIdentification);
 
     List<ResponseData> findByMessageType(String messageType);
 
     List<ResponseData> findByDeviceIdentification(String deviceIdentification);
+    
+    List<ResponseData> findByNumberOfNotificationsSendLessThan(String numberOfNotificationsSend);
 
     ResponseData findByCorrelationUid(String correlationUid);
 

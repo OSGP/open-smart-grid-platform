@@ -143,7 +143,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         }
 
         final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
-                deviceIdentification, correlationUid, resultType, responseDataObject);
+                deviceIdentification, correlationUid, resultType, responseDataObject, 0);
         this.responseDataService.enqueue(responseData);
     }
 
