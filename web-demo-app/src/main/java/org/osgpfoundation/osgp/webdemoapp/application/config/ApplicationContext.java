@@ -10,25 +10,28 @@ package org.osgpfoundation.osgp.webdemoapp.application.config;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpAdminClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.infra.platform.KeyStoreHelper;
 import org.osgpfoundation.osgp.webdemoapp.infra.platform.SoapRequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -42,12 +45,36 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 @ComponentScan(basePackages = { "org.osgpfoundation.osgp.webdemoapp" })
 @EnableWebMvc
 @ImportResource("classpath:applicationContext.xml")
+@PropertySources({ @PropertySource("classpath:web-demo-app.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/WebDemoApp/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
     private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";
     private static final String VIEW_RESOLVER_SUFFIX = ".jsp";
+
+    @Value("${web.service.truststore.location}")
+    private String truststoreLocation;
+
+    @Value("${web.service.truststore.type}")
+    private String truststoreType;
+
+    @Value("${web.service.truststore.password}")
+    private String truststorePw;
+
+    @Value("${web.service.keystore.location}")
+    private String keystoreLocation;
+
+    @Value("${web.service.keystore.type}")
+    private String keystoreType;
+
+    @Value("${web.service.keystore.password}")
+    private String keystorePw;
+
+    @Value("${web.service.client.certificate}")
+    private String clientCertificate;
 
     /**
      * Method for resolving views.
@@ -103,8 +130,8 @@ public class ApplicationContext {
      * @return KeyStoreHelper
      */
     private KeyStoreHelper keyStoreHelper() {
-        return new KeyStoreHelper("jks", "/etc/ssl/certs/trust.jks", "123456", "/etc/ssl/certs/test-org.pfx", "pkcs12",
-                "1234");
+        return new KeyStoreHelper(this.truststoreType, this.truststoreLocation, this.truststorePw,
+                this.keystoreLocation + this.clientCertificate, this.keystoreType, this.keystorePw);
     }
 
     /**

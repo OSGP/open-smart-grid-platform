@@ -20,6 +20,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
@@ -34,10 +35,28 @@ public class SoapRequestHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SoapRequestHelper.class);
 
-    private Jaxb2Marshaller marshaller;
-    private KeyStoreHelper keyStoreHelper;
+    @Value("${organisation.identification}")
+    private String organisationIdentifcation;
 
-    private SaajSoapMessageFactory messageFactory;
+    @Value("${user.name}")
+    private String userName;
+
+    @Value("${application.name}")
+    private String applicationName;
+
+    @Value("${base.uri}")
+    private String baseUri;
+
+    @Value("${web.service.template.default.uri.admin.devicemanagement}")
+    private String adminWebServiceDeviceManagementUri;
+
+    @Value("${web.service.template.default.uri.publiclighting.adhocmanagement}")
+    private String publicLightingWebServiceAdHocManagementUri;
+
+    private Jaxb2Marshaller marshaller;
+    private final KeyStoreHelper keyStoreHelper;
+
+    private final SaajSoapMessageFactory messageFactory;
 
     public SoapRequestHelper(final SaajSoapMessageFactory messageFactory, final KeyStoreHelper keyStoreHelper) {
         this.messageFactory = messageFactory;
@@ -53,7 +72,9 @@ public class SoapRequestHelper {
     public WebServiceTemplate createAdminRequest() {
         this.initMarshaller("com.alliander.osgp.adapter.ws.schema.admin.devicemanagement");
 
-        final String uri = "https://localhost/osgp-adapter-ws-admin/admin/deviceManagementService/DeviceManagement";
+        // Example URI:
+        // "https://localhost/osgp-adapter-ws-admin/admin/deviceManagementService/DeviceManagement";
+        final String uri = this.baseUri + this.adminWebServiceDeviceManagementUri;
 
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
@@ -63,8 +84,8 @@ public class SoapRequestHelper {
 
         webServiceTemplate.setCheckConnectionForFault(true);
 
-        webServiceTemplate.setInterceptors(new ClientInterceptor[] { this
-                .createClientInterceptor("http://www.alliander.com/schemas/osp/common") });
+        webServiceTemplate.setInterceptors(new ClientInterceptor[] {
+                this.createClientInterceptor("http://www.alliander.com/schemas/osp/common") });
 
         webServiceTemplate.setMessageSender(this.createHttpMessageSender());
 
@@ -80,7 +101,9 @@ public class SoapRequestHelper {
     public WebServiceTemplate createPublicLightingRequest() {
         this.initMarshaller("com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement");
 
-        final String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
+        // Example URI:
+        // "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
+        final String uri = this.baseUri + this.publicLightingWebServiceAdHocManagementUri;
 
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
@@ -90,8 +113,8 @@ public class SoapRequestHelper {
 
         webServiceTemplate.setCheckConnectionForFault(true);
 
-        webServiceTemplate.setInterceptors(new ClientInterceptor[] { this
-                .createClientInterceptor("http://www.alliander.com/schemas/osgp/common") });
+        webServiceTemplate.setInterceptors(new ClientInterceptor[] {
+                this.createClientInterceptor("http://www.alliander.com/schemas/osgp/common") });
 
         webServiceTemplate.setMessageSender(this.createHttpMessageSender());
 
@@ -129,7 +152,7 @@ public class SoapRequestHelper {
             builder.setSSLSocketFactory(sslConnectionFactory);
             sender.setHttpClient(builder.build());
         } catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
-            LOGGER.error("Unbale to cretae SSL context", e);
+            LOGGER.error("Unbale to create SSL context", e);
         }
 
         return sender;
@@ -142,8 +165,8 @@ public class SoapRequestHelper {
      * @return ClientInterceptor
      */
     private ClientInterceptor createClientInterceptor(final String namespace) {
-        return new IdentificationClientInterceptor("test-org", "demo-app-user", "demo-app", namespace,
-                "OrganisationIdentification", "UserName", "ApplicationName");
+        return new IdentificationClientInterceptor(this.organisationIdentifcation, this.userName, this.applicationName,
+                namespace, "OrganisationIdentification", "UserName", "ApplicationName");
     }
 
 }
