@@ -9,9 +9,6 @@ package com.alliander.osgp.core.db.api.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
@@ -31,10 +28,6 @@ public class Device extends AbstractEntity {
     @Column
     private Float gpsLongitude;
 
-    @ManyToOne
-    @JoinTable(name = "device_authorization", joinColumns = @JoinColumn(name = "device"), inverseJoinColumns = @JoinColumn(name = "organisation"))
-    private Organisation organisation;
-
     public Device() {
         // Default constructor
     }
@@ -43,15 +36,8 @@ public class Device extends AbstractEntity {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public Device(final String deviceIdentification, final Organisation organisation) {
+    public Device(final String deviceIdentification, final Float gpsLatitude, final Float gpsLongitude) {
         this.deviceIdentification = deviceIdentification;
-        this.organisation = organisation;
-    }
-
-    public Device(final String deviceIdentification, final Organisation organisation, final Float gpsLatitude,
-            final Float gpsLongitude) {
-        this.deviceIdentification = deviceIdentification;
-        this.organisation = organisation;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
     }
@@ -66,9 +52,5 @@ public class Device extends AbstractEntity {
 
     public Float getGpsLongitude() {
         return this.gpsLongitude;
-    }
-
-    public Organisation getOrganisation() {
-        return this.organisation;
     }
 }
