@@ -388,8 +388,8 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="PeriodType" type="tns:PeriodType" />
-      <xsd:element name="BeginDate" type="xsd:date" />
-      <xsd:element name="EndDate" type="xsd:date" />
+      <xsd:element name="BeginDate" type="xsd:dateTime" />
+      <xsd:element name="EndDate" type="xsd:dateTime" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -398,8 +398,8 @@
       <xsd:extension base="common:Query">
         <xsd:sequence>
           <xsd:element name="PeriodType" type="tns:PeriodType" />
-          <xsd:element name="BeginDate" type="xsd:date" />
-          <xsd:element name="EndDate" type="xsd:date" />
+          <xsd:element name="BeginDate" type="xsd:dateTime" />
+          <xsd:element name="EndDate" type="xsd:dateTime" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
