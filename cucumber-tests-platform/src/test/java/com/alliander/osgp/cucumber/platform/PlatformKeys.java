@@ -322,5 +322,5 @@ public class PlatformKeys extends Keys {
 
     public static final String DATE = "Date";
     public static final String TIME_UNTIL_ON = "TimeUntilOn";
-
+	public static final String KEY_NUMBER_OF_NOTIFICATIONS_SEND = "NumberOfNotificationsSend";
 }

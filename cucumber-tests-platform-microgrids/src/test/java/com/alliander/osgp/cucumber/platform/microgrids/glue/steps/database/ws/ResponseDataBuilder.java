@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.microgrids.glue.steps.database.ws.ResponseDataBuilder;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 public class ResponseDataBuilder {
@@ -22,10 +23,11 @@ public class ResponseDataBuilder {
     private String messageType = "GET_DATA";
     private Serializable messageData = null;
     private ResponseMessageResultType resultType = ResponseMessageResultType.OK;
-
+    private Integer numberOfNotificationsSend = 0;
+    
     public ResponseData build() {
         return new ResponseData(this.organisationIdentification, this.messageType, this.deviceIdentification,
-                this.correlationUid, this.resultType, this.messageData);
+                this.correlationUid, this.resultType, this.messageData, this.numberOfNotificationsSend);
     }
 
     public ResponseDataBuilder fromSettings(final Map<String, String> settings) {
@@ -46,6 +48,9 @@ public class ResponseDataBuilder {
         }
         if (settings.containsKey(PlatformKeys.KEY_RESULT_TYPE)) {
             this.withResultType(ResponseMessageResultType.valueOf(settings.get(PlatformKeys.KEY_RESULT_TYPE)));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SEND)) {
+        	this.withNumberOfNotificationsSend(Integer.parseInt(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SEND)));
         }
         return this;
     }
@@ -77,6 +82,11 @@ public class ResponseDataBuilder {
 
     public ResponseDataBuilder withResultType(final ResponseMessageResultType resultType) {
         this.resultType = resultType;
+        return this;
+    }
+    
+    public ResponseDataBuilder withNumberOfNotificationsSend(final Integer numberOfNotificationsSend) {
+        this.numberOfNotificationsSend = numberOfNotificationsSend;
         return this;
     }
 }
