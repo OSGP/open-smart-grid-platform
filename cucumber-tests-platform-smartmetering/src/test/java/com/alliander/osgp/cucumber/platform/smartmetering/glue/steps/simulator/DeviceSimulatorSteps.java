@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.util.Map;
 import java.util.Properties;
 
+import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClient;
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClientException;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class DeviceSimulatorSteps extends GlueBase {
          */
 
         try {
-            this.simulatorTriggerClient.setDlmsAttributeValues(classId, obisCode, settings);
+            this.simulatorTriggerClient.setDlmsAttributeValues(classId, new ObisCode(obisCode), settings);
         } catch (final SimulatorTriggerClientException stce) {
             LOGGER.error("Error while setting DLMS attribute values for classId: " + classId + ", obisCode: " + obisCode
                     + " and settings: " + settings + " with SimulatorTriggerClient", stce);
@@ -69,7 +70,7 @@ public class DeviceSimulatorSteps extends GlueBase {
             final String deviceIdentification, final Map<String, String> settings) throws Throwable {
         Properties properties = null;
         try {
-            properties = this.simulatorTriggerClient.getDlmsAttributeValues(classId, obisCode);
+            properties = this.simulatorTriggerClient.getDlmsAttributeValues(classId, new ObisCode(obisCode));
 
         } catch (final SimulatorTriggerClientException stce) {
             LOGGER.error("Error while getting DLMS attribute values");
