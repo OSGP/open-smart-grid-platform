@@ -3,26 +3,26 @@ package com.alliander.osgp.adapter.ws.shared.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
-import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 
-@EnableScheduling
-@Configuration
-@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
+@Service
+@Transactional(value = "transactionManager")
 public class ResendNotificationService {
 
-	private static final String KEY_RESEND_NOTIFICATION_MAXIMUM = "smartmetering.scheduling.job.resend.notification.maximum";
-
+	@Autowired
+    private int resendNotificationMaximum;
+    
 	@Autowired
 	private NotificationService notificationService;
 
@@ -32,7 +32,7 @@ public class ResendNotificationService {
 	public void execute() {
 		List<ResponseData> notificationsToResend = new ArrayList<ResponseData>();
 		notificationsToResend = this.responseDataRepository
-				.findByNumberOfNotificationsSendLessThan(KEY_RESEND_NOTIFICATION_MAXIMUM);
+				.findByNumberOfNotificationsSendLessThan(this.resendNotificationMaximum);
 
 		// check modified by time with respect to number_of_notifications_send here?
 
