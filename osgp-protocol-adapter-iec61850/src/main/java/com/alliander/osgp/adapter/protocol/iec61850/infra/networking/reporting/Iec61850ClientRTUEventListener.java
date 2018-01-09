@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaReasonForInclusion;
-import org.openmuc.openiec61850.DataSet;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.HexConverter;
 import org.openmuc.openiec61850.Report;
@@ -33,7 +32,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Devi
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850BdaOptFldsHelper;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
@@ -111,13 +109,16 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
         this.logger.info("newReport for {}", reportDescription);
 
-        if (report.isBufOvfl()) {
-            this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
-                    reportDescription);
-        } else if (this.skipRecordBecauseOfOldSqNum(report)) {
-            this.logger.warn("Skipping report because SqNum: {} is less than what should be the first new value: {}",
-                    report.getSqNum(), this.firstNewSqNum);
-            return;
+        if (report.getBufOvfl() != null) {
+            if (report.getBufOvfl()) {
+                this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
+                        reportDescription);
+            } else if (this.skipRecordBecauseOfOldSqNum(report)) {
+                this.logger.warn(
+                        "Skipping report because SqNum: {} is less than what should be the first new value: {}",
+                        report.getSqNum(), this.firstNewSqNum);
+                return;
+            }
         }
 
         final Iec61850ReportHandler reportHandler = this.getReportHandler(report.getDataSetRef());
@@ -147,12 +148,12 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private void processReport(final Report report, final String reportDescription,
             final Iec61850ReportHandler reportHandler) throws ProtocolAdapterException {
-        if (report.getDataSet() == null) {
-            this.logger.warn("No DataSet available for {}", reportDescription);
+        if (report.getValues() == null) {
+            this.logger.warn("No dataSet members available for {}", reportDescription);
             return;
         }
 
-        final List<FcModelNode> members = report.getDataSet().getMembers();
+        final List<FcModelNode> members = report.getValues();
         if ((members == null) || members.isEmpty()) {
             this.logger.warn("No members in DataSet available for {}", reportDescription);
             return;
@@ -205,7 +206,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         sb.append("\t             RptId:\t").append(report.getRptId()).append(System.lineSeparator());
         sb.append("\t        DataSetRef:\t").append(report.getDataSetRef()).append(System.lineSeparator());
         sb.append("\t           ConfRev:\t").append(report.getConfRev()).append(System.lineSeparator());
-        sb.append("\t           BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
+        sb.append("\t           BufOvfl:\t").append(report.getBufOvfl()).append(System.lineSeparator());
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
         sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
                 .append(System.lineSeparator());
@@ -229,15 +230,16 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
                         .append(System.lineSeparator());
             }
         }
-        sb.append("\t           optFlds:").append(report.getOptFlds()).append("\t(")
-                .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-                .append(System.lineSeparator());
-        final DataSet dataSet = report.getDataSet();
-        if (dataSet == null) {
+        // sb.append("\t optFlds:").append(report.getOptFlds()).append("\t(")
+        // .append(new
+        // Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
+        // .append(System.lineSeparator());
+        // final DataSet dataSet = report.getDataSet();
+        if (report.getValues() == null) {
             sb.append("\t           DataSet:\tnull").append(System.lineSeparator());
         } else {
-            sb.append("\t           DataSet:\t").append(dataSet.getReferenceStr()).append(System.lineSeparator());
-            final List<FcModelNode> members = dataSet.getMembers();
+            sb.append("\t           DataSet:\t").append(report.getDataSetRef()).append(System.lineSeparator());
+            final List<FcModelNode> members = report.getValues();
             if ((members != null) && !members.isEmpty()) {
                 sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
                 for (final FcModelNode member : members) {

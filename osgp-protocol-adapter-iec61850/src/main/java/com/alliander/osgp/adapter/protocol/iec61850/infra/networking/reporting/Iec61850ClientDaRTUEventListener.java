@@ -19,7 +19,6 @@ import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaFloat32;
 import org.openmuc.openiec61850.BdaReasonForInclusion;
 import org.openmuc.openiec61850.BdaTimestamp;
-import org.openmuc.openiec61850.DataSet;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.HexConverter;
@@ -32,7 +31,6 @@ import org.osgpfoundation.osgp.dto.da.iec61850.LogicalNodeDto;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850BdaOptFldsHelper;
 
 public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventListener {
 
@@ -58,15 +56,19 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
     }
 
     private void processReport(final Report report, final String reportDescription) throws ProtocolAdapterException {
-        if (report.getDataSet() == null) {
-            this.logger.warn("No DataSet available for {}", reportDescription);
+
+        // if (report.getDataSet() == null) {
+        if (report.getValues() == null) {
+            this.logger.warn("No dataSet members available for {}", reportDescription);
             return;
         }
 
         final List<LogicalDevice> logicalDevices = new ArrayList<>();
-        final List<FcModelNode> members = report.getDataSet().getMembers();
+        // final List<FcModelNode> members = report.getDataSet().getMembers();
+        final List<FcModelNode> members = report.getValues();
+
         if ((members == null) || members.isEmpty()) {
-            this.logger.warn("No members in DataSet available for {}", reportDescription);
+            this.logger.warn("No dataSet members available for {}", reportDescription);
             return;
         }
         for (final FcModelNode member : members) {
@@ -236,7 +238,11 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
         sb.append("\t             RptId:\t").append(report.getRptId()).append(System.lineSeparator());
         sb.append("\t        DataSetRef:\t").append(report.getDataSetRef()).append(System.lineSeparator());
         sb.append("\t           ConfRev:\t").append(report.getConfRev()).append(System.lineSeparator());
-        sb.append("\t           BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
+
+        // sb.append("\t
+        // BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
+        sb.append("\t           BufOvfl:\t").append(report.getBufOvfl()).append(System.lineSeparator());
+
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
         sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
                 .append(System.lineSeparator());
@@ -260,15 +266,26 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
                         .append(System.lineSeparator());
             }
         }
-        sb.append("\t           optFlds:").append(report.getOptFlds()).append("\t(")
-                .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-                .append(System.lineSeparator());
-        final DataSet dataSet = report.getDataSet();
-        if (dataSet == null) {
-            sb.append("\t           DataSet:\tnull").append(System.lineSeparator());
+
+        // TODO: check for removing OptFlds
+        // sb.append("\t optFlds:").append(report.getOptFlds()).append("\t(")
+        // .append(new
+        // Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
+        // .append(System.lineSeparator());
+
+        // final DataSet dataSet = report.getDataSet();
+        // if (dataSet == null) {
+        final List<FcModelNode> members = report.getValues();
+        if (members == null) {
+            sb.append("\t           DataSet members:\tnull").append(System.lineSeparator());
         } else {
-            sb.append("\t           DataSet:\t").append(dataSet.getReferenceStr()).append(System.lineSeparator());
-            final List<FcModelNode> members = dataSet.getMembers();
+            // sb.append("\t
+            // DataSet:\t").append(dataSet.getReferenceStr()).append(System.lineSeparator());
+            sb.append("\t           DataSet:\t").append(report.getDataSetRef()).append(System.lineSeparator());
+
+            // final List<FcModelNode> members = dataSet.getMembers();
+            // final List<FcModelNode> members = report.getValues();
+
             if ((members != null) && !members.isEmpty()) {
                 sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
                 for (final FcModelNode member : members) {
