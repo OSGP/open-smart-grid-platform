@@ -198,7 +198,7 @@ public class FirmwareFileSteps {
                 PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final FirmwareFile firmware = this.firmwareFileRepository.findByIdentification(
-                getString(settings, PlatformKeys.FIRMWARE_FILENAME, PlatformDefaults.FIRMWARE_FILENAME));
+                getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME, PlatformDefaults.FIRMWARE_FILENAME));
 
         final Date installationDate = new Date();
 
