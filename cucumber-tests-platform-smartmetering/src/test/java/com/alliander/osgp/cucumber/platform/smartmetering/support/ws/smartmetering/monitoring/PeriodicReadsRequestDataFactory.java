@@ -9,11 +9,8 @@ package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeter
 
 import static com.alliander.osgp.cucumber.core.Helpers.getDate;
 
-import java.util.GregorianCalendar;
 import java.util.Map;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
@@ -22,6 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData;
 import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.helpers.DateConverter;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class PeriodicReadsRequestDataFactory {
@@ -46,14 +44,7 @@ public class PeriodicReadsRequestDataFactory {
             final String key) {
 
         final DateTime dateTime = getDate(settings, key, new DateTime());
-
-        try {
-            final GregorianCalendar gregorianCalendar = new GregorianCalendar();
-            gregorianCalendar.setTime(dateTime.toDate());
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
-        } catch (final DatatypeConfigurationException e) {
-            throw new RuntimeException(e);
-        }
+        return DateConverter.createXMLGregorianCalendar(dateTime.toDate());
     }
 
 }

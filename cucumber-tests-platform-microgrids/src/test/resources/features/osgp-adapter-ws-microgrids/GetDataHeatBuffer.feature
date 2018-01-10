@@ -1,5 +1,5 @@
-@MicroGrids @Platform @Iec61850MockServerSchoteroog
-Feature: MicroGrids Get Heat Buffer Data
+@Microgrids @Platform @Iec61850MockServerSchoteroog
+Feature: Microgrids Get Heat Buffer Data
   As an OSGP client
   I want to get Heat Buffer data from an RTU
   So this data can be used by other processes

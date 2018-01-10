@@ -30,10 +30,12 @@ public class JUnitResultFormatterAsRunListener extends RunListener {
 
     @Override
     public void testRunStarted(final Description description) throws Exception {
+        // Empty body.
     }
 
     @Override
     public void testRunFinished(final Result result) throws Exception {
+        // Empty body.
     }
 
     @Override
@@ -45,8 +47,12 @@ public class JUnitResultFormatterAsRunListener extends RunListener {
 
         this.oldStdout = System.out;
         this.oldStderr = System.err;
-        System.setOut(new PrintStream(this.stdout = new ByteArrayOutputStream()));
-        System.setErr(new PrintStream(this.stderr = new ByteArrayOutputStream()));
+
+        this.stdout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(this.stdout));
+
+        this.stderr = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(this.stderr));
     }
 
     @Override

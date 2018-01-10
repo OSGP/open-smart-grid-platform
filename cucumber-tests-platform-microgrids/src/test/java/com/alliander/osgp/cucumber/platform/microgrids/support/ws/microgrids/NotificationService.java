@@ -34,4 +34,8 @@ public class NotificationService {
     public Notification getNotification() {
         return this.queue.poll();
     }
+
+    public void clearAllNotifications() {
+        this.queue.clear();
+    }
 }

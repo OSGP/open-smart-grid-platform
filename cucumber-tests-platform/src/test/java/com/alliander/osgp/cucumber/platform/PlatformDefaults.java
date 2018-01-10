@@ -150,13 +150,6 @@ public class PlatformDefaults {
     public static final String FIRMWARE_DESCRIPTION = "Test Firmware";
     public static final Boolean IN_MAINTENANCE = false;
 
-    public static final String DEFAULT_SCHEDULE_NAME = "Schedule1";
-    public static final String DEFAULT_SCHEDULE_DESCRIPTION = "This is the description for Schedule 1";
-    public static final String DEFAULT_SCHEDULE_COLOR = "Green";
-    public static final Boolean DEFAULT_SCHEDULE_DEFAULT = false;
-    public static final Boolean DEFAULT_SCHEDULE_SUCCESS = false;
-    public static final Boolean DEFAULT_SCHEDULE_TEMPLATE = false;
-
     public static final String FIRMWARE_MODULE_VERSION_COMM = "1";
     public static final String FIRMWARE_MODULE_VERSION_FUNC = "2";
     public static final String FIRMWARE_MODULE_VERSION_MA = "3";
@@ -165,6 +158,7 @@ public class PlatformDefaults {
     public static final String FIRMWARE_INSTALLED_BY = "Test User";
     public static final String FIRMWARE_INSTALLATION_DATE = "now";
     public static final Boolean FIRMWARE_FILE_EXISTS = true;
+    public static final String FIRMWARE_FILENAME = "firmware.txt";
 
     public static final Boolean DEVICE_IN_MAINTENANCE = false;
 

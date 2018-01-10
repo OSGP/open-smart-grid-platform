@@ -10,13 +10,13 @@ package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeter
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.cucumber.platform.support.ws.BaseClient;
 
 public abstract class SmartMeteringBaseClient extends BaseClient {
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private ResponseDataRepository responseDataRepository;
 
     @Value("${smartmetering.response.wait.check.interval:1000}")
     private int waitCheckIntervalMillis;
@@ -34,7 +34,7 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
         try {
             for (int timeSpentWaiting = 0; timeSpentWaiting < this.waitFailMillis; timeSpentWaiting += this.waitCheckIntervalMillis) {
                 Thread.sleep(this.waitCheckIntervalMillis);
-                if (this.meterResponseDataRepository.findSingleResultByCorrelationUid(correlationUid) != null) {
+                if (this.responseDataRepository.findByCorrelationUid(correlationUid) != null) {
                     return;
                 }
             }

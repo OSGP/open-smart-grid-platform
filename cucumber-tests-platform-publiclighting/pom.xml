@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.alliander.osgp</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>4.22.0-SNAPSHOT</version>
+    <version>4.23.0-SNAPSHOT</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
@@ -155,7 +155,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
-            <skipAssembly>${skipTestJarWithDependenciesAssembly}</skipAssembly>
+          <skipAssembly>${skipTestJarWithDependenciesAssembly}</skipAssembly>
         </configuration>
         <executions>
           <execution>

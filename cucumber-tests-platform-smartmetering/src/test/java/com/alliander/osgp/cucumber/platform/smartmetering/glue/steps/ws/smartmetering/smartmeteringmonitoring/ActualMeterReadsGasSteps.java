@@ -26,7 +26,7 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ActualMeterReadsGas {
+public class ActualMeterReadsGasSteps {
 
     @Autowired
     private SmartMeteringMonitoringRequestClient<ActualMeterReadsGasAsyncResponse, ActualMeterReadsGasRequest> requestClient;

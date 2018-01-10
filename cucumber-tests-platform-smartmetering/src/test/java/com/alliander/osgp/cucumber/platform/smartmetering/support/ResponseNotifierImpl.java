@@ -16,8 +16,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
@@ -34,7 +34,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     private DeviceLogItemRepository deviceLogItemRepository;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private ResponseDataRepository responseDataRepository;
 
     @Override
     public boolean waitForResponse(final String correlationUid, final int timeout, final int maxtime) {
@@ -105,9 +105,9 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     private PollResult pollMeterResponseDatabase(final String correlationUid) {
         PollResult pollResult = PollResult.NOT_OK;
         try {
-            final List<MeterResponseData> meterResponseDataByCorrelationUid = this.meterResponseDataRepository
+            final ResponseData responseDataByCorrelationUid = this.responseDataRepository
                     .findByCorrelationUid(correlationUid);
-            if (!meterResponseDataByCorrelationUid.isEmpty()) {
+            if (responseDataByCorrelationUid != null) {
                 pollResult = PollResult.OK;
             }
         } catch (final Exception e) {
