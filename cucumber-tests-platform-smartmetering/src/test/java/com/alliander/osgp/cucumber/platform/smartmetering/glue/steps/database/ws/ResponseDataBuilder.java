@@ -17,9 +17,9 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class ResponseDataBuilder {
 
     private String organisationIdentification = "test-org";
-    private String deviceIdentification = "test-rtu";
-    private String correlationUid = "test-org|||test-rtu|||20170101000000000";
-    private String messageType = "GET_DATA";
+    private String deviceIdentification = "TEST1024000000001";
+    private String correlationUid = "test-org|||TEST1024000000001|||20170101000000000";
+    private String messageType = "REQUEST_ACTUAL_METER_DATA";
     private Serializable messageData = null;
     private ResponseMessageResultType resultType = ResponseMessageResultType.OK;
 	private Integer numberOfNotificationsSend = 0;

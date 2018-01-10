@@ -1,38 +1,64 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.notifications;
 
-import cucumber.api.DataTable;
-import cucumber.api.PendingException;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
+import com.alliander.osgp.cucumber.platform.PlatformKeys;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class ResendNotifications {
 
-	@When("^OSGP checks for which response data a notification has to be resend$")
-	public void osgpChecksForWhichResponseDataANotificationHasToBeResend() throws Throwable {
+	@Autowired
+	private ResponseDataRepository responseDataRespository;
+
+	@When("^the missed notification is resend$")
+	public void theMissedNotificationIsResend(final Map<String, String> settings) throws Throwable {
 		// Do nothing - scheduled task runs automatically
 	}
-
-	@Then("^a notification is sent$")
-	public void aNotificationIsSent(DataTable arg1) throws Throwable {
-	    // Write code here that turns the phrase above into concrete actions
-	    // For automatic transformation, change DataTable to one of
-	    // List<YourType>, List<List<E>>, List<Map<K,V>> or Map<K,V>.
-	    // E,K,V must be a scalar (String, Integer, Date, enum etc)
-	    throw new PendingException();
+	
+	@When("^no notification is resend$")
+	public void noNotificationIsResend() throws Throwable {
+		// Do nothing - scheduled task runs automatically
 	}
-
+	
 	@Then("^a record in the response_data table of the database has values$")
-	public void recordInTheResponseDataTableOfTheAdapterDatabaseHasValues(DataTable arg1) throws Throwable {
-	    // Write code here that turns the phrase above into concrete actions
-	    // For automatic transformation, change DataTable to one of
-	    // List<YourType>, List<List<E>>, List<Map<K,V>> or Map<K,V>.
-	    // E,K,V must be a scalar (String, Integer, Date, enum etc)
-	    throw new PendingException();
+	public void recordInTheResponseDataTableOfTheAdapterDatabaseHasValues(final Map<String, String> settings)
+			throws Throwable {
+		String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
+		ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+
+		int maxtime = 120000;
+		int timeout = 500;
+		int initial_timeout = 60000; //needed to make sure the ResendNotificationJob has at least runned once
+		Thread.sleep(initial_timeout);
+		for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
+			Thread.sleep(timeout);
+			responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+			if (settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SEND)
+					.equals(responseData.getNumberOfNotificationsSend().toString())) {
+				break;
+			}
+		}
+		assertEquals("NumberOfNotificationsSend is not as expected",
+				settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SEND),
+				responseData.getNumberOfNotificationsSend().toString());
+		assertEquals("MessageType is not as expected", settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
+				responseData.getMessageType());
 	}
 
 	@Then("^no notification is sent$")
-	public void noNotificationIsSent() throws Throwable {
-	    // Write code here that turns the phrase above into concrete actions
-	    throw new PendingException();
+	public void noNotificationIsSent(final Map<String, String> settings) throws Throwable {
+		String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
+		final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+		assertEquals("NumberOfNotificationsSend is not as expected",
+				settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SEND),
+				responseData.getNumberOfNotificationsSend());
 	}
 }
