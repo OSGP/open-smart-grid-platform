@@ -17,7 +17,7 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = { "classpath:features/osgp-adapter-ws-microgrids",
-        "classpath:features/osgp-adapter-ws-core" }, tags = { "~@Skip" }, glue = {
+        "classpath:features/osgp-adapter-ws-core" }, tags = { "~@Skip", "~@NightlyBuildOnly" }, glue = {
                 "classpath:com.alliander.osgp.cucumber.platform.glue",
                 "classpath:com.alliander.osgp.cucumber.platform.common.glue",
                 "classpath:com.alliander.osgp.cucumber.platform.microgrids.glue" }, plugin = { "pretty",
