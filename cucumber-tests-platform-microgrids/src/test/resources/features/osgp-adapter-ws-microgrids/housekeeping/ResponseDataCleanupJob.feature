@@ -1,4 +1,4 @@
-@MicroGrids @Platform
+@MicroGrids @Platform @NightlyBuildOnly
 Feature: MicroGrids Housekeeping - Response Data Cleanup Job
   As a ...
   I want to clean up the response data
