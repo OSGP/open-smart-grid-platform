@@ -15,8 +15,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -34,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.shared.usermanagement.AbstractClient;
 import com.alliander.osgp.shared.usermanagement.ResponseException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 public class SimulatorTriggerClient extends AbstractClient {
@@ -188,13 +187,11 @@ public class SimulatorTriggerClient extends AbstractClient {
         }
     }
 
-    public void setDlmsAttributeValues(final int classId, final ObisCode obisCode, final Map<String, String> settings)
+    public void setDlmsAttributeValues(final int classId, final ObisCode obisCode, final ObjectNode jsonAttributeValues)
             throws SimulatorTriggerClientException {
 
-        final String properties = this.buildPropertiesPathSegment(settings);
-
         final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(classId)
-                .path(obisCode.asDecimalString()).path(properties).put(null);
+                .path(obisCode.asDecimalString()).put(jsonAttributeValues);
 
         try {
             this.checkResponseStatus(response);
@@ -203,7 +200,7 @@ public class SimulatorTriggerClient extends AbstractClient {
         }
     }
 
-    public final Properties getDlmsAttributeValues(final int classId, final ObisCode obisCode)
+    public ObjectNode getDlmsAttributeValues(final int classId, final ObisCode obisCode)
             throws SimulatorTriggerClientException {
 
         final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(classId)
@@ -214,16 +211,7 @@ public class SimulatorTriggerClient extends AbstractClient {
         } catch (final ResponseException e) {
             throw new SimulatorTriggerClientException("getDlmsAttributeValues response exception", e);
         }
-        return response.readEntity(Properties.class);
-    }
-
-    private String buildPropertiesPathSegment(final Map<String, String> settings) {
-        final StringBuilder sb = new StringBuilder();
-        for (final Map.Entry<String, String> setting : settings.entrySet()) {
-            sb.append(setting.getKey()).append('=').append(setting.getValue()).append(',');
-        }
-        sb.setLength(sb.length() - 1);
-        return sb.toString();
+        return response.readEntity(ObjectNode.class);
     }
 
     private void checkResponseStatus(final Response response) throws ResponseException {
