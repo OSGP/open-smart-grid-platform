@@ -134,7 +134,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     protected void handleMessage(final String organisationIdentification, final String messageType,
             final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
             final String resultDescription, final Serializable dataObject) {
-
+    	
+    	int numberOfNotificationsSend = 0;
         Serializable responseDataObject;
         if (dataObject == null) {
             responseDataObject = resultDescription;
@@ -143,7 +144,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         }
 
         final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
-                deviceIdentification, correlationUid, resultType, responseDataObject, 0);
+                deviceIdentification, correlationUid, resultType, responseDataObject, numberOfNotificationsSend);
         this.responseDataService.enqueue(responseData);
     }
 

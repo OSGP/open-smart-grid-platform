@@ -136,6 +136,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
             final String resultDescription, final Serializable dataObject) {
 
+    	int numberOfNotificationsSend = 0;
         Serializable meterResponseObject;
         if (dataObject == null) {
             meterResponseObject = resultDescription;
@@ -144,7 +145,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
         }
 
         final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
-                deviceIdentification, correlationUid, resultType, meterResponseObject, 0);
+                deviceIdentification, correlationUid, resultType, meterResponseObject, numberOfNotificationsSend);
         this.responseDataService.enqueue(responseData);
     }
 
