@@ -42,8 +42,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientRTUEventListener.class);
 
     private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER|WIND|PQ)";
+
     private static final Pattern REPORT_PATTERN = Pattern
-            .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\$(Status|Measurements|Heartbeat)\\Z");
+            .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\.(Status|Measurements|Heartbeat)\\Z");
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
 
@@ -69,7 +70,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     }
 
     private Iec61850ReportHandler getReportHandler(final String dataSetRef) {
-
         final Matcher reportMatcher = REPORT_PATTERN.matcher(dataSetRef);
         if (reportMatcher.matches()) {
             String node = reportMatcher.group(2);
