@@ -138,11 +138,11 @@ Feature: SmartMetering Configuration
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
-      | 5 |         1 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+      | 5 | unsigned             |         1 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     When the set m-bus user key by channel request is received
       | DeviceIdentification | TEST1024000000001 |
       | Channel              |                 2 |
