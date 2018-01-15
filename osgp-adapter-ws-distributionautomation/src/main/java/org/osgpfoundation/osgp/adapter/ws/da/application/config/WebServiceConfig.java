@@ -17,7 +17,7 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 import org.osgpfoundation.osgp.adapter.ws.da.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.osgpfoundation.osgp.adapter.ws.da.application.exceptionhandling.SoapFaultMapper;
-import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationService;
+import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationServiceDistributionAutomation;
 import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationServiceBlackHole;
 import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationServiceWs;
 import org.osgpfoundation.osgp.adapter.ws.da.presentation.ws.SendNotificationServiceClient;
@@ -194,7 +194,7 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
+    public NotificationServiceDistributionAutomation wsSmartMeteringNotificationService() throws GeneralSecurityException {
         if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.webserviceNotificationUrl)) {
             return new NotificationServiceWs(this.sendNotificationServiceClient(), this.webserviceNotificationUrl,
                     this.webserviceNotificationUsername, this.webserviceNotificationOrganisation);

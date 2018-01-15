@@ -1,4 +1,4 @@
-package com.alliander.osgp.adapter.ws.microgrids.application.config;
+package org.osgpfoundation.osgp.adapter.ws.da.application.config;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -13,13 +13,13 @@ import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
 
 @EnableScheduling
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
+@PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)
-public class NotificationConfig extends AbstractSchedulingConfig{
+@PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
+public class ResendNotificationConfig extends AbstractSchedulingConfig{
 
-	    private static final String KEY_RESEND_NOTIFICATION_CRON_EXPRESSION = "microgrids.scheduling.job.resend.notification.cron.expression";
-	    private static final String KEY_RESEND_NOTIFICATION_THREAD_COUNT = "microgrids.scheduling.job.resend.notification.thread.count";
+	    private static final String KEY_RESEND_NOTIFICATION_CRON_EXPRESSION = "distributionautomation.scheduling.job.resend.notification.cron.expression";
+	    private static final String KEY_RESEND_NOTIFICATION_THREAD_COUNT = "distributionautomation.scheduling.job.resend.notification.thread.count";
 
 	    @Value("${db.driver}")
 	    private String databaseDriver;
@@ -42,7 +42,7 @@ public class NotificationConfig extends AbstractSchedulingConfig{
 	    @Value("${db.username}")
 	    private String databaseUsername;
 	    
-	    @Value("${microgrids.scheduling.job.resend.notification.cron.expression}")
+	    @Value("${distributionautomation.scheduling.job.resend.notification.cron.expression}")
 	    private String resendNotificationCronExpression;
 	  
 	    @Bean
@@ -50,7 +50,7 @@ public class NotificationConfig extends AbstractSchedulingConfig{
 	        return this.resendNotificationCronExpression;
 	    }
 	    
-	    @Value("${microgrids.scheduling.job.resend.notification.maximum}")
+	    @Value("${distributionautomation.scheduling.job.resend.notification.maximum}")
 	    private int resendNotificationMaximum;
 	  
 	    @Bean
@@ -58,7 +58,7 @@ public class NotificationConfig extends AbstractSchedulingConfig{
 	        return this.resendNotificationMaximum;
 	    }    
 	    
-	    @Value("${microgrids.scheduling.job.resend.notification.multiplier}")
+	    @Value("${distributionautomation.scheduling.job.resend.notification.multiplier}")
 	    private int resendNotificationMultiplier;
 	  
 	    @Bean

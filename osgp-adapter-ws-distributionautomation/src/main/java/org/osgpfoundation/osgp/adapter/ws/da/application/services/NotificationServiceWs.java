@@ -18,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Transactional(value = "transactionManager")
 @Validated
-public class NotificationServiceWs implements NotificationService {
+public class NotificationServiceWs implements NotificationServiceDistributionAutomation {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWs.class);
 

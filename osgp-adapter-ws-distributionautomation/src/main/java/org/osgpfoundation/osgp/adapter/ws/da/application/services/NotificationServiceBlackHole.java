@@ -12,7 +12,7 @@ import org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.notifica
 /**
  * Notification service to be used when no notifications should be sent.
  */
-public class NotificationServiceBlackHole implements NotificationService {
+public class NotificationServiceBlackHole implements NotificationServiceDistributionAutomation {
 
     @Override
     public void sendNotification(final String organisationIdentification, final String deviceIdentification, final String result,
