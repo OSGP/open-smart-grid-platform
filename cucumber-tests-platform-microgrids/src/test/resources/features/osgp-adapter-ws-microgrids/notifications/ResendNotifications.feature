@@ -1,4 +1,4 @@
-@SmartMetering @Platform @test
+@Microgrids @Platform
 Feature: Microgrids notifications - Resend notifications
   As an OSGP user
   I want the platform to resend missed notifications

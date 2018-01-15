@@ -1,9 +1,9 @@
-@SmartMetering @Platform 
+@SmartMetering @Platform
 Feature: SmartMetering notifications - Resend notifications
   As an OSGP user
   I want the platform to resend missed notifications
   So the notification mechanism is more robust
-@test
+
   Scenario: Resend missed notifications
     Given a response data record
       | DeviceIdentification      | TEST1024000000001                                      |
