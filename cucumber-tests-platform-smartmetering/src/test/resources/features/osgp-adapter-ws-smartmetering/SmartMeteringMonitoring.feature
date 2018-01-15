@@ -56,6 +56,7 @@ Feature: SmartMetering Monitoring
       | MONTHLY    | 2016-01-01T00:00:00.000Z | 2016-09-01T00:00:00.000Z |
 
   Scenario: Read the alarm register from a device
+    Given device "TEST1024000000001" has some alarms registered
     When the get read alarm register request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the alarm register should be returned

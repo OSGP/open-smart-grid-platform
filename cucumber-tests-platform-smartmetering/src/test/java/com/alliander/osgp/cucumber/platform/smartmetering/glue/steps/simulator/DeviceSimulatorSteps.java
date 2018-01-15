@@ -13,12 +13,14 @@ import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClient;
 import org.osgp.adapter.protocol.dlms.simulator.trigger.SimulatorTriggerClientException;
 import org.slf4j.Logger;
@@ -35,7 +37,6 @@ import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
@@ -66,9 +67,24 @@ public class DeviceSimulatorSteps extends GlueBase {
         }
     }
 
+    @Given("^device \"([^\"]*)\" has some alarms registered$")
+    public void deviceHasSomeAlarmsRegistered(final String deviceIdentification) {
+        final ObisCode obisCodeAlarmObject = new ObisCode(0, 0, 97, 98, 0, 255);
+        final ObjectNode attributeValues = this
+                .convertTableToJsonObject(Arrays.asList(Arrays.asList("2", "double-long-unsigned", "33693956")));
+        try {
+            this.simulatorTriggerClient.setDlmsAttributeValues(InterfaceClass.DATA.id(), obisCodeAlarmObject,
+                    attributeValues);
+        } catch (final SimulatorTriggerClientException stce) {
+            LOGGER.error("Error while setting DLMS attribute values for alarm object with SimulatorTriggerClient",
+                    stce);
+            fail("Error setting DLMS attribute values for the alarm object on the simulator");
+        }
+    }
+
     @Given("^device simulation of \"([^\"]*)\" with classid (\\d+) obiscode \"([^\"]*)\" and attributes$")
     public void deviceSimulationOfObisCodeWithClassIdAndAttributes(final String deviceIdentification, final int classId,
-            final String obisCode, final DataTable attributes) throws Throwable {
+            final String obisCode, final List<List<String>> attributes) throws Throwable {
 
         /*
          * Currently the first argument: deviceIdentification, is not used yet,
@@ -82,7 +98,7 @@ public class DeviceSimulatorSteps extends GlueBase {
 
         try {
             this.simulatorTriggerClient.setDlmsAttributeValues(classId, new ObisCode(obisCode),
-                    this.convertDataTableToJsonObject(attributes));
+                    this.convertTableToJsonObject(attributes));
         } catch (final SimulatorTriggerClientException stce) {
             LOGGER.error("Error while setting DLMS attribute values for classId: " + classId + ", obisCode: " + obisCode
                     + " and attributes: " + attributes + " with SimulatorTriggerClient", stce);
@@ -90,16 +106,15 @@ public class DeviceSimulatorSteps extends GlueBase {
         }
     }
 
-    private ObjectNode convertDataTableToJsonObject(final DataTable attributes) {
+    private ObjectNode convertTableToJsonObject(final List<List<String>> tableRows) {
 
         final JsonNodeFactory jsonNodeFactory = new JsonNodeFactory(false);
         final ObjectNode attributeValues = jsonNodeFactory.objectNode();
 
-        if (attributes == null) {
+        if (tableRows == null) {
             return attributeValues;
         }
 
-        final List<List<String>> tableRows = attributes.asLists(String.class);
         for (final List<String> tableRow : tableRows) {
             this.setAttributeValueFromTableRow(attributeValues, tableRow, jsonNodeFactory);
         }
@@ -166,12 +181,12 @@ public class DeviceSimulatorSteps extends GlueBase {
 
     @Then("^the values for classid (\\d+) obiscode \"([^\"]*)\" on device simulator \"([^\"]*)\" are$")
     public void theValuesForClassidObiscodeOnDeviceSimulatorAre(final int classId, final String obisCode,
-            final String deviceIdentification, final DataTable expectedAttributes) throws Throwable {
+            final String deviceIdentification, final List<List<String>> expectedAttributes) throws Throwable {
 
         try {
             final ObjectNode attributeValuesNode = this.simulatorTriggerClient.getDlmsAttributeValues(classId,
                     new ObisCode(obisCode));
-            final ObjectNode expectedAttributeValuesNode = this.convertDataTableToJsonObject(expectedAttributes);
+            final ObjectNode expectedAttributeValuesNode = this.convertTableToJsonObject(expectedAttributes);
 
             expectedAttributeValuesNode.fields().forEachRemaining(field -> {
                 final String attributeId = field.getKey();
