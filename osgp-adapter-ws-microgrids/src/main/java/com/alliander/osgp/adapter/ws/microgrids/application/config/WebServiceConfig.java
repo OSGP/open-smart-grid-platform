@@ -36,8 +36,8 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInter
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.SoapFaultMapper;
-import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceBlackHole;
+import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceMicrogrids;
 import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceWs;
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
@@ -214,7 +214,7 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
+    public NotificationServiceMicrogrids wsSmartMeteringNotificationService() throws GeneralSecurityException {
         if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.webserviceNotificationUrl)) {
             return new NotificationServiceWs(this.sendNotificationServiceClient(), this.webserviceNotificationUrl,
                     this.webserviceNotificationUsername, this.webserviceNotificationOrganisation);

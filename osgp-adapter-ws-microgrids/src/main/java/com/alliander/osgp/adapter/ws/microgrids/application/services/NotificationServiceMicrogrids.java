@@ -10,7 +10,7 @@ package com.alliander.osgp.adapter.ws.microgrids.application.services;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.NotificationType;
 import com.alliander.osgp.domain.core.validation.Identification;
 
-public interface NotificationService {
+public interface NotificationServiceMicrogrids {
 
     void sendNotification(@Identification String organisationIdentification, String deviceIdentification,
             String result, String correlationUid, String message, NotificationType notificationType);
