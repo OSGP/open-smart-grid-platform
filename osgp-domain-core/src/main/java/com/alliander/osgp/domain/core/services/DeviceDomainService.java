@@ -15,11 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
@@ -40,6 +42,9 @@ public class DeviceDomainService {
     @Autowired
     private SsldRepository ssldRepository;
 
+    @Autowired
+    private SmartMeterRepository smartMeterRepository;
+
     public Device saveDevice(final Device device) {
         return this.deviceRepository.save(device);
     }
@@ -55,11 +60,17 @@ public class DeviceDomainService {
         return device;
     }
 
-    public Device searchActiveDevice(@Identification final String deviceIdentification, final ComponentType osgpComponent)
-            throws FunctionalException {
+    public Device searchActiveDevice(@Identification final String deviceIdentification,
+            final ComponentType osgpComponent) throws FunctionalException {
 
         final Device device = this.searchDevice(deviceIdentification);
-        final Ssld ssld = this.ssldRepository.findOne(device.getId());
+
+        // For smartmeters, we want to able to communicate no matter what the
+        // device life cycle status is.
+        final SmartMeter smartMeter = this.smartMeterRepository.findOne(device.getId());
+        if (smartMeter != null) {
+            return device;
+        }
 
         if (!device.isActivated() || !device.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)) {
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, osgpComponent,
@@ -68,6 +79,7 @@ public class DeviceDomainService {
 
         // Note: since this code is still specific for SSLD / PSLD, this null
         // check is needed.
+        final Ssld ssld = this.ssldRepository.findOne(device.getId());
         if (ssld != null && !ssld.isPublicKeyPresent()) {
             throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, osgpComponent,
                     new UnregisteredDeviceException(deviceIdentification));
