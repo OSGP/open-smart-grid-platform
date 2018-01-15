@@ -60,11 +60,6 @@
 			<artifactId>shared</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.alliander.osgp</groupId>
-			<artifactId>osgp-ws-smartmetering</artifactId>
-		</dependency>
-
 		<!-- Spring Framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>
