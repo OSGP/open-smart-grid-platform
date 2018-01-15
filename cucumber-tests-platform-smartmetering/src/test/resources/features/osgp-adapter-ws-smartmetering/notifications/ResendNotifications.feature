@@ -1,5 +1,5 @@
-@SmartMetering @Platform
-Feature: SmartMetering Housekeeping - Response Data Cleanup Job
+@SmartMetering @Platform 
+Feature: SmartMetering notifications - Resend notifications
   As an OSGP user
   I want the platform to resend missed notifications
   So the notification mechanism is more robust
@@ -32,7 +32,6 @@ Feature: SmartMetering Housekeeping - Response Data Cleanup Job
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSend |                                                      0 |
 
-  
   Scenario: Don't send notifications when the maximum of notifications sent has been reached
     Given a response data record
       | DeviceIdentification      | TEST1024000000001                                      |
