@@ -37,9 +37,9 @@ Feature: SmartMetering Monitoring
       | DeviceIdentification | TEST1024000000001 |
 
     Examples: 
-      | PeriodType | BeginDate  | EndDate    |
-      | INTERVAL   | 2015-09-01 | 2015-10-01 |
-      | MONTHLY    | 2016-01-01 | 2016-09-01 |
+      | PeriodType | BeginDate                | EndDate                  |
+      | INTERVAL   | 2015-09-01T00:00:00.000Z | 2015-10-01T00:00:00.000Z |
+      | MONTHLY    | 2016-01-01T00:00:00.000Z | 2016-09-01T00:00:00.000Z |
 
   Scenario Outline: Get the meter reads from a gas device
     When the get "<PeriodType>" meter reads gas request is received
@@ -51,29 +51,26 @@ Feature: SmartMetering Monitoring
       | DeviceIdentification | TESTG102400000001 |
 
     Examples: 
-      | PeriodType | BeginDate  | EndDate    |
-      | INTERVAL   | 2015-09-01 | 2015-10-01 |
-      | MONTHLY    | 2016-01-01 | 2016-09-01 |
+      | PeriodType | BeginDate                | EndDate                  |
+      | INTERVAL   | 2015-09-01T00:00:00.000Z | 2015-10-01T00:00:00.000Z |
+      | MONTHLY    | 2016-01-01T00:00:00.000Z | 2016-09-01T00:00:00.000Z |
 
   Scenario: Read the alarm register from a device
+    Given device "TEST1024000000001" has some alarms registered
     When the get read alarm register request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the alarm register should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario: Refuse an operation with an inactive device
+  Scenario: Do not refuse an operation with an inactive device
     Given a dlms device
       | DeviceIdentification  | E9998000014123414 |
       | DeviceType            | SMART_METER_E     |
       | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
-    When the actual meter reads request is received for an inactive device
+    When the get actual meter reads request is received
       | DeviceIdentification | E9998000014123414 |
-    Then a SOAP fault should have been returned
-      | Code           |                                                               207 |
-      | Component      | WS_SMART_METERING                                                 |
-      | Message        | INACTIVE_DEVICE                                                   |
-      | InnerException | com.alliander.osgp.domain.core.exceptions.InactiveDeviceException |
-      | InnerMessage   | Device E9998000014123414 is not active in the platform            |
+    Then the actual meter reads result should be returned
+      | DeviceIdentification | E9998000014123414 |
 
   Scenario: Get the profile generic data from a device
     When the get profile generic data request is received

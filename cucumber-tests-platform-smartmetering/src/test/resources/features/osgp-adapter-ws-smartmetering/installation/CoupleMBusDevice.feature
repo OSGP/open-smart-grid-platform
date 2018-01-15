@@ -17,11 +17,11 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 |         9 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+      | 5 | unsigned             |         9 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG102400000001" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "9"
@@ -38,11 +38,11 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | ITG               |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 |         9 |
-      | 6 | 302343985 |
-      | 7 |      9863 |
-      | 8 |        66 |
-      | 9 |         3 |
+      | 5 | unsigned             |         9 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |      9863 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG102400000001" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "9"
@@ -61,17 +61,17 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 | 0 |
-      | 6 | 0 |
-      | 7 | 0 |
-      | 8 | 0 |
-      | 9 | 0 |
+      | 5 | unsigned             | 0 |
+      | 6 | double-long-unsigned | 0 |
+      | 7 | long-unsigned        | 0 |
+      | 8 | unsigned             | 0 |
+      | 9 | unsigned             | 0 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
-      | 5 |         9 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+      | 5 | unsigned             |         9 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG102400000001" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "9"
@@ -123,17 +123,17 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 | 0 |
-      | 6 | 0 |
-      | 7 | 0 |
-      | 8 | 0 |
-      | 9 | 0 |
+      | 5 | unsigned             | 0 |
+      | 6 | double-long-unsigned | 0 |
+      | 7 | long-unsigned        | 0 |
+      | 8 | unsigned             | 0 |
+      | 9 | unsigned             | 0 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
-      | 5 |         9 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+      | 5 | unsigned             |         9 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     When the Couple G-meter "TESTG102400000002" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG102400000002" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "9"
@@ -155,11 +155,11 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusDeviceTypeIdentification   |                 3 |
       | MbusPrimaryAddress             |                 3 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 |         9 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+      | 5 | unsigned             |         9 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
     Then retrieving the Couple response results in an exception
     And a SOAP fault should have been returned
@@ -187,11 +187,11 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
-      | 5 |         9 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+      | 5 | unsigned             |         9 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     When the Couple G-meter "TESTG102400000002" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG102400000001" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
@@ -216,45 +216,18 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | Code    |            201 |
       | Message | UNKNOWN_DEVICE |
 
-  Scenario: Couple inactive G-meter to an E-meter
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-    And a dlms device
-      | DeviceIdentification  | TESTG102400000001 |
-      | DeviceType            | SMART_METER_G     |
-      | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
-    When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
-    Then retrieving the Couple response results in an exception
-    And a SOAP fault should have been returned
-      | Code    |             207 |
-      | Message | INACTIVE_DEVICE |
-
-  Scenario: Couple G-meter to an inactive E-meter
-    Given a dlms device
-      | DeviceIdentification  | TEST1024000000001 |
-      | DeviceType            | SMART_METER_E     |
-      | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
-    And a dlms device
-      | DeviceIdentification | TESTG102400000001 |
-      | DeviceType           | SMART_METER_G     |
-    When the Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" request is received for an inactive device
-    Then a SOAP fault should have been returned
-      | Code    |             207 |
-      | Message | INACTIVE_DEVICE |
-
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Couple unbound G-meter "TESTG101205673101" to E-meter "TEST1024000000001" on a channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" and attributes
-      | 5 | 0 |
-      | 6 | 0 |
-      | 7 | 0 |
-      | 8 | 0 |
-      | 9 | 0 |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
+      | 5 | unsigned             | 0 |
+      | 6 | double-long-unsigned | 0 |
+      | 7 | long-unsigned        | 0 |
+      | 8 | unsigned             | 0 |
+      | 9 | unsigned             | 0 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673101 |
       | DeviceType                     | SMART_METER_G     |
@@ -266,12 +239,12 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     When the Couple G-meter "TESTG101205673101" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG101205673101" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
-    And the values for classid 72 obiscode "0-1:24.1.255" on device simulator "TEST1024000000001" are
-      | 5 |         3 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+    And the values for classid 72 obiscode "0-1:24.1.0" on device simulator "TEST1024000000001" are
+      | 5 | unsigned             |         3 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: ITG corresponds with the device attributeID 7: 9863
@@ -279,12 +252,12 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" and attributes
-      | 5 | 0 |
-      | 6 | 0 |
-      | 7 | 0 |
-      | 8 | 0 |
-      | 9 | 0 |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
+      | 5 | unsigned             | 0 |
+      | 6 | double-long-unsigned | 0 |
+      | 7 | long-unsigned        | 0 |
+      | 8 | unsigned             | 0 |
+      | 9 | unsigned             | 0 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673101 |
       | DeviceType                     | SMART_METER_G     |
@@ -295,11 +268,11 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     When the Couple G-meter "TESTG101205673101" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG101205673101" is coupled to device "TEST1024000000001" on M-Bus channel "1"
-    And the values for classid 72 obiscode "0-1:24.1.255" on device simulator "TEST1024000000001" are
-      | 6 | 302343985 |
-      | 7 |      9863 |
-      | 8 |        66 |
-      | 9 |         3 |
+    And the values for classid 72 obiscode "0-1:24.1.0" on device simulator "TEST1024000000001" are
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |      9863 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
@@ -307,18 +280,18 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" and attributes
-      | 5 |       241 |
-      | 6 | 302343974 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
+      | 5 | unsigned             |       241 |
+      | 6 | double-long-unsigned | 302343974 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.255" and attributes
-      | 5 | 0 |
-      | 6 | 0 |
-      | 7 | 0 |
-      | 8 | 0 |
-      | 9 | 0 |
+      | 5 | unsigned             | 0 |
+      | 6 | double-long-unsigned | 0 |
+      | 7 | long-unsigned        | 0 |
+      | 8 | unsigned             | 0 |
+      | 9 | unsigned             | 0 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673101 |
       | DeviceType                     | SMART_METER_G     |
@@ -330,18 +303,18 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     When the Couple G-meter "TESTG101205673101" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG101205673101" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "3"
-    And the values for classid 72 obiscode "0-1:24.1.255" on device simulator "TEST1024000000001" are
-      | 5 |       241 |
-      | 6 | 302343974 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
-    And the values for classid 72 obiscode "0-2:24.1.255" on device simulator "TEST1024000000001" are
-      | 5 |         3 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+    And the values for classid 72 obiscode "0-1:24.1.0" on device simulator "TEST1024000000001" are
+      | 5 | unsigned             |       241 |
+      | 6 | double-long-unsigned | 302343974 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
+    And the values for classid 72 obiscode "0-2:24.1.0" on device simulator "TEST1024000000001" are
+      | 5 | unsigned             |         3 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
@@ -368,24 +341,24 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.255" and attributes
-      | 5 |       241 |
-      | 6 | 302343974 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
+      | 5 | unsigned             |       241 |
+      | 6 | double-long-unsigned | 302343974 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 2 |
       | MbusPrimaryAddress          |                 3 |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.255" and attributes
-      | 5 | 0 |
-      | 6 | 0 |
-      | 7 | 0 |
-      | 8 | 0 |
-      | 9 | 0 |
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
+      | 5 | unsigned             | 0 |
+      | 6 | double-long-unsigned | 0 |
+      | 7 | long-unsigned        | 0 |
+      | 8 | unsigned             | 0 |
+      | 9 | unsigned             | 0 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673101 |
       | DeviceType                     | SMART_METER_G     |
@@ -397,18 +370,18 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     When the Couple G-meter "TESTG101205673101" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG101205673101" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
-    And the values for classid 72 obiscode "0-2:24.1.255" on device simulator "TEST1024000000001" are
-      | 5 |       241 |
-      | 6 | 302343974 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
-    And the values for classid 72 obiscode "0-1:24.1.255" on device simulator "TEST1024000000001" are
-      | 5 |         3 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+    And the values for classid 72 obiscode "0-2:24.1.0" on device simulator "TEST1024000000001" are
+      | 5 | unsigned             |       241 |
+      | 6 | double-long-unsigned | 302343974 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
+    And the values for classid 72 obiscode "0-1:24.1.0" on device simulator "TEST1024000000001" are
+      | 5 | unsigned             |         3 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
@@ -417,11 +390,11 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 |         3 |
-      | 6 | 302343985 |
-      | 7 |     12514 |
-      | 8 |        66 |
-      | 9 |         3 |
+      | 5 | unsigned             |         3 |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        |     12514 |
+      | 8 | unsigned             |        66 |
+      | 9 | unsigned             |         3 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
