@@ -216,33 +216,6 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | Code    |            201 |
       | Message | UNKNOWN_DEVICE |
 
-  Scenario: Couple inactive G-meter to an E-meter
-    Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
-    And a dlms device
-      | DeviceIdentification  | TESTG102400000001 |
-      | DeviceType            | SMART_METER_G     |
-      | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
-    When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
-    Then retrieving the Couple response results in an exception
-    And a SOAP fault should have been returned
-      | Code    |             207 |
-      | Message | INACTIVE_DEVICE |
-
-  Scenario: Couple G-meter to an inactive E-meter
-    Given a dlms device
-      | DeviceIdentification  | TEST1024000000001 |
-      | DeviceType            | SMART_METER_E     |
-      | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
-    And a dlms device
-      | DeviceIdentification | TESTG102400000001 |
-      | DeviceType           | SMART_METER_G     |
-    When the Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" request is received for an inactive device
-    Then a SOAP fault should have been returned
-      | Code    |             207 |
-      | Message | INACTIVE_DEVICE |
-
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Couple unbound G-meter "TESTG101205673101" to E-meter "TEST1024000000001" on a channel 1
