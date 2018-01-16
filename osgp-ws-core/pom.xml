@@ -105,6 +105,23 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
+          <execution>
+            <id>notification</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+              <bindingFiles>notification.xjb</bindingFiles>
+              <schemaDirectory>src/main/resources</schemaDirectory>
+              <schemaFiles>Notification.wsdl</schemaFiles>
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-notification-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>

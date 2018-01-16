@@ -28,6 +28,8 @@ public class JmsConfigurationNames {
 
     public static final String JMS_COMMON_WS_RESPONSES = "jms.common.ws.responses";
 
+    public static final String JMS_COMMON_DOMAIN_TO_WS_REQUESTS = "jms.common.domain.to.ws.requests";
+
     public static final String JMS_OSGP_CORE_REQUESTS = "jms.osgp.core.requests";
 
     public static final String JMS_OSGP_CORE_RESPONSES = "jms.osgp.core.responses";

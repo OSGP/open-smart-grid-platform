@@ -42,9 +42,9 @@ public abstract class AbstractWsAdapterInitializer extends AbstractApplicationIn
      * DispatchServlet
      *
      * @param servletContext
-     *            Java servlet context as supplied by application server
+     *            Java servlet context as supplied by application server.
      * @throws ServletException
-     *             thrown when a servlet encounters difficulty
+     *             Thrown when a servlet encounters difficulty.
      */
     @Override
     protected void startUp(final ServletContext servletContext) throws ServletException {
@@ -57,5 +57,35 @@ public abstract class AbstractWsAdapterInitializer extends AbstractApplicationIn
         final ServletRegistration.Dynamic dispatcher = servletContext.addServlet(DISPATCHER_SERVLET_NAME, servlet);
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping(DISPATCHER_SERVLET_MAPPING);
+    }
+
+    /**
+     * Custom startup of application context for webservice adapters which can
+     * be used to initialize the servlet on a different mapping using a
+     * different name.
+     *
+     * @param servletContext
+     *            Java servlet context as supplied by application server.
+     * @param servletName
+     *            The custom servlet name to be used instead of
+     *            {@code DISPATCHER_SERVLET_NAME}.
+     * @param servletMapping
+     *            The custom servlet mapping to be used instead of
+     *            {@code DISPATCHER_SERVLET_MAPPING}.
+     *
+     * @throws ServletException
+     *             Thrown when a servlet encounters difficulty.
+     */
+    protected void customStartUp(final ServletContext servletContext, final String servletName,
+            final String servletMapping) throws ServletException {
+        super.startUp(servletContext);
+
+        final MessageDispatcherServlet servlet = new MessageDispatcherServlet();
+        servlet.setContextClass(AnnotationConfigWebApplicationContext.class);
+        servlet.setTransformWsdlLocations(true);
+
+        final ServletRegistration.Dynamic dispatcher = servletContext.addServlet(servletName, servlet);
+        dispatcher.setLoadOnStartup(1);
+        dispatcher.addMapping(servletMapping);
     }
 }

@@ -49,6 +49,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
 
     private Jaxb2Marshaller marshaller;
     private SaajSoapMessageFactory messageFactory;
+    private boolean isSecurityEnabled;
     private String targetUri;
     private String keyStoreType;
     private String keyStoreLocation;
@@ -79,6 +80,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         private Jaxb2Marshaller marshaller;
         private SaajSoapMessageFactory messageFactory;
         private String targetUri;
+        private boolean isSecurityEnabled = true;
         private String keyStoreType;
         private String keyStoreLocation;
         private String keyStorePassword;
@@ -103,6 +105,11 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
 
         public Builder setTargetUri(final String targetUri) {
             this.targetUri = targetUri;
+            return this;
+        }
+
+        public Builder setSecurityEnabled(final boolean enabled) {
+            this.isSecurityEnabled = enabled;
             return this;
         }
 
@@ -141,10 +148,13 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             webServiceTemplateFactory.marshaller = this.marshaller;
             webServiceTemplateFactory.messageFactory = this.messageFactory;
             webServiceTemplateFactory.targetUri = this.targetUri;
-            webServiceTemplateFactory.keyStoreType = this.keyStoreType;
-            webServiceTemplateFactory.keyStoreLocation = this.keyStoreLocation;
-            webServiceTemplateFactory.keyStorePassword = this.keyStorePassword;
-            webServiceTemplateFactory.trustStoreFactory = this.trustStoreFactory;
+            webServiceTemplateFactory.isSecurityEnabled = this.isSecurityEnabled;
+            if (this.isSecurityEnabled) {
+                webServiceTemplateFactory.keyStoreType = this.keyStoreType;
+                webServiceTemplateFactory.keyStoreLocation = this.keyStoreLocation;
+                webServiceTemplateFactory.keyStorePassword = this.keyStorePassword;
+                webServiceTemplateFactory.trustStoreFactory = this.trustStoreFactory;
+            }
             webServiceTemplateFactory.applicationName = this.applicationName;
             webServiceTemplateFactory.maxConnectionsPerRoute = this.maxConnectionsPerRoute;
             webServiceTemplateFactory.maxConnectionsTotal = this.maxConnectionsTotal;
@@ -204,18 +214,33 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
 
         webServiceTemplate.setMarshaller(this.marshaller);
         webServiceTemplate.setUnmarshaller(this.marshaller);
+
         webServiceTemplate.setInterceptors(new ClientInterceptor[] {
                 new OrganisationIdentificationClientInterceptor(organisationIdentification, userName, applicationName,
                         NAMESPACE, ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER) });
 
-        try {
-            webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
-        } catch (GeneralSecurityException | IOException e) {
-            LOGGER.error("Webservice exception occurred: Certificate not available", e);
-            throw new WebServiceSecurityException("Certificate not available", e);
+        if (this.isSecurityEnabled) {
+            try {
+                webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
+            } catch (GeneralSecurityException | IOException e) {
+                LOGGER.error("Webservice exception occurred: Certificate not available", e);
+                throw new WebServiceSecurityException("Certificate not available", e);
+            }
+        } else {
+            webServiceTemplate.setMessageSender(this.webServiceMessageSender());
         }
 
         return webServiceTemplate;
+    }
+
+    private HttpComponentsMessageSender webServiceMessageSender() {
+        final HttpClientBuilder clientbuilder = HttpClientBuilder.create();
+        // Add intercepter to prevent issue with duplicate headers.
+        // See also:
+        // http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
+        clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
+
+        return new HttpComponentsMessageSender(clientbuilder.build());
     }
 
     private HttpComponentsMessageSender webServiceMessageSender(final String keystore)
