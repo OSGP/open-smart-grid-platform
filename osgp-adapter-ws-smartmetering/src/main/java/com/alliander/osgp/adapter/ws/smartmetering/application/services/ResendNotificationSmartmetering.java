@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2018 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -32,14 +32,15 @@ public class ResendNotificationSmartmetering extends ResendNotificationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResendNotificationSmartmetering.class);
 
-	public void executer(ResponseData responseData) {
+	@Override
+	public void executer(final ResponseData responseData) {
 
 		if (EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
 			LOGGER.info("Found response data for resending notification");
-			NotificationType notificationType = NotificationType.valueOf(responseData.getMessageType());
+			final NotificationType notificationType = NotificationType.valueOf(responseData.getMessageType());
 			this.notificationService.sendNotification(responseData.getOrganisationIdentification(),
 					responseData.getDeviceIdentification(), responseData.getResultType().name(),
-					responseData.getCorrelationUid(), getNotificationMessage(responseData.getMessageType()),
+					responseData.getCorrelationUid(), this.getNotificationMessage(responseData.getMessageType()),
 					notificationType);
 			LOGGER.info("Notification has been resend");
 			responseData.setNumberOfNotificationsSend(responseData.getNumberOfNotificationsSend() + 1);

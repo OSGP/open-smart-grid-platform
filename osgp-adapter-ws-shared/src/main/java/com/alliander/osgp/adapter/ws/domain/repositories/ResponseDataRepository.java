@@ -20,13 +20,13 @@ public interface ResponseDataRepository extends JpaRepository<ResponseData, Long
 
 	List<ResponseData> findByOrganisationIdentification(String organisationIdentification);
 
-    List<ResponseData> findByMessageType(String messageType);
+	List<ResponseData> findByMessageType(String messageType);
 
-    List<ResponseData> findByDeviceIdentification(String deviceIdentification);
-    
-    List<ResponseData> findByNumberOfNotificationsSendLessThan(Integer numberOfNotificationsSend);
+	List<ResponseData> findByDeviceIdentification(String deviceIdentification);
 
-    ResponseData findByCorrelationUid(String correlationUid);
+	List<ResponseData> findByNumberOfNotificationsSendLessThan(Integer numberOfNotificationsSend);
 
-    void removeByCreationTimeBefore(Date date);
+	ResponseData findByCorrelationUid(String correlationUid);
+
+	void removeByCreationTimeBefore(Date date);
 }

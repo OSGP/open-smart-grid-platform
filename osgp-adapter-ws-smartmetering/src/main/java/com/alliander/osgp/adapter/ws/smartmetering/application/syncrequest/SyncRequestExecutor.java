@@ -30,90 +30,90 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  */
 public abstract class SyncRequestExecutor {
 
-    @Value("${sync.notification.delay}")
-    private int syncNotificationDelay;
+	@Value("${sync.notification.delay}")
+	private int syncNotificationDelay;
 
-    @Autowired
-    private NotificationService notificationService;
+	@Autowired
+	private NotificationService notificationService;
 
-    @Autowired
-    private ResponseDataService responseDataService;
+	@Autowired
+	private ResponseDataService responseDataService;
 
-    final DeviceFunction messageType;
+	final DeviceFunction messageType;
 
-    SyncRequestExecutor(final DeviceFunction messageType) {
-        this.messageType = messageType;
-    }
+	SyncRequestExecutor(final DeviceFunction messageType) {
+		this.messageType = messageType;
+	}
 
-    ResponseMessageResultType getResultType() {
-        return ResponseMessageResultType.OK;
-    }
+	ResponseMessageResultType getResultType() {
+		return ResponseMessageResultType.OK;
+	}
 
-    /**
-     * To be called after a request was succesfully performed. This will hande
-     * the behaviour to act as a asynchronous request.
-     *
-     * @param organisationIdentification
-     * @param deviceIdentification
-     * @param correlationUid
-     * @param data
-     *            Response data
-     */
-    void postExecute(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Serializable data) {
-        this.storeResponseData(organisationIdentification, deviceIdentification, correlationUid,
-                ResponseMessageResultType.OK, data);
+	/**
+	 * To be called after a request was succesfully performed. This will hande the
+	 * behaviour to act as a asynchronous request.
+	 *
+	 * @param organisationIdentification
+	 * @param deviceIdentification
+	 * @param correlationUid
+	 * @param data
+	 *            Response data
+	 */
+	void postExecute(final String organisationIdentification, final String deviceIdentification,
+			final String correlationUid, final Serializable data) {
+		this.storeResponseData(organisationIdentification, deviceIdentification, correlationUid,
+				ResponseMessageResultType.OK, data);
 
-        // Delay execution so the notification will not arrive before the
-        // response of this call.
-        new java.util.Timer().schedule(new java.util.TimerTask() {
-            @Override
-            public void run() {
-                SyncRequestExecutor.this.sendNotification(organisationIdentification, deviceIdentification,
-                        correlationUid, ResponseMessageResultType.OK);
-            }
-        }, this.syncNotificationDelay);
+		// Delay execution so the notification will not arrive before the
+		// response of this call.
+		new java.util.Timer().schedule(new java.util.TimerTask() {
+			@Override
+			public void run() {
+				SyncRequestExecutor.this.sendNotification(organisationIdentification, deviceIdentification,
+						correlationUid, ResponseMessageResultType.OK);
+			}
+		}, this.syncNotificationDelay);
 
-    }
+	}
 
-    /**
-     * To be called when an exception occurred. This will store the exception
-     * message and send a NOT_OK status notification.
-     *
-     * @param organisationIdentification
-     * @param deviceIdentification
-     * @param correlationUid
-     * @param exception
-     */
-    void handleException(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Exception exception) {
-        this.storeResponseData(organisationIdentification, deviceIdentification, correlationUid,
-                ResponseMessageResultType.NOT_OK, exception.getMessage());
-        this.sendNotification(organisationIdentification, deviceIdentification, correlationUid,
-                ResponseMessageResultType.NOT_OK);
-    }
+	/**
+	 * To be called when an exception occurred. This will store the exception
+	 * message and send a NOT_OK status notification.
+	 *
+	 * @param organisationIdentification
+	 * @param deviceIdentification
+	 * @param correlationUid
+	 * @param exception
+	 */
+	void handleException(final String organisationIdentification, final String deviceIdentification,
+			final String correlationUid, final Exception exception) {
+		this.storeResponseData(organisationIdentification, deviceIdentification, correlationUid,
+				ResponseMessageResultType.NOT_OK, exception.getMessage());
+		this.sendNotification(organisationIdentification, deviceIdentification, correlationUid,
+				ResponseMessageResultType.NOT_OK);
+	}
 
-    private DeviceFunction getMessageType() {
-        return this.messageType;
-    }
+	private DeviceFunction getMessageType() {
+		return this.messageType;
+	}
 
-    private void storeResponseData(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ResponseMessageResultType resultType, final Serializable data) {
-    	int numberOfNotificationsSend = 0;
-    	
-    	final ResponseData responseData = new ResponseData(organisationIdentification,
-                this.getMessageType().name(), deviceIdentification, correlationUid, resultType, data, numberOfNotificationsSend);
-        this.responseDataService.enqueue(responseData);
-    }
+	private void storeResponseData(final String organisationIdentification, final String deviceIdentification,
+			final String correlationUid, final ResponseMessageResultType resultType, final Serializable data) {
+		final int numberOfNotificationsSend = 0;
 
-    private void sendNotification(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ResponseMessageResultType resultType) {
-        final NotificationType notificationType = NotificationType.valueOf(this.getMessageType().name());
-        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, resultType.name(),
-                correlationUid, this.getNotificationMessage(), notificationType);
-    }
+		final ResponseData responseData = new ResponseData(organisationIdentification, this.getMessageType().name(),
+				deviceIdentification, correlationUid, resultType, data, numberOfNotificationsSend);
+		this.responseDataService.enqueue(responseData);
+	}
 
-    private String getNotificationMessage() {
-        return String.format("Response of type %s is available.", this.getMessageType().name());
-    }
+	private void sendNotification(final String organisationIdentification, final String deviceIdentification,
+			final String correlationUid, final ResponseMessageResultType resultType) {
+		final NotificationType notificationType = NotificationType.valueOf(this.getMessageType().name());
+		this.notificationService.sendNotification(organisationIdentification, deviceIdentification, resultType.name(),
+				correlationUid, this.getNotificationMessage(), notificationType);
+	}
+
+	private String getNotificationMessage() {
+		return String.format("Response of type %s is available.", this.getMessageType().name());
+	}
 }

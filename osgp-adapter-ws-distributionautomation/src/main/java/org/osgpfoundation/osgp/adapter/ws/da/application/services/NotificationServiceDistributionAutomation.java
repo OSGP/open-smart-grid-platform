@@ -7,12 +7,13 @@
  */
 package org.osgpfoundation.osgp.adapter.ws.da.application.services;
 
-import com.alliander.osgp.domain.core.validation.Identification;
 import org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.notification.NotificationType;
+
+import com.alliander.osgp.domain.core.validation.Identification;
 
 public interface NotificationServiceDistributionAutomation {
 
-    void sendNotification(@Identification String organisationIdentification, String deviceIdentification, String result, String correlationUid,
-                          String message, NotificationType notificationType);
+	void sendNotification(@Identification String organisationIdentification, String deviceIdentification, String result,
+			String correlationUid, String message, NotificationType notificationType);
 
 }
