@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids.notifications;
 
 import static org.junit.Assert.assertEquals;
@@ -14,7 +21,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class ResendNotifications {
-	
+
 	@Autowired
 	private ResponseDataRepository responseDataRespository;
 
@@ -22,21 +29,21 @@ public class ResendNotifications {
 	public void theMissedNotificationIsResend(final Map<String, String> settings) throws Throwable {
 		// Do nothing - scheduled task runs automatically
 	}
-	
+
 	@When("^no notification is resend$")
 	public void noNotificationIsResend() throws Throwable {
 		// Do nothing - scheduled task runs automatically
 	}
-	
+
 	@Then("^a record in the response_data table of the database has values$")
 	public void recordInTheResponseDataTableOfTheAdapterDatabaseHasValues(final Map<String, String> settings)
 			throws Throwable {
-		String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
+		final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
 		ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
 
-		int maxtime = 120000;
-		int timeout = 500;
-		int initial_timeout = 60000; //needed to make sure the ResendNotificationJob has at least runned once
+		final int maxtime = 120000;
+		final int timeout = 500;
+		final int initial_timeout = 60000; // needed to make sure the ResendNotificationJob has at least runned once
 		Thread.sleep(initial_timeout);
 		for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
 			Thread.sleep(timeout);
