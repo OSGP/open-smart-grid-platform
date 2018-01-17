@@ -84,8 +84,8 @@ public class FunctionalExceptionsSteps {
         }
     }
 
-    @When("^receiving a smartmetering add device request with an invalid DSMR_version$")
-    public void receivingASmartmeteringAddDeviceRequestWithAnInvalidDSMR_version(final Map<String, String> settings)
+    @When("^receiving a smartmetering add device request with an invalid DSMR version$")
+    public void receivingASmartmeteringAddDeviceRequestWithAnInvalidDsmrVersion(final Map<String, String> settings)
             throws Throwable {
 
         final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
