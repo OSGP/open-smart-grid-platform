@@ -79,7 +79,7 @@ public class SecurityKeyService {
      * @param keyType
      *            type of the key, for logging purposes
      * @return the key encrypted with the symmetrical secret key used only
-     *         inside the DLMS protocol adapter, or {@code null} if
+     *         inside the DLMS protocol adapter, or an empty byte array if
      *         {@code externallyEncryptedKey == null}
      * @throws ProtocolAdapterException
      *             in case of a encryption errors while handling the key
@@ -88,7 +88,7 @@ public class SecurityKeyService {
             throws ProtocolAdapterException {
 
         if (externallyEncryptedKey == null) {
-            return null;
+            return new byte[0];
         }
 
         try {
@@ -110,11 +110,12 @@ public class SecurityKeyService {
      *            protocol adapter.
      * @param keyType
      *            type of the key, for logging purposes
-     * @return the plain key, or {@code null} if {@code encryptedKey == null}
+     * @return the plain key, or an empty byte array if
+     *         {@code encryptedKey == null}
      */
     public byte[] decryptKey(final byte[] encryptedKey, final SecurityKeyType keyType) throws ProtocolAdapterException {
         if (encryptedKey == null) {
-            return null;
+            return new byte[0];
         }
         try {
             return this.encryptionService.decrypt(encryptedKey);
@@ -136,7 +137,7 @@ public class SecurityKeyService {
      */
     public byte[] encryptKey(final byte[] plainKey, final SecurityKeyType keyType) throws ProtocolAdapterException {
         if (plainKey == null) {
-            return null;
+            return new byte[0];
         }
         try {
             return this.encryptionService.encrypt(plainKey);
@@ -192,8 +193,8 @@ public class SecurityKeyService {
      *
      * @param deviceIdentification
      *            the identification of a DLMS device.
-     * @return the key, possibly {@code null} if either the device is not found
-     *         or it does not have a valid global unicast encryption key.
+     * @return the key, possibly an empty byte array if either the device is not
+     *         found or it does not have a valid global unicast encryption key.
      * @throws EncrypterException
      *             if there is an error decoding the key.
      */
@@ -211,8 +212,8 @@ public class SecurityKeyService {
      *
      * @param mbusDeviceIdentification
      *            the identification of an M-Bus device.
-     * @return the key, possibly {@code null} if either the device is not found
-     *         or it does not have a valid M-Bus Default key.
+     * @return the key, possibly an empty byte array if either the device is not
+     *         found or it does not have a valid M-Bus Default key.
      * @throws EncrypterException
      *             if there is an error decoding the key.
      */
@@ -230,8 +231,8 @@ public class SecurityKeyService {
      *
      * @param mbusDeviceIdentification
      *            the identification of an M-Bus device.
-     * @return the key, possibly {@code null} if either the device is not found
-     *         or it does not have a valid M-Bus User key.
+     * @return the key, possibly an empty byte array if either the device is not
+     *         found or it does not have a valid M-Bus User key.
      * @throws EncrypterException
      *             if the key is found, but there is an error decoding or
      *             decrypting the key.
@@ -250,8 +251,8 @@ public class SecurityKeyService {
      *
      * @param deviceIdentification
      *            the identification of a DLMS device.
-     * @return the key, possibly {@code null} if either the device is not found
-     *         or it does not have a valid password.
+     * @return the key, possibly an empty byte array if either the device is not
+     *         found or it does not have a valid password.
      * @throws EncrypterException
      *             if there is an error decoding the key.
      */
@@ -266,14 +267,14 @@ public class SecurityKeyService {
         if (dlmsDevice == null) {
             LOGGER.warn("No DlmsDevice found for identification {} - returning null as {} key.", deviceIdentification,
                     securityKeyType);
-            return null;
+            return new byte[0];
         }
 
         final SecurityKey securityKey = dlmsDevice.getValidSecurityKey(securityKeyType);
         if (securityKey == null) {
             LOGGER.warn("No valid {} key found with device {} - returning null.", securityKeyType,
                     deviceIdentification);
-            return null;
+            return new byte[0];
         }
 
         try {

@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -41,9 +40,9 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(entityManagerFactoryRef = "dlmsEntityManagerFactory", basePackageClasses = { DlmsDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-dlms.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
 public class DlmsPersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username.dlms";
@@ -122,8 +121,6 @@ public class DlmsPersistenceConfig extends AbstractConfig {
      * Method for creating the Transaction Manager.
      *
      * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
      */
     @Bean
     public JpaTransactionManager transactionManager() throws ProtocolAdapterException {
@@ -132,7 +129,7 @@ public class DlmsPersistenceConfig extends AbstractConfig {
         try {
             transactionManager.setEntityManagerFactory(this.dlmsEntityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
-        } catch (final ClassNotFoundException e) {
+        } catch (final Exception e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
             throw new ProtocolAdapterException(msg, e);
@@ -169,7 +166,7 @@ public class DlmsPersistenceConfig extends AbstractConfig {
      */
     @Bean
     @DependsOn("dlmsFlyway")
-    public LocalContainerEntityManagerFactoryBean dlmsEntityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean dlmsEntityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_PROTOCOL_ADAPTER_DLMS_SETTINGS");

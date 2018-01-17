@@ -18,7 +18,6 @@ import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProvi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -38,11 +37,9 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
  *
  */
 @Component
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-dlms.properties"),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true),
-})
+@PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
 public class SessionProviderSimulator extends SessionProvider {
 
     @Value("${triggered.simulator.ipaddress}")
@@ -85,7 +82,7 @@ public class SessionProviderSimulator extends SessionProvider {
         } catch (final FunctionalException e) {
             throw new SessionProviderException("Unable to find dlmsDevice. ", e);
         } catch (final SimulatorTriggerClientException e) {
-            throw new SessionProviderException("Unable to start successfully start a simulator. ", e);
+            throw new SessionProviderException("Unable to successfully start a simulator. ", e);
         }
 
         return this.ipAddress;

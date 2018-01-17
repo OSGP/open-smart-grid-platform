@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.domain.entities;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -135,23 +136,18 @@ public class DlmsDevice extends AbstractEntity {
         if (this == o) {
             return true;
         }
-        if (o == null || this.getClass() != o.getClass()) {
+        if (!(o instanceof DlmsDevice)) {
             return false;
         }
 
         final DlmsDevice device = (DlmsDevice) o;
 
-        if (this.deviceIdentification != null ? !this.deviceIdentification.equals(device.deviceIdentification)
-                : device.deviceIdentification != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(this.deviceIdentification, device.deviceIdentification);
     }
 
     @Override
     public int hashCode() {
-        return 31 * (this.deviceIdentification != null ? this.deviceIdentification.hashCode() : 0);
+        return Objects.hashCode(this.deviceIdentification);
     }
 
     public boolean isIpAddressIsStatic() {

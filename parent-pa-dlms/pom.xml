@@ -7,8 +7,8 @@
   <version>4.23.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-pa-dlms</name>
-  <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin 
-    to generate a maven site -->
+  <!-- Description, Organization, Licences, URL and Distribution Management 
+    elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Parent module.</description>
   <organization>
     <name>OSGP</name>
@@ -115,9 +115,9 @@
         <groupId>org.openmuc</groupId>
         <artifactId>jdlms</artifactId>
         <version>${openmuc.jdlms.version}</version>
-	<exclusions>
+        <exclusions>
           <exclusion>
-            <!-- Exclude to ensure compatibility with (older) 1.51 users-->
+            <!-- Exclude to ensure compatibility with (older) 1.51 users -->
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
           </exclusion>
