@@ -81,13 +81,4 @@ public class ResendNotificationsSteps {
         assertEquals("MessageType is not as expected", settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
                 responseData.getMessageType());
     }
-
-    @Then("^no notification is sent$")
-    public void noNotificationIsSent(final Map<String, String> settings) throws Throwable {
-        final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
-        final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
-        assertEquals("NumberOfNotificationsSentd is not as expected",
-                settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT),
-                responseData.getNumberOfNotificationsSent());
-    }
 }
