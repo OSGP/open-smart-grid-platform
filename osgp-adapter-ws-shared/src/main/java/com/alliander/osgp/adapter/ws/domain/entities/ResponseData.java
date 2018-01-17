@@ -24,78 +24,78 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Table(name = "response_data")
 public class ResponseData extends AbstractEntity {
 
-	/**
-	 * Serial Version UID.
-	 */
-	private static final long serialVersionUID = 493031146792643786L;
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = 493031146792643786L;
 
-	@Column(length = 255)
-	private String organisationIdentification;
+    @Column(length = 255)
+    private String organisationIdentification;
 
-	@Column(length = 255)
-	private String messageType;
+    @Column(length = 255)
+    private String messageType;
 
-	@Column(length = 255)
-	private String deviceIdentification;
+    @Column(length = 255)
+    private String deviceIdentification;
 
-	@Column(length = 255)
-	private String correlationUid;
+    @Column(length = 255)
+    private String correlationUid;
 
-	@Column(length = 255)
-	private Integer numberOfNotificationsSend;
+    @Column
+    private Short numberOfNotificationsSent;
 
-	@Enumerated(EnumType.STRING)
-	private ResponseMessageResultType resultType;
+    @Enumerated(EnumType.STRING)
+    private ResponseMessageResultType resultType;
 
-	@Type(type = "java.io.Serializable")
-	private Serializable messageData;
+    @Type(type = "java.io.Serializable")
+    private Serializable messageData;
 
-	@SuppressWarnings("unused")
-	private ResponseData() {
+    @SuppressWarnings("unused")
+    private ResponseData() {
 
-	}
+    }
 
-	public ResponseData(final String organisationIdentification, final String messageType,
-			final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
-			final Serializable messageData, final Integer numberOfNotificationsSend) {
-		this.organisationIdentification = organisationIdentification;
-		this.messageType = messageType;
-		this.deviceIdentification = deviceIdentification;
-		this.correlationUid = correlationUid;
-		this.resultType = resultType;
-		this.messageData = messageData;
-		this.numberOfNotificationsSend = numberOfNotificationsSend;
-	}
+    public ResponseData(final String organisationIdentification, final String messageType,
+            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
+            final Serializable messageData, final Short numberOfNotificationsSent) {
+        this.organisationIdentification = organisationIdentification;
+        this.messageType = messageType;
+        this.deviceIdentification = deviceIdentification;
+        this.correlationUid = correlationUid;
+        this.resultType = resultType;
+        this.messageData = messageData;
+        this.numberOfNotificationsSent = numberOfNotificationsSent;
+    }
 
-	public String getCorrelationUid() {
-		return this.correlationUid;
-	}
+    public String getCorrelationUid() {
+        return this.correlationUid;
+    }
 
-	public String getOrganisationIdentification() {
-		return this.organisationIdentification;
-	}
+    public String getOrganisationIdentification() {
+        return this.organisationIdentification;
+    }
 
-	public String getDeviceIdentification() {
-		return this.deviceIdentification;
-	}
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
+    }
 
-	public String getMessageType() {
-		return this.messageType;
-	}
+    public String getMessageType() {
+        return this.messageType;
+    }
 
-	public Serializable getMessageData() {
-		return this.messageData;
-	}
+    public Serializable getMessageData() {
+        return this.messageData;
+    }
 
-	public ResponseMessageResultType getResultType() {
-		return this.resultType;
-	}
+    public ResponseMessageResultType getResultType() {
+        return this.resultType;
+    }
 
-	public Integer getNumberOfNotificationsSend() {
-		return this.numberOfNotificationsSend;
-	}
+    public Short getNumberOfNotificationsSent() {
+        return this.numberOfNotificationsSent;
+    }
 
-	public void setNumberOfNotificationsSend(final Integer numberOfNotificationsSend) {
-		this.numberOfNotificationsSend = numberOfNotificationsSend;
-	}
+    public void setNumberOfNotificationsSent(final Short numberOfNotificationsSent) {
+        this.numberOfNotificationsSent = numberOfNotificationsSent;
+    }
 }
