@@ -57,22 +57,22 @@ public class NotificationClientConfig extends AbstractConfig {
 
     // Notification web service security properties.
 
-    @Value("${web.service.truststore.location}")
+    @Value("${web.service.truststore.location:/etc/ssl/certs/trust.jks}")
     private String webserviceTruststoreLocation;
 
-    @Value("${web.service.truststore.password}")
+    @Value("${web.service.truststore.password:123456}")
     private String webserviceTruststorePassword;
 
-    @Value("${web.service.truststore.type}")
+    @Value("${web.service.truststore.type:jks}")
     private String webserviceTruststoreType;
 
-    @Value("${web.service.keystore.location}")
+    @Value("${web.service.keystore.location:/etc/ssl/certs}")
     private String webserviceKeystoreLocation;
 
-    @Value("${web.service.keystore.password}")
+    @Value("${web.service.keystore.password:1234}")
     private String webserviceKeystorePassword;
 
-    @Value("${web.service.keystore.type}")
+    @Value("${web.service.keystore.type:pkcs12}")
     private String webserviceKeystoreType;
 
     @Bean
