@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -36,17 +37,22 @@ public class ResendNotificationsSteps {
     @Value("${iec61850.rtu.response.wait.fail.duration:120000}")
     private int waitFailMillis;
 
-    @When("^the missed notification is resent$")
-    public void theMissedNotificationIsResend(final Map<String, String> settings) throws Throwable {
+    @Then("^a notification is sent$")
+    public void theMissedNotificationIsResent(final Map<String, String> settings) throws Throwable {
         // Do nothing - scheduled task runs automatically
     }
 
-    @When("^no notification is resent$")
+    @Then("^no notification is sent$")
     public void noNotificationIsResend() throws Throwable {
         // Do nothing - scheduled task runs automatically
     }
 
-    @Then("^the response data has values$")
+    @When("^OSGP checks for which response data a notification has to be resend$")
+    public void osgpChecksForWhichResponseDataANotificationHasToBeResend() throws Throwable {
+        // Do nothing - scheduled task runs automatically
+    }
+
+    @And("^the response data has values$")
     public void theResponseDataHasValues(final Map<String, String> settings) throws Throwable {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
         ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);

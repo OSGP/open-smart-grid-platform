@@ -11,9 +11,10 @@ Feature: Microgrids notifications - Resend notifications
       | MessageType               | GET_DATA                                               |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
-    When the missed notification is resent
+    When OSGP checks for which response data a notification has to be resend
+    Then a notification is sent
       | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
-    Then the response data has values
+    And the response data has values
       | DeviceIdentification      | TEST1024000000001                                      |
       | MessageType               | GET_DATA                                               |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
@@ -25,8 +26,9 @@ Feature: Microgrids notifications - Resend notifications
       | MessageType               | GET_DATA                                               |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
-    When no notification is resent
-    Then the response data has values
+    When OSGP checks for which response data a notification has to be resend
+    Then no notification is sent
+    And the response data has values
       | DeviceIdentification      | TEST1024000000001                                      |
       | MessageType               | GET_DATA                                               |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
@@ -39,8 +41,9 @@ Feature: Microgrids notifications - Resend notifications
       | MessageType               | GET_DATA                                               |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      3 |
-    When no notification is resent
-    Then the response data has values
+    When OSGP checks for which response data a notification has to be resend
+    Then no notification is sent
+    And the response data has values
       | DeviceIdentification      | TEST1024000000001                                      |
       | MessageType               | GET_DATA                                               |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
