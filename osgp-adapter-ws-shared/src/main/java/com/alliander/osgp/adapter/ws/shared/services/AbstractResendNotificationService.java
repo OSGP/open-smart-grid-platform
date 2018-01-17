@@ -9,9 +9,9 @@ package com.alliander.osgp.adapter.ws.shared.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.support.CronSequenceGenerator;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
@@ -19,13 +19,13 @@ import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 public abstract class AbstractResendNotificationService {
 
     @Autowired
-    private String resendNotificationCronExpression;
-
-    @Autowired
     private int resendNotificationMultiplier;
 
     @Autowired
     private Short resendNotificationMaximum;
+
+    @Autowired
+    private int resendThresholdInHours;
 
     @Autowired
     private ResponseDataRepository responseDataRepository;
@@ -37,23 +37,23 @@ public abstract class AbstractResendNotificationService {
             final double multiplier = Math.pow(this.resendNotificationMultiplier,
                     responseData.getNumberOfNotificationsSent());
 
-            final Date modificationDate = responseData.getModificationTime();
             final Date currentDate = new Date();
-            final long previousModificationTime = currentDate.getTime() - modificationDate.getTime();
+            final long previousModificationTimeInterval = currentDate.getTime()
+                    - responseData.getModificationTime().getTime();
+            final long creationTimeInterval = currentDate.getTime() - responseData.getCreationTime().getTime();
 
-            final CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(
-                    this.resendNotificationCronExpression);
-            final Date nextFirstExecutionDate = cronSequenceGenerator.next(currentDate);
-            final Date nextSecondExecutionDate = cronSequenceGenerator.next(nextFirstExecutionDate);
-            final long cronSequenceInterval = nextSecondExecutionDate.getTime() - nextFirstExecutionDate.getTime();
-
-            if ((cronSequenceInterval * multiplier) < previousModificationTime) {
-                this.executer(responseData);
+            if (TimeUnit.MINUTES.toMillis(this.resendThresholdInHours) < creationTimeInterval) {
+                if (multiplier == 1) {
+                    this.resendNotification(responseData);
+                } else if ((TimeUnit.HOURS.toMillis(this.resendThresholdInHours)
+                        * multiplier) < previousModificationTimeInterval) {
+                    this.resendNotification(responseData);
+                }
             }
         }
     }
 
-    public abstract void executer(ResponseData responseData);
+    public abstract void resendNotification(ResponseData responseData);
 
     public String getNotificationMessage(final String responseData) {
         return String.format("Response of type %s is available.", responseData);

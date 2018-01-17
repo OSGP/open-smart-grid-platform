@@ -49,19 +49,14 @@ public class ResendNotificationConfig extends AbstractSchedulingConfig {
     @Value("${db.username}")
     private String databaseUsername;
 
-    @Value("${smartmetering.scheduling.job.resend.notification.cron.expression}")
-    private String resendNotificationCronExpression;
-
     @Value("${smartmetering.scheduling.job.resend.notification.maximum}")
     private short resendNotificationMaximum;
 
     @Value("${smartmetering.scheduling.job.resend.notification.multiplier}")
     private int resendNotificationMultiplier;
 
-    @Bean
-    public String resendNotificationCronExpression() {
-        return this.resendNotificationCronExpression;
-    }
+    @Value("${smartmetering.scheduling.job.resend.notification.resend.threshold.in.minutes}")
+    private int resendThresholdInHours;
 
     @Bean
     public short resendNotificationMaximum() {
@@ -71,6 +66,11 @@ public class ResendNotificationConfig extends AbstractSchedulingConfig {
     @Bean
     public int resendNotificationMultiplier() {
         return this.resendNotificationMultiplier;
+    }
+
+    @Bean
+    public int resendThresholdInHours() {
+        return this.resendThresholdInHours;
     }
 
     @Bean(destroyMethod = "shutdown")

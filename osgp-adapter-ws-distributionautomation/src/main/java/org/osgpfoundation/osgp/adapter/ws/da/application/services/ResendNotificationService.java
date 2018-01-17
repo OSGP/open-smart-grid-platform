@@ -32,7 +32,7 @@ public class ResendNotificationService extends AbstractResendNotificationService
     private static final Logger LOGGER = LoggerFactory.getLogger(ResendNotificationService.class);
 
     @Override
-    public void executer(final ResponseData responseData) {
+    public void resendNotification(final ResponseData responseData) {
 
         if (EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
             LOGGER.info("Found response data for resending notification");
