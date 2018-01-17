@@ -91,7 +91,7 @@ public class Device implements Serializable {
      * device.
      */
     @Identification
-    @Column(unique = true, nullable = false, length = 40)
+    @Column(unique = true, nullable = false, length = 40, updatable = false)
     protected String deviceIdentification;
 
     /**
@@ -214,7 +214,7 @@ public class Device implements Serializable {
 
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     @Sort(type = SortType.NATURAL)
-    private SortedSet<DeviceFirmwareFile> deviceFirmwareFiles = new TreeSet<>();
+    private final SortedSet<DeviceFirmwareFile> deviceFirmwareFiles = new TreeSet<>();
 
     public Device() {
         // Default constructor

@@ -58,7 +58,10 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
                     Float.valueOf(source.getGpsLongitude()));
         }
 
-        destination.setActivated(source.isActivated());
+        if (source.isActivated() != null) {
+            destination.setActivated(source.isActivated());
+        }
+
         if (source.getDeviceLifecycleStatus() != null) {
             destination
                     .setDeviceLifecycleStatus(DeviceLifecycleStatus.valueOf(source.getDeviceLifecycleStatus().name()));

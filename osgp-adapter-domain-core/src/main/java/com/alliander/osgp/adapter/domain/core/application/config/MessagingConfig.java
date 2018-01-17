@@ -20,6 +20,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import com.alliander.osgp.adapter.domain.core.infra.jms.OsgpCoreRequestMessageListener;
 import com.alliander.osgp.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageListener;
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageListener;
+import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageSender;
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
@@ -29,8 +30,8 @@ import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-domain-core.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterDomainCore/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterDomainCore/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
@@ -53,12 +54,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(
+                this.environment.getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
         redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(
+                this.environment.getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
 
         return redeliveryPolicy;
     }
@@ -147,5 +148,24 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public JmsTemplate osgpCoreResponsesIncomingJmsTemplate(
             final JmsConfiguration osgpCoreResponsesIncomingJmsConfiguration) {
         return osgpCoreResponsesIncomingJmsConfiguration.getJmsTemplate();
+    }
+
+    // === JMS SETTINGS: OSGP DOMAIN CORE TO CORE WEB SERVICE REQUESTS ===
+
+    @Bean
+    public JmsConfiguration commonDomainToWsRequestsJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_COMMON_DOMAIN_TO_WS_REQUESTS);
+    }
+
+    @Bean(name = "domainCoreWebServiceRequestsJmsTemplate")
+    public JmsTemplate commonDomainToWsRequestsJmsTemplate(
+            final JmsConfiguration commonDomainToWsRequestsJmsConfiguration) {
+        return commonDomainToWsRequestsJmsConfiguration.getJmsTemplate();
+    }
+
+    @Bean(name = "domainCoreWebServiceRequestsMessageSender")
+    public WebServiceRequestMessageSender commonDomainToWsRequestsMessageSender() {
+        return new WebServiceRequestMessageSender();
     }
 }

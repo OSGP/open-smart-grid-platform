@@ -15,4 +15,6 @@ import com.alliander.osgp.domain.core.entities.DomainInfo;
 @Repository
 public interface DomainInfoRepository extends JpaRepository<DomainInfo, Long> {
 
+    DomainInfo findByDomainAndDomainVersion(final String domain, final String domainVersion);
+
 }

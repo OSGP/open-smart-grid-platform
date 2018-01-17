@@ -36,6 +36,8 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchC
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchConfigurationAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchConfigurationResponse;
+import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -57,7 +59,10 @@ public class ConfigurationManagementEndpoint {
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
     private final ConfigurationManagementService configurationManagementService;
-    private ConfigurationManagementMapper configurationManagementMapper;
+    private final ConfigurationManagementMapper configurationManagementMapper;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     public ConfigurationManagementEndpoint(
@@ -82,8 +87,8 @@ public class ConfigurationManagementEndpoint {
             // Get the request parameters, make sure that they are in UTC.
             // Maybe add an adapter to the service, so that all date-time are
             // converted to UTC automatically.
-            final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request
-                    .getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+            final DateTime scheduleTime = request.getScheduledTime() == null ? null
+                    : new DateTime(request.getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
             final Configuration configuration = this.configurationManagementMapper.map(request.getConfiguration(),
                     Configuration.class);
@@ -119,13 +124,23 @@ public class ConfigurationManagementEndpoint {
         final SetConfigurationResponse response = new SetConfigurationResponse();
 
         try {
-            final ResponseMessage message = this.configurationManagementService.dequeueSetConfigurationResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.configurationManagementService
+                    .dequeueSetConfigurationResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
         } catch (final Exception e) {
             this.handleException(e);
+        }
+
+        if (OsgpResultType.OK.equals(response.getResult())) {
+            try {
+                this.notificationService.sendNotification(organisationIdentification,
+                        request.getAsyncRequest().getDeviceId(), response.getResult().name(),
+                        request.getAsyncRequest().getCorrelationUid(), null, NotificationType.DEVICE_UPDATED);
+            } catch (final Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
         return response;
@@ -143,8 +158,8 @@ public class ConfigurationManagementEndpoint {
         final GetConfigurationAsyncResponse response = new GetConfigurationAsyncResponse();
 
         try {
-            final String correlationUid = this.configurationManagementService.enqueueGetConfigurationRequest(
-                    organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.configurationManagementService
+                    .enqueueGetConfigurationRequest(organisationIdentification, request.getDeviceIdentification());
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -173,8 +188,8 @@ public class ConfigurationManagementEndpoint {
         final GetConfigurationResponse response = new GetConfigurationResponse();
 
         try {
-            final ResponseMessage message = this.configurationManagementService.dequeueGetConfigurationResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.configurationManagementService
+                    .dequeueGetConfigurationResponse(request.getAsyncRequest().getCorrelationUid());
 
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));

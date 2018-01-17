@@ -7,9 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.microgrids.presentation.ws;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
@@ -26,15 +23,6 @@ public class SendNotificationServiceClient {
         this.webServiceTemplateFactory = webServiceTemplateFactory;
     }
 
-    /**
-     * Add a new device to the platform.
-     *
-     * @param model
-     *            The device to add.
-     * @throws WebServiceSecurityException
-     * @throws GeneralSecurityException
-     * @throws IOException
-     */
     public void sendNotification(final String organisationIdentification, final Notification notification,
             final String notificationURL, final String notificationUsername) throws WebServiceSecurityException {
 
@@ -43,7 +31,7 @@ public class SendNotificationServiceClient {
         sendNotificationRequest.setNotification(notification);
 
         this.webServiceTemplateFactory.getTemplate(organisationIdentification, notificationUsername, notificationURL)
-        .marshalSendAndReceive(sendNotificationRequest);
+                .marshalSendAndReceive(sendNotificationRequest);
 
     }
 }
