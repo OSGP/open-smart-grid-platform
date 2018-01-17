@@ -1,4 +1,4 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering Housekeeping - Response Data Cleanup Job
   As a ...
   I want to clean up the meter response data

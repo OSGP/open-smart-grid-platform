@@ -8,12 +8,10 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncResponse;
@@ -60,19 +58,5 @@ public class ActualMeterReadsSteps {
         assertNotNull("ActiveEnergyImportTariffOne should not be null", response.getActiveEnergyImportTariffOne());
         assertNotNull("ActiveEnergyimportTariffTwo should not be null", response.getActiveEnergyImportTariffTwo());
         assertNotNull("LogTime should not be null", response.getLogTime());
-    }
-
-    @When("^the actual meter reads request is received for an inactive device$")
-    public void theActualMeterReadsRequestIsReceivedForAnInactiveDevice(final Map<String, String> settings)
-            throws Throwable {
-
-        final ActualMeterReadsRequest request = ActualMeterReadsRequestFactory.fromParameterMap(settings);
-
-        try {
-            this.requestClient.doRequest(request);
-            fail("A SoapFaultClientException should have been thrown");
-        } catch (final SoapFaultClientException e) {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
-        }
     }
 }

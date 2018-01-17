@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
@@ -76,6 +78,22 @@ public class FunctionalExceptionsSteps {
         final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestFactory
                 .fromParameterMapAsync(extendedParameters);
         try {
+            this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
+        } catch (final Exception exception) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
+        }
+    }
+
+    @When("^receiving a smartmetering add device request with an invalid DSMR version$")
+    public void receivingASmartmeteringAddDeviceRequestWithAnInvalidDsmrVersion(final Map<String, String> settings)
+            throws Throwable {
+
+        final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
+        try {
+            final AddDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient.addDevice(request);
+            final AddDeviceAsyncRequest addDeviceAsyncRequest = new AddDeviceAsyncRequest();
+            addDeviceAsyncRequest.setCorrelationUid(asyncResponse.getCorrelationUid());
+            addDeviceAsyncRequest.setDeviceIdentification(asyncResponse.getDeviceIdentification());
             this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
         } catch (final Exception exception) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
