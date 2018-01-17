@@ -40,7 +40,7 @@ public class ManufacturerSteps extends GlueBase {
      *            The settings for the manufacturer to be used.
      * @throws Throwable
      */
-    @Given("^a manufacturer")
+    @Given("^a manufacturer$")
     public void aManufacturer(final Map<String, String> settings) throws Throwable {
 
         final Manufacturer manufacturer = new ManufacturerBuilder().withSettings(settings).build();

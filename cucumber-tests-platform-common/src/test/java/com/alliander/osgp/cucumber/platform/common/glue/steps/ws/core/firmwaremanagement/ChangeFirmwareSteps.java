@@ -77,7 +77,7 @@ public class ChangeFirmwareSteps {
             throws Throwable {
         final Firmware firmware = new Firmware();
         firmware.setId((int) firmwareFileId);
-        firmware.setFilename(getString(requestParameters, PlatformKeys.FIRMWARE_FILENAME, ""));
+        firmware.setFilename(getString(requestParameters, PlatformKeys.FIRMWARE_FILE_FILENAME, ""));
         firmware.setDescription(getString(requestParameters, PlatformKeys.FIRMWARE_DESCRIPTION, ""));
         firmware.setPushToNewDevices(getBoolean(requestParameters, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
                 PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));

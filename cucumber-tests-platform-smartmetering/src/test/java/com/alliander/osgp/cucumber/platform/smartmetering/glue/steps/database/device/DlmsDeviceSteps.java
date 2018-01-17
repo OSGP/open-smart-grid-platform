@@ -46,6 +46,7 @@ import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
@@ -68,6 +69,9 @@ public class DlmsDeviceSteps {
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
+
+    @Autowired
+    private ManufacturerRepository manufacturerRepository;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -478,24 +482,15 @@ public class DlmsDeviceSteps {
     }
 
     private DeviceModel getDeviceModel(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(PlatformKeys.KEY_DEVICE_MODEL)) {
-            /*
-             * Model code does not uniquely identify a device model, which is
-             * why deviceModelRepository is changed to return a list of device
-             * models. In the test data that is set up, there probably is only
-             * one device model for the given model code, and just selecting the
-             * first device model returned should work.
-             *
-             * A better solution might be to add the manufacturer in the
-             * scenario data and do a lookup by manufacturer and model code,
-             * which should uniquely define the device model.
-             */
-            final List<DeviceModel> deviceModels = this.deviceModelRepository
-                    .findByModelCode(inputSettings.get(PlatformKeys.KEY_DEVICE_MODEL));
-            if (!deviceModels.isEmpty()) {
-                return deviceModels.get(0);
-            }
+
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.MANUFACTURER_CODE)
+                && inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_MODEL_CODE)) {
+            final Manufacturer manufacturer = this.manufacturerRepository
+                    .findByCode(inputSettings.get(PlatformSmartmeteringKeys.MANUFACTURER_CODE));
+            return this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,
+                    inputSettings.get(PlatformSmartmeteringKeys.DEVICE_MODEL_CODE));
         }
+
         return null;
     }
 

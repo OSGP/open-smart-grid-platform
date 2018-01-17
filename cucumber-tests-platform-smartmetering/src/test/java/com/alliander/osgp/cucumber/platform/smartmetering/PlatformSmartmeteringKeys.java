@@ -8,8 +8,8 @@
 package com.alliander.osgp.cucumber.platform.smartmetering;
 
 /**
- * Keys specific for the dlms related data. Note: Keep in mind that generic keys should be specified in the
- * cucumber-tests-platform project.
+ * Keys specific for the dlms related data. Note: Keep in mind that generic keys
+ * should be specified in the cucumber-tests-platform project.
  */
 public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platform.PlatformKeys {
 
@@ -28,7 +28,8 @@ public class PlatformSmartmeteringKeys extends com.alliander.osgp.cucumber.platf
     public static final String SMART_METER_E = "SmartMeterE";
     // Default keys for dlms_device
     public static final String DEVICE_IDENTIFICATION = "DeviceIdentification";
-    public static final String DEVICE_MODEL = "DeviceModel";
+    public static final String DEVICE_MODEL_CODE = "DeviceModelCode";
+
     // other
     public static final String DEVICE_TYPE = "DeviceType";
     public static final String GAS_DEVICE_IDENTIFICATION = "GasDeviceIdentification";

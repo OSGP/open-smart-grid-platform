@@ -56,7 +56,7 @@ public class DeviceFirmwareFileSteps extends GlueBase {
 
         // Get the firmware file
         FirmwareFile firmwareFile;
-        final String firmwareFileName = getString(settings, PlatformKeys.FIRMWARE_FILENAME);
+        final String firmwareFileName = getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME);
         if (StringUtils.isEmpty(firmwareFileName)) {
             final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository.findAll();
             firmwareFile = firmwareFiles.get(firmwareFiles.size() - 1);
