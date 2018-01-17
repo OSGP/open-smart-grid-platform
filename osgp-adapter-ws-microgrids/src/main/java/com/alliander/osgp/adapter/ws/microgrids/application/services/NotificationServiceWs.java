@@ -20,7 +20,7 @@ import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 @Transactional(value = "transactionManager")
 @Validated
-public class NotificationServiceWs implements NotificationServiceMicrogrids {
+public class NotificationServiceWs implements NotificationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWs.class);
 

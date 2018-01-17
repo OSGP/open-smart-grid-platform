@@ -24,7 +24,7 @@ import com.alliander.osgp.adapter.ws.shared.services.AbstractResendNotificationS
 public class ResendNotificationService extends AbstractResendNotificationService {
 
     @Autowired
-    private NotificationServiceDistributionAutomation notificationServiceDistributionAutomation;
+    private NotificationService notificationService;
 
     @Autowired
     private ResponseDataRepository responseDataRepository;
@@ -37,7 +37,7 @@ public class ResendNotificationService extends AbstractResendNotificationService
         if (EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
             LOGGER.info("Found response data for resending notification");
             final NotificationType notificationType = NotificationType.valueOf(responseData.getMessageType());
-            this.notificationServiceDistributionAutomation.sendNotification(
+            this.notificationService.sendNotification(
                     responseData.getOrganisationIdentification(), responseData.getDeviceIdentification(),
                     responseData.getResultType().name(), responseData.getCorrelationUid(),
                     this.getNotificationMessage(responseData.getMessageType()), notificationType);

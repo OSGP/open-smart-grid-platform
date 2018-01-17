@@ -24,7 +24,7 @@ import com.alliander.osgp.adapter.ws.shared.services.AbstractResendNotificationS
 public class ResendNotificationService extends AbstractResendNotificationService {
 
     @Autowired
-    private NotificationServiceMicrogrids notificationServiceMicrogrids;
+    private NotificationService notificationServiceMicrogrids;
 
     @Autowired
     private ResponseDataRepository responseDataRepository;

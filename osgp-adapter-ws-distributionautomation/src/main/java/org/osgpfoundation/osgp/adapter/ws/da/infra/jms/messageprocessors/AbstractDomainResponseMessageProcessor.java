@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationServiceDistributionAutomation;
+import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationService;
 import org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.notification.NotificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
      */
     protected DeviceFunction deviceFunction;
     @Autowired
-    private NotificationServiceDistributionAutomation notificationService;
+    private NotificationService notificationService;
     @Autowired
     private ResponseDataService responseDataService;
 

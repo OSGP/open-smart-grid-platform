@@ -12,7 +12,7 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification
 /**
  * Notification service to be used when no notifications should be sent.
  */
-public class NotificationServiceBlackHole implements NotificationServiceMicrogrids {
+public class NotificationServiceBlackHole implements NotificationService {
 
 	@Override
 	public void sendNotification(final String organisationIdentification, final String deviceIdentification,
