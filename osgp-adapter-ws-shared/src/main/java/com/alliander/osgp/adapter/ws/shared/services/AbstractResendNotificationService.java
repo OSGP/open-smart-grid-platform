@@ -31,6 +31,7 @@ public abstract class AbstractResendNotificationService {
     private ResponseDataRepository responseDataRepository;
 
     public void execute() {
+        final int initialNotificationResend = 1;
         final List<ResponseData> notificationsToResend = this.responseDataRepository
                 .findByNumberOfNotificationsSentLessThan(this.resendNotificationMaximum);
         for (final ResponseData responseData : notificationsToResend) {
@@ -43,7 +44,7 @@ public abstract class AbstractResendNotificationService {
             final long creationTimeInterval = currentDate.getTime() - responseData.getCreationTime().getTime();
 
             if (TimeUnit.MINUTES.toMillis(this.resendThresholdInHours) < creationTimeInterval) {
-                if (multiplier == 1) {
+                if (multiplier == initialNotificationResend) {
                     this.resendNotification(responseData);
                 } else if ((TimeUnit.HOURS.toMillis(this.resendThresholdInHours)
                         * multiplier) < previousModificationTimeInterval) {

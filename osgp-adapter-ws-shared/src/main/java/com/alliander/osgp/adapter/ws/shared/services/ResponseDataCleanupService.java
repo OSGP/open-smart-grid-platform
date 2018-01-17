@@ -19,16 +19,16 @@ import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 @Transactional(value = "transactionManager")
 public class ResponseDataCleanupService {
 
-	@Autowired
-	private ResponseDataRepository responseDataRepository;
+    @Autowired
+    private ResponseDataRepository responseDataRepository;
 
-	@Autowired
-	private int cleanupJobRetentionTimeInDays;
+    @Autowired
+    private int cleanupJobRetentionTimeInDays;
 
-	public void execute() {
+    public void execute() {
 
-		final DateTime removeBeforeDateTime = DateTime.now(DateTimeZone.UTC)
-				.minusDays(this.cleanupJobRetentionTimeInDays);
-		this.responseDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toDate());
-	}
+        final DateTime removeBeforeDateTime = DateTime.now(DateTimeZone.UTC)
+                .minusDays(this.cleanupJobRetentionTimeInDays);
+        this.responseDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toDate());
+    }
 }

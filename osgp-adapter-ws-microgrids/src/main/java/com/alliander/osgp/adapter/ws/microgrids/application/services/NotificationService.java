@@ -12,7 +12,7 @@ import com.alliander.osgp.domain.core.validation.Identification;
 
 public interface NotificationService {
 
-	void sendNotification(@Identification String organisationIdentification, String deviceIdentification, String result,
-			String correlationUid, String message, NotificationType notificationType);
+    void sendNotification(@Identification String organisationIdentification, String deviceIdentification,
+            String result, String correlationUid, String message, NotificationType notificationType);
 
 }
