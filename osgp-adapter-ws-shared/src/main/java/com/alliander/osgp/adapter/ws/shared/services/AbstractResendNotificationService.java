@@ -35,7 +35,7 @@ public abstract class AbstractResendNotificationService {
         final List<ResponseData> notificationsToResend = this.responseDataRepository
                 .findByNumberOfNotificationsSentLessThan(this.resendNotificationMaximum);
         for (final ResponseData responseData : notificationsToResend) {
-            final double multiplier = Math.pow(this.resendNotificationMultiplier,
+            final int multiplier = (int) Math.pow(this.resendNotificationMultiplier,
                     responseData.getNumberOfNotificationsSent());
 
             final Date currentDate = new Date();
