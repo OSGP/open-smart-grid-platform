@@ -113,9 +113,17 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
             deviceOutputSettings.add(newDeviceOutputSetting);
         }
         destination.updateOutputSettings(deviceOutputSettings);
-        destination.setPublicKeyPresent(source.isPublicKeyPresent());
-        destination.setHasSchedule(source.isHasSchedule());
-        destination.setActivated(source.isActivated());
+
+        if (source.isPublicKeyPresent() != null) {
+            destination.setPublicKeyPresent(source.isPublicKeyPresent());
+        }
+
+        if (source.isHasSchedule() != null) {
+            destination.setHasSchedule(source.isHasSchedule());
+        }
+        if (source.isActivated() != null) {
+            destination.setActivated(source.isActivated());
+        }
 
         if (source.getDeviceLifecycleStatus() != null) {
             destination

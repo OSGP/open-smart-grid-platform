@@ -26,7 +26,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
@@ -61,6 +60,8 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSs
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationResponse;
+import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -90,7 +91,7 @@ public class DeviceManagementEndpoint {
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
     private static final String EXCEPTION = "Exception: {}, StackTrace: {}";
-    private static final String EXCEPTION_WHILE_UPDATING_DEVICE = "Exception: {} while adding device: {} for organisation {}.";
+    private static final String EXCEPTION_WHILE_UPDATING_DEVICE = "Exception: {} while updating device: {} for organisation: {}.";
 
     private final DeviceManagementService deviceManagementService;
     private final DeviceManagementMapper deviceManagementMapper;
@@ -99,13 +100,8 @@ public class DeviceManagementEndpoint {
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
-    private LoggingMessageSender loggingMessageSender;
+    private NotificationService notificationService;
 
-    /**
-     * Constructor
-     *
-     * @param deviceManagementService
-     */
     @Autowired
     public DeviceManagementEndpoint(
             @Qualifier(value = "wsCoreDeviceManagementService") final DeviceManagementService deviceManagementService,
@@ -319,8 +315,8 @@ public class DeviceManagementEndpoint {
     public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Updating device: Original {}, Updated: {}.", request.getDeviceIdentification(),
-                request.getUpdatedDevice().getDeviceIdentification());
+        LOGGER.info("UpdateDeviceRequest received for device: {} for organisation: {}.",
+                request.getDeviceIdentification(), organisationIdentification);
 
         try {
             final com.alliander.osgp.domain.core.entities.Ssld device = this.deviceManagementMapper
@@ -333,8 +329,8 @@ public class DeviceManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, new Object[] { e.getMessage(),
-                    request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), request.getDeviceIdentification(),
+                    organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -357,7 +353,7 @@ public class DeviceManagementEndpoint {
     public SetDeviceAliasResponse setDeviceAlias(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetDeviceAliasRequest request) throws OsgpException {
 
-        LOGGER.info("Setting device alias for device:{} to: {}.", request.getDeviceIdentification(),
+        LOGGER.info("Setting device alias for device: {} to: {}.", request.getDeviceIdentification(),
                 request.getDeviceAlias());
 
         try {
@@ -368,8 +364,8 @@ public class DeviceManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE,
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), request.getDeviceIdentification(),
+                    organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -403,8 +399,8 @@ public class DeviceManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE,
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), request.getDeviceIdentification(),
+                    organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -576,6 +572,16 @@ public class DeviceManagementEndpoint {
             }
         } catch (final Exception e) {
             this.handleException(e);
+        }
+
+        if (OsgpResultType.OK.equals(response.getResult())) {
+            try {
+                this.notificationService.sendNotification(organisationIdentification, asyncRequest.getDeviceId(),
+                        response.getResult().name(), asyncRequest.getCorrelationUid(), null,
+                        NotificationType.DEVICE_UPDATED);
+            } catch (final Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
         return response;

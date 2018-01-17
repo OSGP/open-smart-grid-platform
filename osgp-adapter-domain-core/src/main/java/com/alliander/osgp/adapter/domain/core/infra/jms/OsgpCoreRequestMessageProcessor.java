@@ -7,10 +7,15 @@
  */
 package com.alliander.osgp.adapter.domain.core.infra.jms;
 
+import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageSender;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.UnknownMessageTypeException;
 
@@ -19,20 +24,29 @@ public class OsgpCoreRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageProcessor.class);
 
+    @Qualifier("domainCoreWebServiceRequestsMessageSender")
+    @Autowired
+    private WebServiceRequestMessageSender webServiceRequestMessageSender;
+
     public void processMessage(final RequestMessage requestMessage, final String messageType)
             throws UnknownMessageTypeException {
 
         final String organisationIdentification = requestMessage.getOrganisationIdentification();
         final String deviceIdentification = requestMessage.getDeviceIdentification();
         final String correlationUid = requestMessage.getCorrelationUid();
-        final Object dataObject = requestMessage.getRequest();
+        final Serializable dataObject = requestMessage.getRequest();
 
         LOGGER.info(
-                "Received request message from OSGP-CORE messageType: {} deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}, className: {}",
-                messageType, deviceIdentification, organisationIdentification, correlationUid, dataObject.getClass()
-                .getCanonicalName());
+                "Received request message from OSGP-CORE messageType: {} deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}, dataObject.className: {}",
+                messageType, deviceIdentification, organisationIdentification, correlationUid,
+                dataObject == null ? "null" : dataObject.getClass().getCanonicalName());
 
-        throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
-
+        if ("RELAY_STATUS_UPDATED".equals(messageType)) {
+            final RequestMessage requestMsg = new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, dataObject);
+            this.webServiceRequestMessageSender.send(requestMsg, messageType);
+        } else {
+            throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
+        }
     }
 }

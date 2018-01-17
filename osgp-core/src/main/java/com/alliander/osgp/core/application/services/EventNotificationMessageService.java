@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.core.application.services;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,28 +16,23 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.core.infra.jms.domain.in.DomainRequestMessageJmsTemplateFactory;
+import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.DomainInfo;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderTimestampService;
@@ -53,6 +49,8 @@ public class EventNotificationMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
 
+    private static final String RELAY_STATUS_UPDATED_EVENTS = "RELAY_STATUS_UPDATED";
+
     @Autowired
     private DeviceRepository deviceRepository;
 
@@ -63,13 +61,16 @@ public class EventNotificationMessageService {
     private SsldRepository ssldRepository;
 
     @Autowired
-    private DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory;
-
-    @Autowired
     private CorrelationIdProviderTimestampService correlationIdProviderTimestampService;
 
     @Autowired
     private String netmanagementOrganisation;
+
+    @Autowired
+    private DomainRequestService domainRequestService;
+
+    @Autowired
+    private DomainInfoRepository domainInfoRepository;
 
     @Transactional(value = "transactionManager")
     public void handleEvent(final String deviceIdentification, final Date dateTime, final EventType eventType,
@@ -139,7 +140,8 @@ public class EventNotificationMessageService {
                     eventTime, eventNotification.getDescription(), eventNotification.getIndex());
             this.eventRepository.save(event);
 
-            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
+            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON)
+                    || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
                 lightSwitchingEvents.add(event);
             } else if (eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
                     || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
@@ -194,6 +196,8 @@ public class EventNotificationMessageService {
 
             ssld.updateRelayStatusses(lastRelayStatusPerIndex);
             this.deviceRepository.save(device);
+
+            this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, ssld.getDeviceIdentification(), null);
         }
     }
 
@@ -210,9 +214,8 @@ public class EventNotificationMessageService {
         final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(switchingEvent.getEventType())
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(switchingEvent.getEventType());
 
-        if (lastRelayStatusPerIndex.get(relayIndex) == null
-                || switchingEvent.getDateTime().after(
-                        lastRelayStatusPerIndex.get(relayIndex).getLastKnowSwitchingTime())) {
+        if (lastRelayStatusPerIndex.get(relayIndex) == null || switchingEvent.getDateTime()
+                .after(lastRelayStatusPerIndex.get(relayIndex).getLastKnowSwitchingTime())) {
             lastRelayStatusPerIndex.put(relayIndex,
                     new RelayStatus(device, relayIndex, isRelayOn, switchingEvent.getDateTime()));
         }
@@ -241,6 +244,8 @@ public class EventNotificationMessageService {
         if (!lastRelayStatusPerIndex.isEmpty()) {
             ssld.updateRelayStatusses(lastRelayStatusPerIndex);
             this.deviceRepository.save(device);
+
+            this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, ssld.getDeviceIdentification(), null);
         }
     }
 
@@ -261,9 +266,12 @@ public class EventNotificationMessageService {
         }
 
         this.deviceRepository.save(device);
+
+        this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, device.getDeviceIdentification(), null);
     }
 
-    private void updateRelayStatus(final int index, final Device device, final Date dateTime, final EventType eventType) {
+    private void updateRelayStatus(final int index, final Device device, final Date dateTime,
+            final EventType eventType) {
 
         final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
@@ -284,7 +292,8 @@ public class EventNotificationMessageService {
         }
     }
 
-    private void handleLightMeasurementDeviceEvents(final Device device, final List<Event> lightMeasurementDeviceEvents) {
+    private void handleLightMeasurementDeviceEvents(final Device device,
+            final List<Event> lightMeasurementDeviceEvents) {
         if (lightMeasurementDeviceEvents.isEmpty()) {
             LOGGER.info("List of events is empty for device: {}, not needed to process events.",
                     device.getDeviceIdentification());
@@ -292,33 +301,42 @@ public class EventNotificationMessageService {
         }
 
         try {
-            // Prepare message to send to OSGP-ADAPTER-DOMAIN-PUBLICLIGHTING.
-            final String deviceIdentification = device.getDeviceIdentification();
-            final String correlationUid = this.correlationIdProviderTimestampService.getCorrelationId(
-                    this.netmanagementOrganisation, deviceIdentification);
             final EventMessageDataContainer dataContainer = new EventMessageDataContainer(lightMeasurementDeviceEvents);
-            final RequestMessage requestMessage = new RequestMessage(correlationUid, this.netmanagementOrganisation,
-                    deviceIdentification, dataContainer);
-
-            // Get JmsTemplate.
-            final String key = "PUBLIC_LIGHTING-1.0";
-            final JmsTemplate jmsTemplate = this.domainRequestMessageJmsTemplateFactory.getJmsTemplate(key);
-
-            // Send message.
-            jmsTemplate.send(new MessageCreator() {
-
-                @Override
-                public Message createMessage(final Session session) throws JMSException {
-                    final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
-                    objectMessage.setJMSType(DeviceFunction.SET_TRANSITION.name());
-                    return objectMessage;
-                }
-
-            });
+            this.sendRequestMessageToDomainPublicLighting(DeviceFunction.SET_TRANSITION.name(),
+                    device.getDeviceIdentification(), dataContainer);
         } catch (final Exception e) {
-            LOGGER.error(
-                    String.format("Unexpected exception while handling events for light measurement device: %s",
-                            device.getDeviceIdentification()), e);
+            LOGGER.error(String.format("Unexpected exception while handling events for light measurement device: %s",
+                    device.getDeviceIdentification()), e);
         }
+    }
+
+    /**
+     * Send a request message to OSGP-ADAPTER-DOMAIN-CORE.
+     */
+    private void sendRequestMessageToDomainCore(final String messageType, final String deviceIdentification,
+            final Serializable dataObject) {
+        final String correlationUid = this.correlationIdProviderTimestampService
+                .getCorrelationId(this.netmanagementOrganisation, deviceIdentification);
+
+        final RequestMessage message = new RequestMessage(correlationUid, this.netmanagementOrganisation,
+                deviceIdentification, dataObject);
+        final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion("CORE", "1.0");
+
+        this.domainRequestService.send(message, messageType, domainInfo);
+    }
+
+    /**
+     * Send a request message to OSGP-ADAPTER-DOMAIN-PUBLICLIGHTING.
+     */
+    private void sendRequestMessageToDomainPublicLighting(final String messageType, final String deviceIdentification,
+            final Serializable dataObject) {
+        final String correlationUid = this.correlationIdProviderTimestampService
+                .getCorrelationId(this.netmanagementOrganisation, deviceIdentification);
+
+        final RequestMessage message = new RequestMessage(correlationUid, this.netmanagementOrganisation,
+                deviceIdentification, dataObject);
+        final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion("PUBLIC_LIGHTING", "1.0");
+
+        this.domainRequestService.send(message, messageType, domainInfo);
     }
 }
