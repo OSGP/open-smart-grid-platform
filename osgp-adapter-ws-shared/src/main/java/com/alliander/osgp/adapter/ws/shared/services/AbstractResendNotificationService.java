@@ -46,7 +46,7 @@ public abstract class AbstractResendNotificationService {
         final long resendThresholdTime = TimeUnit.MINUTES.toMillis(this.resendThresholdInMinutes);
         final long multiplier = (long) Math.pow(this.resendNotificationMultiplier,
                 responseData.getNumberOfNotificationsSent());
-        return ((modificationTime + resendThresholdTime) * multiplier);
+        return ((modificationTime) + (resendThresholdTime * multiplier));
     }
 
     public abstract void resendNotification(ResponseData responseData);
