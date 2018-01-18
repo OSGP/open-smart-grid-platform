@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.ws.microgrids.application.config;
+package com.alliander.osgp.adapter.ws.smartmetering.application.config;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -20,13 +20,13 @@ import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
 
 @EnableScheduling
 @Configuration
-@PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
+@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)
-public class ResendNotificationConfig extends AbstractSchedulingConfig {
+@PropertySource(value = "file:${osgp/smartmetering/config}", ignoreResourceNotFound = true)
+public class ResendNotificationSchedulingConfig extends AbstractSchedulingConfig {
 
-    private static final String KEY_RESEND_NOTIFICATION_CRON_EXPRESSION = "microgrids.scheduling.job.resend.notification.cron.expression";
-    private static final String KEY_RESEND_NOTIFICATION_THREAD_COUNT = "microgrids.scheduling.job.resend.notification.thread.count";
+    private static final String KEY_RESEND_NOTIFICATION_CRON_EXPRESSION = "smartmetering.scheduling.job.resend.notification.cron.expression";
+    private static final String KEY_RESEND_NOTIFICATION_THREAD_COUNT = "smartmetering.scheduling.job.resend.notification.thread.count";
 
     @Value("${db.driver}")
     private String databaseDriver;
@@ -49,14 +49,14 @@ public class ResendNotificationConfig extends AbstractSchedulingConfig {
     @Value("${db.username}")
     private String databaseUsername;
 
-    @Value("${microgrids.scheduling.job.resend.notification.maximum}")
+    @Value("${smartmetering.scheduling.job.resend.notification.maximum}")
     private short resendNotificationMaximum;
 
-    @Value("${microgrids.scheduling.job.resend.notification.multiplier}")
+    @Value("${smartmetering.scheduling.job.resend.notification.multiplier}")
     private int resendNotificationMultiplier;
 
-    @Value("${microgrids.scheduling.job.resend.notification.resend.threshold.in.minutes}")
-    private int resendThresholdInHours;
+    @Value("${smartmetering.scheduling.job.resend.notification.resend.threshold.in.minutes}")
+    private int resendThresholdInMinutes;
 
     @Bean
     public short resendNotificationMaximum() {
@@ -69,8 +69,8 @@ public class ResendNotificationConfig extends AbstractSchedulingConfig {
     }
 
     @Bean
-    public int resendThresholdInHours() {
-        return this.resendThresholdInHours;
+    public int resendThresholdInMinutes() {
+        return this.resendThresholdInMinutes;
     }
 
     @Bean(destroyMethod = "shutdown")

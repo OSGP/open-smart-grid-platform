@@ -19,7 +19,7 @@ import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.adapter.ws.shared.services.AbstractResendNotificationService;
 
-@Service(value = "ResendNotificationServiceDistributionAutomation")
+@Service(value = "resendNotificationServiceDistributionAutomation")
 @Transactional(value = "transactionManager")
 public class ResendNotificationService extends AbstractResendNotificationService {
 
@@ -37,11 +37,11 @@ public class ResendNotificationService extends AbstractResendNotificationService
         if (EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
             LOGGER.info("Found response data for resending notification");
             final NotificationType notificationType = NotificationType.valueOf(responseData.getMessageType());
-            this.notificationService.sendNotification(
-                    responseData.getOrganisationIdentification(), responseData.getDeviceIdentification(),
-                    responseData.getResultType().name(), responseData.getCorrelationUid(),
-                    this.getNotificationMessage(responseData.getMessageType()), notificationType);
-            LOGGER.info("Notification has been resend");
+            this.notificationService.sendNotification(responseData.getOrganisationIdentification(),
+                    responseData.getDeviceIdentification(), responseData.getResultType().name(),
+                    responseData.getCorrelationUid(), this.getNotificationMessage(responseData.getMessageType()),
+                    notificationType);
+            LOGGER.info("Notification has been resent");
             responseData.setNumberOfNotificationsSent((short) (responseData.getNumberOfNotificationsSent() + 1));
             this.responseDataRepository.save(responseData);
         }

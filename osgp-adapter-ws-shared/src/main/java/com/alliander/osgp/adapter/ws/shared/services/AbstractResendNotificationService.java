@@ -25,33 +25,28 @@ public abstract class AbstractResendNotificationService {
     private Short resendNotificationMaximum;
 
     @Autowired
-    private int resendThresholdInHours;
+    private int resendThresholdInMinutes;
 
     @Autowired
     private ResponseDataRepository responseDataRepository;
 
     public void execute() {
-        final int initialNotificationResend = 1;
+
         final List<ResponseData> notificationsToResend = this.responseDataRepository
                 .findByNumberOfNotificationsSentLessThan(this.resendNotificationMaximum);
         for (final ResponseData responseData : notificationsToResend) {
-            final int multiplier = (int) Math.pow(this.resendNotificationMultiplier,
-                    responseData.getNumberOfNotificationsSent());
-
-            final Date currentDate = new Date();
-            final long previousModificationTimeInterval = currentDate.getTime()
-                    - responseData.getModificationTime().getTime();
-            final long creationTimeInterval = currentDate.getTime() - responseData.getCreationTime().getTime();
-
-            if (TimeUnit.MINUTES.toMillis(this.resendThresholdInHours) < creationTimeInterval) {
-                if (multiplier == initialNotificationResend) {
-                    this.resendNotification(responseData);
-                } else if ((TimeUnit.HOURS.toMillis(this.resendThresholdInHours)
-                        * multiplier) < previousModificationTimeInterval) {
-                    this.resendNotification(responseData);
-                }
+            if (this.nextNotificationTime(responseData) < new Date().getTime()) {
+                this.resendNotification(responseData);
             }
         }
+    }
+
+    private long nextNotificationTime(final ResponseData responseData) {
+        final long modificationTime = responseData.getModificationTime().getTime();
+        final long resendThresholdTime = TimeUnit.MINUTES.toMillis(this.resendThresholdInMinutes);
+        final long multiplier = (long) Math.pow(this.resendNotificationMultiplier,
+                responseData.getNumberOfNotificationsSent());
+        return ((modificationTime + resendThresholdTime) * multiplier);
     }
 
     public abstract void resendNotification(ResponseData responseData);

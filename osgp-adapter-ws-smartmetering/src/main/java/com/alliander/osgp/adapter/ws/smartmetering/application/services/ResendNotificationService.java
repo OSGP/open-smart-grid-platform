@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notificat
 import com.alliander.osgp.adapter.ws.shared.services.AbstractResendNotificationService;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 
-@Service(value = "ResendNotificationServiceSmartmetering")
+@Service(value = "resendNotificationServiceSmartmetering")
 @Transactional(value = "transactionManager")
 public class ResendNotificationService extends AbstractResendNotificationService {
 
@@ -42,7 +42,7 @@ public class ResendNotificationService extends AbstractResendNotificationService
                     responseData.getDeviceIdentification(), responseData.getResultType().name(),
                     responseData.getCorrelationUid(), this.getNotificationMessage(responseData.getMessageType()),
                     notificationType);
-            LOGGER.info("Notification has been resend");
+            LOGGER.info("Notification has been resent");
             responseData.setNumberOfNotificationsSent((short) (responseData.getNumberOfNotificationsSent() + 1));
             this.responseDataRepository.save(responseData);
         }

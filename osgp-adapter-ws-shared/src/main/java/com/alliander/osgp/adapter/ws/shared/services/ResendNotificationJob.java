@@ -21,12 +21,12 @@ public class ResendNotificationJob implements Job {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResendNotificationJob.class);
 
     @Autowired
-    private AbstractResendNotificationService abstractResendNotificationService;
+    private AbstractResendNotificationService resendNotificationService;
 
     @Override
     public void execute(final JobExecutionContext context) throws JobExecutionException {
 
         LOGGER.info("Quartz triggered resend notification.");
-        this.abstractResendNotificationService.execute();
+        this.resendNotificationService.execute();
     }
 }

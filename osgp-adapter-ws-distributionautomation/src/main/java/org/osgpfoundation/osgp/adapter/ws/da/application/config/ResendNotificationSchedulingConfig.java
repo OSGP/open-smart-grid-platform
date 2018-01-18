@@ -23,7 +23,7 @@ import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
 @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
-public class ResendNotificationConfig extends AbstractSchedulingConfig {
+public class ResendNotificationSchedulingConfig extends AbstractSchedulingConfig {
 
     private static final String KEY_RESEND_NOTIFICATION_CRON_EXPRESSION = "distributionautomation.scheduling.job.resend.notification.cron.expression";
     private static final String KEY_RESEND_NOTIFICATION_THREAD_COUNT = "distributionautomation.scheduling.job.resend.notification.thread.count";
@@ -56,7 +56,7 @@ public class ResendNotificationConfig extends AbstractSchedulingConfig {
     private int resendNotificationMultiplier;
 
     @Value("${distributionautomation.scheduling.job.resend.notification.resend.threshold.in.minutes}")
-    private int resendThresholdInHours;
+    private int resendThresholdInMinutes;
 
     @Bean
     public short resendNotificationMaximum() {
@@ -69,8 +69,8 @@ public class ResendNotificationConfig extends AbstractSchedulingConfig {
     }
 
     @Bean
-    public int resendThresholdInHours() {
-        return this.resendThresholdInHours;
+    public int resendThresholdInMinutes() {
+        return this.resendThresholdInMinutes;
     }
 
     @Bean(destroyMethod = "shutdown")
