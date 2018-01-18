@@ -373,7 +373,8 @@ class ImageTransfer {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ);
         }
 
-        this.imageBlockSize = ((Long) imageBlockSizeData.getValue()).intValue();
+        final Long imageBlockSizeValue = imageBlockSizeData.getValue();
+        this.imageBlockSize = imageBlockSizeValue.intValue();
         this.imageBlockSizeReadFlag = true;
         return this.imageBlockSize;
     }
@@ -397,7 +398,8 @@ class ImageTransfer {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER_NOT_READ);
         }
 
-        return ((Long) imageFirstNotReadBlockNumberData.getValue()).intValue();
+        final Long imageFirstNotReadBlockNumber = imageFirstNotReadBlockNumberData.getValue();
+        return imageFirstNotReadBlockNumber.intValue();
     }
 
     private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws OsgpException {
