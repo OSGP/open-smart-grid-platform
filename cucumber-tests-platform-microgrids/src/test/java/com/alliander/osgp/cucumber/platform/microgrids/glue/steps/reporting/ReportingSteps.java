@@ -79,7 +79,6 @@ public class ReportingSteps extends GlueBase {
 
     @When("^the Pampus RTU pushes a report$")
     public void thePampusRTUPushesAReport(final Map<String, String> settings) throws Throwable {
-
         this.pushAReport(this.iec61850MockServerPampus, settings);
     }
 
@@ -114,7 +113,8 @@ public class ReportingSteps extends GlueBase {
             throws Throwable {
 
         // Change a quality attribute value to trigger sending of a report.
-        final String triggerNode = this.reportTriggerNodeMappingService.getReportTriggerNode(settings);
+        final String triggerNode = settings.get(PlatformMicrogridsKeys.NODE);
+
         iec61850MockServer.mockValue(settings.get(PlatformMicrogridsKeys.LOGICAL_DEVICE), triggerNode,
                 QualityType.OLD_DATA.name());
     }

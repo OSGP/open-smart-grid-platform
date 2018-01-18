@@ -15,4 +15,5 @@ public class PlatformMicrogridsKeys extends com.alliander.osgp.cucumber.platform
     public static final String USE_COMBINED_LOAD = "UseCombinedLoad";
     public static final String LOGICAL_DEVICE = "LogicalDevice";
     public static final String REPORT_TYPE = "ReportType";
+    public static final String NODE = "Node";
 }
