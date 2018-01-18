@@ -7,13 +7,17 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.database.ws;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
@@ -27,8 +31,16 @@ import cucumber.api.java.en.Then;
 
 public class ResponseDataSteps extends BaseDeviceSteps {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseDataSteps.class);
+
     @Autowired
     private ResponseDataRepository responseDataRespository;
+
+    @Value("${iec61850.rtu.response.wait.check.interval:1000}")
+    private int waitCheckIntervalMillis;
+
+    @Value("${iec61850.rtu.response.wait.fail.duration:180000}")
+    private int waitFailMillis;
 
     @Given("^a response data record$")
     @Transactional("txMgrWsMicrogrids")
@@ -61,5 +73,34 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
 
         assertNotNull("Response data should not be deleted", responseData);
+    }
+
+    @Then("^the response data has values$")
+    public void theResponseDataHasValues(final Map<String, String> settings) throws Throwable {
+        final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
+        ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+
+        final int maxtime = this.waitFailMillis;
+        final int timeout = this.waitCheckIntervalMillis;
+
+        for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
+            try {
+                Thread.sleep(timeout);
+            } catch (final InterruptedException e) {
+                LOGGER.error("Thread sleep interrupted ", e.getMessage());
+                break;
+            }
+            responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+            if (settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)
+                    .equals(responseData.getNumberOfNotificationsSent().toString())) {
+                break;
+            }
+        }
+
+        assertEquals("NumberOfNotificationsSent is not as expected",
+                settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT),
+                responseData.getNumberOfNotificationsSent().toString());
+        assertEquals("MessageType is not as expected", settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
+                responseData.getMessageType());
     }
 }

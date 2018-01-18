@@ -7,20 +7,11 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.notifications;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
-import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
-import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
-
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -28,14 +19,17 @@ public class ResendNotificationsSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResendNotificationsSteps.class);
 
-    @Value("${smartmetering.response.wait.check.interval:1000}")
-    private int waitCheckIntervalMillis;
+    @When("^OSGP checks for which response data a notification has to be resend$")
+    public void osgpChecksForWhichResponseDataANotificationHasToBeResend() throws Throwable {
+        final int initial_timeout = 60000; // needed to make sure the final ResendNotificationJob has at final least
+                                           // runned once
 
-    @Value("${smartmetering.response.wait.fail.duration:120000}")
-    private int waitFailMillis;
-
-    @Autowired
-    private ResponseDataRepository responseDataRespository;
+        try {
+            Thread.sleep(initial_timeout);
+        } catch (final InterruptedException e) {
+            LOGGER.error("Thread sleep interrupted ", e.getMessage());
+        }
+    }
 
     @Then("^a notification is sent$")
     public void theMissedNotificationIsResent(final Map<String, String> settings) throws Throwable {
@@ -45,46 +39,5 @@ public class ResendNotificationsSteps {
     @Then("^no notification is sent$")
     public void noNotificationIsResend() throws Throwable {
         // Do nothing - scheduled task runs automatically
-    }
-
-    @When("^OSGP checks for which response data a notification has to be resend$")
-    public void osgpChecksForWhichResponseDataANotificationHasToBeResend() throws Throwable {
-        // Do nothing - scheduled task runs automatically
-    }
-
-    @And("^the response data has values$")
-    public void theResponseDataHasValues(final Map<String, String> settings) throws Throwable {
-        final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
-        ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
-
-        final int maxtime = this.waitFailMillis;
-        final int timeout = this.waitCheckIntervalMillis;
-        final int initial_timeout = 60000; // needed to make sure the ResendNotificationJob has at least runned once
-
-        try {
-            Thread.sleep(initial_timeout);
-        } catch (final InterruptedException e) {
-            LOGGER.error("Thread sleep interrupted ", e.getMessage());
-        }
-
-        for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
-            try {
-                Thread.sleep(timeout);
-            } catch (final InterruptedException e) {
-                LOGGER.error("Thread sleep interrupted ", e.getMessage());
-                break;
-            }
-            responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
-            if (settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)
-                    .equals(responseData.getNumberOfNotificationsSent().toString())) {
-                break;
-            }
-        }
-
-        assertEquals("NumberOfNotificationsSent is not as expected",
-                settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT),
-                responseData.getNumberOfNotificationsSent().toString());
-        assertEquals("MessageType is not as expected", settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
-                responseData.getMessageType());
     }
 }

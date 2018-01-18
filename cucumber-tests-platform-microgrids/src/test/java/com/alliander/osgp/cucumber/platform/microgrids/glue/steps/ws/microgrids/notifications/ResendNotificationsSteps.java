@@ -7,20 +7,15 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids.notifications;
 
-import static org.junit.Assert.assertEquals;
-
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
-import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
-import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
-import com.alliander.osgp.cucumber.platform.PlatformKeys;
+import com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids.notification.NotificationSteps;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -29,36 +24,10 @@ public class ResendNotificationsSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResendNotificationsSteps.class);
 
     @Autowired
-    private ResponseDataRepository responseDataRespository;
-
-    @Value("${iec61850.rtu.response.wait.check.interval:1000}")
-    private int waitCheckIntervalMillis;
-
-    @Value("${iec61850.rtu.response.wait.fail.duration:120000}")
-    private int waitFailMillis;
-
-    @Then("^a notification is sent$")
-    public void theMissedNotificationIsResent(final Map<String, String> settings) throws Throwable {
-        // Do nothing - scheduled task runs automatically
-    }
-
-    @Then("^no notification is sent$")
-    public void noNotificationIsResend() throws Throwable {
-        // Do nothing - scheduled task runs automatically
-    }
+    private NotificationSteps notificationSteps;
 
     @When("^OSGP checks for which response data a notification has to be resend$")
     public void osgpChecksForWhichResponseDataANotificationHasToBeResend() throws Throwable {
-        // Do nothing - scheduled task runs automatically
-    }
-
-    @And("^the response data has values$")
-    public void theResponseDataHasValues(final Map<String, String> settings) throws Throwable {
-        final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
-        ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
-
-        final int maxtime = this.waitFailMillis;
-        final int timeout = this.waitCheckIntervalMillis;
         final int initial_timeout = 60000; // needed to make sure the ResendNotificationJob has at least runned once
 
         try {
@@ -66,25 +35,19 @@ public class ResendNotificationsSteps {
         } catch (final InterruptedException e) {
             LOGGER.error("Thread sleep interrupted ", e.getMessage());
         }
+    }
 
-        for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
-            try {
-                Thread.sleep(timeout);
-            } catch (final InterruptedException e) {
-                LOGGER.error("Thread sleep interrupted ", e.getMessage());
-                break;
-            }
-            responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
-            if (settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)
-                    .equals(responseData.getNumberOfNotificationsSent().toString())) {
-                break;
-            }
-        }
+    @Then("^a notification is sent$")
+    public void theMissedNotificationIsResent(final Map<String, String> settings) throws Throwable {
+        final Map<String, String> maxTimeout = new HashMap<>();
+        maxTimeout.put("maxTimeout", "180000");
+        this.notificationSteps.iShouldReceiveANotification(maxTimeout);
+    }
 
-        assertEquals("NumberOfNotificationsSent is not as expected",
-                settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT),
-                responseData.getNumberOfNotificationsSent().toString());
-        assertEquals("MessageType is not as expected", settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
-                responseData.getMessageType());
+    @Then("^no notification is sent$")
+    public void noNotificationIsResend() throws Throwable {
+        final Map<String, String> maxTimeout = new HashMap<>();
+        maxTimeout.put("maxTimeout", "30000");
+        this.notificationSteps.iShouldNotReceiveANotification(maxTimeout);
     }
 }

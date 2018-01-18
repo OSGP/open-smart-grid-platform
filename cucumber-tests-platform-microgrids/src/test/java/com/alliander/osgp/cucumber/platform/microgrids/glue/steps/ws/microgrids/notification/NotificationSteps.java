@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids.notification;
 
+import java.util.Map;
+
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +26,8 @@ import cucumber.api.java.en.When;
 
 public class NotificationSteps extends GlueBase {
 
-    private int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
-    private int MAX_WAIT_FOR_NOTIFICATION = 1200000;
+    private final int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
+    private final int MAX_WAIT_FOR_NOTIFICATION = 1200000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
 
@@ -38,10 +40,14 @@ public class NotificationSteps extends GlueBase {
     }
 
     @Then("^I should receive a notification$")
-    public void iShouldReceiveANotification() throws Throwable {
+    public void iShouldReceiveANotification(final Map<String, String> settings) throws Throwable {
         int waited = 0;
+        int maxTimeOut = this.MAX_WAIT_FOR_NOTIFICATION;
+        if (settings.containsKey("maxTimeout")) {
+            maxTimeOut = Integer.parseInt(settings.get("maxTimeout"));
+        }
 
-        while (!this.mockNotificationService.receivedNotification() && waited < this.MAX_WAIT_FOR_NOTIFICATION) {
+        while (!this.mockNotificationService.receivedNotification() && waited < maxTimeOut) {
             LOGGER.info("Checking and waiting for notification.");
             Thread.sleep(this.WAIT_FOR_NEXT_NOTIFICATION_CHECK);
             waited += this.WAIT_FOR_NEXT_NOTIFICATION_CHECK;
@@ -60,6 +66,25 @@ public class NotificationSteps extends GlueBase {
             ScenarioContext.current().put(PlatformKeys.KEY_USER_NAME, PlatformDefaults.DEFAULT_USER_NAME);
         } else {
             Assert.fail("Did not receive a notification within the timeout limit.");
+        }
+    }
+
+    @Then("^I should not receive a notification$")
+    public void iShouldNotReceiveANotification(final Map<String, String> settings) throws Throwable {
+        int waited = 0;
+        int maxTimeOut = this.MAX_WAIT_FOR_NOTIFICATION;
+        if (settings.containsKey("maxTimeout")) {
+            maxTimeOut = Integer.parseInt(settings.get("maxTimeout"));
+        }
+        while (!this.mockNotificationService.receivedNotification() && waited < maxTimeOut) {
+            LOGGER.info("Checking and waiting for notification.");
+            Thread.sleep(this.WAIT_FOR_NEXT_NOTIFICATION_CHECK);
+            waited += this.WAIT_FOR_NEXT_NOTIFICATION_CHECK;
+        }
+
+        final Notification notification = this.mockNotificationService.getNotification();
+        if (notification != null) {
+            Assert.fail("Received a notification within the timeout limit.");
         }
     }
 }
