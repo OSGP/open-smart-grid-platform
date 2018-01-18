@@ -159,9 +159,10 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     @Override
     public void setLight(final SetLightDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
             throws JMSException {
-        DeviceConnection deviceConnection = null;
+        DeviceConnection devCon = null;
         try {
-            deviceConnection = this.connectToDevice(deviceRequest);
+            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            devCon = deviceConnection;
 
             // Getting the SSLD for the device output-settings.
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
@@ -190,12 +191,15 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                     relaysWithInternalIdToSwitch, null);
 
             this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);
+
+            this.enableReporting(deviceConnection, deviceRequest);
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
+            this.iec61850DeviceConnectionService.disconnect(devCon, deviceRequest);
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
+            this.iec61850DeviceConnectionService.disconnect(devCon, deviceRequest);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     private LightValueDto checkForIndex0(final List<LightValueDto> lightValues) {
