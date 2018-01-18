@@ -7,13 +7,20 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
@@ -66,7 +73,23 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
         super(clazz);
     }
 
-    protected DataObject buildSendDestinationAndMethodObject(final SendDestinationAndMethodDto sendDestinationAndMethod) {
+    protected AccessResultCode getAccessResultSetSendDestinationAndMethod(final String pushSetup,
+            final DlmsConnectionHolder conn, final ObisCode obisCode, final SetParameter setParameter) {
+
+        conn.getDlmsMessageListener()
+                .setDescription(pushSetup + " configure send destination and method, set attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(
+                                new AttributeAddress(CLASS_ID, obisCode, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD)));
+
+        try {
+            return conn.getConnection().set(setParameter);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
+    }
+
+    protected DataObject buildSendDestinationAndMethodObject(
+            final SendDestinationAndMethodDto sendDestinationAndMethod) {
 
         final List<DataObject> sendDestinationAndMethodElements = new ArrayList<>();
 

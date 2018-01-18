@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -90,13 +89,13 @@ public class SetAlarmNotificationsCommandExecutor
             LOGGER.info("Modified Alarm Filter long value for device: {}", updatedAlarmFilterLongValue);
 
             return this.writeUpdatedAlarmNotifications(conn, updatedAlarmFilterLongValue);
-        } catch (IOException | TimeoutException e) {
+        } catch (final IOException e) {
             throw new ConnectionException(e);
         }
     }
 
     private AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionHolder conn)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+            throws IOException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -117,7 +116,7 @@ public class SetAlarmNotificationsCommandExecutor
     }
 
     private AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnectionHolder conn,
-            final long alarmFilterLongValue) throws IOException, TimeoutException {
+            final long alarmFilterLongValue) throws IOException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final DataObject value = DataObject.newUInteger32Data(alarmFilterLongValue);
@@ -145,7 +144,8 @@ public class SetAlarmNotificationsCommandExecutor
                     "Value in DataObject is not a java.lang.Number: " + alarmFilter.getValue().getClass().getName());
         }
 
-        return this.alarmNotifications(((Number) alarmFilter.getValue()).longValue());
+        final Number alarmFilterValue = alarmFilter.getValue();
+        return this.alarmNotifications(alarmFilterValue.longValue());
 
     }
 

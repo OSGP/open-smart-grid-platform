@@ -7,8 +7,6 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.io.IOException;
-
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
@@ -16,7 +14,6 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,17 +57,9 @@ public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor<
 
         final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupSms);
 
-        conn.getDlmsMessageListener()
-                .setDescription("SetPushSetupSms configure send destination and method, set attribute: "
-                        + JdlmsObjectToStringUtil.describeAttributes(
-                                new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD)));
+        final AccessResultCode resultCode = this.getAccessResultSetSendDestinationAndMethod("PushSetupSms", conn,
+                OBIS_CODE, setParameterSendDestinationAndMethod);
 
-        AccessResultCode resultCode;
-        try {
-            resultCode = conn.getConnection().set(setParameterSendDestinationAndMethod);
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
         if (resultCode != null) {
             return resultCode;
         } else {

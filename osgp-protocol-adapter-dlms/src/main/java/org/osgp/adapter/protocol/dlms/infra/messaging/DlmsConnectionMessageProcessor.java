@@ -7,11 +7,16 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
+import java.io.Serializable;
+
+import javax.jms.JMSException;
+
 import org.osgp.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,5 +109,33 @@ public abstract class DlmsConnectionMessageProcessor {
         final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
         this.securityKeyService.incrementInvocationCounter(device.getDeviceIdentification(),
                 SecurityKeyType.E_METER_ENCRYPTION, numberOfSentMessages);
+    }
+
+    /**
+     * @param logger
+     *            the logger from the calling subClass
+     * @param exception
+     *            the exception to be logged
+     * @param messageMetadata
+     *            a DlmsDeviceMessageMetadata containing debug info to be logged
+     */
+    protected void logJmsException(final Logger logger, final JMSException exception,
+            final MessageMetadata messageMetadata) {
+        logger.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
+        logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
+        logger.debug("domain: {}", messageMetadata.getDomain());
+        logger.debug("domainVersion: {}", messageMetadata.getDomainVersion());
+        logger.debug("messageType: {}", messageMetadata.getMessageType());
+        logger.debug("organisationIdentification: {}", messageMetadata.getOrganisationIdentification());
+        logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
+    }
+
+    protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
+            throws ProtocolAdapterException {
+        if (!expected.isInstance(requestObject)) {
+            throw new ProtocolAdapterException(
+                    String.format("The request object has an incorrect type. %s expected but %s was found.",
+                            expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
+        }
     }
 }

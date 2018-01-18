@@ -241,17 +241,18 @@ class ImageTransfer {
                     StandardCharsets.UTF_8);
             if (imageToActivateIdentification.equals(this.imageIdentifier) && this.isSignature(imageSignature)
                     && imageToActivateSize == this.imageData.length) {
-                LOGGER.info("Found matching image to activate info element (size=" + imageToActivateSize
-                        + ", identification=" + imageToActivateIdentification + ", signature="
-                        + Arrays.toString(imageSignature) + ")");
+                final String imageDescription = this.describeImageInfo(imageToActivateSize,
+                        imageToActivateIdentification, imageSignature);
+                LOGGER.info("Found matching image to activate info element ({})", imageDescription);
                 return true;
             } else {
+                final String imageToActivateDescription = this.describeImageInfo(imageToActivateSize,
+                        imageToActivateIdentification, imageSignature);
+                final String imageDescription = this.describeImageInfo(this.imageData.length, this.imageIdentifier,
+                        Arrays.copyOf(this.imageData, imageSignature.length));
                 LOGGER.info(
-                        "Retrieved an image to activate info element (size=" + imageToActivateSize + ", identification="
-                                + imageToActivateIdentification + ", signature=" + Arrays.toString(imageSignature)
-                                + ") with value not matching the image being transferred (size=" + this.imageData.length
-                                + ", identification=" + this.imageIdentifier + ", signature="
-                                + Arrays.toString(Arrays.copyOf(this.imageData, imageSignature.length)) + ").");
+                        "Retrieved an image to activate info element ({}) with value not matching the image being transferred ({}).",
+                        imageToActivateDescription, imageDescription);
             }
         }
 
@@ -262,6 +263,11 @@ class ImageTransfer {
          */
         LOGGER.warn("No image to activate info element matched the firmware image being transferred.");
         return true;
+    }
+
+    private String describeImageInfo(final long size, final String identification, final byte[] signature) {
+        return String.format("size=%d, identification=%s, signature=%s", size, identification,
+                Arrays.toString(signature));
     }
 
     /**
