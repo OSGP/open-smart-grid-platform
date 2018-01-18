@@ -42,7 +42,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -54,9 +53,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-dlms.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
 public class DlmsConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_DLMS_PORT_SERVER = "dlms.port.server";
 
@@ -99,7 +98,7 @@ public class DlmsConfig extends AbstractConfig {
         return bootstrap;
     }
 
-    private ChannelPipeline createChannelPipeline(final ChannelHandler handler) throws ProtocolAdapterException {
+    private ChannelPipeline createChannelPipeline(final ChannelHandler handler) {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, true));

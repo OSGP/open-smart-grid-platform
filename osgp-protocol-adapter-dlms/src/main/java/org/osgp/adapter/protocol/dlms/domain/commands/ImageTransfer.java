@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -121,16 +122,15 @@ class ImageTransfer {
         final List<DataObject> params = new ArrayList<>();
         params.add(DataObject.newOctetStringData(this.imageIdentifier.getBytes(StandardCharsets.UTF_8)));
         params.add(DataObject.newUInteger32Data(this.getImageSize()));
+        final DataObject parameter = DataObject.newStructureData(params);
 
-        this.connector.getDlmsMessageListener().setDescription("ImageTransfer call image_transfer_initiate "
-                + params.toString() + ", call method: " + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
-                        .createMethodParameter(Method.IMAGE_TRANSFER_INITIATE, DataObject.newStructureData(params))));
+        this.setDescriptionForMethodCall(Method.IMAGE_TRANSFER_INITIATE, parameter);
 
         final MethodResultCode resultCode = this.imageTransferCosem.callMethod(Method.IMAGE_TRANSFER_INITIATE,
-                DataObject.newStructureData(params));
+                parameter);
 
         if (resultCode != MethodResultCode.SUCCESS) {
-            LOGGER.warn("Method IMAGE_TRANSFER_INITIATE gave result {}", resultCode.name());
+            LOGGER.warn("Method IMAGE_TRANSFER_INITIATE gave result {}", resultCode);
         }
     }
 
@@ -178,13 +178,10 @@ class ImageTransfer {
      * @throws OsgpException
      */
     public void verifyImage() throws OsgpException {
-        this.connector.getDlmsMessageListener()
-                .setDescription("ImageTransfer call image_verify " + ", call method: "
-                        + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
-                                .createMethodParameter(Method.IMAGE_VERIFY, DataObject.newInteger8Data((byte) 0))));
+        final DataObject parameter = DataObject.newInteger8Data((byte) 0);
+        this.setDescriptionForMethodCall(Method.IMAGE_VERIFY, parameter);
 
-        final MethodResultCode verified = this.imageTransferCosem.callMethod(Method.IMAGE_VERIFY,
-                DataObject.newInteger8Data((byte) 0));
+        final MethodResultCode verified = this.imageTransferCosem.callMethod(Method.IMAGE_VERIFY, parameter);
         if (verified == null) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
         }
@@ -244,17 +241,18 @@ class ImageTransfer {
                     StandardCharsets.UTF_8);
             if (imageToActivateIdentification.equals(this.imageIdentifier) && this.isSignature(imageSignature)
                     && imageToActivateSize == this.imageData.length) {
-                LOGGER.info("Found matching image to activate info element (size=" + imageToActivateSize
-                        + ", identification=" + imageToActivateIdentification + ", signature="
-                        + Arrays.toString(imageSignature) + ")");
+                final String imageDescription = this.describeImageInfo(imageToActivateSize,
+                        imageToActivateIdentification, imageSignature);
+                LOGGER.info("Found matching image to activate info element ({})", imageDescription);
                 return true;
             } else {
+                final String imageToActivateDescription = this.describeImageInfo(imageToActivateSize,
+                        imageToActivateIdentification, imageSignature);
+                final String imageDescription = this.describeImageInfo(this.imageData.length, this.imageIdentifier,
+                        Arrays.copyOf(this.imageData, imageSignature.length));
                 LOGGER.info(
-                        "Retrieved an image to activate info element (size=" + imageToActivateSize + ", identification="
-                                + imageToActivateIdentification + ", signature=" + Arrays.toString(imageSignature)
-                                + ") with value not matching the image being transferred (size=" + this.imageData.length
-                                + ", identification=" + this.imageIdentifier + ", signature="
-                                + Arrays.toString(Arrays.copyOf(this.imageData, imageSignature.length)) + ").");
+                        "Retrieved an image to activate info element ({}) with value not matching the image being transferred ({}).",
+                        imageToActivateDescription, imageDescription);
             }
         }
 
@@ -267,19 +265,21 @@ class ImageTransfer {
         return true;
     }
 
+    private String describeImageInfo(final long size, final String identification, final byte[] signature) {
+        return String.format("size=%d, identification=%s, signature=%s", size, identification,
+                Arrays.toString(signature));
+    }
+
     /**
      * The image is activated.
      *
      * @throws OsgpException
      */
     public void activateImage() throws OsgpException {
-        this.connector.getDlmsMessageListener()
-                .setDescription("ImageTransfer call image_activate " + ", call method: "
-                        + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
-                                .createMethodParameter(Method.IMAGE_ACTIVATE, DataObject.newInteger8Data((byte) 0))));
+        final DataObject parameter = DataObject.newInteger8Data((byte) 0);
+        this.setDescriptionForMethodCall(Method.IMAGE_ACTIVATE, parameter);
 
-        final MethodResultCode imageActivate = this.imageTransferCosem.callMethod(Method.IMAGE_ACTIVATE,
-                DataObject.newInteger8Data((byte) 0));
+        final MethodResultCode imageActivate = this.imageTransferCosem.callMethod(Method.IMAGE_ACTIVATE, parameter);
         if (imageActivate == null) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_CALLED);
         }
@@ -373,7 +373,8 @@ class ImageTransfer {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ);
         }
 
-        this.imageBlockSize = ((Long) imageBlockSizeData.getValue()).intValue();
+        final Long imageBlockSizeValue = imageBlockSizeData.getValue();
+        this.imageBlockSize = imageBlockSizeValue.intValue();
         this.imageBlockSizeReadFlag = true;
         return this.imageBlockSize;
     }
@@ -397,7 +398,8 @@ class ImageTransfer {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER_NOT_READ);
         }
 
-        return ((Long) imageFirstNotReadBlockNumberData.getValue()).intValue();
+        final Long imageFirstNotReadBlockNumber = imageFirstNotReadBlockNumberData.getValue();
+        return imageFirstNotReadBlockNumber.intValue();
     }
 
     private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws OsgpException {
@@ -439,17 +441,22 @@ class ImageTransfer {
         final List<DataObject> params = new ArrayList<>();
         params.add(DataObject.newUInteger32Data(blockNumber));
         params.add(DataObject.newOctetStringData(transferData));
+        final DataObject parameter = DataObject.newStructureData(params);
 
-        this.connector.getDlmsMessageListener().setDescription("ImageTransfer call image_block_transfer "
-                + params.toString() + ", call method: " + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem
-                        .createMethodParameter(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params))));
+        this.setDescriptionForMethodCall(Method.IMAGE_BLOCK_TRANSFER, parameter);
 
-        final MethodResultCode resultCode = this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER,
-                DataObject.newStructureData(params));
+        final MethodResultCode resultCode = this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER, parameter);
 
         if (resultCode != MethodResultCode.SUCCESS) {
-            LOGGER.info("Method IMAGE_BLOCK_TRANSFER gave result {} for block {}", resultCode.name(), blockNumber);
+            LOGGER.info("Method IMAGE_BLOCK_TRANSFER gave result {} for block {}", resultCode, blockNumber);
         }
+    }
+
+    private void setDescriptionForMethodCall(final Method method, final DataObject parameter) {
+        this.connector.getDlmsMessageListener()
+                .setDescription("ImageTransfer call " + method.name().toLowerCase(Locale.UK) + " with parameter "
+                        + parameter + ", call method: " + JdlmsObjectToStringUtil
+                                .describeMethod(this.imageTransferCosem.createMethodParameter(method, parameter)));
     }
 
     private void logUploadPercentage(final int block, final int totalBlocks) {

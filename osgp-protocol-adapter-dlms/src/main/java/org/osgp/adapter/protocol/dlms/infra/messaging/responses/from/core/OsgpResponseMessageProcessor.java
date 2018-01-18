@@ -87,34 +87,6 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
                 this.osgpRequestMessageType.name(), this);
     }
 
-    /**
-     * @param logger
-     *            the logger from the calling subClass
-     * @param exception
-     *            the exception to be logged
-     * @param messageMetadata
-     *            a DlmsDeviceMessageMetadata containing debug info to be logged
-     */
-    protected void logJmsException(final Logger logger, final JMSException exception,
-            final MessageMetadata messageMetadata) {
-        logger.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
-        logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
-        logger.debug("domain: {}", messageMetadata.getDomain());
-        logger.debug("domainVersion: {}", messageMetadata.getDomainVersion());
-        logger.debug("messageType: {}", messageMetadata.getMessageType());
-        logger.debug("organisationIdentification: {}", messageMetadata.getOrganisationIdentification());
-        logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
-    }
-
-    protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
-            throws ProtocolAdapterException {
-        if (!expected.isInstance(requestObject)) {
-            throw new ProtocolAdapterException(
-                    String.format("The request object has an incorrect type. %s expected but %s was found.",
-                            expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
-        }
-    }
-
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.osgpRequestMessageType);

@@ -18,7 +18,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.shared.application.config.AbstractConfig;
@@ -31,11 +30,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 @ComponentScan(basePackages = { "org.osgp.adapter.protocol.dlms", "com.alliander.osgp.shared.security" })
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, DlmsPersistenceConfig.class, JasperWirelessConfig.class })
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-dlms.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true),
-})
+@PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
     private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";

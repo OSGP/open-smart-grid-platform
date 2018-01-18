@@ -17,7 +17,6 @@ import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,34 +78,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     public void init() {
         this.dlmsRequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
                 this.deviceRequestMessageType.name(), this);
-    }
-
-    /**
-     * @param logger
-     *            the logger from the calling subClass
-     * @param exception
-     *            the exception to be logged
-     * @param messageMetadata
-     *            a DlmsDeviceMessageMetadata containing debug info to be logged
-     */
-    protected void logJmsException(final Logger logger, final JMSException exception,
-            final MessageMetadata messageMetadata) {
-        logger.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
-        logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
-        logger.debug("domain: {}", messageMetadata.getDomain());
-        logger.debug("domainVersion: {}", messageMetadata.getDomainVersion());
-        logger.debug("messageType: {}", messageMetadata.getMessageType());
-        logger.debug("organisationIdentification: {}", messageMetadata.getOrganisationIdentification());
-        logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
-    }
-
-    protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
-            throws ProtocolAdapterException {
-        if (!expected.isInstance(requestObject)) {
-            throw new ProtocolAdapterException(
-                    String.format("The request object has an incorrect type. %s expected but %s was found.",
-                            expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
-        }
     }
 
     @Override
