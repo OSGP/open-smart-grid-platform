@@ -77,7 +77,7 @@ public class FirmwareFileSteps {
      * @throws IOException
      * @throws Throwable
      */
-    @Given("^a firmware")
+    @Given("^a firmware$")
     public void aFirmware(final Map<String, String> settings) throws IOException {
 
         /*
@@ -139,9 +139,9 @@ public class FirmwareFileSteps {
          * identification then no longer needs to be added to the constructor
          * used to create the firmware.)
          */
-        final String identification = getString(settings, PlatformKeys.FIRMWARE_FILENAME,
+        final String identification = getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME,
                 UUID.randomUUID().toString().replace("-", ""));
-        final String filename = getString(settings, PlatformKeys.FIRMWARE_FILENAME, "");
+        final String filename = getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME, "");
         final boolean fileExists = getBoolean(settings, PlatformKeys.FIRMWARE_FILE_EXISTS,
                 PlatformDefaults.FIRMWARE_FILE_EXISTS);
         final byte[] file;
@@ -198,7 +198,7 @@ public class FirmwareFileSteps {
                 PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final FirmwareFile firmware = this.firmwareFileRepository.findByIdentification(
-                getString(settings, PlatformKeys.FIRMWARE_FILENAME, PlatformDefaults.FIRMWARE_FILENAME));
+                getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME, PlatformDefaults.FIRMWARE_FILENAME));
 
         final Date installationDate = new Date();
 
@@ -237,7 +237,7 @@ public class FirmwareFileSteps {
              * that may be good to address.)
              */
             final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository
-                    .findByFilename(getString(expectedEntity, PlatformKeys.FIRMWARE_FILENAME));
+                    .findByFilename(getString(expectedEntity, PlatformKeys.FIRMWARE_FILE_FILENAME));
             final FirmwareFile firmwareFile = firmwareFiles.get(0);
             final DeviceModel deviceModel = firmwareFile.getDeviceModels().iterator().next();
 
@@ -279,7 +279,7 @@ public class FirmwareFileSteps {
              * to similar test results as before.
              */
             final List<FirmwareFile> firmwareFiles = this.firmwareFileRepository
-                    .findByFilename(getString(expectedEntity, PlatformKeys.FIRMWARE_FILENAME));
+                    .findByFilename(getString(expectedEntity, PlatformKeys.FIRMWARE_FILE_FILENAME));
             if (!firmwareFiles.isEmpty()) {
                 final FirmwareFile firmwareFile = firmwareFiles.get(0);
                 final DeviceModel deviceModel = firmwareFile.getDeviceModels().iterator().next();

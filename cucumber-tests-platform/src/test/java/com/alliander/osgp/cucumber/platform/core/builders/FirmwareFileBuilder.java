@@ -109,8 +109,8 @@ public class FirmwareFileBuilder implements CucumberBuilder<FirmwareFile> {
 
     @Override
     public FirmwareFileBuilder withSettings(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_FILENAME)) {
-            this.withFilename(inputSettings.get(PlatformKeys.FIRMWARE_FILENAME));
+        if (inputSettings.containsKey(PlatformKeys.FIRMWARE_FILE_FILENAME)) {
+            this.withFilename(inputSettings.get(PlatformKeys.FIRMWARE_FILE_FILENAME));
         }
 
         if (inputSettings.containsKey(PlatformKeys.FIRMWARE_DESCRIPTION)) {

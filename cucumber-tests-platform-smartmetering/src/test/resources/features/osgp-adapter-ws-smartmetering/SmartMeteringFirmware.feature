@@ -4,7 +4,7 @@ Feature: SmartMetering Firmware
   I want to be able to perform SmartMeteringFirmware operations on a device
   In order to ...
 
-  Background: 
+  Scenario: Get the firmware version from device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -13,8 +13,6 @@ Feature: SmartMetering Firmware
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
-  
-  Scenario: Get the firmware version from device
     When the get firmware version request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the firmware version result should be returned
@@ -30,7 +28,8 @@ Feature: SmartMetering Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | DeviceModel          | MA105             |
+      | ManufacturerCode     | KAIF              |
+      | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
@@ -66,7 +65,8 @@ Feature: SmartMetering Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | DeviceModel          | MA105             |
+      | ManufacturerCode     | KAIF              |
+      | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareModuleVersionComm |                    |
       | FirmwareModuleVersionMa   |                    |
@@ -98,7 +98,8 @@ Feature: SmartMetering Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | DeviceModel          | MA105             |
+      | ManufacturerCode     | KAIF              |
+      | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
@@ -136,7 +137,8 @@ Feature: SmartMetering Firmware
     And a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
-      | DeviceModel          | MA105             |
+      | ManufacturerCode     | KAIF              |
+      | DeviceModelCode      | MA105             |
     And a firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
