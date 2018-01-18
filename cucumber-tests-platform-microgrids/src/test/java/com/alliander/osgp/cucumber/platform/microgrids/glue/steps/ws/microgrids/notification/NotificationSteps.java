@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids.notification;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -40,7 +41,12 @@ public class NotificationSteps extends GlueBase {
     }
 
     @Then("^I should receive a notification$")
-    public void iShouldReceiveANotification(final Map<String, String> settings) throws Throwable {
+    public void iShouldReceiveANotification() throws Throwable {
+        final Map<String, String> maxTimeout = new HashMap<>();
+        this.receiveNotification(maxTimeout);
+    }
+
+    public void receiveNotification(final Map<String, String> settings) throws Throwable {
         int waited = 0;
         int maxTimeOut = this.MAX_WAIT_FOR_NOTIFICATION;
         if (settings.containsKey("maxTimeout")) {

@@ -41,7 +41,7 @@ public class ResendNotificationsSteps {
     public void theMissedNotificationIsResent(final Map<String, String> settings) throws Throwable {
         final Map<String, String> maxTimeout = new HashMap<>();
         maxTimeout.put("maxTimeout", "180000");
-        this.notificationSteps.iShouldReceiveANotification(maxTimeout);
+        this.notificationSteps.receiveNotification(maxTimeout);
     }
 
     @Then("^no notification is sent$")
