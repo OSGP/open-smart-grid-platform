@@ -36,10 +36,10 @@ public class ResponseDataSteps extends BaseDeviceSteps {
     @Autowired
     private ResponseDataRepository responseDataRespository;
 
-    @Value("${iec61850.rtu.response.wait.check.interval:1000}")
+    @Value("${iec61850.rtu.resend.wait.check.interval:1000}")
     private int waitCheckIntervalMillis;
 
-    @Value("${iec61850.rtu.response.wait.fail.duration:180000}")
+    @Value("${iec61850.rtu.resend.wait.fail.duration:180000}")
     private int waitFailMillis;
 
     @Given("^a response data record$")
