@@ -55,4 +55,9 @@ public abstract class AbstractNotificationServiceWs {
 
     }
 
+    protected String retrieveNotificationUrl(final ResponseUrlService responseUrlService, final String correlationUid) {
+        final String responseUrl = responseUrlService.popResponseUrl(correlationUid);
+        return (responseUrl == null) ? this.notificationUrl : responseUrl;
+    }
+
 }

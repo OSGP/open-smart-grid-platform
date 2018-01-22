@@ -43,14 +43,13 @@ import com.alliander.osgp.adapter.ws.shared.services.NotificationServiceBlackHol
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationServiceWs;
-import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
 public class WebServiceConfig extends AbstractConfig {
 
     private static final String SERVER = "SERVER";
@@ -146,12 +145,6 @@ public class WebServiceConfig extends AbstractConfig {
         return marshaller;
     }
 
-    @Bean
-    public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(
-                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
-    }
-
     private DefaultWebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(marshaller)
                 .setMessageFactory(this.messageFactory()).setTargetUri(this.webserviceNotificationUrl)
@@ -177,8 +170,8 @@ public class WebServiceConfig extends AbstractConfig {
         return this.webserviceNotificationOrganisation;
     }
 
-    @Bean
-    public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
+    @Bean(value = "notificationServiceSmartMetering")
+    public NotificationService notificationService() throws GeneralSecurityException {
         if (this.webserviceNotificationEnabled) {
             return new NotificationServiceWs(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
                     this.notificationUrl(), this.notificationUsername(), this.notificationOrganisation());
@@ -355,7 +348,7 @@ public class WebServiceConfig extends AbstractConfig {
     public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
         final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
 
-        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<MethodArgumentResolver>();
+        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
         // SMART METERING
         methodArgumentResolvers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
@@ -376,7 +369,7 @@ public class WebServiceConfig extends AbstractConfig {
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(BYPASS_RETRY_HEADER, BypassRetry.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
-        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
+        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
         // SMART METERING
         methodReturnValueHandlers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());

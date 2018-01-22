@@ -36,10 +36,9 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInter
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.SoapFaultMapper;
-import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationService;
-import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceBlackHole;
 import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceWs;
-import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationServiceBlackHole;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
@@ -213,11 +212,12 @@ public class WebServiceConfig extends AbstractConfig {
                 APPLICATION_NAME_HEADER);
     }
 
-    @Bean
-    public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
+    @Bean(value = "notificationServiceMicrogrids")
+    public NotificationService notificationService() throws GeneralSecurityException {
         if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.webserviceNotificationUrl)) {
-            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.webserviceNotificationUrl,
-                    this.webserviceNotificationUsername, this.webserviceNotificationOrganisation);
+            return new NotificationServiceWs(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
+                    this.webserviceNotificationUrl, this.webserviceNotificationUsername,
+                    this.webserviceNotificationOrganisation);
         } else {
             return new NotificationServiceBlackHole();
         }
@@ -244,12 +244,6 @@ public class WebServiceConfig extends AbstractConfig {
         marshaller.setContextPath(
                 this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_NOTIFICATION));
         return marshaller;
-    }
-
-    @Bean
-    public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(
-                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
     }
 
     private DefaultWebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {

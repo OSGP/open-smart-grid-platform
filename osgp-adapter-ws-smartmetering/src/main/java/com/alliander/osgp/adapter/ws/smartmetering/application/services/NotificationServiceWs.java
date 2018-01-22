@@ -32,7 +32,6 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
 
     private final DefaultWebServiceTemplateFactory webServiceTemplateFactory;
 
-    @Autowired
     public NotificationServiceWs(final DefaultWebServiceTemplateFactory webServiceTemplateFactory,
             final String notificationUrl, final String notificationUsername, final String notificationOrganisation) {
         super(notificationUrl, notificationUsername, notificationOrganisation);
@@ -43,24 +42,18 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
     public void sendNotification(final String organisationIdentification, final String deviceIdentification,
             final String result, final String correlationUid, final String message, final Object notificationType) {
 
-        final String notifyUrl = this.notificationUrl(correlationUid);
-        final SendNotificationRequest notificationRequest = this.notificationRequest(organisationIdentification,
-                deviceIdentification, result, correlationUid, message, notificationType);
+        final String notifyUrl = this.retrieveNotificationUrl(this.responseUrlService, correlationUid);
+        final SendNotificationRequest notificationRequest = this.notificationRequest(deviceIdentification, result,
+                correlationUid, message, notificationType);
         this.doSendNotification(this.webServiceTemplateFactory, organisationIdentification, this.notificationUsername,
                 notifyUrl, notificationRequest);
     }
 
-    private String notificationUrl(final String correlationUid) {
-        final String responseUrl = this.responseUrlService.popResponseUrl(correlationUid);
-        return (responseUrl == null) ? this.notificationUrl : responseUrl;
-    }
+    private SendNotificationRequest notificationRequest(final String deviceIdentification, final String result,
+            final String correlationUid, final String message, final Object notificationType) {
 
-    private SendNotificationRequest notificationRequest(final String organisationIdentification,
-            final String deviceIdentification, final String result, final String correlationUid, final String message,
-            final Object notificationType) {
-
-        LOGGER.debug("creating SendNotificationRequest with {},{},{},{},{},{} ", organisationIdentification,
-                deviceIdentification, correlationUid, notificationType, message, result);
+        LOGGER.debug("creating SendNotificationRequest with {},{},{},{},{} ", deviceIdentification, correlationUid,
+                notificationType, message, result);
 
         final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
         final Notification notification = new Notification();
