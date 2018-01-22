@@ -1,7 +1,7 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  */
-package com.alliander.osgp.adapter.ws.core.infra.ws;
+package com.alliander.osgp.adapter.ws.clients;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.adapter.ws.core.application.config.NotificationClientConfig;
 import com.alliander.osgp.adapter.ws.schema.core.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.core.notification.SendNotificationRequest;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
@@ -32,7 +31,7 @@ public class SendNotificationServiceClient {
 
     /**
      * An instance of this class is created by a bean function in an application
-     * context class. See
+     * context class. For example
      * {@link NotificationClientConfig#sendNotificationServiceClient()}.
      *
      * @param webServiceTemplateFactory

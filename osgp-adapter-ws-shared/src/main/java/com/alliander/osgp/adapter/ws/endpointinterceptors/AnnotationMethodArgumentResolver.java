@@ -33,13 +33,12 @@ public class AnnotationMethodArgumentResolver implements MethodArgumentResolver 
     }
 
     @Override
-    public Object resolveArgument(final MessageContext messageContext, final MethodParameter parameter)
-            throws Exception {
+    public Object resolveArgument(final MessageContext messageContext, final MethodParameter parameter) {
         if (messageContext.containsProperty(this.contextPropertyName)) {
             return messageContext.getProperty(this.contextPropertyName);
         }
 
-        throw new UnsupportedOperationException(String.format("argument %s not found in message context",
-                this.contextPropertyName));
+        throw new UnsupportedOperationException(
+                String.format("argument %s not found in message context", this.contextPropertyName));
     }
 }
