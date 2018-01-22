@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.cucumber.core.Helpers;
+import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 
@@ -48,6 +49,7 @@ public class ResponseDataSteps extends BaseDeviceSteps {
 
         ResponseData responseData = new ResponseDataBuilder().fromSettings(settings).build();
         responseData = this.responseDataRespository.save(responseData);
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
 
         // set correct creation time for testing after inserting in the database
         // (as it will be overridden on first save)

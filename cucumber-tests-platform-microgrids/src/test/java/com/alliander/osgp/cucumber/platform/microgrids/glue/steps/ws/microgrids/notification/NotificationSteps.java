@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids.notification;
 
+import static org.junit.Assert.assertNotSame;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +92,8 @@ public class NotificationSteps extends GlueBase {
 
         final Notification notification = this.mockNotificationService.getNotification();
         if (notification != null) {
-            Assert.fail("Received a notification within the timeout limit.");
+            assertNotSame("Received a notification for matching correlationUid",
+                    ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID, notification.getCorrelationUid()));
         }
     }
 }
