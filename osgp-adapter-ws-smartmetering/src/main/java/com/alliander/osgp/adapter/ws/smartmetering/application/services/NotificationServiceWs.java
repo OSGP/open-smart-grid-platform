@@ -13,13 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
+import com.alliander.osgp.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
 import com.alliander.osgp.adapter.ws.shared.services.AbstractNotificationServiceWs;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.adapter.ws.shared.services.ResponseUrlService;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 @Transactional(value = "transactionManager")
 @Validated
@@ -31,6 +34,7 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
     private ResponseUrlService responseUrlService;
 
     private final DefaultWebServiceTemplateFactory webServiceTemplateFactory;
+    private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     public NotificationServiceWs(final DefaultWebServiceTemplateFactory webServiceTemplateFactory,
             final String notificationUrl, final String notificationUsername, final String notificationOrganisation) {
@@ -42,28 +46,16 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
     public void sendNotification(final String organisationIdentification, final String deviceIdentification,
             final String result, final String correlationUid, final String message, final Object notificationType) {
 
+        LOGGER.info("sendNotification called with organisation: {}, correlationUid: {}, type: {}, to organisation: {}",
+                this.notificationOrganisation, correlationUid, notificationType, organisationIdentification);
+
         final String notifyUrl = this.retrieveNotificationUrl(this.responseUrlService, correlationUid);
-        final SendNotificationRequest notificationRequest = this.notificationRequest(deviceIdentification, result,
-                correlationUid, message, notificationType);
+        final GenericSendNotificationRequest genericNotificationRequest = this.genericNotificationRequest(deviceIdentification,
+                result, correlationUid, message, ((NotificationType) notificationType).toString());
+        final SendNotificationRequest notificationRequest = this.mapperFactory.getMapperFacade()
+                .map(genericNotificationRequest, SendNotificationRequest.class);
         this.doSendNotification(this.webServiceTemplateFactory, organisationIdentification, this.notificationUsername,
                 notifyUrl, notificationRequest);
     }
 
-    private SendNotificationRequest notificationRequest(final String deviceIdentification, final String result,
-            final String correlationUid, final String message, final Object notificationType) {
-
-        LOGGER.debug("creating SendNotificationRequest with {},{},{},{},{} ", deviceIdentification, correlationUid,
-                notificationType, message, result);
-
-        final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
-        final Notification notification = new Notification();
-        // message is null, unless an error occurred
-        notification.setMessage(message);
-        notification.setResult(result);
-        notification.setDeviceIdentification(deviceIdentification);
-        notification.setCorrelationUid(correlationUid);
-        notification.setNotificationType((NotificationType) notificationType);
-        sendNotificationRequest.setNotification(notification);
-        return sendNotificationRequest;
-    }
 }
