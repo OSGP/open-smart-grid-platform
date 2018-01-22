@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
@@ -30,14 +32,20 @@ public abstract class AbstractResendNotificationService {
     @Autowired
     private ResponseDataRepository responseDataRepository;
 
+    @Autowired
+    private int resendPageSize;
+
     public void execute() {
 
-        final List<ResponseData> notificationsToResend = this.responseDataRepository
-                .findByNumberOfNotificationsSentLessThan(this.resendNotificationMaximum);
-        for (final ResponseData responseData : notificationsToResend) {
-            if (this.nextNotificationTime(responseData) < new Date().getTime()) {
-                this.resendNotification(responseData);
+        List<ResponseData> notificationsToResend = this.getScheduledTasks();
+
+        while (!notificationsToResend.isEmpty()) {
+            for (final ResponseData responseData : notificationsToResend) {
+                if (this.nextNotificationTime(responseData) < new Date().getTime()) {
+                    this.resendNotification(responseData);
+                }
             }
+            notificationsToResend = this.getScheduledTasks();
         }
     }
 
@@ -53,5 +61,12 @@ public abstract class AbstractResendNotificationService {
 
     public String getNotificationMessage(final String responseData) {
         return String.format("Response of type %s is available.", responseData);
+    }
+
+    private List<ResponseData> getScheduledTasks() {
+        final Pageable pageable = new PageRequest(0, this.resendPageSize);
+
+        return this.responseDataRepository.findByNumberOfNotificationsSentLessThan(this.resendNotificationMaximum,
+                pageable);
     }
 }

@@ -58,6 +58,9 @@ public class ResendNotificationSchedulingConfig extends AbstractSchedulingConfig
     @Value("${smartmetering.scheduling.job.resend.notification.resend.threshold.in.minutes}")
     private int resendThresholdInMinutes;
 
+    @Value("${smartmetering.scheduling.job.resend.notification.page.size}")
+    private int resendPageSize;
+
     @Bean
     public short resendNotificationMaximum() {
         return this.resendNotificationMaximum;
@@ -71,6 +74,11 @@ public class ResendNotificationSchedulingConfig extends AbstractSchedulingConfig
     @Bean
     public int resendThresholdInMinutes() {
         return this.resendThresholdInMinutes;
+    }
+
+    @Bean
+    public int resendPageSize() {
+        return this.resendPageSize;
     }
 
     @Bean(destroyMethod = "shutdown")
