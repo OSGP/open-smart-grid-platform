@@ -22,7 +22,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class CoreWebServiceConfig {
 
-    private static final String COMMON_XSD_PATH = "schemas/common.xsd";
+    private static final String COMMON_XSD_PATH = "schemas/common-ws-core.xsd";
     private static final String ADHOC_MANAGEMENT_XSD_PATH = "schemas/adhocmanagement.xsd";
     private static final String CONFIGURATION_MANAGEMENT_XSD_PATH = "schemas/configurationmanagement.xsd";
     private static final String DEVICE_INSTALLATION_XSD_PATH = "schemas/deviceinstallation.xsd";

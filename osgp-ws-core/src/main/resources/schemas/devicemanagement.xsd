@@ -8,7 +8,7 @@
   targetNamespace="http://www.alliander.com/schemas/osgp/devicemanagement/2014/10">
 
   <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
-    schemaLocation="../schemas/common.xsd" />
+    schemaLocation="../schemas/common-ws-core.xsd" />
 
   <xsd:element name="FindAllOrganisationsRequest">
     <xsd:complexType>

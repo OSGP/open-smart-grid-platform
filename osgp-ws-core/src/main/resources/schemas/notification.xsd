@@ -14,7 +14,7 @@
   targetNamespace="http://www.alliander.com/schemas/osgp/netmanagement/osgp-notification/2018/01">
 
   <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
-    schemaLocation="common.xsd" />
+    schemaLocation="common-ws-core.xsd" />
 
   <xsd:element name="SendNotificationRequest">
     <xsd:complexType>
