@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.microgrids.application.config;
 
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -213,7 +212,7 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean(value = "notificationServiceMicrogrids")
-    public NotificationService notificationService() throws GeneralSecurityException {
+    public NotificationService notificationService() {
         if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.webserviceNotificationUrl)) {
             return new NotificationServiceWs(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
                     this.webserviceNotificationUrl, this.webserviceNotificationUsername,

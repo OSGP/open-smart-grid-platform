@@ -8,6 +8,9 @@
 package com.alliander.osgp.adapter.ws.schema.shared.notification;
 
 public class GenericSendNotificationRequest {
+
+    private GenericNotification notification;
+
     /**
      * @return the notification
      */
@@ -23,5 +26,4 @@ public class GenericSendNotificationRequest {
         this.notification = notification;
     }
 
-    private GenericNotification notification;
 }

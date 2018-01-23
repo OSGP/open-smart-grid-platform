@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.config;
 
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -170,7 +169,7 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean(value = "notificationServiceSmartMetering")
-    public NotificationService notificationService() throws GeneralSecurityException {
+    public NotificationService notificationService() {
         if (this.webserviceNotificationEnabled) {
             return new NotificationServiceWs(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
                     this.notificationUrl(), this.notificationUsername(), this.notificationOrganisation());
