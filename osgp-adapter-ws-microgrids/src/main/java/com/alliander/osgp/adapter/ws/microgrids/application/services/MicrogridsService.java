@@ -104,11 +104,7 @@ public class MicrogridsService {
             }
             throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
         case OK:
-            if (response.getDataObject() != null) {
-                return (GetDataResponse) response.getDataObject();
-            }
-            // Should not get here
-            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains no data.");
+            return (GetDataResponse) response.getDataObject();
         default:
             // Should not get here
             throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
