@@ -37,7 +37,7 @@ public abstract class AbstractResendNotificationService {
 
     public void execute() {
 
-        List<ResponseData> notificationsToResend = this.getScheduledTasks();
+        List<ResponseData> notificationsToResend = this.getResponseData();
 
         while (!notificationsToResend.isEmpty()) {
             for (final ResponseData responseData : notificationsToResend) {
@@ -45,7 +45,7 @@ public abstract class AbstractResendNotificationService {
                     this.resendNotification(responseData);
                 }
             }
-            notificationsToResend = this.getScheduledTasks();
+            notificationsToResend = this.getResponseData();
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractResendNotificationService {
         return String.format("Response of type %s is available.", responseData);
     }
 
-    private List<ResponseData> getScheduledTasks() {
+    private List<ResponseData> getResponseData() {
         final Pageable pageable = new PageRequest(0, this.resendPageSize);
 
         return this.responseDataRepository.findByNumberOfNotificationsSentLessThan(this.resendNotificationMaximum,
