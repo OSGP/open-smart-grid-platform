@@ -14,6 +14,8 @@ import org.springframework.ws.client.WebServiceTransportException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.shared.notification.GenericNotification;
+import com.alliander.osgp.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.WebserviceTemplateFactory;
 
@@ -53,6 +55,26 @@ public abstract class AbstractNotificationServiceWs {
             LOGGER.error(msg, e);
         }
 
+    }
+
+    protected String retrieveNotificationUrl(final ResponseUrlService responseUrlService, final String correlationUid) {
+        final String responseUrl = responseUrlService.popResponseUrl(correlationUid);
+        return (responseUrl == null) ? this.notificationUrl : responseUrl;
+    }
+
+    protected GenericSendNotificationRequest genericNotificationRequest(final String deviceIdentification, final String result,
+            final String correlationUid, final String message, final String notificationType) {
+
+        final GenericSendNotificationRequest sendNotificationRequest = new GenericSendNotificationRequest();
+        final GenericNotification notification = new GenericNotification();
+        // message is null, unless an error occurred
+        notification.setMessage(message);
+        notification.setResult(result);
+        notification.setDeviceIdentification(deviceIdentification);
+        notification.setCorrelationUid(correlationUid);
+        notification.setNotificationType(notificationType);
+        sendNotificationRequest.setNotification(notification);
+        return sendNotificationRequest;
     }
 
 }

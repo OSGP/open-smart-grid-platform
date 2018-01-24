@@ -26,7 +26,6 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
-import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -37,7 +36,6 @@ import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
@@ -75,9 +73,6 @@ public class DeviceInstallationService {
     private WritableSsldRepository writableSsldRepository;
 
     @Autowired
-    private WritableDeviceModelRepository deviceModelRepository;
-
-    @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
@@ -85,15 +80,6 @@ public class DeviceInstallationService {
 
     @Autowired
     private CommonResponseMessageFinder commonResponseMessageFinder;
-
-    @Autowired
-    private String defaultProtocol;
-
-    @Autowired
-    private String defaultProtocolVersion;
-
-    @Autowired
-    private ProtocolInfoRepository protocolRepository;
 
     DeviceInstallationService() {
         // Parameterless constructor required for transactions
@@ -107,8 +93,8 @@ public class DeviceInstallationService {
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
         // If the device already exists, throw an exception.
-        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(newDevice
-                .getDeviceIdentification());
+        final Device existingDevice = this.writableDeviceRepository
+                .findByDeviceIdentification(newDevice.getDeviceIdentification());
         if (existingDevice != null) {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
                     new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
@@ -148,8 +134,8 @@ public class DeviceInstallationService {
     public void updateDevice(@Identification final String organisationIdentification, @Valid final Ssld updateDevice)
             throws FunctionalException {
 
-        final Ssld existingDevice = this.writableSsldRepository.findByDeviceIdentification(updateDevice
-                .getDeviceIdentification());
+        final Ssld existingDevice = this.writableSsldRepository
+                .findByDeviceIdentification(updateDevice.getDeviceIdentification());
         if (existingDevice == null) {
             // device does not exist
             LOGGER.info("Device does not exist, nothing to update.");
@@ -157,8 +143,8 @@ public class DeviceInstallationService {
                     new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
         }
 
-        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
-                existingDevice, DeviceFunctionGroup.OWNER);
+        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository
+                .findByDeviceAndFunctionGroup(existingDevice, DeviceFunctionGroup.OWNER);
 
         // Check organisation against owner of device
         boolean isOwner = false;

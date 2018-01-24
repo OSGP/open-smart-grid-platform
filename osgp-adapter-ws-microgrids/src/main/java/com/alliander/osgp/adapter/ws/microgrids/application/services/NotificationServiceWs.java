@@ -11,70 +11,45 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.ws.client.WebServiceIOException;
 
-import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
-import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.NotificationType;
-import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.adapter.ws.schema.microgrids.notification.SendNotificationRequest;
+import com.alliander.osgp.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
+import com.alliander.osgp.adapter.ws.shared.services.AbstractNotificationServiceWs;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 @Transactional(value = "transactionManager")
 @Validated
-public class NotificationServiceWs implements NotificationService {
+public class NotificationServiceWs extends AbstractNotificationServiceWs implements NotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWs.class);
 
-    private final SendNotificationServiceClient sendNotificationServiceClient;
+    private final DefaultWebServiceTemplateFactory webServiceTemplateFactory;
+    private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
-    private final String notificationUrl;
-
-    private final String notificationUsername;
-
-    private final String notificationOrganisation;
-
-    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl,
-            final String notificationUsername, final String notificationOrganisation) {
-        this.sendNotificationServiceClient = client;
-        this.notificationUrl = notificationUrl;
-        this.notificationUsername = notificationUsername;
-        this.notificationOrganisation = notificationOrganisation;
+    public NotificationServiceWs(final DefaultWebServiceTemplateFactory webServiceTemplateFactory,
+            final String notificationUrl, final String notificationUsername, final String notificationOrganisation) {
+        super(notificationUrl, notificationUsername, notificationOrganisation);
+        this.webServiceTemplateFactory = webServiceTemplateFactory;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.alliander.osgp.adapter.ws.smartmetering.application.services.
-     * INotificationService#sendNotification(java.lang.String, java.lang.String,
-     * java.lang.String, java.lang.String, java.lang.String,
-     * com.alliander.osgp.adapter
-     * .ws.schema.smartmetering.notification.NotificationType)
-     */
     @Override
     public void sendNotification(final String organisationIdentification, final String deviceIdentification,
-            final String result, final String correlationUid, final String message,
-            final NotificationType notificationType) {
+            final String result, final String correlationUid, final String message, final Object notificationType) {
 
         LOGGER.info("sendNotification called with organisation: {}, correlationUid: {}, type: {}, to organisation: {}",
                 this.notificationOrganisation, correlationUid, notificationType, organisationIdentification);
 
-        final Notification notification = new Notification();
-        // message is null, unless an error occurred
-        notification.setMessage(message);
-        notification.setResult(result);
-        notification.setDeviceIdentification(deviceIdentification);
-        notification.setCorrelationUid(correlationUid);
-        notification.setNotificationType(notificationType);
+        final GenericSendNotificationRequest genericNotificationRequest = this.genericNotificationRequest(deviceIdentification,
+                result, correlationUid, message, ((NotificationType) notificationType).toString());
+        final SendNotificationRequest notificationRequest = this.mapperFactory.getMapperFacade()
+                .map(genericNotificationRequest, SendNotificationRequest.class);
 
-        try {
-            /*
-             * Get a template for the organisation representing the OSGP
-             * platform, on behalf of which the notification is sent to the
-             * organisation identified by the organisationIdentification.
-             */
-            this.sendNotificationServiceClient.sendNotification(this.notificationOrganisation, notification,
-                    this.notificationUrl, this.notificationUsername);
-        } catch (final WebServiceSecurityException | WebServiceIOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+        this.doSendNotification(this.webServiceTemplateFactory, organisationIdentification, this.notificationUsername,
+                this.notificationUrl, notificationRequest);
     }
 }

@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.shared.services.AbstractResendNotificationService;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 
 @Service(value = "resendNotificationServiceMicrogrids")
 @Transactional(value = "transactionManager")

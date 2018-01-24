@@ -77,6 +77,10 @@
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-ws-admin</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-ws-core</artifactId>
+    </dependency>
 
     <!-- Spring Framework -->
     <dependency>
