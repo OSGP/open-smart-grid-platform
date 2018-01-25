@@ -15,7 +15,7 @@
 
       <xsd:import
         namespace="http://www.alliander.com/schemas/osgp/adhocmanagement/2014/10"
-        schemaLocation="schemas/adhocmanagement.xsd" />
+        schemaLocation="schemas/adhocmanagement-ws-core.xsd" />
     </xsd:schema>
   </wsdl:types>
 

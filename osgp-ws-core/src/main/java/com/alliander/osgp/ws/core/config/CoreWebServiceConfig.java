@@ -23,10 +23,10 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 public class CoreWebServiceConfig {
 
     private static final String COMMON_XSD_PATH = "schemas/common-ws-core.xsd";
-    private static final String ADHOC_MANAGEMENT_XSD_PATH = "schemas/adhocmanagement.xsd";
+    private static final String ADHOC_MANAGEMENT_XSD_PATH = "schemas/adhocmanagement-ws-core.xsd";
     private static final String CONFIGURATION_MANAGEMENT_XSD_PATH = "schemas/configurationmanagement.xsd";
     private static final String DEVICE_INSTALLATION_XSD_PATH = "schemas/deviceinstallation.xsd";
-    private static final String DEVICE_MANAGEMENT_XSD_PATH = "schemas/devicemanagement.xsd";
+    private static final String DEVICE_MANAGEMENT_XSD_PATH = "schemas/devicemanagement-ws-core.xsd";
     private static final String FIRMWARE_MANAGEMENT_XSD_PATH = "schemas/firmwaremanagement.xsd";
 
     private static final String ADHOC_MANAGEMENT_WSDL_PATH = "AdHocManagement.wsdl";

@@ -14,7 +14,7 @@
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
         namespace="http://www.alliander.com/schemas/osgp/netmanagement/osgp-notification/2018/01"
-        schemaLocation="schemas/notification.xsd" />
+        schemaLocation="schemas/notification-ws-core.xsd" />
     </xsd:schema>
   </wsdl:types>
 

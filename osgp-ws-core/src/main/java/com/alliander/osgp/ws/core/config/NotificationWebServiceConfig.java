@@ -23,7 +23,7 @@ public class NotificationWebServiceConfig {
 
     private static final String COMMON_XSD_PATH = "schemas/common.xsd";
 
-    private static final String NOTIFICATION_XSD_PATH = "schemas/notification.xsd";
+    private static final String NOTIFICATION_XSD_PATH = "schemas/notification-ws-core.xsd";
 
     private static final String NOTIFICATION_WSDL_PATH = "Notification.wsdl";
 

@@ -15,7 +15,7 @@
 
       <xsd:import
         namespace="http://www.alliander.com/schemas/osgp/devicemanagement/2014/10"
-        schemaLocation="schemas/devicemanagement.xsd" />
+        schemaLocation="schemas/devicemanagement-ws-core.xsd" />
     </xsd:schema>
   </wsdl:types>
 

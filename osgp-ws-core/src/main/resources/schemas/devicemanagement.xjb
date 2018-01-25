@@ -7,7 +7,7 @@
     </jxb:schemaBindings>
   </jxb:bindings>
 
-  <jxb:bindings schemaLocation="devicemanagement.xsd">
+  <jxb:bindings schemaLocation="devicemanagement-ws-core.xsd">
     <jxb:schemaBindings>
       <jxb:package
         name="com.alliander.osgp.adapter.ws.schema.core.devicemanagement"></jxb:package>

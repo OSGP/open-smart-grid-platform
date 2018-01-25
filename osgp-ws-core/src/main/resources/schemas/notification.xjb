@@ -17,7 +17,7 @@
     </jxb:schemaBindings>
   </jxb:bindings>
 
-  <jxb:bindings schemaLocation="notification.xsd">
+  <jxb:bindings schemaLocation="notification-ws-core.xsd">
     <jxb:schemaBindings>
       <jxb:package
         name="com.alliander.osgp.adapter.ws.schema.core.notification"></jxb:package>
