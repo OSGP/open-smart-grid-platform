@@ -17,7 +17,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
@@ -36,11 +35,8 @@ public class ResponseDataSteps extends BaseDeviceSteps {
     @Autowired
     private ResponseDataRepository responseDataRespository;
 
-    @Value("${iec61850.rtu.response.wait.check.interval:1000}")
-    private int waitCheckIntervalMillis;
-
-    @Value("${iec61850.rtu.response.wait.fail.duration:180000}")
-    private int waitFailMillis;
+    private final int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
+    private final int MAX_WAIT_FOR_NOTIFICATION = 180000;
 
     @Given("^a response data record$")
     @Transactional("txMgrRespData")
@@ -80,8 +76,8 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
         ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
 
-        final int maxtime = this.waitFailMillis;
-        final int timeout = this.waitCheckIntervalMillis;
+        final int maxtime = this.MAX_WAIT_FOR_NOTIFICATION;
+        final int timeout = this.WAIT_FOR_NEXT_NOTIFICATION_CHECK;
 
         for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
             try {

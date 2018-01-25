@@ -13,7 +13,6 @@ Feature: SmartMetering notifications - Resend notifications
       | NumberOfNotificationsSent |                                                      0 |
     When OSGP checks for which response data a notification has to be resend
     Then a notification is sent
-      | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
     And the response data has values
       | DeviceIdentification      | TEST1024000000001                                      |
       | MessageType               | REQUEST_PERIODIC_METER_DATA                            |

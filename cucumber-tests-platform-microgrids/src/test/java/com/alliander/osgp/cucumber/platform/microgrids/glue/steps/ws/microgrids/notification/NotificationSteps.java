@@ -9,7 +9,6 @@ package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids
 
 import static org.junit.Assert.assertNotSame;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -31,6 +30,8 @@ public class NotificationSteps extends GlueBase {
 
     private final int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
     private final int MAX_WAIT_FOR_NOTIFICATION = 1200000;
+    private final int MAX_WAIT_FOR_RESEND_NOTIFICATION = 120000;
+    private final int MAX_WAIT_FOR_NO_RESEND_NOTIFICATION = 30000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
 
@@ -44,16 +45,11 @@ public class NotificationSteps extends GlueBase {
 
     @Then("^I should receive a notification$")
     public void iShouldReceiveANotification() throws Throwable {
-        final Map<String, String> maxTimeout = new HashMap<>();
-        this.receiveNotification(maxTimeout);
+        this.waitForNotificationIsReceived(this.MAX_WAIT_FOR_NOTIFICATION);
     }
 
-    public void receiveNotification(final Map<String, String> settings) throws Throwable {
+    private void waitForNotificationIsReceived(final int maxTimeOut) throws Throwable {
         int waited = 0;
-        int maxTimeOut = this.MAX_WAIT_FOR_NOTIFICATION;
-        if (settings.containsKey("maxTimeout")) {
-            maxTimeOut = Integer.parseInt(settings.get("maxTimeout"));
-        }
 
         while (!this.mockNotificationService.receivedNotification() && waited < maxTimeOut) {
             LOGGER.info("Checking and waiting for notification.");
@@ -78,12 +74,13 @@ public class NotificationSteps extends GlueBase {
     }
 
     @Then("^I should not receive a notification$")
-    public void iShouldNotReceiveANotification(final Map<String, String> settings) throws Throwable {
+    public void iShouldNotReceiveANotification() throws Throwable {
+        this.waitToMakeSureNotificationIsNotReceived(this.MAX_WAIT_FOR_NO_RESEND_NOTIFICATION);
+    }
+
+    private void waitToMakeSureNotificationIsNotReceived(final int maxTimeOut) throws InterruptedException {
         int waited = 0;
-        int maxTimeOut = this.MAX_WAIT_FOR_NOTIFICATION;
-        if (settings.containsKey("maxTimeout")) {
-            maxTimeOut = Integer.parseInt(settings.get("maxTimeout"));
-        }
+
         while (!this.mockNotificationService.receivedNotification() && waited < maxTimeOut) {
             LOGGER.info("Checking and waiting for notification.");
             Thread.sleep(this.WAIT_FOR_NEXT_NOTIFICATION_CHECK);
@@ -95,5 +92,25 @@ public class NotificationSteps extends GlueBase {
             assertNotSame("Received a notification for matching correlationUid",
                     ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID, notification.getCorrelationUid()));
         }
+    }
+
+    @Then("^a notification is sent$")
+    public void aNotificationIsSent(final Map<String, String> settings) throws Throwable {
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, settings.get(PlatformKeys.KEY_CORRELATION_UID));
+        int maxTimeOut = this.MAX_WAIT_FOR_RESEND_NOTIFICATION;
+        if (settings.containsKey("maxTimeout")) {
+            maxTimeOut = Integer.parseInt(settings.get("maxTimeout"));
+        }
+        this.waitForNotificationIsReceived(maxTimeOut);
+    }
+
+    @Then("^no notification is sent$")
+    public void noNotificationIsSent(final Map<String, String> settings) throws Throwable {
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, settings.get(PlatformKeys.KEY_CORRELATION_UID));
+        int maxTimeOut = this.MAX_WAIT_FOR_NO_RESEND_NOTIFICATION;
+        if (settings.containsKey("maxTimeout")) {
+            maxTimeOut = Integer.parseInt(settings.get("maxTimeout"));
+        }
+        this.waitToMakeSureNotificationIsNotReceived(maxTimeOut);
     }
 }

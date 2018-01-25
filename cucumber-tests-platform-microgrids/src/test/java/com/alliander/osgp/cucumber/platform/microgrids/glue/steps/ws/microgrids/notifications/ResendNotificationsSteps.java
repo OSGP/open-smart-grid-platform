@@ -7,47 +7,24 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids.notifications;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids.notification.NotificationSteps;
-
-import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class ResendNotificationsSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResendNotificationsSteps.class);
 
-    @Autowired
-    private NotificationSteps notificationSteps;
+    private final int INITIAL_TIMEOUT = 60000;
 
     @When("^OSGP checks for which response data a notification has to be resend$")
     public void osgpChecksForWhichResponseDataANotificationHasToBeResend() throws Throwable {
-        final int initial_timeout = 60000; // needed to make sure the ResendNotificationJob has at least runned once
-
+        // needed to make sure the ResendNotificationJob has at least runned once
         try {
-            Thread.sleep(initial_timeout);
+            Thread.sleep(this.INITIAL_TIMEOUT);
         } catch (final InterruptedException e) {
             LOGGER.error("Thread sleep interrupted ", e.getMessage());
         }
-    }
-
-    @Then("^a notification is sent$")
-    public void theMissedNotificationIsResent(final Map<String, String> settings) throws Throwable {
-        final Map<String, String> maxTimeout = new HashMap<>();
-        maxTimeout.put("maxTimeout", "180000");
-        this.notificationSteps.receiveNotification(maxTimeout);
-    }
-
-    @Then("^no notification is sent$")
-    public void noNotificationIsResend() throws Throwable {
-        final Map<String, String> maxTimeout = new HashMap<>();
-        maxTimeout.put("maxTimeout", "30000");
-        this.notificationSteps.iShouldNotReceiveANotification(maxTimeout);
     }
 }
