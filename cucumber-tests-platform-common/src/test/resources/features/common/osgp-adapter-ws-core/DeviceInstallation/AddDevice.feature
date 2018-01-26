@@ -163,9 +163,57 @@ Feature: CoreDeviceInstallation Device Creating
       | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
       | InnerMessage   | Organisation with id "unknown-organization" could not be found.  |
 
-  Scenario: Adding a device which already exists
+  Scenario Outline: Allow adding an existing device if there has been no communication with the device yet
+    Given a device model
+      | ModelCode | <ModelCode> |
+      | Metered   | <Metered>   |
+    And a device
+      | DeviceIdentification | <DeviceIdentification> |
+      | Activated            | false                  |
+      | PublicKeyPresent     | <PublicKeyPresent>     |
+    When receiving an add device request
+      | DeviceUid              | <DeviceUid>             |
+      | DeviceIdentification   | <DeviceIdentification>  |
+      | alias                  | <Alias>                 |
+      | Owner                  | <Owner>                 |
+      | containerPostalCode    | <ContainerPostalCode>   |
+      | containerCity          | <ContainerCity>         |
+      | containerStreet        | <ContainerStreet>       |
+      | containerNumber        | <ContainerNumber>       |
+      | containerMunicipality  | <ContainerMunicipality> |
+      | gpsLatitude            | <GpsLatitude>           |
+      | gpsLongitude           | <GpsLongitude>          |
+      | HasSchedule            | <HasSchedule>           |
+      | PublicKeyPresent       | <PublicKeyPresent>      |
+      | Manufacturer           | <Manufacturer>          |
+      | DeviceModelCode        | <ModelCode>             |
+      | DeviceModelDescription | <Description>           |
+      | Metered                | <Metered>               |
+    Then the add device response is successful
+    And the device exists
+      | DeviceIdentification       | <DeviceIdentification>  |
+      | alias                      | <Alias>                 |
+      | OrganizationIdentification | <Owner>                 |
+      | containerPostalCode        | <ContainerPostalCode>   |
+      | containerCity              | <ContainerCity>         |
+      | containerStreet            | <ContainerStreet>       |
+      | containerNumber            | <ContainerNumber>       |
+      | containerMunicipality      | <ContainerMunicipality> |
+      | gpsLatitude                | <GpsLatitude>           |
+      | gpsLongitude               | <GpsLongitude>          |
+      | Activated                  | false                   |
+      | HasSchedule                | <HasSchedule>           |
+      | PublicKeyPresent           | <PublicKeyPresent>      |
+      | DeviceModel                | <ModelCode>             |
+
+    Examples: 
+      | DeviceUid  | DeviceIdentification | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
+      | 1234567890 | TEST1024000000001    |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
+
+  Scenario: Disallow adding an existing device if there has been communication with the device
     Given a device
       | DeviceIdentification | TEST1024000000001 |
+      | Activated            | true              |
     When receiving an add device request
       | DeviceIdentification | TEST1024000000001 |
     Then the add device response contains soap fault
