@@ -28,6 +28,7 @@ import org.osgpfoundation.osgp.dto.da.GetPQValuesResponseDto;
 import org.osgpfoundation.osgp.dto.da.iec61850.DataSampleDto;
 import org.osgpfoundation.osgp.dto.da.iec61850.LogicalDeviceDto;
 import org.osgpfoundation.osgp.dto.da.iec61850.LogicalNodeDto;
+import org.springframework.util.CollectionUtils;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -56,22 +57,15 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
     }
 
     private void processReport(final Report report, final String reportDescription) throws ProtocolAdapterException {
-
-        // if (report.getDataSet() == null) {
-        if (report.getValues() == null) {
-            this.logger.warn("No dataSet members available for {}", reportDescription);
-            return;
-        }
-
+        final List<FcModelNode> dataSetMembers = report.getValues();
         final List<LogicalDevice> logicalDevices = new ArrayList<>();
-        // final List<FcModelNode> members = report.getDataSet().getMembers();
-        final List<FcModelNode> members = report.getValues();
 
-        if ((members == null) || members.isEmpty()) {
+        if (CollectionUtils.isEmpty(dataSetMembers)) {
             this.logger.warn("No dataSet members available for {}", reportDescription);
             return;
         }
-        for (final FcModelNode member : members) {
+
+        for (final FcModelNode member : dataSetMembers) {
             // we are only interested in measurements
             if (member.getFc() == Fc.MX) {
                 this.processMeasurementNode(logicalDevices, member);
@@ -238,10 +232,11 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
         sb.append("\t             RptId:\t").append(report.getRptId()).append(System.lineSeparator());
         sb.append("\t        DataSetRef:\t").append(report.getDataSetRef()).append(System.lineSeparator());
         sb.append("\t           ConfRev:\t").append(report.getConfRev()).append(System.lineSeparator());
-
-        // sb.append("\t
-        // BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
-        sb.append("\t           BufOvfl:\t").append(report.getBufOvfl()).append(System.lineSeparator());
+        if (report.getBufOvfl() == null) {
+            sb.append("\t           BufOvfl:\tnull").append(System.lineSeparator());
+        } else {
+            sb.append("\t           BufOvfl:\t").append(report.getBufOvfl()).append(System.lineSeparator());
+        }
 
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
         sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
@@ -267,28 +262,14 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
             }
         }
 
-        // TODO: check for removing OptFlds
-        // sb.append("\t optFlds:").append(report.getOptFlds()).append("\t(")
-        // .append(new
-        // Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-        // .append(System.lineSeparator());
-
-        // final DataSet dataSet = report.getDataSet();
-        // if (dataSet == null) {
-        final List<FcModelNode> members = report.getValues();
-        if (members == null) {
+        final List<FcModelNode> dataSetMembers = report.getValues();
+        if (dataSetMembers == null) {
             sb.append("\t           DataSet members:\tnull").append(System.lineSeparator());
         } else {
-            // sb.append("\t
-            // DataSet:\t").append(dataSet.getReferenceStr()).append(System.lineSeparator());
             sb.append("\t           DataSet:\t").append(report.getDataSetRef()).append(System.lineSeparator());
-
-            // final List<FcModelNode> members = dataSet.getMembers();
-            // final List<FcModelNode> members = report.getValues();
-
-            if ((members != null) && !members.isEmpty()) {
-                sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
-                for (final FcModelNode member : members) {
+            if (!dataSetMembers.isEmpty()) {
+                sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
+                for (final FcModelNode member : dataSetMembers) {
                     sb.append("\t            member:\t").append(member).append(System.lineSeparator());
                     sb.append("\t                   \t\t").append(member);
                 }

@@ -25,6 +25,7 @@ import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.HexConverter;
 import org.openmuc.openiec61850.Report;
+import org.springframework.util.CollectionUtils;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
@@ -98,11 +99,9 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         this.logger.info("newReport for {}", reportDescription);
         boolean skipRecordBecauseOfOldSqNum = false;
 
-        if (report.getBufOvfl() != null) {
-            if (report.getBufOvfl()) {
-                this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
-                        reportDescription);
-            }
+        if (Boolean.TRUE.equals(report.getBufOvfl())) {
+            this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
+                    reportDescription);
         }
 
         if (this.firstNewSqNum != null && report.getSqNum() != null && report.getSqNum() < this.firstNewSqNum) {
@@ -110,14 +109,14 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         }
         this.logReportDetails(report);
 
-        final List<FcModelNode> members = report.getValues();
-        if (members == null || members.isEmpty()) {
+        final List<FcModelNode> dataSetMembers = report.getValues();
+        if (CollectionUtils.isEmpty(dataSetMembers)) {
             this.logger.warn("No dataSet members available for {}", reportDescription);
             return;
         } else {
-            this.logger.debug("Handling {} DataSet members for {}", members.size(), reportDescription);
+            this.logger.debug("Handling {} DataSet members for {}", dataSetMembers.size(), reportDescription);
         }
-        for (final FcModelNode member : members) {
+        for (final FcModelNode member : dataSetMembers) {
             if (member == null) {
                 this.logger.warn("Member == null in DataSet for {}", reportDescription);
                 continue;
@@ -276,7 +275,12 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         sb.append("\t             RptId:\t").append(report.getRptId()).append(System.lineSeparator());
         sb.append("\t        DataSetRef:\t").append(report.getDataSetRef()).append(System.lineSeparator());
         sb.append("\t           ConfRev:\t").append(report.getConfRev()).append(System.lineSeparator());
-        sb.append("\t           BufOvfl:\t").append(report.getBufOvfl()).append(System.lineSeparator());
+        if (report.getBufOvfl() == null) {
+            sb.append("\t           BufOvfl:\tnull").append(System.lineSeparator());
+        } else {
+            sb.append("\t           BufOvfl:\t").append(report.getBufOvfl()).append(System.lineSeparator());
+        }
+
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
         sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
                 .append(System.lineSeparator());
@@ -300,20 +304,15 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
                         .append(System.lineSeparator());
             }
         }
-        // sb.append("\t optFlds:").append(report.getOptFlds()).append("\t(")
-        // .append(new
-        // Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-        // .append(System.lineSeparator());
-        // final DataSet dataSet = report.getDataSet();
-        final List<FcModelNode> members = report.getValues();
-        if (members == null) {
+
+        final List<FcModelNode> dataSetMembers = report.getValues();
+        if (dataSetMembers == null) {
             sb.append("\t           DataSet members:\tnull").append(System.lineSeparator());
         } else {
             sb.append("\t           DataSet:\t").append(report.getDataSetRef()).append(System.lineSeparator());
-            // final List<FcModelNode> members = dataSet.getMembers();
-            if (members != null && !members.isEmpty()) {
-                sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
-                for (final FcModelNode member : members) {
+            if (!dataSetMembers.isEmpty()) {
+                sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
+                for (final FcModelNode member : dataSetMembers) {
                     sb.append("\t            member:\t").append(member).append(System.lineSeparator());
                     if (member.getReference().toString().contains("CSLC.EvnRpn")) {
                         sb.append(this.evnRpnInfo("\t                   \t\t", member));
