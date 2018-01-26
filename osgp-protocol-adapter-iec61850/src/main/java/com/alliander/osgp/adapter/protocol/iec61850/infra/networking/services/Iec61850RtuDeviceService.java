@@ -79,6 +79,10 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getDeviceIdentification(), deviceRequest.getOrganisationIdentification(), serverName),
                     deviceRequest);
 
+            if (getDataResponse == null) {
+                throw new ProtocolAdapterException("No valid response received during GetData");
+            }
+
             final GetDataDeviceResponse deviceResponse = new GetDataDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, getDataResponse);
