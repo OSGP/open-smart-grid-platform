@@ -135,10 +135,7 @@ public abstract class BaseDeviceSteps extends GlueBase {
                                 ? getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformDefaults.DEFAULT_LONGITUDE)
                                 : null);
 
-        device.setActivated(getBoolean(settings, PlatformKeys.KEY_IS_ACTIVATED, PlatformDefaults.DEFAULT_IS_ACTIVATED));
-        // Dirty fix as it seems both KEY_IS_ACTIVATED and KEY_ACTIVATED are in
-        // use
-        device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, device.isActivated()));
+        device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformDefaults.DEFAULT_ACTIVATED));
 
         device = this.deviceRepository.save(device);
 

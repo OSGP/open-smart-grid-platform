@@ -27,7 +27,6 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceModelDescription | <Description>           |
       | Metered                | <Metered>               |
     Then the add device response is successful
-    # Note: 'Activated' en 'Active' moeten altijd 'false' zijn, de device zet deze waarden automatisch op 'true'
     And the device exists
       | DeviceIdentification       | <DeviceIdentification>  |
       | alias                      | <Alias>                 |
@@ -40,7 +39,6 @@ Feature: CoreDeviceInstallation Device Creating
       | gpsLatitude                | <GpsLatitude>           |
       | gpsLongitude               | <GpsLongitude>          |
       | Activated                  | false                   |
-      | Active                     | false                   |
       | HasSchedule                | <HasSchedule>           |
       | PublicKeyPresent           | <PublicKeyPresent>      |
       | DeviceModel                | <ModelCode>             |

@@ -8,7 +8,6 @@ Feature: SmartMetering DLMS logging
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Active               | true              |
       | InDebugMode          | true              |
     When the get administrative status request is received
       | DeviceIdentification | TEST1024000000001 |
@@ -20,7 +19,6 @@ Feature: SmartMetering DLMS logging
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Active               | true              |
       | InDebugMode          | false             |
     When the get administrative status request is received
       | DeviceIdentification | TEST1024000000001 |
