@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.ws.admin.endpoints;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.validator.method.MethodConstraintViolationException;
@@ -61,6 +62,8 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceP
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyResponse;
+import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
@@ -91,6 +94,9 @@ public class DeviceManagementEndpoint {
 
     private final DeviceManagementService deviceManagementService;
     private final DeviceManagementMapper deviceManagementMapper;
+
+    @Autowired
+    private NotificationService notificationService;
 
     /**
      * Constructor
@@ -252,6 +258,9 @@ public class DeviceManagementEndpoint {
             @RequestPayload final UpdateDeviceAuthorisationsRequest request) throws OsgpException {
 
         LOGGER.info("Update device autorisations for organisation: {}.", organisationIdentification);
+
+        final List<String> deviceIdentifications = new ArrayList<>();
+
         try {
             for (final DeviceAuthorisation authorization : request.getDeviceAuthorisations()) {
                 if (authorization.isRevoked() != null && authorization.isRevoked()) {
@@ -265,6 +274,10 @@ public class DeviceManagementEndpoint {
                             this.deviceManagementMapper.map(authorization.getFunctionGroup(),
                                     DeviceFunctionGroup.class));
                 }
+                // Save the device identification for notification later.
+                if (!deviceIdentifications.contains(authorization.getDeviceIdentification())) {
+                    deviceIdentifications.add(authorization.getDeviceIdentification());
+                }
             }
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURED, e);
@@ -272,6 +285,15 @@ public class DeviceManagementEndpoint {
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
+        }
+
+        for (final String deviceIdentification : deviceIdentifications) {
+            try {
+                this.notificationService.sendNotification(organisationIdentification, deviceIdentification, null, null,
+                        null, NotificationType.DEVICE_UPDATED);
+            } catch (final Exception e) {
+                LOGGER.error("Caught exception when sending notification", e);
+            }
         }
 
         return new UpdateDeviceAuthorisationsResponse();

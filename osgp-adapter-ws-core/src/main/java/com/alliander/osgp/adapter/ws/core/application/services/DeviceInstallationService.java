@@ -26,7 +26,6 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
-import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -37,7 +36,6 @@ import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
@@ -75,9 +73,6 @@ public class DeviceInstallationService {
     private WritableSsldRepository writableSsldRepository;
 
     @Autowired
-    private WritableDeviceModelRepository deviceModelRepository;
-
-    @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
@@ -85,15 +80,6 @@ public class DeviceInstallationService {
 
     @Autowired
     private CommonResponseMessageFinder commonResponseMessageFinder;
-
-    @Autowired
-    private String defaultProtocol;
-
-    @Autowired
-    private String defaultProtocolVersion;
-
-    @Autowired
-    private ProtocolInfoRepository protocolRepository;
 
     DeviceInstallationService() {
         // Parameterless constructor required for transactions
@@ -109,6 +95,7 @@ public class DeviceInstallationService {
         // If the device already exists, throw an exception.
         final Device existingDevice = this.writableDeviceRepository
                 .findByDeviceIdentification(newDevice.getDeviceIdentification());
+
         // Added additional check on isActivated:
         // if isActivated is false,
         // there has been no communication with the device yet

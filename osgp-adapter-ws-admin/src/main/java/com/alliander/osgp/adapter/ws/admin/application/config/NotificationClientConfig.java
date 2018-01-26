@@ -1,4 +1,4 @@
-package com.alliander.osgp.adapter.ws.core.application.config;
+package com.alliander.osgp.adapter.ws.admin.application.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,17 +10,17 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
+import com.alliander.osgp.adapter.ws.admin.application.services.NotificationServiceWsAdmin;
 import com.alliander.osgp.adapter.ws.clients.SendNotificationServiceClient;
-import com.alliander.osgp.adapter.ws.core.application.services.NotificationServiceWsCore;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationServiceBlackHole;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-core.properties"),
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-admin.properties"),
         @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true), })
 public class NotificationClientConfig extends AbstractConfig {
 
     // Notification web service global properties.
@@ -46,7 +46,7 @@ public class NotificationClientConfig extends AbstractConfig {
     // Notification web service application name, user name and organization
     // properties.
 
-    @Value("${web.service.notification.application.name:WS_CORE}")
+    @Value("${web.service.notification.application.name:WS_ADMIN}")
     private String applicationName;
 
     @Value("${web.service.notification.username:OSGP}")
@@ -121,7 +121,7 @@ public class NotificationClientConfig extends AbstractConfig {
     @Bean
     public NotificationService notificationService() {
         if (this.webserviceNotificationEnabled) {
-            return new NotificationServiceWsCore();
+            return new NotificationServiceWsAdmin();
         } else {
             return new NotificationServiceBlackHole();
         }

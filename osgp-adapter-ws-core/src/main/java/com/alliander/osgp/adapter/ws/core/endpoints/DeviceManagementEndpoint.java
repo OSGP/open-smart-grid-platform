@@ -345,6 +345,13 @@ public class DeviceManagementEndpoint {
 
         updateDeviceResponse.setAsyncResponse(asyncResponse);
 
+        try {
+            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
+                    null, null, null, NotificationType.DEVICE_UPDATED);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
         return updateDeviceResponse;
     }
 
@@ -380,6 +387,13 @@ public class DeviceManagementEndpoint {
 
         setDeviceAliasResponse.setAsyncResponse(asyncResponse);
 
+        try {
+            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
+                    null, null, null, NotificationType.DEVICE_UPDATED);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
         return setDeviceAliasResponse;
     }
 
@@ -406,6 +420,13 @@ public class DeviceManagementEndpoint {
 
         final SetMaintenanceStatusResponse setMaintenanceStatusResponse = new SetMaintenanceStatusResponse();
         setMaintenanceStatusResponse.setResult(OsgpResultType.OK);
+
+        try {
+            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
+                    null, null, null, NotificationType.DEVICE_UPDATED);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
 
         return setMaintenanceStatusResponse;
     }

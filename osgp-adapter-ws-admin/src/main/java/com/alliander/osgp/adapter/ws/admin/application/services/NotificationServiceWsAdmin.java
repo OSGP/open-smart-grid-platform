@@ -1,19 +1,12 @@
-/**
- * Copyright 2018 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- */
-package com.alliander.osgp.adapter.ws.core.application.services;
+package com.alliander.osgp.adapter.ws.admin.application.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import com.alliander.osgp.adapter.ws.admin.application.config.NotificationClientConfig;
 import com.alliander.osgp.adapter.ws.clients.SendNotificationServiceClient;
-import com.alliander.osgp.adapter.ws.core.application.config.NotificationClientConfig;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.core.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
@@ -24,9 +17,9 @@ import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
  * An instance of this class is created by a bean function in an application
  * context class. See {@link NotificationClientConfig#notificationService()}.
  */
-public class NotificationServiceWsCore implements NotificationService {
+public class NotificationServiceWsAdmin implements NotificationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWsCore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWsAdmin.class);
 
     private static final String CAUGHT_EXCEPTION = "Caught exception when sending notification";
 
