@@ -146,11 +146,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private void processReport(final Report report, final String reportDescription,
             final Iec61850ReportHandler reportHandler) throws ProtocolAdapterException {
-        if (report.getValues() == null) {
-            this.logger.warn("No dataSet members available for {}", reportDescription);
-            return;
-        }
-
         final List<FcModelNode> dataSetMembers = report.getValues();
         if (CollectionUtils.isEmpty(dataSetMembers)) {
             this.logger.warn("No dataSet members available for {}", reportDescription);

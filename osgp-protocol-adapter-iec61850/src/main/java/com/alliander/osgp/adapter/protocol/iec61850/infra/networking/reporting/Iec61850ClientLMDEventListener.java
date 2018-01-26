@@ -50,7 +50,6 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
         if (Boolean.TRUE.equals(report.getBufOvfl())) {
             this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
                     reportDescription);
-
         }
 
         if (this.firstNewSqNum != null && report.getSqNum() != null && report.getSqNum() < this.firstNewSqNum) {
