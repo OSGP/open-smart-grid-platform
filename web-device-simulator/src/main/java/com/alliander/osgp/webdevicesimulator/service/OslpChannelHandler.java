@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
@@ -41,6 +43,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.ConfirmRegisterDeviceResponse;
@@ -77,6 +80,7 @@ import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.OslpUtils;
 import com.alliander.osgp.webdevicesimulator.application.services.DeviceManagementService;
 import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
+import com.alliander.osgp.webdevicesimulator.domain.entities.DeviceMessageStatus;
 import com.alliander.osgp.webdevicesimulator.domain.entities.DeviceOutputSetting;
 import com.alliander.osgp.webdevicesimulator.domain.entities.OslpLogItem;
 import com.alliander.osgp.webdevicesimulator.domain.repositories.OslpLogItemRepository;
@@ -169,6 +173,9 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     @Autowired
     private DeviceManagementService deviceManagementService;
+
+    @Autowired
+    private RegisterDevice registerDevice;
 
     private final Lock lock = new ReentrantLock();
 
@@ -548,6 +555,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             response = createResumeScheduleResponse();
         } else if (request.hasSetRebootRequest()) {
             response = createSetRebootResponse();
+
+            this.sendDelayedDeviceRegistration(device);
         } else if (request.hasSetTransitionRequest()) {
             this.handleSetTransitionRequest(device);
 
@@ -568,6 +577,37 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         LOGGER.debug("Responding: " + response);
 
         return response;
+    }
+
+    private void sendDelayedDeviceRegistration(final Device device) {
+        if (device == null) {
+            return;
+        }
+
+        final String deviceIdentification = device.getDeviceIdentification();
+        if (StringUtils.isEmpty(deviceIdentification)) {
+            return;
+        }
+
+        new Timer().schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                try {
+                    LOGGER.info("Sending DeviceRegistrationRequest for device: {}", deviceIdentification);
+                    final DeviceMessageStatus deviceMessageStatus = OslpChannelHandler.this.registerDevice
+                            .sendRegisterDeviceCommand(device.getId(), true);
+                    if (DeviceMessageStatus.OK.equals(deviceMessageStatus)) {
+                        LOGGER.info("Sending ConfirmDeviceRegistrationRequest for device: {}", deviceIdentification);
+                        OslpChannelHandler.this.registerDevice.sendConfirmDeviceRegistrationCommand(device.getId());
+                    }
+                } catch (final Exception e) {
+                    LOGGER.error("Caught exception during sendDelayedDeviceRegistration() for device : "
+                            + deviceIdentification, e);
+                }
+            }
+
+        }, 2000);
     }
 
     private static Message createConfirmRegisterDeviceResponse(final int randomDevice, final int randomPlatform) {
