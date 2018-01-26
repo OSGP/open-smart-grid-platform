@@ -310,17 +310,21 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
             sb.append("\t           DataSet members:\tnull").append(System.lineSeparator());
         } else {
             sb.append("\t           DataSet:\t").append(report.getDataSetRef()).append(System.lineSeparator());
-            if (!dataSetMembers.isEmpty()) {
-                sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
-                for (final FcModelNode member : dataSetMembers) {
-                    sb.append("\t            member:\t").append(member).append(System.lineSeparator());
-                    if (member.getReference().toString().contains("CSLC.EvnRpn")) {
-                        sb.append(this.evnRpnInfo("\t                   \t\t", member));
-                    }
+            this.handleDataSetMembers(dataSetMembers, sb);
+        }
+        this.logger.info(sb.append(System.lineSeparator()).toString());
+    }
+
+    private void handleDataSetMembers(final List<FcModelNode> dataSetMembers, final StringBuilder sb) {
+        if (!dataSetMembers.isEmpty()) {
+            sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
+            for (final FcModelNode member : dataSetMembers) {
+                sb.append("\t            member:\t").append(member).append(System.lineSeparator());
+                if (member.getReference().toString().contains("CSLC.EvnRpn")) {
+                    sb.append(this.evnRpnInfo("\t                   \t\t", member));
                 }
             }
         }
-        this.logger.info(sb.append(System.lineSeparator()).toString());
     }
 
     private String evnRpnInfo(final String linePrefix, final FcModelNode evnRpn) {

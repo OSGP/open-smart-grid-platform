@@ -189,6 +189,7 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
             sb.append("\t           DataSet members:\tnull").append(System.lineSeparator());
         } else {
             sb.append("\t           DataSet:\t").append(report.getDataSetRef()).append(System.lineSeparator());
+            this.handleDataSetMembers(dataSetMembers, sb);
             if (!dataSetMembers.isEmpty()) {
                 sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
                 for (final FcModelNode member : dataSetMembers) {
@@ -200,6 +201,18 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
             }
         }
         this.logger.info(sb.append(System.lineSeparator()).toString());
+    }
+
+    private void handleDataSetMembers(final List<FcModelNode> dataSetMembers, final StringBuilder sb) {
+        if (!dataSetMembers.isEmpty()) {
+            sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
+            for (final FcModelNode member : dataSetMembers) {
+                sb.append("\t            member:\t").append(member).append(System.lineSeparator());
+                if (member.getReference().toString().contains("CSLC.EvnRpn")) {
+                    sb.append(this.evnRpnInfo("\t                   \t\t", member));
+                }
+            }
+        }
     }
 
     private String evnRpnInfo(final String linePrefix, final FcModelNode evnRpn) {
