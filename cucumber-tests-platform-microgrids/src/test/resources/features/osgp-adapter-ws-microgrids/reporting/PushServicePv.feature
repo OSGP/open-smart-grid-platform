@@ -11,8 +11,8 @@ Feature: Microgrids Receive reports for PV
     And OSGP is connected to the Pampus RTU
       | DeviceIdentification | RTU-PAMPUSREPORT |
     When the Pampus RTU pushes a report
-      | LogicalDevice | PV1                      |
-      | Node          | <Measurement_Node_Value> |
+      | LogicalDevice | PV1                   |
+      | Node          | <Report_Trigger_Node> |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-PAMPUSREPORT         |
@@ -28,11 +28,11 @@ Feature: Microgrids Receive reports for PV
       | MeasurementNode_1_1    | <Measurement_Node>       |
 
     Examples: 
-      | Measurement_Node | Measurement_Node_Value |
-      | TotW             | MMXU1.TotW.q           |
-      | TotWh            | DGEN1.TotWh.q          |
-      | MaxWPhs          | MMXU1.MaxWPhs.q        |
-      | MinWPhs          | MMXU1.MinWPhs.q        |
+      | Measurement_Node | Report_Trigger_Node |
+      | TotW             | MMXU1.TotW.q        |
+      | TotWh            | DGEN1.TotWh.q       |
+      | MaxWPhs          | MMXU1.MaxWPhs.q     |
+      | MinWPhs          | MMXU1.MinWPhs.q     |
 
   Scenario Outline: Receive a PV status report
     Given an rtu iec61850 device
@@ -42,8 +42,8 @@ Feature: Microgrids Receive reports for PV
     And OSGP is connected to the Pampus RTU
       | DeviceIdentification | RTU-PAMPUSREPORT |
     When the Pampus RTU pushes a report
-      | LogicalDevice | PV1                 |
-      | Node          | <Status_Node_Value> |
+      | LogicalDevice | PV1                   |
+      | Node          | <Report_Trigger_Node> |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-PAMPUSREPORT         |
@@ -56,22 +56,22 @@ Feature: Microgrids Receive reports for PV
       | SystemType_1           | PV                       |
       | NumberOfMeasurements_1 |                        1 |
       | MeasurementId_1_1      |                        1 |
-      | MeasurementNode_1_1    | <Status_Node>            |
+      | MeasurementNode_1_1    | <Measurement_Node>       |
 
     Examples: 
-      | Status_Node | Status_Node_Value |
-      | Beh         | LLN0.Beh.q        |
-      | Health      | LLN0.Health.q     |
+      | Measurement_Node | Report_Trigger_Node |
+      | Beh              | LLN0.Beh.q          |
+      | Health           | LLN0.Health.q       |
       #     | OutWSet     |DRCC1.OutWSet.subQ |
-      | GnOpSt      | DGEN1.GnOpSt.q    |
-      | OpTmsRs     | DGEN1.OpTmsRs.q   |
-      | IntIn1      | GGIO1.IntIn1.q    |
-      | IntIn2      | GGIO1.IntIn2.q    |
-      | Alm1        | GGIO1.Alm1.q      |
-      | Alm2        | GGIO1.Alm2.q      |
-      | Alm3        | GGIO1.Alm3.q      |
-      | Alm4        | GGIO1.Alm4.q      |
-      | Wrn1        | GGIO1.Wrn1.q      |
-      | Wrn2        | GGIO1.Wrn2.q      |
-      | Wrn3        | GGIO1.Wrn3.q      |
-      | Wrn4        | GGIO1.Wrn4.q      |
+      | GnOpSt           | DGEN1.GnOpSt.q      |
+      | OpTmsRs          | DGEN1.OpTmsRs.q     |
+      | IntIn1           | GGIO1.IntIn1.q      |
+      | IntIn2           | GGIO1.IntIn2.q      |
+      | Alm1             | GGIO1.Alm1.q        |
+      | Alm2             | GGIO1.Alm2.q        |
+      | Alm3             | GGIO1.Alm3.q        |
+      | Alm4             | GGIO1.Alm4.q        |
+      | Wrn1             | GGIO1.Wrn1.q        |
+      | Wrn2             | GGIO1.Wrn2.q        |
+      | Wrn3             | GGIO1.Wrn3.q        |
+      | Wrn4             | GGIO1.Wrn4.q        |
