@@ -108,12 +108,13 @@ public class FunctionalExceptionsSteps {
     @When("^the get administrative status request generating an error is received$")
     public void theGetAdministrativeStatusRequestGeneratingAnErrorIsReceived(final Map<String, String> settings)
             throws Throwable {
+        final int waitFailMillis = 600000;
         this.getAdministrativeStatus.theRetrieveAdministrativeStatusRequestIsReceived(settings);
 
         final GetAdministrativeStatusAsyncRequest getAdministrativeStatusAsyncRequest = GetAdministrativeStatusRequestFactory
                 .fromScenarioContext();
 
-        this.smartMeteringConfigurationClient.setWaitFailMillis(600000);
+        this.smartMeteringConfigurationClient.setWaitFailMillis(waitFailMillis);
         try {
             this.smartMeteringConfigurationClient
                     .retrieveGetAdministrativeStatusResponse(getAdministrativeStatusAsyncRequest);
