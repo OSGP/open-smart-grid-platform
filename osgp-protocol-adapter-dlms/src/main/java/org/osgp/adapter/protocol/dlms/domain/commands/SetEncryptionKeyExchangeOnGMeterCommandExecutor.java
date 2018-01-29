@@ -133,8 +133,11 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     private void checkMethodResultCode(final MethodResult methodResultCode, final String methodParameterName)
             throws ProtocolAdapterException {
         if (methodResultCode == null || !MethodResultCode.SUCCESS.equals(methodResultCode.getResultCode())) {
-            throw new ProtocolAdapterException(
-                    "Error while executing " + methodParameterName + ". Reason = " + methodResultCode.getResultCode());
+            String message = "Error while executing " + methodParameterName + ".";
+            if (methodResultCode != null) {
+                message += " Reason = " + methodResultCode.getResultCode();
+            }
+            throw new ProtocolAdapterException(message);
         }
     }
 
