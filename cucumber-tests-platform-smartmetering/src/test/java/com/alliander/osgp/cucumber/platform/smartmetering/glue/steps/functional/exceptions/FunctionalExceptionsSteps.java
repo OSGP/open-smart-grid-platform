@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
@@ -21,6 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDevice
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
+import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.GetAdministrativeStatus;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetAdministrativeStatusRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.AddDeviceRequestFactory;
@@ -30,6 +32,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class FunctionalExceptionsSteps {
+
+    @Autowired
+    private GetAdministrativeStatus getAdministrativeStatus;
 
     @Autowired
     private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
@@ -95,6 +100,23 @@ public class FunctionalExceptionsSteps {
             addDeviceAsyncRequest.setCorrelationUid(asyncResponse.getCorrelationUid());
             addDeviceAsyncRequest.setDeviceIdentification(asyncResponse.getDeviceIdentification());
             this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
+        } catch (final Exception exception) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
+        }
+    }
+
+    @When("^the get administrative status request generating an error is received$")
+    public void theGetAdministrativeStatusRequestGeneratingAnErrorIsReceived(final Map<String, String> settings)
+            throws Throwable {
+        this.getAdministrativeStatus.theRetrieveAdministrativeStatusRequestIsReceived(settings);
+
+        final GetAdministrativeStatusAsyncRequest getAdministrativeStatusAsyncRequest = GetAdministrativeStatusRequestFactory
+                .fromScenarioContext();
+
+        this.smartMeteringConfigurationClient.setWaitFailMillis(600000);
+        try {
+            this.smartMeteringConfigurationClient
+                    .retrieveGetAdministrativeStatusResponse(getAdministrativeStatusAsyncRequest);
         } catch (final Exception exception) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
         }
