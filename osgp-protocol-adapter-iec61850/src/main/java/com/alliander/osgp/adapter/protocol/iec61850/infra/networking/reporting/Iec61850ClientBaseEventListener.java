@@ -7,7 +7,14 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.joda.time.DateTime;
+import org.openmuc.openiec61850.BdaReasonForInclusion;
 import org.openmuc.openiec61850.ClientEventListener;
+import org.openmuc.openiec61850.HexConverter;
+import org.openmuc.openiec61850.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,4 +61,44 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
         this.logger.info("First new SqNum for report listener for device: {} is: {}", this.deviceIdentification, value);
         this.firstNewSqNum = value;
     }
+
+    /**
+     * The logging of the {@link Report} consists of a default part and a custom
+     * part. This method is intended for the default part.
+     */
+    public void logDefaultReportDetails(final StringBuilder sb, final Report report) {
+        sb.append("\t             RptId:\t").append(report.getRptId()).append(System.lineSeparator());
+        sb.append("\t        DataSetRef:\t").append(report.getDataSetRef()).append(System.lineSeparator());
+        sb.append("\t           ConfRev:\t").append(report.getConfRev()).append(System.lineSeparator());
+        if (report.getBufOvfl() == null) {
+            sb.append("\t           BufOvfl:\tnull").append(System.lineSeparator());
+        } else {
+            sb.append("\t           BufOvfl:\t").append(report.getBufOvfl()).append(System.lineSeparator());
+        }
+
+        sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
+        sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
+                .append(System.lineSeparator());
+        sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());
+        sb.append("\t             SqNum:\t").append(report.getSqNum()).append(System.lineSeparator());
+        sb.append("\t          SubSqNum:\t").append(report.getSubSqNum()).append(System.lineSeparator());
+        sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
+        if (report.getTimeOfEntry() != null) {
+            sb.append("\t                   \t(")
+                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
+                    .append(')').append(System.lineSeparator());
+        }
+        final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
+        if ((reasonCodes != null) && !reasonCodes.isEmpty()) {
+            sb.append("\t       ReasonCodes:").append(System.lineSeparator());
+            for (final BdaReasonForInclusion reasonCode : reasonCodes) {
+                sb.append("\t                   \t")
+                        .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
+                                : reasonCode)
+                        .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
+                        .append(System.lineSeparator());
+            }
+        }
+    }
+
 }
