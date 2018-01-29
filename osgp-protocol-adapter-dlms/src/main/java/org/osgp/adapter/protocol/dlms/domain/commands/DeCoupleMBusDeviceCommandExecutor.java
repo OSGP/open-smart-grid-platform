@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
@@ -54,8 +55,11 @@ public class DeCoupleMBusDeviceCommandExecutor
         final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, this.getObisCode(decoupleMbusDto),
                 CLASS_ID);
         final DataObject parameter = DataObject.newUInteger8Data((byte) 0);
-        mBusSetup.callMethod(Method.SLAVE_DE_INSTALL, parameter);
-
+        final MethodResultCode slaveDeinstall = mBusSetup.callMethod(Method.SLAVE_DEINSTALL, parameter);
+        if (slaveDeinstall != MethodResultCode.SUCCESS) {
+            LOGGER.warn("Slave deinstall was not successfull on device {} for mbus device {}",
+                    device.getDeviceIdentification(), decoupleMbusDto.getmBusDeviceIdentification());
+        }
         return response;
     }
 
@@ -99,7 +103,7 @@ public class DeCoupleMBusDeviceCommandExecutor
     }
 
     private enum Method implements CosemObjectMethod {
-        SLAVE_DE_INSTALL(2);
+        SLAVE_DEINSTALL(2);
 
         private final int methodId;
 
