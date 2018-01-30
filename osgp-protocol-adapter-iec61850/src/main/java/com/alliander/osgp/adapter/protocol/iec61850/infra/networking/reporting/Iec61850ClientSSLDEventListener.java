@@ -287,11 +287,15 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
                 sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
                 for (final FcModelNode member : dataSetMembers) {
                     sb.append("\t            member:\t").append(member).append(System.lineSeparator());
-                    if (member.getReference().toString().contains("CSLC.EvnRpn")) {
-                        sb.append(this.evnRpnInfo("\t                   \t\t", member));
-                    }
+                    this.checkNodeType(member, sb, "CSLC.EvnRpn");
                 }
             }
+        }
+    }
+
+    private void checkNodeType(final FcModelNode member, final StringBuilder sb, final String nodeType) {
+        if (member.getReference().toString().contains(nodeType)) {
+            sb.append(this.evnRpnInfo("\t                   \t\t", member));
         }
     }
 
