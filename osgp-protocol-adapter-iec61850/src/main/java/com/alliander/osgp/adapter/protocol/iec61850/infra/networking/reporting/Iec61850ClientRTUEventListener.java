@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +18,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
-import org.openmuc.openiec61850.BdaReasonForInclusion;
-import org.openmuc.openiec61850.DataSet;
 import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.HexConverter;
 import org.openmuc.openiec61850.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
@@ -33,7 +30,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Devi
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850BdaOptFldsHelper;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
@@ -44,8 +40,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientRTUEventListener.class);
 
     private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER|WIND|PQ)";
+
     private static final Pattern REPORT_PATTERN = Pattern
-            .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\$(Status|Measurements|Heartbeat)\\Z");
+            .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\.(Status|Measurements|Heartbeat)\\Z");
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
 
@@ -71,7 +68,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     }
 
     private Iec61850ReportHandler getReportHandler(final String dataSetRef) {
-
         final Matcher reportMatcher = REPORT_PATTERN.matcher(dataSetRef);
         if (reportMatcher.matches()) {
             String node = reportMatcher.group(2);
@@ -111,7 +107,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
         this.logger.info("newReport for {}", reportDescription);
 
-        if (report.isBufOvfl()) {
+        if (Boolean.TRUE.equals(report.getBufOvfl())) {
             this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
                     reportDescription);
         } else if (this.skipRecordBecauseOfOldSqNum(report)) {
@@ -147,18 +143,14 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private void processReport(final Report report, final String reportDescription,
             final Iec61850ReportHandler reportHandler) throws ProtocolAdapterException {
-        if (report.getDataSet() == null) {
-            this.logger.warn("No DataSet available for {}", reportDescription);
+        final List<FcModelNode> dataSetMembers = report.getValues();
+        if (CollectionUtils.isEmpty(dataSetMembers)) {
+            this.logger.warn("No dataSet members available for {}", reportDescription);
             return;
         }
 
-        final List<FcModelNode> members = report.getDataSet().getMembers();
-        if ((members == null) || members.isEmpty()) {
-            this.logger.warn("No members in DataSet available for {}", reportDescription);
-            return;
-        }
-
-        final List<MeasurementDto> measurements = this.processMeasurements(reportHandler, reportDescription, members);
+        final List<MeasurementDto> measurements = this.processMeasurements(reportHandler, reportDescription,
+                dataSetMembers);
 
         final GetDataSystemIdentifierDto systemResult = reportHandler.createResult(measurements);
         final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
@@ -202,50 +194,27 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     private void logReportDetails(final Report report) {
         final StringBuilder sb = new StringBuilder("Report details for device ").append(this.deviceIdentification)
                 .append(System.lineSeparator());
-        sb.append("\t             RptId:\t").append(report.getRptId()).append(System.lineSeparator());
-        sb.append("\t        DataSetRef:\t").append(report.getDataSetRef()).append(System.lineSeparator());
-        sb.append("\t           ConfRev:\t").append(report.getConfRev()).append(System.lineSeparator());
-        sb.append("\t           BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
-        sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
-        sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
-                .append(System.lineSeparator());
-        sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());
-        sb.append("\t             SqNum:\t").append(report.getSqNum()).append(System.lineSeparator());
-        sb.append("\t          SubSqNum:\t").append(report.getSubSqNum()).append(System.lineSeparator());
-        sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
-        if (report.getTimeOfEntry() != null) {
-            sb.append("\t                   \t(")
-                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
-                    .append(')').append(System.lineSeparator());
-        }
-        final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
-        if ((reasonCodes != null) && !reasonCodes.isEmpty()) {
-            sb.append("\t       ReasonCodes:").append(System.lineSeparator());
-            for (final BdaReasonForInclusion reasonCode : reasonCodes) {
-                sb.append("\t                   \t")
-                        .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                                : reasonCode)
-                        .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
-                        .append(System.lineSeparator());
-            }
-        }
-        sb.append("\t           optFlds:").append(report.getOptFlds()).append("\t(")
-                .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-                .append(System.lineSeparator());
-        final DataSet dataSet = report.getDataSet();
-        if (dataSet == null) {
+        this.logDefaultReportDetails(sb, report);
+
+        final List<FcModelNode> dataSetMembers = report.getValues();
+        this.logDataSetMembersDetails(report, dataSetMembers, sb);
+
+        this.logger.info(sb.append(System.lineSeparator()).toString());
+    }
+
+    private void logDataSetMembersDetails(final Report report, final List<FcModelNode> dataSetMembers,
+            final StringBuilder sb) {
+        if (dataSetMembers == null) {
             sb.append("\t           DataSet:\tnull").append(System.lineSeparator());
         } else {
-            sb.append("\t           DataSet:\t").append(dataSet.getReferenceStr()).append(System.lineSeparator());
-            final List<FcModelNode> members = dataSet.getMembers();
-            if ((members != null) && !members.isEmpty()) {
-                sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
-                for (final FcModelNode member : members) {
+            sb.append("\t           DataSet:\t").append(report.getDataSetRef()).append(System.lineSeparator());
+            if (!dataSetMembers.isEmpty()) {
+                sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
+                for (final FcModelNode member : dataSetMembers) {
                     sb.append("\t            member:\t").append(member.getReference()).append(System.lineSeparator());
                 }
             }
         }
-        this.logger.info(sb.append(System.lineSeparator()).toString());
     }
 
     @Override

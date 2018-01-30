@@ -16,17 +16,14 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.BdaBoolean;
-import org.openmuc.openiec61850.BdaReasonForInclusion;
-import org.openmuc.openiec61850.DataSet;
 import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.HexConverter;
 import org.openmuc.openiec61850.Report;
+import org.springframework.util.CollectionUtils;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850BdaOptFldsHelper;
 import com.alliander.osgp.core.db.api.iec61850.entities.LightMeasurementDevice;
 import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 import com.alliander.osgp.dto.valueobjects.EventTypeDto;
@@ -47,31 +44,32 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
 
         this.logger.info("newReport for {}", reportDescription);
         boolean skipRecordBecauseOfOldSqNum = false;
-        if (report.isBufOvfl()) {
+
+        if (Boolean.TRUE.equals(report.getBufOvfl())) {
             this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
                     reportDescription);
         }
+
         if (this.firstNewSqNum != null && report.getSqNum() != null && report.getSqNum() < this.firstNewSqNum) {
             skipRecordBecauseOfOldSqNum = true;
             this.logger.warn("Unused boolean skipRecordBecauseOfOldSqNum is set to {}!", skipRecordBecauseOfOldSqNum);
         }
         this.logReportDetails(report);
 
-        final DataSet dataSet = report.getDataSet();
-        if (dataSet == null) {
-            this.logger.warn("No DataSet available for {}", reportDescription);
+        if (CollectionUtils.isEmpty(report.getValues())) {
+            this.logger.warn("No dataSet members available for {}", reportDescription);
             return;
         }
 
         final Map<LightMeasurementDevice, FcModelNode> reportMemberPerDevice = this
-                .processReportedDataForLightMeasurementDevices(dataSet.getMembers());
+                .processReportedDataForLightMeasurementDevices(report.getValues());
 
         for (final LightMeasurementDevice lmd : reportMemberPerDevice.keySet()) {
             final String deviceIdentification = lmd.getDeviceIdentification();
             final Short index = lmd.getDigitalInput();
             final FcModelNode member = reportMemberPerDevice.get(lmd);
-            final EventNotificationDto eventNotification = this.getEventNotificationForReportedData(member,
-                    timeOfEntry, reportDescription, deviceIdentification, index.intValue());
+            final EventNotificationDto eventNotification = this.getEventNotificationForReportedData(member, timeOfEntry,
+                    reportDescription, deviceIdentification, index.intValue());
 
             try {
                 this.deviceManagementService.addEventNotifications(deviceIdentification,
@@ -103,15 +101,15 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
     }
 
     private DateTime getTimeOfEntry(final Report report) {
-        return report.getTimeOfEntry() == null ? DateTime.now(DateTimeZone.UTC) : new DateTime(report.getTimeOfEntry()
-                .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+        return report.getTimeOfEntry() == null ? DateTime.now(DateTimeZone.UTC)
+                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
     }
 
     private String getReportDescription(final Report report, final DateTime timeOfEntry) {
         return String.format("reportId: %s, timeOfEntry: %s, sqNum: %s%s%s", report.getRptId(),
-                timeOfEntry == null ? "-" : timeOfEntry, report.getSqNum(), report.getSubSqNum() == null ? ""
-                        : " subSqNum: " + report.getSubSqNum(),
-                        report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
+                timeOfEntry == null ? "-" : timeOfEntry, report.getSqNum(),
+                report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
+                report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
     }
 
     private EventNotificationDto getEventNotificationForReportedData(final FcModelNode evnRpn,
@@ -122,7 +120,7 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
         //@formatter:off
         /*
          * 0 -> false -> NIGHT_DAY --> LIGHT_SENSOR_REPORTS_LIGHT
-         * 1 -> true  -> DAY_NIGHT --> LIGHT_SENSOR_REPORTS_DARK
+         * 1 -> true -> DAY_NIGHT --> LIGHT_SENSOR_REPORTS_DARK
          */
         //@formatter:on
         if (lightSensorValue) {
@@ -151,56 +149,33 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
     private void logReportDetails(final Report report) {
         final StringBuilder sb = new StringBuilder("Report details for device ").append(this.deviceIdentification)
                 .append(System.lineSeparator());
-        sb.append("\t             RptId:\t").append(report.getRptId()).append(System.lineSeparator());
-        sb.append("\t        DataSetRef:\t").append(report.getDataSetRef()).append(System.lineSeparator());
-        sb.append("\t           ConfRev:\t").append(report.getConfRev()).append(System.lineSeparator());
-        sb.append("\t           BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
-        sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
-        sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
-        .append(System.lineSeparator());
-        sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());
-        sb.append("\t             SqNum:\t").append(report.getSqNum()).append(System.lineSeparator());
-        sb.append("\t          SubSqNum:\t").append(report.getSubSqNum()).append(System.lineSeparator());
-        sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
-        if (report.getTimeOfEntry() != null) {
-            sb.append("\t                   \t(")
-            .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
-            .append(')').append(System.lineSeparator());
-        }
-        final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
-        if (reasonCodes != null && !reasonCodes.isEmpty()) {
-            sb.append("\t       ReasonCodes:").append(System.lineSeparator());
-            for (final BdaReasonForInclusion reasonCode : reasonCodes) {
-                sb.append("\t                   \t")
-                .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                        : reasonCode).append("\t(")
-                        .append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
-                        .append(System.lineSeparator());
-            }
-        }
-        sb.append("\t           optFlds:").append(report.getOptFlds()).append("\t(")
-        .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-        .append(System.lineSeparator());
-        final DataSet dataSet = report.getDataSet();
-        if (dataSet == null) {
-            sb.append("\t           DataSet:\tnull").append(System.lineSeparator());
-        } else {
-            this.appendDataSet(dataSet, sb);
-        }
+        this.logDefaultReportDetails(sb, report);
+
+        final List<FcModelNode> dataSetMembers = report.getValues();
+        this.logDataSetMembersDetails(report, dataSetMembers, sb);
+
         this.logger.info(sb.append(System.lineSeparator()).toString());
     }
 
-    private void appendDataSet(final DataSet dataSet, final StringBuilder sb) {
-        sb.append("\t           DataSet:\t").append(dataSet.getReferenceStr()).append(System.lineSeparator());
-        final List<FcModelNode> members = dataSet.getMembers();
-        if (members != null && !members.isEmpty()) {
-            sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
-            for (final FcModelNode member : members) {
-                sb.append("\t            member:\t").append(member).append(System.lineSeparator());
-                if (member.getReference().toString().contains("CSLC.EvnRpn")) {
-                    sb.append(this.evnRpnInfo("\t                   \t\t", member));
+    private void logDataSetMembersDetails(final Report report, final List<FcModelNode> dataSetMembers,
+            final StringBuilder sb) {
+        if (dataSetMembers == null) {
+            sb.append("\t           DataSet members:\tnull").append(System.lineSeparator());
+        } else {
+            sb.append("\t           DataSet:\t").append(report.getDataSetRef()).append(System.lineSeparator());
+            if (!dataSetMembers.isEmpty()) {
+                sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
+                for (final FcModelNode member : dataSetMembers) {
+                    sb.append("\t            member:\t").append(member).append(System.lineSeparator());
+                    this.checkNodeType(member, sb, "CSLC.EvnRpn");
                 }
             }
+        }
+    }
+
+    private void checkNodeType(final FcModelNode member, final StringBuilder sb, final String nodeType) {
+        if (member.getReference().toString().contains(nodeType)) {
+            sb.append(this.evnRpnInfo("\t                   \t\t", member));
         }
     }
 
@@ -223,7 +198,7 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.openmuc.openiec61850.ClientEventListener#associationClosed(java.io
      * .IOException)

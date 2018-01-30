@@ -12,27 +12,23 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaFloat32;
-import org.openmuc.openiec61850.BdaReasonForInclusion;
 import org.openmuc.openiec61850.BdaTimestamp;
-import org.openmuc.openiec61850.DataSet;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.HexConverter;
 import org.openmuc.openiec61850.ModelNode;
 import org.openmuc.openiec61850.Report;
 import org.osgpfoundation.osgp.dto.da.GetPQValuesResponseDto;
 import org.osgpfoundation.osgp.dto.da.iec61850.DataSampleDto;
 import org.osgpfoundation.osgp.dto.da.iec61850.LogicalDeviceDto;
 import org.osgpfoundation.osgp.dto.da.iec61850.LogicalNodeDto;
+import org.springframework.util.CollectionUtils;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850BdaOptFldsHelper;
 
 public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventListener {
 
@@ -58,18 +54,15 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
     }
 
     private void processReport(final Report report, final String reportDescription) throws ProtocolAdapterException {
-        if (report.getDataSet() == null) {
-            this.logger.warn("No DataSet available for {}", reportDescription);
+        final List<FcModelNode> dataSetMembers = report.getValues();
+        final List<LogicalDevice> logicalDevices = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(dataSetMembers)) {
+            this.logger.warn("No dataSet members available for {}", reportDescription);
             return;
         }
 
-        final List<LogicalDevice> logicalDevices = new ArrayList<>();
-        final List<FcModelNode> members = report.getDataSet().getMembers();
-        if ((members == null) || members.isEmpty()) {
-            this.logger.warn("No members in DataSet available for {}", reportDescription);
-            return;
-        }
-        for (final FcModelNode member : members) {
+        for (final FcModelNode member : dataSetMembers) {
             // we are only interested in measurements
             if (member.getFc() == Fc.MX) {
                 this.processMeasurementNode(logicalDevices, member);
@@ -233,51 +226,27 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
     private void logReportDetails(final Report report) {
         final StringBuilder sb = new StringBuilder("Report details for device ").append(this.deviceIdentification)
                 .append(System.lineSeparator());
-        sb.append("\t             RptId:\t").append(report.getRptId()).append(System.lineSeparator());
-        sb.append("\t        DataSetRef:\t").append(report.getDataSetRef()).append(System.lineSeparator());
-        sb.append("\t           ConfRev:\t").append(report.getConfRev()).append(System.lineSeparator());
-        sb.append("\t           BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
-        sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
-        sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
-                .append(System.lineSeparator());
-        sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());
-        sb.append("\t             SqNum:\t").append(report.getSqNum()).append(System.lineSeparator());
-        sb.append("\t          SubSqNum:\t").append(report.getSubSqNum()).append(System.lineSeparator());
-        sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
-        if (report.getTimeOfEntry() != null) {
-            sb.append("\t                   \t(")
-                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
-                    .append(')').append(System.lineSeparator());
-        }
-        final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
-        if ((reasonCodes != null) && !reasonCodes.isEmpty()) {
-            sb.append("\t       ReasonCodes:").append(System.lineSeparator());
-            for (final BdaReasonForInclusion reasonCode : reasonCodes) {
-                sb.append("\t                   \t")
-                        .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                                : reasonCode)
-                        .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
-                        .append(System.lineSeparator());
-            }
-        }
-        sb.append("\t           optFlds:").append(report.getOptFlds()).append("\t(")
-                .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-                .append(System.lineSeparator());
-        final DataSet dataSet = report.getDataSet();
-        if (dataSet == null) {
+        this.logDefaultReportDetails(sb, report);
+
+        final List<FcModelNode> dataSetMembers = report.getValues();
+        this.logDataSetMembersDetails(report, dataSetMembers, sb);
+
+        this.logger.info(sb.append(System.lineSeparator()).toString());
+    }
+
+    private void logDataSetMembersDetails(final Report report, final List<FcModelNode> dataSetMembers,
+            final StringBuilder sb) {
+        if (dataSetMembers == null) {
             sb.append("\t           DataSet:\tnull").append(System.lineSeparator());
         } else {
-            sb.append("\t           DataSet:\t").append(dataSet.getReferenceStr()).append(System.lineSeparator());
-            final List<FcModelNode> members = dataSet.getMembers();
-            if ((members != null) && !members.isEmpty()) {
-                sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
-                for (final FcModelNode member : members) {
-                    sb.append("\t            member:\t").append(member).append(System.lineSeparator());
-                    sb.append("\t                   \t\t").append(member);
+            sb.append("\t           DataSet:\t").append(report.getDataSetRef()).append(System.lineSeparator());
+            if (!dataSetMembers.isEmpty()) {
+                sb.append("\t   DataSet members:\t").append(dataSetMembers.size()).append(System.lineSeparator());
+                for (final FcModelNode member : dataSetMembers) {
+                    sb.append("\t            member:\t").append(member.getReference()).append(System.lineSeparator());
                 }
             }
         }
-        this.logger.info(sb.append(System.lineSeparator()).toString());
     }
 
     @Override
