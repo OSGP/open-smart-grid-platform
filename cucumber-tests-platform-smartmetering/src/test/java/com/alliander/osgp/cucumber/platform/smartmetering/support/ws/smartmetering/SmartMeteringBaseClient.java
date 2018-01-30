@@ -23,13 +23,16 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
     @Value("${smartmetering.response.wait.fail.duration:30000}")
     private int waitFailMillis;
 
+    public void setWaitFailMillis(final int waitFailMillis) {
+        this.waitFailMillis = waitFailMillis;
+    }
+
     protected void waitForDlmsResponseData(final String correlationUid) {
         /*
-         * Polling the database is a temporary implementation of waiting for a
-         * response in the tests. It is considered better than polling the
-         * platforms web service layer, but the preferable solution is to be
-         * able to respond to the notification sent by the platform, and not to
-         * poll external resources at all.
+         * Polling the database is a temporary implementation of waiting for a response
+         * in the tests. It is considered better than polling the platforms web service
+         * layer, but the preferable solution is to be able to respond to the
+         * notification sent by the platform, and not to poll external resources at all.
          */
         try {
             for (int timeSpentWaiting = 0; timeSpentWaiting < this.waitFailMillis; timeSpentWaiting += this.waitCheckIntervalMillis) {
