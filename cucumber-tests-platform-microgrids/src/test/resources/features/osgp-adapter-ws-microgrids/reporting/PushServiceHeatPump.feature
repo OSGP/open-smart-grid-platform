@@ -69,7 +69,6 @@ Feature: Microgrids Receive reports for Heat Pump
       | Beh              | LLN0.Beh.q          |
       | Health           | LLN0.Health.q       |
       | GnOpSt           | DGEN1.GnOpSt.q      |
-      #     | OutWSet     | DRCC1.OutWSet.subQ |
       | OpTmsRs          | DGEN1.OpTmsRs.q     |
       | IntIn1           | GGIO1.IntIn1.q      |
       | IntIn2           | GGIO1.IntIn2.q      |

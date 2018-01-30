@@ -65,7 +65,6 @@ Feature: Microgrids Receive reports for Battery
       | Health           | LLN0.Health.q       |
       | GnOpSt           | DGEN1.GnOpSt.q      |
       | OpTmsRs          | DGEN1.OpTmsRs.q     |
-      #     | OutWSet    | DRCC1.OutWSet.subQ |
       | IntIn1           | GGIO1.IntIn1.q      |
       | IntIn2           | GGIO1.IntIn2.q      |
       | Alm1             | GGIO1.Alm1.q        |

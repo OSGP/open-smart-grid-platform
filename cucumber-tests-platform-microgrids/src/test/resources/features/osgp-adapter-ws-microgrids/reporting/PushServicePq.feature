@@ -167,4 +167,3 @@ Feature: Microgrids Receive reports for PQ
       | Wrn2             | GGIO1.Wrn2.q        |
       | Wrn3             | GGIO1.Wrn3.q        |
       | Wrn4             | GGIO1.Wrn4.q        |
-      #| OpCntRs     | QVVR1.OpCntRs.ctlModel   |

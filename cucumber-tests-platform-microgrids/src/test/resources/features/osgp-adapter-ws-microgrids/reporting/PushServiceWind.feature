@@ -96,7 +96,6 @@ Feature: Microgrids Receive reports for Wind
       | Measurement_Node | Report_Trigger_Node |
       | Beh              | LLN0.Beh.q          |
       | Health           | LLN0.Health.q       |
-      #     | OutWSet     | DRCC1.OutWSet.subQ |
       | GnOpSt           | DGEN1.GnOpSt.q      |
       | OpTmsRs          | DGEN1.OpTmsRs.q     |
       | IntIn1           | GGIO1.IntIn1.q      |
