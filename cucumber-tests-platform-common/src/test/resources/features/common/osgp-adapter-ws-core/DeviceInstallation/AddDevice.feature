@@ -1,6 +1,6 @@
 @Common @Platform @CoreDeviceInstallation
 Feature: CoreDeviceInstallation Device Creating
-  As a ...
+    As a ...
   I want to be able to perform DeviceInstallation operations on a device
   In order to ...
 
@@ -161,54 +161,65 @@ Feature: CoreDeviceInstallation Device Creating
       | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
       | InnerMessage   | Organisation with id "unknown-organization" could not be found.  |
 
-  Scenario Outline: Allow adding an existing device if there has been no communication with the device yet
+  Scenario: 
+    Allow adding an existing device if there has been no communication with the device yet
+
     Given a device model
       | ModelCode | <ModelCode> |
       | Metered   | <Metered>   |
     And a device
-      | DeviceIdentification | <DeviceIdentification> |
-      | Activated            | false                  |
-      | PublicKeyPresent     | <PublicKeyPresent>     |
+      | DeviceIdentification       | TEST1024000000001 |
+      | alias                      | ALIAS_ORIGINAL    |
+      | OrganizationIdentification | test-org          |
+      | containerPostalCode        | 1234AA            |
+      | containerCity              | Maastricht        |
+      | containerStreet            | Stationsstraat    |
+      | containerNumber            |                12 |
+      | containerMunicipality      |                   |
+      | gpsLatitude                |                 0 |
+      | gpsLongitude               |                 0 |
+      | Activated                  | false             |
+      | HasSchedule                | false             |
+      | PublicKeyPresent           | false             |
+      | DeviceModel                | Test Model        |
     When receiving an add device request
-      | DeviceUid              | <DeviceUid>             |
-      | DeviceIdentification   | <DeviceIdentification>  |
-      | alias                  | <Alias>                 |
-      | Owner                  | <Owner>                 |
-      | containerPostalCode    | <ContainerPostalCode>   |
-      | containerCity          | <ContainerCity>         |
-      | containerStreet        | <ContainerStreet>       |
-      | containerNumber        | <ContainerNumber>       |
-      | containerMunicipality  | <ContainerMunicipality> |
-      | gpsLatitude            | <GpsLatitude>           |
-      | gpsLongitude           | <GpsLongitude>          |
-      | HasSchedule            | <HasSchedule>           |
-      | PublicKeyPresent       | <PublicKeyPresent>      |
-      | Manufacturer           | <Manufacturer>          |
-      | DeviceModelCode        | <ModelCode>             |
-      | DeviceModelDescription | <Description>           |
-      | Metered                | <Metered>               |
+      | DeviceUid              |        1234567890 |
+      | DeviceIdentification   | TEST1024000000001 |
+      | alias                  | ALIAS_NEW         |
+      | Owner                  | test-org          |
+      | containerPostalCode    | 5678BB            |
+      | containerCity          | Heerlen           |
+      | containerStreet        | Stationsweg       |
+      | containerNumber        |                34 |
+      | containerMunicipality  | Parkstad          |
+      | gpsLatitude            |                 1 |
+      | gpsLongitude           |                 1 |
+      | HasSchedule            | false             |
+      | PublicKeyPresent       | false             |
+      | Manufacturer           | Test              |
+      | DeviceModelCode        | Test Model        |
+      | DeviceModelDescription | Test              |
+      | Metered                | true              |
     Then the add device response is successful
     And the device exists
-      | DeviceIdentification       | <DeviceIdentification>  |
-      | alias                      | <Alias>                 |
-      | OrganizationIdentification | <Owner>                 |
-      | containerPostalCode        | <ContainerPostalCode>   |
-      | containerCity              | <ContainerCity>         |
-      | containerStreet            | <ContainerStreet>       |
-      | containerNumber            | <ContainerNumber>       |
-      | containerMunicipality      | <ContainerMunicipality> |
-      | gpsLatitude                | <GpsLatitude>           |
-      | gpsLongitude               | <GpsLongitude>          |
-      | Activated                  | false                   |
-      | HasSchedule                | <HasSchedule>           |
-      | PublicKeyPresent           | <PublicKeyPresent>      |
-      | DeviceModel                | <ModelCode>             |
+      | DeviceIdentification       | TEST1024000000001 |
+      | alias                      | ALIAS_NEW         |
+      | OrganizationIdentification | test-org          |
+      | containerPostalCode        | 5678BB            |
+      | containerCity              | Heerlen           |
+      | containerStreet            | Stationsweg       |
+      | containerNumber            |                34 |
+      | containerMunicipality      | Parkstad          |
+      | gpsLatitude                |                 1 |
+      | gpsLongitude               |                 1 |
+      | Activated                  | false             |
+      | HasSchedule                | false             |
+      | PublicKeyPresent           | false             |
+      | DeviceModel                | Test Model        |
 
-    Examples: 
-      | DeviceUid  | DeviceIdentification | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 1234567890 | TEST1024000000001    |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
+  Scenario: 
+    Disallow adding an existing device if there has been communication with the device
 
-  Scenario: Disallow adding an existing device if there has been communication with the device
     Given a device
       | DeviceIdentification | TEST1024000000001 |
       | Activated            | true              |

@@ -10,7 +10,6 @@ Feature: FirmwareManagement update firmware
       | DeviceIdentification | TEST1024000000001 |
       | Status               | Active            |
       | Organization         | TestOrganization  |
-      | Activated            | true              |
       | Protocol             | <Protocol>        |
     And the device returns a update firmware "OK" over "<Protocol>"
     When receiving an update firmware request
