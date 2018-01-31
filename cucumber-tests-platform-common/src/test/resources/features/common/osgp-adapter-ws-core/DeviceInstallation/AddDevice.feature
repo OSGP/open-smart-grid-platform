@@ -161,12 +161,11 @@ Feature: CoreDeviceInstallation Device Creating
       | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
       | InnerMessage   | Organisation with id "unknown-organization" could not be found.  |
 
-  Scenario: 
-    Allow adding an existing device if there has been no communication with the device yet
+  Scenario: Allow adding an existing device if there has been no communication with the device yet
 
     Given a device model
-      | ModelCode | <ModelCode> |
-      | Metered   | <Metered>   |
+      | ModelCode | Test Model |
+      | Metered   | true       |
     And a device
       | DeviceIdentification       | TEST1024000000001 |
       | alias                      | ALIAS_ORIGINAL    |
@@ -182,6 +181,7 @@ Feature: CoreDeviceInstallation Device Creating
       | HasSchedule                | false             |
       | PublicKeyPresent           | false             |
       | DeviceModel                | Test Model        |
+      | DeviceType                 |                   |
     When receiving an add device request
       | DeviceUid              |        1234567890 |
       | DeviceIdentification   | TEST1024000000001 |
@@ -216,13 +216,13 @@ Feature: CoreDeviceInstallation Device Creating
       | HasSchedule                | false             |
       | PublicKeyPresent           | false             |
       | DeviceModel                | Test Model        |
+      | DeviceType                 |                   |
 
-  Scenario: 
-    Disallow adding an existing device if there has been communication with the device
+  Scenario: Disallow adding an existing device if there has been communication with the device
 
     Given a device
       | DeviceIdentification | TEST1024000000001 |
-      | Activated            | true              |
+      | DeviceType           | SSLD              |
     When receiving an add device request
       | DeviceIdentification | TEST1024000000001 |
     Then the add device response contains soap fault
