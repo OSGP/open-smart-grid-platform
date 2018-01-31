@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.InterfaceClass;
@@ -49,7 +50,21 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         LOGGER.debug("DeCouple mbus device from gateway device");
 
-        return this.writeUpdatedMbus(conn, decoupleMbusDto);
+        final DeCoupleMbusDeviceResponseDto response = this.writeUpdatedMbus(conn, decoupleMbusDto);
+
+        final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, this.getObisCode(decoupleMbusDto),
+                CLASS_ID);
+        final DataObject parameter = DataObject.newUInteger8Data((byte) 0);
+        final MethodResultCode slaveDeinstall = mBusSetup.callMethod(Method.SLAVE_DEINSTALL, parameter);
+        if (slaveDeinstall != MethodResultCode.SUCCESS) {
+            LOGGER.warn("Slave deinstall was not successfull on device {} for mbus device {}",
+                    device.getDeviceIdentification(), decoupleMbusDto.getmBusDeviceIdentification());
+        }
+        return response;
+    }
+
+    private ObisCode getObisCode(final DeCoupleMbusDeviceDto decoupleMbusDto) {
+        return new ObisCode(String.format(OBIS_CODE_TEMPLATE, decoupleMbusDto.getChannel()));
     }
 
     private DeCoupleMbusDeviceResponseDto writeUpdatedMbus(final DlmsConnectionHolder conn,
@@ -80,11 +95,26 @@ public class DeCoupleMBusDeviceCommandExecutor
 
     private DataObjectAttrExecutor getMbusAttributeExecutor(final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto,
             final MbusClientAttribute attribute, final DataObject value) {
-        final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, deCoupleMbusDeviceDto.getChannel()));
-        final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode,
-                attribute.attributeId());
+        final ObisCode obiscode = this.getObisCode(deCoupleMbusDeviceDto);
+        final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode, attribute.attributeId());
 
         return new DataObjectAttrExecutor(attribute.attributeName(), attributeAddress, value, CLASS_ID, obiscode,
                 attribute.attributeId());
     }
+
+    private enum Method implements CosemObjectMethod {
+        SLAVE_DEINSTALL(2);
+
+        private final int methodId;
+
+        private Method(final int methodId) {
+            this.methodId = methodId;
+        }
+
+        @Override
+        public int getValue() {
+            return this.methodId;
+        }
+    }
+
 }
