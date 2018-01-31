@@ -96,11 +96,13 @@ public class DeviceInstallationService {
         final Device existingDevice = this.writableDeviceRepository
                 .findByDeviceIdentification(newDevice.getDeviceIdentification());
 
-        // Added additional check on isActivated:
-        // if isActivated is false,
+        // Added additional check on device type: if device type is empty
         // there has been no communication with the device yet
         // and it should be possible to overwrite the existing device
-        if (existingDevice != null && existingDevice.isActivated()) {
+        // It would probably be better to use isActivated for this, however this
+        // would require additional changes in applications currently using this
+        // field
+        if (existingDevice != null && StringUtils.isNotBlank(existingDevice.getDeviceType())) {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
                     new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
         }
