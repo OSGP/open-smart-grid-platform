@@ -54,8 +54,17 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, this.getObisCode(decoupleMbusDto),
                 CLASS_ID);
-        final DataObject parameter = DataObject.newUInteger8Data((byte) 0);
-        final MethodResultCode slaveDeinstall = mBusSetup.callMethod(Method.SLAVE_DEINSTALL, parameter);
+
+        // in blue book version 10, the parameter is of type integer
+        DataObject parameter = DataObject.newInteger8Data((byte) 0);
+        conn.getDlmsMessageListener().setDescription("Call slave deinstall method");
+        MethodResultCode slaveDeinstall = mBusSetup.callMethod(Method.SLAVE_DEINSTALL, parameter);
+        if (slaveDeinstall == MethodResultCode.TYPE_UNMATCHED) {
+            // in blue book version 12, the parameter is of type unsigned, we
+            // will try again with that type
+            parameter = DataObject.newUInteger8Data((byte) 0);
+            slaveDeinstall = mBusSetup.callMethod(Method.SLAVE_DEINSTALL, parameter);
+        }
         if (slaveDeinstall != MethodResultCode.SUCCESS) {
             LOGGER.warn("Slave deinstall was not successfull on device {} for mbus device {}",
                     device.getDeviceIdentification(), decoupleMbusDto.getmBusDeviceIdentification());
