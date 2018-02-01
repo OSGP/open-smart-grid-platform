@@ -25,7 +25,8 @@ public interface ResponseDataRepository extends JpaRepository<ResponseData, Long
 
     List<ResponseData> findByDeviceIdentification(String deviceIdentification);
 
-    List<ResponseData> findByNumberOfNotificationsSentLessThan(Short numberOfNotificationsSent, Pageable pageable);
+    List<ResponseData> findByNumberOfNotificationsSentAndCreationTimeBefore(Short numberOfNotificationsSent,
+            Date createdBefore, Pageable pageable);
 
     ResponseData findByCorrelationUid(String correlationUid);
 
