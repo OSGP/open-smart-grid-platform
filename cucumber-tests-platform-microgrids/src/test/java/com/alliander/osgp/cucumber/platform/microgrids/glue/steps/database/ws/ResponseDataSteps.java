@@ -14,8 +14,6 @@ import static org.junit.Assert.assertNull;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,13 +29,8 @@ import cucumber.api.java.en.Then;
 
 public class ResponseDataSteps extends BaseDeviceSteps {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseDataSteps.class);
-
     @Autowired
     private ResponseDataRepository responseDataRespository;
-
-    private final int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
-    private final int MAX_WAIT_FOR_NOTIFICATION = 180000;
 
     @Given("^a response data record$")
     @Transactional("txMgrWsMicrogrids")
@@ -76,29 +69,12 @@ public class ResponseDataSteps extends BaseDeviceSteps {
     @Then("^the response data has values$")
     public void theResponseDataHasValues(final Map<String, String> settings) throws Throwable {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
-        ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
+        final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
 
-        final int maxtime = this.MAX_WAIT_FOR_NOTIFICATION;
-        final int timeout = this.WAIT_FOR_NEXT_NOTIFICATION_CHECK;
-
-        for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
-            try {
-                Thread.sleep(timeout);
-            } catch (final InterruptedException e) {
-                LOGGER.error("Thread sleep interrupted ", e.getMessage());
-                break;
-            }
-            responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
-            if (settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)
-                    .equals(responseData.getNumberOfNotificationsSent().toString())) {
-                break;
-            }
-        }
-
-        assertEquals("NumberOfNotificationsSent is not as expected",
+        assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT,
                 settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT),
                 responseData.getNumberOfNotificationsSent().toString());
-        assertEquals("MessageType is not as expected", settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
+        assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
                 responseData.getMessageType());
     }
 }

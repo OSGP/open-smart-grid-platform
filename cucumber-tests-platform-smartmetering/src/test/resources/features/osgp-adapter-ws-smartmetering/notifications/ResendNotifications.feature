@@ -7,7 +7,7 @@ Feature: SmartMetering notifications - Resend notifications
   Scenario: Resend missed notifications
     Given a response data record
       | DeviceIdentification      | TEST1024000000001                                      |
-      | CreationTime              | yesterday                                              |
+      | CreationTime              | now - 2 minutes                                        |
       | MessageType               | REQUEST_PERIODIC_METER_DATA                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
@@ -21,7 +21,7 @@ Feature: SmartMetering notifications - Resend notifications
 
   Scenario: Don't send notifications when the configurable time has not passed
     Given a response data record
-      | CreationTime              | now                                                    |
+      | CreationTime              | now + 5 minutes                                        |
       | MessageType               | REQUEST_PERIODIC_METER_DATA                            |
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      0 |
