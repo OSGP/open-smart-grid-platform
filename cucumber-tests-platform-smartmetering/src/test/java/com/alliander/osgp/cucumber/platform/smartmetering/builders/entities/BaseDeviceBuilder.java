@@ -8,8 +8,12 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.builders.entities;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.inputparsers.DateInputParser;
@@ -40,6 +44,8 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     Date technicalInstallationDate = PlatformSmartmeteringDefaults.TECHNICAL_INSTALLATION_DATE;
     DeviceModel deviceModel = PlatformSmartmeteringDefaults.DEVICE_MODEL;
     DeviceLifecycleStatus deviceLifeCycleStatus = PlatformDefaults.DEFAULT_DEVICE_LIFECYCLE_STATUS;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseDeviceBuilder.class);
 
     public T setVersion(final Long version) {
         this.version = version;
@@ -187,6 +193,21 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
         }
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.GATEWAY_DEVICE_IDENTIFICATION)) {
             this.setGatewayDevice(inputSettings.get(PlatformSmartmeteringKeys.GATEWAY_DEVICE_IDENTIFICATION));
+        }
+
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.NETWORK_ADDRESS)) {
+            if (inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS).isEmpty()) {
+                this.setNetworkAddress(null);
+            } else {
+                try {
+                    if (inputSettings.containsKey(PlatformSmartmeteringKeys.NETWORK_ADDRESS)) {
+                        this.setNetworkAddress(
+                                InetAddress.getByName(inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS)));
+                    }
+                } catch (final UnknownHostException e) {
+                    LOGGER.error("Exception occured while setting InetAddress for device.", e);
+                }
+            }
         }
 
         return (T) this;
