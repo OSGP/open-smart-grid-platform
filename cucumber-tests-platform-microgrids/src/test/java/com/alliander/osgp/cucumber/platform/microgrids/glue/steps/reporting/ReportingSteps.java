@@ -12,7 +12,6 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncRequest;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.platform.microgrids.PlatformMicrogridsKeys;
 import com.alliander.osgp.cucumber.platform.microgrids.mocks.iec61850.Iec61850MockServer;
-import com.alliander.osgp.cucumber.platform.microgrids.support.ReportTriggerNodeMappingService;
 import com.alliander.osgp.cucumber.platform.microgrids.support.ws.microgrids.NotificationService;
 import com.alliander.osgp.cucumber.platform.microgrids.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
 import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
@@ -40,9 +39,6 @@ public class ReportingSteps extends GlueBase {
 
     @Autowired
     private NotificationService mockNotificationService;
-
-    @Autowired
-    private ReportTriggerNodeMappingService reportTriggerNodeMappingService;
 
     @Given("^all reports are disabled on the rtu$")
     public void allReportsAreDisabled() {
@@ -112,9 +108,9 @@ public class ReportingSteps extends GlueBase {
 
     private void pushAReport(final Iec61850MockServer iec61850MockServer, final Map<String, String> settings)
             throws Throwable {
-
         // Change a quality attribute value to trigger sending of a report.
-        final String triggerNode = this.reportTriggerNodeMappingService.getReportTriggerNode(settings);
+        final String triggerNode = settings.get(PlatformMicrogridsKeys.NODE);
+
         iec61850MockServer.mockValue(settings.get(PlatformMicrogridsKeys.LOGICAL_DEVICE), triggerNode,
                 QualityType.OLD_DATA.name());
     }

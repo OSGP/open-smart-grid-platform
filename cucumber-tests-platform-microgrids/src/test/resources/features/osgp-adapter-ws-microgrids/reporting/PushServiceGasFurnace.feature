@@ -3,7 +3,7 @@ Feature: Microgrids Receive reports for Gas Furnace
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 
-  Scenario: Receive a Gas Furnace measurements report
+  Scenario Outline: Receive a Gas Furnace measurements report
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-SCHOTEROOGREPORT |
       | Port                 |                62104 |
@@ -11,8 +11,8 @@ Feature: Microgrids Receive reports for Gas Furnace
     And OSGP is connected to the Schoteroog RTU
       | DeviceIdentification | RTU-SCHOTEROOGREPORT |
     When the Schoteroog RTU pushes a report
-      | LogicalDevice | GAS_FURNACE1 |
-      | ReportType    | Measurements |
+      | LogicalDevice | GAS_FURNACE1          |
+      | Node          | <Report_Trigger_Node> |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-SCHOTEROOGREPORT      |
@@ -23,17 +23,18 @@ Feature: Microgrids Receive reports for Gas Furnace
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z  |
       | SystemId_1             |                         1 |
       | SystemType_1           | GAS_FURNACE               |
-      | NumberOfMeasurements_1 |                         4 |
-      | MeasurementId_1_1      |                         1 |
-      | MeasurementNode_1_1    | TmpSv                     |
-      | MeasurementId_1_2      |                         2 |
-      | MeasurementNode_1_2    | TmpSv                     |
-      | MeasurementId_1_3      |                         1 |
-      | MeasurementNode_1_3    | FlwRte                    |
-      | MeasurementId_1_4      |                         2 |
-      | MeasurementNode_1_4    | FlwRte                    |
+      | NumberOfMeasurements_1 |                         1 |
+      | MeasurementId_1_1      | <ID>                      |
+      | MeasurementNode_1_1    | <Measurement_Node>        |
 
-  Scenario: Receive a Gas Furnace status report
+    Examples:
+      | Measurement_Node | ID | Report_Trigger_Node |
+      | TmpSv            |  1 | TTMP1.TmpSv.q       |
+      | TmpSv            |  2 | TTMP2.TmpSv.q       |
+      | FlwRte           |  1 | MFLW1.FlwRte.q      |
+      | FlwRte           |  2 | MFLW2.FlwRte.q      |
+
+  Scenario Outline: Receive a Gas Furnace status report
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-SCHOTEROOGREPORT |
       | Port                 |                62104 |
@@ -41,8 +42,8 @@ Feature: Microgrids Receive reports for Gas Furnace
     And OSGP is connected to the Schoteroog RTU
       | DeviceIdentification | RTU-SCHOTEROOGREPORT |
     When the Schoteroog RTU pushes a report
-      | LogicalDevice | GAS_FURNACE1 |
-      | ReportType    | Status       |
+      | LogicalDevice | GAS_FURNACE1          |
+      | Node          | <Report_Trigger_Node> |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-SCHOTEROOGREPORT     |
@@ -53,32 +54,21 @@ Feature: Microgrids Receive reports for Gas Furnace
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
       | SystemType_1           | GAS_FURNACE              |
-      | NumberOfMeasurements_1 |                       14 |
+      | NumberOfMeasurements_1 |                        1 |
       | MeasurementId_1_1      |                        1 |
-      | MeasurementNode_1_1    | Beh                      |
-      | MeasurementId_1_2      |                        1 |
-      | MeasurementNode_1_2    | Health                   |
-      | MeasurementId_1_3      |                        1 |
-      | MeasurementNode_1_3    | Beh                      |
-      | MeasurementId_1_4      |                        1 |
-      | MeasurementNode_1_4    | Beh                      |
-      | MeasurementId_1_5      |                        1 |
-      | MeasurementNode_1_5    | IntIn1                   |
-      | MeasurementId_1_6      |                        1 |
-      | MeasurementNode_1_6    | IntIn2                   |
-      | MeasurementId_1_7      |                        1 |
-      | MeasurementNode_1_7    | Alm1                     |
-      | MeasurementId_1_8      |                        1 |
-      | MeasurementNode_1_8    | Alm2                     |
-      | MeasurementId_1_9      |                        1 |
-      | MeasurementNode_1_9    | Alm3                     |
-      | MeasurementId_1_10     |                        1 |
-      | MeasurementNode_1_10   | Alm4                     |
-      | MeasurementId_1_11     |                        1 |
-      | MeasurementNode_1_11   | Wrn1                     |
-      | MeasurementId_1_12     |                        1 |
-      | MeasurementNode_1_12   | Wrn2                     |
-      | MeasurementId_1_13     |                        1 |
-      | MeasurementNode_1_13   | Wrn3                     |
-      | MeasurementId_1_14     |                        1 |
-      | MeasurementNode_1_14   | Wrn4                     |
+      | MeasurementNode_1_1    | <Measurement_Node>       |
+
+    Examples: 
+      | Measurement_Node | Report_Trigger_Node |
+      | Beh              | LLN0.Beh.q          |
+      | Health           | LLN0.Health.q       |
+      | IntIn1           | GGIO1.IntIn1.q      |
+      | IntIn2           | GGIO1.IntIn2.q      |
+      | Alm1             | GGIO1.Alm1.q        |
+      | Alm2             | GGIO1.Alm2.q        |
+      | Alm3             | GGIO1.Alm3.q        |
+      | Alm4             | GGIO1.Alm4.q        |
+      | Wrn1             | GGIO1.Wrn1.q        |
+      | Wrn2             | GGIO1.Wrn2.q        |
+      | Wrn3             | GGIO1.Wrn3.q        |
+      | Wrn4             | GGIO1.Wrn4.q        |
