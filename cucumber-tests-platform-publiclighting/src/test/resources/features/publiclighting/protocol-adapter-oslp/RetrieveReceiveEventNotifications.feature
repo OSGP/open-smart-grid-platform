@@ -173,20 +173,17 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       | DeviceIdentification | TESTDEVICE0000001 |
       | Result               | <TotalNumber>     |
 
-    #NOTE: PageSize cannot be larger than 30 because this is the Default value which is
-    #used through the entire application. Overruling this value for testing purposes only is not needed
-    # Failure on first of OSLP and first of OSLP ELSTER
-    Examples: 
+    Examples:
       | Protocol    | TotalNumber | PageSize | RequestedPage | TotalPages |
-      | OSLP        |           0 |       10 |             1 |          0 | 
+      | OSLP        |           0 |       10 |             1 |          0 |
       | OSLP        |           1 |       10 |             1 |          1 |
       | OSLP        |          15 |       10 |             1 |          2 |
       | OSLP        |          15 |       10 |             2 |          2 |
       | OSLP        |         500 |       30 |             1 |         17 |
-      | OSLP        |         500 |      400 |             1 |         17 |
+      | OSLP        |         500 |      400 |             1 |          2 |
       | OSLP ELSTER |           0 |       10 |             1 |          0 |
       | OSLP ELSTER |           1 |       10 |             1 |          1 |
       | OSLP ELSTER |          15 |       10 |             1 |          2 |
       | OSLP ELSTER |          15 |       10 |             2 |          2 |
       | OSLP ELSTER |         500 |       30 |             1 |         17 |
-      | OSLP ELSTER |         500 |      400 |             1 |         17 |
+      | OSLP ELSTER |         500 |      400 |             1 |          2 |

@@ -9,8 +9,11 @@ package com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.database.
 
 import static com.alliander.osgp.cucumber.core.Helpers.getString;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -57,6 +60,21 @@ public class OslpDeviceSteps extends GlueBase {
         device.setRandomPlatform(0);
         device.updatePublicKey(DEVICE_PUBLIC_KEY);
         this.oslpDeviceRespository.save(device);
+    }
+
+    @Given("^(\\d++) ssld oslp devices$")
+    public void ssldOslpDevices(final int numberOfDevices, final Map<String, String> settings) throws Throwable {
+
+        for (int i = 0; i < numberOfDevices; i++) {
+            final String deviceIdentification = "TST-" + (i + 1);
+            final Map<String, String> deviceSettings = new HashMap<>();
+            deviceSettings.put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
+            deviceSettings.put(PlatformKeys.KEY_DEVICE_UID,
+                    Base64.encodeBase64String(deviceIdentification.getBytes(StandardCharsets.US_ASCII)));
+            deviceSettings.put(PlatformKeys.KEY_VERSION, "0");
+            deviceSettings.putAll(settings);
+            this.anSsldOslpDevice(deviceSettings);
+        }
     }
 
     @Then("^the ssld oslp device contains$")
