@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.microgrids.database.Database;
+import com.alliander.osgp.cucumber.platform.microgrids.support.ws.microgrids.NotificationService;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -23,6 +24,9 @@ public class ScenarioHooks extends GlueBase {
 
     @Autowired
     private Database databaseSteps;
+
+    @Autowired
+    private NotificationService mockNotificationService;
 
     /**
      * Executed after each scenario.
@@ -39,9 +43,8 @@ public class ScenarioHooks extends GlueBase {
     /**
      * Executed before each scenario.
      *
-     * Remove all stuff from the database before each test. Each test should
-     * stand on its own. Therefore you should guarantee that the scenario is
-     * complete.
+     * Remove all stuff from the database before each test. Each test should stand
+     * on its own. Therefore you should guarantee that the scenario is complete.
      *
      * Order 1000 ensures this will be run as one of the first hooks before the
      * scenario.
@@ -50,6 +53,7 @@ public class ScenarioHooks extends GlueBase {
     public void beforeScenario() {
         this.databaseSteps.prepareDatabaseForScenario();
 
+        this.mockNotificationService.clearAllNotifications();
         // Make sure that the scenario context is clean before each test.
         ScenarioContext.context = null;
     }

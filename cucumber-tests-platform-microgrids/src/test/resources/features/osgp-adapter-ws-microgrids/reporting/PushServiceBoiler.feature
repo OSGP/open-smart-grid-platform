@@ -3,7 +3,7 @@ Feature: Microgrids Receive reports for Boiler
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 
-  Scenario: Receive a Boiler measurements report
+  Scenario Outline: Receive a Boiler measurements report
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-MARKER-WADDENREPORT |
       | Port                 |                   62103 |
@@ -11,8 +11,8 @@ Feature: Microgrids Receive reports for Boiler
     And OSGP is connected to the Marker Wadden RTU
       | DeviceIdentification | RTU-MARKER-WADDENREPORT |
     When the Marker Wadden RTU pushes a report
-      | LogicalDevice | BOILER1      |
-      | ReportType    | Measurements |
+      | LogicalDevice | BOILER1               |
+      | Node          | <Report_Trigger_Node> |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-MARKER-WADDENREPORT  |
@@ -23,27 +23,23 @@ Feature: Microgrids Receive reports for Boiler
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
       | SystemType_1           | BOILER                   |
-      | NumberOfMeasurements_1 |                        9 |
-      | MeasurementId_1_1      |                        1 |
-      | MeasurementNode_1_1    | TotW                     |
-      | MeasurementId_1_2      |                        1 |
-      | MeasurementNode_1_2    | TotWh                    |
-      | MeasurementId_1_3      |                        1 |
-      | MeasurementNode_1_3    | MaxWPhs                  |
-      | MeasurementId_1_4      |                        1 |
-      | MeasurementNode_1_4    | MinWPhs                  |
-      | MeasurementId_1_5      |                        1 |
-      | MeasurementNode_1_5    | TmpSv                    |
-      | MeasurementId_1_6      |                        2 |
-      | MeasurementNode_1_6    | TmpSv                    |
-      | MeasurementId_1_7      |                        3 |
-      | MeasurementNode_1_7    | TmpSv                    |
-      | MeasurementId_1_8      |                        4 |
-      | MeasurementNode_1_8    | TmpSv                    |
-      | MeasurementId_1_9      |                        1 |
-      | MeasurementNode_1_9    | FlwRte                   |
+      | NumberOfMeasurements_1 |                        1 |
+      | MeasurementId_1_1      | <ID>                     |
+      | MeasurementNode_1_1    | <Measurement_Node>       |
 
-  Scenario: Receive a Boiler status report
+    Examples: 
+      | Measurement_Node | ID | Report_Trigger_Node |
+      | TotW             |  1 | MMXU1.TotW.q        |
+      | TotWh            |  1 | DGEN1.TotWh.q       |
+      | MaxWPhs          |  1 | MMXU1.MaxWPhs.q     |
+      | MinWPhs          |  1 | MMXU1.MinWPhs.q     |
+      | TmpSv            |  1 | TTMP1.TmpSv.q       |
+      | TmpSv            |  2 | TTMP2.TmpSv.q       |
+      | TmpSv            |  3 | TTMP3.TmpSv.q       |
+      | TmpSv            |  4 | TTMP4.TmpSv.q       |
+      | FlwRte           |  1 | MFLW1.FlwRte.q      |
+
+  Scenario Outline: Receive a Boiler status report
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-MARKER-WADDENREPORT |
       | Port                 |                   62103 |
@@ -51,8 +47,8 @@ Feature: Microgrids Receive reports for Boiler
     And OSGP is connected to the Marker Wadden RTU
       | DeviceIdentification | RTU-MARKER-WADDENREPORT |
     When the Marker Wadden RTU pushes a report
-      | LogicalDevice | BOILER1 |
-      | ReportType    | Status  |
+      | LogicalDevice | BOILER1               |
+      | Node          | <Report_Trigger_Node> |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-MARKER-WADDENREPORT  |
@@ -63,42 +59,23 @@ Feature: Microgrids Receive reports for Boiler
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
       | SystemType_1           | BOILER                   |
-      | NumberOfMeasurements_1 |                       19 |
+      | NumberOfMeasurements_1 |                        1 |
       | MeasurementId_1_1      |                        1 |
-      | MeasurementNode_1_1    | Beh                      |
-      | MeasurementId_1_2      |                        1 |
-      | MeasurementNode_1_2    | Health                   |
-      | MeasurementId_1_3      |                        1 |
-      | MeasurementNode_1_3    | OutWSet                  |
-      | MeasurementId_1_4      |                        1 |
-      | MeasurementNode_1_4    | GnOpSt                   |
-      | MeasurementId_1_5      |                        1 |
-      | MeasurementNode_1_5    | OpTmsRs                  |
-      | MeasurementId_1_6      |                        1 |
-      | MeasurementNode_1_6    | IntIn1                   |
-      | MeasurementId_1_7      |                        1 |
-      | MeasurementNode_1_7    | IntIn2                   |
-      | MeasurementId_1_8      |                        1 |
-      | MeasurementNode_1_8    | Alm1                     |
-      | MeasurementId_1_9      |                        1 |
-      | MeasurementNode_1_9    | Alm2                     |
-      | MeasurementId_1_10     |                        1 |
-      | MeasurementNode_1_10   | Alm3                     |
-      | MeasurementId_1_11     |                        1 |
-      | MeasurementNode_1_11   | Alm4                     |
-      | MeasurementId_1_12     |                        1 |
-      | MeasurementNode_1_12   | Wrn1                     |
-      | MeasurementId_1_13     |                        1 |
-      | MeasurementNode_1_13   | Wrn2                     |
-      | MeasurementId_1_14     |                        1 |
-      | MeasurementNode_1_14   | Wrn3                     |
-      | MeasurementId_1_15     |                        1 |
-      | MeasurementNode_1_15   | Wrn4                     |
-      | MeasurementId_1_16     |                        1 |
-      | MeasurementNode_1_16   | SchdId                   |
-      | MeasurementId_1_17     |                        2 |
-      | MeasurementNode_1_17   | SchdId                   |
-      | MeasurementId_1_18     |                        3 |
-      | MeasurementNode_1_18   | SchdId                   |
-      | MeasurementId_1_19     |                        4 |
-      | MeasurementNode_1_19   | SchdId                   |
+      | MeasurementNode_1_1    | <Measurement_Node>       |
+
+    Examples: 
+      | Measurement_Node | Report_Trigger_Node |
+      | Beh              | LLN0.Beh.q          |
+      | Health           | LLN0.Health.q       |
+      | GnOpSt           | DGEN1.GnOpSt.q      |
+      | OpTmsRs          | DGEN1.OpTmsRs.q     |
+      | IntIn1           | GGIO1.IntIn1.q      |
+      | IntIn2           | GGIO1.IntIn2.q      |
+      | Alm1             | GGIO1.Alm1.q        |
+      | Alm2             | GGIO1.Alm2.q        |
+      | Alm3             | GGIO1.Alm3.q        |
+      | Alm4             | GGIO1.Alm4.q        |
+      | Wrn1             | GGIO1.Wrn1.q        |
+      | Wrn2             | GGIO1.Wrn2.q        |
+      | Wrn3             | GGIO1.Wrn3.q        |
+      | Wrn4             | GGIO1.Wrn4.q        |

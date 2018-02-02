@@ -3,7 +3,7 @@ Feature: Microgrids Receive reports for Load
   I want to receive reports from the RTU
   So that I can monitor the microgrid
 
-  Scenario: Receive a Load measurements report
+  Scenario Outline: Receive a Load measurements report
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUSREPORT |
       | Port                 |            62102 |
@@ -11,8 +11,8 @@ Feature: Microgrids Receive reports for Load
     And OSGP is connected to the Pampus RTU
       | DeviceIdentification | RTU-PAMPUSREPORT |
     When the Pampus RTU pushes a report
-      | LogicalDevice | LOAD1        |
-      | ReportType    | Measurements |
+      | LogicalDevice | LOAD1                 |
+      | Node          | <Report_Trigger_Node> |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-PAMPUSREPORT         |
@@ -23,17 +23,18 @@ Feature: Microgrids Receive reports for Load
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
       | SystemType_1           | LOAD                     |
-      | NumberOfMeasurements_1 |                        4 |
+      | NumberOfMeasurements_1 |                        1 |
       | MeasurementId_1_1      |                        1 |
-      | MeasurementNode_1_1    | TotW                     |
-      | MeasurementId_1_2      |                        1 |
-      | MeasurementNode_1_2    | TotWh                    |
-      | MeasurementId_1_3      |                        1 |
-      | MeasurementNode_1_3    | MaxWPhs                  |
-      | MeasurementId_1_4      |                        1 |
-      | MeasurementNode_1_4    | MinWPhs                  |
+      | MeasurementNode_1_1    | <Measurement_Node>       |
 
-  Scenario: Receive a Load status report
+    Examples: 
+      | Measurement_Node | Report_Trigger_Node |
+      | TotW             | MMXU1.TotW.q        |
+      | TotWh            | MMTR1.TotWh.q       |
+      | MaxWPhs          | MMXU1.MaxWPhs.q     |
+      | MinWPhs          | MMXU1.MinWPhs.q     |
+
+  Scenario Outline: Receive a Load status report
     Given an rtu iec61850 device
       | DeviceIdentification | RTU-PAMPUSREPORT |
       | Port                 |            62102 |
@@ -41,8 +42,8 @@ Feature: Microgrids Receive reports for Load
     And OSGP is connected to the Pampus RTU
       | DeviceIdentification | RTU-PAMPUSREPORT |
     When the Pampus RTU pushes a report
-      | LogicalDevice | LOAD1  |
-      | ReportType    | Status |
+      | LogicalDevice | LOAD1                 |
+      | Node          | <Report_Trigger_Node> |
     Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification   | RTU-PAMPUSREPORT         |
@@ -53,28 +54,21 @@ Feature: Microgrids Receive reports for Load
       | ReportTimeOfEntry      | 2017-05-01T00:00:00.000Z |
       | SystemId_1             |                        1 |
       | SystemType_1           | LOAD                     |
-      | NumberOfMeasurements_1 |                       12 |
+      | NumberOfMeasurements_1 |                        1 |
       | MeasurementId_1_1      |                        1 |
-      | MeasurementNode_1_1    | Beh                      |
-      | MeasurementId_1_2      |                        1 |
-      | MeasurementNode_1_2    | Health                   |
-      | MeasurementId_1_3      |                        1 |
-      | MeasurementNode_1_3    | IntIn1                   |
-      | MeasurementId_1_4      |                        1 |
-      | MeasurementNode_1_4    | IntIn2                   |
-      | MeasurementId_1_5      |                        1 |
-      | MeasurementNode_1_5    | Alm1                     |
-      | MeasurementId_1_6      |                        1 |
-      | MeasurementNode_1_6    | Alm2                     |
-      | MeasurementId_1_7      |                        1 |
-      | MeasurementNode_1_7    | Alm3                     |
-      | MeasurementId_1_8      |                        1 |
-      | MeasurementNode_1_8    | Alm4                     |
-      | MeasurementId_1_9      |                        1 |
-      | MeasurementNode_1_9    | Wrn1                     |
-      | MeasurementId_1_10     |                        1 |
-      | MeasurementNode_1_10   | Wrn2                     |
-      | MeasurementId_1_11     |                        1 |
-      | MeasurementNode_1_11   | Wrn3                     |
-      | MeasurementId_1_12     |                        1 |
-      | MeasurementNode_1_12   | Wrn4                     |
+      | MeasurementNode_1_1    | <Measurement_Node>       |
+
+    Examples: 
+      | Measurement_Node | Report_Trigger_Node |
+      | Beh              | LLN0.Beh.q          |
+      | Health           | LLN0.Health.q       |
+      | IntIn1           | GGIO1.IntIn1.q      |
+      | IntIn2           | GGIO1.IntIn2.q      |
+      | Alm1             | GGIO1.Alm1.q        |
+      | Alm2             | GGIO1.Alm2.q        |
+      | Alm3             | GGIO1.Alm3.q        |
+      | Alm4             | GGIO1.Alm4.q        |
+      | Wrn1             | GGIO1.Wrn1.q        |
+      | Wrn2             | GGIO1.Wrn2.q        |
+      | Wrn3             | GGIO1.Wrn3.q        |
+      | Wrn4             | GGIO1.Wrn4.q        |
