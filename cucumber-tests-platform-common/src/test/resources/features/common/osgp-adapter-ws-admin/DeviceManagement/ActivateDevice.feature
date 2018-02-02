@@ -7,7 +7,7 @@ Feature: AdminDeviceManagement Device Activation
   Scenario: Activate a inactive SSLD
     Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
-      | Active               | false             |
+      | DeviceLifecycleStatus | READY_FOR_USE |
     When receiving an activate device request
       | DeviceIdentification | TEST1024000000001 |
     Then the activate device response contains

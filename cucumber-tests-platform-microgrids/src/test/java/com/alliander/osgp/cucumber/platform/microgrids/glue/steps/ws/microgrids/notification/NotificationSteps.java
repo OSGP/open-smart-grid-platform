@@ -7,7 +7,10 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.ws.microgrids.notification;
 
-import org.junit.Assert;
+import static org.junit.Assert.fail;
+
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +27,9 @@ import cucumber.api.java.en.When;
 
 public class NotificationSteps extends GlueBase {
 
-    private int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
-    private int MAX_WAIT_FOR_NOTIFICATION = 1200000;
+    private static final int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
+    private static final int MAX_WAIT_FOR_NOTIFICATION = 1200000;
+    private static final int MAX_WAIT_FOR_RESEND_NOTIFICATION = 65000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
 
@@ -41,10 +45,10 @@ public class NotificationSteps extends GlueBase {
     public void iShouldReceiveANotification() throws Throwable {
         int waited = 0;
 
-        while (!this.mockNotificationService.receivedNotification() && waited < this.MAX_WAIT_FOR_NOTIFICATION) {
+        while (!this.mockNotificationService.receivedNotification() && waited < MAX_WAIT_FOR_NOTIFICATION) {
             LOGGER.info("Checking and waiting for notification.");
-            Thread.sleep(this.WAIT_FOR_NEXT_NOTIFICATION_CHECK);
-            waited += this.WAIT_FOR_NEXT_NOTIFICATION_CHECK;
+            Thread.sleep(WAIT_FOR_NEXT_NOTIFICATION_CHECK);
+            waited += WAIT_FOR_NEXT_NOTIFICATION_CHECK;
         }
 
         final Notification notification = this.mockNotificationService.getNotification();
@@ -59,7 +63,45 @@ public class NotificationSteps extends GlueBase {
             // Username is always needed to retrieve a response.
             ScenarioContext.current().put(PlatformKeys.KEY_USER_NAME, PlatformDefaults.DEFAULT_USER_NAME);
         } else {
-            Assert.fail("Did not receive a notification within the timeout limit.");
+            fail("Did not receive a notification within the timeout limit.");
+        }
+    }
+
+    @Then("^a notification is sent$")
+    public void aNotificationIsSent(final Map<String, String> settings) throws Throwable {
+        final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
+        this.waitForNotification(MAX_WAIT_FOR_RESEND_NOTIFICATION, correlationUid, true);
+    }
+
+    @Then("^no notification is sent$")
+    public void noNotificationIsSent(final Map<String, String> settings) throws Throwable {
+        final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
+        this.waitForNotification(MAX_WAIT_FOR_RESEND_NOTIFICATION, correlationUid, false);
+    }
+
+    private void waitForNotification(final int maxTimeOut, final String correlationUid,
+            final boolean expectCorrelationUid) throws Throwable {
+
+        int waited = 0;
+
+        while (!this.mockNotificationService.receivedNotification() && waited < maxTimeOut) {
+            Thread.sleep(WAIT_FOR_NEXT_NOTIFICATION_CHECK);
+            waited += WAIT_FOR_NEXT_NOTIFICATION_CHECK;
+
+            if (this.mockNotificationService.receivedNotification()) {
+                final Notification notification = this.mockNotificationService.getNotification();
+                if (correlationUid.equals(notification.getCorrelationUid())) {
+                    if (expectCorrelationUid) {
+                        return;
+                    }
+                    fail("Received notification for correlation UID: " + correlationUid);
+                }
+            }
+        }
+
+        if (expectCorrelationUid) {
+            fail("Did not receive a notification for correlation UID: " + correlationUid + " within " + maxTimeOut
+                    + " milliseconds");
         }
     }
 }

@@ -10,7 +10,6 @@ Feature: FirmwareManagement update firmware
       | DeviceIdentification | TEST1024000000001 |
       | Status               | Active            |
       | Organization         | TestOrganization  |
-      | IsActivated          | true              |
       | Protocol             | <Protocol>        |
     And the device returns a update firmware "OK" over "<Protocol>"
     When receiving an update firmware request
@@ -28,7 +27,7 @@ Feature: FirmwareManagement update firmware
       | Protocol    |
       | OSLP        |
       | OSLP ELSTER |
-  
+
   Scenario: Update the firmware for an unknown firmware
     When receiving an update firmware request
       | DeviceIdentification | unknown |

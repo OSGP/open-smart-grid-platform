@@ -63,7 +63,6 @@ public class PlatformKeys extends Keys {
     public static final String INTERVAL_TYPE = "IntervalType";
     public static final String KEY_ACTIVATED = "Activated";
 
-    public static final String KEY_ACTIVE = "Active";
     public static final String KEY_DEVICE_LIFECYCLE_STATUS = "DeviceLifecycleStatus";
     public static final String KEY_ACTUAL_LINKTYPE = "ActualLinkType";
 
@@ -77,6 +76,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_COMM_METHOD = "CommunicationMethod";
     public static final String KEY_CORRELATION_UID = "CorrelationUid";
     public static final String KEY_CREATION_TIME = "CreationTime";
+    public static final String KEY_MODIFICATION_TIME = "ModificationTime";
     public static final String KEY_DESCRIPTION = "Description";
     public static final String KEY_DEVICE_ACTIVATED = "DeviceActivated";
     public static final String KEY_DEVICE_COMMUNICATIONMETHOD = "CommunicationMethod";
@@ -139,7 +139,6 @@ public class PlatformKeys extends Keys {
     public static final String KEY_INDEXES = "Indexes";
     public static final String KEY_INTERNALID = "InternalId";
     public static final String KEY_IP_ADDR_IS_STATIC = "IpAddressIsStatic";
-    public static final String KEY_IS_ACTIVATED = "IsActivated";
     public static final String KEY_ISIMMEDIATE = "IsImmediate";
     public static final String KEY_LATITUDE = "gpsLatitude";
     public static final String KEY_LIGHTTYPE = "LightType";
@@ -324,5 +323,5 @@ public class PlatformKeys extends Keys {
 
     public static final String DATE = "Date";
     public static final String TIME_UNTIL_ON = "TimeUntilOn";
-
+    public static final String KEY_NUMBER_OF_NOTIFICATIONS_SENT = "NumberOfNotificationsSent";
 }
