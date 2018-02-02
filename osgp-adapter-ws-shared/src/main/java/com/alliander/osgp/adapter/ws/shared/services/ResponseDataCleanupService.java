@@ -23,11 +23,12 @@ public class ResponseDataCleanupService {
     private ResponseDataRepository responseDataRepository;
 
     @Autowired
-    private int retentionTimeInDays;
+    private int cleanupJobRetentionTimeInDays;
 
     public void execute() {
 
-        final DateTime removeBeforeDateTime = DateTime.now(DateTimeZone.UTC).minusDays(this.retentionTimeInDays);
+        final DateTime removeBeforeDateTime = DateTime.now(DateTimeZone.UTC)
+                .minusDays(this.cleanupJobRetentionTimeInDays);
         this.responseDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toDate());
     }
 }

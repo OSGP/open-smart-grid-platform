@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.ws.microgrids.application.config;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -151,7 +152,7 @@ public class WebServiceConfig extends AbstractConfig {
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
-        // Add Public Lighting Marshalling Payload Method Processors to Method
+        // Add Microgrids Marshalling Payload Method Processors to Method
         // Return Value Handlers
         methodReturnValueHandlers.add(this.microgridsAdHocManagementMarshallingPayloadMethodProcessor());
 
@@ -212,7 +213,7 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean(value = "notificationServiceMicrogrids")
-    public NotificationService notificationService() {
+    public NotificationService notificationService() throws GeneralSecurityException {
         if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.webserviceNotificationUrl)) {
             return new NotificationServiceWs(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
                     this.webserviceNotificationUrl, this.webserviceNotificationUsername,
