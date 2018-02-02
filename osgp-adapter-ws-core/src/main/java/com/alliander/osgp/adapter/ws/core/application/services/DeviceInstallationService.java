@@ -95,16 +95,32 @@ public class DeviceInstallationService {
         // If the device already exists, throw an exception.
         final Device existingDevice = this.writableDeviceRepository
                 .findByDeviceIdentification(newDevice.getDeviceIdentification());
-        if (existingDevice != null) {
+
+        // Added additional check on device type: if device type is empty
+        // there has been no communication with the device yet
+        // and it should be possible to overwrite the existing device
+        // It would probably be better to use isActivated for this, however this
+        // would require additional changes in applications currently using this
+        // field
+        if (existingDevice != null && StringUtils.isNotBlank(existingDevice.getDeviceType())) {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
                     new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
         }
 
-        // Create a new SSLD instance.
-        final Ssld ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(),
-                newDevice.getContainerCity(), newDevice.getContainerPostalCode(), newDevice.getContainerStreet(),
-                newDevice.getContainerNumber(), newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(),
-                newDevice.getGpsLongitude());
+        Ssld ssld = null;
+        if (existingDevice != null) {
+            // Update existing device
+            ssld = this.writableSsldRepository.findByDeviceIdentification(newDevice.getDeviceIdentification());
+            ssld.updateMetaData(newDevice.getAlias(), newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
+                    newDevice.getContainerStreet(), newDevice.getContainerNumber(),
+                    newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(), newDevice.getGpsLongitude());
+            ssld.getAuthorizations().clear();
+        } else {
+            // Create a new SSLD instance.
+            ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(), newDevice.getContainerCity(),
+                    newDevice.getContainerPostalCode(), newDevice.getContainerStreet(), newDevice.getContainerNumber(),
+                    newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(), newDevice.getGpsLongitude());
+        }
         ssld.setHasSchedule(false);
         ssld.setDeviceModel(newDevice.getDeviceModel());
 
@@ -122,7 +138,7 @@ public class DeviceInstallationService {
             LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(),
                     ownerOrganisationIdentification);
         } else {
-            // If the device doesn't exists yet, and the optional
+            // If the device doesn't exist yet, and the optional
             // ownerOrganisationIdentification is not given, create device
             // without owner device authorization.
             this.writableSsldRepository.save(ssld);
