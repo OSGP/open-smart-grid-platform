@@ -31,8 +31,8 @@ public class DeCoupleMBusDeviceCommandExecutor
 
     private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
     /**
-     * The ObisCode for the M-Bus Client Setup exists for a number of channels.
-     * DSMR specifies these M-Bus Client Setup channels as values from 1..4.
+     * The ObisCode for the M-Bus Client Setup exists for a number of channels. DSMR
+     * specifies these M-Bus Client Setup channels as values from 1..4.
      */
     private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
 
@@ -49,8 +49,6 @@ public class DeCoupleMBusDeviceCommandExecutor
             final DeCoupleMbusDeviceDto decoupleMbusDto) throws ProtocolAdapterException {
 
         LOGGER.debug("DeCouple mbus device from gateway device");
-
-        final DeCoupleMbusDeviceResponseDto response = this.writeUpdatedMbus(conn, decoupleMbusDto);
 
         final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, this.getObisCode(decoupleMbusDto),
                 CLASS_ID);
@@ -69,7 +67,8 @@ public class DeCoupleMBusDeviceCommandExecutor
             LOGGER.warn("Slave deinstall was not successfull on device {} for mbus device {}",
                     device.getDeviceIdentification(), decoupleMbusDto.getmBusDeviceIdentification());
         }
-        return response;
+
+        return this.writeUpdatedMbus(conn, decoupleMbusDto);
     }
 
     private ObisCode getObisCode(final DeCoupleMbusDeviceDto decoupleMbusDto) {
