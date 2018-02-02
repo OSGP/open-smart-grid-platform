@@ -7,7 +7,6 @@
  */
 package org.osgpfoundation.osgp.adapter.ws.da.application.services;
 
-import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import org.osgpfoundation.osgp.adapter.ws.da.presentation.ws.SendNotificationServiceClient;
 import org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.notification.Notification;
 import org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.notification.NotificationType;
@@ -15,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 @Transactional(value = "transactionManager")
 @Validated
@@ -30,7 +31,8 @@ public class NotificationServiceWs implements NotificationService {
 
     private final String notificationOrganisation;
 
-    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl, final String notificationUsername, final String notificationOrganisation) {
+    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl,
+            final String notificationUsername, final String notificationOrganisation) {
         this.sendNotificationServiceClient = client;
         this.notificationUrl = notificationUrl;
         this.notificationUsername = notificationUsername;
@@ -47,8 +49,9 @@ public class NotificationServiceWs implements NotificationService {
      * .ws.schema.smartmetering.notification.NotificationType)
      */
     @Override
-    public void sendNotification(final String organisationIdentification, final String deviceIdentification, final String result,
-                                 final String correlationUid, final String message, final NotificationType notificationType) {
+    public void sendNotification(final String organisationIdentification, final String deviceIdentification,
+            final String result, final String correlationUid, final String message,
+            final NotificationType notificationType) {
 
         LOGGER.info("sendNotification called with organisation: {}, correlationUid: {}, type: {}, to organisation: {}",
                 this.notificationOrganisation, correlationUid, notificationType, organisationIdentification);
@@ -63,9 +66,9 @@ public class NotificationServiceWs implements NotificationService {
 
         try {
             /*
-             * Get a template for the organisation representing the OSGP
-             * platform, on behalf of which the notification is sent to the
-             * organisation identified by the organisationIdentification.
+             * Get a template for the organisation representing the OSGP platform, on behalf
+             * of which the notification is sent to the organisation identified by the
+             * organisationIdentification.
              */
             this.sendNotificationServiceClient.sendNotification(this.notificationOrganisation, notification,
                     this.notificationUrl, this.notificationUsername);

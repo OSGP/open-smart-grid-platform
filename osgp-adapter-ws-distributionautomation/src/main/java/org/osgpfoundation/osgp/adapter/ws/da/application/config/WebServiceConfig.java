@@ -7,21 +7,18 @@
  */
 package org.osgpfoundation.osgp.adapter.ws.da.application.config;
 
-import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
-import com.alliander.osgp.shared.application.config.AbstractConfig;
-import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.commons.lang3.StringUtils;
 import org.osgpfoundation.osgp.adapter.ws.da.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.osgpfoundation.osgp.adapter.ws.da.application.exceptionhandling.SoapFaultMapper;
 import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationService;
 import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationServiceBlackHole;
 import org.osgpfoundation.osgp.adapter.ws.da.application.services.NotificationServiceWs;
 import org.osgpfoundation.osgp.adapter.ws.da.presentation.ws.SendNotificationServiceClient;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,16 +35,19 @@ import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHa
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
-@PropertySources({@PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}",
-                ignoreResourceNotFound = true), @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}",
-        ignoreResourceNotFound = true),})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
@@ -89,7 +89,8 @@ public class WebServiceConfig extends AbstractConfig {
     // === DISTRIBUTION AUTOMATION MARSHALLERS ===
 
     /**
-     * Method for creating the Marshaller for Distribution Automation Generic (Ad Hoc Management, Device Management and Monitoring)
+     * Method for creating the Marshaller for Distribution Automation Generic (Ad
+     * Hoc Management, Device Management and Monitoring)
      *
      * @return Jaxb2Marshaller
      */
@@ -98,13 +99,14 @@ public class WebServiceConfig extends AbstractConfig {
         LOGGER.debug("Creating Distribution Automation Generic JAXB 2 Marshaller Bean");
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath(
-                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_GENERIC));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_GENERIC));
         return marshaller;
     }
 
     /**
-     * Method for creating the Marshalling Payload Method Processor for Distribition Automation Generic
+     * Method for creating the Marshalling Payload Method Processor for Distribition
+     * Automation Generic
      *
      * @return MarshallingPayloadMethodProcessor
      */
@@ -129,16 +131,19 @@ public class WebServiceConfig extends AbstractConfig {
 
         final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
-        // Add Distribution Automation Marshalling Payload Method Processors to Method Argument Resolvers
+        // Add Distribution Automation Marshalling Payload Method Processors to Method
+        // Argument Resolvers
         methodArgumentResolvers.add(this.distributionautomationGenericMarshallingPayloadMethodProcessor());
 
         // Add Organisation Identification Annotation Method Argument Resolver
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT, OrganisationIdentification.class));
+        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
+                OrganisationIdentification.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
-        // Add Distribution Automation Marshalling Payload Method Processors to Method Return Value Handlers
+        // Add Distribution Automation Marshalling Payload Method Processors to Method
+        // Return Value Handlers
         methodReturnValueHandlers.add(this.distributionautomationGenericMarshallingPayloadMethodProcessor());
 
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
@@ -149,7 +154,8 @@ public class WebServiceConfig extends AbstractConfig {
     @Bean
     public DetailSoapFaultMappingExceptionResolver exceptionResolver() {
         LOGGER.debug("Creating Detail Soap Fault Mapping Exception Resolver Bean");
-        final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(new SoapFaultMapper());
+        final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(
+                new SoapFaultMapper());
         exceptionResolver.setOrder(1);
 
         final Properties props = new Properties();
@@ -168,7 +174,8 @@ public class WebServiceConfig extends AbstractConfig {
      */
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
-        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID, X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
+        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
     /**
@@ -176,7 +183,8 @@ public class WebServiceConfig extends AbstractConfig {
      */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
-        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
+                ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     /**
@@ -184,17 +192,18 @@ public class WebServiceConfig extends AbstractConfig {
      */
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
-        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME,
-                ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     @Bean
     public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
-        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER);
+        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
+                APPLICATION_NAME_HEADER);
     }
 
-    @Bean
-    public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
+    @Bean(value = "notificationServiceDistributionAutomation")
+    public NotificationService notificationService() throws GeneralSecurityException {
         if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.webserviceNotificationUrl)) {
             return new NotificationServiceWs(this.sendNotificationServiceClient(), this.webserviceNotificationUrl,
                     this.webserviceNotificationUsername, this.webserviceNotificationOrganisation);
@@ -221,20 +230,22 @@ public class WebServiceConfig extends AbstractConfig {
     @Bean
     public Jaxb2Marshaller notificationSenderMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller
-                .setContextPath(this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_NOTIFICATION));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_NOTIFICATION));
         return marshaller;
     }
 
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
+        return new SendNotificationServiceClient(
+                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
     }
 
     private DefaultWebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
-        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(marshaller).setMessageFactory(this.messageFactory())
-                .setTargetUri(this.webserviceNotificationUrl).setKeyStoreType(this.webserviceKeystoreType)
-                .setKeyStoreLocation(this.webserviceKeystoreLocation).setKeyStorePassword(this.webserviceKeystorePassword)
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(marshaller)
+                .setMessageFactory(this.messageFactory()).setTargetUri(this.webserviceNotificationUrl)
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName("ZownStream").build();
     }
 }
