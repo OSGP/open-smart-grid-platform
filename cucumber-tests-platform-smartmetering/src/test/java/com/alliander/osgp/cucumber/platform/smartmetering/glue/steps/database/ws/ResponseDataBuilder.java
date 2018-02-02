@@ -17,15 +17,16 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class ResponseDataBuilder {
 
     private String organisationIdentification = "test-org";
-    private String deviceIdentification = "test-rtu";
-    private String correlationUid = "test-org|||test-rtu|||20170101000000000";
-    private String messageType = "GET_DATA";
+    private String deviceIdentification = "TEST1024000000001";
+    private String correlationUid = "test-org|||TEST1024000000001|||20170101000000000";
+    private String messageType = "REQUEST_ACTUAL_METER_DATA";
     private Serializable messageData = null;
     private ResponseMessageResultType resultType = ResponseMessageResultType.OK;
+    private Short numberOfNotificationsSent = 0;
 
     public ResponseData build() {
         return new ResponseData(this.organisationIdentification, this.messageType, this.deviceIdentification,
-                this.correlationUid, this.resultType, this.messageData);
+                this.correlationUid, this.resultType, this.messageData, this.numberOfNotificationsSent);
     }
 
     public ResponseDataBuilder fromSettings(final Map<String, String> settings) {
@@ -46,6 +47,10 @@ public class ResponseDataBuilder {
         }
         if (settings.containsKey(PlatformKeys.KEY_RESULT_TYPE)) {
             this.withResultType(ResponseMessageResultType.valueOf(settings.get(PlatformKeys.KEY_RESULT_TYPE)));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)) {
+            this.withNumberOfNotificationsSent(
+                    Short.parseShort(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT)));
         }
         return this;
     }
@@ -77,6 +82,11 @@ public class ResponseDataBuilder {
 
     public ResponseDataBuilder withResultType(final ResponseMessageResultType resultType) {
         this.resultType = resultType;
+        return this;
+    }
+
+    public ResponseDataBuilder withNumberOfNotificationsSent(final Short numberOfNotificationsSent) {
+        this.numberOfNotificationsSent = numberOfNotificationsSent;
         return this;
     }
 }
