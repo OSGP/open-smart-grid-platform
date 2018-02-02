@@ -7,7 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -20,7 +21,6 @@ import org.joda.time.DateTime;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsRequestData;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class FindEventsRequestDataFactory {
@@ -28,7 +28,7 @@ public class FindEventsRequestDataFactory {
     public static FindEventsRequestData fromParameterMap(final Map<String, String> requestParameters) {
 
         final EventLogCategory eventLogCategory = EventLogCategory
-                .fromValue(Helpers.getString(requestParameters, PlatformSmartmeteringKeys.EVENT_TYPE));
+                .fromValue(getString(requestParameters, PlatformSmartmeteringKeys.EVENT_TYPE));
         final XMLGregorianCalendar beginDate = createXMLGregorianCalendar(requestParameters,
                 PlatformSmartmeteringKeys.KEY_BEGIN_DATE);
         final XMLGregorianCalendar endDate = createXMLGregorianCalendar(requestParameters,

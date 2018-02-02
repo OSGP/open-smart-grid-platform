@@ -7,11 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+
 import java.util.Collections;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusRequest;
-import com.alliander.osgp.cucumber.platform.core.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class GetMbusEncryptionKeyStatusRequestBuilder {
@@ -36,7 +37,7 @@ public class GetMbusEncryptionKeyStatusRequestBuilder {
     }
 
     private String getMbusDeviceIdentification(final Map<String, String> parameters) {
-        return Helpers.getString(parameters, PlatformSmartmeteringKeys.MBUS_DEVICE_IDENTIFICATION,
+        return getString(parameters, PlatformSmartmeteringKeys.MBUS_DEVICE_IDENTIFICATION,
                 DEFAULT_MBUS_DEVICE_IDENTIFICATION);
     }
 }

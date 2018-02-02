@@ -7,12 +7,13 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasRequest;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
@@ -24,7 +25,7 @@ public class ActualMeterReadsGasRequestFactory {
 
     public static ActualMeterReadsGasRequest fromParameterMap(final Map<String, String> settings) {
         final ActualMeterReadsGasRequest actualMeterReadsGasRequest = new ActualMeterReadsGasRequest();
-        actualMeterReadsGasRequest.setDeviceIdentification(Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+        actualMeterReadsGasRequest.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformSmartmeteringDefaults.DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION));
         return actualMeterReadsGasRequest;
     }
@@ -32,7 +33,8 @@ public class ActualMeterReadsGasRequestFactory {
     public static ActualMeterReadsGasAsyncRequest fromScenarioContext() {
         final ActualMeterReadsGasAsyncRequest actualMeterReadsGasAsyncRequest = new ActualMeterReadsGasAsyncRequest();
         actualMeterReadsGasAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        actualMeterReadsGasAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        actualMeterReadsGasAsyncRequest
+                .setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
         return actualMeterReadsGasAsyncRequest;
     }
 

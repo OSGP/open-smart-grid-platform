@@ -8,7 +8,7 @@
 
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.functional.exceptions;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 

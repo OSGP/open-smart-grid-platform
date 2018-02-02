@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +27,8 @@ public class UpdateFirmwareRequestFactory {
     public static UpdateFirmwareRequest fromParameterMap(final Map<String, String> parameters) {
         final UpdateFirmwareRequest updateFirmwareRequest = new UpdateFirmwareRequest();
 
-        updateFirmwareRequest.setDeviceIdentification(getString(parameters, PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION,
-                PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
+        updateFirmwareRequest.setDeviceIdentification(getString(parameters,
+                PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION, PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
 
         updateFirmwareRequest.getFirmwareVersions().addAll(firmwareVersionsFromParameters(parameters));
 

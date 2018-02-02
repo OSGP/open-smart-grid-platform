@@ -7,8 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationUidInScenarioContext;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+import static com.alliander.osgp.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
 

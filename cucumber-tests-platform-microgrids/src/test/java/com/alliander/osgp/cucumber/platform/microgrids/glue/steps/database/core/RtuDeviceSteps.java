@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.microgrids.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -45,8 +45,7 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
 
     @Transactional("txMgrCore")
     public Device updateRtuDevice(final Map<String, String> settings) throws Throwable {
-        return this.updateDevice(
-                this.deviceRespository.findByDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION)),
-                settings);
+        return this.updateDevice(this.deviceRespository
+                .findByDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION)), settings);
     }
 }

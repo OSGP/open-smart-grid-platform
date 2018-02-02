@@ -7,6 +7,10 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +20,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetAlarmNotificationsRequestBuilder {
@@ -51,7 +54,7 @@ public class SetAlarmNotificationsRequestBuilder {
     }
 
     private int getAlarmNotificationCount(final Map<String, String> parameters) {
-        return Helpers.getInteger(parameters, PlatformSmartmeteringKeys.ALARM_NOTIFICATION_COUNT,
+        return getInteger(parameters, PlatformSmartmeteringKeys.ALARM_NOTIFICATION_COUNT,
                 DEFAULT_ALARM_NOTIFICATIONS_COUNT);
     }
 
@@ -71,12 +74,12 @@ public class SetAlarmNotificationsRequestBuilder {
 
     private AlarmType getAlarmType(final Map<String, String> parameters, final int index) {
         final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.ALARM_TYPE, index);
-        return Helpers.getEnum(parameters, key, AlarmType.class, DEFAULT_ALARM_TYPE);
+        return getEnum(parameters, key, AlarmType.class, DEFAULT_ALARM_TYPE);
     }
 
     private boolean getEnabled(final Map<String, String> parameters, final int index) {
         final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.ALARM_TYPE_ENABLED, index);
-        return Helpers.getBoolean(parameters, key, DEFAULT_ENABLED);
+        return getBoolean(parameters, key, DEFAULT_ENABLED);
     }
 
 }

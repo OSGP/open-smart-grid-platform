@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getNullOrNonEmptyString;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getNullOrNonEmptyString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.File;
 import java.io.IOException;

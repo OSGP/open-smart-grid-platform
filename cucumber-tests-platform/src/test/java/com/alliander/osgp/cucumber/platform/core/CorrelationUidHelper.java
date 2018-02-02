@@ -6,7 +6,7 @@ import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 
-public class Helpers extends com.alliander.osgp.cucumber.core.Helpers {
+public class CorrelationUidHelper {
 
     /**
      * Check the correlationUid in the response and save it in the current
@@ -15,8 +15,8 @@ public class Helpers extends com.alliander.osgp.cucumber.core.Helpers {
      * @param response
      *            The response to find the correlationUid in.
      * @param organizationIdentification
-     *            The organizationIdentifier used. Default test-org will be
-     *            used.
+     *            The organizationIdentifier used; if null or empty, the default
+     *            test-org will be used.
      * @throws Throwable
      */
     public static void saveCorrelationUidInScenarioContext(final String correlationUid,

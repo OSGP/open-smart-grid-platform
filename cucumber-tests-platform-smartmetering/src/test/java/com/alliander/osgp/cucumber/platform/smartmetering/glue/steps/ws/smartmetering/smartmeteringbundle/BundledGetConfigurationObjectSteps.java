@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
 
 import java.util.Map;
 

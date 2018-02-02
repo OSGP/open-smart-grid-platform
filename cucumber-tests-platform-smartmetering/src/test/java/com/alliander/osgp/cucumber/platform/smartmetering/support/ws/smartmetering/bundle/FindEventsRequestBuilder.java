@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -17,7 +20,6 @@ import org.joda.time.DateTimeZone;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
-import com.alliander.osgp.cucumber.platform.core.Helpers;
 import com.alliander.osgp.cucumber.platform.helpers.DateConverter;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
@@ -51,17 +53,17 @@ public class FindEventsRequestBuilder {
     }
 
     private EventLogCategory getEventLogCategory(final Map<String, String> parameters) {
-        return Helpers.getEnum(parameters, PlatformSmartmeteringKeys.EVENT_TYPE, EventLogCategory.class,
+        return getEnum(parameters, PlatformSmartmeteringKeys.EVENT_TYPE, EventLogCategory.class,
                 DEFAULT_EVENT_LOG_CATEGORY);
     }
 
     private XMLGregorianCalendar getFrom(final Map<String, String> parameters) {
-        final DateTime dateTime = Helpers.getDate(parameters, PlatformSmartmeteringKeys.FROM_DATE, DEFAULT_FROM);
+        final DateTime dateTime = getDate(parameters, PlatformSmartmeteringKeys.FROM_DATE, DEFAULT_FROM);
         return DateConverter.createXMLGregorianCalendar(dateTime.toDate());
     }
 
     private XMLGregorianCalendar getUntil(final Map<String, String> parameters) {
-        final DateTime dateTime = Helpers.getDate(parameters, PlatformSmartmeteringKeys.UNTIL_DATE, DEFAULT_UNTIL);
+        final DateTime dateTime = getDate(parameters, PlatformSmartmeteringKeys.UNTIL_DATE, DEFAULT_UNTIL);
         return DateConverter.createXMLGregorianCalendar(dateTime.toDate());
     }
 }

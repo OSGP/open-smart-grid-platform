@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -22,10 +22,11 @@ public class SetClockConfigurationRequestFactory {
     public static SetClockConfigurationRequest fromParameterMap(final Map<String, String> parameters) {
         final SetClockConfigurationRequest setClockConfigurationRequest = new SetClockConfigurationRequest();
 
-        setClockConfigurationRequest.setDeviceIdentification(
-                getString(parameters, PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION, PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
+        setClockConfigurationRequest.setDeviceIdentification(getString(parameters,
+                PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION, PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION));
 
-        setClockConfigurationRequest.setSetClockConfigurationData(SetClockConfigurationRequestDataFactory.fromParameterMap(parameters));
+        setClockConfigurationRequest
+                .setSetClockConfigurationData(SetClockConfigurationRequestDataFactory.fromParameterMap(parameters));
 
         return setClockConfigurationRequest;
     }

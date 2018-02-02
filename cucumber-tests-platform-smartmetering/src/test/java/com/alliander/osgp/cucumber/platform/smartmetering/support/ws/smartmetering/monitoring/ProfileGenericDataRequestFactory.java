@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getDate;
 
 import java.util.Map;
 
@@ -35,7 +35,8 @@ public class ProfileGenericDataRequestFactory {
         final CaptureObjectDefinitions captureObjecDefinitions = CaptureObjectDefinitionsFactory
                 .fromParameterMap(requestParameters);
 
-        profileGenericDataRequest.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        profileGenericDataRequest
+                .setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         profileGenericDataRequest.setBeginDate(DateConverter.createXMLGregorianCalendar(beginDate.toDate()));
         profileGenericDataRequest.setEndDate(DateConverter.createXMLGregorianCalendar(endDate.toDate()));
         profileGenericDataRequest.setObisCode(obisCodeValues);

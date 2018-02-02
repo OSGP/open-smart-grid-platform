@@ -19,7 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClock
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetClockConfigurationResponse;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
+import com.alliander.osgp.cucumber.platform.smartmetering.ScenarioContextHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SetClockConfigurationRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
@@ -37,7 +37,7 @@ public class SetClockConfiguration {
         final SetClockConfigurationAsyncResponse asyncResponse = this.client.setClockConfiguration(request);
 
         assertNotNull(asyncResponse);
-        Helpers.saveAsyncResponse(asyncResponse);
+        ScenarioContextHelper.saveAsyncResponse(asyncResponse);
     }
 
     @Then("^the set clock configuration response should be returned$")

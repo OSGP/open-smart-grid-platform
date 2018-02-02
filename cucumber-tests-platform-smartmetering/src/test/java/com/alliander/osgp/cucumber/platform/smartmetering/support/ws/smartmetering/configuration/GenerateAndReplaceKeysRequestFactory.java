@@ -7,11 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysRequest;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
@@ -24,12 +25,13 @@ public class GenerateAndReplaceKeysRequestFactory {
 
     public static GenerateAndReplaceKeysRequest fromParameterMap(final Map<String, String> requestParameters) {
         final GenerateAndReplaceKeysRequest generateAndReplaceKeysRequest = new GenerateAndReplaceKeysRequest();
-        generateAndReplaceKeysRequest.setDeviceIdentification(Helpers.getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        generateAndReplaceKeysRequest.setDeviceIdentification(getString(requestParameters,
+                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         return generateAndReplaceKeysRequest;
     }
 
-    public static GenerateAndReplaceKeysAsyncRequest fromParameterMapAsync(final Map<String, String> requestParameters) {
+    public static GenerateAndReplaceKeysAsyncRequest fromParameterMapAsync(
+            final Map<String, String> requestParameters) {
         final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
         final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromStepData(requestParameters);
         final GenerateAndReplaceKeysAsyncRequest generateAndReplaceKeysAsyncRequest = new GenerateAndReplaceKeysAsyncRequest();

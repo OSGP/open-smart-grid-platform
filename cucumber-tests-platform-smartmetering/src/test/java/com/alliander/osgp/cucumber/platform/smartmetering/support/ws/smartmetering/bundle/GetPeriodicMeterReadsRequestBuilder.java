@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -18,7 +21,6 @@ import org.joda.time.DateTimeZone;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.cucumber.platform.helpers.DateConverter;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class GetPeriodicMeterReadsRequestBuilder {
@@ -51,18 +53,16 @@ public class GetPeriodicMeterReadsRequestBuilder {
     }
 
     private PeriodType getPeriodType(final Map<String, String> parameters) {
-        return Helpers.getEnum(parameters, PlatformSmartmeteringKeys.KEY_PERIOD_TYPE, PeriodType.class,
-                DEFAULT_PERIOD_TYPE);
+        return getEnum(parameters, PlatformSmartmeteringKeys.KEY_PERIOD_TYPE, PeriodType.class, DEFAULT_PERIOD_TYPE);
     }
 
     private XMLGregorianCalendar getBeginDate(final Map<String, String> parameters) {
-        final DateTime dateTime = Helpers.getDate(parameters, PlatformSmartmeteringKeys.KEY_BEGIN_DATE,
-                DEFAULT_BEGIN_DATE);
+        final DateTime dateTime = getDate(parameters, PlatformSmartmeteringKeys.KEY_BEGIN_DATE, DEFAULT_BEGIN_DATE);
         return DateConverter.createXMLGregorianCalendar(dateTime.toDate());
     }
 
     private XMLGregorianCalendar getEndDate(final Map<String, String> parameters) {
-        final DateTime dateTime = Helpers.getDate(parameters, PlatformSmartmeteringKeys.KEY_END_DATE, DEFAULT_END_DATE);
+        final DateTime dateTime = getDate(parameters, PlatformSmartmeteringKeys.KEY_END_DATE, DEFAULT_END_DATE);
         return DateConverter.createXMLGregorianCalendar(dateTime.toDate());
     }
 }

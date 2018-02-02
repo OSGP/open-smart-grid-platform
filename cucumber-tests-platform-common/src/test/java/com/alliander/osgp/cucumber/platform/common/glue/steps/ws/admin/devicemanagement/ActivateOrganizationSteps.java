@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -38,8 +38,9 @@ public class ActivateOrganizationSteps extends GlueBase {
     public void receivingAnActivateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
         final ActivateOrganisationRequest request = new ActivateOrganisationRequest();
-        request.setOrganisationIdentification(getString(requestSettings, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        request.setOrganisationIdentification(
+                getString(requestSettings, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.activateOrganization(request));
@@ -55,6 +56,7 @@ public class ActivateOrganizationSteps extends GlueBase {
      */
     @Then("^the activate organization response is successful$")
     public void theActivateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ActivateOrganisationResponse);
+        Assert.assertTrue(
+                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ActivateOrganisationResponse);
     }
 }

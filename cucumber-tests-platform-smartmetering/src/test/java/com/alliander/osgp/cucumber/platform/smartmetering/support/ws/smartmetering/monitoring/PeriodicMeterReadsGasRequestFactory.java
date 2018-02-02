@@ -7,11 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
@@ -22,17 +23,21 @@ public class PeriodicMeterReadsGasRequestFactory {
 
         final PeriodicMeterReadsGasRequest periodicMeterReadsGasRequest = new PeriodicMeterReadsGasRequest();
 
-        periodicMeterReadsGasRequest.setDeviceIdentification(Helpers.getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformSmartmeteringDefaults.DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION));
-        periodicMeterReadsGasRequest.setPeriodicReadsRequestData(PeriodicReadsRequestDataFactory.fromParameterMap(requestParameters));
+        periodicMeterReadsGasRequest
+                .setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformSmartmeteringDefaults.DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION));
+        periodicMeterReadsGasRequest
+                .setPeriodicReadsRequestData(PeriodicReadsRequestDataFactory.fromParameterMap(requestParameters));
 
         return periodicMeterReadsGasRequest;
     }
 
     public static PeriodicMeterReadsGasAsyncRequest fromScenarioContext() {
         final PeriodicMeterReadsGasAsyncRequest periodicMeterReadsGasAsyncRequest = new PeriodicMeterReadsGasAsyncRequest();
-        periodicMeterReadsGasAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        periodicMeterReadsGasAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        periodicMeterReadsGasAsyncRequest
+                .setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
+        periodicMeterReadsGasAsyncRequest
+                .setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
         return periodicMeterReadsGasAsyncRequest;
     }
 }

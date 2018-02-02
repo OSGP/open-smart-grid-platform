@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -49,8 +49,8 @@ public class RemoveDeviceSteps extends GlueBase {
     public void receivingARemoveDeviceRequest(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final RemoveDeviceRequest request = new RemoveDeviceRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.removeDevice(request));

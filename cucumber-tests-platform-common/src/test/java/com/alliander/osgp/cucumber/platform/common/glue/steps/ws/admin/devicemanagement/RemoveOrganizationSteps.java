@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -46,8 +46,9 @@ public class RemoveOrganizationSteps extends GlueBase {
     public void receivingARemoveOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
         final RemoveOrganisationRequest request = new RemoveOrganisationRequest();
-        request.setOrganisationIdentification(getString(requestSettings, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        request.setOrganisationIdentification(
+                getString(requestSettings, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         try {
             ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.client.removeOrganization(request));
@@ -63,7 +64,8 @@ public class RemoveOrganizationSteps extends GlueBase {
      */
     @Then("^the remove organization response is successful$")
     public void theRemoveOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof RemoveOrganisationResponse);
+        Assert.assertTrue(
+                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof RemoveOrganisationResponse);
     }
 
     /**

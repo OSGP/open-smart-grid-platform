@@ -7,13 +7,14 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
+
 import java.util.List;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObjectDefinition;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObjectDefinitions;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 
 public class CaptureObjectDefinitionsFactory {
@@ -29,7 +30,7 @@ public class CaptureObjectDefinitionsFactory {
         final CaptureObjectDefinitions captureObjectDefinitions = new CaptureObjectDefinitions();
         final List<CaptureObjectDefinition> selectedValues = captureObjectDefinitions.getCaptureObject();
 
-        final int numberOfSelectedValues = Helpers.getInteger(requestParameters, NUMBER_OF_SELECTED_VALUES, 0);
+        final int numberOfSelectedValues = getInteger(requestParameters, NUMBER_OF_SELECTED_VALUES, 0);
         for (int i = 1; i <= numberOfSelectedValues; i++) {
             final CaptureObjectDefinition captureObjectDefinition = new CaptureObjectDefinition();
             captureObjectDefinition.setClassId(SettingsHelper.getIntegerValue(requestParameters, CLASS_ID, i));

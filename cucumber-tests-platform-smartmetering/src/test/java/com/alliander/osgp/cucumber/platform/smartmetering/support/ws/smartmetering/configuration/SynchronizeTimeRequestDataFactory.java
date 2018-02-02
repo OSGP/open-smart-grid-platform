@@ -7,8 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getByte;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getByte;
 
 import java.util.Map;
 
@@ -21,8 +21,10 @@ public class SynchronizeTimeRequestDataFactory {
     public static SynchronizeTimeRequestData fromParameterMap(final Map<String, String> parameters) {
         final SynchronizeTimeRequestData synchronizeTimeRequestData = new SynchronizeTimeRequestData();
 
-        synchronizeTimeRequestData.setDeviation(getByte(parameters, PlatformSmartmeteringKeys.DEVIATION, PlatformSmartmeteringDefaults.DEVIATION));
-        synchronizeTimeRequestData.setDst(getBoolean(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_ACTIVE, PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_ACTIVE));
+        synchronizeTimeRequestData.setDeviation(
+                getByte(parameters, PlatformSmartmeteringKeys.DEVIATION, PlatformSmartmeteringDefaults.DEVIATION));
+        synchronizeTimeRequestData.setDst(getBoolean(parameters, PlatformSmartmeteringKeys.DAYLIGHT_SAVINGS_ACTIVE,
+                PlatformSmartmeteringDefaults.DAYLIGHT_SAVINGS_ACTIVE));
 
         return synchronizeTimeRequestData;
     }

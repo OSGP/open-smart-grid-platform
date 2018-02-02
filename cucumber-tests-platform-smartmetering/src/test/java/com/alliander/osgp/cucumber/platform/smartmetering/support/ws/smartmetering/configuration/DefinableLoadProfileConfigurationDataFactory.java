@@ -7,10 +7,11 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getLong;
+
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DefinableLoadProfileConfigurationData;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class DefinableLoadProfileConfigurationDataFactory {
@@ -19,7 +20,7 @@ public class DefinableLoadProfileConfigurationDataFactory {
         final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData = new DefinableLoadProfileConfigurationData();
         definableLoadProfileConfigurationData.setCaptureObjects(CaptureObjectsFactory.fromParameterMap(parameters));
         definableLoadProfileConfigurationData
-                .setCapturePeriod(Helpers.getLong(parameters, PlatformSmartmeteringKeys.CAPTURE_PERIOD, null));
+                .setCapturePeriod(getLong(parameters, PlatformSmartmeteringKeys.CAPTURE_PERIOD, null));
         return definableLoadProfileConfigurationData;
     }
 }

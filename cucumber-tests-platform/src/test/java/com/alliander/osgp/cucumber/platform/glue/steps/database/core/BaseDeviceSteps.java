@@ -7,12 +7,12 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getDate;
-import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.core.Helpers.getFloat;
-import static com.alliander.osgp.cucumber.core.Helpers.getLong;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getFloat;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getLong;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -128,7 +128,8 @@ public abstract class BaseDeviceSteps extends GlueBase {
                 getString(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
                 getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY),
                 (settings.containsKey(PlatformKeys.KEY_LATITUDE) && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
-                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE) : null,
+                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE)
+                        : null,
                 (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
                         && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
                                 ? getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformDefaults.DEFAULT_LONGITUDE)

@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +20,6 @@ import javax.xml.bind.DatatypeConverter;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDay;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetSpecialDaysRequestBuilder {
@@ -48,7 +50,7 @@ public class SetSpecialDaysRequestBuilder {
     }
 
     private int getSpecialDayCount(final Map<String, String> parameters) {
-        return Helpers.getInteger(parameters, PlatformSmartmeteringKeys.SPECIAL_DAY_COUNT, DEFAULT_SPECIAL_DAY_COUNT);
+        return getInteger(parameters, PlatformSmartmeteringKeys.SPECIAL_DAY_COUNT, DEFAULT_SPECIAL_DAY_COUNT);
     }
 
     private SpecialDay getSpecialDay(final Map<String, String> parameters, final int index) {
@@ -60,12 +62,12 @@ public class SetSpecialDaysRequestBuilder {
 
     private int getSpecialDayId(final Map<String, String> parameters, final int index) {
         final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.SPECIAL_DAY_ID, index);
-        return Helpers.getInteger(parameters, key, DEFAULT_SPECIAL_DAY_ID);
+        return getInteger(parameters, key, DEFAULT_SPECIAL_DAY_ID);
     }
 
     private byte[] getSpecialDayDate(final Map<String, String> parameters, final int index) {
         final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.SPECIAL_DAY_DATE, index);
-        final String value = Helpers.getString(parameters, key, DEFAULT_SPECIAL_DAY_DATE);
+        final String value = getString(parameters, key, DEFAULT_SPECIAL_DAY_DATE);
         return DatatypeConverter.parseHexBinary(value);
     }
 

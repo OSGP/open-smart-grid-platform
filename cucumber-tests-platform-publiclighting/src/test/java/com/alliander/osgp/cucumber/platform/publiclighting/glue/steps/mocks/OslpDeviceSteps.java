@@ -7,11 +7,11 @@
  */
 package com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.mocks;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getDate;
-import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.core.Helpers.getInteger;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -1038,10 +1038,8 @@ public class OslpDeviceSteps {
 
         try {
             final OslpEnvelope request = this
-                    .createEnvelopeBuilder(
-                            getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
-                                    PlatformPubliclightingDefaults.DEVICE_UID),
-                            this.oslpMockServer.getSequenceNumber())
+                    .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
+                            PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber())
                     .withPayloadMessage(
                             Message.newBuilder()
                                     .setRegisterDeviceRequest(Oslp.RegisterDeviceRequest.newBuilder()

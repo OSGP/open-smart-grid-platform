@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
-import com.alliander.osgp.cucumber.core.Helpers;
+import com.alliander.osgp.cucumber.core.DateTimeHelper;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 
@@ -42,7 +42,7 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         if (settings.containsKey(PlatformKeys.KEY_CREATION_TIME)) {
             final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
             fld.setAccessible(true);
-            fld.set(responseData, Helpers.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
+            fld.set(responseData, DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
             this.responseDataRespository.save(responseData);
         }
 

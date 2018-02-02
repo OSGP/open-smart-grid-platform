@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -25,7 +26,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGene
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ProfileGenericDataRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
@@ -59,7 +59,7 @@ public class ProfileGenericDataSteps {
         final ProfileGenericDataResponse response = this.responseClient.getResponse(asyncRequest);
         assertNotNull("ProfileGenericDataResponse should not be null", response);
 
-        final int expectedNumberOfCaptureObjects = Helpers.getInteger(settings, "NumberOfCaptureObjects", 0);
+        final int expectedNumberOfCaptureObjects = getInteger(settings, "NumberOfCaptureObjects", 0);
         final List<CaptureObject> actualCaptureObjects = response.getCaptureObjectList().getCaptureObjects();
         assertEquals("Number of capture objects", expectedNumberOfCaptureObjects, actualCaptureObjects.size());
 
@@ -68,14 +68,15 @@ public class ProfileGenericDataSteps {
             this.validateCaptureObject(actualCaptureObject, settings, i + 1);
         }
 
-        final int expectedNumberOfProfileEntries = Helpers.getInteger(settings, "NumberOfProfileEntries", 0);
+        final int expectedNumberOfProfileEntries = getInteger(settings, "NumberOfProfileEntries", 0);
         final List<ProfileEntry> actualProfileEntries = response.getProfileEntryList().getProfileEntries();
         assertEquals("Number of profile entries", expectedNumberOfProfileEntries, actualProfileEntries.size());
 
         if (expectedNumberOfProfileEntries > 0) {
             /*
-             * Expected value equals expectedNumberOfCaptureObjects, because the number of ProfileEntryValues in a
-             * ProfileEntry should match the number of captured objects from the buffer.
+             * Expected value equals expectedNumberOfCaptureObjects, because the
+             * number of ProfileEntryValues in a ProfileEntry should match the
+             * number of captured objects from the buffer.
              */
             assertEquals("Number of profile entry values", expectedNumberOfCaptureObjects,
                     actualProfileEntries.get(0).getProfileEntryValue().size());

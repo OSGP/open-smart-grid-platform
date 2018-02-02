@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.addSetting;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +16,6 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 
 import cucumber.api.java.en.Then;
@@ -54,7 +55,7 @@ public class FindMbusEventsReads extends AbstractFindEventsReads {
     @Then("^mbus events should be returned$")
     @Override
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        super.eventsShouldBeReturned(Helpers.addSetting(settings, PlatformKeys.KEY_EVENTS_NODELIST_EXPECTED, "true"));
+        super.eventsShouldBeReturned(addSetting(settings, PlatformKeys.KEY_EVENTS_NODELIST_EXPECTED, "true"));
     }
 
     @Then("^mbus events for all types should be returned$")

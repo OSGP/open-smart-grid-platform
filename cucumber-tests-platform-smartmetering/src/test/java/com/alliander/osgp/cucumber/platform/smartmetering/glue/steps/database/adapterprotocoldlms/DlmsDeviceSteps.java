@@ -7,8 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.database.adapterprotocoldlms;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,11 +67,12 @@ public class DlmsDeviceSteps extends GlueBase {
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
         final DlmsDevice dlmsDevice = new DlmsDevice(deviceIdentification);
-        dlmsDevice.setInDebugMode(getBoolean(settings, PlatformKeys.KEY_INDEBUGMODE, PlatformDefaults.DEFAULT_INDEBUGMODE));
+        dlmsDevice.setInDebugMode(
+                getBoolean(settings, PlatformKeys.KEY_INDEBUGMODE, PlatformDefaults.DEFAULT_INDEBUGMODE));
         dlmsDevice.setCommunicationMethod(
                 getString(settings, PlatformKeys.KEY_COMM_METHOD, PlatformDefaults.DLMS_DEFAULT_COMMUNICATION_METHOD));
-        dlmsDevice.setIpAddressIsStatic(
-                getBoolean(settings, PlatformKeys.KEY_IP_ADDR_IS_STATIC, PlatformDefaults.DLMS_DEFAULT_IP_ADDRESS_IS_STATIC));
+        dlmsDevice.setIpAddressIsStatic(getBoolean(settings, PlatformKeys.KEY_IP_ADDR_IS_STATIC,
+                PlatformDefaults.DLMS_DEFAULT_IP_ADDRESS_IS_STATIC));
 
         return dlmsDevice;
     }

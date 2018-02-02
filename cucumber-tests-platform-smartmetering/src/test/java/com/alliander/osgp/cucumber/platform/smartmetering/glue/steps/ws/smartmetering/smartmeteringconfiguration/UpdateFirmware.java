@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -30,7 +31,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFi
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
+import com.alliander.osgp.cucumber.platform.smartmetering.ScenarioContextHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.UpdateFirmwareRequestFactory;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -56,7 +57,7 @@ public class UpdateFirmware {
         final UpdateFirmwareAsyncResponse asyncResponse = this.client.updateFirmware(request);
 
         assertNotNull("asyncResponse should not be null", asyncResponse);
-        Helpers.saveAsyncResponse(asyncResponse);
+        ScenarioContextHelper.saveAsyncResponse(asyncResponse);
     }
 
     @Then("^retrieving the update firmware response results in an exception$")
@@ -119,7 +120,7 @@ public class UpdateFirmware {
     public void theDatabaseShouldBeUpdatedWithTheNewDeviceFirmware(final Map<String, String> settings)
             throws Throwable {
 
-        final String deviceIdentification = Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
         final Device device = this.deviceRepository.findByDeviceIdentificationWithFirmware(deviceIdentification);
         assertNotNull("Device " + deviceIdentification + " not found.", device);
@@ -141,7 +142,7 @@ public class UpdateFirmware {
     public void theDatabaseShouldNotBeUpdatedWithTheNewDeviceFirmware(final Map<String, String> settings)
             throws Throwable {
 
-        final String deviceIdentification = Helpers.getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_SMART_METER_DEVICE_IDENTIFICATION);
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         assertNotNull("Device " + deviceIdentification + " not found.", device);
@@ -149,8 +150,8 @@ public class UpdateFirmware {
         final FirmwareFile activeFirmwareFile = device.getActiveFirmwareFile();
         if (activeFirmwareFile == null) {
             /*
-             * The device has no active firmware in the database, so the firmware from the settings has not been linked
-             * to the device.
+             * The device has no active firmware in the database, so the
+             * firmware from the settings has not been linked to the device.
              */
             return;
         }

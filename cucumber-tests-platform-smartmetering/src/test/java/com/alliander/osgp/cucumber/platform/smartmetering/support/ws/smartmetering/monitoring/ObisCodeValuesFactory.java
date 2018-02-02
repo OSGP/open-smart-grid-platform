@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getShort;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getShort;
 
 import java.util.Map;
 

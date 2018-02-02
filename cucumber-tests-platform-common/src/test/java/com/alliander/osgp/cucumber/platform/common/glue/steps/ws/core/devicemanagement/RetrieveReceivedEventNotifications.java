@@ -8,10 +8,10 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getDateTime;
-import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.core.Helpers.getInteger;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.DateTimeHelper.getDateTime;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
