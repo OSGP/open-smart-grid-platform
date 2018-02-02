@@ -128,13 +128,15 @@ public abstract class BaseDeviceSteps extends GlueBase {
                 getString(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
                 getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY),
                 (settings.containsKey(PlatformKeys.KEY_LATITUDE) && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
-                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE) : null,
+                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE)
+                        : null,
                 (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
                         && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
                                 ? getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformDefaults.DEFAULT_LONGITUDE)
                                 : null);
 
-        device.setActivated(getBoolean(settings, PlatformKeys.KEY_IS_ACTIVATED, PlatformDefaults.DEFAULT_IS_ACTIVATED));
+        device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformDefaults.DEFAULT_ACTIVATED));
+
         device = this.deviceRepository.save(device);
 
         if (getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,

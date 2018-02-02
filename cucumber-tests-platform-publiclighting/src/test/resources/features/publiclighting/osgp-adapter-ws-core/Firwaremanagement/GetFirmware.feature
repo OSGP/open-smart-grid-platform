@@ -11,7 +11,6 @@ Feature: FirmwareManagement get firmware
       | DeviceIdentification | TEST1024000000001 |
       | Status               | Active            |
       | Organization         | TestOrganization  |
-      | IsActivated          | true              |
       | Protocol             | <Protocol>        |
     And the device returns firmware version "<Firmware Version>" over "<Protocol>"
     When receiving a get firmware version request

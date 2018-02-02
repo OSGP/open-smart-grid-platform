@@ -6,15 +6,15 @@ Feature: AdminDeviceManagement Device Deactivation
 
   Scenario: Deactivate a device
     Given a device
-      | DeviceIdentification | TEST1024000000001 |
-      | Active               | true              |
+      | DeviceIdentification  | TEST1024000000001 |
+      | DeviceLifecycleStatus | IN_USE            |
     When receiving a deactivate device request
       | DeviceIdentification | TEST1024000000001 |
     Then the deactivate device response contains
       | Result | OK |
     And the device with device identification "TEST1024000000001" should be inactive
 
-   Scenario: Deactivate an unknown device
+  Scenario: Deactivate an unknown device
     When receiving a deactivate device request
       | DeviceIdentification | TEST1024000000001 |
     Then the deactivate device response contains soap fault

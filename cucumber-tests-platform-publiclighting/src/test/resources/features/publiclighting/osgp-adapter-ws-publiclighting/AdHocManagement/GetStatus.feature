@@ -102,7 +102,7 @@ Feature: PublicLightingAdhocManagement GetStatus
   Scenario Outline: Get status for an inactive device
     Given an ssld device
       | DeviceIdentification  | TEST1024000000001 |
-      | IsActivated           | <IsActivated>     |
+      | Activated             | <Activated>       |
       | DeviceLifecycleStatus | <Status>          |
     When receiving a get status request
       | DeviceIdentification | TEST1024000000001 |
@@ -110,10 +110,10 @@ Feature: PublicLightingAdhocManagement GetStatus
       | Message | INACTIVE_DEVICE |
 
     Examples: 
-      | IsActivated | Status           |
-      | false       | NEW_IN_INVENTORY |
-      | false       | REGISTERED       |
-      | false       | DESTROYED        |
+      | Activated | Status           |
+      | false     | NEW_IN_INVENTORY |
+      | false     | REGISTERED       |
+      | false     | DESTROYED        |
 
   Scenario: Get status for an unregistered device
     Given an ssld device

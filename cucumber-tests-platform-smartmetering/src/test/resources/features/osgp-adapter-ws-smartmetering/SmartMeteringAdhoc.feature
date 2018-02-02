@@ -7,7 +7,6 @@ Feature: SmartMetering AdHoc
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Active               | true              |
 
   Scenario: Get All Attribute Values Request
     When the get all attribute values request is received

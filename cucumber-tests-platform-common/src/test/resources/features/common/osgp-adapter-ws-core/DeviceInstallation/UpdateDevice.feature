@@ -12,7 +12,6 @@ Feature: CoreDeviceInstallation Device Updating
       | DeviceIdentification      | TEST1024000000001       |
       | Alias                     | AfterTest               |
       | NetworkAddress            | 127.0.0.1               |
-      | Active                    | true                    |
       | internalId                |                       1 |
       | externalId                |                       2 |
       | relayType                 | LIGHT                   |
@@ -35,7 +34,6 @@ Feature: CoreDeviceInstallation Device Updating
       | DeviceIdentification      | TEST1024000000001       |
       | Alias                     | AfterTest               |
       | NetworkAddress            | 127.0.0.1               |
-      | Active                    | true                    |
       | internalId                |                       1 |
       | externalId                |                       2 |
       | relayType                 | LIGHT                   |

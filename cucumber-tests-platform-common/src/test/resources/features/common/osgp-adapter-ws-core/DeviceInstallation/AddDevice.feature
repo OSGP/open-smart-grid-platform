@@ -1,6 +1,6 @@
 @Common @Platform @CoreDeviceInstallation
 Feature: CoreDeviceInstallation Device Creating
-  As a ...
+    As a ...
   I want to be able to perform DeviceInstallation operations on a device
   In order to ...
 
@@ -27,7 +27,6 @@ Feature: CoreDeviceInstallation Device Creating
       | DeviceModelDescription | <Description>           |
       | Metered                | <Metered>               |
     Then the add device response is successful
-    # Note: 'Activated' en 'Active' moeten altijd 'false' zijn, de device zet deze waarden automatisch op 'true'
     And the device exists
       | DeviceIdentification       | <DeviceIdentification>  |
       | alias                      | <Alias>                 |
@@ -40,7 +39,6 @@ Feature: CoreDeviceInstallation Device Creating
       | gpsLatitude                | <GpsLatitude>           |
       | gpsLongitude               | <GpsLongitude>          |
       | Activated                  | false                   |
-      | Active                     | false                   |
       | HasSchedule                | <HasSchedule>           |
       | PublicKeyPresent           | <PublicKeyPresent>      |
       | DeviceModel                | <ModelCode>             |
@@ -163,9 +161,68 @@ Feature: CoreDeviceInstallation Device Creating
       | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
       | InnerMessage   | Organisation with id "unknown-organization" could not be found.  |
 
-  Scenario: Adding a device which already exists
+  Scenario: Allow adding an existing device if there has been no communication with the device yet
+
+    Given a device model
+      | ModelCode | Test Model |
+      | Metered   | true       |
+    And a device
+      | DeviceIdentification       | TEST1024000000001 |
+      | alias                      | ALIAS_ORIGINAL    |
+      | OrganizationIdentification | test-org          |
+      | containerPostalCode        | 1234AA            |
+      | containerCity              | Maastricht        |
+      | containerStreet            | Stationsstraat    |
+      | containerNumber            |                12 |
+      | containerMunicipality      |                   |
+      | gpsLatitude                |                 0 |
+      | gpsLongitude               |                 0 |
+      | Activated                  | false             |
+      | HasSchedule                | false             |
+      | PublicKeyPresent           | false             |
+      | DeviceModel                | Test Model        |
+      | DeviceType                 |                   |
+    When receiving an add device request
+      | DeviceUid              |        1234567890 |
+      | DeviceIdentification   | TEST1024000000001 |
+      | alias                  | ALIAS_NEW         |
+      | Owner                  | test-org          |
+      | containerPostalCode    | 5678BB            |
+      | containerCity          | Heerlen           |
+      | containerStreet        | Stationsweg       |
+      | containerNumber        |                34 |
+      | containerMunicipality  | Parkstad          |
+      | gpsLatitude            |                 1 |
+      | gpsLongitude           |                 1 |
+      | HasSchedule            | false             |
+      | PublicKeyPresent       | false             |
+      | Manufacturer           | Test              |
+      | DeviceModelCode        | Test Model        |
+      | DeviceModelDescription | Test              |
+      | Metered                | true              |
+    Then the add device response is successful
+    And the device exists
+      | DeviceIdentification       | TEST1024000000001 |
+      | alias                      | ALIAS_NEW         |
+      | OrganizationIdentification | test-org          |
+      | containerPostalCode        | 5678BB            |
+      | containerCity              | Heerlen           |
+      | containerStreet            | Stationsweg       |
+      | containerNumber            |                34 |
+      | containerMunicipality      | Parkstad          |
+      | gpsLatitude                |                 1 |
+      | gpsLongitude               |                 1 |
+      | Activated                  | false             |
+      | HasSchedule                | false             |
+      | PublicKeyPresent           | false             |
+      | DeviceModel                | Test Model        |
+      | DeviceType                 |                   |
+
+  Scenario: Disallow adding an existing device if there has been communication with the device
+
     Given a device
       | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SSLD              |
     When receiving an add device request
       | DeviceIdentification | TEST1024000000001 |
     Then the add device response contains soap fault
