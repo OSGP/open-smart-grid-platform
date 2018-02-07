@@ -7,7 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import org.joda.time.DateTime;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.DateConverter;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
@@ -27,7 +27,7 @@ public class PeriodicReadsRequestDataFactory {
     public static PeriodicReadsRequestData fromParameterMap(final Map<String, String> requestParameters) {
 
         final PeriodType periodType = PeriodType
-                .fromValue(Helpers.getString(requestParameters, PlatformSmartmeteringKeys.KEY_PERIOD_TYPE, "DAILY"));
+                .fromValue(getString(requestParameters, PlatformSmartmeteringKeys.KEY_PERIOD_TYPE, "DAILY"));
         final XMLGregorianCalendar beginDate = createXMLGregorianCalendar(requestParameters,
                 PlatformKeys.KEY_BEGIN_DATE);
         final XMLGregorianCalendar endDate = createXMLGregorianCalendar(requestParameters, PlatformKeys.KEY_END_DATE);

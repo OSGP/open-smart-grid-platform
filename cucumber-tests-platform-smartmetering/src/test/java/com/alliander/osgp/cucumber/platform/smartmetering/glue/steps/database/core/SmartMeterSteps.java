@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.database.core;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getFloat;
-import static com.alliander.osgp.cucumber.core.Helpers.getShort;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getFloat;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getShort;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 

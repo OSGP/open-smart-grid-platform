@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getHexDecoded;
-import static com.alliander.osgp.cucumber.core.Helpers.getShort;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getHexDecoded;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getShort;
 
 import java.util.Map;
 

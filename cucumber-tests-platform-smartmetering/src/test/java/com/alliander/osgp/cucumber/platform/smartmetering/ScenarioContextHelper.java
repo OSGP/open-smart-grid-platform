@@ -4,7 +4,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 
-public class Helpers extends com.alliander.osgp.cucumber.platform.core.Helpers {
+public class ScenarioContextHelper {
     /**
      * Store the correlationUid and deviceIdentification in the ScenarioContext,
      * given the AsyncResponse

@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.core.audittrail;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -44,7 +44,8 @@ public class AuditTrail {
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
         assertTrue("DeviceLogItems are not found in the database",
-                // Wait 10 minutes with a timeout of 1 sec for the logged retry exceptions
+                // Wait 10 minutes with a timeout of 1 sec for the logged retry
+                // exceptions
                 this.responseNotifier.waitForLog(deviceIdentification, 1000, 600000));
 
         final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository

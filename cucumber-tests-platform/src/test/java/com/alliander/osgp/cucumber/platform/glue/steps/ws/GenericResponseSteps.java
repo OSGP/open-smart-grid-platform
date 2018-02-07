@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.ws;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;

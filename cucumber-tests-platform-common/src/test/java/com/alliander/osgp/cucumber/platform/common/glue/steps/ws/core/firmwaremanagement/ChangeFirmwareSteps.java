@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.core.firmwaremanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -82,8 +82,8 @@ public class ChangeFirmwareSteps {
         firmware.setPushToNewDevices(getBoolean(requestParameters, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
                 PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
         firmware.setFirmwareModuleData(new FirmwareModuleData());
-        firmware.setManufacturer(
-                getString(requestParameters, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
+        firmware.setManufacturer(getString(requestParameters, PlatformKeys.MANUFACTURER_NAME,
+                PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
         firmware.setModelCode(getString(requestParameters, PlatformKeys.DEVICEMODEL_MODELCODE,
                 PlatformDefaults.DEVICE_MODEL_MODEL_CODE));
         return firmware;

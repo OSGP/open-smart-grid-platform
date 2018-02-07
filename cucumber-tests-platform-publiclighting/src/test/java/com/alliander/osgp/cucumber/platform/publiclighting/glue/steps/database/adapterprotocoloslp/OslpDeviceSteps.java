@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.database.adapterprotocoloslp;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;

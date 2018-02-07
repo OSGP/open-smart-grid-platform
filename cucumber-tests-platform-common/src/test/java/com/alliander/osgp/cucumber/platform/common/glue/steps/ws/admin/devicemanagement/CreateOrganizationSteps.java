@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -51,21 +51,27 @@ public class CreateOrganizationSteps extends GlueBase {
         final Organisation organization = new Organisation();
 
         // Required fields
-        organization.setName(getString(requestSettings, PlatformCommonKeys.KEY_NAME, PlatformCommonDefaults.DEFAULT_ORGANIZATION_NAME));
-        organization.setOrganisationIdentification(getString(requestSettings, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        organization.setPrefix(getString(requestSettings, PlatformCommonKeys.KEY_PREFIX, PlatformCommonDefaults.DEFAULT_ORGANIZATION_PREFIX));
+        organization.setName(getString(requestSettings, PlatformCommonKeys.KEY_NAME,
+                PlatformCommonDefaults.DEFAULT_ORGANIZATION_NAME));
+        organization.setOrganisationIdentification(
+                getString(requestSettings, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        organization.setPrefix(getString(requestSettings, PlatformCommonKeys.KEY_PREFIX,
+                PlatformCommonDefaults.DEFAULT_ORGANIZATION_PREFIX));
 
-        final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, PlatformCommonKeys.KEY_PLATFORM_FUNCTION_GROUP,
-                PlatformFunctionGroup.class, PlatformCommonDefaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
+        final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings,
+                PlatformCommonKeys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
+                PlatformCommonDefaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
         organization.setFunctionGroup(platformFunctionGroup);
 
-        for (final String domain : getString(requestSettings, PlatformCommonKeys.KEY_DOMAINS, PlatformCommonDefaults.DEFAULT_DOMAINS).split(";")) {
+        for (final String domain : getString(requestSettings, PlatformCommonKeys.KEY_DOMAINS,
+                PlatformCommonDefaults.DEFAULT_DOMAINS).split(";")) {
             organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
         }
 
         // Optional fields
-        if (requestSettings.containsKey(PlatformCommonKeys.KEY_ENABLED) && !requestSettings.get(PlatformCommonKeys.KEY_ENABLED).isEmpty()) {
+        if (requestSettings.containsKey(PlatformCommonKeys.KEY_ENABLED)
+                && !requestSettings.get(PlatformCommonKeys.KEY_ENABLED).isEmpty()) {
             organization.setEnabled(getBoolean(requestSettings, PlatformCommonKeys.KEY_ENABLED));
         }
 
@@ -100,7 +106,8 @@ public class CreateOrganizationSteps extends GlueBase {
      */
     @Then("^the create organization response is successful$")
     public void theCreateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof CreateOrganisationResponse);
+        Assert.assertTrue(
+                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof CreateOrganisationResponse);
     }
 
     /**

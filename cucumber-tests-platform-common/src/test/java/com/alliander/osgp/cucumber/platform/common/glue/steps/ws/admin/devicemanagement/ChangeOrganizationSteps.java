@@ -7,8 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.admin.devicemanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -49,19 +49,20 @@ public class ChangeOrganizationSteps extends GlueBase {
     public void receivingAnUpdateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
         final ChangeOrganisationRequest request = new ChangeOrganisationRequest();
 
-        request.setOrganisationIdentification(getString(requestSettings, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        request.setOrganisationIdentification(
+                getString(requestSettings, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        request.setNewOrganisationName(
-                getString(requestSettings, PlatformCommonKeys.KEY_NAME, PlatformCommonDefaults.DEFAULT_NEW_ORGANIZATION_NAME));
+        request.setNewOrganisationName(getString(requestSettings, PlatformCommonKeys.KEY_NAME,
+                PlatformCommonDefaults.DEFAULT_NEW_ORGANIZATION_NAME));
 
-        request.setNewOrganisationPlatformFunctionGroup(
-                getEnum(requestSettings, PlatformCommonKeys.KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP, PlatformFunctionGroup.class,
-                        PlatformCommonDefaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
+        request.setNewOrganisationPlatformFunctionGroup(getEnum(requestSettings,
+                PlatformCommonKeys.KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP, PlatformFunctionGroup.class,
+                PlatformCommonDefaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
 
         request.getNewOrganisationPlatformDomains().clear();
-        for (final String platformDomain : getString(requestSettings, PlatformCommonKeys.KEY_DOMAINS, PlatformCommonDefaults.DEFAULT_DOMAINS)
-                .split(";")) {
+        for (final String platformDomain : getString(requestSettings, PlatformCommonKeys.KEY_DOMAINS,
+                PlatformCommonDefaults.DEFAULT_DOMAINS).split(";")) {
             request.getNewOrganisationPlatformDomains().add(Enum.valueOf(PlatformDomain.class, platformDomain));
         }
 
@@ -74,7 +75,8 @@ public class ChangeOrganizationSteps extends GlueBase {
 
     @Then("^the update organization response is successful$")
     public void theUpdateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ChangeOrganisationResponse);
+        Assert.assertTrue(
+                ScenarioContext.current().get(PlatformCommonKeys.RESPONSE) instanceof ChangeOrganisationResponse);
     }
 
     /**

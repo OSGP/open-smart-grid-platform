@@ -7,6 +7,10 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +21,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.Configur
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationFlags;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationObject;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GprsOperationModeType;
-import com.alliander.osgp.cucumber.platform.core.Helpers;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
@@ -60,12 +63,12 @@ public class SetConfigurationObjectRequestBuilder {
     }
 
     private GprsOperationModeType getGprsOperationModeType(final Map<String, String> parameters) {
-        return Helpers.getEnum(parameters, PlatformSmartmeteringKeys.GPRS_OPERATION_MODE_TYPE,
-                GprsOperationModeType.class, DEFAULT_GPRS_OPERATION_MODE_TYPE);
+        return getEnum(parameters, PlatformSmartmeteringKeys.GPRS_OPERATION_MODE_TYPE, GprsOperationModeType.class,
+                DEFAULT_GPRS_OPERATION_MODE_TYPE);
     }
 
     private int getConfigurationFlagCount(final Map<String, String> parameters) {
-        return Helpers.getInteger(parameters, PlatformSmartmeteringKeys.CONFIGURATION_FLAG_COUNT,
+        return getInteger(parameters, PlatformSmartmeteringKeys.CONFIGURATION_FLAG_COUNT,
                 DEFAULT_CONFIGURATION_FLAG_COUNT);
     }
 
@@ -85,12 +88,12 @@ public class SetConfigurationObjectRequestBuilder {
 
     private ConfigurationFlagType getConfigurationFlagType(final Map<String, String> parameters, final int index) {
         final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_TYPE, index);
-        return Helpers.getEnum(parameters, key, ConfigurationFlagType.class, DEFAULT_CONFIGURATION_FLAG_TYPE);
+        return getEnum(parameters, key, ConfigurationFlagType.class, DEFAULT_CONFIGURATION_FLAG_TYPE);
     }
 
     private boolean getConfigurationFlagEnabled(final Map<String, String> parameters, final int index) {
         final String key = SettingsHelper.makeKey(PlatformSmartmeteringKeys.CONFIGURATION_FLAG_ENABLED, index);
-        return Helpers.getBoolean(parameters, key, DEFAULT_CONFIGURATION_FLAG_ENABLED);
+        return getBoolean(parameters, key, DEFAULT_CONFIGURATION_FLAG_ENABLED);
     }
 
 }

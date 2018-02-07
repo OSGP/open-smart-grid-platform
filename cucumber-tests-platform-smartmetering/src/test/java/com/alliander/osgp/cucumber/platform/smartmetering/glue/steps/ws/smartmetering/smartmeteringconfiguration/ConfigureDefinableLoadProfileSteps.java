@@ -19,7 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.Configur
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileResponse;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
+import com.alliander.osgp.cucumber.platform.smartmetering.ScenarioContextHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.ConfigureDefinableLoadProfileRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 
@@ -39,7 +39,7 @@ public class ConfigureDefinableLoadProfileSteps {
                 .configureDefinableLoadProfile(request);
 
         assertNotNull(asyncResponse);
-        Helpers.saveAsyncResponse(asyncResponse);
+        ScenarioContextHelper.saveAsyncResponse(asyncResponse);
     }
 
     @Then("^the Configure Definable Load Profile response should be returned$")

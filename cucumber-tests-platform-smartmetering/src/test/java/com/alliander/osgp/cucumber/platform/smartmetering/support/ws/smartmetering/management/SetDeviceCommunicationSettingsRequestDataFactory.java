@@ -7,13 +7,13 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
 
 import java.math.BigInteger;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsData;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
@@ -23,7 +23,7 @@ public class SetDeviceCommunicationSettingsRequestDataFactory {
         final SetDeviceCommunicationSettingsData setDeviceCommunicationSettingsData = new SetDeviceCommunicationSettingsData();
 
         setDeviceCommunicationSettingsData.setChallengeLength(
-                BigInteger.valueOf(Helpers.getInteger(parameters, PlatformSmartmeteringKeys.CHALLENGE_LENGTH)));
+                BigInteger.valueOf(getInteger(parameters, PlatformSmartmeteringKeys.CHALLENGE_LENGTH)));
         setDeviceCommunicationSettingsData.setWithListSupported(getBoolean(parameters,
                 PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED, PlatformSmartmeteringDefaults.WITH_LIST_SUPPORTED));
         setDeviceCommunicationSettingsData.setSelectiveAccessSupported(

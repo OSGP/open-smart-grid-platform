@@ -7,12 +7,13 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
@@ -25,7 +26,7 @@ public class ReplaceKeysRequestFactory {
 
     public static ReplaceKeysRequest fromParameterMap(final Map<String, String> requestParameters) {
         final ReplaceKeysRequest replaceKeysRequest = new ReplaceKeysRequest();
-        replaceKeysRequest.setDeviceIdentification(Helpers.getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+        replaceKeysRequest.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         final SetKeysRequestData setKeysRequestData = SetKeysRequestDataFactory.fromParameterMap(requestParameters);
         replaceKeysRequest.setSetKeysRequestData(setKeysRequestData);

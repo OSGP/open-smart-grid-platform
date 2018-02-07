@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -90,7 +90,8 @@ public class ReceivedAlarmNotificationsSteps {
     }
 
     /*
-     * it may take some time before the records are to the dev_log_item table, so we have to poll.
+     * it may take some time before the records are to the dev_log_item table,
+     * so we have to poll.
      */
     private List<DeviceLogItem> findDeviceLogItems(final String deviceIdentification, final int minExcepted) {
         int loopCount = 0;

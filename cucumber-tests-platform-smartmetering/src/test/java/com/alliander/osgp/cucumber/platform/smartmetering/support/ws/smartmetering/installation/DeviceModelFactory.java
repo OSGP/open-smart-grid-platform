@@ -8,10 +8,11 @@
 
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeviceModel;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 
@@ -24,9 +25,9 @@ public class DeviceModelFactory {
     public static DeviceModel fromParameterMap(final Map<String, String> settings) {
         final DeviceModel deviceModel = new DeviceModel();
 
-        deviceModel.setManufacturer(Helpers.getString(settings, PlatformKeys.MANUFACTURER_CODE,
-                PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
-        deviceModel.setModelCode(Helpers.getString(settings, PlatformKeys.DEVICEMODEL_MODELCODE,
+        deviceModel.setManufacturer(
+                getString(settings, PlatformKeys.MANUFACTURER_CODE, PlatformDefaults.DEFAULT_MANUFACTURER_CODE));
+        deviceModel.setModelCode(getString(settings, PlatformKeys.DEVICEMODEL_MODELCODE,
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
 
         return deviceModel;

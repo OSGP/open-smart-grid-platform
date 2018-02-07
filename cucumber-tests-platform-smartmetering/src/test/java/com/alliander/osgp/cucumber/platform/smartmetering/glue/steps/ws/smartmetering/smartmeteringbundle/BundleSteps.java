@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -52,7 +52,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTime
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
+import com.alliander.osgp.cucumber.platform.smartmetering.ScenarioContextHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
@@ -109,7 +109,7 @@ public class BundleSteps extends BaseBundleSteps {
         final BundleAsyncResponse asyncResponse = this.client.sendBundleRequest(request);
 
         assertNotNull(asyncResponse);
-        Helpers.saveAsyncResponse(asyncResponse);
+        ScenarioContextHelper.saveAsyncResponse(asyncResponse);
     }
 
     @Then("^the number of responses in the bundle response should match the number of actions in the bundle request$")

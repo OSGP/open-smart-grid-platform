@@ -9,10 +9,10 @@
  */
 package com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.schedulemanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getDate;
-import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationUidInScenarioContext;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getDate;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+import static com.alliander.osgp.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
 

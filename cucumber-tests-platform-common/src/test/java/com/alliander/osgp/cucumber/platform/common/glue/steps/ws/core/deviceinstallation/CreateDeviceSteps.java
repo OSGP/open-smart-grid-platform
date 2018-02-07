@@ -9,9 +9,9 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getFloat;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getFloat;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -101,30 +101,37 @@ public class CreateDeviceSteps extends GlueBase {
 
         final Device device = new Device();
         device.setAlias(getString(settings, PlatformKeys.KEY_ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
-        device.setContainerCity(getString(settings, PlatformKeys.KEY_CITY, PlatformCommonDefaults.DEFAULT_CONTAINER_CITY));
-        device.setContainerMunicipality(
-                getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformCommonDefaults.DEFAULT_CONTAINER_MUNICIPALITY));
-        device.setContainerNumber(getString(settings, PlatformKeys.KEY_NUMBER, PlatformCommonDefaults.DEFAULT_CONTAINER_NUMBER));
-        device.setContainerPostalCode(getString(settings, PlatformKeys.KEY_POSTCODE, PlatformCommonDefaults.DEFAULT_CONTAINER_POSTALCODE));
-        device.setContainerStreet(getString(settings, PlatformKeys.KEY_STREET, PlatformCommonDefaults.DEFAULT_CONTAINER_STREET));
-        device.setDeviceIdentification(
-                getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        device.setContainerCity(
+                getString(settings, PlatformKeys.KEY_CITY, PlatformCommonDefaults.DEFAULT_CONTAINER_CITY));
+        device.setContainerMunicipality(getString(settings, PlatformKeys.KEY_MUNICIPALITY,
+                PlatformCommonDefaults.DEFAULT_CONTAINER_MUNICIPALITY));
+        device.setContainerNumber(
+                getString(settings, PlatformKeys.KEY_NUMBER, PlatformCommonDefaults.DEFAULT_CONTAINER_NUMBER));
+        device.setContainerPostalCode(
+                getString(settings, PlatformKeys.KEY_POSTCODE, PlatformCommonDefaults.DEFAULT_CONTAINER_POSTALCODE));
+        device.setContainerStreet(
+                getString(settings, PlatformKeys.KEY_STREET, PlatformCommonDefaults.DEFAULT_CONTAINER_STREET));
+        device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         final DeviceModel deviceModel = new DeviceModel();
-        deviceModel.setDescription(
-                getString(settings, PlatformKeys.KEY_DEVICE_MODEL_DESCRIPTION, PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
-        deviceModel.setManufacturer(
-                getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MANUFACTURER, PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
-        deviceModel
-                .setMetered(getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_METERED, PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED));
-        deviceModel.setModelCode(
-                getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE, PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        deviceModel.setDescription(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_DESCRIPTION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
+        deviceModel.setManufacturer(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MANUFACTURER,
+                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
+        deviceModel.setMetered(getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_METERED,
+                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED));
+        deviceModel.setModelCode(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
+                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
         device.setDeviceUid(getString(settings, PlatformKeys.KEY_DEVICE_UID, PlatformCommonDefaults.DEVICE_UID));
         device.setGpsLatitude(getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformCommonDefaults.DEFAULT_LATITUDE));
-        device.setGpsLongitude(getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformCommonDefaults.DEFAULT_LONGITUDE));
-        device.setHasSchedule(getBoolean(settings, PlatformKeys.KEY_HAS_SCHEDULE, PlatformCommonDefaults.DEFAULT_HASSCHEDULE));
+        device.setGpsLongitude(
+                getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformCommonDefaults.DEFAULT_LONGITUDE));
+        device.setHasSchedule(
+                getBoolean(settings, PlatformKeys.KEY_HAS_SCHEDULE, PlatformCommonDefaults.DEFAULT_HASSCHEDULE));
         device.setOwner(getString(settings, PlatformKeys.KEY_OWNER, PlatformCommonDefaults.DEFAULT_OWNER));
-        device.setPublicKeyPresent(getBoolean(settings, PlatformKeys.KEY_PUBLICKEYPRESENT, PlatformCommonDefaults.DEFAULT_PUBLICKEYPRESENT));
+        device.setPublicKeyPresent(getBoolean(settings, PlatformKeys.KEY_PUBLICKEYPRESENT,
+                PlatformCommonDefaults.DEFAULT_PUBLICKEYPRESENT));
         device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformCommonDefaults.DEFAULT_ACTIVATED));
 
         return device;

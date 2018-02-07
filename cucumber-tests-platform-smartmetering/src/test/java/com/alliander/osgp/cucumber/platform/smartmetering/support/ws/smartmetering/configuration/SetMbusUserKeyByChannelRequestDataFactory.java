@@ -7,10 +7,11 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getShort;
+
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetMbusUserKeyByChannelRequestData;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetMbusUserKeyByChannelRequestDataFactory {
@@ -24,8 +25,7 @@ public class SetMbusUserKeyByChannelRequestDataFactory {
             throw new AssertionError(
                     "A value for key '" + PlatformSmartmeteringKeys.CHANNEL + "' must be set in the step data.");
         }
-        setMbusUserKeyByChannelRequestData
-                .setChannel(Helpers.getShort(requestParameters, PlatformSmartmeteringKeys.CHANNEL));
+        setMbusUserKeyByChannelRequestData.setChannel(getShort(requestParameters, PlatformSmartmeteringKeys.CHANNEL));
         return setMbusUserKeyByChannelRequestData;
     }
 }

@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -21,7 +23,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCo
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.smartmetering.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.management.SetDeviceCommunicationSettingsRequestFactory;
@@ -76,22 +77,19 @@ public class SetDeviceCommunicationSettingsSteps {
             final Map<String, String> settings) throws Throwable {
         final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
 
-        final int expectedResult = Helpers.getInteger(settings, PlatformSmartmeteringKeys.CHALLENGE_LENGTH,
+        final int expectedResult = getInteger(settings, PlatformSmartmeteringKeys.CHALLENGE_LENGTH,
                 PlatformSmartmeteringDefaults.CHALLENGE_LENGTH);
         assertEquals("Number of challenge length should match", expectedResult, device.getChallengeLength().intValue());
 
         assertEquals("With list supported should match",
-                Helpers.getBoolean(settings, PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED),
-                device.isWithListSupported());
+                getBoolean(settings, PlatformSmartmeteringKeys.WITH_LIST_SUPPORTED), device.isWithListSupported());
         assertEquals("Selective access supported should match",
-                Helpers.getBoolean(settings, PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED),
+                getBoolean(settings, PlatformSmartmeteringKeys.SELECTIVE_ACCESS_SUPPORTED),
                 device.isSelectiveAccessSupported());
         assertEquals("IP address is static should match",
-                Helpers.getBoolean(settings, PlatformSmartmeteringKeys.IP_ADDRESS_IS_STATIC),
-                device.isIpAddressIsStatic());
-        assertEquals("Use SN should match", Helpers.getBoolean(settings, PlatformSmartmeteringKeys.USE_SN),
-                device.isUseSn());
-        assertEquals("Use HDLC should match", Helpers.getBoolean(settings, PlatformSmartmeteringKeys.USE_HDLC),
+                getBoolean(settings, PlatformSmartmeteringKeys.IP_ADDRESS_IS_STATIC), device.isIpAddressIsStatic());
+        assertEquals("Use SN should match", getBoolean(settings, PlatformSmartmeteringKeys.USE_SN), device.isUseSn());
+        assertEquals("Use HDLC should match", getBoolean(settings, PlatformSmartmeteringKeys.USE_HDLC),
                 device.isUseHdlc());
     }
 

@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getInteger;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.Map;
 
@@ -88,7 +88,8 @@ public class DeviceSteps {
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_POSTCODE)) {
-            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_POSTCODE), actualDevice.getContainerPostalCode());
+            Assert.assertEquals(getString(expectedDevice, PlatformKeys.KEY_POSTCODE),
+                    actualDevice.getContainerPostalCode());
         }
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_STREET)) {

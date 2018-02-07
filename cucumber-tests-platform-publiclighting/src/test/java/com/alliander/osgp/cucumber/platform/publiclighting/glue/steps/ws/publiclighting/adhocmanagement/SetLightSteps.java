@@ -9,10 +9,10 @@
  */
 package com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.adhocmanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.core.Helpers.getInteger;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationUidInScenarioContext;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+import static com.alliander.osgp.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
 

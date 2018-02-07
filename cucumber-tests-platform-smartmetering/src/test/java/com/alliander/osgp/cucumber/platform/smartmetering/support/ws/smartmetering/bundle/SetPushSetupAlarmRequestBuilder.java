@@ -7,13 +7,15 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
+
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetPushSetupAlarmRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm;
-import com.alliander.osgp.cucumber.core.Helpers;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 public class SetPushSetupAlarmRequestBuilder {
@@ -44,10 +46,10 @@ public class SetPushSetupAlarmRequestBuilder {
     }
 
     private String getHost(final Map<String, String> parameters) {
-        return Helpers.getString(parameters, PlatformSmartmeteringKeys.HOSTNAME, DEFAULT_HOST);
+        return getString(parameters, PlatformSmartmeteringKeys.HOSTNAME, DEFAULT_HOST);
     }
 
     private BigInteger getPort(final Map<String, String> parameters) {
-        return BigInteger.valueOf(Helpers.getInteger(parameters, PlatformSmartmeteringKeys.PORT, DEFAULT_PORT));
+        return BigInteger.valueOf(getInteger(parameters, PlatformSmartmeteringKeys.PORT, DEFAULT_PORT));
     }
 }

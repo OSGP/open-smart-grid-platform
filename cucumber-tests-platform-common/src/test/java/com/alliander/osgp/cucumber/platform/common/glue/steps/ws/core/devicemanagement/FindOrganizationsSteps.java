@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.core.devicemanagement;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;

@@ -7,8 +7,8 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.basicosgpfunctions;
 
-import static com.alliander.osgp.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
