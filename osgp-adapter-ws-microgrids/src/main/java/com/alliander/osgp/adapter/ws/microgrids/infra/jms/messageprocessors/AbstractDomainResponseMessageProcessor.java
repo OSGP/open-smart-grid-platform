@@ -183,7 +183,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             final NotificationType notificationType) {
 
         /*
-         * Make sure exception are not thrown out of this method. Exceptions
+         * Make sure exceptions are not thrown out of this method. Exceptions
          * could trigger retries from the message queue, that should not happen
          * when the response has been made available to be retrieved (which
          * should be the case before notifications are sent).
