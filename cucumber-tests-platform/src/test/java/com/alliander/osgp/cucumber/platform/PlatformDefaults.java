@@ -92,6 +92,7 @@ public class PlatformDefaults {
     public static final String DEFAULT_ORGANIZATION_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
     public static final Boolean DEFAULT_ORGANIZATION_ENABLED = true;
     public static final String DEFAULT_ORGANIZATION_IDENTIFICATION = "test-org";
+    public static final String DEFAULT_DELEGATE_ORGANIZATION_IDENTIFICATION = "test-org";
     public static final String DEFAULT_ORGANIZATION_NAME = "Test organization";
     public static final String DEFAULT_ORGANIZATION_PREFIX = "cgi";
 

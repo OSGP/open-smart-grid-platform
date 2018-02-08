@@ -26,4 +26,5 @@ public class PlatformCommonDefaults extends com.alliander.osgp.cucumber.platform
     public static final LongTermIntervalType DEFAULT_INTERVAL_TYPE = LongTermIntervalType.DAYS;
     public static final PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = PlatformFunctionGroup.ADMIN;
     public static final DeviceFunctionGroup DEVICE_FUNCTION_GROUP = DeviceFunctionGroup.OWNER;
+    public static final boolean REVOKED = false;
 }

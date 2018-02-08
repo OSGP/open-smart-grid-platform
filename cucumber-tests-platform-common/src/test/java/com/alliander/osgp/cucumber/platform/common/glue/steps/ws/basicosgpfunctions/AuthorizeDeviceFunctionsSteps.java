@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.common.glue.steps.ws.basicosgpfunctions;
 
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getBoolean;
 import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
 import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
@@ -40,6 +41,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
+import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.common.PlatformCommonDefaults;
 import com.alliander.osgp.cucumber.platform.common.PlatformCommonKeys;
 import com.alliander.osgp.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
@@ -80,11 +82,20 @@ public class AuthorizeDeviceFunctionsSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizeDeviceFunctionsSteps.class);
 
     private DeviceFunction deviceFunction;
-    private Throwable throwable;
+    private Exception exception;
+
+    @When("receiving a set device authorization request")
+    public void receivingADeviceAuthorizationRequest(final Map<String, String> requestParameters) {
+        try {
+            this.setDeviceAuthorization(requestParameters);
+        } catch (final Exception e) {
+            LOGGER.info("Exception: {}, message {}", e.getClass().getSimpleName(), e.getMessage());
+            this.exception = e;
+        }
+    }
 
     @When("receiving a device function request")
-    public void receivingADeviceFunctionRequest(final Map<String, String> requestParameters)
-            throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException, IOException {
+    public void receivingADeviceFunctionRequest(final Map<String, String> requestParameters) {
         this.deviceFunction = getEnum(requestParameters, PlatformCommonKeys.DEVICE_FUNCTION, DeviceFunction.class);
 
         try {
@@ -139,9 +150,9 @@ public class AuthorizeDeviceFunctionsSteps {
                             "DeviceFunction " + this.deviceFunction + " does not exist.");
                 }
             }
-        } catch (final Throwable t) {
-            LOGGER.info("Exception: {}", t.getClass().getSimpleName());
-            this.throwable = t;
+        } catch (final Exception e) {
+            LOGGER.info("Exception: {}, message {}", e.getClass().getSimpleName(), e.getMessage());
+            this.exception = e;
         }
     }
 
@@ -149,18 +160,40 @@ public class AuthorizeDeviceFunctionsSteps {
     public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
         if (allowed) {
             final Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
-            Assert.assertTrue(!(response instanceof SoapFaultClientException));
+            Assert.assertNotNull("Response is null, which indicates an exception occurred", response);
+            Assert.assertFalse(response instanceof SoapFaultClientException);
         } else {
-            Assert.assertNotNull(this.throwable);
+            Assert.assertNotNull(this.exception);
 
-            if (!this.throwable.getMessage().equals("METHOD_NOT_ALLOWED_FOR_OWNER")) {
-                Assert.assertEquals("UNAUTHORIZED", this.throwable.getMessage());
+            if (!this.exception.getMessage().equals("METHOD_NOT_ALLOWED_FOR_OWNER")) {
+                Assert.assertEquals("UNAUTHORIZED", this.exception.getMessage());
             }
         }
     }
 
+    @Then("^device \"([^\"]*)\" has (\\d++) device authorizations$")
+    public void deviceHasDeviceAuthorizations(final String deviceIdentification,
+            final int expectedCountDeviceAuthorizations) {
+        final FindDeviceAuthorisationsRequest findDeviceAuthorisationsRequest = new FindDeviceAuthorisationsRequest();
+        findDeviceAuthorisationsRequest.setDeviceIdentification(deviceIdentification);
+
+        Wait.until(() -> {
+            FindDeviceAuthorisationsResponse response;
+            try {
+                response = this.adminDeviceManagementClient.findDeviceAuthorisations(findDeviceAuthorisationsRequest);
+
+                Assert.assertEquals(expectedCountDeviceAuthorizations, response.getDeviceAuthorisations().size());
+            } catch (final Exception e) {
+                final String message = String.format("An exception occurred while retrieving the authorizations for %s",
+                        deviceIdentification);
+                LOGGER.warn(message, e);
+                Assert.fail(message);
+            }
+        });
+    }
+
     private void findDeviceAuthorisations(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException, OperationNotSupportedException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final FindDeviceAuthorisationsRequest findDeviceAuthorisationsRequest = new FindDeviceAuthorisationsRequest();
         findDeviceAuthorisationsRequest.setDeviceIdentification(getString(requestParameters,
                 PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -325,9 +358,20 @@ public class AuthorizeDeviceFunctionsSteps {
         final DeviceAuthorisation deviceAuthorisation = new DeviceAuthorisation();
         deviceAuthorisation.setDeviceIdentification(getString(requestParameters,
                 PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION, PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        deviceAuthorisation.setOrganisationIdentification(PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-        deviceAuthorisation.setRevoked(false);
+        deviceAuthorisation.setOrganisationIdentification(
+                getString(requestParameters, PlatformCommonKeys.DELEGATE_ORGANIZATION_IDENTIFICATION,
+                        PlatformCommonDefaults.DEFAULT_DELEGATE_ORGANIZATION_IDENTIFICATION));
+
+        final String functionGroupString = getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_FUNCTION_GROUP);
+        final DeviceFunctionGroup deviceFunctionGroup = DeviceFunctionGroup.fromValue(functionGroupString);
+        deviceAuthorisation.setFunctionGroup(deviceFunctionGroup);
+
+        deviceAuthorisation.setRevoked(
+                getBoolean(requestParameters, PlatformCommonKeys.KEY_REVOKED, PlatformCommonDefaults.REVOKED));
         request.getDeviceAuthorisations().add(deviceAuthorisation);
+        ScenarioContext.current().put(PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                getString(requestParameters, PlatformCommonKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformCommonDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
                 this.adminDeviceManagementClient.updateDeviceAuthorisations(request));
 

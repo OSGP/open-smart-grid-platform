@@ -47,16 +47,6 @@ Feature: BasicOsgpFunctions Common Authorizing Device Functions
       | GET_STATUS               | CONFIGURATION       | false   |
       | GET_STATUS               | MONITORING          | false   |
       | GET_STATUS               | METADATA_MANAGEMENT | false   |
-      | SET_DEVICE_AUTHORIZATION | OWNER               | true    |
-      | SET_DEVICE_AUTHORIZATION | INSTALLATION        | true    |
-      | SET_DEVICE_AUTHORIZATION | AD_HOC              | true    |
-      | SET_DEVICE_AUTHORIZATION | MANAGEMENT          | true    |
-      | SET_DEVICE_AUTHORIZATION | FIRMWARE            | true    |
-      | SET_DEVICE_AUTHORIZATION | SCHEDULING          | true    |
-      | SET_DEVICE_AUTHORIZATION | TARIFF_SCHEDULING   | true    |
-      | SET_DEVICE_AUTHORIZATION | CONFIGURATION       | true    |
-      | SET_DEVICE_AUTHORIZATION | MONITORING          | true    |
-      | SET_DEVICE_AUTHORIZATION | METADATA_MANAGEMENT | true    |
       | GET_DEVICE_AUTHORIZATION | OWNER               | true    |
       | GET_DEVICE_AUTHORIZATION | INSTALLATION        | true    |
       | GET_DEVICE_AUTHORIZATION | AD_HOC              | true    |
@@ -66,7 +56,7 @@ Feature: BasicOsgpFunctions Common Authorizing Device Functions
       | GET_DEVICE_AUTHORIZATION | TARIFF_SCHEDULING   | true    |
       | GET_DEVICE_AUTHORIZATION | CONFIGURATION       | true    |
       | GET_DEVICE_AUTHORIZATION | MONITORING          | true    |
-      | GET_DEVICE_AUTHORIZATION | METADATA_MANAGEMENT | true    |
+      | GET_DEVICE_AUTHORIZATION | METADATA_MANAGEMENT | false   |
       | SET_EVENT_NOTIFICATIONS  | OWNER               | true    |
       | SET_EVENT_NOTIFICATIONS  | INSTALLATION        | false   |
       | SET_EVENT_NOTIFICATIONS  | AD_HOC              | false   |
@@ -162,11 +152,9 @@ Feature: BasicOsgpFunctions Common Authorizing Device Functions
     Given a device
       | DeviceIdentification | TEST1024000000001     |
       | DeviceFunctionGroup  | <DeviceFunctionGroup> |
-    When receiving a device function request
-      | DeviceIdentification  | TEST1024000000001        |
-      | DeviceFunction        | SET_DEVICE_AUTHORIZATION |
-      | DelegateFunctionGroup | <DelegateFunctionGroup>  |
-      | DeviceFunctionGroup   | <DeviceFunctionGroup>    |
+    When receiving a set device authorization request
+      | DeviceIdentification | TEST1024000000001       |
+      | DeviceFunctionGroup  | <DelegateFunctionGroup> |
     Then the device function response is "<Allowed>"
 
     Examples: 
@@ -190,7 +178,7 @@ Feature: BasicOsgpFunctions Common Authorizing Device Functions
       | INSTALLATION        | TARIFF_SCHEDULING     | false   |
       | INSTALLATION        | CONFIGURATION         | false   |
       | INSTALLATION        | MONITORING            | false   |
-      | INSTALLATION        | METADATA_MANAGMENT    | false   |
+      | INSTALLATION        | METADATA_MANAGEMENT   | false   |
       | AD_HOC              | OWNER                 | false   |
       | AD_HOC              | INSTALLATION          | false   |
       | AD_HOC              | AD_HOC                | false   |
@@ -240,7 +228,7 @@ Feature: BasicOsgpFunctions Common Authorizing Device Functions
       | TARIFF_SCHEDULING   | TARIFF_SCHEDULING     | false   |
       | TARIFF_SCHEDULING   | CONFIGURATION         | false   |
       | TARIFF_SCHEDULING   | MONITORING            | false   |
-      | TARIFF_SCHEDULING   | METDATA_MANAGEMENT    | false   |
+      | TARIFF_SCHEDULING   | METADATA_MANAGEMENT   | false   |
       | CONFIGURATION       | OWNER                 | false   |
       | CONFIGURATION       | INSTALLATION          | false   |
       | CONFIGURATION       | AD_HOC                | false   |
@@ -250,7 +238,7 @@ Feature: BasicOsgpFunctions Common Authorizing Device Functions
       | CONFIGURATION       | TARIFF_SCHEDULING     | false   |
       | CONFIGURATION       | CONFIGURATION         | false   |
       | CONFIGURATION       | MONITORING            | false   |
-      | CONFIGURATION       | METDATA_MANAGEMENT    | false   |
+      | CONFIGURATION       | METADATA_MANAGEMENT   | false   |
       | MONITORING          | OWNER                 | false   |
       | MONITORING          | INSTALLATION          | false   |
       | MONITORING          | AD_HOC                | false   |

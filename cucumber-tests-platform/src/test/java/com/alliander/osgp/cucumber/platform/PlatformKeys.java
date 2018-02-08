@@ -32,6 +32,7 @@ public class PlatformKeys extends Keys {
     public static final String DC_LIGHTS = "DcLights";
     public static final String DC_MAP = "DcMap";
     public static final String DELEGATE_FUNCTION_GROUP = "DelegateFunctionGroup";
+    public static final String DELEGATE_ORGANIZATION_IDENTIFICATION = "DelegateOrganizationIdentification";
     public static final String DEVICE_FUNCTION = "DeviceFunction";
     public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
     public static final String DEVICEFIRMWARE_INSTALLATIONDATE = "DevicefirmwareInstallationDate";
@@ -195,6 +196,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_RELAY_TYPE = "RelayType";
     public static final String KEY_RESULT = "Result";
     public static final String KEY_RESULT_TYPE = "ResultType";
+    public static final String KEY_REVOKED = "Revoked";
     public static final String KEY_SETPOINT_END_TIME = "SetPointEndTime";
 
     public static final String KEY_SETPOINT_ID = "SetPointId";
