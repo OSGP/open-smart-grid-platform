@@ -39,7 +39,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringConfig.class);
 
     private static final String PROPERTY_NAME_COMMUNICATION_MONITORING_ENABLED = "communication.monitoring.enabled";
-    private static final String PROPERTY_NAME_MINIMUM_TIME_BETWEEN_RUNS = "communication.monitoring.minumum.time.between.runs";
+    private static final String PROPERTY_NAME_MINIMUM_TIME_BETWEEN_RUNS = "communication.monitoring.minimum.time.between.runs";
     private static final String PROPERTY_NAME_CRON_EXPRESSION = "communication.monitoring.cron.expression";
     private static final String PROPERTY_NAME_SCHEDULER_POOL_SIZE = "communication.monitoring.scheduler.pool.size";
     private static final String PROPERTY_NAME_SCHEDULER_THREAD_NAME_PREFIX = "communication.monitoring.scheduler.thread.name.prefix";
