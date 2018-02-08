@@ -106,7 +106,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             notificationType = NotificationType.valueOf(messageType);
 
             dataObject = message.getObject();
-        } catch (final JMSException e) {
+        } catch (final JMSException | IllegalArgumentException | NullPointerException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
@@ -121,13 +121,21 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid,
                     resultType, resultDescription, dataObject);
 
-            // Send notification indicating data is available.
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
-                    resultType.name(), correlationUid, notificationMessage, notificationType);
-
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
+            return;
         }
+
+        /*
+         * Keep the notification part apart from handling the message. Exception
+         * handling that might be appropriate for issues with the message could
+         * likely not be appropriate for exceptions in the notification
+         * mechanism. The latter kind of issues should be covered by re-sending
+         * of notifications for existing response data or by application-side
+         * attempts to retrieve results after some amount of time.
+         */
+        this.sendNotification(organisationIdentification, deviceIdentification, resultType.name(), correlationUid,
+                notificationMessage, notificationType);
     }
 
     protected void handleMessage(final String organisationIdentification, final String messageType,
@@ -165,8 +173,28 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final NotificationType notificationType) {
 
-        LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType);
-        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
-                correlationUid, e.getMessage(), notificationType);
+        LOGGER.info("handling error: {} for notification type: {}", e.getMessage(), notificationType);
+        this.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK", correlationUid,
+                e.getMessage(), notificationType);
+    }
+
+    private void sendNotification(final String organisationIdentification, final String deviceIdentification,
+            final String result, final String correlationUid, final String message,
+            final NotificationType notificationType) {
+
+        /*
+         * Make sure exceptions are not thrown out of this method. Exceptions
+         * could trigger retries from the message queue, that should not happen
+         * when the response has been made available to be retrieved (which
+         * should be the case before notifications are sent).
+         */
+
+        try {
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
+                    correlationUid, message, notificationType);
+        } catch (final RuntimeException e) {
+            LOGGER.error("Exception sending notification for {} response data with correlation UID {} and result {}",
+                    notificationType, correlationUid, result, e);
+        }
     }
 }
