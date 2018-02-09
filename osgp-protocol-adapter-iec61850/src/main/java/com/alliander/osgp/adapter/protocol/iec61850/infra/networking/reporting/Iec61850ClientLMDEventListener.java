@@ -85,7 +85,9 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
             final List<FcModelNode> dataSetMembers) {
         final Map<LightMeasurementDevice, FcModelNode> result = new HashMap<>();
 
-        final List<LightMeasurementDevice> lmds = this.deviceManagementService.findAllLightMeasurementDevices();
+        this.logger.info("Trying to find light measurement devices...");
+        final List<LightMeasurementDevice> lmds = this.deviceManagementService.findRealLightMeasurementDevices();
+        this.logger.info("Found {} light measurement devices.", lmds == null ? "null" : lmds.size());
 
         for (final LightMeasurementDevice lmd : lmds) {
             final String nodeName = LogicalNode.getSpggioByIndex(lmd.getDigitalInput()).getDescription().concat(".");
@@ -96,6 +98,8 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
                 }
             }
         }
+
+        this.logger.info("Returning {} results.", result.size());
 
         return result;
     }

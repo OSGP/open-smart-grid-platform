@@ -64,6 +64,18 @@ public class DeviceManagementService {
         return this.lmdDataRepository.findAll();
     }
 
+    /**
+     * Find the 4 real light measurement devices. These devices are using
+     * digital input 1, 2, 3 and 4.
+     *
+     * @return List of 4 {@link LightMeasurementDevice}.
+     */
+    public List<LightMeasurementDevice> findRealLightMeasurementDevices() {
+        final short start = 1;
+        final short end = 4;
+        return this.lmdDataRepository.findByDigitalInputBetween(start, end);
+    }
+
     public LightMeasurementDevice findLightMeasurementDevice(final String deviceIdentification) {
         return this.lmdDataRepository.findByDeviceIdentification(deviceIdentification);
     }
@@ -87,8 +99,8 @@ public class DeviceManagementService {
             final LightMeasurementDevice lmd = this.lmdDataRepository.findByDeviceIdentification(deviceIdentification);
             if (lmd == null) {
 
-                throw new ProtocolAdapterException("Unable to find device using deviceIdentification: "
-                        + deviceIdentification);
+                throw new ProtocolAdapterException(
+                        "Unable to find device using deviceIdentification: " + deviceIdentification);
             }
         }
 
@@ -116,8 +128,8 @@ public class DeviceManagementService {
 
         final Ssld ssldDevice = this.ssldDataRepository.findByDeviceIdentification(deviceIdentification);
         if (ssldDevice == null) {
-            throw new ProtocolAdapterException("Unable to find device using deviceIdentification: "
-                    + deviceIdentification);
+            throw new ProtocolAdapterException(
+                    "Unable to find device using deviceIdentification: " + deviceIdentification);
         }
 
         return ssldDevice.getOutputSettings();
@@ -128,12 +140,10 @@ public class DeviceManagementService {
         // Correlation ID is generated @ WS adapter, domain+version is
         // hard-coded
         // for now
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-        .dataObject(response)
-        .deviceMessageMetadata(
-                new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
-                        DeviceFunctionDto.GET_DATA.name(), 0)).result(ResponseMessageResultType.OK)
-                        .domain("MICROGRIDS").domainVersion("1.0").build();
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(response)
+                .deviceMessageMetadata(new DeviceMessageMetadata(deviceIdentification, "no-organisation",
+                        "no-correlationUid", DeviceFunctionDto.GET_DATA.name(), 0))
+                .result(ResponseMessageResultType.OK).domain("MICROGRIDS").domainVersion("1.0").build();
         this.responseSender.send(responseMessage);
     }
 
@@ -141,11 +151,9 @@ public class DeviceManagementService {
             final GetPQValuesResponseDto response) throws ProtocolAdapterException {
         final Iec61850DeviceReportGroup deviceReportGroup = this.deviceReportGroupRepository
                 .findByDeviceIdentificationAndReportDataSet(deviceIdentification, reportDataSet);
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-        .dataObject(response)
-        .deviceMessageMetadata(
-                new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
-                        DeviceFunctionDto.GET_POWER_QUALITY_VALUES.name(), 0))
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(response)
+                .deviceMessageMetadata(new DeviceMessageMetadata(deviceIdentification, "no-organisation",
+                        "no-correlationUid", DeviceFunctionDto.GET_POWER_QUALITY_VALUES.name(), 0))
                 .result(ResponseMessageResultType.OK).domain(deviceReportGroup.getDomain())
                 .domainVersion(deviceReportGroup.getDomainVersion()).build();
         this.responseSender.send(responseMessage);

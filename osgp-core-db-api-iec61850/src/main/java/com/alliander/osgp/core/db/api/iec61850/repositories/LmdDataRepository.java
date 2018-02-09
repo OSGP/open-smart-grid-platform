@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.core.db.api.iec61850.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +17,6 @@ import com.alliander.osgp.core.db.api.iec61850.entities.LightMeasurementDevice;
 @Repository
 public interface LmdDataRepository extends JpaRepository<LightMeasurementDevice, Long> {
     LightMeasurementDevice findByDeviceIdentification(String deviceIdentification);
+
+    List<LightMeasurementDevice> findByDigitalInputBetween(short start, short end);
 }

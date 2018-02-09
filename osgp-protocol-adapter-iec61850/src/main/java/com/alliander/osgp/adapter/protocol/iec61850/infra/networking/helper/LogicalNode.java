@@ -26,6 +26,18 @@ public enum LogicalNode {
     SPGGIO_2("SPGGIO2"),
     SPGGIO_3("SPGGIO3"),
     SPGGIO_4("SPGGIO4"),
+    SPGGIO_5("SPGGIO5"),
+    SPGGIO_6("SPGGIO6"),
+    SPGGIO_7("SPGGIO7"),
+    SPGGIO_8("SPGGIO8"),
+    SPGGIO_9("SPGGIO9"),
+    SPGGIO_10("SPGGIO10"),
+    SPGGIO_11("SPGGIO11"),
+    SPGGIO_12("SPGGIO12"),
+    SPGGIO_13("SPGGIO13"),
+    SPGGIO_14("SPGGIO14"),
+    SPGGIO_15("SPGGIO15"),
+    SPGGIO_16("SPGGIO16"),
     /**
      * CSLC, configuration Logical Node.
      */
@@ -199,18 +211,12 @@ public enum LogicalNode {
      * @return The name of a SPGGIO Logical Node.
      */
     public static LogicalNode getSpggioByIndex(final int index) {
-        switch (index) {
-        case 1:
-            return SPGGIO_1;
-        case 2:
-            return SPGGIO_2;
-        case 3:
-            return SPGGIO_3;
-        case 4:
-            return SPGGIO_4;
-        default:
+
+        if (index < 1 || index > 16) {
             throw new IllegalArgumentException("Invalid index value for SPGGIO: " + index);
         }
+        final String description = "SPGGIO" + index;
+        return LogicalNode.fromString(description);
     }
 
     public static LogicalNode fromString(final String description) {
