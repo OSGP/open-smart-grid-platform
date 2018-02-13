@@ -36,22 +36,10 @@ public class ResponseDataSteps extends BaseDeviceSteps {
     @Transactional("txMgrRespData")
     public ResponseData aResponseDataRecord(final Map<String, String> settings) throws Throwable {
 
-        ResponseData responseData = new ResponseDataBuilder().fromSettings(settings).build();
+        final ResponseData responseData = this.responseDataRespository
+                .save(new ResponseDataBuilder().fromSettings(settings).build());
 
-        /*
-         * For the smart metering tests, as long as it is not possible to
-         * capture notifications for the response data, some workaround can be
-         * used that gives reasonable confidence the notification is sent. For
-         * this the response data can be read from the database, and the number
-         * of notifications sent for the response data can be compared to the
-         * number stored in the scenario context. If higher it is probably safe
-         * to assume a notification has actually been sent.
-         */
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, responseData.getCorrelationUid());
-        ScenarioContext.current().put(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT,
-                responseData.getNumberOfNotificationsSent());
-
-        responseData = this.responseDataRespository.save(responseData);
 
         // set correct creation time for testing after inserting in the database
         // (as it will be overridden on first save)
@@ -82,12 +70,27 @@ public class ResponseDataSteps extends BaseDeviceSteps {
     @Then("^the response data has values$")
     public void theResponseDataHasValues(final Map<String, String> settings) throws Throwable {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
+        final short expectedNumberOfNotificationsSent = Short
+                .parseShort(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT));
+        final String expectedMessageType = settings.get(PlatformKeys.KEY_MESSAGE_TYPE);
+
+        try {
+            this.assertResponseDataHasNotificationsAndMessageType(correlationUid, expectedNumberOfNotificationsSent,
+                    expectedMessageType);
+        } catch (final AssertionError e) {
+            Thread.sleep(500);
+            this.assertResponseDataHasNotificationsAndMessageType(correlationUid, expectedNumberOfNotificationsSent,
+                    expectedMessageType);
+        }
+    }
+
+    private void assertResponseDataHasNotificationsAndMessageType(final String correlationUid,
+            final Short expectedNumberOfNotificationsSent, final String expectedMessageType) {
+
         final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
 
-        assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT,
-                settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT),
-                responseData.getNumberOfNotificationsSent().toString());
-        assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
-                responseData.getMessageType());
+        assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT, expectedNumberOfNotificationsSent,
+                responseData.getNumberOfNotificationsSent());
+        assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, expectedMessageType, responseData.getMessageType());
     }
 }

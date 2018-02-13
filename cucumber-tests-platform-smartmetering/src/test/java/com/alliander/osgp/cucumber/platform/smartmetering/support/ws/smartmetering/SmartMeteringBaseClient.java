@@ -7,16 +7,20 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.notification.NotificationService;
 import com.alliander.osgp.cucumber.platform.support.ws.BaseClient;
 
 public abstract class SmartMeteringBaseClient extends BaseClient {
 
     @Autowired
-    private ResponseDataRepository responseDataRepository;
+    private NotificationService notificationService;
 
     @Value("${smartmetering.response.wait.check.interval:1000}")
     private int waitCheckIntervalMillis;
@@ -27,24 +31,19 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
         this.waitFailMillis = waitFailMillis;
     }
 
-    protected void waitForDlmsResponseData(final String correlationUid) {
-        /*
-         * Polling the database is a temporary implementation of waiting for a response
-         * in the tests. It is considered better than polling the platforms web service
-         * layer, but the preferable solution is to be able to respond to the
-         * notification sent by the platform, and not to poll external resources at all.
-         */
+    protected void waitForNotification(final String correlationUid) {
         try {
-            for (int timeSpentWaiting = 0; timeSpentWaiting < this.waitFailMillis; timeSpentWaiting += this.waitCheckIntervalMillis) {
-                Thread.sleep(this.waitCheckIntervalMillis);
-                if (this.responseDataRepository.findByCorrelationUid(correlationUid) != null) {
-                    return;
-                }
-            }
-            throw new AssertionError(
-                    "MeterResponseData not available within " + this.waitFailMillis + " milliseconds.");
+            this.notificationService.getNotification(correlationUid).get(this.waitFailMillis, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException e) {
-            throw new AssertionError("Waiting for MeterResponseData was interrupted.", e);
+            Thread.currentThread().interrupt();
+            throw new AssertionError(
+                    "Thread was interrupted while awaiting notification for correlation UID: " + correlationUid, e);
+        } catch (final ExecutionException e) {
+            throw new AssertionError("Exception while obtaining notification for correlation UID: " + correlationUid,
+                    e);
+        } catch (final TimeoutException e) {
+            throw new AssertionError("Notification for correlation UID " + correlationUid + " not received within "
+                    + this.waitFailMillis + " milliseconds.", e);
         }
     }
 }
