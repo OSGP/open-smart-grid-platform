@@ -10,9 +10,7 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 
 import static org.junit.Assert.fail;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,57 +39,45 @@ public class NotificationSteps {
 
     @Then("^a notification is sent$")
     public void aNotificationIsSent() throws Throwable {
-
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         if (correlationUid == null) {
             fail("No " + PlatformKeys.KEY_CORRELATION_UID
                     + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent.");
         }
-
-        try {
-            this.notificationService.getNotification(correlationUid).get(MAX_WAIT_FOR_NOTIFICATION,
-                    TimeUnit.MILLISECONDS);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new AssertionError(
-                    "Thread was interrupted while awaiting notification for correlation UID: " + correlationUid, e);
-        } catch (final ExecutionException e) {
-            throw new AssertionError("Exception while obtaining notification for correlation UID: " + correlationUid,
-                    e);
-        } catch (final TimeoutException e) {
-            fail("A notification for correlation UID " + correlationUid + " has not been sent within "
-                    + MAX_WAIT_FOR_NOTIFICATION + " milliseconds.");
-        }
+        this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, true);
     }
 
     @Then("^no notification is sent$")
     public void noNotificationIsSent() throws Throwable {
-
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         if (correlationUid == null) {
             fail("No " + PlatformKeys.KEY_CORRELATION_UID
                     + " stored in the scenario context. Unable to make assumptions as to whether a notification has been sent.");
         }
+        this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, false);
+    }
 
-        try {
-            final Notification notification = this.notificationService.getNotification(correlationUid)
-                    .get(MAX_WAIT_FOR_NOTIFICATION, TimeUnit.MILLISECONDS);
-            fail("A notification for correlation UID " + correlationUid + " for notification type "
-                    + notification.getNotificationType() + " was sent.");
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new AssertionError(
-                    "Thread was interrupted while awaiting no notification to be sent for correlation UID: "
-                            + correlationUid,
-                    e);
-        } catch (final ExecutionException e) {
-            throw new AssertionError(
-                    "Exception while obtaining the notification not to be sent for correlation UID: " + correlationUid,
-                    e);
-        } catch (final TimeoutException e) {
-            LOGGER.debug(
-                    "Got expected time-out waiting for notification that should not be sent for correlation UID: {} -> {}",
-                    correlationUid, e);
+    private void waitForNotification(final int maxTimeOut, final String correlationUid,
+            final boolean expectCorrelationUid) throws Throwable {
+
+        LOGGER.info(
+                "Waiting to make sure {} notification is received for correlation UID {} for at most {} milliseconds.",
+                expectCorrelationUid ? "a" : "no", correlationUid, maxTimeOut);
+
+        final Notification notification = this.notificationService.getNotification(correlationUid, maxTimeOut,
+                TimeUnit.MILLISECONDS);
+
+        final boolean gotExpectedNotification = expectCorrelationUid && notification != null;
+        final boolean didNotGetUnexpectedNotification = !expectCorrelationUid && notification == null;
+        if (gotExpectedNotification || didNotGetUnexpectedNotification) {
+            return;
+        }
+
+        if (expectCorrelationUid) {
+            fail("Did not receive a notification for correlation UID: " + correlationUid + " within " + maxTimeOut
+                    + " milliseconds");
+        } else {
+            fail("Received notification for correlation UID: " + correlationUid);
         }
     }
 }

@@ -7,23 +7,24 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.notification.NotificationService;
 import com.alliander.osgp.cucumber.platform.support.ws.BaseClient;
 
 public abstract class SmartMeteringBaseClient extends BaseClient {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringBaseClient.class);
+
     @Autowired
     private NotificationService notificationService;
 
-    @Value("${smartmetering.response.wait.check.interval:1000}")
-    private int waitCheckIntervalMillis;
     @Value("${smartmetering.response.wait.fail.duration:30000}")
     private int waitFailMillis;
 
@@ -32,18 +33,15 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
     }
 
     protected void waitForNotification(final String correlationUid) {
-        try {
-            this.notificationService.getNotification(correlationUid).get(this.waitFailMillis, TimeUnit.MILLISECONDS);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new AssertionError(
-                    "Thread was interrupted while awaiting notification for correlation UID: " + correlationUid, e);
-        } catch (final ExecutionException e) {
-            throw new AssertionError("Exception while obtaining notification for correlation UID: " + correlationUid,
-                    e);
-        } catch (final TimeoutException e) {
-            throw new AssertionError("Notification for correlation UID " + correlationUid + " not received within "
-                    + this.waitFailMillis + " milliseconds.", e);
+        LOGGER.info("Waiting for a notification for correlation UID {} for at most {} milliseconds.", correlationUid,
+                this.waitFailMillis);
+
+        final Notification notification = this.notificationService.getNotification(correlationUid, this.waitFailMillis,
+                TimeUnit.MILLISECONDS);
+
+        if (notification == null) {
+            throw new AssertionError("Did not receive a notification for correlation UID: " + correlationUid + " within "
+                    + this.waitFailMillis + " milliseconds");
         }
     }
 }

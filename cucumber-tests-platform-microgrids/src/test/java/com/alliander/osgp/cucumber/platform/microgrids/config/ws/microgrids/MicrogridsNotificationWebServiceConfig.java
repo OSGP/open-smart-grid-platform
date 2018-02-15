@@ -8,20 +8,18 @@
 package com.alliander.osgp.cucumber.platform.microgrids.config.ws.microgrids;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.remoting.support.SimpleHttpServerFactoryBean;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
-import org.springframework.ws.server.EndpointAdapter;
 import org.springframework.ws.server.EndpointInterceptor;
-import org.springframework.ws.server.EndpointMapping;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
@@ -34,8 +32,6 @@ import org.springframework.ws.transport.http.WebServiceMessageReceiverHttpHandle
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.cucumber.platform.microgrids.config.PlatformMicrogridsConfiguration;
-import com.sun.net.httpserver.HttpHandler;
 
 @EnableWs
 @Configuration
@@ -43,8 +39,14 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
-    @Autowired
-    private PlatformMicrogridsConfiguration configuration;
+    @Value("${jaxb2.marshaller.context.path.microgrids.notification}")
+    private String contextPathMicrogridsNotification;
+
+    @Value("${web.service.notification.context}")
+    private String notificationContextPath;
+
+    @Value("${web.service.notification.port}")
+    private int notificationPort;
 
     @Bean
     public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
@@ -75,24 +77,16 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
             final PayloadRootAnnotationMethodEndpointMapping mapping) {
 
         final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
-        final List<EndpointMapping> mappings = new ArrayList<>();
-        mappings.add(mapping);
-        soapMessageDispatcher.setEndpointMappings(mappings);
+        soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
+        soapMessageDispatcher.setEndpointAdapters(Arrays.asList(defaultMethodEndpointAdapter));
 
-        final List<EndpointAdapter> adapters = new ArrayList<>();
-        adapters.add(defaultMethodEndpointAdapter);
-        soapMessageDispatcher.setEndpointAdapters(adapters);
-
-        final WebServiceMessageReceiverHttpHandler wsmrhh = new WebServiceMessageReceiverHttpHandler();
-        wsmrhh.setMessageReceiver(soapMessageDispatcher);
-        wsmrhh.setMessageFactory(messageFactory);
-
-        final Map<String, HttpHandler> contexts = new HashMap<>();
-        contexts.put(this.configuration.getNotificationsContextPath(), wsmrhh);
+        final WebServiceMessageReceiverHttpHandler httpHandler = new WebServiceMessageReceiverHttpHandler();
+        httpHandler.setMessageReceiver(soapMessageDispatcher);
+        httpHandler.setMessageFactory(messageFactory);
 
         final SimpleHttpServerFactoryBean httpServer = new SimpleHttpServerFactoryBean();
-        httpServer.setContexts(contexts);
-        httpServer.setPort(this.configuration.getNotificationsPort());
+        httpServer.setContexts(Collections.singletonMap(this.notificationContextPath, httpHandler));
+        httpServer.setPort(this.notificationPort);
 
         return httpServer;
     }
@@ -106,7 +100,7 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
     public Jaxb2Marshaller microgridsNotificationMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.configuration.getContextPathMicrogridsNotification());
+        marshaller.setContextPath(this.contextPathMicrogridsNotification);
 
         return marshaller;
     }

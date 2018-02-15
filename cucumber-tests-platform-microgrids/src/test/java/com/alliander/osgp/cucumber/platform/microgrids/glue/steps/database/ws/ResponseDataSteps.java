@@ -69,12 +69,27 @@ public class ResponseDataSteps extends BaseDeviceSteps {
     @Then("^the response data has values$")
     public void theResponseDataHasValues(final Map<String, String> settings) throws Throwable {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
+        final short expectedNumberOfNotificationsSent = Short
+                .parseShort(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT));
+        final String expectedMessageType = settings.get(PlatformKeys.KEY_MESSAGE_TYPE);
+
+        try {
+            this.assertResponseDataHasNotificationsAndMessageType(correlationUid, expectedNumberOfNotificationsSent,
+                    expectedMessageType);
+        } catch (final AssertionError e) {
+            Thread.sleep(500);
+            this.assertResponseDataHasNotificationsAndMessageType(correlationUid, expectedNumberOfNotificationsSent,
+                    expectedMessageType);
+        }
+    }
+
+    private void assertResponseDataHasNotificationsAndMessageType(final String correlationUid,
+            final Short expectedNumberOfNotificationsSent, final String expectedMessageType) {
+
         final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
 
-        assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT,
-                settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT),
-                responseData.getNumberOfNotificationsSent().toString());
-        assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
-                responseData.getMessageType());
+        assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT, expectedNumberOfNotificationsSent,
+                responseData.getNumberOfNotificationsSent());
+        assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, expectedMessageType, responseData.getMessageType());
     }
 }
