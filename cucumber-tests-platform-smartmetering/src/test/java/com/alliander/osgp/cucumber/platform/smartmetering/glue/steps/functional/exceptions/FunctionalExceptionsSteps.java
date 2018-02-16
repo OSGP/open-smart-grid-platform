@@ -57,16 +57,16 @@ public class FunctionalExceptionsSteps {
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
     @Autowired
-    private SmartMeteringMonitoringRequestClient<ActualMeterReadsGasAsyncResponse, ActualMeterReadsGasRequest> smartMeteringMonitoringRequestClient;
+    private SmartMeteringMonitoringRequestClient<ActualMeterReadsGasAsyncResponse, ActualMeterReadsGasRequest> actualMeterReadsGasRequestClient;
 
     @Autowired
-    private SmartMeteringMonitoringResponseClient<ActualMeterReadsGasResponse, ActualMeterReadsGasAsyncRequest> smartMeteringMonitoringResponseClient;
+    private SmartMeteringMonitoringResponseClient<ActualMeterReadsGasResponse, ActualMeterReadsGasAsyncRequest> actualMeterReadsGasResponseClient;
 
     @Autowired
-    private SmartMeteringAdHocRequestClient<GetSpecificAttributeValueAsyncResponse, GetSpecificAttributeValueRequest> smartMeteringAdHocRequestClient;
+    private SmartMeteringAdHocRequestClient<GetSpecificAttributeValueAsyncResponse, GetSpecificAttributeValueRequest> getSpecificAttributeValueRequestClient;
 
     @Autowired
-    private SmartMeteringAdHocResponseClient<GetSpecificAttributeValueResponse, GetSpecificAttributeValueAsyncRequest> SmartMeteringAdHocResponseClient;
+    private SmartMeteringAdHocResponseClient<GetSpecificAttributeValueResponse, GetSpecificAttributeValueAsyncRequest> getSpecificAttributeValueResponseClient;
 
     @When("^the get administrative status request for an invalid organisation is received$")
     public void theRetrieveAdministrativeStatusRequestForAnInvalidOrganisationIsReceived(
@@ -152,14 +152,14 @@ public class FunctionalExceptionsSteps {
     public void theGetActualMeterReadsGasRequestGeneratingAnErrorIsReceived(final Map<String, String> requestData)
             throws Throwable {
         final ActualMeterReadsGasRequest request = ActualMeterReadsGasRequestFactory.fromParameterMap(requestData);
-        final ActualMeterReadsGasAsyncResponse asyncResponse = this.smartMeteringMonitoringRequestClient
+        final ActualMeterReadsGasAsyncResponse asyncResponse = this.actualMeterReadsGasRequestClient
                 .doRequest(request);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
 
         final ActualMeterReadsGasAsyncRequest asyncRequest = ActualMeterReadsGasRequestFactory.fromScenarioContext();
 
         try {
-            this.smartMeteringMonitoringResponseClient.getResponse(asyncRequest);
+            this.actualMeterReadsGasResponseClient.getResponse(asyncRequest);
         } catch (final Exception exception) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
         }
@@ -170,7 +170,7 @@ public class FunctionalExceptionsSteps {
             throws Throwable {
         final GetSpecificAttributeValueRequest request = SpecificAttributeValueRequestFactory
                 .fromParameterMap(settings);
-        final GetSpecificAttributeValueAsyncResponse asyncResponse = this.smartMeteringAdHocRequestClient
+        final GetSpecificAttributeValueAsyncResponse asyncResponse = this.getSpecificAttributeValueRequestClient
                 .doRequest(request);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
 
@@ -178,7 +178,7 @@ public class FunctionalExceptionsSteps {
                 .fromScenarioContext();
 
         try {
-            this.SmartMeteringAdHocResponseClient.getResponse(asyncRequest);
+            this.getSpecificAttributeValueResponseClient.getResponse(asyncRequest);
         } catch (final Exception exception) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
         }
