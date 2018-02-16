@@ -34,3 +34,36 @@ Feature: SmartMetering functional exceptions regarding devices
     And a SOAP fault should have been returned
       | Code    |             204 |
       | Message | EXISTING_DEVICE |
+
+  Scenario: Read actual meter reads of a gas meter without channel information
+    Given a dlms device
+      | DeviceIdentification     | TEST1024000000001 |
+      | DeviceType               | SMART_METER_E     |
+      | SelectiveAccessSupported | true              |
+    And a dlms device
+      | DeviceIdentification        | TESTG102400000001 |
+      | DeviceType                  | SMART_METER_G     |
+      | GatewayDeviceIdentification | TEST1024000000001 |
+    When the get actual meter reads gas request generating an error is received
+      | DeviceIdentification | TESTG102400000001 |
+    Then a SOAP fault should have been returned
+      | Code    |              401 |
+      | Message | VALIDATION_ERROR |
+
+  Scenario: Retrieve a non-existing DLMS attribute
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+    When the get specific attribute value request generating an error is received
+      | DeviceIdentification | TEST1024000000001 |
+      | ClassId              |               999 |
+      | ObisCodeA            |                 9 |
+      | ObisCodeB            |                 9 |
+      | ObisCodeC            |                 9 |
+      | ObisCodeD            |                 9 |
+      | ObisCodeE            |                 9 |
+      | ObisCodeF            |                 9 |
+      | Attribute            |                 9 |
+    Then a SOAP fault should have been returned
+      | Code    |                              412 |
+      | Message | ERROR_RETRIEVING_ATTRIBUTE_VALUE |
