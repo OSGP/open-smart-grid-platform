@@ -14,9 +14,9 @@ Feature: SmartMetering functional exceptions regarding firmware
       | ManufacturerCode     | KAIF              |
       | DeviceModelCode      | MA105             |
     And a firmware
-      | FirmwareModuleVersionComm |                    |
-      | FirmwareModuleVersionMa   |                    |
-      | FirmwareModuleVersionFunc |                    |
+      | FirmwareModuleVersionComm | x                  |
+      | FirmwareModuleVersionMa   | y                  |
+      | FirmwareModuleVersionFunc | z                  |
       | FirmwareModuleVersionMbus |                    |
       | FirmwareModuleVersionSec  |                    |
       | FirmwareFilename          | KFPP_V060100FF.bin |
