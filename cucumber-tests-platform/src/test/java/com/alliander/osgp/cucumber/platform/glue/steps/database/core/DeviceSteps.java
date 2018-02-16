@@ -27,7 +27,6 @@ import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 
 public class DeviceSteps extends BaseDeviceSteps {
@@ -58,7 +57,7 @@ public class DeviceSteps extends BaseDeviceSteps {
      *
      * @return
      */
-    @And("^the device exists")
+    @Then("^the device exists")
     public void theDeviceExists(final Map<String, String> settings) throws Throwable {
         final Device device = Wait.untilAndReturn(() -> {
             final Device entity = this.deviceRepository
