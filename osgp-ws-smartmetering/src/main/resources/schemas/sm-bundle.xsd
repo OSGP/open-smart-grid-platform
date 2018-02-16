@@ -110,8 +110,15 @@
   <xsd:element name="GetMbusEncryptionKeyStatusRequest">
     <xsd:complexType>
       <xsd:complexContent>
+        <xsd:extension base="smconf:GetMbusEncryptionKeyStatusRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetMbusEncryptionKeyStatusByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
         <xsd:extension
-          base="smconf:GetMbusEncryptionKeyStatusRequestData"></xsd:extension>
+          base="smconf:GetMbusEncryptionKeyStatusByChannelRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -205,7 +212,7 @@
         <xsd:extension base="smconf:SetClockConfigurationRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
-  </xsd:element>  
+  </xsd:element>
   <xsd:element name="GetProfileGenericDataRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -226,7 +233,7 @@
         <xsd:extension base="smconf:DefinableLoadProfileConfigurationData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
-  </xsd:element> 
+  </xsd:element>
   <xsd:element name="SetMbusUserKeyByChannelRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -265,6 +272,7 @@
         <xsd:element ref="tns:SetActivityCalendarRequest" />
         <xsd:element ref="tns:SetEncryptionKeyExchangeOnGMeterRequest" />
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusRequest" />
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelRequest" />
         <xsd:element ref="tns:SetAlarmNotificationsRequest" />
         <xsd:element ref="tns:SetConfigurationObjectRequest" />
         <xsd:element ref="tns:SetPushSetupAlarmRequest" />
@@ -385,6 +393,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetMbusEncryptionKeyStatusByChannelResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:GetMbusEncryptionKeyStatusByChannelResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="GetAllAttributeValuesResponse">
     <xsd:complexType>
       <xsd:complexContent>
@@ -454,7 +470,8 @@
         <xsd:element ref="tns:AdministrativeStatusResponse" />
         <xsd:element ref="tns:PeriodicMeterReadsResponse" />
         <xsd:element ref="tns:PeriodicMeterReadsGasResponse" />
-        <xsd:element ref="tns:GetMbusEncryptionKeyStatusResponse"/>
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusResponse" />
+        <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelResponse" />
         <xsd:element ref="tns:GetAllAttributeValuesResponse" />
         <xsd:element ref="tns:GetSpecificAttributeValueResponse" />
         <xsd:element ref="tns:GetFirmwareVersionResponse" />
@@ -462,7 +479,7 @@
         <xsd:element ref="tns:AssociationLnObjectsResponse" />
         <xsd:element ref="tns:GetConfigurationObjectResponse" />
         <xsd:element ref="tns:ProfileGenericDataResponse" />
-        <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse"/>
+        <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>

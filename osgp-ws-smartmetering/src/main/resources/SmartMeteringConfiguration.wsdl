@@ -162,6 +162,28 @@
       name="GetMbusEncryptionKeyStatusResponse">
     </wsdl:part>
   </wsdl:message>
+  
+  <wsdl:message name="GetMbusEncryptionKeyStatusByChannelRequest">
+    <wsdl:part element="smconf:GetMbusEncryptionKeyStatusByChannelRequest"
+      name="GetMbusEncryptionKeyStatusByChannelRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetMbusEncryptionKeyStatusByChannelAsyncResponse">
+    <wsdl:part element="smconf:GetMbusEncryptionKeyStatusByChannelAsyncResponse"
+      name="GetMbusEncryptionKeyStatusByChannelAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetMbusEncryptionKeyStatusByChannelAsyncRequest">
+    <wsdl:part element="smconf:GetMbusEncryptionKeyStatusByChannelAsyncRequest"
+      name="GetMbusEncryptionKeyStatusByChannelAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetMbusEncryptionKeyStatusByChannelResponse">
+    <wsdl:part element="smconf:GetMbusEncryptionKeyStatusByChannelResponse"
+      name="GetMbusEncryptionKeyStatusByChannelResponse">
+    </wsdl:part>
+  </wsdl:message>
 
   <wsdl:message name="SetActivityCalendarRequest">
     <wsdl:part element="smconf:SetActivityCalendarRequest"
@@ -555,6 +577,24 @@
       </wsdl:input>
       <wsdl:output message="tns:GetMbusEncryptionKeyStatusResponse"
         name="GetMbusEncryptionKeyStatusResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="GetMbusEncryptionKeyStatusByChannel">
+      <wsdl:input message="tns:GetMbusEncryptionKeyStatusByChannelRequest"
+        name="GetMbusEncryptionKeyStatusByChannelRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetMbusEncryptionKeyStatusByChannelAsyncResponse"
+        name="GetMbusEncryptionKeyStatusByChannelAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetMbusEncryptionKeyStatusByChannelResponse">
+      <wsdl:input message="tns:GetMbusEncryptionKeyStatusByChannelAsyncRequest"
+        name="GetMbusEncryptionKeyStatusByChannelAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetMbusEncryptionKeyStatusByChannelResponse"
+        name="GetMbusEncryptionKeyStatusByChannelResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -1023,6 +1063,37 @@
           use="literal" />
       </wsdl:input>
       <wsdl:output name="GetMbusEncryptionKeyStatusResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    
+    <wsdl:operation name="GetMbusEncryptionKeyStatusByChannel">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetMbusEncryptionKeyStatusByChannelRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetMbusEncryptionKeyStatusByChannelAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetMbusEncryptionKeyStatusByChannelResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetMbusEncryptionKeyStatusByChannelAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetMbusEncryptionKeyStatusByChannelResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
