@@ -58,4 +58,3 @@ Feature: SmartMetering functional exceptions regarding firmware
     And a SOAP fault should have been returned
       | Code    |                 601 |
       | Message | UNKNOWN_DEVICEMODEL |
-      
