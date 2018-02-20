@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNull;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.cucumber.core.DateTimeHelper;
+import com.alliander.osgp.cucumber.core.RetryableAssert;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
@@ -73,14 +75,8 @@ public class ResponseDataSteps extends BaseDeviceSteps {
                 .parseShort(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT));
         final String expectedMessageType = settings.get(PlatformKeys.KEY_MESSAGE_TYPE);
 
-        try {
-            this.assertResponseDataHasNotificationsAndMessageType(correlationUid, expectedNumberOfNotificationsSent,
-                    expectedMessageType);
-        } catch (final AssertionError e) {
-            Thread.sleep(500);
-            this.assertResponseDataHasNotificationsAndMessageType(correlationUid, expectedNumberOfNotificationsSent,
-                    expectedMessageType);
-        }
+        RetryableAssert.assertWithRetries(() -> ResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
+                correlationUid, expectedNumberOfNotificationsSent, expectedMessageType), 3, 200, TimeUnit.MILLISECONDS);
     }
 
     private void assertResponseDataHasNotificationsAndMessageType(final String correlationUid,
