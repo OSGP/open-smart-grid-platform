@@ -95,10 +95,9 @@ public class ReportingSteps extends GlueBase {
             throws Throwable {
 
         // Restart the simulator to avoid problems with cached connections.
-        iec61850MockServer.stop();
-        iec61850MockServer.start();
+        iec61850MockServer.restart();
 
-        // Do a GetDataRequest to get a connection with OSGP
+        // Do a GetDataRequest to ensure a connection with OSGP
         this.doGetDataRequest(settings);
 
         // Make sure the notifications queue is empty, so that when the

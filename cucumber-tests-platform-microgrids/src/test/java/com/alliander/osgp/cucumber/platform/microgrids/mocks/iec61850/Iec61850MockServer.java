@@ -9,11 +9,13 @@ package com.alliander.osgp.cucumber.platform.microgrids.mocks.iec61850;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import org.openmuc.openiec61850.SclParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.cucumber.core.RetryableAssert;
 import com.alliander.osgp.simulator.protocol.iec61850.server.RtuSimulator;
 
 public class Iec61850MockServer {
@@ -72,6 +74,11 @@ public class Iec61850MockServer {
         this.rtuSimulator.stop();
         this.simulatorIsListening = false;
         LOGGER.info("Stopped IEC61850 Mock server for device {}", this.mockedDevice);
+    }
+
+    public void restart() {
+        this.stop();
+        RetryableAssert.assertWithRetries(this::start, 5, 500, TimeUnit.MILLISECONDS);
     }
 
     public void ensureReportsDisabled() {
