@@ -37,7 +37,7 @@ public class SmartMeteringBundleClient extends SmartMeteringBaseClient {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
-        this.waitForDlmsResponseData(correlationUid);
+        this.waitForNotification(correlationUid);
 
         return (BundleResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
     }

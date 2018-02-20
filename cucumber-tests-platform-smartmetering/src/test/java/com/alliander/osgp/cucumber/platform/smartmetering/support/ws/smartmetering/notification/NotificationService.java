@@ -1,11 +1,11 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2018 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.cucumber.platform.microgrids.support.ws.microgrids;
+package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.notification;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 
 @Component
 public class NotificationService {

@@ -83,10 +83,10 @@ public class AdHocManagementClient extends BaseClient {
     private void waitForResponseData(final String correlationUid) {
         try {
             for (int timeSpentWaiting = 0; timeSpentWaiting < this.waitFailMillis; timeSpentWaiting += this.waitCheckIntervalMillis) {
-                Thread.sleep(this.waitCheckIntervalMillis);
                 if (this.responseDataRepository.findByCorrelationUid(correlationUid) != null) {
                     return;
                 }
+                Thread.sleep(this.waitCheckIntervalMillis);
             }
             throw new AssertionError("RtuResponseData not available within " + this.waitFailMillis + " milliseconds.");
         } catch (final InterruptedException e) {
