@@ -1,6 +1,6 @@
 # Needs a DlmsDevice simulator with e650 profile on port 1026
-@SmartMetering @Platform @SN
-Feature: SmartMetering short names - dedicated event log UnderVoltageL1, UnderVoltageL2 and UnderVoltageL3
+@SmartMetering @Platform @SN @Focus
+Feature: SmartMetering short names - Dedicated event logs Under- and OverVoltageL1, L2 and L3
 
   Scenario Outline: Get dedicated event log UnderVoltage capture objects from L+G E650
     Given a dlms device
@@ -27,10 +27,13 @@ Feature: SmartMetering short names - dedicated event log UnderVoltageL1, UnderVo
       | ResponsePart         | <responsePart>    |
 
     Examples: 
-      | obiscodeE | responsePart    |
-      |       152 | 1-1:32.23.0.255 |
-      |       153 | 1-1:52.23.0.255 |
-      |       154 | 1-1:72.23.0.255 |
+      | log            | obiscodeE | responsePart    |
+      | UnderVoltageL1 |       152 | 1-1:32.23.0.255 |
+      | UnderVoltageL2 |       153 | 1-1:52.23.0.255 |
+      | UnderVoltageL3 |       154 | 1-1:72.23.0.255 |
+      | OverVoltageL1  |       155 | 1-1:32.26.0.255 |
+      | OverVoltageL2  |       156 | 1-1:52.26.0.255 |
+      | OverVoltageL3  |       157 | 1-1:72.26.0.255 |
 
   Scenario Outline: Get dedicated event log UnderVoltageL1 buffer from L+G E650
     Given a dlms device
@@ -79,7 +82,10 @@ Feature: SmartMetering short names - dedicated event log UnderVoltageL1, UnderVo
       | CaptureObject_Unit_4           | V                 |
 
     Examples: 
-      | obiscodeE | obisCode          | logicalName4    |
-      |       152 | 1.1.99.98.152.255 | 1.1.32.23.0.255 |
-      |       153 | 1.1.99.98.153.255 | 1.1.52.23.0.255 |
-      |       154 | 1.1.99.98.154.255 | 1.1.72.23.0.255 |
+      | log            | obiscodeE | obisCode          | logicalName4    |
+      | UnderVoltageL1 |       152 | 1.1.99.98.152.255 | 1.1.32.23.0.255 |
+      | UnderVoltageL2 |       153 | 1.1.99.98.153.255 | 1.1.52.23.0.255 |
+      | UnderVoltageL3 |       154 | 1.1.99.98.154.255 | 1.1.72.23.0.255 |
+      | OverVoltageL1  |       155 | 1.1.99.98.155.255 | 1.1.32.26.0.255 |
+      | OverVoltageL2  |       156 | 1.1.99.98.156.255 | 1.1.52.26.0.255 |
+      | OverVoltageL3  |       157 | 1.1.99.98.157.255 | 1.1.72.26.0.255 |
