@@ -7,13 +7,13 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public class GetMbusEncryptionKeyStatusByChannelRequestDto implements ActionRequestDto {
+public class GetMbusEncryptionKeyStatusByChannelRequestDataDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 5456202868652046554L;
 
     private short channel;
 
-    public GetMbusEncryptionKeyStatusByChannelRequestDto(final short channel) {
+    public GetMbusEncryptionKeyStatusByChannelRequestDataDto(final short channel) {
         this.channel = channel;
     }
 
