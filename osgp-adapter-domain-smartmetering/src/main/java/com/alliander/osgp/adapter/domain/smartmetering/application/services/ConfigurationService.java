@@ -845,12 +845,6 @@ public class ConfigurationService {
         LOGGER.info("handleGetMbusEncryptionKeyStatusResponse for MessageType: {}",
                 deviceMessageMetadata.getMessageType());
 
-        ResponseMessageResultType result = resultType;
-        if (exception != null) {
-            LOGGER.error("Configure Definable Load Profile Response not ok. Unexpected Exception", exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
         final String gatewayDeviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType
                 .valueOf(getMbusEncryptionKeyStatusByChannelResponseDto.getEncryptionKeyStatus().name());
