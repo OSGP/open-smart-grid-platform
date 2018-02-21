@@ -45,6 +45,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttribute
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MbusActionRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
@@ -82,6 +83,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
@@ -169,6 +171,8 @@ public class ActionMapperService {
         CLASS_MAP.put(CoupleMbusDeviceByChannelRequestData.class, CoupleMbusDeviceByChannelRequestDataDto.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusRequestData.class, GetMbusEncryptionKeyStatusRequestDto.class);
         CLASS_MAP.put(ClearAlarmRegisterData.class, ClearAlarmRegisterRequestDto.class);
+        CLASS_MAP.put(GetMbusEncryptionKeyStatusByChannelRequestData.class,
+                GetMbusEncryptionKeyStatusByChannelRequestDto.class);
     }
 
     /**
@@ -212,6 +216,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(ClearAlarmRegisterData.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelRequestData.class, this.configurationMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageDataContainer,

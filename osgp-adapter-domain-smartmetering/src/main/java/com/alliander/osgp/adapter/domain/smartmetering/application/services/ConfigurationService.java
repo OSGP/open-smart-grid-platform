@@ -32,6 +32,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
@@ -47,6 +48,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
@@ -805,6 +808,56 @@ public class ConfigurationService {
         this.webServiceResponseMessageSender.send(
                 new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(), mbusDeviceIdentification, resultType,
+                        exception, encryptionKeyStatusType, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+    }
+
+    public void getMbusEncryptionKeyStatusByChannel(final DeviceMessageMetadata deviceMessageMetadata,
+            final GetMbusEncryptionKeyStatusByChannelRequestData getMbusEncryptionKeyStatusByChannelRequestData)
+            throws FunctionalException {
+
+        LOGGER.info(
+                "getMbusEncryptionKeyStatusByChannel for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SmartMeter gatewayDevice = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+        if (gatewayDevice == null) {
+            throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE,
+                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMbusDeviceException());
+        }
+
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
+                        gatewayDevice.getIpAddress(),
+                        new GetMbusEncryptionKeyStatusByChannelRequestDto(
+                                getMbusEncryptionKeyStatusByChannelRequestData.getChannel())),
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                deviceMessageMetadata.getScheduleTime());
+    }
+
+    public void handleGetMbusEncryptionKeyStatusByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType resultType, final OsgpException exception,
+            final GetMbusEncryptionKeyStatusByChannelResponseDto getMbusEncryptionKeyStatusByChannelResponseDto) {
+
+        LOGGER.info("handleGetMbusEncryptionKeyStatusResponse for MessageType: {}",
+                deviceMessageMetadata.getMessageType());
+
+        ResponseMessageResultType result = resultType;
+        if (exception != null) {
+            LOGGER.error("Configure Definable Load Profile Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        final String gatewayDeviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+        final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType
+                .valueOf(getMbusEncryptionKeyStatusByChannelResponseDto.getEncryptionKeyStatus().name());
+
+        this.webServiceResponseMessageSender.send(
+                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(), gatewayDeviceIdentification, resultType,
                         exception, encryptionKeyStatusType, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
