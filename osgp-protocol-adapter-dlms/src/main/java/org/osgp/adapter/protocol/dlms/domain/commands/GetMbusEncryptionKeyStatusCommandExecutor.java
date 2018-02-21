@@ -55,11 +55,20 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
     public GetMbusEncryptionKeyStatusResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final GetMbusEncryptionKeyStatusRequestDto request) throws ProtocolAdapterException {
 
-        final ObisCode obisCode = OBIS_CODES.get(request.getChannel());
+        final EncryptionKeyStatusTypeDto encryptionKeyStatusType = this
+                .getEncryptionKeyStatusTypeDto(request.getChannel(), conn);
+        return new GetMbusEncryptionKeyStatusResponseDto(request.getMbusDeviceIdentification(),
+                encryptionKeyStatusType);
+    }
+
+    public EncryptionKeyStatusTypeDto getEncryptionKeyStatusTypeDto(final short channel,
+            final DlmsConnectionHolder conn) throws ProtocolAdapterException {
+
+        final ObisCode obisCode = OBIS_CODES.get(channel);
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, obisCode, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener().setDescription("GetMbusEncryptionKeyStatus, retrieve attribute: "
+        conn.getDlmsMessageListener().setDescription("GetMbusEncryptionKeyStatusByChannel, retrieve attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(getParameter));
 
         LOGGER.info(
@@ -82,9 +91,7 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
             throw new ProtocolAdapterException("Received unexpected result data.");
         }
 
-        final EncryptionKeyStatusTypeDto encryptionKeyStatusType = EncryptionKeyStatusTypeDto
+        return EncryptionKeyStatusTypeDto
                 .valueOf(EncryptionKeyStatusType.fromValue((Integer) dataObject.getValue()).name());
-        return new GetMbusEncryptionKeyStatusResponseDto(request.getMbusDeviceIdentification(),
-                encryptionKeyStatusType);
     }
 }

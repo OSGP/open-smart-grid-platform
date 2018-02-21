@@ -17,28 +17,26 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
-/**
- * Class for processing the get M-Bus encryption keys status request message
- */
 @Component
-public class GetMbusEncryptionKeyStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetMbusEncryptionKeyStatusByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public GetMbusEncryptionKeyStatusRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_MBUS_ENCRYPTION_KEY_STATUS);
+    public GetMbusEncryptionKeyStatusByChannelRequestMessageProcessor() {
+        super(DeviceRequestMessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL);
     }
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
-        this.assertRequestObjectType(GetMbusEncryptionKeyStatusRequestDto.class, requestObject);
-        final GetMbusEncryptionKeyStatusRequestDto request = (GetMbusEncryptionKeyStatusRequestDto) requestObject;
-        return this.configurationService.requestGetMbusEncryptionKeyStatus(conn, device, request);
+        this.assertRequestObjectType(GetMbusEncryptionKeyStatusByChannelRequestDto.class, requestObject);
+        final GetMbusEncryptionKeyStatusByChannelRequestDto request = (GetMbusEncryptionKeyStatusByChannelRequestDto) requestObject;
+        return this.configurationService.requestGetMbusEncryptionKeyStatusByChannel(conn, device, request);
     }
+
 }
