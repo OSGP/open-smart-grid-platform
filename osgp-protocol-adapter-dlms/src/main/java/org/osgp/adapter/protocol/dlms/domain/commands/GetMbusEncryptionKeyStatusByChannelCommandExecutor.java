@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EncryptionKeyStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -24,7 +24,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Component
 public class GetMbusEncryptionKeyStatusByChannelCommandExecutor extends
-        AbstractCommandExecutor<GetMbusEncryptionKeyStatusByChannelRequestDto, GetMbusEncryptionKeyStatusByChannelResponseDto> {
+        AbstractCommandExecutor<GetMbusEncryptionKeyStatusByChannelRequestDataDto, GetMbusEncryptionKeyStatusByChannelResponseDto> {
 
     @Autowired
     private GetMbusEncryptionKeyStatusCommandExecutor getMbusEncryptionKeyStatusCommandExecutor;
@@ -33,12 +33,12 @@ public class GetMbusEncryptionKeyStatusByChannelCommandExecutor extends
     private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
 
     public GetMbusEncryptionKeyStatusByChannelCommandExecutor() {
-        super(GetMbusEncryptionKeyStatusByChannelRequestDto.class);
+        super(GetMbusEncryptionKeyStatusByChannelRequestDataDto.class);
     }
 
     @Override
     public GetMbusEncryptionKeyStatusByChannelResponseDto execute(final DlmsConnectionHolder conn,
-            final DlmsDevice device, final GetMbusEncryptionKeyStatusByChannelRequestDto request)
+            final DlmsDevice device, final GetMbusEncryptionKeyStatusByChannelRequestDataDto request)
             throws ProtocolAdapterException, FunctionalException {
 
         final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest = new GetMBusDeviceOnChannelRequestDataDto(

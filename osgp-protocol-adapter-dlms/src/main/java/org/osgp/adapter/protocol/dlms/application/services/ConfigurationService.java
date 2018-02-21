@@ -48,7 +48,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DefinableLoadProfileCon
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
@@ -372,7 +372,7 @@ public class ConfigurationService {
 
     public GetMbusEncryptionKeyStatusByChannelResponseDto requestGetMbusEncryptionKeyStatusByChannel(
             final DlmsConnectionHolder conn, final DlmsDevice device,
-            final GetMbusEncryptionKeyStatusByChannelRequestDto getMbusEncryptionKeyStatusByChannelRequest)
+            final GetMbusEncryptionKeyStatusByChannelRequestDataDto getMbusEncryptionKeyStatusByChannelRequest)
             throws ProtocolAdapterException, FunctionalException {
 
         return this.getMbusEncryptionKeyStatusByChannelCommandExecutor.execute(conn, device,
