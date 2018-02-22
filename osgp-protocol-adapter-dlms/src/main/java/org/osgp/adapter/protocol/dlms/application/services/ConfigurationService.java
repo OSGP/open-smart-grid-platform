@@ -40,7 +40,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
@@ -161,11 +160,12 @@ public class ConfigurationService {
         LOGGER.info(VISUAL_SEPARATOR);
         LOGGER.info("******** Configuration Object: 0-1:94.31.3.255 *******");
         LOGGER.info(VISUAL_SEPARATOR);
-        LOGGER.info("Operation mode:{} ", gprsOperationModeType.name());
-        LOGGER.info("Flags:");
-        for (final ConfigurationFlagDto configurationFlag : configurationFlags.getConfigurationFlag()) {
-            LOGGER.info("Flag : {}, enabled = {}", configurationFlag.getConfigurationFlagType().toString(),
-                    configurationFlag.isEnabled());
+        LOGGER.info("Operation mode: {}",
+                gprsOperationModeType == null ? "not altered by this request" : gprsOperationModeType);
+        if (configurationFlags == null) {
+            LOGGER.info("Flags: none enabled or disabled by this request");
+        } else {
+            LOGGER.info("{}", configurationFlags);
         }
         LOGGER.info(VISUAL_SEPARATOR);
 

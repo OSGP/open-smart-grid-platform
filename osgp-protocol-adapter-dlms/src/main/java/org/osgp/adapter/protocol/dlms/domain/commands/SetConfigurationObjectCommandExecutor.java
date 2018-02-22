@@ -170,6 +170,9 @@ public class SetConfigurationObjectCommandExecutor
 
     private List<ConfigurationFlagDto> getNewFlags(final ConfigurationObjectDto configurationObject) {
         final List<ConfigurationFlagDto> configurationFlags = new ArrayList<>();
+        if (configurationObject.getConfigurationFlags() == null) {
+            return configurationFlags;
+        }
         for (final ConfigurationFlagDto configurationFlag : configurationObject.getConfigurationFlags()
                 .getConfigurationFlag()) {
             if (!this.isForbidden(configurationFlag.getConfigurationFlagType())) {
