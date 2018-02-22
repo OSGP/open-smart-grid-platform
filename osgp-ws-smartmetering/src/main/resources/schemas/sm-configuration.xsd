@@ -893,8 +893,8 @@
 
   <xsd:complexType name="ConfigurationObject">
     <xsd:sequence>
-      <xsd:element name="GprsOperationMode" type="tns:GprsOperationModeType" />
-      <xsd:element name="ConfigurationFlags" type="tns:ConfigurationFlags" />
+      <xsd:element name="GprsOperationMode" type="tns:GprsOperationModeType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="ConfigurationFlags" type="tns:ConfigurationFlags" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
   </xsd:complexType>
 
