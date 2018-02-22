@@ -1,11 +1,11 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2018 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.cucumber.platform.microgrids.config.ws.microgrids;
+package com.alliander.osgp.cucumber.platform.smartmetering.config.ws.smartmetering;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,12 +35,12 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInte
 
 @EnableWs
 @Configuration
-public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter {
+public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapter {
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
-    @Value("${jaxb2.marshaller.context.path.microgrids.notification}")
-    private String contextPathMicrogridsNotification;
+    @Value("${jaxb2.marshaller.context.path.smartmetering.notification}")
+    private String contextPathSmartMeteringNotification;
 
     @Value("${web.service.notification.context}")
     private String notificationContextPath;
@@ -53,13 +53,13 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
         final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
 
         final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
-        methodArgumentResolvers.add(this.microgridsNotificationMarshallingPayloadMethodProcessor());
+        methodArgumentResolvers.add(this.smartMeteringNotificationMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_HEADER,
                 OrganisationIdentification.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
-        methodReturnValueHandlers.add(this.microgridsNotificationMarshallingPayloadMethodProcessor());
+        methodReturnValueHandlers.add(this.smartMeteringNotificationMarshallingPayloadMethodProcessor());
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 
         return defaultMethodEndpointAdapter;
@@ -91,29 +91,16 @@ public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter 
         return httpServer;
     }
 
-    /**
-     * Method for creating the Marshaller for Microgrids notification.
-     *
-     * @return Jaxb2Marshaller
-     */
     @Bean
-    public Jaxb2Marshaller microgridsNotificationMarshaller() {
+    public Jaxb2Marshaller smartMeteringNotificationMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-
-        marshaller.setContextPath(this.contextPathMicrogridsNotification);
-
+        marshaller.setContextPath(this.contextPathSmartMeteringNotification);
         return marshaller;
     }
 
-    /**
-     * Method for creating the Marshalling Payload Method Processor for
-     * Microgrids notification.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
     @Bean
-    public MarshallingPayloadMethodProcessor microgridsNotificationMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.microgridsNotificationMarshaller(),
-                this.microgridsNotificationMarshaller());
+    public MarshallingPayloadMethodProcessor smartMeteringNotificationMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringNotificationMarshaller(),
+                this.smartMeteringNotificationMarshaller());
     }
 }

@@ -47,7 +47,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
             throws WebServiceSecurityException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
-        this.waitForDlmsResponseData(correlationUid);
+        this.waitForNotification(correlationUid);
 
         final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
@@ -65,7 +65,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
             throws WebServiceSecurityException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
-        this.waitForDlmsResponseData(correlationUid);
+        this.waitForNotification(correlationUid);
 
         final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
@@ -83,7 +83,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
             throws WebServiceSecurityException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
-        this.waitForDlmsResponseData(correlationUid);
+        this.waitForNotification(correlationUid);
 
         final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
@@ -101,7 +101,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
             final CoupleMbusDeviceByChannelAsyncRequest asyncRequest) throws WebServiceSecurityException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
-        this.waitForDlmsResponseData(correlationUid);
+        this.waitForNotification(correlationUid);
 
         final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());

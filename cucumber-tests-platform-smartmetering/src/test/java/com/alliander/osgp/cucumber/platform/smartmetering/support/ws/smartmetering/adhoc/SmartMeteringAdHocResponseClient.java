@@ -32,7 +32,7 @@ public class SmartMeteringAdHocResponseClient<T, V extends AsyncRequest> extends
 
     public T getResponse(final V request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        this.waitForDlmsResponseData(request.getCorrelationUid());
+        this.waitForNotification(request.getCorrelationUid());
         return (T) this.getTemplate().marshalSendAndReceive(request);
     }
 
