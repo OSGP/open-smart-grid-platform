@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNull;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.cucumber.core.DateTimeHelper;
+import com.alliander.osgp.cucumber.core.RetryableAssert;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
@@ -69,12 +71,21 @@ public class ResponseDataSteps extends BaseDeviceSteps {
     @Then("^the response data has values$")
     public void theResponseDataHasValues(final Map<String, String> settings) throws Throwable {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
+        final short expectedNumberOfNotificationsSent = Short
+                .parseShort(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT));
+        final String expectedMessageType = settings.get(PlatformKeys.KEY_MESSAGE_TYPE);
+
+        RetryableAssert.assertWithRetries(() -> ResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
+                correlationUid, expectedNumberOfNotificationsSent, expectedMessageType), 3, 200, TimeUnit.MILLISECONDS);
+    }
+
+    private void assertResponseDataHasNotificationsAndMessageType(final String correlationUid,
+            final Short expectedNumberOfNotificationsSent, final String expectedMessageType) {
+
         final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
 
-        assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT,
-                settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT),
-                responseData.getNumberOfNotificationsSent().toString());
-        assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, settings.get(PlatformKeys.KEY_MESSAGE_TYPE),
-                responseData.getMessageType());
+        assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT, expectedNumberOfNotificationsSent,
+                responseData.getNumberOfNotificationsSent());
+        assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, expectedMessageType, responseData.getMessageType());
     }
 }

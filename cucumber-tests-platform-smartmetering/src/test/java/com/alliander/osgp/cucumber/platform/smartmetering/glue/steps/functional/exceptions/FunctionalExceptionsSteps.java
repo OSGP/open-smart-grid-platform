@@ -14,19 +14,33 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.GetAdministrativeStatus;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SpecificAttributeValueRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetAdministrativeStatusRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.AddDeviceRequestFactory;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.ActualMeterReadsGasRequestFactory;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
+import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -41,6 +55,18 @@ public class FunctionalExceptionsSteps {
 
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
+
+    @Autowired
+    private SmartMeteringMonitoringRequestClient<ActualMeterReadsGasAsyncResponse, ActualMeterReadsGasRequest> actualMeterReadsGasRequestClient;
+
+    @Autowired
+    private SmartMeteringMonitoringResponseClient<ActualMeterReadsGasResponse, ActualMeterReadsGasAsyncRequest> actualMeterReadsGasResponseClient;
+
+    @Autowired
+    private SmartMeteringAdHocRequestClient<GetSpecificAttributeValueAsyncResponse, GetSpecificAttributeValueRequest> getSpecificAttributeValueRequestClient;
+
+    @Autowired
+    private SmartMeteringAdHocResponseClient<GetSpecificAttributeValueResponse, GetSpecificAttributeValueAsyncRequest> getSpecificAttributeValueResponseClient;
 
     @When("^the get administrative status request for an invalid organisation is received$")
     public void theRetrieveAdministrativeStatusRequestForAnInvalidOrganisationIsReceived(
@@ -58,7 +84,6 @@ public class FunctionalExceptionsSteps {
         } catch (final Exception exception) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
         }
-
     }
 
     @When("^the get administrative status request for an invalid device is received$")
@@ -118,6 +143,42 @@ public class FunctionalExceptionsSteps {
         try {
             this.smartMeteringConfigurationClient
                     .retrieveGetAdministrativeStatusResponse(getAdministrativeStatusAsyncRequest);
+        } catch (final Exception exception) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
+        }
+    }
+
+    @When("^the get actual meter reads gas request generating an error is received$")
+    public void theGetActualMeterReadsGasRequestGeneratingAnErrorIsReceived(final Map<String, String> requestData)
+            throws Throwable {
+        final ActualMeterReadsGasRequest request = ActualMeterReadsGasRequestFactory.fromParameterMap(requestData);
+        final ActualMeterReadsGasAsyncResponse asyncResponse = this.actualMeterReadsGasRequestClient
+                .doRequest(request);
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+
+        final ActualMeterReadsGasAsyncRequest asyncRequest = ActualMeterReadsGasRequestFactory.fromScenarioContext();
+
+        try {
+            this.actualMeterReadsGasResponseClient.getResponse(asyncRequest);
+        } catch (final Exception exception) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
+        }
+    }
+
+    @When("^the get specific attribute value request generating an error is received$")
+    public void whenTheGetSpecificAttributeValueRequestGeneratingAnErrorIsReceived(final Map<String, String> settings)
+            throws Throwable {
+        final GetSpecificAttributeValueRequest request = SpecificAttributeValueRequestFactory
+                .fromParameterMap(settings);
+        final GetSpecificAttributeValueAsyncResponse asyncResponse = this.getSpecificAttributeValueRequestClient
+                .doRequest(request);
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+
+        final GetSpecificAttributeValueAsyncRequest asyncRequest = SpecificAttributeValueRequestFactory
+                .fromScenarioContext();
+
+        try {
+            this.getSpecificAttributeValueResponseClient.getResponse(asyncRequest);
         } catch (final Exception exception) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
         }

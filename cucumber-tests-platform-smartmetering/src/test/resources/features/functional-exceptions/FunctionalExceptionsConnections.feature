@@ -55,6 +55,6 @@ Feature: SmartMetering functional exceptions regarding connections
       | Hls5active           | false             |
     When the get administrative status request generating an error is received
       | DeviceIdentification | TEST1024000000001 |
-    And a SOAP fault should have been returned
+    Then a SOAP fault should have been returned
       | Code    |                               413 |
       | Message | UNSUPPORTED_COMMUNICATION_SETTING |
