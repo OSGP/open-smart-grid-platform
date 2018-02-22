@@ -93,7 +93,6 @@ Feature: SmartMetering short names - Dedicated event logs
       | OverVoltageL2  |       156 | 1.1.99.98.156.255 | 1.1.52.26.0.255 |
       | OverVoltageL3  |       157 | 1.1.99.98.157.255 | 1.1.72.26.0.255 |
 
-@Focus
   Scenario Outline: Get dedicated event log PhaseFailureL1, 2, 3 buffer from L+G E650
     Given a dlms device
       | DeviceIdentification | TEST1024000000005 |
