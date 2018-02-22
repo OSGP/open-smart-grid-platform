@@ -9,7 +9,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +20,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeySta
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
 public class GetMbusEncryptionKeyStatusByChannelCommandExecutor extends
@@ -39,7 +39,7 @@ public class GetMbusEncryptionKeyStatusByChannelCommandExecutor extends
     @Override
     public GetMbusEncryptionKeyStatusByChannelResponseDto execute(final DlmsConnectionHolder conn,
             final DlmsDevice device, final GetMbusEncryptionKeyStatusByChannelRequestDataDto request)
-            throws ProtocolAdapterException, FunctionalException {
+            throws OsgpException {
 
         final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest = new GetMBusDeviceOnChannelRequestDataDto(
                 device.getDeviceIdentification(), request.getChannel());

@@ -63,7 +63,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsConfigurationService")
@@ -373,7 +372,7 @@ public class ConfigurationService {
     public GetMbusEncryptionKeyStatusByChannelResponseDto requestGetMbusEncryptionKeyStatusByChannel(
             final DlmsConnectionHolder conn, final DlmsDevice device,
             final GetMbusEncryptionKeyStatusByChannelRequestDataDto getMbusEncryptionKeyStatusByChannelRequest)
-            throws ProtocolAdapterException, FunctionalException {
+            throws OsgpException {
 
         return this.getMbusEncryptionKeyStatusByChannelCommandExecutor.execute(conn, device,
                 getMbusEncryptionKeyStatusByChannelRequest);
