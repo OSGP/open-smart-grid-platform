@@ -1,5 +1,5 @@
 # Needs a DlmsDevice simulator with e650 profile on port 1026
-@SmartMetering @Platform @SN @Focus
+@SmartMetering @Platform @SN
 Feature: SmartMetering short names - Load profile 1
 
   Scenario: Get load profile1 capture objects from L+G E650
@@ -50,6 +50,7 @@ Feature: SmartMetering short names - Load profile 1
     Then the profile generic data result should be returned
       | DeviceIdentification           | TEST1024000000005 |
       | Result                         | OK                |
+      | NumberOfProfileEntries         |               289 |
       | NumberOfCaptureObjects         |                 9 |
       | CaptureObject_ClassId_1        |                 8 |
       | CaptureObject_LogicalName_1    | 0.0.1.0.0.255     |
@@ -65,34 +66,34 @@ Feature: SmartMetering short names - Load profile 1
       | CaptureObject_LogicalName_3    | 1.1.1.4.0.255     |
       | CaptureObject_AttributeIndex_3 |                 3 |
       | CaptureObject_DataIndex_3      |                 0 |
-      | CaptureObject_Unit_3           | UNDEFINED         |
+      | CaptureObject_Unit_3           | W                 |
       | CaptureObject_ClassId_4        |                 5 |
       | CaptureObject_LogicalName_4    | 1.1.2.4.0.255     |
-      | CaptureObject_AttributeIndex_4 |                 5 |
+      | CaptureObject_AttributeIndex_4 |                 3 |
       | CaptureObject_DataIndex_4      |                 0 |
-      | CaptureObject_Unit_4           | UNDEFINED         |
+      | CaptureObject_Unit_4           | W                 |
       | CaptureObject_ClassId_5        |                 5 |
       | CaptureObject_LogicalName_5    | 1.1.3.4.0.255     |
       | CaptureObject_AttributeIndex_5 |                 3 |
       | CaptureObject_DataIndex_5      |                 0 |
-      | CaptureObject_Unit_5           | UNDEFINED         |
+      | CaptureObject_Unit_5           | VAR               |
       | CaptureObject_ClassId_6        |                 5 |
       | CaptureObject_LogicalName_6    | 1.1.4.4.0.255     |
       | CaptureObject_AttributeIndex_6 |                 3 |
       | CaptureObject_DataIndex_6      |                 0 |
-      | CaptureObject_Unit_6           | W                 |
+      | CaptureObject_Unit_6           | VAR               |
       | CaptureObject_ClassId_7        |                 3 |
       | CaptureObject_LogicalName_7    | 1.1.33.7.0.255    |
       | CaptureObject_AttributeIndex_7 |                11 |
       | CaptureObject_DataIndex_7      |                 0 |
-      | CaptureObject_Unit_7           | W                 |
+      | CaptureObject_Unit_7           | COUNT             |
       | CaptureObject_ClassId_8        |                 3 |
       | CaptureObject_LogicalName_8    | 1.1.53.7.0.255    |
       | CaptureObject_AttributeIndex_8 |                11 |
       | CaptureObject_DataIndex_8      |                 0 |
-      | CaptureObject_Unit_8           | W                 |
+      | CaptureObject_Unit_8           | COUNT             |
       | CaptureObject_ClassId_9        |                 3 |
       | CaptureObject_LogicalName_9    | 1.1.73.7.0.255    |
       | CaptureObject_AttributeIndex_9 |                11 |
       | CaptureObject_DataIndex_9      |                 0 |
-      | CaptureObject_Unit_9           | W                 |
+      | CaptureObject_Unit_9           | COUNT             |
