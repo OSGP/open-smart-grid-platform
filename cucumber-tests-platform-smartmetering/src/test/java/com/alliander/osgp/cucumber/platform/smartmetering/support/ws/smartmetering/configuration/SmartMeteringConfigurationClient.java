@@ -380,7 +380,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = getMbusEncryptionKeyStatusByChannelAsyncRequest.getCorrelationUid();
-        this.waitForDlmsResponseData(correlationUid);
+        this.waitForNotification(correlationUid);
 
         return (GetMbusEncryptionKeyStatusByChannelResponse) this.getTemplate()
                 .marshalSendAndReceive(getMbusEncryptionKeyStatusByChannelAsyncRequest);
