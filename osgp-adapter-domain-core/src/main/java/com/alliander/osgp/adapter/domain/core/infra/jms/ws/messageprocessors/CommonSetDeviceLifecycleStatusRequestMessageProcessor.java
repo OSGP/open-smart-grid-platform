@@ -48,13 +48,14 @@ public class CommonSetDeviceLifecycleStatusRequestMessageProcessor extends WebSe
         LOGGER.debug("Processing common set device verification key message");
 
         String correlationUid = null;
-        final String messageType = null;
+        String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
         DeviceLifecycleStatus deviceLifecycleStatus = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
+            messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             deviceLifecycleStatus = (DeviceLifecycleStatus) message.getObject();
