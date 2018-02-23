@@ -114,7 +114,8 @@
   </wsdl:message>
 
   <wsdl:message name="SetDeviceCommunicationSettingsRequest">
-    <wsdl:part element="smman:SetDeviceCommunicationSettingsRequest" name="SetDeviceCommunicationSettingsRequest">
+    <wsdl:part element="smman:SetDeviceCommunicationSettingsRequest"
+      name="SetDeviceCommunicationSettingsRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetDeviceCommunicationSettingsAsyncResponse">
@@ -129,7 +130,29 @@
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetDeviceCommunicationSettingsResponse">
-    <wsdl:part element="smman:SetDeviceCommunicationSettingsResponse" name="SetDeviceCommunicationSettingsResponse">
+    <wsdl:part element="smman:SetDeviceCommunicationSettingsResponse"
+      name="SetDeviceCommunicationSettingsResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="SetDeviceLifecycleStatusByChannelRequest">
+    <wsdl:part element="smman:SetDeviceLifecycleStatusByChannelRequest"
+      name="SetDeviceLifecycleStatusByChannelRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusByChannelAsyncResponse">
+    <wsdl:part element="smman:SetDeviceLifecycleStatusByChannelAsyncResponse"
+      name="SetDeviceLifecycleStatusByChannelAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusByChannelAsyncRequest">
+    <wsdl:part element="smman:SetDeviceLifecycleStatusByChannelAsyncRequest"
+      name="SetDeviceLifecycleStatusByChannelAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetDeviceLifecycleStatusByChannelResponse">
+    <wsdl:part element="smman:SetDeviceLifecycleStatusByChannelResponse"
+      name="SetDeviceLifecycleStatusByChannelResponse">
     </wsdl:part>
   </wsdl:message>
 
@@ -209,7 +232,8 @@
     </wsdl:operation>
 
     <wsdl:operation name="SetDeviceCommunicationSettings">
-      <wsdl:input message="tns:SetDeviceCommunicationSettingsRequest" name="SetDeviceCommunicationSettingsRequest">
+      <wsdl:input message="tns:SetDeviceCommunicationSettingsRequest"
+        name="SetDeviceCommunicationSettingsRequest">
       </wsdl:input>
       <wsdl:output message="tns:SetDeviceCommunicationSettingsAsyncResponse"
         name="SetDeviceCommunicationSettingsAsyncResponse">
@@ -222,6 +246,23 @@
       </wsdl:input>
       <wsdl:output message="tns:SetDeviceCommunicationSettingsResponse"
         name="SetDeviceCommunicationSettingsResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetDeviceLifecycleStatusByChannel">
+      <wsdl:input message="tns:SetDeviceLifecycleStatusByChannelRequest"
+        name="SetDeviceLifecycleStatusByChannelRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetDeviceLifecycleStatusByChannelAsyncResponse"
+        name="SetDeviceLifecycleStatusByChannelAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetDeviceLifecycleStatusByChannelResponse">
+      <wsdl:input message="tns:SetDeviceLifecycleStatusByChannelAsyncRequest"
+        name="SetDeviceLifecycleStatusByChannelAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetDeviceLifecycleStatusByChannelResponse"
+        name="SetDeviceLifecycleStatusByChannelResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -405,6 +446,38 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SetDeviceCommunicationSettingsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+      <wsdl:operation name="SetDeviceLifecycleStatusByChannel">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetDeviceLifecycleStatusByChannelRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetDeviceLifecycleStatusByChannelAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSetDeviceLifecycleStatusByChannelResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetDeviceLifecycleStatusByChannelAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetDeviceLifecycleStatusByChannelResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
