@@ -225,10 +225,6 @@
           type="common:Identification" />
         <xsd:element name="SetDeviceLifecycleStatusByChannelRequestData"
           type="tns:SetDeviceLifecycleStatusByChannelRequestData" />
-        <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus"
-          minOccurs="1" maxOccurs="1" />
-        <xsd:element name="Channel" type="tns:Channel"
-          minOccurs="1" maxOccurs="1" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -253,7 +249,6 @@
           minOccurs="1" />
         <xsd:element name="SetDeviceLifecycleStatusByChannelResponseData"
           type="tns:SetDeviceLifecycleStatusByChannelResponseData" />
-        <xsd:element name="MbusDeviceIdentification" type="common:Identification" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -552,7 +547,7 @@
         <xsd:sequence>
           <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus"
             minOccurs="1" maxOccurs="1" />
-          <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus"
+          <xsd:element name="Channel" type="tns:Channel"
             minOccurs="1" maxOccurs="1" />
         </xsd:sequence>
       </xsd:extension>
@@ -568,7 +563,7 @@
           <xsd:element name="MbusDeviceIdentification" type="common:Identification" />
           <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus"
             minOccurs="1" maxOccurs="1" />
-          <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus"
+          <xsd:element name="Channel" type="tns:Channel"
             minOccurs="1" maxOccurs="1" />
         </xsd:sequence>
       </xsd:extension>
