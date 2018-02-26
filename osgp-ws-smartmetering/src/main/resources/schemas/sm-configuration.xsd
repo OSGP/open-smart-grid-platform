@@ -1161,8 +1161,8 @@
       <xsd:maxInclusive value="4" />
     </xsd:restriction>
   </xsd:simpleType>
-  
-    <xsd:complexType name="GetMbusEncryptionKeyStatusByChannelRequestData">
+
+  <xsd:complexType name="GetMbusEncryptionKeyStatusByChannelRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>

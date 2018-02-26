@@ -162,7 +162,7 @@
       name="GetMbusEncryptionKeyStatusResponse">
     </wsdl:part>
   </wsdl:message>
-  
+
   <wsdl:message name="GetMbusEncryptionKeyStatusByChannelRequest">
     <wsdl:part element="smconf:GetMbusEncryptionKeyStatusByChannelRequest"
       name="GetMbusEncryptionKeyStatusByChannelRequest">
@@ -342,61 +342,77 @@
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="GenerateAndReplaceKeysRequest">
-    <wsdl:part element="smconf:GenerateAndReplaceKeysRequest" name="GenerateAndReplaceKeysRequest" />
+    <wsdl:part element="smconf:GenerateAndReplaceKeysRequest"
+      name="GenerateAndReplaceKeysRequest" />
   </wsdl:message>
   <wsdl:message name="GenerateAndReplaceKeysAsyncResponse">
-    <wsdl:part element="smconf:GenerateAndReplaceKeysAsyncResponse" name="GenerateAndReplaceKeysAsyncResponse" />
+    <wsdl:part element="smconf:GenerateAndReplaceKeysAsyncResponse"
+      name="GenerateAndReplaceKeysAsyncResponse" />
   </wsdl:message>
   <wsdl:message name="GenerateAndReplaceKeysAsyncRequest">
-    <wsdl:part element="smconf:GenerateAndReplaceKeysAsyncRequest" name="GenerateAndReplaceKeysAsyncRequest">
+    <wsdl:part element="smconf:GenerateAndReplaceKeysAsyncRequest"
+      name="GenerateAndReplaceKeysAsyncRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="GenerateAndReplaceKeysResponse">
-    <wsdl:part element="smconf:GenerateAndReplaceKeysResponse" name="GenerateAndReplaceKeysResponse">
+    <wsdl:part element="smconf:GenerateAndReplaceKeysResponse"
+      name="GenerateAndReplaceKeysResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetClockConfigurationRequest">
-    <wsdl:part element="smconf:SetClockConfigurationRequest" name="SetClockConfigurationRequest" />
+    <wsdl:part element="smconf:SetClockConfigurationRequest"
+      name="SetClockConfigurationRequest" />
   </wsdl:message>
   <wsdl:message name="SetClockConfigurationAsyncResponse">
-    <wsdl:part element="smconf:SetClockConfigurationAsyncResponse" name="SetClockConfigurationAsyncResponse" />
+    <wsdl:part element="smconf:SetClockConfigurationAsyncResponse"
+      name="SetClockConfigurationAsyncResponse" />
   </wsdl:message>
   <wsdl:message name="SetClockConfigurationAsyncRequest">
-    <wsdl:part element="smconf:SetClockConfigurationAsyncRequest" name="SetClockConfigurationAsyncRequest">
+    <wsdl:part element="smconf:SetClockConfigurationAsyncRequest"
+      name="SetClockConfigurationAsyncRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetClockConfigurationResponse">
-    <wsdl:part element="smconf:SetClockConfigurationResponse" name="SetClockConfigurationKeysResponse">
+    <wsdl:part element="smconf:SetClockConfigurationResponse"
+      name="SetClockConfigurationKeysResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="ConfigureDefinableLoadProfileRequest">
-    <wsdl:part element="smconf:ConfigureDefinableLoadProfileRequest" name="ConfigureDefinableLoadProfileRequest" />
+    <wsdl:part element="smconf:ConfigureDefinableLoadProfileRequest"
+      name="ConfigureDefinableLoadProfileRequest" />
   </wsdl:message>
   <wsdl:message name="ConfigureDefinableLoadProfileAsyncResponse">
-    <wsdl:part element="smconf:ConfigureDefinableLoadProfileAsyncResponse" name="ConfigureDefinableLoadProfileAsyncResponse" />
+    <wsdl:part element="smconf:ConfigureDefinableLoadProfileAsyncResponse"
+      name="ConfigureDefinableLoadProfileAsyncResponse" />
   </wsdl:message>
   <wsdl:message name="ConfigureDefinableLoadProfileAsyncRequest">
-    <wsdl:part element="smconf:ConfigureDefinableLoadProfileAsyncRequest" name="ConfigureDefinableLoadProfileAsyncRequest">
+    <wsdl:part element="smconf:ConfigureDefinableLoadProfileAsyncRequest"
+      name="ConfigureDefinableLoadProfileAsyncRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="ConfigureDefinableLoadProfileResponse">
-    <wsdl:part element="smconf:ConfigureDefinableLoadProfileResponse" name="ConfigureDefinableLoadProfileResponse">
+    <wsdl:part element="smconf:ConfigureDefinableLoadProfileResponse"
+      name="ConfigureDefinableLoadProfileResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetMbusUserKeyByChannelRequest">
-    <wsdl:part element="smconf:SetMbusUserKeyByChannelRequest" name="SetMbusUserKeyByChannelRequest">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelRequest"
+      name="SetMbusUserKeyByChannelRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetMbusUserKeyByChannelAsyncResponse">
-    <wsdl:part element="smconf:SetMbusUserKeyByChannelAsyncResponse" name="SetMbusUserKeyByChannelAsyncResponse">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelAsyncResponse"
+      name="SetMbusUserKeyByChannelAsyncResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetMbusUserKeyByChannelAsyncRequest">
-    <wsdl:part element="smconf:SetMbusUserKeyByChannelAsyncRequest" name="SetMbusUserKeyByChannelAsyncRequest">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelAsyncRequest"
+      name="SetMbusUserKeyByChannelAsyncRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetMbusUserKeyByChannelResponse">
-    <wsdl:part element="smconf:SetMbusUserKeyByChannelResponse" name="SetMbusUserKeyByChannelResponse">
+    <wsdl:part element="smconf:SetMbusUserKeyByChannelResponse"
+      name="SetMbusUserKeyByChannelResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:portType name="SmartMeteringConfigurationPort">
@@ -420,9 +436,11 @@
     </wsdl:operation>
 
     <wsdl:operation name="GetPushNotificationAlarm">
-      <wsdl:input message="tns:GetPushNotificationAlarmAsyncRequest" name="GetPushNotificationAlarmAsyncRequest">
+      <wsdl:input message="tns:GetPushNotificationAlarmAsyncRequest"
+        name="GetPushNotificationAlarmAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:GetPushNotificationAlarmResponse" name="GetPushNotificationAlarmResponse">
+      <wsdl:output message="tns:GetPushNotificationAlarmResponse"
+        name="GetPushNotificationAlarmResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -579,12 +597,13 @@
         name="GetMbusEncryptionKeyStatusResponse">
       </wsdl:output>
     </wsdl:operation>
-    
+
     <wsdl:operation name="GetMbusEncryptionKeyStatusByChannel">
       <wsdl:input message="tns:GetMbusEncryptionKeyStatusByChannelRequest"
         name="GetMbusEncryptionKeyStatusByChannelRequest">
       </wsdl:input>
-      <wsdl:output message="tns:GetMbusEncryptionKeyStatusByChannelAsyncResponse"
+      <wsdl:output
+        message="tns:GetMbusEncryptionKeyStatusByChannelAsyncResponse"
         name="GetMbusEncryptionKeyStatusByChannelAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
@@ -667,44 +686,53 @@
     </wsdl:operation>
 
     <wsdl:operation name="GenerateAndReplaceKeys">
-      <wsdl:input message="tns:GenerateAndReplaceKeysRequest" name="GenerateAndReplaceKeysRequest">
+      <wsdl:input message="tns:GenerateAndReplaceKeysRequest"
+        name="GenerateAndReplaceKeysRequest">
       </wsdl:input>
       <wsdl:output message="tns:GenerateAndReplaceKeysAsyncResponse"
         name="GenerateAndReplaceKeysAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGenerateAndReplaceKeysResponse">
-      <wsdl:input message="tns:GenerateAndReplaceKeysAsyncRequest" name="GenerateAndReplaceKeysAsyncRequest">
+      <wsdl:input message="tns:GenerateAndReplaceKeysAsyncRequest"
+        name="GenerateAndReplaceKeysAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:GenerateAndReplaceKeysResponse" name="GenerateAndReplaceKeysResponse">
+      <wsdl:output message="tns:GenerateAndReplaceKeysResponse"
+        name="GenerateAndReplaceKeysResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetClockConfiguration">
-      <wsdl:input message="tns:SetClockConfigurationRequest" name="SetClockConfigurationRequest">
+      <wsdl:input message="tns:SetClockConfigurationRequest"
+        name="SetClockConfigurationRequest">
       </wsdl:input>
       <wsdl:output message="tns:SetClockConfigurationAsyncResponse"
         name="SetClockConfigurationAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetSetClockConfigurationResponse">
-      <wsdl:input message="tns:SetClockConfigurationAsyncRequest" name="SetClockConfigurationAsyncRequest">
+      <wsdl:input message="tns:SetClockConfigurationAsyncRequest"
+        name="SetClockConfigurationAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:SetClockConfigurationResponse" name="SetClockConfigurationResponse">
+      <wsdl:output message="tns:SetClockConfigurationResponse"
+        name="SetClockConfigurationResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="ConfigureDefinableLoadProfile">
-      <wsdl:input message="tns:ConfigureDefinableLoadProfileRequest" name="ConfigureDefinableLoadProfileRequest">
+      <wsdl:input message="tns:ConfigureDefinableLoadProfileRequest"
+        name="ConfigureDefinableLoadProfileRequest">
       </wsdl:input>
       <wsdl:output message="tns:ConfigureDefinableLoadProfileAsyncResponse"
         name="ConfigureDefinableLoadProfileAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetConfigureDefinableLoadProfileResponse">
-      <wsdl:input message="tns:ConfigureDefinableLoadProfileAsyncRequest" name="ConfigureDefinableLoadProfileAsyncRequest">
+      <wsdl:input message="tns:ConfigureDefinableLoadProfileAsyncRequest"
+        name="ConfigureDefinableLoadProfileAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:ConfigureDefinableLoadProfileResponse" name="ConfigureDefinableLoadProfileResponse">
+      <wsdl:output message="tns:ConfigureDefinableLoadProfileResponse"
+        name="ConfigureDefinableLoadProfileResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -1066,7 +1094,7 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    
+
     <wsdl:operation name="GetMbusEncryptionKeyStatusByChannel">
       <soap:operation soapAction="" />
       <wsdl:input name="GetMbusEncryptionKeyStatusByChannelRequest">
