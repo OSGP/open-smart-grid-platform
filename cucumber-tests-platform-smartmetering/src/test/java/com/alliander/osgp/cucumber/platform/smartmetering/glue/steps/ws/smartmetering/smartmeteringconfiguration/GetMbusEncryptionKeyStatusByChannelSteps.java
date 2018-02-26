@@ -70,10 +70,9 @@ public class GetMbusEncryptionKeyStatusByChannelSteps {
         final GetMbusEncryptionKeyStatusByChannelResponse response = this.smartMeterConfigurationClient
                 .retrieveGetMbusEncryptionKeyStatusByChannelResponse(asyncRequest);
 
-        assertNotNull(OPERATION + ": Result should not be null", response.getResult());
-        assertEquals(OPERATION + ": Result should be OK", OsgpResultType.OK, response.getResult());
-        assertEquals(OPERATION + "Encryptionkeystatus should be ENCRYPTION_KEY_IN_USE ",
-                EncryptionKeyStatus.ENCRYPTION_KEY_IN_USE, response.getEncryptionKeyStatus());
+        assertEquals(OPERATION + ", Checking result:", OsgpResultType.OK, response.getResult());
+        assertEquals(OPERATION + ", Checking EncryptionKeyStatus:", EncryptionKeyStatus.ENCRYPTION_KEY_IN_USE,
+                response.getEncryptionKeyStatus());
     }
 
     @Then("^the get M-Bus encryption key status by channel request should return an exception$")
