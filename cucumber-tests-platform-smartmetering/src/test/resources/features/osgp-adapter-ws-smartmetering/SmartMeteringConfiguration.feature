@@ -4,7 +4,7 @@ Feature: SmartMetering Configuration
   I want to be able to perform SmartMeteringConfiguration operations on a device
   In order to ...
 
-  Background: 
+  Background:
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -21,15 +21,6 @@ Feature: SmartMetering Configuration
     When the set special days request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the special days should be set on the device
-      | DeviceIdentification | TEST1024000000001 |
-
-  Scenario: Set configuration object on a device
-    When the set configuration object request is received
-      | DeviceIdentification     | TEST1024000000001 |
-      | ConfigurationFlagType    | PO_ENABLE         |
-      | ConfigurationFlagEnabled | TRUE              |
-      | GprsOperationModeType    | ALWAYS_ON         |
-    Then the configuration object should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: Handle a received alarm notification from a known device
