@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2018 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -13,9 +13,9 @@ public class GetMbusEncryptionKeyStatusByChannelResponseData extends ActionRespo
 
     private static final long serialVersionUID = 3636769765482239443L;
 
-    private EncryptionKeyStatusType encryptionKeyStatus;
-    private short channel;
-    private String gatewayDeviceIdentification;
+    private final EncryptionKeyStatusType encryptionKeyStatus;
+    private final short channel;
+    private final String gatewayDeviceIdentification;
 
     public GetMbusEncryptionKeyStatusByChannelResponseData(final String gatewayDeviceIdentification,
             final EncryptionKeyStatusType encryptionKeyStatus, final short channel) {

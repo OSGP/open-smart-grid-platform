@@ -414,6 +414,36 @@ public class ConfigurationService {
         return correlationUid;
     }
 
+    public String enqueueGetMbusEncryptionKeyStatusByChannelRequest(final String organisationIdentification,
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime, final short channel)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device,
+                DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL);
+
+        LOGGER.debug("enqueueGetMbusEncryptionKeyStatusByChannelRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL.toString(), messagePriority,
+                scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new GetMbusEncryptionKeyStatusByChannelRequestData(channel)).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
@@ -630,32 +660,4 @@ public class ConfigurationService {
         return correlationUid;
     }
 
-    public String enqueueGetMbusEncryptionKeyStatusByChannelRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Long scheduleTime, final short channel)
-            throws FunctionalException {
-
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
-
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS);
-
-        LOGGER.debug("enqueueGetMbusEncryptionKeyStatusRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL.toString(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata)
-                .request(new GetMbusEncryptionKeyStatusByChannelRequestData(channel)).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
-    }
 }

@@ -823,11 +823,6 @@ public class ConfigurationService {
         final SmartMeter gatewayDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        if (gatewayDevice == null) {
-            throw new FunctionalException(FunctionalExceptionType.GATEWAY_DEVICE_NOT_SET_FOR_MBUS_DEVICE,
-                    ComponentType.DOMAIN_SMART_METERING, new GatewayDeviceNotSetForMbusDeviceException());
-        }
-
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
@@ -842,7 +837,7 @@ public class ConfigurationService {
             final ResponseMessageResultType resultType, final OsgpException exception,
             final GetMbusEncryptionKeyStatusByChannelResponseDto getMbusEncryptionKeyStatusByChannelResponseDto) {
 
-        LOGGER.info("handleGetMbusEncryptionKeyStatusResponse for MessageType: {}",
+        LOGGER.info("handleGetMbusEncryptionKeyStatusByChannelResponse for MessageType: {}",
                 deviceMessageMetadata.getMessageType());
 
         final String gatewayDeviceIdentification = deviceMessageMetadata.getDeviceIdentification();
