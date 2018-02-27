@@ -75,7 +75,7 @@ Feature: SmartMetering short names - Event Log
       | CaptureObject_LogicalName_5    | 0.0.97.97.0.255   |
       | CaptureObject_AttributeIndex_5 |                 2 |
       | CaptureObject_DataIndex_5      |                 0 |
-      | CaptureObject_Unit_5           | UNDEFINED         |
+      | CaptureObject_Unit_5           | M3                |
       | CaptureObject_ClassId_6        |                 3 |
       | CaptureObject_LogicalName_6    | 1.1.1.8.0.255     |
       | CaptureObject_AttributeIndex_6 |                 2 |
@@ -86,4 +86,3 @@ Feature: SmartMetering short names - Event Log
       | CaptureObject_AttributeIndex_7 |                 2 |
       | CaptureObject_DataIndex_7      |                 0 |
       | CaptureObject_Unit_7           | W                 |
-      
