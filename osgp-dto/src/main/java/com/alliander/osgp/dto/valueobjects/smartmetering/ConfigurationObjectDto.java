@@ -25,6 +25,12 @@ public class ConfigurationObjectDto implements Serializable {
         this.configurationFlags = configurationFlags;
     }
 
+    @Override
+    public String toString() {
+        return String.format("ConfigurationObjectDto[gprsOperationMode=%s, flags=%s]", this.gprsOperationMode,
+                this.configurationFlags);
+    }
+
     public GprsOperationModeTypeDto getGprsOperationMode() {
         return this.gprsOperationMode;
     }

@@ -23,6 +23,11 @@ public class ConfigurationFlagsDto implements Serializable {
         this.configurationFlag = new ArrayList<>(configurationFlag);
     }
 
+    @Override
+    public String toString() {
+        return this.configurationFlag == null ? "Flags[none]" : String.format("Flags%s", this.configurationFlag);
+    }
+
     public List<ConfigurationFlagDto> getConfigurationFlag() {
         return new ArrayList<>(this.configurationFlag);
     }
