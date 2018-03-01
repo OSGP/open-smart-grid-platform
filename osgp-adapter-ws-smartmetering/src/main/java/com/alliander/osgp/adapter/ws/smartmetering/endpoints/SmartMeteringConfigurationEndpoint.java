@@ -51,6 +51,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmw
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmAsyncRequest;
@@ -584,6 +588,60 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             this.throwExceptionIfResultNotOk(responseData, "retrieving the M-Bus encryption key status.");
 
             response = new GetMbusEncryptionKeyStatusResponse();
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            response.setEncryptionKeyStatus(
+                    EncryptionKeyStatus.fromValue(((EncryptionKeyStatusType) responseData.getMessageData()).name()));
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "GetMbusEncryptionKeyStatusByChannelRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetMbusEncryptionKeyStatusByChannelAsyncResponse getMbusEncryptionKeyStatusByChannel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetMbusEncryptionKeyStatusByChannelRequest request,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
+
+        LOGGER.info("Get M-Bus encryption key status by channel request received from organisation {} for device {}",
+                organisationIdentification, request.getGatewayDeviceIdentification());
+
+        GetMbusEncryptionKeyStatusByChannelAsyncResponse asyncResponse = null;
+        try {
+            final String correlationUid = this.configurationService.enqueueGetMbusEncryptionKeyStatusByChannelRequest(
+                    organisationIdentification, request.getGatewayDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.configurationMapper.map(scheduleTime, Long.class),
+                    request.getGetMbusEncryptionKeyStatusByChannelRequestData().getChannel());
+
+            asyncResponse = new GetMbusEncryptionKeyStatusByChannelAsyncResponse();
+
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getGatewayDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "GetMbusEncryptionKeyStatusByChannelAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetMbusEncryptionKeyStatusByChannelResponse getGetMBusEncryptionKeyStatusByChannelResponse(
+            @RequestPayload final GetMbusEncryptionKeyStatusByChannelAsyncRequest request) throws OsgpException {
+
+        GetMbusEncryptionKeyStatusByChannelResponse response = null;
+        try {
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
+
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the M-Bus encryption key status by channel.");
+
+            response = new GetMbusEncryptionKeyStatusByChannelResponse();
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             response.setEncryptionKeyStatus(
                     EncryptionKeyStatus.fromValue(((EncryptionKeyStatusType) responseData.getMessageData()).name()));
@@ -1168,4 +1226,5 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
+
 }
