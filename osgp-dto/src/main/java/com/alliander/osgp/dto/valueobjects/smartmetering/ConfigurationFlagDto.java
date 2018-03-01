@@ -24,6 +24,11 @@ public class ConfigurationFlagDto implements Serializable {
         this.enabled = enabled;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Flag[%s %s]", this.configurationFlagType, this.enabled ? "enabled" : "disabled");
+    }
+
     public ConfigurationFlagTypeDto getConfigurationFlagType() {
         return this.configurationFlagType;
     }
