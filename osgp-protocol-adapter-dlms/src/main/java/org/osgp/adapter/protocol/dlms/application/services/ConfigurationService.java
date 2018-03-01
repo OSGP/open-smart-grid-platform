@@ -16,6 +16,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCom
 import org.osgp.adapter.protocol.dlms.domain.commands.GetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetMBusDeviceOnChannelCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetMbusEncryptionKeyStatusByChannelCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetMbusEncryptionKeyStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
@@ -46,6 +47,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DefinableLoadProfileCon
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
@@ -123,6 +126,9 @@ public class ConfigurationService {
 
     @Autowired
     private GetMbusEncryptionKeyStatusCommandExecutor getMbusEncryptionKeyStatusCommandExecutor;
+
+    @Autowired
+    private GetMbusEncryptionKeyStatusByChannelCommandExecutor getMbusEncryptionKeyStatusByChannelCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -361,5 +367,14 @@ public class ConfigurationService {
             throws ProtocolAdapterException {
 
         return this.getMbusEncryptionKeyStatusCommandExecutor.execute(conn, device, getMbusEncryptionKeyStatusRequest);
+    }
+
+    public GetMbusEncryptionKeyStatusByChannelResponseDto requestGetMbusEncryptionKeyStatusByChannel(
+            final DlmsConnectionHolder conn, final DlmsDevice device,
+            final GetMbusEncryptionKeyStatusByChannelRequestDataDto getMbusEncryptionKeyStatusByChannelRequest)
+            throws OsgpException {
+
+        return this.getMbusEncryptionKeyStatusByChannelCommandExecutor.execute(conn, device,
+                getMbusEncryptionKeyStatusByChannelRequest);
     }
 }
