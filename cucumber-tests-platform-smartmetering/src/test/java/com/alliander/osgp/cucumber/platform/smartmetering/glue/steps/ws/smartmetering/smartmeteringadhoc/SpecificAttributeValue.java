@@ -62,7 +62,7 @@ public class SpecificAttributeValue {
         final String actual = response.getAttributeValueData();
         assertTrue("Result contains no data.", StringUtils.isNotBlank(actual));
         final String expected = settings.get(PlatformSmartmeteringKeys.RESPONSE_PART);
-        assertTrue("Result data is not as expected; expected '" + expected + "', to be part of '" + actual + "'",
+        assertTrue("Result data is not as expected; expected '" + expected + "' to be part of '" + actual + "'",
                 actual.contains(expected));
     }
 }
