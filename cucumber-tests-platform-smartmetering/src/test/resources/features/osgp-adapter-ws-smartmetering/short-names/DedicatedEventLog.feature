@@ -139,4 +139,3 @@ Feature: SmartMetering short names - Dedicated event logs
       | PhaseFailureL1 |       158 | 1.1.99.98.158.255 |
       | PhaseFailureL2 |       159 | 1.1.99.98.159.255 |
       | PhaseFailureL3 |       160 | 1.1.99.98.160.255 |
-      
