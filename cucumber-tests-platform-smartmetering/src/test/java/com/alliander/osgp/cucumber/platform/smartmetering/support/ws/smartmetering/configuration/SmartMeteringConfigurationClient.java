@@ -32,6 +32,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmw
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
@@ -362,5 +366,23 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
         return this.smartMeteringConfigurationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    }
+
+    public GetMbusEncryptionKeyStatusByChannelAsyncResponse getMbusEncryptionKeyStatusByChannel(
+            final GetMbusEncryptionKeyStatusByChannelRequest getMbusEncryptionKeyStatusByChannelRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (GetMbusEncryptionKeyStatusByChannelAsyncResponse) this.getTemplate()
+                .marshalSendAndReceive(getMbusEncryptionKeyStatusByChannelRequest);
+    }
+
+    public GetMbusEncryptionKeyStatusByChannelResponse retrieveGetMbusEncryptionKeyStatusByChannelResponse(
+            final GetMbusEncryptionKeyStatusByChannelAsyncRequest getMbusEncryptionKeyStatusByChannelAsyncRequest)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = getMbusEncryptionKeyStatusByChannelAsyncRequest.getCorrelationUid();
+        this.waitForNotification(correlationUid);
+
+        return (GetMbusEncryptionKeyStatusByChannelResponse) this.getTemplate()
+                .marshalSendAndReceive(getMbusEncryptionKeyStatusByChannelAsyncRequest);
     }
 }
