@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
@@ -25,9 +24,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @EnableScheduling
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-core.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-core.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true)
 public class SchedulingConfig extends AbstractConfig implements SchedulingConfigurer {
 
     private static final String PROPERTY_NAME_SCHEDULING_SCHEDULED_TASKS_CRON_EXPRESSION = "scheduling.scheduled.tasks.cron.expression";
