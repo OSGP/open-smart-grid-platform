@@ -42,10 +42,22 @@ import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeteri
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 
+import cucumber.api.Scenario;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class FunctionalExceptionsSteps {
+
+    /**
+     * Some tests, for instance with some connection exceptions, require a
+     * relatively long wait time before the actual response is available.
+     *
+     * For steps that are used in scenarios requiring a longer wait time, as
+     * well as in scenarios that don't, the same step may be used, looking at
+     * {@link #useLongWaitTime} to see which wait time to apply.
+     */
+    private static final int LONG_WAIT_TIME = 900000;
 
     @Autowired
     private GetAdministrativeStatus getAdministrativeStatus;
@@ -67,6 +79,13 @@ public class FunctionalExceptionsSteps {
 
     @Autowired
     private SmartMeteringAdHocResponseClient<GetSpecificAttributeValueResponse, GetSpecificAttributeValueAsyncRequest> getSpecificAttributeValueResponseClient;
+
+    private boolean useLongWaitTime;
+
+    @Before
+    public void before(final Scenario scenario) {
+        this.useLongWaitTime = scenario.getSourceTagNames().contains("@NightlyBuildOnly");
+    }
 
     @When("^the get administrative status request for an invalid organisation is received$")
     public void theRetrieveAdministrativeStatusRequestForAnInvalidOrganisationIsReceived(
@@ -133,13 +152,16 @@ public class FunctionalExceptionsSteps {
     @When("^the get administrative status request generating an error is received$")
     public void theGetAdministrativeStatusRequestGeneratingAnErrorIsReceived(final Map<String, String> settings)
             throws Throwable {
-        final int waitFailMillis = 900000;
+
         this.getAdministrativeStatus.theRetrieveAdministrativeStatusRequestIsReceived(settings);
 
         final GetAdministrativeStatusAsyncRequest getAdministrativeStatusAsyncRequest = GetAdministrativeStatusRequestFactory
                 .fromScenarioContext();
 
-        this.smartMeteringConfigurationClient.setWaitFailMillis(waitFailMillis);
+        if (this.useLongWaitTime) {
+            this.smartMeteringConfigurationClient.setWaitFailMillis(LONG_WAIT_TIME);
+        }
+
         try {
             this.smartMeteringConfigurationClient
                     .retrieveGetAdministrativeStatusResponse(getAdministrativeStatusAsyncRequest);
