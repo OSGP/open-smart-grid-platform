@@ -28,7 +28,9 @@ public class PushSetupSmsDto extends AbstractPushSetupDto {
             final List<WindowElementDto> communicationWindow, final Integer randomisationStartInterval,
             final Integer numberOfRetries, final Integer repetitionDelay) {
 
-        super(logicalName, pushObjectList, sendDestinationAndMethod, communicationWindow, randomisationStartInterval,
-                numberOfRetries, repetitionDelay);
+        super(AbstractPushSetupDtoBuilder.newBuilder().logicalName(logicalName).pushObjectList(pushObjectList)
+                .sendDestinationAndMethod(sendDestinationAndMethod).communicationWindow(communicationWindow)
+                .randomisationStartInterval(randomisationStartInterval).numberOfRetries(numberOfRetries)
+                .repetitionDelay(repetitionDelay).build());
     }
 }

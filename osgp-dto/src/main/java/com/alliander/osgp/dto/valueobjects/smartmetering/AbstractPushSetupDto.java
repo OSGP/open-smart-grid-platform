@@ -14,13 +14,13 @@ class AbstractPushSetupDto implements ActionRequestDto {
     private static final long serialVersionUID = -1080411684155651756L;
     private static final char TAB_CHAR = '\t';
 
-    private final CosemObisCodeDto logicalName;
-    private List<CosemObjectDefinitionDto> pushObjectList;
-    private final SendDestinationAndMethodDto sendDestinationAndMethod;
-    private List<WindowElementDto> communicationWindow;
-    private final Integer randomisationStartInterval;
-    private final Integer numberOfRetries;
-    private final Integer repetitionDelay;
+    private CosemObisCodeDto logicalName = null;
+    private List<CosemObjectDefinitionDto> pushObjectList = null;
+    private SendDestinationAndMethodDto sendDestinationAndMethod = null;
+    private List<WindowElementDto> communicationWindow = null;
+    private Integer randomisationStartInterval = null;
+    private Integer numberOfRetries = null;
+    private Integer repetitionDelay = null;
 
     public abstract static class AbstractBuilder {
 
@@ -70,31 +70,17 @@ class AbstractPushSetupDto implements ActionRequestDto {
         }
     }
 
-    AbstractPushSetupDto(final CosemObisCodeDto logicalName, final List<CosemObjectDefinitionDto> pushObjectList,
-            final SendDestinationAndMethodDto sendDestinationAndMethod,
-            final List<WindowElementDto> communicationWindow, final Integer randomisationStartInterval,
-            final Integer numberOfRetries, final Integer repetitionDelay) {
-        this.checkRandomisationStartInterval(randomisationStartInterval);
-        this.checkNumberOfRetries(numberOfRetries);
-        this.checkRepetitionDelay(repetitionDelay);
-        this.logicalName = logicalName;
-        if (pushObjectList == null) {
-            this.pushObjectList = null;
-        } else {
-            this.pushObjectList = new ArrayList<>(pushObjectList);
-        }
-        this.sendDestinationAndMethod = sendDestinationAndMethod;
-        if (communicationWindow == null) {
-            this.communicationWindow = null;
-        } else {
-            this.communicationWindow = new ArrayList<>(communicationWindow);
-        }
-        this.randomisationStartInterval = randomisationStartInterval;
-        this.numberOfRetries = numberOfRetries;
-        this.repetitionDelay = repetitionDelay;
+    AbstractPushSetupDto(final AbstractPushSetupDtoBuilder abstractPushSetupDtoBuilder) {
+        this.logicalName = abstractPushSetupDtoBuilder.getLogicalName();
+        this.pushObjectList = abstractPushSetupDtoBuilder.getPushObjectList();
+        this.sendDestinationAndMethod = abstractPushSetupDtoBuilder.getSendDestinationAndMethod();
+        this.communicationWindow = abstractPushSetupDtoBuilder.getCommunicationWindow();
+        this.randomisationStartInterval = abstractPushSetupDtoBuilder.getRandomisationStartInterval();
+        this.numberOfRetries = abstractPushSetupDtoBuilder.getNumberOfRetries();
+        this.repetitionDelay = abstractPushSetupDtoBuilder.getRepetitionDelay();
     }
 
-    private void checkRandomisationStartInterval(final Integer randomisationStartInterval) {
+    static void checkRandomisationStartInterval(final Integer randomisationStartInterval) {
         if (randomisationStartInterval == null) {
             return;
         }
@@ -103,7 +89,7 @@ class AbstractPushSetupDto implements ActionRequestDto {
         }
     }
 
-    private void checkNumberOfRetries(final Integer numberOfRetries) {
+    static void checkNumberOfRetries(final Integer numberOfRetries) {
         if (numberOfRetries == null) {
             return;
         }
@@ -112,7 +98,7 @@ class AbstractPushSetupDto implements ActionRequestDto {
         }
     }
 
-    private void checkRepetitionDelay(final Integer repetitionDelay) {
+    static void checkRepetitionDelay(final Integer repetitionDelay) {
         if (repetitionDelay == null) {
             return;
         }

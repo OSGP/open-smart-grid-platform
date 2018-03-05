@@ -18,16 +18,16 @@ public class SsldDataDto implements Serializable {
      */
     private static final long serialVersionUID = -3380158030038178362L;
 
-    private int actualCurrent1;
-    private int actualCurrent2;
-    private int actualCurrent3;
-    private int actualPower1;
-    private int actualPower2;
-    private int actualPower3;
-    private int averagePowerFactor1;
-    private int averagePowerFactor2;
-    private int averagePowerFactor3;
-    private List<RelayDataDto> relayData = new ArrayList<>();
+    private final int actualCurrent1;
+    private final int actualCurrent2;
+    private final int actualCurrent3;
+    private final int actualPower1;
+    private final int actualPower2;
+    private final int actualPower3;
+    private final int averagePowerFactor1;
+    private final int averagePowerFactor2;
+    private final int averagePowerFactor3;
+    private final List<RelayDataDto> relayData;
 
     private SsldDataDto(final Builder builder) {
         this.actualCurrent1 = builder.actualCurrent1;
@@ -44,15 +44,15 @@ public class SsldDataDto implements Serializable {
 
     public static class Builder {
 
-        private int actualCurrent1;
-        private int actualCurrent2;
-        private int actualCurrent3;
-        private int actualPower1;
-        private int actualPower2;
-        private int actualPower3;
-        private int averagePowerFactor1;
-        private int averagePowerFactor2;
-        private int averagePowerFactor3;
+        private int actualCurrent1 = 0;
+        private int actualCurrent2 = 0;
+        private int actualCurrent3 = 0;
+        private int actualPower1 = 0;
+        private int actualPower2 = 0;
+        private int actualPower3 = 0;
+        private int averagePowerFactor1 = 0;
+        private int averagePowerFactor2 = 0;
+        private int averagePowerFactor3 = 0;
         private List<RelayDataDto> relayData = new ArrayList<>();
 
         public SsldDataDto build() {
