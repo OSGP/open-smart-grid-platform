@@ -50,16 +50,16 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
     @Value("${db.name}")
     private String databaseName;
 
-    @Value("${db.min_pool_size}")
+    @Value("${db.min_pool_size:1}")
     private int minPoolSize;
 
-    @Value("${db.max_pool_size}")
+    @Value("${db.max_pool_size:5}")
     private int maxPoolSize;
 
-    @Value("${db.auto_commit}")
+    @Value("${db.auto_commit:false}")
     private boolean isAutoCommit;
 
-    @Value("${db.idle_timeout}")
+    @Value("${db.idle_timeout:120000}")
     private int idleTimeout;
 
     @Value("${flyway.initial.version}")
