@@ -8,7 +8,9 @@
 package com.alliander.osgp.adapter.ws.core.application.config;
 
 import javax.annotation.PreDestroy;
+import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -18,6 +20,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.shared.application.config.AbstractPersistenceConfig;
+import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
+import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(basePackageClasses = { DeviceRepository.class })
 @Configuration
@@ -25,6 +29,37 @@ import com.alliander.osgp.shared.application.config.AbstractPersistenceConfig;
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true)
 public class PersistenceConfig extends AbstractPersistenceConfig {
+
+    @Value("${db.readonly.username}")
+    private String username;
+
+    @Value("${db.readonly.password}")
+    private String password;
+
+    @Value("${db.host}")
+    private String databaseHost;
+
+    @Value("${db.port}")
+    private int databasePort;
+
+    @Value("${db.name}")
+    private String databaseName;
+
+    private HikariDataSource dataSourceCore;
+
+    private DataSource getDataSourceCore() {
+
+        if (this.dataSourceCore == null) {
+
+            final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.username)
+                    .withPassword(this.password).withDatabaseHost(this.databaseHost).withDatabasePort(this.databasePort)
+                    .withDatabaseName(this.databaseName);
+            final DefaultConnectionPoolFactory factory = builder.build();
+            this.dataSourceCore = factory.getDefaultConnectionPool();
+        }
+
+        return this.dataSourceCore;
+    }
 
     @Override
     @Bean
@@ -35,12 +70,14 @@ public class PersistenceConfig extends AbstractPersistenceConfig {
     @Override
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        return super.entityManagerFactory("OSGP_WS_ADAPTER_CORE");
+        return super.entityManagerFactory("OSGP_WS_ADAPTER_CORE", this.getDataSourceCore());
     }
 
     @Override
     @PreDestroy
     public void destroyDataSource() {
-        super.destroyDataSource();
+        if (this.dataSourceCore != null) {
+            this.dataSourceCore.close();
+        }
     }
 }
