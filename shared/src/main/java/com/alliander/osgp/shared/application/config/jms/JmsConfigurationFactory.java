@@ -52,8 +52,8 @@ public class JmsConfigurationFactory {
      * @param redeliveryPolicyMap
      *            Created redelivery policy will be added to this map.
      */
-    public JmsConfigurationFactory(final Environment environment,
-            final PooledConnectionFactory pooledConnectionFactory, final RedeliveryPolicyMap redeliveryPolicyMap) {
+    public JmsConfigurationFactory(final Environment environment, final PooledConnectionFactory pooledConnectionFactory,
+            final RedeliveryPolicyMap redeliveryPolicyMap) {
         this.environment = environment;
         this.pooledConnectionFactory = pooledConnectionFactory;
         this.redeliveryPolicyMap = redeliveryPolicyMap;
@@ -79,7 +79,8 @@ public class JmsConfigurationFactory {
      *            The {@link MessageListener} to put on the queue.
      * @return JmsConfiguration containing created objects.
      */
-    public JmsConfiguration initializeConfiguration(final String propertyPrefix, final MessageListener messageListener) {
+    public JmsConfiguration initializeConfiguration(final String propertyPrefix,
+            final MessageListener messageListener) {
         return new JmsConfigurationCreator<>(propertyPrefix, messageListener).create();
     }
 
@@ -119,8 +120,8 @@ public class JmsConfigurationFactory {
      * @param messageListener
      *            The {@link MessageListener} to put on the queue.
      * @param replyToQueue
-     *            {@link ActiveMQDestination} instance where reply messages
-     *            should be sent.
+     *            {@link ActiveMQDestination} instance where reply messages should
+     *            be sent.
      * @return JmsConfiguration containing created objects.
      */
     public JmsConfiguration initializeReceiveConfiguration(final String propertyPrefix,
@@ -196,11 +197,12 @@ public class JmsConfigurationFactory {
         private <T> T property(final String propertyName, final Class<T> targetType) {
             try {
                 LOGGER.info("Trying to find property {}.{}", this.propertyPrefix, propertyName);
-                T property = JmsConfigurationFactory.this.environment.getProperty(this.propertyPrefix + "."
-                        + propertyName, targetType);
+                T property = JmsConfigurationFactory.this.environment
+                        .getProperty(this.propertyPrefix + "." + propertyName, targetType);
 
                 if (property == null) {
-                    LOGGER.info("Property {}.{} not found, trying default property.", this.propertyPrefix, propertyName);
+                    LOGGER.info("Property {}.{} not found, trying default property.", this.propertyPrefix,
+                            propertyName);
                     property = this.fallbackProperty(propertyName, targetType);
                 }
 
@@ -233,31 +235,17 @@ public class JmsConfigurationFactory {
         }
 
         private RedeliveryPolicy redeliveryPolicy() {
-            final RedeliveryPolicy redeliveryPolicy = this.redeliveryPolicy(this.destinationQueue,
-                    this.property(PROPERTY_INITIAL_REDELIVERY_DELAY, long.class),
-                    this.property(PROPERTY_MAXIMUM_REDELIVERIES, int.class),
-                    this.property(PROPERTY_MAXIMUM_REDELIVERY_DELAY, long.class),
-                    this.property(PROPERTY_REDELIVERY_DELAY, long.class),
-                    this.property(PROPERTY_BACK_OFF_MULTIPLIER, long.class),
-                    this.property(PROPERTY_USE_EXPONENTIAL_BACK_OFF, boolean.class));
+            final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
+            redeliveryPolicy.setDestination(this.destinationQueue);
+            redeliveryPolicy.setInitialRedeliveryDelay(this.property(PROPERTY_INITIAL_REDELIVERY_DELAY, long.class));
+            redeliveryPolicy.setMaximumRedeliveries(this.property(PROPERTY_MAXIMUM_REDELIVERIES, int.class));
+            redeliveryPolicy.setMaximumRedeliveryDelay(this.property(PROPERTY_MAXIMUM_REDELIVERY_DELAY, long.class));
+            redeliveryPolicy.setRedeliveryDelay(this.property(PROPERTY_REDELIVERY_DELAY, long.class));
+            redeliveryPolicy.setBackOffMultiplier(this.property(PROPERTY_BACK_OFF_MULTIPLIER, long.class));
+            redeliveryPolicy.setUseExponentialBackOff(this.property(PROPERTY_USE_EXPONENTIAL_BACK_OFF, boolean.class));
 
             JmsConfigurationFactory.this.redeliveryPolicyMap.put(this.destinationQueue, redeliveryPolicy);
 
-            return redeliveryPolicy;
-        }
-
-        private RedeliveryPolicy redeliveryPolicy(final ActiveMQDestination queue, final long initialRedeliveryDelay,
-                final int maxRedeliveries, final long maxRedeliveryDelay, final long redeliveryDelay,
-                final long backOffMultiplier, final boolean useExpBackOff) {
-
-            final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-            redeliveryPolicy.setDestination(queue);
-            redeliveryPolicy.setInitialRedeliveryDelay(initialRedeliveryDelay);
-            redeliveryPolicy.setMaximumRedeliveries(maxRedeliveries);
-            redeliveryPolicy.setMaximumRedeliveryDelay(maxRedeliveryDelay);
-            redeliveryPolicy.setRedeliveryDelay(redeliveryDelay);
-            redeliveryPolicy.setBackOffMultiplier(backOffMultiplier);
-            redeliveryPolicy.setUseExponentialBackOff(useExpBackOff);
             return redeliveryPolicy;
         }
 
