@@ -13,7 +13,7 @@ public class PushSetupAlarmDto extends AbstractPushSetupDto {
 
     private static final long serialVersionUID = -3541154908239512383L;
 
-    public static class Builder extends AbstractPushSetupDto.AbstractBuilder {
+    public static class Builder extends AbstractPushSetupDto.Builder {
 
         @Override
         public PushSetupAlarmDto build() {
@@ -28,7 +28,7 @@ public class PushSetupAlarmDto extends AbstractPushSetupDto {
             final List<WindowElementDto> communicationWindow, final Integer randomisationStartInterval,
             final Integer numberOfRetries, final Integer repetitionDelay) {
 
-        super(AbstractPushSetupDtoBuilder.newBuilder().withLogicalName(logicalName).withPushObjectList(pushObjectList)
+        super(AbstractPushSetupDto.newBuilder().withLogicalName(logicalName).withPushObjectList(pushObjectList)
                 .withSendDestinationAndMethod(sendDestinationAndMethod).withCommunicationWindow(communicationWindow)
                 .withRandomisationStartInterval(randomisationStartInterval).withNumberOfRetries(numberOfRetries)
                 .withRepetitionDelay(repetitionDelay).build());
