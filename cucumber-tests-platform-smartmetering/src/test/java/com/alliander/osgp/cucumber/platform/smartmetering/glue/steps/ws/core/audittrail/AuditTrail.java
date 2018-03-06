@@ -10,7 +10,6 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.core.au
 import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertFalse;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -67,7 +66,7 @@ public class AuditTrail {
         } catch (final AssertionError e) {
             throw new AssertionError("Failed to find at least " + minimumNumberReturned + " retry log items for device "
                     + deviceIdentification + " within "
-                    + Duration.ofMillis(unit.toMillis(numberOfRetries * delay)).toString().substring(2), e);
+                    + RetryableAssert.describeMaxDuration(numberOfRetries, delay, unit), e);
         }
     }
 }
