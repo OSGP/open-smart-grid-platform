@@ -57,25 +57,26 @@ public class GetPushSetupSmsCommandExecutor extends GetPushSetupCommandExecutor<
         GetPushSetupCommandExecutor.checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
 
         final PushSetupSmsDto.Builder pushSetupSmsBuilder = new PushSetupSmsDto.Builder();
-        pushSetupSmsBuilder.logicalName(new CosemObisCodeDto(OBIS_CODE.bytes()));
+        pushSetupSmsBuilder.withLogicalName(new CosemObisCodeDto(OBIS_CODE.bytes()));
 
-        pushSetupSmsBuilder.pushObjectList(this.dlmsHelperService.readListOfObjectDefinition(
-                getResultList.get(INDEX_PUSH_OBJECT_LIST), "Push Object List"));
+        pushSetupSmsBuilder.withPushObjectList(this.dlmsHelperService
+                .readListOfObjectDefinition(getResultList.get(INDEX_PUSH_OBJECT_LIST), "Push Object List"));
 
-        pushSetupSmsBuilder.sendDestinationAndMethod(this.dlmsHelperService.readSendDestinationAndMethod(
+        pushSetupSmsBuilder.withSendDestinationAndMethod(this.dlmsHelperService.readSendDestinationAndMethod(
                 getResultList.get(INDEX_SEND_DESTINATION_AND_METHOD), "Send Destination And Method"));
 
-        pushSetupSmsBuilder.communicationWindow(this.dlmsHelperService.readListOfWindowElement(
-                getResultList.get(INDEX_COMMUNICATION_WINDOW), "Communication Window"));
+        pushSetupSmsBuilder.withCommunicationWindow(this.dlmsHelperService
+                .readListOfWindowElement(getResultList.get(INDEX_COMMUNICATION_WINDOW), "Communication Window"));
 
-        pushSetupSmsBuilder.randomisationStartInterval(this.dlmsHelperService.readLongNotNull(
-                getResultList.get(INDEX_RANDOMISATION_START_INTERVAL), "Randomisation Start Interval").intValue());
+        pushSetupSmsBuilder.withRandomisationStartInterval(this.dlmsHelperService
+                .readLongNotNull(getResultList.get(INDEX_RANDOMISATION_START_INTERVAL), "Randomisation Start Interval")
+                .intValue());
 
-        pushSetupSmsBuilder.numberOfRetries(this.dlmsHelperService.readLongNotNull(
-                getResultList.get(INDEX_NUMBER_OF_RETRIES), "Number of Retries").intValue());
+        pushSetupSmsBuilder.withNumberOfRetries(this.dlmsHelperService
+                .readLongNotNull(getResultList.get(INDEX_NUMBER_OF_RETRIES), "Number of Retries").intValue());
 
-        pushSetupSmsBuilder.repetitionDelay(this.dlmsHelperService.readLongNotNull(
-                getResultList.get(INDEX_REPETITION_DELAY), "Repetition Delay").intValue());
+        pushSetupSmsBuilder.withRepetitionDelay(this.dlmsHelperService
+                .readLongNotNull(getResultList.get(INDEX_REPETITION_DELAY), "Repetition Delay").intValue());
 
         return pushSetupSmsBuilder.build();
     }
