@@ -140,8 +140,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     }
 
     private ResponseMessage setupResponseMessage(final FirmwareFileDto firmwareFileDto) {
-        return new ResponseMessage("corr-uid-1", "test-org", "dvc-01", ResponseMessageResultType.OK, null,
-                firmwareFileDto);
+        return ResponseMessage.newResponseMessageBuilder().withCorrelationUid("corr-uid-1")
+                .withOrganisationIdentification("test-org").withDeviceIdentification("dvc-01")
+                .withResult(ResponseMessageResultType.OK).withDataObject(firmwareFileDto).build();
     }
-
 }
