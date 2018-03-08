@@ -1,5 +1,5 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
+	branch = SLIM-1603_SetDeviceLifecycleStatus_with_GatewayId_and_Channel
 
