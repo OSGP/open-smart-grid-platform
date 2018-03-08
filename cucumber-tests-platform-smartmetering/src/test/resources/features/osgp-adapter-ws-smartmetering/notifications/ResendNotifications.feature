@@ -19,7 +19,6 @@ Feature: SmartMetering notifications - Resend notifications
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      1 |
 
-@Focus
   Scenario: Resend missed notifications with response url
     Given a response data record
       | DeviceIdentification      | TEST1024000000001                                      |
