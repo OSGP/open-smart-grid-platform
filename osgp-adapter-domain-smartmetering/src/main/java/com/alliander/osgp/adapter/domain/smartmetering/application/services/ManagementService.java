@@ -18,11 +18,17 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Manag
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestList;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -50,6 +56,9 @@ public class ManagementService {
 
     @Autowired
     private ManagementMapper managementMapper;
+
+    @Autowired
+    private SmartMeterRepository smartMeterRepository;
 
     public ManagementService() {
         // Parameterless constructor required for transactions...
@@ -147,6 +156,54 @@ public class ManagementService {
         this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
     }
 
+    public void setDeviceLifecycleStatusByChannel(final DeviceMessageMetadata deviceMessageMetadata,
+            final SetDeviceLifecycleStatusByChannelRequestData request) throws FunctionalException {
+
+        LOGGER.info("Set device communication settings for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SetDeviceLifecycleStatusByChannelRequestDataDto requestDto = this.managementMapper.map(request,
+                SetDeviceLifecycleStatusByChannelRequestDataDto.class);
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    }
+
+    public void handleSetDeviceLifecycleStatusByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType result, final OsgpException osgpException,
+            final SetDeviceLifecycleStatusByChannelResponseDto responseDto) {
+
+        LOGGER.info("handleSetDeviceLifecycleStatusByChannelResponse for MessageType: {}",
+                deviceMessageMetadata.getMessageType());
+
+        this.setDeviceLifecycleStatusByChannel(responseDto);
+
+        final String gatewayDeviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+
+        final SetDeviceLifecycleStatusByChannelResponseData responseData = this.managementMapper.map(responseDto,
+                SetDeviceLifecycleStatusByChannelResponseData.class);
+
+        this.webServiceResponseMessageSender.send(
+                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(), gatewayDeviceIdentification, result,
+                        osgpException, responseData, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+
+    }
+
+    public void setDeviceLifecycleStatusByChannel(final SetDeviceLifecycleStatusByChannelResponseDto responseDto) {
+
+        final SmartMeter mbusDevice = this.smartMeterRepository
+                .findByDeviceIdentification(responseDto.getMbusDeviceIdentification());
+        mbusDevice
+                .setDeviceLifecycleStatus(DeviceLifecycleStatus.valueOf(responseDto.getDeviceLifecycleStatus().name()));
+        this.smartMeterRepository.save(mbusDevice);
+    }
+
     private void sendMetadataOnlyRequestMessage(final DeviceMessageMetadata deviceMessageMetadata)
             throws FunctionalException {
         final SmartMeter smartMeteringDevice = this.domainHelperService
@@ -174,4 +231,5 @@ public class ManagementService {
                 result, exception, null, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
+
 }

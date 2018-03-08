@@ -40,6 +40,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
@@ -59,6 +60,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -108,6 +110,8 @@ public class ActionMapperResponseService {
         classMap.put(GetMbusEncryptionKeyStatusResponseDto.class, GetMbusEncryptionKeyStatusResponseData.class);
         classMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class,
                 GetMbusEncryptionKeyStatusByChannelResponseData.class);
+        classMap.put(SetDeviceLifecycleStatusByChannelResponseDto.class,
+                SetDeviceLifecycleStatusByChannelResponseData.class);
     }
 
     /**
@@ -133,6 +137,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class, this.configurationMapper);
+        classToMapperMap.put(SetDeviceLifecycleStatusByChannelResponseDto.class, this.managementMapper);
     }
 
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)

@@ -42,6 +42,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAdministrati
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetClockConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetConfigurationObjectRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetDeviceLifecycleStatusByChannelRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetEncryptionKeyExchangeOnGMeterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetKeysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetMbusUserKeyByChannelRequest;
@@ -80,6 +81,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegist
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
@@ -234,6 +236,10 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterData.class,
                 this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelRequest.class, this.managementMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelRequestData.class,
+                this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ClearAlarmRegisterRequest.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
@@ -345,6 +351,11 @@ public class ActionMapperService {
         CLASS_MAP.put(ConfigureDefinableLoadProfileRequest.class, DefinableLoadProfileConfigurationData.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelRequest.class, CoupleMbusDeviceByChannelRequestData.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusRequest.class, GetMbusEncryptionKeyStatusRequestData.class);
+        CLASS_MAP.put(SetDeviceLifecycleStatusByChannelRequest.class,
+                SetDeviceLifecycleStatusByChannelRequestData.class);
+        CLASS_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelRequestData.class,
+                SetDeviceLifecycleStatusByChannelRequestData.class);
         CLASS_MAP.put(ClearAlarmRegisterRequest.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.ClearAlarmRegisterData.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusByChannelRequest.class,
