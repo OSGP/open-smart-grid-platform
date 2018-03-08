@@ -28,20 +28,32 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
     @Value("${smartmetering.response.wait.fail.duration:30000}")
     private int waitFailMillis;
 
+    private int customWait = 0;
+
     public void setWaitFailMillis(final int waitFailMillis) {
-        this.waitFailMillis = waitFailMillis;
+        this.customWait = waitFailMillis;
+    }
+
+    private int getNextWait() {
+        if (this.customWait > 0) {
+            final int nextWait = this.customWait;
+            this.customWait = 0;
+            return nextWait;
+        }
+        return this.waitFailMillis;
     }
 
     protected void waitForNotification(final String correlationUid) {
+        final int nextWait = this.getNextWait();
         LOGGER.info("Waiting for a notification for correlation UID {} for at most {} milliseconds.", correlationUid,
-                this.waitFailMillis);
+                nextWait);
 
-        final Notification notification = this.notificationService.getNotification(correlationUid, this.waitFailMillis,
+        final Notification notification = this.notificationService.getNotification(correlationUid, nextWait,
                 TimeUnit.MILLISECONDS);
 
         if (notification == null) {
-            throw new AssertionError("Did not receive a notification for correlation UID: " + correlationUid + " within "
-                    + this.waitFailMillis + " milliseconds");
+            throw new AssertionError("Did not receive a notification for correlation UID: " + correlationUid
+                    + " within " + nextWait + " milliseconds");
         }
     }
 }
