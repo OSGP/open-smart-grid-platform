@@ -41,16 +41,17 @@ public class NotificationService {
                 .map(pushNotificationAlarm, PushNotificationAlarm.class);
 
         /*
-         * Send the push notification alarm as a response message to the web
-         * service, so it can be handled similar to response messages based on
-         * earlier web service requests.
+         * Send the push notification alarm as a response message to the web service, so
+         * it can be handled similar to response messages based on earlier web service
+         * requests.
          */
         this.webServiceResponseMessageSender.send(
-                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(), ResponseMessageResultType.OK, null,
-                        pushNotificationAlarmDomain, deviceMessageMetadata.getMessagePriority()),
+                ResponseMessage.newResponseMessageBuilder()
+                        .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                        .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                        .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                        .withResult(ResponseMessageResultType.OK).withDataObject(pushNotificationAlarmDomain)
+                        .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
                 deviceMessageMetadata.getMessageType());
     }
-
 }

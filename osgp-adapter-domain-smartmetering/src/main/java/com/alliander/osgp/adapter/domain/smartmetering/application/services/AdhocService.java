@@ -91,9 +91,11 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()),
+        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
                 deviceMessageMetadata.getMessageType());
     }
 
@@ -125,11 +127,14 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, resultData, deviceMessageMetadata.getMessagePriority()),
+        this.webServiceResponseMessageSender.send(
+                ResponseMessage.newResponseMessageBuilder()
+                        .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                        .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                        .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                        .withOsgpException(exception).withDataObject(resultData)
+                        .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
                 deviceMessageMetadata.getMessageType());
-
     }
 
     public void getAssociationLnObjects(final DeviceMessageMetadata deviceMessageMetadata,
@@ -162,11 +167,14 @@ public class AdhocService {
         final AssociationLnListType associationLnListValueDomain = this.mapperFactory.getMapperFacade().map(resultData,
                 AssociationLnListType.class);
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, associationLnListValueDomain, deviceMessageMetadata.getMessagePriority()),
+        this.webServiceResponseMessageSender.send(
+                ResponseMessage.newResponseMessageBuilder()
+                        .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                        .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                        .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                        .withOsgpException(exception).withDataObject(associationLnListValueDomain)
+                        .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
                 deviceMessageMetadata.getMessageType());
-
     }
 
     public void getSpecificAttributeValue(final DeviceMessageMetadata deviceMessageMetadata,
@@ -200,10 +208,13 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, resultData, deviceMessageMetadata.getMessagePriority()),
+        this.webServiceResponseMessageSender.send(
+                ResponseMessage.newResponseMessageBuilder()
+                        .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                        .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                        .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                        .withOsgpException(exception).withDataObject(resultData)
+                        .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
                 deviceMessageMetadata.getMessageType());
-
     }
 }

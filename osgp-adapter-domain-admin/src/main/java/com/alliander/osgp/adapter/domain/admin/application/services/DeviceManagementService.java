@@ -104,8 +104,10 @@ public class DeviceManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while updating key", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, null));
+        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
+                .build());
     }
 
     // === REVOKE KEY ===
@@ -163,8 +165,10 @@ public class DeviceManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while revoking key", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, null));
+        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
+                .build());
     }
 
     public void activateDevice(final String organisationIdentification,
@@ -193,8 +197,9 @@ public class DeviceManagementService extends AbstractService {
 
         this.deviceRepository.save(device);
 
-        final ResponseMessage responseMessage = new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ResponseMessageResultType.OK, null);
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.OK).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 }

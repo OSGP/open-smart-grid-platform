@@ -52,7 +52,7 @@ public class DeviceMonitoringService extends AbstractService {
 
     public void getActualPowerUsage(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("GetActualPowerUsage for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -60,8 +60,9 @@ public class DeviceMonitoringService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, null), messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
+                device.getIpAddress());
     }
 
     public void handleGetActualPowerUsageResponse(
@@ -86,8 +87,8 @@ public class DeviceMonitoringService extends AbstractService {
 
         } catch (final OsgpException e) {
             /*
-             * Since the domainCoreMapper does not throw OsgpExceptions, this
-             * exception has already been logged in the corresponding try-block.
+             * Since the domainCoreMapper does not throw OsgpExceptions, this exception has
+             * already been logged in the corresponding try-block.
              */
             osgpException = e;
         } catch (final Exception e) {
@@ -100,16 +101,18 @@ public class DeviceMonitoringService extends AbstractService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, actualPowerUsageData));
+         this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+         .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+         .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
+         .withDataObject(actualPowerUsageData).build());
     }
 
     // === GET POWER USAGE HISTORY ===
 
     public void getPowerUsageHistory(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
-            @Valid final TimePeriod timePeriod, @NotNull final HistoryTermType historyTermType,
-            final Long scheduleTime, final String messageType) throws FunctionalException {
+            @Valid final TimePeriod timePeriod, @NotNull final HistoryTermType historyTermType, final Long scheduleTime,
+            final String messageType) throws FunctionalException {
 
         LOGGER.info("GetPowerUsageHistory for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -119,8 +122,8 @@ public class DeviceMonitoringService extends AbstractService {
 
         final com.alliander.osgp.dto.valueobjects.TimePeriodDto timePeriodDto = new com.alliander.osgp.dto.valueobjects.TimePeriodDto(
                 timePeriod.getStartTime(), timePeriod.getEndTime());
-        final com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto historyTermTypeDto = this.domainCoreMapper.map(
-                historyTermType, com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto.class);
+        final com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto historyTermTypeDto = this.domainCoreMapper
+                .map(historyTermType, com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto.class);
         final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryMessageDataContainerDto = new PowerUsageHistoryMessageDataContainerDto(
                 timePeriodDto, historyTermTypeDto);
 
@@ -157,8 +160,11 @@ public class DeviceMonitoringService extends AbstractService {
                     "Exception occurred while getting device power usage history", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, powerUsageHistoryResponse),
+        this.webServiceResponseMessageSender.send(
+                ResponseMessage.newResponseMessageBuilder().withCorrelationUid(correlationUid)
+                        .withOrganisationIdentification(organisationIdentification)
+                        .withDeviceIdentification(deviceIdentification).withResult(result)
+                        .withOsgpException(osgpException).withDataObject(powerUsageHistoryResponse).build(),
                 this.getPowerUsageHistoryResponseTimeToLive);
     }
 }
