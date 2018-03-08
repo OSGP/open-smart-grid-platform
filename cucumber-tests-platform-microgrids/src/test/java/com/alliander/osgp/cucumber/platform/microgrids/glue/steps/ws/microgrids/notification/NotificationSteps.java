@@ -28,8 +28,7 @@ import cucumber.api.java.en.When;
 
 public class NotificationSteps extends GlueBase {
 
-    private static final int MAX_WAIT_FOR_NOTIFICATION = 1200000;
-    private static final int MAX_WAIT_FOR_RESEND_NOTIFICATION = 65000;
+    private static final int MAX_WAIT_FOR_NOTIFICATION = 65000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
 
@@ -70,13 +69,13 @@ public class NotificationSteps extends GlueBase {
     @Then("^a notification is sent$")
     public void aNotificationIsSent(final Map<String, String> settings) throws Throwable {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
-        this.waitForNotification(MAX_WAIT_FOR_RESEND_NOTIFICATION, correlationUid, true);
+        this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, true);
     }
 
     @Then("^no notification is sent$")
     public void noNotificationIsSent(final Map<String, String> settings) throws Throwable {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
-        this.waitForNotification(MAX_WAIT_FOR_RESEND_NOTIFICATION, correlationUid, false);
+        this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, false);
     }
 
     private void waitForNotification(final int maxTimeOut, final String correlationUid,

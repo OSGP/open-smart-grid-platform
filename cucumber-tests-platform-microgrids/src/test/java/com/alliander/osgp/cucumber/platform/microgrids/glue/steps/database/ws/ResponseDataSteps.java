@@ -48,7 +48,7 @@ public class ResponseDataSteps extends BaseDeviceSteps {
             final Field fld = responseData.getClass().getSuperclass().getDeclaredField("creationTime");
             fld.setAccessible(true);
             fld.set(responseData, DateTimeHelper.getDateTime(settings.get(PlatformKeys.KEY_CREATION_TIME)).toDate());
-            this.responseDataRespository.save(responseData);
+            this.responseDataRespository.saveAndFlush(responseData);
         }
 
         return responseData;

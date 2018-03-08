@@ -8,18 +8,23 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import com.alliander.osgp.cucumber.core.RetryableAssert;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.cucumber.platform.smartmetering.hooks.SimulatePushedAlarmsHooks;
@@ -72,45 +77,35 @@ public class ReceivedAlarmNotificationsSteps {
     @Then("^the alarm should be pushed to the osgp_logging database device_log_item table$")
     public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable(final Map<String, String> settings)
             throws Throwable {
+
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
-        final List<DeviceLogItem> deviceLogItems = this.findDeviceLogItems(deviceIdentification, 2);
-        if (null == deviceLogItems) {
-            Assert.fail("DeviceLogItems were not found in the database");
-        }
+        final int numberOfMatchingLogs = 2;
+        final Predicate<DeviceLogItem> filter = dli -> Pattern.matches(PATTERN, dli.getDecodedMessage());
 
-        for (final DeviceLogItem deviceLogItem : deviceLogItems) {
-            LOGGER.info("CreationTime: {}", deviceLogItem.getCreationTime().toString());
-            LOGGER.info("DecodedMessage: {}", deviceLogItem.getDecodedMessage());
+        final Runnable assertion = () -> {
 
-            final boolean isMatch = Pattern.matches(PATTERN, deviceLogItem.getDecodedMessage());
-            assertTrue("There is no match for a decoded message.", isMatch);
-        }
-    }
+            final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+            final Page<DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
+                    .findByDeviceIdentification(deviceIdentification, pageable);
+            final List<DeviceLogItem> filteredDeviceLogItems = deviceLogPage.getContent().stream().filter(filter)
+                    .collect(Collectors.toList());
 
-    /*
-     * it may take some time before the records are to the dev_log_item table,
-     * so we have to poll.
-     */
-    private List<DeviceLogItem> findDeviceLogItems(final String deviceIdentification, final int minExcepted) {
-        int loopCount = 0;
-        while (loopCount++ < 25) {
-            this.sleep(2000L);
-            final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
-                    .findByDeviceIdentification(deviceIdentification, new PageRequest(0, 2)).getContent();
-            if (deviceLogItems != null && deviceLogItems.size() >= minExcepted) {
-                return deviceLogItems;
-            }
-        }
-        return null;
-    }
+            assertEquals("Number of DlmsPushNotification DeviceLogItems for alarms from device " + deviceIdentification,
+                    numberOfMatchingLogs, filteredDeviceLogItems.size());
+        };
 
-    private void sleep(final long sleepTime) {
+        final int numberOfRetries = 25;
+        final long delay = 2;
+        final TimeUnit unit = TimeUnit.SECONDS;
         try {
-            Thread.sleep(sleepTime);
-        } catch (final InterruptedException e) {
-            LOGGER.error("Thread sleep was interrupted", e);
+            RetryableAssert.assertWithRetries(assertion, numberOfRetries, delay, unit);
+        } catch (final AssertionError e) {
+            throw new AssertionError("Failed to find " + numberOfMatchingLogs
+                    + " DlmsPushNotification log items for alarms from device " + deviceIdentification + " within "
+                    + RetryableAssert.describeMaxDuration(numberOfRetries, delay, unit), e);
         }
     }
+
 }
