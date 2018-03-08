@@ -543,7 +543,7 @@
 
   <xsd:complexType name="SetDeviceLifecycleStatusByChannelRequestData">
     <xsd:complexContent>
-      <xsd:extension base="common:Command">
+      <xsd:extension base="common:Query">
         <xsd:sequence>
           <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus"
             minOccurs="1" maxOccurs="1" />
