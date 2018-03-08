@@ -30,40 +30,6 @@ public class ResponseMessage implements Serializable {
     private final int messagePriority;
     private final boolean bypassRetry;
 
-    public ResponseMessage(final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final ResponseMessageResultType result,
-            final OsgpException osgpException, final Serializable dataObject, final int messagePriority) {
-        this.correlationUid = correlationUid;
-        this.organisationIdentification = organisationIdentification;
-        this.deviceIdentification = deviceIdentification;
-        this.result = result;
-        this.osgpException = osgpException;
-        this.dataObject = dataObject;
-        this.messagePriority = messagePriority;
-        this.bypassRetry = DEFAULT_BYPASS_RETRY;
-    }
-
-    public ResponseMessage(final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final ResponseMessageResultType result,
-            final OsgpException osgpException, final Serializable dataObject) {
-        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject,
-                MessagePriorityEnum.DEFAULT.getPriority());
-    }
-
-    public ResponseMessage(final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final ResponseMessageResultType result,
-            final OsgpException osgpException) {
-        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null,
-                MessagePriorityEnum.DEFAULT.getPriority());
-    }
-
-    public ResponseMessage(final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final ResponseMessageResultType result,
-            final OsgpException osgpException, final int messagePriority) {
-        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null,
-                messagePriority);
-    }
-
     protected ResponseMessage(final Builder builder) {
         this.correlationUid = builder.correlationUid;
         this.organisationIdentification = builder.organisationIdentification;
@@ -77,56 +43,56 @@ public class ResponseMessage implements Serializable {
 
     public static class Builder {
 
-        private String correlationUid;
-        private String organisationIdentification;
-        private String deviceIdentification;
-        private ResponseMessageResultType result;
-        private OsgpException osgpException;
-        private Serializable dataObject;
-        private int messagePriority;
-        private boolean bypassRetry;
+        private String correlationUid = null;
+        private String organisationIdentification = null;
+        private String deviceIdentification = null;
+        private ResponseMessageResultType result = null;
+        private OsgpException osgpException = null;
+        private Serializable dataObject = null;
+        private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+        private boolean bypassRetry = DEFAULT_BYPASS_RETRY;
 
-        public Builder correlationUid(final String correlationUid) {
+        public Builder withCorrelationUid(final String correlationUid) {
             this.correlationUid = correlationUid;
             return this;
         }
 
-        public Builder organisationIdentification(final String organisationIdentification) {
+        public Builder withOrganisationIdentification(final String organisationIdentification) {
             this.organisationIdentification = organisationIdentification;
             return this;
         }
 
-        public Builder deviceIdentification(final String deviceIdentification) {
+        public Builder withDeviceIdentification(final String deviceIdentification) {
             this.deviceIdentification = deviceIdentification;
             return this;
         }
 
-        public Builder result(final ResponseMessageResultType result) {
+        public Builder withResult(final ResponseMessageResultType result) {
             this.result = result;
             return this;
         }
 
-        public Builder osgpException(final OsgpException osgpException) {
+        public Builder withOsgpException(final OsgpException osgpException) {
             this.osgpException = osgpException;
             return this;
         }
 
-        public Builder dataObject(final Serializable dataObject) {
+        public Builder withDataObject(final Serializable dataObject) {
             this.dataObject = dataObject;
             return this;
         }
 
-        public Builder messagePriority(final int messagePriority) {
+        public Builder withMessagePriority(final int messagePriority) {
             this.messagePriority = messagePriority;
             return this;
         }
 
-        public Builder bypassRetry(final boolean bypassRetry) {
+        public Builder withBypassRetry(final boolean bypassRetry) {
             this.bypassRetry = bypassRetry;
             return this;
         }
 
-        public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
+        public Builder withDeviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
             this.correlationUid = deviceMessageMetadata.getCorrelationUid();
             this.organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
             this.deviceIdentification = deviceMessageMetadata.getDeviceIdentification();

@@ -42,8 +42,6 @@ class AbstractPushSetupDto implements ActionRequestDto {
         protected Integer numberOfRetries = null;
         protected Integer repetitionDelay = null;
 
-        // public abstract AbstractPushSetupDto build();
-
         public AbstractPushSetupDto build() {
             return new AbstractPushSetupDto(this);
         }
