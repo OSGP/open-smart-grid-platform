@@ -75,18 +75,29 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         final short expectedNumberOfNotificationsSent = Short
                 .parseShort(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT));
         final String expectedMessageType = settings.get(PlatformKeys.KEY_MESSAGE_TYPE);
+        final String expectedResponseUrl = settings.containsKey(PlatformKeys.KEY_RESPONSE_URL)
+                ? settings.get(PlatformKeys.KEY_RESPONSE_URL)
+                : "";
 
-        RetryableAssert.assertWithRetries(() -> ResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
-                correlationUid, expectedNumberOfNotificationsSent, expectedMessageType), 3, 200, TimeUnit.MILLISECONDS);
+        RetryableAssert.assertWithRetries(
+                () -> ResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(correlationUid,
+                        expectedNumberOfNotificationsSent, expectedMessageType, expectedResponseUrl),
+                3, 200, TimeUnit.MILLISECONDS);
     }
 
     private void assertResponseDataHasNotificationsAndMessageType(final String correlationUid,
-            final Short expectedNumberOfNotificationsSent, final String expectedMessageType) {
+            final Short expectedNumberOfNotificationsSent, final String expectedMessageType,
+            final String expectedResponseUrl) {
 
         final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
 
         assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT, expectedNumberOfNotificationsSent,
                 responseData.getNumberOfNotificationsSent());
         assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, expectedMessageType, responseData.getMessageType());
+
+        if (!expectedResponseUrl.isEmpty()) {
+            assertEquals(PlatformKeys.KEY_RESPONSE_URL, expectedResponseUrl, responseData.getResponseUrl());
+
+        }
     }
 }
