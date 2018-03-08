@@ -7,6 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.osgp.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.osgp.adapter.protocol.dlms.domain.commands.CoupleMBusDeviceCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.CoupleMbusDeviceByChannelCommandExecutor;
@@ -63,7 +64,7 @@ public class InstallationService {
     }
 
     private void reEncryptMasterKey(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
-        if (smartMeteringDevice.getMasterKey() == null) {
+        if (ArrayUtils.isEmpty(smartMeteringDevice.getMasterKey())) {
             return;
         }
         final byte[] reEncryptedMasterKey = this.securityKeyService.reEncryptKey(smartMeteringDevice.getMasterKey(),
@@ -74,7 +75,7 @@ public class InstallationService {
     private void reEncryptAuthenticationKey(final SmartMeteringDeviceDto smartMeteringDevice)
             throws ProtocolAdapterException {
 
-        if (smartMeteringDevice.getAuthenticationKey() == null) {
+        if (ArrayUtils.isEmpty(smartMeteringDevice.getAuthenticationKey())) {
             return;
         }
         final byte[] reEncryptedAuthenticationKey = this.securityKeyService
@@ -85,7 +86,7 @@ public class InstallationService {
     private void reEncryptEncryptionKey(final SmartMeteringDeviceDto smartMeteringDevice)
             throws ProtocolAdapterException {
 
-        if (smartMeteringDevice.getGlobalEncryptionUnicastKey() == null) {
+        if (ArrayUtils.isEmpty(smartMeteringDevice.getGlobalEncryptionUnicastKey())) {
             return;
         }
         final byte[] reEncryptedEncryptionKey = this.securityKeyService
@@ -96,9 +97,10 @@ public class InstallationService {
     private void reEncryptMbusDefaultKey(final SmartMeteringDeviceDto smartMeteringDevice)
             throws ProtocolAdapterException {
 
-        if (smartMeteringDevice.getMbusDefaultKey() == null) {
+        if (ArrayUtils.isEmpty(smartMeteringDevice.getMbusDefaultKey())) {
             return;
         }
+
         final byte[] reEncryptedMbusDefaultKey = this.securityKeyService
                 .reEncryptKey(smartMeteringDevice.getMbusDefaultKey(), SecurityKeyType.G_METER_MASTER);
         smartMeteringDevice.setMbusDefaultKey(reEncryptedMbusDefaultKey);
