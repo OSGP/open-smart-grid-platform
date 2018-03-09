@@ -26,20 +26,6 @@
   <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
   <url>${maven.site.url}</url>
   <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>smartsociety-releases</id>
-      <name>Smart Society Release Repo</name>
-      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-releases/</url>
-      <layout>default</layout>
-    </repository>
-    <snapshotRepository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>smartsociety-snapshots</id>
-      <name>Smart Society Development Repo</name>
-      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-snapshots/</url>
-      <layout>default</layout>
-    </snapshotRepository>
     <site>
       <id>platform</id>
       <name>platform</name>
