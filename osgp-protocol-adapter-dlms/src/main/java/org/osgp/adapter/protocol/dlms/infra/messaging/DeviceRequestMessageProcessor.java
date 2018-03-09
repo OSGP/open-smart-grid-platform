@@ -17,20 +17,16 @@ import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
-import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
-import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.alliander.osgp.shared.infra.jms.RetryHeader;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -162,35 +158,43 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }
 
-    protected void sendResponseMessage(final MessageMetadata messageMetadata, final ResponseMessageResultType result,
-            final Exception exception, final DeviceResponseMessageSender responseMessageSender,
-            final Serializable responseObject) {
-
-        OsgpException osgpException = null;
-        if (exception != null) {
-            osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
-        }
-
-        RetryHeader retryHeader;
-        if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof RetryableException)) {
-            retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
-        } else {
-            retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
-        }
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification(),
-                messageMetadata.getCorrelationUid(), messageMetadata.getMessageType(),
-                messageMetadata.getMessagePriority(), messageMetadata.getScheduleTime());
-
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).domain(messageMetadata.getDomain())
-                .domainVersion(messageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
-                .dataObject(responseObject).retryCount(messageMetadata.getRetryCount()).retryHeader(retryHeader)
-                .scheduled(messageMetadata.isScheduled()).build();
-
-        responseMessageSender.send(responseMessage);
-    }
+    // protected void sendResponseMessage(final MessageMetadata messageMetadata,
+    // final ResponseMessageResultType result,
+    // final Exception exception, final DeviceResponseMessageSender
+    // responseMessageSender,
+    // final Serializable responseObject) {
+    //
+    // OsgpException osgpException = null;
+    // if (exception != null) {
+    // osgpException =
+    // this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
+    // }
+    //
+    // RetryHeader retryHeader;
+    // if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof
+    // RetryableException)) {
+    // retryHeader =
+    // this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
+    // } else {
+    // retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
+    // }
+    //
+    // final DeviceMessageMetadata deviceMessageMetadata = new
+    // DeviceMessageMetadata(
+    // messageMetadata.getDeviceIdentification(),
+    // messageMetadata.getOrganisationIdentification(),
+    // messageMetadata.getCorrelationUid(), messageMetadata.getMessageType(),
+    // messageMetadata.getMessagePriority(), messageMetadata.getScheduleTime());
+    //
+    // final ProtocolResponseMessage responseMessage = new
+    // ProtocolResponseMessage.Builder()
+    // .deviceMessageMetadata(deviceMessageMetadata).domain(messageMetadata.getDomain())
+    // .domainVersion(messageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
+    // .dataObject(responseObject).retryCount(messageMetadata.getRetryCount()).retryHeader(retryHeader)
+    // .scheduled(messageMetadata.isScheduled()).build();
+    //
+    // responseMessageSender.send(responseMessage);
+    // }
 
     /**
      * Used to determine if the handleMessage needs a device connection or not.
