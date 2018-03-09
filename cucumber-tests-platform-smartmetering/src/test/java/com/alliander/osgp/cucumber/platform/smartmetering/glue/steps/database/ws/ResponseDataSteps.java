@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
 import com.alliander.osgp.cucumber.core.DateTimeHelper;
 import com.alliander.osgp.cucumber.core.RetryableAssert;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
@@ -33,6 +34,9 @@ public class ResponseDataSteps extends BaseDeviceSteps {
 
     @Autowired
     private ResponseDataRepository responseDataRespository;
+
+    @Autowired
+    private ResponseUrlDataRepository responseUrlDataRespository;
 
     @Given("^a response data record$")
     @Transactional("txMgrRespData")
@@ -75,19 +79,13 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         final short expectedNumberOfNotificationsSent = Short
                 .parseShort(settings.get(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT));
         final String expectedMessageType = settings.get(PlatformKeys.KEY_MESSAGE_TYPE);
-        final String expectedResponseUrl = settings.containsKey(PlatformKeys.KEY_RESPONSE_URL)
-                ? settings.get(PlatformKeys.KEY_RESPONSE_URL)
-                : "";
 
-        RetryableAssert.assertWithRetries(
-                () -> ResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(correlationUid,
-                        expectedNumberOfNotificationsSent, expectedMessageType, expectedResponseUrl),
-                3, 200, TimeUnit.MILLISECONDS);
+        RetryableAssert.assertWithRetries(() -> ResponseDataSteps.this.assertResponseDataHasNotificationsAndMessageType(
+                correlationUid, expectedNumberOfNotificationsSent, expectedMessageType), 3, 200, TimeUnit.MILLISECONDS);
     }
 
     private void assertResponseDataHasNotificationsAndMessageType(final String correlationUid,
-            final Short expectedNumberOfNotificationsSent, final String expectedMessageType,
-            final String expectedResponseUrl) {
+            final Short expectedNumberOfNotificationsSent, final String expectedMessageType) {
 
         final ResponseData responseData = this.responseDataRespository.findByCorrelationUid(correlationUid);
 
@@ -95,9 +93,5 @@ public class ResponseDataSteps extends BaseDeviceSteps {
                 responseData.getNumberOfNotificationsSent());
         assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, expectedMessageType, responseData.getMessageType());
 
-        if (!expectedResponseUrl.isEmpty()) {
-            assertEquals(PlatformKeys.KEY_RESPONSE_URL, expectedResponseUrl, responseData.getResponseUrl());
-
-        }
     }
 }
