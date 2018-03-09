@@ -7,6 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.networking;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Set;
@@ -23,6 +24,10 @@ import com.alliander.osgp.dlms.DlmsPushNotification;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotificationDecoder.DecodingState> {
+
+    private static final int EQUIPMENT_IDENTIFIER_LENGTH = 17;
+    private static final int NUMBER_OF_BYTES_FOR_ALARM = 4;
+    private static final int NUMBER_OF_BYTES_FOR_LOGICAL_NAME = 6;
 
     private static final byte[] SMS_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x03, 0x00, (byte) 0xFF };
     private static final byte[] CSD_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x02, 0x00, (byte) 0xFF };
@@ -41,7 +46,7 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
      */
     private static final byte COMMA = 0x2C;
 
-    public static enum DecodingState {
+    public enum DecodingState {
         EQUIPMENT_IDENTIFIER,
         DATA_OBJECT;
     }
@@ -62,19 +67,7 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
     protected Object decode(final ChannelHandlerContext ctx, final Channel channel, final ChannelBuffer buffer,
             final DecodingState state) throws UnknownDecodingStateException, UnrecognizedMessageDataException {
 
-        LOGGER.info("Decoding state: {}", state.toString());
-
-        if (this.getSizeBytePattern(buffer) <= 0) {
-            // appears that an new state is passed even if all data in the
-            // channel buffer is processed
-            // return an empty object, which is discarded in de
-            // DlmsChannelHandlerServer
-            this.builder = new DlmsPushNotification.Builder();
-            this.builder.withEquipmentIdentifier("");
-            this.builder.appendBytes(new byte[] { COMMA });
-            this.builder.withTriggerType("");
-            return this.buildPushNotification();
-        }
+        LOGGER.info("Decoding state: {}", state);
 
         switch (state) {
         case EQUIPMENT_IDENTIFIER:
@@ -84,72 +77,44 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
             this.decodeReceivedData(buffer);
             return this.buildPushNotification();
         default:
-            throw new UnknownDecodingStateException(state.name());
+            throw new UnknownDecodingStateException(String.valueOf(state));
         }
     }
 
-    private void decodeEquipmentIdentifier(final ChannelBuffer buffer) {
-        final byte[] pattern = this.getBytePattern(buffer);
-        final int separator = this.getFirstIndexOf(pattern, COMMA);
+    private void decodeEquipmentIdentifier(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
+        final byte[] equipmentIdentifierPlusSeparatorBytes = new byte[EQUIPMENT_IDENTIFIER_LENGTH + 1];
+        buffer.readBytes(equipmentIdentifierPlusSeparatorBytes, 0, equipmentIdentifierPlusSeparatorBytes.length);
 
-        final byte[] equipmentIdentifierBytes = Arrays.copyOfRange(pattern, 0, separator);
+        if (equipmentIdentifierPlusSeparatorBytes[EQUIPMENT_IDENTIFIER_LENGTH] != COMMA) {
+            throw new UnrecognizedMessageDataException("message must start with " + EQUIPMENT_IDENTIFIER_LENGTH
+                    + " bytes for the equipment identifier, followed by byte 0x2C (a comma).");
+        }
+
+        final byte[] equipmentIdentifierBytes = Arrays.copyOfRange(equipmentIdentifierPlusSeparatorBytes, 0,
+                EQUIPMENT_IDENTIFIER_LENGTH);
         final String equipmentIdentifier = new String(equipmentIdentifierBytes, StandardCharsets.US_ASCII);
         this.builder.withEquipmentIdentifier(equipmentIdentifier);
-        this.builder.appendBytes(equipmentIdentifierBytes).appendByte(COMMA);
-
-        // extract equipment identifier from buffer (the decoder must consume
-        // bytes!)
-        buffer.readBytes(equipmentIdentifierBytes.length);
+        this.builder.appendBytes(equipmentIdentifierPlusSeparatorBytes);
     }
 
     private void decodeReceivedData(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
-        final byte[] pattern = this.getBytePattern(buffer);
-        final int separator = this.getFirstIndexOf(pattern, COMMA);
+        if (buffer.readableBytes() > Math.max(NUMBER_OF_BYTES_FOR_ALARM, NUMBER_OF_BYTES_FOR_LOGICAL_NAME)) {
+            throw new UnrecognizedMessageDataException("length of data bytes is not " + NUMBER_OF_BYTES_FOR_ALARM
+                    + " (alarm) or " + NUMBER_OF_BYTES_FOR_LOGICAL_NAME + " (obiscode)");
+        }
 
-        final byte[] dataBytes = Arrays.copyOfRange(pattern, separator + 1, pattern.length);
-        if (dataBytes.length == 4) {
-            this.decodeAlarmRegisterData(dataBytes);
-        } else if (dataBytes.length == 6) {
-            this.decodeObiscodeData(dataBytes);
+        if (buffer.readableBytes() == NUMBER_OF_BYTES_FOR_ALARM) {
+            this.decodeAlarmRegisterData(buffer);
+        } else if (buffer.readableBytes() == NUMBER_OF_BYTES_FOR_LOGICAL_NAME) {
+            this.decodeObisCodeData(buffer);
         } else {
-            LOGGER.info("Unrecognized length of data bytes in message. length is {}", dataBytes.length);
-            throw new UnrecognizedMessageDataException("length of data bytes is not 4 (alarm) or 6 (obiscode)");
+            this.waitForMoreBytes(buffer);
         }
-        this.builder.appendBytes(dataBytes);
-
-        // extract data bytes and separator from buffer (the decoder must
-        // consume bytes!)
-        buffer.readBytes(dataBytes.length + 1);
-    }
-
-    private byte[] getBytePattern(final ChannelBuffer buffer) {
-        final int startIndex = buffer.readerIndex();
-        final int endIndex = buffer.writerIndex();
-        final byte[] pattern = new byte[endIndex - startIndex];
-        buffer.getBytes(buffer.readerIndex(), pattern);
-        return pattern;
-    }
-
-    private int getFirstIndexOf(final byte[] dataBytes, final byte searchByte) {
-        int i = -1;
-        for (int index = 0; index < dataBytes.length; index++) {
-            if (dataBytes[index] == searchByte) {
-                i = index;
-                break;
-            }
-        }
-        return i;
-    }
-
-    private int getSizeBytePattern(final ChannelBuffer buffer) {
-        final int startIndex = buffer.readerIndex();
-        final int endIndex = buffer.writerIndex();
-        return endIndex - startIndex;
     }
 
     private Object setCheckpointAndContinueDecode(final ChannelHandlerContext ctx, final Channel channel,
-            final ChannelBuffer buffer, final DecodingState nextState) throws UnknownDecodingStateException,
-            UnrecognizedMessageDataException {
+            final ChannelBuffer buffer, final DecodingState nextState)
+            throws UnknownDecodingStateException, UnrecognizedMessageDataException {
         this.checkpoint(nextState);
         return this.decode(ctx, channel, buffer, nextState);
     }
@@ -162,15 +127,17 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         }
     }
 
-    private void decodeObiscodeData(final byte[] dataBytes) {
+    private void decodeObisCodeData(final ChannelBuffer buffer) {
 
-        if (Arrays.equals(SMS_OBISCODE_BYTES, dataBytes)) {
+        final byte[] logicalNameBytes = new byte[NUMBER_OF_BYTES_FOR_LOGICAL_NAME];
+        buffer.readBytes(logicalNameBytes, 0, NUMBER_OF_BYTES_FOR_LOGICAL_NAME);
 
+        if (Arrays.equals(SMS_OBISCODE_BYTES, logicalNameBytes)) {
             this.builder.withTriggerType(PUSH_SMS_TRIGGER);
-        } else if (Arrays.equals(CSD_OBISCODE_BYTES, dataBytes)) {
+        } else if (Arrays.equals(CSD_OBISCODE_BYTES, logicalNameBytes)) {
             LOGGER.warn("CSD Push notification not supported");
             this.builder.withTriggerType(PUSH_CDS_TRIGGER);
-        } else if (Arrays.equals(SCHEDULER_OBISCODE_BYTES, dataBytes)) {
+        } else if (Arrays.equals(SCHEDULER_OBISCODE_BYTES, logicalNameBytes)) {
             LOGGER.warn("Scheduler Push notification not supported");
             this.builder.withTriggerType(PUSH_SCHEDULER_TRIGGER);
         } else {
@@ -179,19 +146,30 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         }
 
         this.builder.withAlarms(null);
+        this.builder.appendBytes(logicalNameBytes);
     }
 
-    private void decodeAlarmRegisterData(final byte[] dataBytes) {
-        long registerValue = 0;
-        for (final byte b : dataBytes) {
-            registerValue = registerValue << 8;
-            final int unsignedValue = b & 0xFF;
-            registerValue = registerValue + unsignedValue;
-        }
+    private void decodeAlarmRegisterData(final ChannelBuffer buffer) {
+
+        final byte[] alarmBytes = new byte[NUMBER_OF_BYTES_FOR_ALARM];
+        buffer.readBytes(alarmBytes, 0, NUMBER_OF_BYTES_FOR_ALARM);
+
+        final Set<AlarmTypeDto> alarms = new AlarmHelperService().toAlarmTypes(ByteBuffer.wrap(alarmBytes).getInt());
+
         this.builder.withTriggerType(PUSH_ALARM_TRIGGER);
-        final AlarmHelperService alarmHelperService = new AlarmHelperService();
-        final Set<AlarmTypeDto> alarms = alarmHelperService.toAlarmTypes(registerValue);
         this.builder.withAlarms(alarms);
+        this.builder.appendBytes(alarmBytes);
+    }
+
+    private void waitForMoreBytes(final ChannelBuffer buffer) {
+        /*
+         * Trigger the REPLAY error from the ReplayingDecoderBuffer which is
+         * used as ChannelBuffer implementation with the ReplayingDecoder.
+         *
+         * This should make sure decode gets reinvoked properly until enough
+         * bytes are available.
+         */
+        buffer.skipBytes(Integer.MAX_VALUE);
     }
 
 }
