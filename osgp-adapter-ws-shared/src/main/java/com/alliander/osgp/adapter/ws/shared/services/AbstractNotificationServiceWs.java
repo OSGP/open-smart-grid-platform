@@ -58,12 +58,12 @@ public abstract class AbstractNotificationServiceWs {
     }
 
     protected String retrieveNotificationUrl(final ResponseUrlService responseUrlService, final String correlationUid) {
-        final String responseUrl = responseUrlService.popResponseUrl(correlationUid);
+        final String responseUrl = responseUrlService.findResponseUrl(correlationUid);
         return (responseUrl == null) ? this.notificationUrl : responseUrl;
     }
 
-    protected GenericSendNotificationRequest genericNotificationRequest(final String deviceIdentification, final String result,
-            final String correlationUid, final String message, final String notificationType) {
+    protected GenericSendNotificationRequest genericNotificationRequest(final String deviceIdentification,
+            final String result, final String correlationUid, final String message, final String notificationType) {
 
         final GenericSendNotificationRequest sendNotificationRequest = new GenericSendNotificationRequest();
         final GenericNotification notification = new GenericNotification();
