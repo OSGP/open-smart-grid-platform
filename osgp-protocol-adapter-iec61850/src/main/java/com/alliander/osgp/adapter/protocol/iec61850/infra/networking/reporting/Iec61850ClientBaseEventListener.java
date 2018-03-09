@@ -77,6 +77,10 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
         }
 
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
+        if (report.getEntryId() != null) {
+            sb.append("\t                   \t(").append(new String(report.getEntryId().getValue())).append(")")
+                    .append(System.lineSeparator());
+        }
         sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
                 .append(System.lineSeparator());
         sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());

@@ -11,9 +11,11 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +29,9 @@ import org.springframework.util.CollectionUtils;
 import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850ReportEntry;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850ReportEntryRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
@@ -46,6 +50,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
 
+    // private Iec61850ReportEntryService iec61850ReportEntryService;
+    private Iec61850ReportEntryRepository iec61850ReportEntryRepository;
+
     static {
         REPORT_HANDLERS_MAP.put("RTU", Iec61850RtuReportHandler.class);
         REPORT_HANDLERS_MAP.put("PV", Iec61850PvReportHandler.class);
@@ -63,8 +70,10 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     }
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
-            final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
+            final DeviceManagementService deviceManagementService,
+            final Iec61850ReportEntryRepository iec61850ReportEntryRepository) throws ProtocolAdapterException {
         super(deviceIdentification, deviceManagementService, Iec61850ClientRTUEventListener.class);
+        this.iec61850ReportEntryRepository = iec61850ReportEntryRepository;
     }
 
     private Iec61850ReportHandler getReportHandler(final String dataSetRef) {
@@ -162,6 +171,29 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
         this.deviceManagementService.sendMeasurements(this.deviceIdentification,
                 new GetDataResponseDto(systems, reportDto));
+
+        this.storeLastReportEntry(report, this.deviceIdentification);
+    }
+
+    private void storeLastReportEntry(final Report report, final String deviceIdentification) {
+        if (Objects.isNull(report.getEntryId()) || Objects.isNull(report.getTimeOfEntry())) {
+            LOGGER.info(
+                    "Not all report entry data availabe for report id {} and device identification {}, skip storing last report entry",
+                    report.getRptId(), deviceIdentification);
+            return;
+        }
+        Iec61850ReportEntry reportEntry = this.iec61850ReportEntryRepository
+                .findByReportIdAndDeviceIdentification(report.getRptId(), deviceIdentification);
+        if (reportEntry == null) {
+            reportEntry = new Iec61850ReportEntry(report.getRptId(), deviceIdentification,
+                    report.getEntryId().getValue(), new Date(report.getTimeOfEntry().getTimestampValue()));
+            LOGGER.info("Store new last report entry: {}", reportEntry.toString());
+        } else {
+            reportEntry.updateLastReportEntry(report.getEntryId().getValue(),
+                    new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET).toDate());
+            LOGGER.info("Store updated last report entry: {}", reportEntry.toString());
+        }
+        this.iec61850ReportEntryRepository.saveAndFlush(reportEntry);
     }
 
     private List<MeasurementDto> processMeasurements(final Iec61850ReportHandler reportHandler,

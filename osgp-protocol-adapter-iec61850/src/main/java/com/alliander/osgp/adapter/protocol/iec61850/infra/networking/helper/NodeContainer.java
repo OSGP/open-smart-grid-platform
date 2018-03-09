@@ -21,6 +21,7 @@ import org.openmuc.openiec61850.BdaInt32U;
 import org.openmuc.openiec61850.BdaInt64;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaInt8U;
+import org.openmuc.openiec61850.BdaOctetString;
 import org.openmuc.openiec61850.BdaQuality;
 import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.BdaVisibleString;
@@ -93,6 +94,18 @@ public class NodeContainer {
 
         stringNode.setValue(value);
         this.writeNode(stringNode);
+    }
+
+    /**
+     * Writes an OctetString value to the given child on the device
+     */
+    public void writeOctetString(final SubDataAttribute child, final byte[] value) throws NodeWriteException {
+        final BdaOctetString bdaOctetString = (BdaOctetString) this.parent.getChild(child.getDescription());
+
+        LOGGER.info("device: {}, writing {} to {}", this.deviceIdentification, value, child.getDescription());
+
+        bdaOctetString.setValue(value);
+        this.writeNode(bdaOctetString);
     }
 
     /**

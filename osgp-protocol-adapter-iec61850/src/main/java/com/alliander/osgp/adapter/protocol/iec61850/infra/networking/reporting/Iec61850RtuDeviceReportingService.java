@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.openmuc.openiec61850.Brcb;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.Rcb;
 import org.openmuc.openiec61850.ServerModel;
@@ -23,10 +24,14 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Report;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850ReportEntry;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850ReportGroup;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850ReportEntryRepository;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
@@ -42,6 +47,12 @@ public class Iec61850RtuDeviceReportingService {
 
     @Autowired
     private Iec61850DeviceReportGroupRepository iec61850DeviceReportRepository;
+
+    @Autowired
+    private Iec61850ReportEntryRepository iec61850ReportEntryRepository;
+
+    @Autowired
+    private Iec61850Client client;
 
     public void enableReportingForDevice(final DeviceConnection connection, final String deviceIdentification,
             final String serverName) {
@@ -82,14 +93,55 @@ public class Iec61850RtuDeviceReportingService {
             final String reportReference = report.getReference().toString();
             try {
                 LOGGER.info("Enable reporting for report {} on device {}.", reportReference, deviceIdentification);
+
+                if (report instanceof Brcb) {
+                    this.resyncBufferedReport(connection, deviceIdentification, (Brcb) report);
+                }
+
                 final NodeContainer node = new NodeContainer(connection, report);
+
                 node.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
             } catch (final NullPointerException e) {
                 LOGGER.debug("NullPointerException", e);
                 LOGGER.warn("Skip enable reporting for report {} on device {}.", reportReference, deviceIdentification);
             } catch (final NodeWriteException e) {
                 LOGGER.debug("NodeWriteException", e);
-                LOGGER.error("Enable reporting for report {} on device {}, failed with exception: {}", reportReference,
+                LOGGER.error("Enable reporting for report {} on device {} failed with exception: {}", reportReference,
+                        deviceIdentification, e.getMessage());
+            }
+        }
+    }
+
+    private void resyncBufferedReport(final DeviceConnection connection, final String deviceIdentification,
+            final Brcb brcb) {
+
+        final NodeContainer node = new NodeContainer(connection, brcb);
+
+        try {
+            this.client.readNodeDataValues(connection.getConnection().getClientAssociation(), node.getFcmodelNode());
+        } catch (final NodeReadException e) {
+            LOGGER.debug("NodeReadException", e);
+            LOGGER.error("Resync reporting failed, could not read report id from device {}", deviceIdentification,
+                    e.getMessage());
+            return;
+        }
+        final String reportId = node.getString(SubDataAttribute.REPORT_ID);
+
+        LOGGER.debug("Resync reporting for report {} on device {}", reportId, deviceIdentification);
+
+        final Iec61850ReportEntry reportEntry = this.iec61850ReportEntryRepository
+                .findByReportIdAndDeviceIdentification(reportId, deviceIdentification);
+        if (reportEntry == null) {
+            LOGGER.info("Resync reporting for report {} on device {} not possible, no last report entry found",
+                    reportId, deviceIdentification);
+        } else {
+            LOGGER.info("Resync reporting for report {} on device {} with last report entry: {}", reportId,
+                    deviceIdentification, reportEntry.toString());
+            try {
+                node.writeOctetString(SubDataAttribute.ENTRY_ID, reportEntry.getEntryId());
+            } catch (final NodeWriteException e) {
+                LOGGER.debug("NodeWriteException", e);
+                LOGGER.error("Resync reporting for report {} on device {} failed with exception: {}", reportId,
                         deviceIdentification, e.getMessage());
             }
         }
