@@ -7,18 +7,12 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.application.config;
 
-import java.util.Properties;
-
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.MigrationVersion;
-import org.hibernate.ejb.HibernatePersistence;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,35 +23,23 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
-import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.application.config.AbstractPersistenceConfig;
 import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Persistence configuration for the osgp_adapter_protocol_iec61850 database.
  */
-@EnableJpaRepositories(entityManagerFactoryRef = "iec61850EntityManagerFactory", basePackageClasses = { Iec61850DeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "iec61850EntityManagerFactory", basePackageClasses = {
+        Iec61850DeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
-public class Iec61850PersistenceConfig extends AbstractConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850PersistenceConfig.class);
-
-    private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
-    private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
-    private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+public class Iec61850PersistenceConfig extends AbstractPersistenceConfig {
 
     @Value("${db.username.iec61850}")
     private String databaseUsername;
     @Value("${db.password.iec61850}")
     private String databasePassword;
-
-    @Value("${db.driver}")
-    private String databaseDriver;
-    @Value("${db.protocol}")
-    private String databaseProtocol;
 
     @Value("${db.host.iec61850}")
     private String databaseHost;
@@ -66,132 +48,46 @@ public class Iec61850PersistenceConfig extends AbstractConfig {
     @Value("${db.name.iec61850}")
     private String databaseName;
 
-    @Value("${db.min_pool_size}")
-    private int databaseMinPoolSize;
-    @Value("${db.max_pool_size}")
-    private int databaseMaxPoolSize;
-    @Value("${db.auto_commit}")
-    private boolean databaseAutoCommit;
-    @Value("${db.idle_timeout}")
-    private int databaseIdleTimeout;
-
-    @Value("${hibernate.dialect}")
-    private String hibernateDialect;
-    @Value("${hibernate.format_sql}")
-    private String hibernateFormatSql;
-    @Value("${hibernate.ejb.naming_strategy}")
-    private String hibernateNamingStrategy;
-    @Value("${hibernate.show_sql}")
-    private String hibernateShowSql;
-
-    @Value("${flyway.initial.version}")
-    private String flywayInitialVersion;
-    @Value("${flyway.initial.description}")
-    private String flywayInitialDescription;
-    @Value("${flyway.init.on.migrate}")
-    private boolean flywayInitOnMigrate;
-
-    @Value("${entitymanager.packages.to.scan}")
-    private String entityManagerPackagesToScan;
-
-    private HikariDataSource dataSource;
+    private HikariDataSource dataSourceIec61850;
 
     public Iec61850PersistenceConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
 
-    /**
-     * Method for creating the Data Source.
-     *
-     * @return DataSource
-     */
-    public DataSource iec61850DataSource() {
-        if (this.dataSource == null) {
-            final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
-            .withUsername(this.databaseUsername).withPassword(this.databasePassword)
-            .withDriverClassName(this.databaseDriver).withProtocol(this.databaseProtocol)
-            .withDatabaseHost(this.databaseHost).withDatabasePort(this.databasePort)
-            .withDatabaseName(this.databaseName).withMinPoolSize(this.databaseMinPoolSize)
-            .withMaxPoolSize(this.databaseMaxPoolSize).withAutoCommit(this.databaseAutoCommit)
-            .withIdleTimeout(this.databaseIdleTimeout);
+    public DataSource getDataSourceIec61850() {
+        if (this.dataSourceIec61850 == null) {
+            final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(this.databaseUsername)
+                    .withPassword(this.databasePassword).withDatabaseHost(this.databaseHost)
+                    .withDatabasePort(this.databasePort).withDatabaseName(this.databaseName);
             final DefaultConnectionPoolFactory factory = builder.build();
-            this.dataSource = factory.getDefaultConnectionPool();
+            this.dataSourceIec61850 = factory.getDefaultConnectionPool();
         }
-        return this.dataSource;
+        return this.dataSourceIec61850;
     }
 
-    /**
-     * Method for creating the Transaction Manager.
-     *
-     * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
-     */
+    @Override
     @Bean
-    public JpaTransactionManager transactionManager() throws ProtocolAdapterException {
-        final JpaTransactionManager transactionManager = new JpaTransactionManager();
-
-        try {
-            transactionManager.setEntityManagerFactory(this.iec61850EntityManagerFactory().getObject());
-            transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
-        } catch (final ClassNotFoundException e) {
-            final String msg = "Error in creating transaction manager bean";
-            LOGGER.error(msg, e);
-            throw new ProtocolAdapterException(msg, e);
-        }
-
-        return transactionManager;
+    public JpaTransactionManager transactionManager() {
+        return super.transactionManager();
     }
 
-    /**
-     * @return
-     */
     @Bean(initMethod = "migrate")
     public Flyway iec61850Flyway() {
-        final Flyway flyway = new Flyway();
-
-        // Initialization for non-empty schema with no metadata table
-        flyway.setBaselineVersion(MigrationVersion.fromVersion(this.flywayInitialVersion));
-        flyway.setBaselineDescription(this.flywayInitialDescription);
-        flyway.setBaselineOnMigrate(this.flywayInitOnMigrate);
-
-        flyway.setDataSource(this.iec61850DataSource());
-
-        return flyway;
+        return super.createFlyway(this.getDataSourceIec61850());
     }
 
-    /**
-     * Method for creating the Entity Manager Factory Bean.
-     *
-     * @return LocalContainerEntityManagerFactoryBean
-     * @throws ClassNotFoundException
-     *             when class not found
-     */
-    @Bean
+    @Override
+    @Bean(name = "iec61850EntityManagerFactory")
     @DependsOn("iec61850Flyway")
-    public LocalContainerEntityManagerFactoryBean iec61850EntityManagerFactory() throws ClassNotFoundException {
-        final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-
-        entityManagerFactoryBean.setPersistenceUnitName("OSGP_PROTOCOL_ADAPTER_IEC61850");
-        entityManagerFactoryBean.setDataSource(this.iec61850DataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.entityManagerPackagesToScan);
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
-
-        final Properties jpaProperties = new Properties();
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT, this.hibernateDialect);
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_FORMAT_SQL, this.hibernateFormatSql);
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY, this.hibernateNamingStrategy);
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, this.hibernateShowSql);
-
-        entityManagerFactoryBean.setJpaProperties(jpaProperties);
-
-        return entityManagerFactoryBean;
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        return super.entityManagerFactory("OSGP_PROTOCOL_ADAPTER_IEC61850", this.getDataSourceIec61850());
     }
 
+    @Override
     @PreDestroy
     public void destroyDataSource() {
-        if (this.dataSource != null) {
-            this.dataSource.close();
+        if (this.dataSourceIec61850 != null) {
+            this.dataSourceIec61850.close();
         }
     }
 }
