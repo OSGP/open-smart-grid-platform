@@ -54,6 +54,7 @@
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <hibernate.version>4.2.16.Final</hibernate.version>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
+    <flyway.version>4.1.2</flyway.version>
     <junit.version>4.11</junit.version>
     <joda.version>2.4</joda.version>
     <slf4j.version>1.7.7</slf4j.version>
@@ -232,6 +233,13 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate.validator.version}</version>
+      </dependency>
+
+      <!-- Flyway (DB Migration) -->
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>${flyway.version}</version>
       </dependency>
 
       <!-- Jackson (JSON) -->
