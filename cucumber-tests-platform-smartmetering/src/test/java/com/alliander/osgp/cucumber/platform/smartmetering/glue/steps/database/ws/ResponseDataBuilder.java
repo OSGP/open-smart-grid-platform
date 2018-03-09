@@ -25,11 +25,8 @@ public class ResponseDataBuilder {
     private Short numberOfNotificationsSent = 0;
 
     public ResponseData build() {
-        return new ResponseData.Builder().withOrganisationIdentification(this.organisationIdentification)
-                .withMessageType(this.messageType).withDeviceIdentification(this.deviceIdentification)
-                .withCorrelationUid(this.correlationUid).withResultType(this.resultType)
-                .withMessageData(this.messageData).withNumberOfNotificationsSent(this.numberOfNotificationsSent)
-                .build();
+        return new ResponseData(this.organisationIdentification, this.messageType, this.deviceIdentification,
+                this.correlationUid, this.resultType, this.messageData, this.numberOfNotificationsSent);
     }
 
     public ResponseDataBuilder fromSettings(final Map<String, String> settings) {
