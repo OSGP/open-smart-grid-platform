@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.RawMessageData;
 import org.openmuc.jdlms.RawMessageData.Apdu;
@@ -30,7 +31,7 @@ public class LoggingDlmsMessageListener extends InvocationCountingDlmsMessageLis
     private MessageMetadata messageMetadata;
     private String description;
 
-    private AtomicInteger numberOfCapturedMessages = new AtomicInteger(0);
+    private final AtomicInteger numberOfCapturedMessages = new AtomicInteger(0);
 
     public LoggingDlmsMessageListener(final String deviceIdentification,
             final DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender) {
@@ -48,7 +49,8 @@ public class LoggingDlmsMessageListener extends InvocationCountingDlmsMessageLis
         final boolean incoming = MessageSource.SERVER == rawMessageData.getMessageSource();
 
         byte[] encodedMessage = this.determineEncodedMessage(rawMessageData);
-        if (encodedMessage != null) {
+
+        if (ArrayUtils.isNotEmpty(encodedMessage)) {
             encodedMessage = Arrays.copyOf(encodedMessage, encodedMessage.length);
         }
 
@@ -71,10 +73,10 @@ public class LoggingDlmsMessageListener extends InvocationCountingDlmsMessageLis
     private byte[] determineEncodedMessage(final Apdu apdu) {
         if (apdu == null) {
             /*
-             * Not returning an empty array, because that would look like an empty message, while there is no message to
-             * be returned at all here.
+             * Not returning an empty array, because that would look like an empty message,
+             * while there is no message to be returned at all here.
              */
-            return null;
+            return new byte[0];
         }
 
         final byte[] acsePdu = apdu.getAcsePdu();
@@ -88,10 +90,10 @@ public class LoggingDlmsMessageListener extends InvocationCountingDlmsMessageLis
     private byte[] determineEncodedMessage(final CosemPdu cosemPdu) {
         if (cosemPdu == null) {
             /*
-             * Not returning an empty array, because that would look like an empty message, while there is no message to
-             * be returned at all here.
+             * Not returning an empty array, because that would look like an empty message,
+             * while there is no message to be returned at all here.
              */
-            return null;
+            return new byte[0];
         }
 
         final byte[] cipheredCosemPdu = cosemPdu.getCipheredCosemPdu();
