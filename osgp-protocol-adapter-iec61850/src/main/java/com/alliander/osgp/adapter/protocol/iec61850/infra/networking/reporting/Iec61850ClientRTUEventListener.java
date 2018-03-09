@@ -24,6 +24,7 @@ import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.jpa.JpaOptimisticLockingFailureException;
 import org.springframework.util.CollectionUtils;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
@@ -184,7 +185,14 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
                     new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET).toDate());
             LOGGER.info("Store updated last report entry: {}", reportEntry.toString());
         }
-        this.iec61850ReportEntryRepository.saveAndFlush(reportEntry);
+        try {
+            this.iec61850ReportEntryRepository.saveAndFlush(reportEntry);
+        } catch (final JpaOptimisticLockingFailureException e) {
+            LOGGER.debug("JpaOptimisticLockingFailureException", e);
+            LOGGER.warn(
+                    "JPA optimistic locking failure exception while saving last report entry: {} with id {} and version {}",
+                    reportEntry, reportEntry.getId(), reportEntry.getVersion());
+        }
     }
 
     private List<MeasurementDto> processMeasurements(final Iec61850ReportHandler reportHandler,
