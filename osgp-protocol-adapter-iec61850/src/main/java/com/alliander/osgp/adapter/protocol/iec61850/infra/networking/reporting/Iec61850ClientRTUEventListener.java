@@ -50,7 +50,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
 
-    // private Iec61850ReportEntryService iec61850ReportEntryService;
     private Iec61850ReportEntryRepository iec61850ReportEntryRepository;
 
     static {
@@ -119,10 +118,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         if (Boolean.TRUE.equals(report.getBufOvfl())) {
             this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
                     reportDescription);
-        } else if (this.skipRecordBecauseOfOldSqNum(report)) {
-            this.logger.warn("Skipping report because SqNum: {} is less than what should be the first new value: {}",
-                    report.getSqNum(), this.firstNewSqNum);
-            return;
         }
 
         final Iec61850ReportHandler reportHandler = this.getReportHandler(report.getDataSetRef());
@@ -144,10 +139,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
                 report.getRptId(), timeOfEntry == null ? "-" : timeOfEntry, report.getSqNum(),
                 report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
                 report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
-    }
-
-    private boolean skipRecordBecauseOfOldSqNum(final Report report) {
-        return (this.firstNewSqNum != null) && (report.getSqNum() != null) && (report.getSqNum() < this.firstNewSqNum);
     }
 
     private void processReport(final Report report, final String reportDescription,
