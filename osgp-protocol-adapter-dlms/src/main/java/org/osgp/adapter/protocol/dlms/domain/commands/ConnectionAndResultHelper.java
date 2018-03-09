@@ -19,9 +19,13 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 public class ConnectionAndResultHelper {
     /**
+     * Retrieves connection, gets result data and validates it before returning.
+     * 
      * @param conn
+     *            holds connection
      * @param getParameter
-     * @return
+     *            for attribute to retrieve result data from
+     * @return dataObject
      * @throws ProtocolAdapterException
      */
     public DataObject getValidatedResultData(final DlmsConnectionHolder conn, final AttributeAddress getParameter)
