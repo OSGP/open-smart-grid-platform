@@ -9,14 +9,16 @@ package com.alliander.osgp.cucumber.platform.microgrids.support.ws.microgrids.ad
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest;
@@ -25,6 +27,8 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAs
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
+import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
+import com.alliander.osgp.cucumber.platform.microgrids.support.ws.microgrids.NotificationService;
 import com.alliander.osgp.cucumber.platform.support.ws.BaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -32,15 +36,15 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 @Component
 public class AdHocManagementClient extends BaseClient {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementClient.class);
+
     @Autowired
     @Qualifier("webServiceTemplateFactoryMicrogridsAdHocManagement")
     private DefaultWebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement;
 
     @Autowired
-    private ResponseDataRepository responseDataRepository;
+    private NotificationService notificationService;
 
-    @Value("${iec61850.rtu.response.wait.check.interval:1000}")
-    private int waitCheckIntervalMillis;
     @Value("${iec61850.rtu.response.wait.fail.duration:15000}")
     private int waitFailMillis;
 
@@ -62,7 +66,7 @@ public class AdHocManagementClient extends BaseClient {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = request.getAsyncRequest().getCorrelationUid();
-        this.waitForResponseData(correlationUid);
+        this.waitForNotification(correlationUid);
 
         final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
@@ -73,24 +77,24 @@ public class AdHocManagementClient extends BaseClient {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = request.getAsyncRequest().getCorrelationUid();
-        this.waitForResponseData(correlationUid);
+        this.waitForNotification(correlationUid);
 
         final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetDataResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    private void waitForResponseData(final String correlationUid) {
-        try {
-            for (int timeSpentWaiting = 0; timeSpentWaiting < this.waitFailMillis; timeSpentWaiting += this.waitCheckIntervalMillis) {
-                if (this.responseDataRepository.findByCorrelationUid(correlationUid) != null) {
-                    return;
-                }
-                Thread.sleep(this.waitCheckIntervalMillis);
-            }
-            throw new AssertionError("RtuResponseData not available within " + this.waitFailMillis + " milliseconds.");
-        } catch (final InterruptedException e) {
-            throw new AssertionError("Waiting for RtuResponseData was interrupted.", e);
+    private void waitForNotification(final String correlationUid) {
+        LOGGER.info("Waiting for a notification for correlation UID {} for at most {} milliseconds.", correlationUid,
+                this.waitFailMillis);
+
+        final Notification notification = this.notificationService.getNotification(correlationUid, this.waitFailMillis,
+                TimeUnit.MILLISECONDS);
+
+        if (notification == null) {
+            throw new AssertionError("Did not receive a notification for correlation UID: " + correlationUid
+                    + " within " + this.waitFailMillis + " milliseconds");
         }
     }
+
 }

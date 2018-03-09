@@ -8,20 +8,23 @@
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.core.audittrail;
 
 import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import com.alliander.osgp.cucumber.core.RetryableAssert;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
-import com.alliander.osgp.cucumber.platform.smartmetering.support.ResponseNotifier;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
@@ -30,34 +33,40 @@ import cucumber.api.java.en.Then;
 public class AuditTrail {
     private static final String PATTERN_RETRY_OPERATION = "retry count= .*, correlationuid= .*";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuditTrail.class);
-
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
-
-    @Autowired
-    protected ResponseNotifier responseNotifier;
 
     @Then("^the audit trail contains multiple retry log records$")
     public void theAuditTrailContainsMultipleRetryLogRecords(final Map<String, String> settings) throws Throwable {
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
-        assertTrue("DeviceLogItems are not found in the database",
-                // Wait 10 minutes with a timeout of 1 sec for the logged retry
-                // exceptions
-                this.responseNotifier.waitForLog(deviceIdentification, 1000, 600000));
+        final int minimumNumberReturned = 2;
+        final Predicate<DeviceLogItem> filter = dli -> Pattern.matches(PATTERN_RETRY_OPERATION,
+                dli.getDecodedMessage());
 
-        final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
-                .findByDeviceIdentification(deviceIdentification, new PageRequest(0, 2)).getContent();
+        final Runnable assertion = () -> {
 
-        for (final DeviceLogItem deviceLogItem : deviceLogItems) {
-            LOGGER.info("CreationTime: {}", deviceLogItem.getCreationTime().toString());
-            LOGGER.info("DecodedMessage: {}", deviceLogItem.getDecodedMessage());
+            final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
+            final Page<DeviceLogItem> deviceLogPage = this.deviceLogItemRepository
+                    .findByDeviceIdentification(deviceIdentification, pageable);
+            final List<DeviceLogItem> filteredDeviceLogItems = deviceLogPage.getContent().stream().filter(filter)
+                    .collect(Collectors.toList());
 
-            final boolean isMatchRetryOperation = Pattern.matches(PATTERN_RETRY_OPERATION,
-                    deviceLogItem.getDecodedMessage());
-            assertTrue("No retry log item found.", isMatchRetryOperation);
+            assertFalse(
+                    "Number of matching DeviceLogItems for device " + deviceIdentification + " must be at least "
+                            + minimumNumberReturned + ", but was " + filteredDeviceLogItems.size(),
+                    filteredDeviceLogItems.size() < minimumNumberReturned);
+        };
+        final int numberOfRetries = 600;
+        final long delay = 1;
+        final TimeUnit unit = TimeUnit.SECONDS;
+        try {
+            RetryableAssert.assertWithRetries(assertion, numberOfRetries, delay, unit);
+        } catch (final AssertionError e) {
+            throw new AssertionError("Failed to find at least " + minimumNumberReturned + " retry log items for device "
+                    + deviceIdentification + " within "
+                    + RetryableAssert.describeMaxDuration(numberOfRetries, delay, unit), e);
         }
     }
 }

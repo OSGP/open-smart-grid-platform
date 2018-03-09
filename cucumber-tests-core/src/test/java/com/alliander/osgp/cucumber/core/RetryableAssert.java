@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.cucumber.core;
 
+import java.time.Duration;
+import java.util.Locale;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -58,4 +60,9 @@ public class RetryableAssert {
             }
         }
     }
+
+    public static String describeMaxDuration(final int numberOfDelays, final long delay, final TimeUnit unit) {
+        return Duration.ofMillis(unit.toMillis(numberOfDelays * delay)).toString().substring(2).toLowerCase(Locale.UK);
+    }
+
 }

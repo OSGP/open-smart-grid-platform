@@ -28,8 +28,15 @@ import cucumber.api.java.en.When;
 
 public class NotificationSteps extends GlueBase {
 
-    private static final int MAX_WAIT_FOR_NOTIFICATION = 1200000;
-    private static final int MAX_WAIT_FOR_RESEND_NOTIFICATION = 65000;
+    private static final int MAX_WAIT_FOR_NOTIFICATION = 65000;
+    /*
+     * Unknown notification means a notification for a correlation UID that has
+     * not been captured earlier on. This might be because it is a device
+     * initiated notification, or a notification about a request initiated from
+     * application code instead of test code as happens when re-establishing an
+     * RTU connection.
+     */
+    private static final int MAX_WAIT_FOR_UNKNOWN_NOTIFICATION = 200000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
 
@@ -43,13 +50,13 @@ public class NotificationSteps extends GlueBase {
 
     @Then("^I should receive a notification$")
     public void iShouldReceiveANotification() throws Throwable {
-        LOGGER.info("Waiting for a notification for at most {} milliseconds.", MAX_WAIT_FOR_NOTIFICATION);
+        LOGGER.info("Waiting for a notification for at most {} milliseconds.", MAX_WAIT_FOR_UNKNOWN_NOTIFICATION);
 
-        final Notification notification = this.notificationService.getNotification(MAX_WAIT_FOR_NOTIFICATION,
+        final Notification notification = this.notificationService.getNotification(MAX_WAIT_FOR_UNKNOWN_NOTIFICATION,
                 TimeUnit.MILLISECONDS);
 
         if (notification == null) {
-            fail("Did not receive a notification within the timeout limit of " + MAX_WAIT_FOR_NOTIFICATION
+            fail("Did not receive a notification within the timeout limit of " + MAX_WAIT_FOR_UNKNOWN_NOTIFICATION
                     + " milliseconds.");
         }
 
@@ -65,18 +72,33 @@ public class NotificationSteps extends GlueBase {
         ScenarioContext.current().put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         ScenarioContext.current().put(PlatformKeys.KEY_USER_NAME, PlatformDefaults.DEFAULT_USER_NAME);
+
+        /*
+         * We did not know for which correlation UID the notification is
+         * received in this implementation. In some scenarios (for instance when
+         * re-establishing the RTU connection) this is because the GetData
+         * request for which the notification is received was not issued from a
+         * test step, in others it may be because the RTU device initiated the
+         * notification without a prior request. In order to retrieve the
+         * response the correlation UID might be used later-on from the scenario
+         * context. This will wait for a notification for the correlation UID
+         * that was stored in this method, which will no longer arrive, unless
+         * the notification service is notified again, which is done in the next
+         * line.
+         */
+        this.notificationService.handleNotification(notification, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
     }
 
     @Then("^a notification is sent$")
     public void aNotificationIsSent(final Map<String, String> settings) throws Throwable {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
-        this.waitForNotification(MAX_WAIT_FOR_RESEND_NOTIFICATION, correlationUid, true);
+        this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, true);
     }
 
     @Then("^no notification is sent$")
     public void noNotificationIsSent(final Map<String, String> settings) throws Throwable {
         final String correlationUid = settings.get(PlatformKeys.KEY_CORRELATION_UID);
-        this.waitForNotification(MAX_WAIT_FOR_RESEND_NOTIFICATION, correlationUid, false);
+        this.waitForNotification(MAX_WAIT_FOR_NOTIFICATION, correlationUid, false);
     }
 
     private void waitForNotification(final int maxTimeOut, final String correlationUid,

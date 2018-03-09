@@ -9,11 +9,12 @@ package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartme
 
 import static org.junit.Assert.fail;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alliander.osgp.cucumber.core.RetryableAssert;
 import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.database.ws.ResponseDataSteps;
 
 import cucumber.api.java.en.Then;
@@ -21,16 +22,16 @@ import cucumber.api.java.en.When;
 
 public class ResponseDataCleanupJobSteps {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseDataCleanupJobSteps.class);
+    private static final TimeUnit TIME_UNIT_RESPONSE_CLEANUP_DELAY = TimeUnit.MILLISECONDS;
 
     @Autowired
     private ResponseDataSteps responseDataSteps;
 
-    @Value("${smartmetering.response.wait.check.interval:1000}")
-    private int waitCheckIntervalMillis;
+    @Value("${smartmetering.response.cleanup.wait.delay:1000}")
+    private long delay;
 
-    @Value("${smartmetering.response.wait.fail.duration:30000}")
-    private int waitFailMillis;
+    @Value("${smartmetering.response.cleanup.wait.retries:65}")
+    private int retries;
 
     @When("^the response data cleanup job runs$")
     public void theResponseDataCleanupJobRuns() {
@@ -40,53 +41,36 @@ public class ResponseDataCleanupJobSteps {
     @Then("^the cleanup job should have removed the response data with correlation uid \"(.*)\"$")
     public void theCleanupJobShouldHaveRemovedTheResponseData(final String correlationUid) {
 
-        this.waitForResponseDataToBeRemoved(correlationUid, this.waitCheckIntervalMillis, this.waitFailMillis);
+        this.waitForResponseDataToBeRemoved(correlationUid, this.delay, this.retries);
     }
 
     @Then("^the cleanup job should not have removed the response data with correlation uid \"(.*)\"$")
     public void theCleanupJobShouldNotHaveRemovedTheResponseData(final String correlationUid) {
 
-        this.waitToMakeSureResponseDataIsNotRemoved(correlationUid, this.waitCheckIntervalMillis, this.waitFailMillis);
+        this.waitToMakeSureResponseDataIsNotRemoved(correlationUid, this.delay, this.retries);
     }
 
-    private void waitForResponseDataToBeRemoved(final String correlationUid, final int timeout, final int maxtime) {
-
-        for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
-
-            try {
-                Thread.sleep(timeout);
-            } catch (final InterruptedException e) {
-                LOGGER.error("Thread sleep interrupted ", e.getMessage());
-                break;
-            }
-
-            try {
-                this.responseDataSteps.theResponseDataRecordShouldBeDeleted(correlationUid);
-            } catch (final AssertionError ae) {
-                continue;
-            }
-            return;
-        }
-        fail("Cleanup job should have removed response data with correlation uid " + correlationUid + " within: "
-                + maxtime + "sec.");
-    }
-
-    private void waitToMakeSureResponseDataIsNotRemoved(final String correlationUid, final int timeout,
-            final int maxtime) {
-
-        for (int delayedtime = 0; delayedtime < maxtime; delayedtime += timeout) {
-            try {
-                Thread.sleep(timeout);
-            } catch (final InterruptedException e) {
-                LOGGER.error("Thread sleep interrupted ", e.getMessage());
-                break;
-            }
-
-            try {
-                this.responseDataSteps.theResponseDataRecordShouldNotBeDeleted(correlationUid);
-            } catch (final AssertionError ae) {
-                fail("Cleanup job should not have removed response data with correlation uid " + correlationUid + ".");
-            }
+    private void waitForResponseDataToBeRemoved(final String correlationUid, final long delay, final int retries) {
+        try {
+            RetryableAssert.assertWithRetries(
+                    () -> this.responseDataSteps.theResponseDataRecordShouldBeDeleted(correlationUid), retries, delay,
+                    TIME_UNIT_RESPONSE_CLEANUP_DELAY);
+        } catch (final AssertionError e) {
+            fail("Cleanup job should have removed response data with correlation uid " + correlationUid + " within "
+                    + RetryableAssert.describeMaxDuration(retries, delay, TIME_UNIT_RESPONSE_CLEANUP_DELAY));
         }
     }
+
+    private void waitToMakeSureResponseDataIsNotRemoved(final String correlationUid, final long delay,
+            final int retries) {
+
+        try {
+            RetryableAssert.assertDelayedWithRetries(
+                    () -> this.responseDataSteps.theResponseDataRecordShouldNotBeDeleted(correlationUid), 0,
+                    retries * delay, TIME_UNIT_RESPONSE_CLEANUP_DELAY);
+        } catch (final AssertionError e) {
+            fail("Cleanup job should not have removed response data with correlation uid " + correlationUid + ".");
+        }
+    }
+
 }
