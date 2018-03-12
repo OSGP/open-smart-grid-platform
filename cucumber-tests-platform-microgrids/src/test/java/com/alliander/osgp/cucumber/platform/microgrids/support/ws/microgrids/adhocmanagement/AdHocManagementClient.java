@@ -85,18 +85,6 @@ public class AdHocManagementClient extends BaseClient {
     }
 
     private void waitForNotification(final String correlationUid) {
-        if (correlationUid.startsWith("DeviceGenerated")) {
-            /*
-             * A DeviceGenerated correlation UID is never received in an
-             * AsyncResponse to a web service request. Instead it is received in
-             * notifications pushed as a result of some things happening on a
-             * device. If such a notification is known, the response for it is
-             * ready and does not need to be waited for.
-             */
-            LOGGER.info("Not waiting for device generated notification for correlation UID {}.", correlationUid);
-            return;
-        }
-
         LOGGER.info("Waiting for a notification for correlation UID {} for at most {} milliseconds.", correlationUid,
                 this.waitFailMillis);
 
