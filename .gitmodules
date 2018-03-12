@@ -9,7 +9,7 @@
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
-	branch = SLIM-1604_Keep_Using_Custom_Urls
+	branch = SLIM-1064_Keep_Using_Custom_Urls
 [submodule "Protocol-Adapter-DLMS"]
 	path = Protocol-Adapter-DLMS
 	url = https://github.com/OSGP/Protocol-Adapter-DLMS.git
