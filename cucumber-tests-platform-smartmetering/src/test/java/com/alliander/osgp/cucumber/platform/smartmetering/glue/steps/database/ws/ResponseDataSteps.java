@@ -88,5 +88,6 @@ public class ResponseDataSteps extends BaseDeviceSteps {
         assertEquals(PlatformKeys.KEY_NUMBER_OF_NOTIFICATIONS_SENT, expectedNumberOfNotificationsSent,
                 responseData.getNumberOfNotificationsSent());
         assertEquals(PlatformKeys.KEY_MESSAGE_TYPE, expectedMessageType, responseData.getMessageType());
+
     }
 }
