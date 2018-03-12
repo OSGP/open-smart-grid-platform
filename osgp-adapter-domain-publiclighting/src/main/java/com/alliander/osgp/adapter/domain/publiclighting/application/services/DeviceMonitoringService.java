@@ -101,10 +101,12 @@ public class DeviceMonitoringService extends AbstractService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-         this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
-         .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-         .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-         .withDataObject(actualPowerUsageData).build());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
+                .withDataObject(actualPowerUsageData).build();
+
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     // === GET POWER USAGE HISTORY ===
