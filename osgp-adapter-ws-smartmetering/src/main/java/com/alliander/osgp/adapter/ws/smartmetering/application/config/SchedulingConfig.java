@@ -16,6 +16,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.alliander.osgp.adapter.ws.shared.services.ResponseDataCleanupJob;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.ResponseUrlDataCleanupJob;
 import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
 
 @EnableScheduling
@@ -58,8 +59,15 @@ public class SchedulingConfig extends AbstractSchedulingConfig {
     }
 
     @Bean(destroyMethod = "shutdown")
-    public Scheduler cleanupJobScheduler() throws SchedulerException {
+    public Scheduler cleanupResponseDataScheduler() throws SchedulerException {
         return this.constructScheduler(ResponseDataCleanupJob.class, KEY_CLEANUP_JOB_THREAD_COUNT,
+                KEY_CLEANUP_JOB_CRON_EXPRESSION, this.getDatabaseUrl(), this.databaseUsername, this.databasePassword,
+                this.databaseDriver);
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public Scheduler cleanupResponseUrlDataScheduler() throws SchedulerException {
+        return this.constructScheduler(ResponseUrlDataCleanupJob.class, KEY_CLEANUP_JOB_THREAD_COUNT,
                 KEY_CLEANUP_JOB_CRON_EXPRESSION, this.getDatabaseUrl(), this.databaseUsername, this.databasePassword,
                 this.databaseDriver);
     }

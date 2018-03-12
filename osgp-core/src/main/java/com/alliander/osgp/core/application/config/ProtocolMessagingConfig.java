@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 
 import com.alliander.osgp.core.infra.jms.JmsTemplateSettings;
 import com.alliander.osgp.core.infra.jms.protocol.ProtocolRequestMessageJmsTemplateFactory;
@@ -31,11 +30,9 @@ import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-core.properties"),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true),
-})
+@PropertySource("classpath:osgp-core.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true)
 public class ProtocolMessagingConfig extends AbstractConfig {
 
     // JMS Settings
@@ -95,8 +92,8 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.protocolRedeliveryPolicyMap());
-        activeMQConnectionFactory.setBrokerURL(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
+        activeMQConnectionFactory
+                .setBrokerURL(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
 
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
 
@@ -118,18 +115,18 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
 
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(
+                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setBackOffMultiplier(Double
+                .parseDouble(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(
+                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
 
         return redeliveryPolicy;
     }
@@ -139,15 +136,16 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     @Bean
     public ProtocolRequestMessageJmsTemplateFactory protocolRequestsJmsTemplate() {
-        final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_EXPLICIT_QOS_ENABLED)),
+        final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_EXPLICIT_QOS_ENABLED)),
                 Long.parseLong(this.environment
                         .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_TIME_TO_LIVE)),
-                        Boolean.parseBoolean(this.environment
-                                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_DELIVERY_PERSISTENT)));
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_DELIVERY_PERSISTENT)));
 
-        return new ProtocolRequestMessageJmsTemplateFactory(this.protocolPooledConnectionFactory(),
-                jmsTemplateSettings, this.protocolInfoRepository.findAll());
+        return new ProtocolRequestMessageJmsTemplateFactory(this.protocolPooledConnectionFactory(), jmsTemplateSettings,
+                this.protocolInfoRepository.findAll());
     }
 
     // === INCOMING PROTOCOL RESPONSES ===
@@ -188,12 +186,13 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     @Bean
     public ProtocolResponseMessageJmsTemplateFactory protocolResponseJmsTemplateFactory() {
-        final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_EXPLICIT_QOS_ENABLED)),
+        final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_EXPLICIT_QOS_ENABLED)),
                 Long.parseLong(this.environment
                         .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_TIME_TO_LIVE)),
-                        Boolean.parseBoolean(this.environment
-                                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_DELIVERY_PERSISTENT)));
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_DELIVERY_PERSISTENT)));
 
         return new ProtocolResponseMessageJmsTemplateFactory(this.protocolPooledConnectionFactory(),
                 jmsTemplateSettings, this.protocolInfoRepository.findAll());
