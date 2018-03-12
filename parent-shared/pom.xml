@@ -30,20 +30,6 @@
   <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
   <url>${maven.site.url}</url>
   <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>smartsociety-releases</id>
-      <name>Smart Society Release Repo</name>
-      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-releases/</url>
-      <layout>default</layout>
-    </repository>
-    <snapshotRepository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>smartsociety-snapshots</id>
-      <name>Smart Society Development Repo</name>
-      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-snapshots/</url>
-      <layout>default</layout>
-    </snapshotRepository>
     <site>
       <id>shared-components</id>
       <name>shared-components</name>
@@ -68,6 +54,7 @@
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <hibernate.version>4.2.16.Final</hibernate.version>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
+    <flyway.version>4.1.2</flyway.version>
     <junit.version>4.11</junit.version>
     <joda.version>2.4</joda.version>
     <slf4j.version>1.7.7</slf4j.version>
@@ -246,6 +233,13 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate.validator.version}</version>
+      </dependency>
+
+      <!-- Flyway (DB Migration) -->
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>${flyway.version}</version>
       </dependency>
 
       <!-- Jackson (JSON) -->
