@@ -13,7 +13,7 @@ public class PushSetupAlarmDto extends AbstractPushSetupDto {
 
     private static final long serialVersionUID = -3541154908239512383L;
 
-    public static class Builder extends AbstractPushSetupDto.Builder {
+    public static class Builder extends AbstractPushSetupDto.AbstractBuilder {
 
         @Override
         public PushSetupAlarmDto build() {

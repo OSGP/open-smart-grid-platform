@@ -22,7 +22,7 @@ class AbstractPushSetupDto implements ActionRequestDto {
     private final Integer numberOfRetries;
     private final Integer repetitionDelay;
 
-    private AbstractPushSetupDto(final Builder builder) {
+    private AbstractPushSetupDto(final AbstractBuilder builder) {
         this.logicalName = builder.logicalName;
         this.pushObjectList = builder.pushObjectList;
         this.sendDestinationAndMethod = builder.sendDestinationAndMethod;
@@ -32,7 +32,7 @@ class AbstractPushSetupDto implements ActionRequestDto {
         this.repetitionDelay = builder.repetitionDelay;
     }
 
-    public static class Builder {
+    public static class AbstractBuilder {
 
         protected CosemObisCodeDto logicalName = null;
         protected List<CosemObjectDefinitionDto> pushObjectList = null;
@@ -46,12 +46,12 @@ class AbstractPushSetupDto implements ActionRequestDto {
             return new AbstractPushSetupDto(this);
         }
 
-        public Builder withLogicalName(final CosemObisCodeDto logicalName) {
+        public AbstractBuilder withLogicalName(final CosemObisCodeDto logicalName) {
             this.logicalName = logicalName;
             return this;
         }
 
-        public Builder withPushObjectList(final List<CosemObjectDefinitionDto> pushObjectList) {
+        public AbstractBuilder withPushObjectList(final List<CosemObjectDefinitionDto> pushObjectList) {
             if (pushObjectList == null) {
                 this.pushObjectList = null;
             } else {
@@ -60,12 +60,12 @@ class AbstractPushSetupDto implements ActionRequestDto {
             return this;
         }
 
-        public Builder withSendDestinationAndMethod(final SendDestinationAndMethodDto sendDestinationAndMethod) {
+        public AbstractBuilder withSendDestinationAndMethod(final SendDestinationAndMethodDto sendDestinationAndMethod) {
             this.sendDestinationAndMethod = sendDestinationAndMethod;
             return this;
         }
 
-        public Builder withCommunicationWindow(final List<WindowElementDto> communicationWindow) {
+        public AbstractBuilder withCommunicationWindow(final List<WindowElementDto> communicationWindow) {
             if (communicationWindow == null) {
                 this.communicationWindow = null;
             } else {
@@ -75,27 +75,27 @@ class AbstractPushSetupDto implements ActionRequestDto {
             return this;
         }
 
-        public Builder withRandomisationStartInterval(final Integer randomisationStartInterval) {
+        public AbstractBuilder withRandomisationStartInterval(final Integer randomisationStartInterval) {
             AbstractPushSetupDto.checkRandomisationStartInterval(randomisationStartInterval);
             this.randomisationStartInterval = randomisationStartInterval;
             return this;
         }
 
-        public Builder withNumberOfRetries(final Integer numberOfRetries) {
+        public AbstractBuilder withNumberOfRetries(final Integer numberOfRetries) {
             AbstractPushSetupDto.checkNumberOfRetries(numberOfRetries);
             this.numberOfRetries = numberOfRetries;
             return this;
         }
 
-        public Builder withRepetitionDelay(final Integer repetitionDelay) {
+        public AbstractBuilder withRepetitionDelay(final Integer repetitionDelay) {
             AbstractPushSetupDto.checkRepetitionDelay(repetitionDelay);
             this.repetitionDelay = repetitionDelay;
             return this;
         }
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
+    public static AbstractBuilder newBuilder() {
+        return new AbstractBuilder();
     }
 
     AbstractPushSetupDto(final AbstractPushSetupDto abstractPushSetupDto) {
