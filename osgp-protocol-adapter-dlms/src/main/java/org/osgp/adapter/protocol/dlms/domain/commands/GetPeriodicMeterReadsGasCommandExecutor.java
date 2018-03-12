@@ -355,11 +355,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
         final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = new ArrayList<>();
         for (final DataObject bufferedObject : bufferedObjectsList) {
-            final List<DataObject> bufferedObjects = bufferedObject.getValue();
+            final List<DataObject> bufferedObjectValue = bufferedObject.getValue();
 
             final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor = GetPeriodicMeterReadsGasCommandExecutor
                     .newBuilder().withPeriodType(periodType).withBeginDateTime(beginDateTime)
-                    .withEndDateTime(endDateTime).withBufferedObjects(bufferedObjects)
+                    .withEndDateTime(endDateTime).withBufferedObjects(bufferedObjectValue)
                     .withChannel(periodicMeterReadsQuery.getChannel())
                     .withIsSelectiveAccessSupported(device.isSelectiveAccessSupported()).withResults(getResultList)
                     .build();
