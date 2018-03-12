@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
 import com.alliander.osgp.cucumber.core.DateTimeHelper;
 import com.alliander.osgp.cucumber.core.RetryableAssert;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
@@ -34,9 +33,6 @@ public class ResponseDataSteps extends BaseDeviceSteps {
 
     @Autowired
     private ResponseDataRepository responseDataRespository;
-
-    @Autowired
-    private ResponseUrlDataRepository responseUrlDataRespository;
 
     @Given("^a response data record$")
     @Transactional("txMgrRespData")
