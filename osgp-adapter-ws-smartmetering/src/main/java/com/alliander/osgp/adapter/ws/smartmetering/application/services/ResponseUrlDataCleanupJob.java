@@ -26,7 +26,7 @@ public class ResponseUrlDataCleanupJob implements Job {
     @Override
     public void execute(final JobExecutionContext context) throws JobExecutionException {
 
-        LOGGER.info("Quartz triggered cleanup of response data.");
+        LOGGER.info("Quartz triggered cleanup of response url data.");
         this.responseUrlDataCleanupService.execute();
     }
 }
