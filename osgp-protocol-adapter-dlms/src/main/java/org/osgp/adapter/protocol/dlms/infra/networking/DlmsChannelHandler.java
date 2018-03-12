@@ -14,49 +14,46 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessage;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.dlms.DlmsPushNotification;
 
 public abstract class DlmsChannelHandler extends SimpleChannelHandler {
 
-    private final Logger logger;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsChannelHandlerServer.class);
 
     @Autowired
     private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
 
-    protected DlmsChannelHandler(final Logger logger) {
-        this.logger = logger;
-    }
-
     @Override
     public void channelOpen(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        this.logger.info("{} Channel opened", e.getChannel().getId());
+        LOGGER.info("{} Channel opened", e.getChannel().getId());
         super.channelOpen(ctx, e);
     }
 
     @Override
     public void channelDisconnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        this.logger.info("{} Channel disconnected", e.getChannel().getId());
+        LOGGER.info("{} Channel disconnected", e.getChannel().getId());
         super.channelDisconnected(ctx, e);
     }
 
     @Override
     public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        this.logger.info("{} Channel closed", e.getChannel().getId());
+        LOGGER.info("{} Channel closed", e.getChannel().getId());
         super.channelClosed(ctx, e);
     }
 
     @Override
     public void channelUnbound(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-        this.logger.info("{} Channel unbound", e.getChannel().getId());
+        LOGGER.info("{} Channel unbound", e.getChannel().getId());
         super.channelUnbound(ctx, e);
     }
 
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
         final int channelId = e.getChannel().getId();
-        this.logger.warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
+        LOGGER.warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
         e.getChannel().close();
     }
 
