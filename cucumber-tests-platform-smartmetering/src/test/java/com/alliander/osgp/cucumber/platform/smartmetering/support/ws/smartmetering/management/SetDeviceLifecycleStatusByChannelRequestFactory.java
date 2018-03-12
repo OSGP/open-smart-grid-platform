@@ -9,7 +9,7 @@ package com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmeter
 
 import java.util.Map;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DeviceLifecycleStatus;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.DeviceLifecycleStatus;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelRequestData;
