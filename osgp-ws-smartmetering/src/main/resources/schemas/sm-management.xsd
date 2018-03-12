@@ -522,32 +522,13 @@
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:simpleType name="DeviceLifecycleStatus">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="NEW_IN_INVENTORY" />
-      <xsd:enumeration value="READY_FOR_USE" />
-      <xsd:enumeration value="REGISTERED" />
-      <xsd:enumeration value="IN_USE" />
-      <xsd:enumeration value="RETURNED_TO_INVENTORY" />
-      <xsd:enumeration value="UNDER_TEST" />
-      <xsd:enumeration value="DESTROYED" />
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="Channel">
-    <xsd:restriction base="xsd:unsignedByte">
-      <xsd:minInclusive value="1" />
-      <xsd:maxInclusive value="4" />
-    </xsd:restriction>
-  </xsd:simpleType>
-
   <xsd:complexType name="SetDeviceLifecycleStatusByChannelRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
-          <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus"
+          <xsd:element name="DeviceLifecycleStatus" type="common:DeviceLifecycleStatus"
             minOccurs="1" maxOccurs="1" />
-          <xsd:element name="Channel" type="tns:Channel"
+          <xsd:element name="Channel" type="common:Channel"
             minOccurs="1" maxOccurs="1" />
         </xsd:sequence>
       </xsd:extension>
@@ -561,9 +542,9 @@
           <xsd:element name="GatewayDeviceIdentification"
             type="common:Identification" />
           <xsd:element name="MbusDeviceIdentification" type="common:Identification" />
-          <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus"
+          <xsd:element name="DeviceLifecycleStatus" type="common:DeviceLifecycleStatus"
             minOccurs="1" maxOccurs="1" />
-          <xsd:element name="Channel" type="tns:Channel"
+          <xsd:element name="Channel" type="common:Channel"
             minOccurs="1" maxOccurs="1" />
         </xsd:sequence>
       </xsd:extension>

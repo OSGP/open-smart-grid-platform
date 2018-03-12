@@ -293,14 +293,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="Channel">
-            <xsd:simpleType>
-              <xsd:restriction base="xsd:unsignedByte">
-                <xsd:minInclusive value="1" />
-                <xsd:maxInclusive value="4" />
-              </xsd:restriction>
-            </xsd:simpleType>
-          </xsd:element>
+          <xsd:element name="Channel" type="common:Channel" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -308,7 +301,7 @@
 
   <xsd:complexType name="ChannelElementValues">
     <xsd:sequence>
-      <xsd:element name="Channel" type="xsd:unsignedByte" />
+      <xsd:element name="Channel" type="common:Channel" />
       <xsd:element name="PrimaryAddress" type="xsd:short" />
       <xsd:element name="IdentificationNumber" type="xsd:string" />
       <xsd:element name="ManufacturerIdentification" type="xsd:string" />
