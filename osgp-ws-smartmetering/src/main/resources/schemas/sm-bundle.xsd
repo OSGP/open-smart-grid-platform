@@ -255,6 +255,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="SetDeviceLifecycleStatusByChannelRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smman:SetDeviceLifecycleStatusByChannelRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
   <xsd:complexType name="Actions">
     <xsd:sequence>
@@ -291,6 +299,7 @@
         <xsd:element ref="tns:CoupleMbusDeviceByChannelRequest" />
         <xsd:element ref="tns:ClearAlarmRegisterRequest" />
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelRequest" />
+        <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
@@ -456,6 +465,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="SetDeviceLifecycleStatusByChannelResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smman:SetDeviceLifecycleStatusByChannelResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
   <xsd:complexType name="AllResponses">
     <xsd:sequence>
@@ -479,6 +496,7 @@
         <xsd:element ref="tns:ProfileGenericDataResponse" />
         <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse" />
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelResponse" />
+        <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelResponse" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>

@@ -1139,7 +1139,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="Channel" type="tns:Channel" />
+          <xsd:element name="Channel" type="common:Channel" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -1155,18 +1155,11 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:simpleType name="Channel">
-    <xsd:restriction base="xsd:unsignedByte">
-      <xsd:minInclusive value="1" />
-      <xsd:maxInclusive value="4" />
-    </xsd:restriction>
-  </xsd:simpleType>
-
   <xsd:complexType name="GetMbusEncryptionKeyStatusByChannelRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="Channel" type="tns:Channel" />
+          <xsd:element name="Channel" type="common:Channel" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -1179,7 +1172,7 @@
           <xsd:element name="GatewayDeviceIdentification"
             type="common:DeviceIdentification" />
           <xsd:element name="EncryptionKeyStatus" type="tns:EncryptionKeyStatus" />
-          <xsd:element name="Channel" type="tns:Channel" />
+          <xsd:element name="Channel" type="common:Channel" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
