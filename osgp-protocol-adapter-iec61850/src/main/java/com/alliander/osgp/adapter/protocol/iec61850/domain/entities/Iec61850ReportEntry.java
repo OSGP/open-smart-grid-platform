@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.domain.entities;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
@@ -68,9 +69,9 @@ public class Iec61850ReportEntry extends AbstractEntity {
     @Override
     public String toString() {
         return String.format(
-                "Iec61850BufferedReport [reportId=%s, deviceIdentification=%s, entryId=%s (%s), timeOfEntry=%s],",
-                this.reportId, this.deviceIdentification, Arrays.toString(this.entryId), new String(this.entryId),
-                this.timeOfEntry);
+                "Iec61850BufferedReport [reportId=%s, deviceIdentification=%s, entryId=%s (%s), timeOfEntry=%s]",
+                this.reportId, this.deviceIdentification, Arrays.toString(this.entryId),
+                new String(this.entryId, Charset.forName("UTF-8")), this.timeOfEntry);
 
     }
 

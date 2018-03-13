@@ -121,8 +121,8 @@ public class Iec61850RtuDeviceReportingService {
             this.client.readNodeDataValues(connection.getConnection().getClientAssociation(), node.getFcmodelNode());
         } catch (final NodeReadException e) {
             LOGGER.debug("NodeReadException", e);
-            LOGGER.error("Resync reporting failed, could not read report id from device {}", deviceIdentification,
-                    e.getMessage());
+            LOGGER.error("Resync reporting failed, could not read report id from device {}, exception: {}",
+                    deviceIdentification, e.getMessage());
             return;
         }
         final String reportId = node.getString(SubDataAttribute.REPORT_ID);
@@ -136,7 +136,7 @@ public class Iec61850RtuDeviceReportingService {
                     reportId, deviceIdentification);
         } else {
             LOGGER.info("Resync reporting for report {} on device {} with last report entry: {}", reportId,
-                    deviceIdentification, reportEntry.toString());
+                    deviceIdentification, reportEntry);
             try {
                 node.writeOctetString(SubDataAttribute.ENTRY_ID, reportEntry.getEntryId());
             } catch (final NodeWriteException e) {

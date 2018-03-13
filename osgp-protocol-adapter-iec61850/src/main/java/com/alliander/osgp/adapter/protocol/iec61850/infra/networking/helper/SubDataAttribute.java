@@ -69,8 +69,8 @@ public enum SubDataAttribute {
      */
     ENABLE_OPERATION("enbOper"),
     /**
-     * Property of Buffered Report Control Block. Enables reporting. This
-     * boolean is reset to false by the device once the reports are sent.
+     * Property of Report Control Block. Enables reporting. This boolean is
+     * reset to false by the device once the reports are sent.
      */
     ENABLE_REPORTING("RptEna"),
     /**

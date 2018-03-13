@@ -22,8 +22,6 @@ import java.util.regex.Pattern;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.Report;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.JpaOptimisticLockingFailureException;
 import org.springframework.util.CollectionUtils;
 
@@ -41,8 +39,6 @@ import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.ReportDto;
 
 public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListener {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientRTUEventListener.class);
 
     private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER|WIND|PQ)";
 
@@ -71,7 +67,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
             final DeviceManagementService deviceManagementService,
-            final Iec61850ReportEntryRepository iec61850ReportEntryRepository) throws ProtocolAdapterException {
+            final Iec61850ReportEntryRepository iec61850ReportEntryRepository) {
         super(deviceIdentification, deviceManagementService, Iec61850ClientRTUEventListener.class);
         this.iec61850ReportEntryRepository = iec61850ReportEntryRepository;
     }
@@ -92,7 +88,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
                 return (Iec61850ReportHandler) ctor.newInstance(systemId);
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException | NoSuchMethodException ex) {
-                LOGGER.error("Unable to instantiate Iec61850ReportHandler ", ex);
+                this.logger.error("Unable to instantiate Iec61850ReportHandler ", ex);
             }
         }
         return null;
@@ -169,7 +165,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private void storeLastReportEntry(final Report report, final String deviceIdentification) {
         if (Objects.isNull(report.getEntryId()) || Objects.isNull(report.getTimeOfEntry())) {
-            LOGGER.info(
+            this.logger.warn(
                     "Not all report entry data availabe for report id {} and device identification {}, skip storing last report entry",
                     report.getRptId(), deviceIdentification);
             return;
@@ -178,18 +174,19 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
                 .findByReportIdAndDeviceIdentification(report.getRptId(), deviceIdentification);
         if (reportEntry == null) {
             reportEntry = new Iec61850ReportEntry(report.getRptId(), deviceIdentification,
-                    report.getEntryId().getValue(), new Date(report.getTimeOfEntry().getTimestampValue()));
-            LOGGER.info("Store new last report entry: {}", reportEntry.toString());
+                    report.getEntryId().getValue(),
+                    new Date(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET));
+            this.logger.info("Store new last report entry: {}", reportEntry);
         } else {
             reportEntry.updateLastReportEntry(report.getEntryId().getValue(),
-                    new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET).toDate());
-            LOGGER.info("Store updated last report entry: {}", reportEntry.toString());
+                    new Date(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET));
+            this.logger.info("Store updated last report entry: {}", reportEntry);
         }
         try {
             this.iec61850ReportEntryRepository.saveAndFlush(reportEntry);
         } catch (final JpaOptimisticLockingFailureException e) {
-            LOGGER.debug("JpaOptimisticLockingFailureException", e);
-            LOGGER.warn(
+            this.logger.debug("JpaOptimisticLockingFailureException", e);
+            this.logger.warn(
                     "JPA optimistic locking failure exception while saving last report entry: {} with id {} and version {}",
                     reportEntry, reportEntry.getId(), reportEntry.getVersion());
         }
