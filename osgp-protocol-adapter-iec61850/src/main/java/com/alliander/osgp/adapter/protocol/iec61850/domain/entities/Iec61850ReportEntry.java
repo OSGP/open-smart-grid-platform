@@ -24,12 +24,15 @@ public class Iec61850ReportEntry extends AbstractEntity {
 
     private static final long serialVersionUID = -4203294559891991816L;
 
-    @Column(nullable = false)
-    private String reportId;
     @Column(nullable = false, length = 40)
     private String deviceIdentification;
+
+    @Column(nullable = false)
+    private String reportId;
+
     @Column(nullable = false)
     private byte[] entryId;
+
     @Column(nullable = false)
     private Date timeOfEntry;
 
@@ -37,10 +40,10 @@ public class Iec61850ReportEntry extends AbstractEntity {
         // Default constructor for hibernate
     }
 
-    public Iec61850ReportEntry(final String reportId, final String deviceIdentification, final byte[] entryId,
+    public Iec61850ReportEntry(final String deviceIdentification, final String reportId, final byte[] entryId,
             final Date timeOfEntry) {
-        this.reportId = reportId;
         this.deviceIdentification = deviceIdentification;
+        this.reportId = reportId;
         this.entryId = entryId;
         this.timeOfEntry = timeOfEntry;
     }
@@ -69,8 +72,8 @@ public class Iec61850ReportEntry extends AbstractEntity {
     @Override
     public String toString() {
         return String.format(
-                "Iec61850BufferedReport [reportId=%s, deviceIdentification=%s, entryId=%s (%s), timeOfEntry=%s]",
-                this.reportId, this.deviceIdentification, Arrays.toString(this.entryId),
+                "Iec61850BufferedReport [deviceIdentification=%s, reportId=%s, entryId=%s (%s), timeOfEntry=%s]",
+                this.deviceIdentification, this.reportId, Arrays.toString(this.entryId),
                 new String(this.entryId, Charset.forName("UTF-8")), this.timeOfEntry);
 
     }
@@ -86,12 +89,12 @@ public class Iec61850ReportEntry extends AbstractEntity {
 
         final Iec61850ReportEntry report = (Iec61850ReportEntry) obj;
 
-        return this.reportId.equals(report.reportId) && this.deviceIdentification.equals(report.deviceIdentification);
+        return this.deviceIdentification.equals(report.deviceIdentification) && this.reportId.equals(report.reportId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.reportId, this.deviceIdentification);
+        return Objects.hash(this.deviceIdentification, this.reportId);
     }
 
 }

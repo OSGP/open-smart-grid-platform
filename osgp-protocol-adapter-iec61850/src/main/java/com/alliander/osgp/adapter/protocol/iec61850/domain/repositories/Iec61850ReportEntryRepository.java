@@ -15,5 +15,5 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Repo
 @Repository
 public interface Iec61850ReportEntryRepository extends JpaRepository<Iec61850ReportEntry, Long> {
 
-    Iec61850ReportEntry findByReportIdAndDeviceIdentification(String reportId, String deviceIdentification);
+    Iec61850ReportEntry findByDeviceIdentificationAndReportId(String deviceIdentification, String reportId);
 }

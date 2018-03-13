@@ -171,9 +171,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             return;
         }
         Iec61850ReportEntry reportEntry = this.iec61850ReportEntryRepository
-                .findByReportIdAndDeviceIdentification(report.getRptId(), deviceIdentification);
+                .findByDeviceIdentificationAndReportId(deviceIdentification, report.getRptId());
         if (reportEntry == null) {
-            reportEntry = new Iec61850ReportEntry(report.getRptId(), deviceIdentification,
+            reportEntry = new Iec61850ReportEntry(deviceIdentification, report.getRptId(),
                     report.getEntryId().getValue(),
                     new Date(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET));
             this.logger.info("Store new last report entry: {}", reportEntry);

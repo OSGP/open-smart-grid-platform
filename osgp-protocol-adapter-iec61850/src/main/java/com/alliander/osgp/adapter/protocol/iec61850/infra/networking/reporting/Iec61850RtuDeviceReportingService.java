@@ -130,7 +130,7 @@ public class Iec61850RtuDeviceReportingService {
         LOGGER.debug("Resync reporting for report {} on device {}", reportId, deviceIdentification);
 
         final Iec61850ReportEntry reportEntry = this.iec61850ReportEntryRepository
-                .findByReportIdAndDeviceIdentification(reportId, deviceIdentification);
+                .findByDeviceIdentificationAndReportId(deviceIdentification, reportId);
         if (reportEntry == null) {
             LOGGER.info("Resync reporting for report {} on device {} not possible, no last report entry found",
                     reportId, deviceIdentification);
