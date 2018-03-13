@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesR
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -53,6 +54,9 @@ public class BundleService {
 
     @Autowired
     private MBusGatewayService mBusGatewayService;
+
+    @Autowired
+    private ManagementService managementService;
 
     public BundleService() {
         // Parameterless constructor required for transactions...
@@ -105,6 +109,9 @@ public class BundleService {
             if (action instanceof CoupleMbusDeviceByChannelResponseDto) {
                 this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
                         (CoupleMbusDeviceByChannelResponseDto) action);
+            } else if (action instanceof SetDeviceLifecycleStatusByChannelResponseDto) {
+                this.managementService
+                        .setDeviceLifecycleStatusByChannel((SetDeviceLifecycleStatusByChannelResponseDto) action);
             }
         }
     }
