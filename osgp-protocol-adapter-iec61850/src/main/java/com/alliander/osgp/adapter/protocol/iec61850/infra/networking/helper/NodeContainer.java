@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2014 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -21,6 +21,7 @@ import org.openmuc.openiec61850.BdaInt32U;
 import org.openmuc.openiec61850.BdaInt64;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaInt8U;
+import org.openmuc.openiec61850.BdaOctetString;
 import org.openmuc.openiec61850.BdaQuality;
 import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.BdaVisibleString;
@@ -34,6 +35,11 @@ import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteExceptio
 public class NodeContainer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeContainer.class);
+
+    private static final String DEVICE_READ_LOG_MESSAGE = "Device: {}, {} has value {}";
+    private static final String DEVICE_WRITE_LOG_MESSAGE = "Device: {}, writing {} to {}";
+    private static final String ATTRIBUTE_NULL_LOG_MESSAGE = "{} is null, most likely attribute: {} does not exist";
+    private static final String NULL_POINTER_MESSAGE = "Attribute %s of type %s is null";
 
     protected final String deviceIdentification;
     protected final DeviceConnection connection;
@@ -75,10 +81,11 @@ public class NodeContainer {
         final BdaVisibleString bdaString = (BdaVisibleString) this.parent.getChild(child.getDescription());
 
         if (bdaString == null) {
-            LOGGER.error("BdaVisibleString is null, most likely attribute: {} does not exist");
+            LOGGER.error(ATTRIBUTE_NULL_LOG_MESSAGE, "BdaVisibleString", child);
+            throw new NullPointerException(String.format(NULL_POINTER_MESSAGE, child, "BdaVisibleString"));
         }
 
-        LOGGER.info("device: {}, {} has value {}", this.deviceIdentification, child.getDescription(),
+        LOGGER.info(DEVICE_READ_LOG_MESSAGE, this.deviceIdentification, child.getDescription(),
                 bdaString.getStringValue());
         return bdaString.getStringValue();
     }
@@ -89,10 +96,22 @@ public class NodeContainer {
     public void writeString(final SubDataAttribute child, final String value) throws NodeWriteException {
         final BdaVisibleString stringNode = (BdaVisibleString) this.parent.getChild(child.getDescription());
 
-        LOGGER.info("device: {}, writing {} to {}", this.deviceIdentification, value, child.getDescription());
+        LOGGER.info(DEVICE_WRITE_LOG_MESSAGE, this.deviceIdentification, value, child.getDescription());
 
         stringNode.setValue(value);
         this.writeNode(stringNode);
+    }
+
+    /**
+     * Writes an OctetString value to the given child on the device
+     */
+    public void writeOctetString(final SubDataAttribute child, final byte[] value) throws NodeWriteException {
+        final BdaOctetString bdaOctetString = (BdaOctetString) this.parent.getChild(child.getDescription());
+
+        LOGGER.info(DEVICE_WRITE_LOG_MESSAGE, this.deviceIdentification, value, child.getDescription());
+
+        bdaOctetString.setValue(value);
+        this.writeNode(bdaOctetString);
     }
 
     /**
@@ -102,10 +121,11 @@ public class NodeContainer {
         final BdaTimestamp dBdaTimestamp = (BdaTimestamp) this.parent.getChild(child.getDescription());
 
         if (dBdaTimestamp == null) {
-            LOGGER.error("BdaTimeStamp is null, most likely attribute: {} does not exist");
+            LOGGER.error(ATTRIBUTE_NULL_LOG_MESSAGE, "BdaTimeStamp", child);
+            throw new NullPointerException(String.format(NULL_POINTER_MESSAGE, child, "BdaTimeStamp"));
         }
 
-        LOGGER.debug("device: {}, {} has value {}", this.deviceIdentification, child.getDescription(),
+        LOGGER.debug(DEVICE_READ_LOG_MESSAGE, this.deviceIdentification, child.getDescription(),
                 dBdaTimestamp.getDate());
         return dBdaTimestamp.getDate();
     }
@@ -116,7 +136,7 @@ public class NodeContainer {
     public void writeDate(final SubDataAttribute child, final Date value) throws NodeWriteException {
         final BdaTimestamp dBdaTimestamp = (BdaTimestamp) this.parent.getChild(child.getDescription());
 
-        LOGGER.info("device: {}, writing {} to {}", this.deviceIdentification, value, child.getDescription());
+        LOGGER.info(DEVICE_WRITE_LOG_MESSAGE, this.deviceIdentification, value, child.getDescription());
         dBdaTimestamp.setDate(value);
         this.writeNode(dBdaTimestamp);
     }

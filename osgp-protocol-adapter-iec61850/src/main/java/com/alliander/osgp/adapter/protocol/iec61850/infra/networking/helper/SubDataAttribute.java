@@ -69,10 +69,16 @@ public enum SubDataAttribute {
      */
     ENABLE_OPERATION("enbOper"),
     /**
-     * Property of LLN0's Node, evn_rpn01. Enables reporting. This boolean is
+     * Property of Report Control Block. Enables reporting. This boolean is
      * reset to false by the device once the reports are sent.
      */
     ENABLE_REPORTING("RptEna"),
+    /**
+     * Property of Buffered Report Control Block. Enables resyncing reporting.
+     * If entry id is set by the client, the device will start reporting at this
+     * entry id when reporting is enabled.
+     */
+    ENTRY_ID("EntryID"),
     /**
      * Attribute of the CSLC Event Buffer configuration, filter for enabled
      * event types.

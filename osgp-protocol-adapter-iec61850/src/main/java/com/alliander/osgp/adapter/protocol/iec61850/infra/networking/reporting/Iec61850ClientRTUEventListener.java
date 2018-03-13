@@ -11,23 +11,26 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.Report;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.orm.jpa.JpaOptimisticLockingFailureException;
 import org.springframework.util.CollectionUtils;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850ReportEntry;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850ReportEntryRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
@@ -37,14 +40,14 @@ import com.alliander.osgp.dto.valueobjects.microgrids.ReportDto;
 
 public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientRTUEventListener.class);
-
     private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER|WIND|PQ)";
 
     private static final Pattern REPORT_PATTERN = Pattern
             .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\.(Status|Measurements|Heartbeat)\\Z");
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
+
+    private Iec61850ReportEntryRepository iec61850ReportEntryRepository;
 
     static {
         REPORT_HANDLERS_MAP.put("RTU", Iec61850RtuReportHandler.class);
@@ -63,8 +66,10 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     }
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
-            final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
+            final DeviceManagementService deviceManagementService,
+            final Iec61850ReportEntryRepository iec61850ReportEntryRepository) {
         super(deviceIdentification, deviceManagementService, Iec61850ClientRTUEventListener.class);
+        this.iec61850ReportEntryRepository = iec61850ReportEntryRepository;
     }
 
     private Iec61850ReportHandler getReportHandler(final String dataSetRef) {
@@ -83,7 +88,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
                 return (Iec61850ReportHandler) ctor.newInstance(systemId);
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException | NoSuchMethodException ex) {
-                LOGGER.error("Unable to instantiate Iec61850ReportHandler ", ex);
+                this.logger.error("Unable to instantiate Iec61850ReportHandler ", ex);
             }
         }
         return null;
@@ -110,10 +115,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         if (Boolean.TRUE.equals(report.getBufOvfl())) {
             this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
                     reportDescription);
-        } else if (this.skipRecordBecauseOfOldSqNum(report)) {
-            this.logger.warn("Skipping report because SqNum: {} is less than what should be the first new value: {}",
-                    report.getSqNum(), this.firstNewSqNum);
-            return;
         }
 
         final Iec61850ReportHandler reportHandler = this.getReportHandler(report.getDataSetRef());
@@ -137,10 +138,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
                 report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
     }
 
-    private boolean skipRecordBecauseOfOldSqNum(final Report report) {
-        return (this.firstNewSqNum != null) && (report.getSqNum() != null) && (report.getSqNum() < this.firstNewSqNum);
-    }
-
     private void processReport(final Report report, final String reportDescription,
             final Iec61850ReportHandler reportHandler) throws ProtocolAdapterException {
         final List<FcModelNode> dataSetMembers = report.getValues();
@@ -162,6 +159,37 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
         this.deviceManagementService.sendMeasurements(this.deviceIdentification,
                 new GetDataResponseDto(systems, reportDto));
+
+        this.storeLastReportEntry(report, this.deviceIdentification);
+    }
+
+    private void storeLastReportEntry(final Report report, final String deviceIdentification) {
+        if (Objects.isNull(report.getEntryId()) || Objects.isNull(report.getTimeOfEntry())) {
+            this.logger.warn(
+                    "Not all report entry data availabe for report id {} and device identification {}, skip storing last report entry",
+                    report.getRptId(), deviceIdentification);
+            return;
+        }
+        Iec61850ReportEntry reportEntry = this.iec61850ReportEntryRepository
+                .findByDeviceIdentificationAndReportId(deviceIdentification, report.getRptId());
+        if (reportEntry == null) {
+            reportEntry = new Iec61850ReportEntry(deviceIdentification, report.getRptId(),
+                    report.getEntryId().getValue(),
+                    new Date(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET));
+            this.logger.info("Store new last report entry: {}", reportEntry);
+        } else {
+            reportEntry.updateLastReportEntry(report.getEntryId().getValue(),
+                    new Date(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET));
+            this.logger.info("Store updated last report entry: {}", reportEntry);
+        }
+        try {
+            this.iec61850ReportEntryRepository.saveAndFlush(reportEntry);
+        } catch (final JpaOptimisticLockingFailureException e) {
+            this.logger.debug("JpaOptimisticLockingFailureException", e);
+            this.logger.warn(
+                    "JPA optimistic locking failure exception while saving last report entry: {} with id {} and version {}",
+                    reportEntry, reportEntry.getId(), reportEntry.getVersion());
+        }
     }
 
     private List<MeasurementDto> processMeasurements(final Iec61850ReportHandler reportHandler,
