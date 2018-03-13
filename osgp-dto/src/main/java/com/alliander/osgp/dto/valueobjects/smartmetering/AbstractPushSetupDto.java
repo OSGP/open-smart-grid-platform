@@ -60,7 +60,8 @@ class AbstractPushSetupDto implements ActionRequestDto {
             return this;
         }
 
-        public AbstractBuilder withSendDestinationAndMethod(final SendDestinationAndMethodDto sendDestinationAndMethod) {
+        public AbstractBuilder withSendDestinationAndMethod(
+                final SendDestinationAndMethodDto sendDestinationAndMethod) {
             this.sendDestinationAndMethod = sendDestinationAndMethod;
             return this;
         }
