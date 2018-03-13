@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.Ssld;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
@@ -43,9 +41,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class DeviceInstallationService extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceInstallationService.class);
-
-    @Autowired
-    private DeviceRepository deviceRepository;
 
     /**
      * Constructor
