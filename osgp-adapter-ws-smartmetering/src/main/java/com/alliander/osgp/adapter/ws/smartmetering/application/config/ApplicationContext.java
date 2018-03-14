@@ -75,7 +75,7 @@ public class ApplicationContext extends AbstractConfig {
     }
 
     @Bean
-    public PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
         final PropertySourcesPlaceholderConfigurer propertySource = new PropertySourcesPlaceholderConfigurer();
         propertySource.setIgnoreUnresolvablePlaceholders(true);
         return propertySource;
