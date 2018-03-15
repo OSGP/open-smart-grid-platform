@@ -732,5 +732,24 @@
       <xsd:element name="LongValue" type="xsd:long" />
     </xsd:choice>
   </xsd:complexType>
+  
+  <xsd:simpleType name="DeviceLifecycleStatus">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="NEW_IN_INVENTORY" />
+      <xsd:enumeration value="READY_FOR_USE" />
+      <xsd:enumeration value="REGISTERED" />
+      <xsd:enumeration value="IN_USE" />
+      <xsd:enumeration value="RETURNED_TO_INVENTORY" />
+      <xsd:enumeration value="UNDER_TEST" />
+      <xsd:enumeration value="DESTROYED" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
+  <xsd:simpleType name="Channel">
+    <xsd:restriction base="xsd:unsignedByte">
+      <xsd:minInclusive value="1" />
+      <xsd:maxInclusive value="4" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
 </xsd:schema>
