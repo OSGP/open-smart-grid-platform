@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetDeviceLifecycleStatusByChannelCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -26,6 +27,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestList;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsManagementService")
 public class ManagementService {
@@ -34,6 +38,9 @@ public class ManagementService {
 
     @Autowired
     private RetrieveEventsCommandExecutor retrieveEventsCommandExecutor;
+
+    @Autowired
+    private SetDeviceLifecycleStatusByChannelCommandExecutor setDeviceLifecycleStatusByChannelCommandExecutor;
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
@@ -81,6 +88,15 @@ public class ManagementService {
         device.setUseHdlc(setCommunicationSettingsDataDto.isUseHdlc());
 
         return device;
+    }
+
+    public SetDeviceLifecycleStatusByChannelResponseDto setDeviceLifecycleStatusByChannel(
+            final DlmsConnectionHolder conn, final DlmsDevice device,
+            final SetDeviceLifecycleStatusByChannelRequestDataDto setDeviceLifecycleStatusByChannelRequest)
+            throws OsgpException {
+
+        return this.setDeviceLifecycleStatusByChannelCommandExecutor.execute(conn, device,
+                setDeviceLifecycleStatusByChannelRequest);
     }
 
 }
