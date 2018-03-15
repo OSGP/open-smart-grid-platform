@@ -60,7 +60,15 @@ public class SchedulingConfig extends AbstractSchedulingConfig {
 
     @Bean(destroyMethod = "shutdown")
     public Scheduler cleanupJobScheduler() throws SchedulerException {
+        return this.constructScheduler(AbstractSchedulingConfigBuilder.newBuilder()
+                .withJobClass(ResponseDataCleanupJob.class).withThreadCountKey(KEY_CLEANUP_JOB_THREAD_COUNT)
+                .withCronExpressionKey(KEY_CLEANUP_JOB_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
+                .withJobStoreDbUsername(this.databaseUsername).withJobStoreDbPassword(this.databasePassword)
+                .withJobStoreDbDriver(this.databaseDriver).build());
+    }
 
+    @Bean(destroyMethod = "shutdown")
+    public Scheduler cleanupResponseUrlDataScheduler() throws SchedulerException {
         return this.constructScheduler(AbstractSchedulingConfigBuilder.newBuilder()
                 .withJobClass(ResponseDataCleanupJob.class).withThreadCountKey(KEY_CLEANUP_JOB_THREAD_COUNT)
                 .withCronExpressionKey(KEY_CLEANUP_JOB_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
