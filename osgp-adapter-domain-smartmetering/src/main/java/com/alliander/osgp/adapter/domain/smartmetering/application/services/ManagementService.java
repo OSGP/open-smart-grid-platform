@@ -190,13 +190,6 @@ public class ManagementService {
         final SetDeviceLifecycleStatusByChannelResponseData responseData = this.managementMapper.map(responseDto,
                 SetDeviceLifecycleStatusByChannelResponseData.class);
 
-        // this.webServiceResponseMessageSender.send(
-        // new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-        // deviceMessageMetadata.getOrganisationIdentification(),
-        // gatewayDeviceIdentification, result,
-        // osgpException, responseData, deviceMessageMetadata.getMessagePriority()),
-        // deviceMessageMetadata.getMessageType());
-
         this.webServiceResponseMessageSender.send(
                 ResponseMessage.newResponseMessageBuilder()
                         .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
@@ -205,7 +198,6 @@ public class ManagementService {
                         .withOsgpException(osgpException).withDataObject(responseData)
                         .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
                 deviceMessageMetadata.getMessageType());
-
     }
 
     public void setDeviceLifecycleStatusByChannel(final SetDeviceLifecycleStatusByChannelResponseDto responseDto) {
@@ -239,13 +231,12 @@ public class ManagementService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
                 .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
                 .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-                deviceMessageMetadata.getMessageType());
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
 }
