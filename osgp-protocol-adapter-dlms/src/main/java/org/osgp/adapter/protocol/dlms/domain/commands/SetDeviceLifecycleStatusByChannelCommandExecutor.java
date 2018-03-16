@@ -49,13 +49,18 @@ public class SetDeviceLifecycleStatusByChannelCommandExecutor extends
         if (!channelElementValues.hasChannel() || !channelElementValues.hasDeviceTypeIdentification()
                 || !channelElementValues.hasManufacturerIdentification()) {
             throw new FunctionalException(FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL,
-                    ComponentType.DOMAIN_SMART_METERING);
+                    ComponentType.PROTOCOL_DLMS);
         }
 
         final DlmsDevice mbusDevice = this.dlmsDeviceRepository
                 .findByMbusIdentificationNumberAndMbusManufacturerIdentification(
                         Long.valueOf(channelElementValues.getIdentificationNumber()),
                         channelElementValues.getManufacturerIdentification());
+
+        if (mbusDevice == null) {
+            throw new FunctionalException(FunctionalExceptionType.NO_MATCHING_MBUS_DEVICE_FOUND,
+                    ComponentType.PROTOCOL_DLMS);
+        }
 
         return new SetDeviceLifecycleStatusByChannelResponseDto(gatewayDevice.getDeviceIdentification(),
                 request.getChannel(), mbusDevice.getDeviceIdentification(), request.getDeviceLifecycleStatus());
