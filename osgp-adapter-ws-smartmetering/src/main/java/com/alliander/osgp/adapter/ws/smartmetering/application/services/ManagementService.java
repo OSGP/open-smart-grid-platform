@@ -37,6 +37,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -255,6 +256,33 @@ public class ManagementService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(dataRequest).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueSetDeviceLifecycleStatusByChannelRequest(final String organisationIdentification,
+            final String deviceIdentification, final SetDeviceLifecycleStatusByChannelRequestData requestData,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL);
+
+        LOGGER.info("SetDeviceLifecycleStatusByChannel called with organisation {}", organisationIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL.toString(), messagePriority,
+                scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

@@ -52,6 +52,11 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCo
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.SetDeviceLifecycleStatusByChannelResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ManagementService;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -464,6 +469,72 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             }
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("SetDeviceCommunicationSettingsResponse Exception", e.getMessage(), e.getStackTrace(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetDeviceLifecycleStatusByChannelRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SetDeviceLifecycleStatusByChannelAsyncResponse setDeviceLifecycleStatusByChannel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetDeviceLifecycleStatusByChannelRequest request,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
+
+        LOGGER.info("Set device lifecycle status by channel request received from organisation {} for device {}",
+                organisationIdentification, request.getGatewayDeviceIdentification());
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData requestData = this.managementMapper
+                .map(request.getSetDeviceLifecycleStatusByChannelRequestData(),
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData.class);
+
+        SetDeviceLifecycleStatusByChannelAsyncResponse asyncResponse = null;
+        try {
+            final String correlationUid = this.managementService.enqueueSetDeviceLifecycleStatusByChannelRequest(
+                    organisationIdentification, request.getGatewayDeviceIdentification(), requestData,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    (this.managementMapper.map(scheduleTime, Long.class)));
+
+            asyncResponse = new SetDeviceLifecycleStatusByChannelAsyncResponse();
+
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getGatewayDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "SetDeviceLifecycleStatusByChannelAsyncRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SetDeviceLifecycleStatusByChannelResponse setDeviceLifecycleStatusByChannelResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetDeviceLifecycleStatusByChannelAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("Set device lifecycle status by channel response for organisation: {} and device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        SetDeviceLifecycleStatusByChannelResponse response = null;
+        try {
+
+            response = new SetDeviceLifecycleStatusByChannelResponse();
+
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
+
+            this.throwExceptionIfResultNotOk(responseData, "Set device lifecycle status by channel");
+
+            response.setSetDeviceLifecycleStatusByChannelResponseData(this.managementMapper
+                    .map(responseData.getMessageData(), SetDeviceLifecycleStatusByChannelResponseData.class));
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Set device lifecycle status by channel Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
