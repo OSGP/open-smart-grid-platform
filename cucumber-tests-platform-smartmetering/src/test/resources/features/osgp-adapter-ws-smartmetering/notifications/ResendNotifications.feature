@@ -19,6 +19,22 @@ Feature: SmartMetering notifications - Resend notifications
       | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
       | NumberOfNotificationsSent |                                                      1 |
 
+  Scenario: Resend missed notifications with response url
+    Given a response data record
+      | DeviceIdentification      | TEST1024000000001                                      |
+      | CreationTime              | now - 2 minutes                                        |
+      | MessageType               | REQUEST_PERIODIC_METER_DATA                            |
+      | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
+      | NumberOfNotificationsSent |                                                      0 |
+    And a response url data record
+      | CorrelationUid | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
+      | ResponseUrl    | http://localhost:8843/notifications                    |
+    When OSGP checks for which response data a notification has to be resend
+    Then a notification is sent
+    And the response url data has values
+      | CorrelationUid            | test-org\|\|\|TEST1024000000001\|\|\|20170101000000000 |
+      | ResponseUrl               | http://localhost:8843/notifications                    |
+
   Scenario: Don't send notifications when the configurable time has not passed
     Given a response data record
       | CreationTime              | now + 5 minutes                                        |

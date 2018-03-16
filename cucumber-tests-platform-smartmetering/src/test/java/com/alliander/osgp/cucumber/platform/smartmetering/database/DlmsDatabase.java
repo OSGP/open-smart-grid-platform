@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
 
 /**
  * DLMS related database steps.
@@ -29,6 +30,9 @@ public class DlmsDatabase {
 
     @Autowired
     private ResponseDataRepository responseDataRepo;
+
+    @Autowired
+    private ResponseUrlDataRepository responseUrlDataRepo;
 
     /**
      * This method is used to create default data not directly related to the
@@ -47,6 +51,7 @@ public class DlmsDatabase {
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();
         this.dlmsDeviceRepo.deleteAllInBatch();
         this.responseDataRepo.deleteAllInBatch();
+        this.responseUrlDataRepo.deleteAllInBatch();
 
         this.insertDefaultData();
     }
