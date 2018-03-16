@@ -21,6 +21,16 @@ public class DeviceMessageMetadata {
     private final Long scheduleTime;
     private boolean bypassRetry;
 
+    public DeviceMessageMetadata(final MessageMetadata metadata) {
+        this.deviceIdentification = metadata.getDeviceIdentification();
+        this.organisationIdentification = metadata.getOrganisationIdentification();
+        this.correlationUid = metadata.getCorrelationUid();
+        this.messageType = metadata.getMessageType();
+        this.messagePriority = metadata.getMessagePriority();
+        this.scheduleTime = metadata.getScheduleTime();
+        this.bypassRetry = metadata.isBypassRetry();
+    }
+
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority,
             final boolean byPassRetry) {
