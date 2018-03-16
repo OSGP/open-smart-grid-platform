@@ -22,6 +22,16 @@ class AbstractPushSetupDto implements ActionRequestDto {
     private final Integer numberOfRetries;
     private final Integer repetitionDelay;
 
+    AbstractPushSetupDto(final AbstractPushSetupDto abstractPushSetupDto) {
+        this.logicalName = abstractPushSetupDto.getLogicalName();
+        this.pushObjectList = abstractPushSetupDto.getPushObjectList();
+        this.sendDestinationAndMethod = abstractPushSetupDto.getSendDestinationAndMethod();
+        this.communicationWindow = abstractPushSetupDto.getCommunicationWindow();
+        this.randomisationStartInterval = abstractPushSetupDto.getRandomisationStartInterval();
+        this.numberOfRetries = abstractPushSetupDto.getNumberOfRetries();
+        this.repetitionDelay = abstractPushSetupDto.getRepetitionDelay();
+    }
+
     private AbstractPushSetupDto(final AbstractBuilder builder) {
         this.logicalName = builder.logicalName;
         this.pushObjectList = builder.pushObjectList;
@@ -55,7 +65,7 @@ class AbstractPushSetupDto implements ActionRequestDto {
             if (pushObjectList == null) {
                 this.pushObjectList = null;
             } else {
-                this.pushObjectList = new ArrayList<>(pushObjectList);
+                this.pushObjectList = pushObjectList;
             }
             return this;
         }
@@ -70,7 +80,7 @@ class AbstractPushSetupDto implements ActionRequestDto {
             if (communicationWindow == null) {
                 this.communicationWindow = null;
             } else {
-                this.communicationWindow = new ArrayList<>(communicationWindow);
+                this.communicationWindow = communicationWindow;
             }
             this.communicationWindow = communicationWindow;
             return this;
@@ -97,16 +107,6 @@ class AbstractPushSetupDto implements ActionRequestDto {
 
     public static AbstractBuilder newBuilder() {
         return new AbstractBuilder();
-    }
-
-    AbstractPushSetupDto(final AbstractPushSetupDto abstractPushSetupDto) {
-        this.logicalName = abstractPushSetupDto.getLogicalName();
-        this.pushObjectList = abstractPushSetupDto.getPushObjectList();
-        this.sendDestinationAndMethod = abstractPushSetupDto.getSendDestinationAndMethod();
-        this.communicationWindow = abstractPushSetupDto.getCommunicationWindow();
-        this.randomisationStartInterval = abstractPushSetupDto.getRandomisationStartInterval();
-        this.numberOfRetries = abstractPushSetupDto.getNumberOfRetries();
-        this.repetitionDelay = abstractPushSetupDto.getRepetitionDelay();
     }
 
     static void checkRandomisationStartInterval(final Integer randomisationStartInterval) {

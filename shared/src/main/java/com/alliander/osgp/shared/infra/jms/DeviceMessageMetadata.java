@@ -21,6 +21,53 @@ public class DeviceMessageMetadata {
     private final Long scheduleTime;
     private boolean bypassRetry;
 
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final int messagePriority,
+            final boolean byPassRetry) {
+
+        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
+                .withOrganisationIdentification(organisationIdentification).withCorrelationUid(correlationUid)
+                .withMessageType(messageType).withMessagePriority(messagePriority).withBypassRetry(byPassRetry));
+    }
+
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final int messagePriority) {
+
+        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
+                .withOrganisationIdentification(organisationIdentification).withCorrelationUid(correlationUid)
+                .withMessageType(messageType).withMessagePriority(messagePriority));
+    }
+
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime) {
+
+        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
+                .withOrganisationIdentification(organisationIdentification).withCorrelationUid(correlationUid)
+                .withMessageType(messageType).withMessagePriority(messagePriority).withScheduleTime(scheduleTime));
+    }
+
+    public DeviceMessageMetadata(final Message message) throws JMSException {
+
+        this(DeviceMessageMetadata.newBuilder()
+                .withDeviceIdentification(message.getStringProperty(Constants.DEVICE_IDENTIFICATION))
+                .withOrganisationIdentification(message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION))
+                .withCorrelationUid(message.getJMSCorrelationID()).withMessageType(message.getJMSType())
+                .withMessagePriority(message.getJMSPriority())
+                .withScheduleTime(message.propertyExists(Constants.SCHEDULE_TIME)
+                        ? message.getLongProperty(Constants.SCHEDULE_TIME)
+                        : null)
+                .withBypassRetry(message.propertyExists(Constants.BYPASS_RETRY)
+                        ? message.getBooleanProperty(Constants.BYPASS_RETRY)
+                        : false));
+    }
+
+    public DeviceMessageMetadata(final ProtocolResponseMessage message) {
+        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(message.getDeviceIdentification())
+                .withOrganisationIdentification(message.getOrganisationIdentification())
+                .withCorrelationUid(message.getCorrelationUid()).withMessageType(message.getMessageType())
+                .withMessagePriority(message.getMessagePriority()));
+    }
+
     private DeviceMessageMetadata(final Builder builder) {
         this.deviceIdentification = builder.deviceIdentification;
         this.organisationIdentification = builder.organisationIdentification;
@@ -83,54 +130,6 @@ public class DeviceMessageMetadata {
 
     public static Builder newBuilder() {
         return new Builder();
-    }
-
-    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority,
-            final boolean byPassRetry) {
-
-        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
-                .withOrganisationIdentification(organisationIdentification).withCorrelationUid(correlationUid)
-                .withMessageType(messageType).withMessagePriority(messagePriority).withBypassRetry(byPassRetry));
-    }
-
-    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority) {
-
-        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
-                .withOrganisationIdentification(organisationIdentification).withCorrelationUid(correlationUid)
-                .withMessageType(messageType).withMessagePriority(messagePriority));
-    }
-
-    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime) {
-
-        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
-                .withOrganisationIdentification(organisationIdentification).withCorrelationUid(correlationUid)
-                .withMessageType(messageType).withMessagePriority(messagePriority).withScheduleTime(scheduleTime));
-    }
-
-    public DeviceMessageMetadata(final Message message) throws JMSException {
-
-        this(DeviceMessageMetadata.newBuilder()
-                .withDeviceIdentification(message.getStringProperty(Constants.DEVICE_IDENTIFICATION))
-                .withOrganisationIdentification(message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION))
-                .withCorrelationUid(message.getJMSCorrelationID()).withMessageType(message.getJMSType())
-                .withMessagePriority(message.getJMSPriority())
-                .withScheduleTime(message.propertyExists(Constants.SCHEDULE_TIME)
-                        ? message.getLongProperty(Constants.SCHEDULE_TIME)
-                        : null)
-                .withBypassRetry(message.propertyExists(Constants.BYPASS_RETRY)
-                        ? message.getBooleanProperty(Constants.BYPASS_RETRY)
-                        : false));
-    }
-
-    public DeviceMessageMetadata(final ProtocolResponseMessage message) {
-
-        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(message.getDeviceIdentification())
-                .withOrganisationIdentification(message.getOrganisationIdentification())
-                .withCorrelationUid(message.getCorrelationUid()).withMessageType(message.getMessageType())
-                .withMessagePriority(message.getMessagePriority()));
     }
 
     public String getDeviceIdentification() {
