@@ -131,3 +131,30 @@ Feature: SmartMetering Management
       | RETURNED_TO_INVENTORY |
       | UNDER_TEST            |
       | DESTROYED             |
+
+  Scenario Outline: Set M-Bus device lifecycle status by channel, no matching device in database
+    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
+      |  5 | unsigned             |         9 |
+      |  6 | double-long-unsigned | 302343985 |
+      |  7 | long-unsigned        |     12514 |
+      |  8 | unsigned             |        66 |
+      |  9 | unsigned             |         3 |
+      | 14 | enumerate            |         4 |
+    When a set device lifecycle status by channel request is received
+      | DeviceIdentification  | TEST1024000000001 |
+      | Channel               |                 1 |
+      | DeviceLifecycleStatus | <Status>          |
+    Then set device lifecycle status by channel request should return an exception
+    And a SOAP fault should have been returned
+      | Code    |                           218 |
+      | Message | NO_MATCHING_MBUS_DEVICE_FOUND |
+
+    Examples: 
+      | Status                |
+      | NEW_IN_INVENTORY      |
+      | READY_FOR_USE         |
+      | REGISTERED            |
+      | IN_USE                |
+      | RETURNED_TO_INVENTORY |
+      | UNDER_TEST            |
+      | DESTROYED             |
