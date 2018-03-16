@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.util.List;
 
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -38,6 +39,10 @@ public class GetConfigurationObjectHelper {
     public static final int CLASS_ID = InterfaceClass.DATA.id();
     public static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
     public static final int ATTRIBUTE_ID = DataAttribute.VALUE.attributeId();
+
+    public static final int NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS = 2;
+    public static final int INDEX_OF_GPRS_OPERATION_MODE = 0;
+    public static final int INDEX_OF_CONFIGURATION_FLAGS = 1;
 
     @Autowired
     private ConfigurationObjectHelperService configurationObjectHelperService;
@@ -70,6 +75,9 @@ public class GetConfigurationObjectHelper {
 
         if (getResult == null) {
             throw new ProtocolAdapterException("No result received while retrieving current configuration object.");
+        } else if (getResult.getResultCode() != AccessResultCode.SUCCESS) {
+            throw new ProtocolAdapterException(
+                    "Non-sucessful result received retrieving configuration object: " + getResult.getResultCode());
         }
 
         return this.getConfigurationObject(getResult);
@@ -78,51 +86,60 @@ public class GetConfigurationObjectHelper {
     private ConfigurationObjectDto getConfigurationObject(final GetResult result) throws ProtocolAdapterException {
 
         final DataObject resultData = result.getResultData();
+        if (resultData == null || !resultData.isComplex()) {
+            LOGGER.warn("Configuration object result data is not complex: {}", resultData);
+            throw new ProtocolAdapterException("No complex result data received retrieving configuration object.");
+        }
         LOGGER.info("Configuration object current complex data: {}", this.dlmsHelperService.getDebugInfo(resultData));
+        final List<DataObject> elements = resultData.getValue();
 
-        final List<DataObject> linkedList = resultData.getValue();
-
-        if (linkedList == null || linkedList.isEmpty()) {
-            throw new ProtocolAdapterException(
-                    "Expected data in result while retrieving current configuration object, but got nothing");
+        if (elements == null || elements.size() != NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS) {
+            LOGGER.warn("Unexpected configuration object structure elements: {}", elements);
+            throw new ProtocolAdapterException("Expected configuration object result data structure to have "
+                    + NUMBER_OF_CONFIGURATION_OBJECT_ELEMENTS + " elements, but got "
+                    + (elements == null ? 0 : elements.size()));
         }
 
-        final GprsOperationModeTypeDto gprsOperationMode = this.getGprsOperationModeType(linkedList);
-        final ConfigurationFlagsDto configurationFlags = this.getConfigurationFlags(linkedList, resultData);
+        final GprsOperationModeTypeDto gprsOperationMode = this
+                .getGprsOperationModeType(elements.get(INDEX_OF_GPRS_OPERATION_MODE));
+        final ConfigurationFlagsDto configurationFlags = this
+                .getConfigurationFlags(elements.get(INDEX_OF_CONFIGURATION_FLAGS));
         return new ConfigurationObjectDto(gprsOperationMode, configurationFlags);
     }
 
-    private GprsOperationModeTypeDto getGprsOperationModeType(final List<DataObject> linkedList)
+    private GprsOperationModeTypeDto getGprsOperationModeType(final DataObject gprsOperationModeData)
             throws ProtocolAdapterException {
 
-        final DataObject gprsOperationModeData = linkedList.get(0);
-        if (gprsOperationModeData == null) {
+        if (gprsOperationModeData == null || !gprsOperationModeData.isNumber()) {
+            LOGGER.warn("GPRS operation mode data is not numerical: {}", gprsOperationModeData);
             throw new ProtocolAdapterException(
-                    "Expected Gprs operation mode data in result while retrieving current configuration object, but got nothing");
+                    "Expected enum data as GPRS operation mode of configuration object structure elements, but got: "
+                            + (gprsOperationModeData == null ? "null" : gprsOperationModeData.getType()));
         }
-        GprsOperationModeTypeDto gprsOperationMode = null;
+        final GprsOperationModeTypeDto gprsOperationMode;
         final Number number = gprsOperationModeData.getValue();
-        if (number.longValue() == 1) {
+        if (number.intValue() == GprsOperationModeTypeDto.ALWAYS_ON.getValue()) {
             gprsOperationMode = GprsOperationModeTypeDto.ALWAYS_ON;
-        } else if (number.longValue() == 2) {
+        } else if (number.intValue() == GprsOperationModeTypeDto.TRIGGERED.getValue()) {
             gprsOperationMode = GprsOperationModeTypeDto.TRIGGERED;
+        } else {
+            LOGGER.warn("Expected GPRS operation mode value to be one of [{}, {}], but got: {}",
+                    GprsOperationModeTypeDto.ALWAYS_ON.getValue(), GprsOperationModeTypeDto.TRIGGERED.getValue(),
+                    number);
+            gprsOperationMode = null;
         }
 
         return gprsOperationMode;
     }
 
-    private ConfigurationFlagsDto getConfigurationFlags(final List<DataObject> linkedList, final DataObject resultData)
-            throws ProtocolAdapterException {
-        final DataObject flagsData = linkedList.get(1);
+    private ConfigurationFlagsDto getConfigurationFlags(final DataObject flagsData) throws ProtocolAdapterException {
+        if (flagsData == null || !flagsData.isBitString()) {
+            LOGGER.warn("Configuration flags data is not a BitString: {}", flagsData);
+            throw new ProtocolAdapterException(
+                    "Expected bit-string data as flags of configuration object structure elements, but got: "
+                            + (flagsData == null ? "null" : flagsData.getType()));
+        }
 
-        if (flagsData == null) {
-            throw new ProtocolAdapterException(
-                    "Expected flag bit data in result while retrieving current configuration object, but got nothing");
-        }
-        if (!(flagsData.getValue() instanceof BitString)) {
-            throw new ProtocolAdapterException(
-                    "Value in DataObject is not a BitString: " + resultData.getValue().getClass().getName());
-        }
         final BitString bitString = flagsData.getValue();
         final byte[] flagByteArray = bitString.getBitString();
 
