@@ -20,6 +20,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
@@ -164,40 +165,28 @@ public class SimulatorTriggerClient extends AbstractClient {
 
     public void sendTrigger(final DlmsDevice simulatedDlmsDevice) throws SimulatorTriggerClientException {
 
-        final Response response = this.getWebClientInstance().path(TRIGGERPATH)
-                .query("port", simulatedDlmsDevice.getPort()).query("logicalId", simulatedDlmsDevice.getLogicalId())
-                .get();
-
-        try {
-            this.checkResponseStatus(response);
-        } catch (final ResponseException e) {
-            throw new SimulatorTriggerClientException("sendTrigger response exception", e);
-        }
-
+        this.checkResponse(this.getWebClientInstance().path(TRIGGERPATH).query("port", simulatedDlmsDevice.getPort())
+                .query("logicalId", simulatedDlmsDevice.getLogicalId()).get(), "sendTrigger");
     }
 
     public void clearDlmsAttributeValues() throws SimulatorTriggerClientException {
 
-        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).delete();
-
-        try {
-            this.checkResponseStatus(response);
-        } catch (final ResponseException e) {
-            throw new SimulatorTriggerClientException("clearDlmsAttributeValues response exception", e);
-        }
+        this.checkResponse(this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).delete(),
+                "clearDlmsAttributeValues");
     }
 
     public void setDlmsAttributeValues(final int classId, final ObisCode obisCode, final ObjectNode jsonAttributeValues)
             throws SimulatorTriggerClientException {
 
-        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(classId)
-                .path(obisCode.asDecimalString()).put(jsonAttributeValues);
+        this.checkResponse(this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(classId)
+                .path(obisCode.asDecimalString()).put(jsonAttributeValues), "setDlmsAttributeValues");
+    }
 
-        try {
-            this.checkResponseStatus(response);
-        } catch (final ResponseException e) {
-            throw new SimulatorTriggerClientException("setDlmsAttributeValues response exception", e);
-        }
+    public void setDlmsAttributeValue(final int classId, final ObisCode obisCode, final int attributeId,
+            final ObjectNode jsonAttributeValue) throws SimulatorTriggerClientException {
+
+        this.checkResponse(this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(classId)
+                .path(obisCode.asDecimalString()).path(attributeId).put(jsonAttributeValue), "setDlmsAttributeValue");
     }
 
     public ObjectNode getDlmsAttributeValues(final int classId, final ObisCode obisCode)
@@ -206,12 +195,34 @@ public class SimulatorTriggerClient extends AbstractClient {
         final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(classId)
                 .path(obisCode.asDecimalString()).get();
 
+        this.checkResponse(response, "getDlmsAttributeValues");
+        if (Status.NO_CONTENT.getStatusCode() == response.getStatus()) {
+            return null;
+        }
+        return response.readEntity(ObjectNode.class);
+    }
+
+    public ObjectNode getDlmsAttributeValue(final int classId, final ObisCode obisCode, final int attributeId)
+            throws SimulatorTriggerClientException {
+
+        final Response response = this.getWebClientInstance().path(DYNAMIC_ATTRIBUTES_PATH).path(classId)
+                .path(obisCode.asDecimalString()).path(attributeId).get();
+
+        this.checkResponse(response, "getDlmsAttributeValue");
+        if (Status.NO_CONTENT.getStatusCode() == response.getStatus()) {
+            return null;
+        }
+        return response.readEntity(ObjectNode.class);
+    }
+
+    private void checkResponse(final Response response, final String checkedFrom)
+            throws SimulatorTriggerClientException {
+
         try {
             this.checkResponseStatus(response);
         } catch (final ResponseException e) {
-            throw new SimulatorTriggerClientException("getDlmsAttributeValues response exception", e);
+            throw new SimulatorTriggerClientException("Response exception from " + checkedFrom, e);
         }
-        return response.readEntity(ObjectNode.class);
     }
 
     private void checkResponseStatus(final Response response) throws ResponseException {
@@ -220,10 +231,9 @@ public class SimulatorTriggerClient extends AbstractClient {
             throw new ResponseException(RESPONSE_IS_NULL);
         }
 
-        final int httpStatusCode = response.getStatus();
-        if (httpStatusCode != 200) {
-            throw new ResponseException(HTTP_STATUS_IS_NOT_200 + httpStatusCode);
+        if (Status.Family.SUCCESSFUL != response.getStatusInfo().getFamily()) {
+            throw new ResponseException(HTTP_STATUS_IS_NOT_200 + response.getStatus());
         }
-
     }
+
 }
