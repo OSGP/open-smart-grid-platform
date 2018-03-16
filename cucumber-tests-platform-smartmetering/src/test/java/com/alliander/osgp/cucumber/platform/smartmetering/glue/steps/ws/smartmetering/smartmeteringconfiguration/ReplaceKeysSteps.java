@@ -40,15 +40,14 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
 
     @When("^the replace keys request is received$")
     public void theReplaceKeysRequestIsReceived(final Map<String, String> settings) throws Throwable {
-
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
                 settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY, settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
-
+        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY,
+                settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
         final ReplaceKeysRequest request = ReplaceKeysRequestFactory.fromParameterMap(settings);
         final ReplaceKeysAsyncResponse asyncResponse = this.smartMeteringConfigurationClient.replaceKeys(request);
-
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
@@ -57,29 +56,36 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
                 PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+        try {
+            final ReplaceKeysAsyncRequest replaceKeysAsyncRequest = ReplaceKeysRequestFactory
+                    .fromParameterMapAsync(extendedParameters);
 
-        final ReplaceKeysAsyncRequest replaceKeysAsyncRequest = ReplaceKeysRequestFactory
-                .fromParameterMapAsync(extendedParameters);
+            final ReplaceKeysResponse response = this.smartMeteringConfigurationClient
+                    .getReplaceKeysResponse(replaceKeysAsyncRequest);
 
-        final ReplaceKeysResponse response = this.smartMeteringConfigurationClient
-                .getReplaceKeysResponse(replaceKeysAsyncRequest);
+            final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
+            assertNotNull("Result", response.getResult());
+            assertEquals("Result", expectedResult, response.getResult().name());
 
-        final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
-        assertNotNull("Result", response.getResult());
-        assertEquals("Result", expectedResult, response.getResult().name());
+        } catch (final Exception exception) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
+        }
     }
 
     @When("^the generate and replace keys request is received$")
     public void theGenerateAndReplaceKeysRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         final GenerateAndReplaceKeysRequest request = GenerateAndReplaceKeysRequestFactory.fromParameterMap(settings);
-        final GenerateAndReplaceKeysAsyncResponse asyncResponse = this.smartMeteringConfigurationClient.generateAndReplaceKeys(request);
+        final GenerateAndReplaceKeysAsyncResponse asyncResponse = this.smartMeteringConfigurationClient
+                .generateAndReplaceKeys(request);
 
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
     @Then("^the generate and replace keys response should be returned$")
-    public void theGenerateAndReplaceKeysResponseShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
+    public void theGenerateAndReplaceKeysResponseShouldBeReturned(final Map<String, String> responseParameters)
+            throws Throwable {
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
                 PlatformKeys.KEY_CORRELATION_UID, correlationUid);
