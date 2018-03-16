@@ -89,13 +89,8 @@ public class GetFirmwareFileMessageProcessor extends ProtocolRequestMessageProce
     private void sendSuccesResponse(final MessageMetadata metadata, final ProtocolInfo protocolInfo,
             final FirmwareFileDto firmwareFileDto) {
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                metadata.getDeviceIdentification(), metadata.getOrganisationIdentification(),
-                metadata.getCorrelationUid(), metadata.getMessageType(), metadata.getMessagePriority(),
-                metadata.getScheduleTime());
-
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).domain(metadata.getDomain())
+                .deviceMessageMetadata(new DeviceMessageMetadata(metadata)).domain(metadata.getDomain())
                 .domainVersion(metadata.getDomainVersion()).result(ResponseMessageResultType.OK).osgpException(null)
                 .dataObject(firmwareFileDto).retryCount(metadata.getRetryCount()).scheduled(metadata.isScheduled())
                 .build();

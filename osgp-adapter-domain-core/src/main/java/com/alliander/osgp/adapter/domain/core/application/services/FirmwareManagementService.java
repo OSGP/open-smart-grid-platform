@@ -97,10 +97,11 @@ public class FirmwareManagementService extends AbstractService {
                     "Exception occurred while getting device firmware version", e);
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject((Serializable) firmwareVersions).build());
+                .withDataObject((Serializable) firmwareVersions).build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     // === SWITCH TO OTHER FIRMWARE VERSION ===

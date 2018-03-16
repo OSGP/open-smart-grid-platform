@@ -150,11 +150,12 @@ public class AdHocManagementService extends AbstractService {
             }
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(response.getResult())
                 .withOsgpException(response.getOsgpException()).withDataObject(response.getDeviceStatusMapped())
-                .build());
+                .build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     private void handleLmd(final DeviceStatus status, final GetStatusResponse response) {

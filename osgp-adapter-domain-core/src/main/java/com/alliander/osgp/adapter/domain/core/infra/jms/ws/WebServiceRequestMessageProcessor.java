@@ -109,9 +109,10 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
         } else {
             osgpException = new TechnicalException(ComponentType.DOMAIN_CORE, "An unknown error occurred", e);
         }
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.NOT_OK)
-                .withOsgpException(osgpException).withDataObject(e).build());
+                .withOsgpException(osgpException).withDataObject(e).build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 }

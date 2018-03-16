@@ -45,9 +45,10 @@ public class DefaultDeviceResponseService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .build());
+                .build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 }

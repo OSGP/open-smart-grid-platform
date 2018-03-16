@@ -124,10 +124,11 @@ public class AdHocManagementService extends AbstractService {
             }
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(deviceStatusMapped).build());
+                .withDataObject(deviceStatusMapped).build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     /**

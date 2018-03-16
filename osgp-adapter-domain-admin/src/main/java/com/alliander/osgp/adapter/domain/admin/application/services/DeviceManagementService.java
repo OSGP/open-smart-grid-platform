@@ -104,10 +104,11 @@ public class DeviceManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while updating key", e);
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
-                .build());
+                .build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     // === REVOKE KEY ===
@@ -165,10 +166,11 @@ public class DeviceManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while revoking key", e);
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
-                .build());
+                .build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     public void activateDevice(final String organisationIdentification,

@@ -162,11 +162,12 @@ public class DeviceMonitoringService extends AbstractService {
                     "Exception occurred while getting device power usage history", e);
         }
 
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result)
+                .withOsgpException(osgpException).withDataObject(powerUsageHistoryResponse).build();
         this.webServiceResponseMessageSender.send(
-                ResponseMessage.newResponseMessageBuilder().withCorrelationUid(correlationUid)
-                        .withOrganisationIdentification(organisationIdentification)
-                        .withDeviceIdentification(deviceIdentification).withResult(result)
-                        .withOsgpException(osgpException).withDataObject(powerUsageHistoryResponse).build(),
+                responseMessage,
                 this.getPowerUsageHistoryResponseTimeToLive);
     }
 }

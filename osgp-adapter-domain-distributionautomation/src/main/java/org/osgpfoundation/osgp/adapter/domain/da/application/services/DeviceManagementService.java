@@ -86,9 +86,10 @@ public class DeviceManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while getting Health Status Response Data");
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
-                .withDataObject(getHealthStatusResponse).build(), messageType);
+                .withDataObject(getHealthStatusResponse).build();
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }

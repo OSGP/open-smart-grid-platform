@@ -166,10 +166,11 @@ public class ConfigurationManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, e.getMessage(), e);
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(configuration).build());
+                .withDataObject(configuration).build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     public void switchConfiguration(final String organisationIdentification, final String deviceIdentification,

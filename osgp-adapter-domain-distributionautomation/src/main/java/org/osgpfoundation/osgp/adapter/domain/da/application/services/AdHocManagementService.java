@@ -86,9 +86,10 @@ public class AdHocManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while getting Device Model Response Data");
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(getDeviceModelResponse).build(), messageType);
+                .withDataObject(getDeviceModelResponse).build();
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }

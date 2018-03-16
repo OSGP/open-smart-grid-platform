@@ -112,9 +112,10 @@ public class MonitoringService extends BaseService {
             actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
         }
 
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(getPQValuesResponse).build(), messageType);
+                .withDataObject(getPQValuesResponse).build();
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }

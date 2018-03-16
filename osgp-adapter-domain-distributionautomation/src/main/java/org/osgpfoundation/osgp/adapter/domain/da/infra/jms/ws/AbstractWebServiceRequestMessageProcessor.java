@@ -106,9 +106,10 @@ public abstract class AbstractWebServiceRequestMessageProcessor implements Messa
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
         final OsgpException osgpException = new TechnicalException(ComponentType.UNKNOWN, "An unknown error occurred",
                 e);
-        this.webServiceResponseMessageSender.send(ResponseMessage.newResponseMessageBuilder()
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.NOT_OK)
-                .withOsgpException(osgpException).withDataObject(e).build(), messageType);
+                .withOsgpException(osgpException).withDataObject(e).build();
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }
