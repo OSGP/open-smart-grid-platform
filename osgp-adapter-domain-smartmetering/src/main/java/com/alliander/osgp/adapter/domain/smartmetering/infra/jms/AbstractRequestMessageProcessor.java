@@ -50,14 +50,13 @@ public abstract class AbstractRequestMessageProcessor {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), deviceMessageMetadata.getMessageType());
         final OsgpException osgpException = this.ensureOsgpException(e, errorMessage);
 
-        this.webServiceResponseMessageSender.send(
-                ResponseMessage.newResponseMessageBuilder()
-                        .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                        .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                        .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                        .withResult(ResponseMessageResultType.NOT_OK).withOsgpException(osgpException)
-                        .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
-                deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(ResponseMessageResultType.NOT_OK).withOsgpException(osgpException)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     protected OsgpException ensureOsgpException(final Exception e, final String errorMessage) {

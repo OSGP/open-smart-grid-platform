@@ -907,13 +907,14 @@ public class ConfigurationService {
         final EncryptionKeyStatusType encryptionKeyStatusType = EncryptionKeyStatusType
                 .valueOf(getMbusEncryptionKeyStatusByChannelResponseDto.getEncryptionKeyStatus().name());
 
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(resultType).withOsgpException(exception).withDataObject(encryptionKeyStatusType)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
         this.webServiceResponseMessageSender.send(
-                ResponseMessage.newResponseMessageBuilder()
-                        .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                        .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                        .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                        .withResult(resultType).withOsgpException(exception).withDataObject(encryptionKeyStatusType)
-                        .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
+                responseMessage,
                 deviceMessageMetadata.getMessageType());
     }
 }

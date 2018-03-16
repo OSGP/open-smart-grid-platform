@@ -141,17 +141,14 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-         this.webServiceResponseMessageSender.send(
-         ResponseMessage.newResponseMessageBuilder()
-         .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-         .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-         .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-         .withOsgpException(exception)
-         .withDataObject(
-         this.monitoringMapper.map(periodMeterReadsValueDTO,
-         PeriodicMeterReadsContainer.class))
-         .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
-         deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(this.monitoringMapper.map(periodMeterReadsValueDTO, PeriodicMeterReadsContainer.class))
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void handlePeriodicMeterReadsresponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -166,16 +163,15 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-         this.webServiceResponseMessageSender.send(
-         ResponseMessage.newResponseMessageBuilder()
-         .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-         .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-         .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-         .withOsgpException(exception)
-         .withDataObject(this.monitoringMapper.map(periodMeterReadsValueDTO,
-         PeriodicMeterReadsContainerGas.class))
-         .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
-         deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(
+                        this.monitoringMapper.map(periodMeterReadsValueDTO, PeriodicMeterReadsContainerGas.class))
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void requestActualMeterReads(final DeviceMessageMetadata deviceMessageMetadata,
@@ -241,16 +237,14 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-         this.webServiceResponseMessageSender.send(
-         ResponseMessage.newResponseMessageBuilder()
-         .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-         .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-         .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-         .withOsgpException(exception)
-         .withDataObject(this.monitoringMapper.map(actualMeterReadsDto,
-         MeterReads.class))
-         .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
-         deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(this.monitoringMapper.map(actualMeterReadsDto, MeterReads.class))
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void handleActualMeterReadsResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -265,16 +259,14 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-         this.webServiceResponseMessageSender.send(
-         ResponseMessage.newResponseMessageBuilder()
-         .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-         .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-         .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-         .withOsgpException(exception)
-         .withDataObject(this.monitoringMapper.map(actualMeterReadsGas,
-         MeterReadsGas.class))
-         .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
-         deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(this.monitoringMapper.map(actualMeterReadsGas, MeterReadsGas.class))
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void requestReadAlarmRegister(final DeviceMessageMetadata deviceMessageMetadata,
@@ -310,14 +302,13 @@ public class MonitoringService {
 
         final AlarmRegister alarmRegisterValueDomain = this.monitoringMapper.map(alarmRegisterDto, AlarmRegister.class);
 
-         this.webServiceResponseMessageSender.send(
-         ResponseMessage.newResponseMessageBuilder()
-         .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-         .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-         .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-         .withOsgpException(exception).withDataObject(alarmRegisterValueDomain)
-         .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
-         deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception).withDataObject(alarmRegisterValueDomain)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void requestProfileGenericData(final DeviceMessageMetadata deviceMessageMetadata,
@@ -352,18 +343,16 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-         final ProfileGenericDataResponse profileGenericDataResponse =
-         this.monitoringMapper
-         .map(profileGenericDataResponseDto, ProfileGenericDataResponse.class);
-        
-         this.webServiceResponseMessageSender.send(
-         ResponseMessage.newResponseMessageBuilder()
-         .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-         .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-         .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-         .withOsgpException(exception).withDataObject(profileGenericDataResponse)
-         .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
-         deviceMessageMetadata.getMessageType());
+        final ProfileGenericDataResponse profileGenericDataResponse = this.monitoringMapper
+                .map(profileGenericDataResponseDto, ProfileGenericDataResponse.class);
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception).withDataObject(profileGenericDataResponse)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void requestClearAlarmRegister(final DeviceMessageMetadata deviceMessageMetadata,
@@ -402,12 +391,11 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-         ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-         .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-         .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-         .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
-         .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage,
-         deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }

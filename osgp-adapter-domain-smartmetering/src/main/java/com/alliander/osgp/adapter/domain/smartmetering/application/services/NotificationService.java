@@ -45,13 +45,12 @@ public class NotificationService {
          * it can be handled similar to response messages based on earlier web service
          * requests.
          */
-        this.webServiceResponseMessageSender.send(
-                ResponseMessage.newResponseMessageBuilder()
-                        .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                        .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                        .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                        .withResult(ResponseMessageResultType.OK).withDataObject(pushNotificationAlarmDomain)
-                        .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
-                deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(ResponseMessageResultType.OK).withDataObject(pushNotificationAlarmDomain)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }
