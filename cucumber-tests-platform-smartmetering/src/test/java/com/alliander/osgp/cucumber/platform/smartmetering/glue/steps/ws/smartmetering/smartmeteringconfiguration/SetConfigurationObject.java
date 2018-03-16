@@ -57,10 +57,6 @@ public class SetConfigurationObject {
         final SetConfigurationObjectResponse setConfigurationObjectResponse = this.smartMeteringConfigurationClient
                 .retrieveSetConfigurationObjectResponse(setConfigurationObjectAsyncRequest);
 
-        LOGGER.info("Set configuration object result is: {}", setConfigurationObjectResponse.getResult());
-
-        assertNotNull("Set configuration object result is null", setConfigurationObjectResponse.getResult());
-        assertEquals("Set configuration object result should be OK", OsgpResultType.OK,
-                setConfigurationObjectResponse.getResult());
+        assertEquals("Set configuration object result", OsgpResultType.OK, setConfigurationObjectResponse.getResult());
     }
 }
