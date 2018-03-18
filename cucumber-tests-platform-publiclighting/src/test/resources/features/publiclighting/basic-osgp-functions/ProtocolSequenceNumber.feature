@@ -26,19 +26,6 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
 
     Examples: 
       | Protocol    | AddNumberToSequenceNumber |
-      | OSLP        |                        -5 |
-      | OSLP        |                        -4 |
-      | OSLP        |                        -3 |
-      | OSLP        |                        -2 |
-      | OSLP        |                        -1 |
-      | OSLP        |                         0 |
-      | OSLP        |                         1 |
-      | OSLP        |                         2 |
-      | OSLP        |                         3 |
-      | OSLP        |                         4 |
-      | OSLP        |                         5 |
-      | OSLP        |                         6 |
-      | OSLP        |                         7 |
       | OSLP ELSTER |                        -5 |
       | OSLP ELSTER |                        -4 |
       | OSLP ELSTER |                        -3 |
@@ -75,10 +62,6 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
 
     Examples: 
       | Protocol    | AddNumberToSequenceNumber |
-      | OSLP        |                        -7 |
-      | OSLP        |                        -6 |
-      | OSLP        |                         8 |
-      | OSLP        |                         9 |
       | OSLP ELSTER |                        -7 |
       | OSLP ELSTER |                        -6 |
       | OSLP ELSTER |                         8 |
@@ -103,18 +86,6 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
 
     Examples: 
       | Protocol    | SequenceNumber | Status |
-      | OSLP        |             -5 | OK     |
-      | OSLP        |             -4 | OK     |
-      | OSLP        |             -3 | OK     |
-      | OSLP        |             -2 | OK     |
-      | OSLP        |             -1 | OK     |
-      | OSLP        |              0 | OK     |
-      | OSLP        |              1 | OK     |
-      | OSLP        |              2 | OK     |
-      | OSLP        |              3 | OK     |
-      | OSLP        |              4 | OK     |
-      | OSLP        |              5 | OK     |
-      | OSLP        |              6 | OK     |
       | OSLP ELSTER |             -5 | OK     |
       | OSLP ELSTER |             -4 | OK     |
       | OSLP ELSTER |             -3 | OK     |
@@ -143,10 +114,6 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
 
     Examples: 
       | Protocol    | SequenceNumber | Status   |
-      | OSLP        |             -7 | REJECTED |
-      | OSLP        |             -6 | REJECTED |
-      | OSLP        |              8 | REJECTED |
-      | OSLP        |              9 | REJECTED |
       | OSLP ELSTER |             -7 | REJECTED |
       | OSLP ELSTER |             -6 | REJECTED |
       | OSLP ELSTER |              8 | REJECTED |

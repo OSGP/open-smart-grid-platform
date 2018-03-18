@@ -25,10 +25,6 @@ Feature: FirmwareManagement get firmware
 
     Examples: 
       | Protocol    | Firmware Version |
-      | OSLP        | R01              |
-      | OSLP        | R02              |
-      | OSLP        |                  |
-      | OSLP        |             0123 |
       | OSLP ELSTER | R01              |
       | OSLP ELSTER | R02              |
       | OSLP ELSTER |                  |

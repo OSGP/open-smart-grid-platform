@@ -25,7 +25,6 @@ Feature: FirmwareManagement update firmware
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   Scenario: Update the firmware for an unknown firmware

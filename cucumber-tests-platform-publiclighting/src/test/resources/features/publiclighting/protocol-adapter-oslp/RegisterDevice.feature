@@ -27,7 +27,6 @@ Feature: ProtocolAdapterOSLP Device Registration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -59,7 +58,6 @@ Feature: ProtocolAdapterOSLP Device Registration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -91,7 +89,6 @@ Feature: ProtocolAdapterOSLP Device Registration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -131,7 +128,6 @@ Feature: ProtocolAdapterOSLP Device Registration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -143,7 +139,6 @@ Feature: ProtocolAdapterOSLP Device Registration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -157,7 +152,6 @@ Feature: ProtocolAdapterOSLP Device Registration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -173,7 +167,6 @@ Feature: ProtocolAdapterOSLP Device Registration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -189,5 +182,4 @@ Feature: ProtocolAdapterOSLP Device Registration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |

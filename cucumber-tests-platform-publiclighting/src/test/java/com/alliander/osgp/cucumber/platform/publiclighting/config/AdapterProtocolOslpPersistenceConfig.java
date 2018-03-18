@@ -18,7 +18,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
+import com.alliander.osgp.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.cucumber.platform.config.ApplicationPersistenceConfiguration;
 
 @Configuration

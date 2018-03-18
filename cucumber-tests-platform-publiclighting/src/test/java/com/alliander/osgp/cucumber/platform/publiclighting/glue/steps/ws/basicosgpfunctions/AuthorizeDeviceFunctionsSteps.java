@@ -31,7 +31,6 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Resum
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.TimePeriod;
@@ -105,9 +104,6 @@ public class AuthorizeDeviceFunctionsSteps {
                 break;
             case SET_TARIFF_SCHEDULE:
                 this.setTariffSchedule(requestParameters);
-                break;
-            case GET_ACTUAL_POWER_USAGE:
-                this.getActualPowerUsage(requestParameters);
                 break;
             case GET_POWER_USAGE_HISTORY:
                 this.getPowerUsageHistory(requestParameters);
@@ -212,17 +208,6 @@ public class AuthorizeDeviceFunctionsSteps {
         request.getSchedules().add(schedule);
         ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
                 this.tariffSwitchingScheduleManagementClient.setSchedule(request));
-    }
-
-    private void getActualPowerUsage(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final GetActualPowerUsageRequest request = new GetActualPowerUsageRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
-                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-
-        ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
-                this.publicLightingDeviceMonitoringClient.getActualPowerUsage(request));
     }
 
     private void getPowerUsageHistory(final Map<String, String> requestParameters)

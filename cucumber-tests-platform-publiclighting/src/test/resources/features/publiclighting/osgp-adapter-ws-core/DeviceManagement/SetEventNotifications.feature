@@ -21,10 +21,6 @@ Feature: CoreDeviceManagement Set Event Notifications
 
     Examples: 
       | Protocol    | Event                       |
-      | OSLP        | LIGHT_EVENTS                |
-      | OSLP        | TARIFF_EVENTS               |
-      | OSLP        | COMM_EVENTS                 |
-      | OSLP        | LIGHT_EVENTS, TARIFF_EVENTS |
       | OSLP ELSTER | LIGHT_EVENTS                |
       | OSLP ELSTER | TARIFF_EVENTS               |
       | OSLP ELSTER | COMM_EVENTS                 |

@@ -102,7 +102,7 @@ public class PlatformDefaults {
 
     public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
     public static final String DEFAULT_PREFIX = "MAA";
-    public static final String DEFAULT_PROTOCOL = "OSLP";
+    public static final String DEFAULT_PROTOCOL = "OSLP ELSTER";
     public static final Long DEFAULT_PROTOCOL_INFO_ID = new java.util.Random().nextLong();
     public static final String DEFAULT_PROTOCOL_VERSION = "1.0";
     public static final String DEFAULT_PUBLIC_KEY = "123456abcdef";

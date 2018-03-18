@@ -31,12 +31,6 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
 
     Examples: 
       | Protocol    | WeekDay     | StartDay   | EndDay     | Time         | TariffValues | ReceivedTariffValues |
-      | OSLP        | MONDAY      |            |            | 08:00:00.000 | 1,true       | 1,false              |
-      | OSLP        | WEEKDAY     |            |            | 21:00:00.000 | 1,false      | 1,true               |
-      | OSLP        | MONDAY      |            |            | 18:00:00.000 | 1,true       | 1,false              |
-      | OSLP        | ABSOLUTEDAY | 2013-03-01 |            | 18:00:00.000 | 1,true       | 1,false              |
-      | OSLP        | MONDAY      |            |            |              | 1,true       | 1,false              |
-      | OSLP        | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       | 0,false              |
       | OSLP ELSTER | MONDAY      |            |            | 08:00:00.000 | 1,true       | 1,false              |
       | OSLP ELSTER | WEEKDAY     |            |            | 21:00:00.000 | 1,false      | 1,true               |
       | OSLP ELSTER | MONDAY      |            |            | 18:00:00.000 | 1,true       | 1,false              |
@@ -72,7 +66,6 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -103,7 +96,6 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   Scenario: Set reverse tariff schedule with invalid schedule
@@ -152,7 +144,6 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   Scenario: Set reverse tariff schedule with 51 schedules # Fail
