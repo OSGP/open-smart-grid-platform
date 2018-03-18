@@ -75,7 +75,6 @@
 
     <!-- Protocol Adapter OSLP -->
     <module>osgp-core-db-api</module>
-    <module>osgp-adapter-protocol-oslp</module>
     <module>osgp-adapter-protocol-oslp-elster</module>
     <module>signing-server</module>
   </modules>

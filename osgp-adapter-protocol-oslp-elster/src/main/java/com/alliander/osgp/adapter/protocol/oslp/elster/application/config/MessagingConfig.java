@@ -7,13 +7,16 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.UUID;
+
 import javax.annotation.Resource;
 import javax.jms.MessageListener;
 
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
@@ -83,18 +86,18 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long
+                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(
+                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setBackOffMultiplier(Double
+                .parseDouble(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(
+                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
 
         return redeliveryPolicy;
     }
@@ -187,7 +190,8 @@ public class MessagingConfig extends AbstractMessagingConfig {
     // === JMS SETTINGS: SIGNING SERVER REQUESTS ===
 
     @Bean
-    public JmsConfiguration signingServerRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+    public JmsConfiguration signingServerRequestJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeConfiguration("jms.signing.server.requests");
     }
 
@@ -214,17 +218,28 @@ public class MessagingConfig extends AbstractMessagingConfig {
      */
     @Bean
     public ActiveMQDestination replyToQueue() {
-        final String prefix = this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE);
-        final String randomPostFix = RandomStringUtils.random(10, false, true);
-        final String queueName = prefix.concat("-").concat(randomPostFix);
-
-        LOGGER.debug("------> replyToQueue: {}", queueName);
-
+        final String queueName = this.createUniqueQueueName(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE);
+        LOGGER.info("------> replyToQueue: {}", queueName);
         return new ActiveMQQueue(queueName);
     }
 
+    // Response queue name helper function.
+
+    private String createUniqueQueueName(final String responseQueuePropertyName) {
+        final String responsesQueuePrefix = this.environment.getRequiredProperty(responseQueuePropertyName);
+        String postFix;
+        try {
+            postFix = InetAddress.getLocalHost().getHostName();
+        } catch (final UnknownHostException e) {
+            LOGGER.info("Hostname not available: " + e.getMessage(), e);
+            postFix = UUID.randomUUID().toString();
+        }
+        return responsesQueuePrefix + "-" + postFix;
+    }
+
     @Bean
-    public JmsConfiguration signingServerResponsesJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+    public JmsConfiguration signingServerResponsesJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeReceiveConfiguration("jms.signing.server.responses",
                 this.signingServerResponsesMessageListener, this.replyToQueue());
     }
