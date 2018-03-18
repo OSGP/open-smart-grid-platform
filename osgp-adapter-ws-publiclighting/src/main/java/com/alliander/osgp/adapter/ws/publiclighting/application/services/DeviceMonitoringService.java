@@ -50,62 +50,39 @@ public class DeviceMonitoringService {
         // Parameterless constructor required for transactions
     }
 
-    // === GET ACTUAL POWER USAGE ===
-
-    public String enqueueGetActualPowerUsageRequest(final String organisationIdentification, final String deviceIdentification) throws FunctionalException {
-
-        LOGGER.debug("enqueueing GetActualPowerUsageRequest for organisationIdentification: {} for deviceIdentification: {}", organisationIdentification,
-                deviceIdentification);
-
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
-
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_ACTUAL_POWER_USAGE);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
-
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(PublicLightingRequestMessageType.GET_ACTUAL_POWER_USAGE, correlationUid,
-                organisationIdentification, deviceIdentification, null, null);
-
-        this.publicLightingRequestMessageSender.send(message);
-
-        return correlationUid;
-    }
-
-    public ResponseMessage dequeueGetActualPowerUsageResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
-        LOGGER.debug("dequeueing GetActualPowerUsageResponse for organisationIdentification: {} for correlationUid: {}", organisationIdentification,
-                correlationUid);
-
-        return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
-    }
-
     // === GET POWER USAGE HISTORY ===
 
-    public String enqueueGetPowerUsageHistoryRequest(final String organisationIdentification, final String deviceIdentification,
-            final PowerUsageHistoryMessageDataContainer powerUsageContainer, final DateTime scheduledTime) throws FunctionalException {
+    public String enqueueGetPowerUsageHistoryRequest(final String organisationIdentification,
+            final String deviceIdentification, final PowerUsageHistoryMessageDataContainer powerUsageContainer,
+            final DateTime scheduledTime) throws FunctionalException {
 
-        LOGGER.debug("enqueueing GetPowerUsageHistoryRequest for organisationIdentification: {} for deviceIdentification: {}", organisationIdentification,
-                deviceIdentification);
+        LOGGER.debug(
+                "enqueueing GetPowerUsageHistoryRequest for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_POWER_USAGE_HISTORY);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(PublicLightingRequestMessageType.GET_POWER_USAGE_HISTORY, correlationUid,
-                organisationIdentification, deviceIdentification, powerUsageContainer, scheduledTime);
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
+                PublicLightingRequestMessageType.GET_POWER_USAGE_HISTORY, correlationUid, organisationIdentification,
+                deviceIdentification, powerUsageContainer, scheduledTime);
 
         this.publicLightingRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueGetPowerUsageHistoryResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueGetPowerUsageHistoryResponse(final String organisationIdentification,
+            final String correlationUid) throws OsgpException {
 
-        LOGGER.debug("dequeueing GetPowerUsageHistoryResponse for organisationIdentification: {} for correlationUid: {}", organisationIdentification,
-                correlationUid);
+        LOGGER.debug(
+                "dequeueing GetPowerUsageHistoryResponse for organisationIdentification: {} for correlationUid: {}",
+                organisationIdentification, correlationUid);
 
         return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
     }
