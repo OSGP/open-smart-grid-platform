@@ -24,10 +24,6 @@ import com.alliander.osgp.adapter.ws.publiclighting.application.mapping.DeviceMo
 import com.alliander.osgp.adapter.ws.publiclighting.application.services.DeviceMonitoringService;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryRequest;
@@ -61,67 +57,6 @@ public class DeviceMonitoringEndpoint {
         this.deviceMonitoringMapper = deviceMonitoringMapper;
     }
 
-    @PayloadRoot(localPart = "GetActualPowerUsageRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public GetActualPowerUsageAsyncResponse getActualPowerUsage(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetActualPowerUsageRequest request) throws OsgpException {
-
-        LOGGER.info("Get Actual Power Usage Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
-
-        final GetActualPowerUsageAsyncResponse response = new GetActualPowerUsageAsyncResponse();
-
-        try {
-            final String correlationUid = this.deviceMonitoringService.enqueueGetActualPowerUsageRequest(
-                    organisationIdentification, request.getDeviceIdentification());
-
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
-        } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_PUBLIC_LIGHTING,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
-    }
-
-    @PayloadRoot(localPart = "GetActualPowerUsageAsyncRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public GetActualPowerUsageResponse getGetActualPowerUsageResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetActualPowerUsageAsyncRequest request) throws OsgpException {
-
-        LOGGER.info("Get Actual Power Usage Response received from organisation: {} for device: {}.",
-                organisationIdentification, request.getAsyncRequest().getDeviceId());
-
-        final GetActualPowerUsageResponse response = new GetActualPowerUsageResponse();
-
-        try {
-            final ResponseMessage message = this.deviceMonitoringService.dequeueGetActualPowerUsageResponse(
-                    organisationIdentification, request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-
-                if (message.getDataObject() != null) {
-                    response.setPowerUsageData(this.deviceMonitoringMapper.map(message.getDataObject(),
-                            com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.PowerUsageData.class));
-                }
-            } else {
-                LOGGER.info("Get Actual Power Usage data is null");
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
-    }
-
     @PayloadRoot(localPart = "GetPowerUsageHistoryRequest", namespace = NAMESPACE)
     @ResponsePayload
     public GetPowerUsageHistoryAsyncResponse getPowerUsageHistory(
@@ -137,8 +72,8 @@ public class DeviceMonitoringEndpoint {
             // Get the request parameters, make sure that they are in UTC.
             // Maybe add an adapter to the service, so that all datetime are
             // converted to utc automatically.
-            final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request
-                    .getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+            final DateTime scheduleTime = request.getScheduledTime() == null ? null
+                    : new DateTime(request.getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
             final PowerUsageHistoryMessageDataContainer powerUsageHistoryMessageDataContainer = new PowerUsageHistoryMessageDataContainer();
 
@@ -149,8 +84,8 @@ public class DeviceMonitoringEndpoint {
             powerUsageHistoryMessageDataContainer.setHistoryTermType(this.deviceMonitoringMapper.map(
                     request.getHistoryTermType(), com.alliander.osgp.domain.core.valueobjects.HistoryTermType.class));
 
-            powerUsageHistoryMessageDataContainer.setTimePeriod(this.deviceMonitoringMapper.map(
-                    request.getTimePeriod(), com.alliander.osgp.domain.core.valueobjects.TimePeriod.class));
+            powerUsageHistoryMessageDataContainer.setTimePeriod(this.deviceMonitoringMapper.map(request.getTimePeriod(),
+                    com.alliander.osgp.domain.core.valueobjects.TimePeriod.class));
 
             final String correlationUid = this.deviceMonitoringService.enqueueGetPowerUsageHistoryRequest(
                     organisationIdentification, request.getDeviceIdentification(),
@@ -191,8 +126,7 @@ public class DeviceMonitoringEndpoint {
                 if (message.getDataObject() != null) {
                     final PowerUsageHistoryResponse powerUsageHistoryResponse = (PowerUsageHistoryResponse) message
                             .getDataObject();
-                    response.getPowerUsageData()
-                    .addAll(this.deviceMonitoringMapper.mapAsList(
+                    response.getPowerUsageData().addAll(this.deviceMonitoringMapper.mapAsList(
                             powerUsageHistoryResponse.getPowerUsageData(),
                             com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.PowerUsageData.class));
                 }
