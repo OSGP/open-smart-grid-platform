@@ -9,22 +9,23 @@
  */
 package org.osgpfoundation.osgp.adapter.domain.da.application.services;
 
+import org.osgpfoundation.osgp.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
+import org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelRequest;
+import org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelResponse;
+import org.osgpfoundation.osgp.dto.da.GetDeviceModelRequestDto;
+import org.osgpfoundation.osgp.dto.da.GetDeviceModelResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelRequest;
-import org.osgpfoundation.osgp.domain.da.valueobjects.GetDeviceModelResponse;
-import org.osgpfoundation.osgp.dto.da.GetDeviceModelRequestDto;
-import org.osgpfoundation.osgp.dto.da.GetDeviceModelResponseDto;
-import org.osgpfoundation.osgp.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainDistributionAutomationAdHocManagementService")
 @Transactional(value = "transactionManager")
@@ -42,8 +43,9 @@ public class AdHocManagementService extends BaseService {
         // Parameterless constructor required for transactions...
     }
 
-    public void getDeviceModel(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-                               final String messageType, final GetDeviceModelRequest request) throws FunctionalException {
+    public void getDeviceModel(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String messageType, final GetDeviceModelRequest request)
+            throws FunctionalException {
 
         LOGGER.info("Get device model for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
@@ -52,14 +54,15 @@ public class AdHocManagementService extends BaseService {
 
         final GetDeviceModelRequestDto dto = this.mapper.map(request, GetDeviceModelRequestDto.class);
 
-        this.osgpCoreRequestMessageSender
-                .send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
-                        device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
+                device.getIpAddress());
     }
 
-    public void handleGetDeviceModelResponse(final GetDeviceModelResponseDto getDeviceModelResponseDto, final String deviceIdentification,
-                                             final String organisationIdentification, final String correlationUid, final String messageType,
-                                             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
+    public void handleGetDeviceModelResponse(final GetDeviceModelResponseDto getDeviceModelResponseDto,
+            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+            final String messageType, final ResponseMessageResultType responseMessageResultType,
+            final OsgpException osgpException) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
@@ -83,8 +86,10 @@ public class AdHocManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while getting Device Model Response Data");
         }
 
-        this.webServiceResponseMessageSender
-                .send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, exception,
-                        getDeviceModelResponse), messageType);
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
+                .withDataObject(getDeviceModelResponse).build();
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }

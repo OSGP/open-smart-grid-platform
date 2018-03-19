@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.alliander.osgp.adapter.ws.shared.services.ResendNotificationJob;
 import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
+import com.alliander.osgp.shared.application.config.AbstractSchedulingConfigBuilder;
 
 @EnableScheduling
 @Configuration
@@ -83,9 +84,15 @@ public class ResendNotificationSchedulingConfig extends AbstractSchedulingConfig
 
     @Bean(destroyMethod = "shutdown")
     public Scheduler resendNotificationScheduler() throws SchedulerException {
-        return this.constructScheduler(ResendNotificationJob.class, KEY_RESEND_NOTIFICATION_THREAD_COUNT,
-                KEY_RESEND_NOTIFICATION_CRON_EXPRESSION, this.getDatabaseUrl(), this.databaseUsername,
-                this.databasePassword, this.databaseDriver);
+
+        final AbstractSchedulingConfigBuilder abstractSchedulingConfigBuilder = AbstractSchedulingConfigBuilder
+                .newBuilder().withJobClass(ResendNotificationJob.class)
+                .withThreadCountKey(KEY_RESEND_NOTIFICATION_THREAD_COUNT)
+                .withCronExpressionKey(KEY_RESEND_NOTIFICATION_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
+                .withJobStoreDbUsername(this.databaseUsername).withJobStoreDbPassword(this.databasePassword)
+                .withJobStoreDbDriver(this.databaseDriver).build();
+
+        return this.constructScheduler(abstractSchedulingConfigBuilder);
     }
 
     private String getDatabaseUrl() {

@@ -92,8 +92,8 @@ public class AdHocManagementService extends AbstractService {
     // === GET STATUS ===
 
     /**
-     * Retrieve status of device and provide a mapped response (PublicLighting
-     * or TariffSwitching)
+     * Retrieve status of device and provide a mapped response (PublicLighting or
+     * TariffSwitching)
      *
      * @param organisationIdentification
      *            identification of organisation
@@ -150,9 +150,12 @@ public class AdHocManagementService extends AbstractService {
             }
         }
 
-        this.webServiceResponseMessageSender
-                .send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification,
-                        response.getResult(), response.getOsgpException(), response.getDeviceStatusMapped()));
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(response.getResult())
+                .withOsgpException(response.getOsgpException()).withDataObject(response.getDeviceStatusMapped())
+                .build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     private void handleLmd(final DeviceStatus status, final GetStatusResponse response) {
@@ -267,8 +270,7 @@ public class AdHocManagementService extends AbstractService {
     // === TRANSITION MESSAGE FROM LIGHT MEASUREMENT DEVICE ===
 
     /**
-     * Send transition message to SSLD's based on light measurement device
-     * trigger.
+     * Send transition message to SSLD's based on light measurement device trigger.
      *
      * @param organisationIdentification
      *            Organization issuing the request.
@@ -425,8 +427,7 @@ public class AdHocManagementService extends AbstractService {
     }
 
     /**
-     * Updates the relay overview from a device based on the given device
-     * status.
+     * Updates the relay overview from a device based on the given device status.
      *
      * @param device
      *            The device to update.

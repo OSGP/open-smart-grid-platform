@@ -9,22 +9,23 @@
  */
 package org.osgpfoundation.osgp.adapter.domain.da.application.services;
 
+import org.osgpfoundation.osgp.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
+import org.osgpfoundation.osgp.domain.da.valueobjects.GetHealthStatusRequest;
+import org.osgpfoundation.osgp.domain.da.valueobjects.GetHealthStatusResponse;
+import org.osgpfoundation.osgp.dto.da.GetHealthStatusRequestDto;
+import org.osgpfoundation.osgp.dto.da.GetHealthStatusResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import org.osgpfoundation.osgp.domain.da.valueobjects.GetHealthStatusRequest;
-import org.osgpfoundation.osgp.domain.da.valueobjects.GetHealthStatusResponse;
-import org.osgpfoundation.osgp.dto.da.GetHealthStatusRequestDto;
-import org.osgpfoundation.osgp.dto.da.GetHealthStatusResponseDto;
-import org.osgpfoundation.osgp.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainDistributionAutomationDeviceManagementService")
 @Transactional(value = "transactionManager")
@@ -42,8 +43,9 @@ public class DeviceManagementService extends BaseService {
         // Parameterless constructor required for transactions...
     }
 
-    public void getHealthStatus(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-                                final String messageType, final GetHealthStatusRequest getHealthStatusRequest) throws FunctionalException {
+    public void getHealthStatus(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String messageType, final GetHealthStatusRequest getHealthStatusRequest)
+            throws FunctionalException {
 
         LOGGER.info("Get Health Status for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
@@ -52,14 +54,15 @@ public class DeviceManagementService extends BaseService {
 
         final GetHealthStatusRequestDto dto = this.mapper.map(getHealthStatusRequest, GetHealthStatusRequestDto.class);
 
-        this.osgpCoreRequestMessageSender
-                .send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
-                        device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
+                device.getIpAddress());
     }
 
-    public void handleHealthStatusResponse(final GetHealthStatusResponseDto getHealthStatusResponseDto, final String deviceIdentification,
-                                           final String organisationIdentification, final String correlationUid, final String messageType,
-                                           final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
+    public void handleHealthStatusResponse(final GetHealthStatusResponseDto getHealthStatusResponseDto,
+            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+            final String messageType, final ResponseMessageResultType responseMessageResultType,
+            final OsgpException osgpException) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
@@ -83,8 +86,10 @@ public class DeviceManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while getting Health Status Response Data");
         }
 
-        this.webServiceResponseMessageSender
-                .send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, exception,
-                        getHealthStatusResponse), messageType);
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
+                .withDataObject(getHealthStatusResponse).build();
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }

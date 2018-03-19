@@ -107,8 +107,11 @@ public class AdHocManagementService extends BaseService {
                     deviceIdentification);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(actualCorrelationUid, organisationIdentification,
-                deviceIdentification, result, exception, dataResponse), messageType);
+        ResponseMessage resopnseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
+                .withDataObject(dataResponse).build();
+        this.webServiceResponseMessageSender.send(resopnseMessage, messageType);
     }
 
     // === SET DATA ===
@@ -155,8 +158,11 @@ public class AdHocManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while setting data");
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, emptyResponse), messageType);
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
+                .withDataObject(emptyResponse).build();
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 
     private void handleResponseMessageReceived(final String deviceIdentification) {

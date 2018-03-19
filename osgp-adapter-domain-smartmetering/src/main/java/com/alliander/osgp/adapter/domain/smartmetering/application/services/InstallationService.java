@@ -148,8 +148,8 @@ public class InstallationService {
     }
 
     /**
-     * In case of errors that prevented adding the meter to the protocol
-     * database, the meter should be removed from the core database as well.
+     * In case of errors that prevented adding the meter to the protocol database,
+     * the meter should be removed from the core database as well.
      *
      * @param deviceMessageMetadata
      */
@@ -215,9 +215,12 @@ public class InstallationService {
         final CoupleMbusDeviceByChannelResponse response = this.commonMapper.map(dataObject,
                 CoupleMbusDeviceByChannelResponse.class);
 
-        final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                responseMessageResultType, osgpException, response, deviceMessageMetadata.getMessagePriority());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(responseMessageResultType).withOsgpException(osgpException).withDataObject(response)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
 
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
@@ -232,10 +235,12 @@ public class InstallationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()),
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage,
                 deviceMessageMetadata.getMessageType());
     }
-
 }

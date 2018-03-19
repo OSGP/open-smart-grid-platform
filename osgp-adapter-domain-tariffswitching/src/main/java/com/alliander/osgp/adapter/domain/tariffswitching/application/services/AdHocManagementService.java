@@ -56,8 +56,8 @@ public class AdHocManagementService extends AbstractService {
     // === GET STATUS ===
 
     /**
-     * Retrieve status of device and provide a mapped response (PublicLighting
-     * or TariffSwitching)
+     * Retrieve status of device and provide a mapped response (PublicLighting or
+     * TariffSwitching)
      *
      * @param organisationIdentification
      *            identification of organisation
@@ -72,13 +72,13 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper.map(
-                allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
+        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper
+                .map(allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), messageType, device.getIpAddress());
@@ -108,11 +108,13 @@ public class AdHocManagementService extends AbstractService {
             }
 
             if (status != null) {
-                deviceStatusMapped = new DeviceStatusMapped(FilterLightAndTariffValuesHelper.filterTariffValues(
-                        status.getLightValues(), dosMap, allowedDomainType),
+                deviceStatusMapped = new DeviceStatusMapped(
+                        FilterLightAndTariffValuesHelper.filterTariffValues(status.getLightValues(), dosMap,
+                                allowedDomainType),
                         FilterLightAndTariffValuesHelper.filterLightValues(status.getLightValues(), dosMap,
-                                allowedDomainType), status.getPreferredLinkType(), status.getActualLinkType(),
-                        status.getLightType(), status.getEventNotificationsMask());
+                                allowedDomainType),
+                        status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                        status.getEventNotificationsMask());
 
                 this.updateDeviceRelayOverview(ssld, deviceStatusMapped);
             } else {
@@ -122,13 +124,15 @@ public class AdHocManagementService extends AbstractService {
             }
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, deviceStatusMapped));
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
+                .withDataObject(deviceStatusMapped).build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     /**
-     * Updates the relay overview from a device based on the given device
-     * status.
+     * Updates the relay overview from a device based on the given device status.
      *
      * @param deviceIdentification
      *            The device to update.
@@ -151,8 +155,8 @@ public class AdHocManagementService extends AbstractService {
                 }
             }
             if (!updated) {
-                final RelayStatus newRelayStatus = new RelayStatus(device, tariffValue.getIndex(),
-                        tariffValue.isHigh(), DateTime.now().toDate());
+                final RelayStatus newRelayStatus = new RelayStatus(device, tariffValue.getIndex(), tariffValue.isHigh(),
+                        DateTime.now().toDate());
                 relayStatuses.add(newRelayStatus);
             }
         }

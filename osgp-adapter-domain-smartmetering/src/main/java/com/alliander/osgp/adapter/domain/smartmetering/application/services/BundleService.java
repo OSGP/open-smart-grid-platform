@@ -95,10 +95,14 @@ public class BundleService {
 
         // Send the response final containing the events final to the
         // webservice-adapter
-        final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                responseMessageResultType, osgpException, bundleResponseMessageDataContainer,
-                deviceMessageMetadata.getMessagePriority());
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(responseMessageResultType).withOsgpException(osgpException)
+                .withDataObject(bundleResponseMessageDataContainer)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 

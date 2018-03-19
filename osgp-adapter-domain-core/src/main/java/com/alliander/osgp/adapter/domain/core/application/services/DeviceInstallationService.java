@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.Ssld;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
@@ -44,9 +42,6 @@ public class DeviceInstallationService extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceInstallationService.class);
 
-    @Autowired
-    private DeviceRepository deviceRepository;
-
     /**
      * Constructor
      */
@@ -62,11 +57,13 @@ public class DeviceInstallationService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType()) ? DeviceFunction.GET_LIGHT_SENSOR_STATUS
-                .name() : messageType;
+        final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType())
+                ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name()
+                : messageType;
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, null), actualMessageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
+                actualMessageType, device.getIpAddress());
     }
 
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
@@ -94,9 +91,12 @@ public class DeviceInstallationService extends AbstractService {
             }
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, response.getResult(), response.getOsgpException(), response
-                        .getDeviceStatusMapped()));
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(response.getResult())
+                .withOsgpException(response.getOsgpException()).withDataObject(response.getDeviceStatusMapped())
+                .build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     private void handleLmd(final DeviceStatus status, final GetStatusResponse response) {
@@ -133,10 +133,11 @@ public class DeviceInstallationService extends AbstractService {
             // Map the DeviceStatus for SSLD.
             final DeviceStatusMapped deviceStatusMapped = new DeviceStatusMapped(
                     FilterLightAndTariffValuesHelper.filterTariffValues(status.getLightValues(), dosMap,
-                            DomainType.TARIFF_SWITCHING), FilterLightAndTariffValuesHelper.filterLightValues(
-                                    status.getLightValues(), dosMap, DomainType.PUBLIC_LIGHTING),
-                                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
-                                    status.getEventNotificationsMask());
+                            DomainType.TARIFF_SWITCHING),
+                    FilterLightAndTariffValuesHelper.filterLightValues(status.getLightValues(), dosMap,
+                            DomainType.PUBLIC_LIGHTING),
+                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                    status.getEventNotificationsMask());
 
             deviceStatusMapped.setBootLoaderVersion(status.getBootLoaderVersion());
             deviceStatusMapped.setCurrentConfigurationBackUsed(status.getCurrentConfigurationBackUsed());
@@ -180,8 +181,9 @@ public class DeviceInstallationService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, null), messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
+                device.getIpAddress());
     }
 
     // === STOP DEVICE TEST ===
@@ -196,7 +198,8 @@ public class DeviceInstallationService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, null), messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
+                device.getIpAddress());
     }
 }

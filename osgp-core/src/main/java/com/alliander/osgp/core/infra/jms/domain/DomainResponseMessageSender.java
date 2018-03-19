@@ -79,19 +79,27 @@ public class DomainResponseMessageSender implements DomainResponseService {
     }
 
     private ResponseMessage createResponseMessage(final ProtocolResponseMessage protocolResponseMessage) {
-        return new ResponseMessage(protocolResponseMessage.getCorrelationUid(),
-                protocolResponseMessage.getOrganisationIdentification(),
-                protocolResponseMessage.getDeviceIdentification(), protocolResponseMessage.getResult(),
-                protocolResponseMessage.getOsgpException(), protocolResponseMessage.getDataObject(),
-                protocolResponseMessage.getMessagePriority());
+
+        return ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(protocolResponseMessage.getCorrelationUid())
+                .withOrganisationIdentification(protocolResponseMessage.getOrganisationIdentification())
+                .withDeviceIdentification(protocolResponseMessage.getDeviceIdentification())
+                .withResult(protocolResponseMessage.getResult())
+                .withOsgpException(protocolResponseMessage.getOsgpException())
+                .withDataObject(protocolResponseMessage.getDataObject())
+                .withMessagePriority(protocolResponseMessage.getMessagePriority()).build();
     }
 
-    private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage, final Exception e) {
+    private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage,
+            final Exception e) {
         final OsgpException ex = this.ensureOsgpException(e);
-        return new ResponseMessage(protocolRequestMessage.getCorrelationUid(),
-                protocolRequestMessage.getOrganisationIdentification(),
-                protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex, null,
-                protocolRequestMessage.getMessagePriority());
+
+        return ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(protocolRequestMessage.getCorrelationUid())
+                .withOrganisationIdentification(protocolRequestMessage.getOrganisationIdentification())
+                .withDeviceIdentification(protocolRequestMessage.getDeviceIdentification())
+                .withResult(ResponseMessageResultType.NOT_OK).withOsgpException(ex)
+                .withMessagePriority(protocolRequestMessage.getMessagePriority()).build();
     }
 
     private OsgpException ensureOsgpException(final Exception e) {
