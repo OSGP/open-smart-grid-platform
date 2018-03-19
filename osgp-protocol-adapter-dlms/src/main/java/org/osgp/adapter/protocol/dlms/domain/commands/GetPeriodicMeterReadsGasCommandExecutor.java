@@ -209,6 +209,12 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     private static final String GAS_VALUES = "gasValue: {}";
     private static final String UNEXPECTED_VALUE = "Unexpected null/unspecified value for Gas Capture Time";
 
+    @Autowired
+    private DlmsHelperService dlmsHelperService;
+
+    @Autowired
+    private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
+
     private final PeriodTypeDto periodType;
     private final DateTime beginDateTime;
     private final DateTime endDateTime;
@@ -216,6 +222,17 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     private final ChannelDto channel;
     private final boolean isSelectiveAccessSupported;
     private final List<GetResult> results;
+
+    public GetPeriodicMeterReadsGasCommandExecutor() {
+        super(PeriodicMeterReadsGasRequestDto.class);
+        this.periodType = null;
+        this.beginDateTime = null;
+        this.endDateTime = null;
+        this.bufferedObjects = null;
+        this.channel = null;
+        this.isSelectiveAccessSupported = false;
+        this.results = null;
+    }
 
     private GetPeriodicMeterReadsGasCommandExecutor(final Builder builder) {
         super(PeriodicMeterReadsGasRequestDto.class);
@@ -280,23 +297,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
     public static Builder newBuilder() {
         return new Builder();
-    }
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
-
-    @Autowired
-    private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
-
-    public GetPeriodicMeterReadsGasCommandExecutor() {
-        super(PeriodicMeterReadsGasRequestDto.class);
-        this.periodType = null;
-        this.beginDateTime = null;
-        this.endDateTime = null;
-        this.bufferedObjects = null;
-        this.channel = null;
-        this.isSelectiveAccessSupported = false;
-        this.results = null;
     }
 
     @Override

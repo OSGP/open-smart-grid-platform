@@ -49,32 +49,66 @@ public class FindMatchingChannelHelper {
     private static boolean mbusShortIdMatches(final MbusChannelElementsDto mbusChannelElements,
             final ChannelElementValuesDto channelElementValues) {
 
-        final boolean hasMbusDeviceInfo = mbusChannelElements.hasMbusIdentificationNumber()
-                && mbusChannelElements.hasMbusManufacturerIdentification() && mbusChannelElements.hasMbusVersion()
-                && mbusChannelElements.hasMbusDeviceTypeIdentification();
-        final boolean hasMbusChannelElementMatch = Objects.equals(mbusChannelElements.getMbusIdentificationNumber(),
+        return hasMbusDeviceInfo(mbusChannelElements)
+                && hasMbusChannelElementMatch(mbusChannelElements, channelElementValues);
+    }
+
+    /**
+     * @param mbusChannelElements
+     * @param channelElementValues
+     * @return true is all the channel elements are equal.
+     */
+    private static boolean hasMbusChannelElementMatch(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        return Objects.equals(mbusChannelElements.getMbusIdentificationNumber(),
                 channelElementValues.getIdentificationNumber())
                 && Objects.equals(mbusChannelElements.getMbusManufacturerIdentification(),
                         channelElementValues.getManufacturerIdentification())
                 && Objects.equals(mbusChannelElements.getMbusVersion(), channelElementValues.getVersion())
                 && Objects.equals(mbusChannelElements.getMbusDeviceTypeIdentification(),
                         channelElementValues.getDeviceTypeIdentification());
+    }
 
-        return hasMbusDeviceInfo && hasMbusChannelElementMatch;
+    /**
+     * @param mbusChannelElements
+     * @return true is all M-Bus parameters are present
+     */
+    private static boolean hasMbusDeviceInfo(final MbusChannelElementsDto mbusChannelElements) {
+        return mbusChannelElements.hasMbusIdentificationNumber()
+                && mbusChannelElements.hasMbusManufacturerIdentification() && mbusChannelElements.hasMbusVersion()
+                && mbusChannelElements.hasMbusDeviceTypeIdentification();
     }
 
     private static boolean wiredMbusMatches(final MbusChannelElementsDto mbusChannelElements,
             final ChannelElementValuesDto channelElementValues) {
 
-        final boolean hasValidMbusAttributes = channelElementValues.isMbusSlaveDeviceConfigured()
-                && mbusChannelElements.getPrimaryAddress().equals(mbusChannelElements.getPrimaryAddress());
-        final boolean validateMbusDeviceInfoMatch = !(failMatchOnMbusIdentificationNumber(mbusChannelElements,
-                channelElementValues)
+        return hasValidMbusAttributes(mbusChannelElements, channelElementValues)
+                && validateMbusDeviceInfoMatch(mbusChannelElements, channelElementValues);
+    }
+
+    /**
+     * @param mbusChannelElements
+     * @param channelElementValues
+     * @return true when no single M-Bus parameter check has failed
+     */
+    private static boolean validateMbusDeviceInfoMatch(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        return !(failMatchOnMbusIdentificationNumber(mbusChannelElements, channelElementValues)
                 || failMatchOnMbusManufacturerIdentification(mbusChannelElements, channelElementValues)
                 || failMatchOnMbusVersion(mbusChannelElements, channelElementValues)
                 || failMatchOnMbusDeviceTypeIdentification(mbusChannelElements, channelElementValues));
+    }
 
-        return hasValidMbusAttributes && validateMbusDeviceInfoMatch;
+    /**
+     * @param mbusChannelElements
+     * @param channelElementValues
+     * @return return true if M-Bus slave device is configured and primary address
+     *         matches
+     */
+    private static boolean hasValidMbusAttributes(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        return channelElementValues.isMbusSlaveDeviceConfigured()
+                && mbusChannelElements.getPrimaryAddress().equals(mbusChannelElements.getPrimaryAddress());
     }
 
     private static boolean failMatchOnMbusIdentificationNumber(final MbusChannelElementsDto mbusChannelElements,
@@ -119,13 +153,23 @@ public class FindMatchingChannelHelper {
     public static boolean matchesPartially(final MbusChannelElementsDto mbusChannelElements,
             final ChannelElementValuesDto channelElementValues) {
 
-        final boolean validateMbusDeviceInfoMatch = !(failPartialMatchOnMbusIdentificationNumber(mbusChannelElements,
-                channelElementValues)
+        return channelElementValues.isMbusSlaveDeviceConfigured()
+                && validateMbusDeviceInfoPartialMatch(mbusChannelElements, channelElementValues);
+    }
+
+    /**
+     * @param mbusChannelElements
+     * @param channelElementValues
+     * @return true if there no single partial check has failed
+     */
+    private static boolean validateMbusDeviceInfoPartialMatch(final MbusChannelElementsDto mbusChannelElements,
+            final ChannelElementValuesDto channelElementValues) {
+        final boolean validateMbusDeviceInfoPartialMatch = !(failPartialMatchOnMbusIdentificationNumber(
+                mbusChannelElements, channelElementValues)
                 || failPartialMatchOnMbusManufacturerIdentification(mbusChannelElements, channelElementValues)
                 || failPartialMatchOnMbusVersion(mbusChannelElements, channelElementValues)
                 || failPartialMatchOnMbusDeviceTypeIdentification(mbusChannelElements, channelElementValues));
-
-        return channelElementValues.isMbusSlaveDeviceConfigured() && validateMbusDeviceInfoMatch;
+        return validateMbusDeviceInfoPartialMatch;
     }
 
     private static boolean failPartialMatchOnMbusIdentificationNumber(final MbusChannelElementsDto mbusChannelElements,

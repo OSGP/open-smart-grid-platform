@@ -21,7 +21,7 @@ import com.alliander.osgp.dlms.DlmsPushNotification;
 
 public abstract class DlmsChannelHandler extends SimpleChannelHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsChannelHandlerServer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsChannelHandler.class);
 
     @Autowired
     private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;

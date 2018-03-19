@@ -72,7 +72,7 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
                 "Retrieving current M-Bus encryption key status by issuing get request for class id: {}, obis code: {}, attribute id: {}",
                 CLASS_ID, obisCode, ATTRIBUTE_ID);
 
-        final DataObject dataObject = new ConnectionAndResultHelper().getValidatedResultData(conn, getParameter);
+        final DataObject dataObject = this.getValidatedResultData(conn, getParameter);
 
         return EncryptionKeyStatusTypeDto
                 .valueOf(EncryptionKeyStatusType.fromValue((Integer) dataObject.getValue()).name());

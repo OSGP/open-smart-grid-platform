@@ -21,7 +21,6 @@ import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsConnectionMessageProcessor;
-import org.osgp.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.slf4j.Logger;
@@ -58,9 +57,6 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
 
     @Autowired
     protected DomainHelperService domainHelperService;
-
-    @Autowired
-    private RetryHeaderFactory retryHeaderFactory;
 
     protected final OsgpRequestMessageType osgpRequestMessageType;
 

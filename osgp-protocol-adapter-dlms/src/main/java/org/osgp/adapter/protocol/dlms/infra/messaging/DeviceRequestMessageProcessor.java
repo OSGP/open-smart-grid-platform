@@ -52,9 +52,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     @Autowired
     protected DomainHelperService domainHelperService;
 
-    @Autowired
-    private RetryHeaderFactory retryHeaderFactory;
-
     protected final DeviceRequestMessageType deviceRequestMessageType;
 
     /**

@@ -152,18 +152,32 @@ public class CoupleMBusDeviceCommandExecutor
 
     private ChannelElementValuesDto findEmptyChannel(final List<ChannelElementValuesDto> channelElementValuesList) {
         for (final ChannelElementValuesDto channelElementValues : channelElementValuesList) {
-            final boolean deviceIdentificationValues = (channelElementValues.getIdentificationNumber() == null
-                    || "00000000".equals(channelElementValues.getIdentificationNumber())
-                            && (channelElementValues.getPrimaryAddress() == 0));
-            final boolean deviceConfigurationValues = (channelElementValues.getVersion() == 0)
-                    && (channelElementValues.getDeviceTypeIdentification() == 0)
-                    && channelElementValues.getManufacturerIdentification() == null;
 
-            if (deviceIdentificationValues && deviceConfigurationValues) {
+            if (this.checkChannelIdentificationValues(channelElementValues)
+                    && this.checkChannelConfigurationValues(channelElementValues)) {
                 return channelElementValues;
             }
         }
         return null;
+    }
+
+    /**
+     * @param channelElementValues
+     * @return true if all channel elements are 0 or null
+     */
+    private boolean checkChannelConfigurationValues(final ChannelElementValuesDto channelElementValues) {
+        return (channelElementValues.getVersion() == 0) && (channelElementValues.getDeviceTypeIdentification() == 0)
+                && channelElementValues.getManufacturerIdentification() == null;
+    }
+
+    /**
+     * @param channelElementValues
+     * @return true if all channel elements are 0 or null
+     */
+    private boolean checkChannelIdentificationValues(final ChannelElementValuesDto channelElementValues) {
+        return (channelElementValues.getIdentificationNumber() == null
+                || "00000000".equals(channelElementValues.getIdentificationNumber())
+                        && (channelElementValues.getPrimaryAddress() == 0));
     }
 
     private ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,

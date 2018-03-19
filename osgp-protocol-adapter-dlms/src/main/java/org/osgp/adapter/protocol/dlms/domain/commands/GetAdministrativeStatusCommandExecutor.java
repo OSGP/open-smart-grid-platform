@@ -69,7 +69,7 @@ public class GetAdministrativeStatusCommandExecutor extends AbstractCommandExecu
                 "Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        final DataObject dataObject = new ConnectionAndResultHelper().getValidatedResultData(conn, getParameter);
+        final DataObject dataObject = this.getValidatedResultData(conn, getParameter);
 
         return this.configurationMapper.map((Integer) dataObject.getValue(), AdministrativeStatusTypeDto.class);
     }
