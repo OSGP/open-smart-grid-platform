@@ -33,10 +33,6 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
     @Autowired
     private OsgpRequestMessageSender osgpRequestMessageSender;
 
-    public DlmsChannelHandlerServer() {
-        super(LOGGER);
-    }
-
     @Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
 

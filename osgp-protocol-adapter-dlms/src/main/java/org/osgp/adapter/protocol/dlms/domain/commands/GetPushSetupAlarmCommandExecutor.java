@@ -30,12 +30,12 @@ public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecuto
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
     private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST),
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD),
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_COMMUNICATION_WINDOW),
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_RANDOMISATION_START_INTERVAL),
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_NUMBER_OF_RETRIES),
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY) };
+            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST),
+            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD),
+            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_COMMUNICATION_WINDOW),
+            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_RANDOMISATION_START_INTERVAL),
+            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_NUMBER_OF_RETRIES),
+            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY) };
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -54,25 +54,26 @@ public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecuto
         GetPushSetupCommandExecutor.checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
 
         final PushSetupAlarmDto.Builder pushSetupAlarmBuilder = new PushSetupAlarmDto.Builder();
-        pushSetupAlarmBuilder.logicalName(new CosemObisCodeDto(OBIS_CODE.bytes()));
+        pushSetupAlarmBuilder.withLogicalName(new CosemObisCodeDto(OBIS_CODE.bytes()));
 
-        pushSetupAlarmBuilder.pushObjectList(this.dlmsHelperService.readListOfObjectDefinition(
-                getResultList.get(INDEX_PUSH_OBJECT_LIST), "Push Object List"));
+        pushSetupAlarmBuilder.withPushObjectList(this.dlmsHelperService
+                .readListOfObjectDefinition(getResultList.get(INDEX_PUSH_OBJECT_LIST), "Push Object List"));
 
-        pushSetupAlarmBuilder.sendDestinationAndMethod(this.dlmsHelperService.readSendDestinationAndMethod(
+        pushSetupAlarmBuilder.withSendDestinationAndMethod(this.dlmsHelperService.readSendDestinationAndMethod(
                 getResultList.get(INDEX_SEND_DESTINATION_AND_METHOD), "Send Destination And Method"));
 
-        pushSetupAlarmBuilder.communicationWindow(this.dlmsHelperService.readListOfWindowElement(
-                getResultList.get(INDEX_COMMUNICATION_WINDOW), "Communication Window"));
+        pushSetupAlarmBuilder.withCommunicationWindow(this.dlmsHelperService
+                .readListOfWindowElement(getResultList.get(INDEX_COMMUNICATION_WINDOW), "Communication Window"));
 
-        pushSetupAlarmBuilder.randomisationStartInterval(this.dlmsHelperService.readLongNotNull(
-                getResultList.get(INDEX_RANDOMISATION_START_INTERVAL), "Randomisation Start Interval").intValue());
+        pushSetupAlarmBuilder.withRandomisationStartInterval(this.dlmsHelperService
+                .readLongNotNull(getResultList.get(INDEX_RANDOMISATION_START_INTERVAL), "Randomisation Start Interval")
+                .intValue());
 
-        pushSetupAlarmBuilder.numberOfRetries(this.dlmsHelperService.readLongNotNull(
-                getResultList.get(INDEX_NUMBER_OF_RETRIES), "Number of Retries").intValue());
+        pushSetupAlarmBuilder.withNumberOfRetries(this.dlmsHelperService
+                .readLongNotNull(getResultList.get(INDEX_NUMBER_OF_RETRIES), "Number of Retries").intValue());
 
-        pushSetupAlarmBuilder.repetitionDelay(this.dlmsHelperService.readLongNotNull(
-                getResultList.get(INDEX_REPETITION_DELAY), "Repetition Delay").intValue());
+        pushSetupAlarmBuilder.withRepetitionDelay(this.dlmsHelperService
+                .readLongNotNull(getResultList.get(INDEX_REPETITION_DELAY), "Repetition Delay").intValue());
 
         return pushSetupAlarmBuilder.build();
     }

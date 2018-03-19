@@ -16,13 +16,19 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
+import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.infra.jms.RetryHeader;
 
 /**
  * Abstract base class for message processors dealing with optional
@@ -40,6 +46,12 @@ public abstract class DlmsConnectionMessageProcessor {
 
     @Autowired
     private SecurityKeyService securityKeyService;
+
+    @Autowired
+    protected OsgpExceptionConverter osgpExceptionConverter;
+
+    @Autowired
+    private RetryHeaderFactory retryHeaderFactory;
 
     protected DlmsConnectionHolder createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException {
@@ -68,9 +80,9 @@ public abstract class DlmsConnectionMessageProcessor {
     protected void doConnectionPostProcessing(final DlmsDevice device, final DlmsConnectionHolder conn) {
         if (conn == null) {
             /*
-             * No connection (possible and perfectly valid if an operation was
-             * handled that did not involve device communication), then no
-             * follow-up actions are required.
+             * No connection (possible and perfectly valid if an operation was handled that
+             * did not involve device communication), then no follow-up actions are
+             * required.
              */
             return;
         }
@@ -137,5 +149,35 @@ public abstract class DlmsConnectionMessageProcessor {
                     String.format("The request object has an incorrect type. %s expected but %s was found.",
                             expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
         }
+    }
+
+    protected void sendResponseMessage(final MessageMetadata messageMetadata, final ResponseMessageResultType result,
+            final Exception exception, final DeviceResponseMessageSender responseMessageSender,
+            final Serializable responseObject) {
+
+        OsgpException osgpException = null;
+        if (exception != null) {
+            osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
+        }
+
+        RetryHeader retryHeader;
+        if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof RetryableException)) {
+            retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
+        } else {
+            retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
+        }
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification(),
+                messageMetadata.getCorrelationUid(), messageMetadata.getMessageType(),
+                messageMetadata.getMessagePriority(), messageMetadata.getScheduleTime());
+
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).domain(messageMetadata.getDomain())
+                .domainVersion(messageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
+                .dataObject(responseObject).retryCount(messageMetadata.getRetryCount()).retryHeader(retryHeader)
+                .scheduled(messageMetadata.isScheduled()).build();
+
+        responseMessageSender.send(responseMessage);
     }
 }
