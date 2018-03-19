@@ -87,17 +87,24 @@ public class SigningService {
             LOGGER.error("Message for device: {} with correlationId: {} NOT SIGNED, sending error to protocol-adpater",
                     deviceIdentification, correlationUid);
 
-            responseMessage = new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification,
-                    ResponseMessageResultType.NOT_OK, new OsgpException(ComponentType.UNKNOWN,
-                            "Failed to build signed OslpEnvelope", null), unsignedOslpEnvelopeDto);
+            responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(correlationUid)
+                    .withOrganisationIdentification(organisationIdentification)
+                    .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.NOT_OK)
+                    .withOsgpException(
+                            new OsgpException(ComponentType.UNKNOWN, "Failed to build signed OslpEnvelope", null))
+                    .withDataObject(unsignedOslpEnvelopeDto).build();
+
         } else {
             LOGGER.info("Message for device: {} with correlationId: {} signed, sending response to protocol-adapter",
                     deviceIdentification, correlationUid);
 
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto = new SignedOslpEnvelopeDto(oslpEnvelope,
                     unsignedOslpEnvelopeDto);
-            responseMessage = new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification,
-                    ResponseMessageResultType.OK, null, signedOslpEnvelopeDto);
+
+            responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(correlationUid)
+                    .withOrganisationIdentification(organisationIdentification)
+                    .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.OK)
+                    .withDataObject(signedOslpEnvelopeDto).build();
         }
 
         this.signingServerResponseMessageSender.send(responseMessage, "SIGNING_RESPONSE", replyToQueue);
