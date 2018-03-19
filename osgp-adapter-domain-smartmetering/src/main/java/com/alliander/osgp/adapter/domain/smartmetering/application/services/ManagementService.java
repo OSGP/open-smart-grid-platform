@@ -190,13 +190,14 @@ public class ManagementService {
         final SetDeviceLifecycleStatusByChannelResponseData responseData = this.managementMapper.map(responseDto,
                 SetDeviceLifecycleStatusByChannelResponseData.class);
 
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(gatewayDeviceIdentification).withResult(result)
+                .withOsgpException(osgpException).withDataObject(responseData)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
         this.webServiceResponseMessageSender.send(
-                ResponseMessage.newResponseMessageBuilder()
-                        .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                        .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                        .withDeviceIdentification(gatewayDeviceIdentification).withResult(result)
-                        .withOsgpException(osgpException).withDataObject(responseData)
-                        .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build(),
+                responseMessage,
                 deviceMessageMetadata.getMessageType());
     }
 
