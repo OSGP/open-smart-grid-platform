@@ -164,12 +164,10 @@ public class FindMatchingChannelHelper {
      */
     private static boolean validateMbusDeviceInfoPartialMatch(final MbusChannelElementsDto mbusChannelElements,
             final ChannelElementValuesDto channelElementValues) {
-        final boolean validateMbusDeviceInfoPartialMatch = !(failPartialMatchOnMbusIdentificationNumber(
-                mbusChannelElements, channelElementValues)
+        return !(failPartialMatchOnMbusIdentificationNumber(mbusChannelElements, channelElementValues)
                 || failPartialMatchOnMbusManufacturerIdentification(mbusChannelElements, channelElementValues)
                 || failPartialMatchOnMbusVersion(mbusChannelElements, channelElementValues)
                 || failPartialMatchOnMbusDeviceTypeIdentification(mbusChannelElements, channelElementValues));
-        return validateMbusDeviceInfoPartialMatch;
     }
 
     private static boolean failPartialMatchOnMbusIdentificationNumber(final MbusChannelElementsDto mbusChannelElements,
