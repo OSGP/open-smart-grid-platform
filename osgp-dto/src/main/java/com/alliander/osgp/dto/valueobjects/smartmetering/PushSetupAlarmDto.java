@@ -27,8 +27,11 @@ public class PushSetupAlarmDto extends AbstractPushSetupDto {
             final SendDestinationAndMethodDto sendDestinationAndMethod,
             final List<WindowElementDto> communicationWindow, final Integer randomisationStartInterval,
             final Integer numberOfRetries, final Integer repetitionDelay) {
-        super(logicalName, pushObjectList, sendDestinationAndMethod, communicationWindow, randomisationStartInterval,
-                numberOfRetries, repetitionDelay);
+
+        super(AbstractPushSetupDto.newBuilder().withLogicalName(logicalName).withPushObjectList(pushObjectList)
+                .withSendDestinationAndMethod(sendDestinationAndMethod).withCommunicationWindow(communicationWindow)
+                .withRandomisationStartInterval(randomisationStartInterval).withNumberOfRetries(numberOfRetries)
+                .withRepetitionDelay(repetitionDelay).build());
     }
 
 }

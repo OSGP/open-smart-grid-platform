@@ -41,7 +41,7 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
     /**
      * Construct the scheduler taskpool with specified job and trigger
-     * 
+     *
      * @param jobClass
      *            references the Job class
      * @param threadCountKey
@@ -60,24 +60,28 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
      * @throws SchedulerException
      *             when issues occur in constructing schedules
      */
-    protected Scheduler constructScheduler(final Class<? extends Job> jobClass, final String threadCountKey,
-            final String cronExpressionKey, final String jobStoreDbUrl, final String jobStoreDbUsername,
-            final String jobStoreDbPassword, final String jobStoreDbDriver) throws SchedulerException {
-        final Properties properties = this.constructQuartzConfiguration(jobClass.getSimpleName(),
-                this.environment.getRequiredProperty(threadCountKey), jobStoreDbUrl, jobStoreDbUsername,
-                jobStoreDbPassword, jobStoreDbDriver);
+    protected Scheduler constructScheduler(final AbstractSchedulingConfigBuilder abstractSchedulingConfigBuilder)
+            throws SchedulerException {
+
+        final Properties properties = this.constructQuartzConfiguration(
+                abstractSchedulingConfigBuilder.getJobClass().getSimpleName(),
+                this.environment.getRequiredProperty(abstractSchedulingConfigBuilder.getThreadCountKey()),
+                abstractSchedulingConfigBuilder.getJobStoreDbUrl(),
+                abstractSchedulingConfigBuilder.getJobStoreDbUsername(),
+                abstractSchedulingConfigBuilder.getJobStoreDbPassword(),
+                abstractSchedulingConfigBuilder.getJobStoreDbDriver());
 
         final StdSchedulerFactory factory = new StdSchedulerFactory();
         factory.initialize(properties);
         final Scheduler scheduler = factory.getScheduler();
         scheduler.setJobFactory(this.springBeanJobFactory());
 
-        final JobDetail jobDetail = this.createJobDetail(jobClass);
+        final JobDetail jobDetail = this.createJobDetail(abstractSchedulingConfigBuilder.getJobClass());
         scheduler.addJob(jobDetail, true);
 
         final Trigger trigger = this.createJobTrigger(jobDetail,
-                this.environment.getRequiredProperty(cronExpressionKey));
-        scheduler.scheduleJob(jobDetail, new HashSet<Trigger>(Arrays.asList(trigger)), true);
+                this.environment.getRequiredProperty(abstractSchedulingConfigBuilder.getCronExpressionKey()));
+        scheduler.scheduleJob(jobDetail, new HashSet<>(Arrays.asList(trigger)), true);
 
         scheduler.start();
 

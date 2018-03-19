@@ -48,7 +48,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
         private RetryHeader retryHeader;
 
         public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
-            this.superBuilder.deviceMessageMetadata(deviceMessageMetadata);
+            this.superBuilder.withDeviceMessageMetadata(deviceMessageMetadata);
             this.messageType = deviceMessageMetadata.getMessageType();
             return this;
         }
@@ -64,17 +64,17 @@ public class ProtocolResponseMessage extends ResponseMessage {
         }
 
         public Builder result(final ResponseMessageResultType result) {
-            this.superBuilder.result(result);
+            this.superBuilder.withResult(result);
             return this;
         }
 
         public Builder osgpException(final OsgpException osgpException) {
-            this.superBuilder.osgpException(osgpException);
+            this.superBuilder.withOsgpException(osgpException);
             return this;
         }
 
         public Builder dataObject(final Serializable dataObject) {
-            this.superBuilder.dataObject(dataObject);
+            this.superBuilder.withDataObject(dataObject);
             return this;
         }
 

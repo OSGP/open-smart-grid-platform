@@ -39,12 +39,6 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private final Map<String, WebServiceTemplate> webServiceTemplates;
     private final Lock lock = new ReentrantLock();
 
-    private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
-    private static final String USER_NAME_HEADER = "UserName";
-    private static final String APPLICATION_NAME_HEADER = "ApplicationName";
-
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osp/common";
-
     private static final String PROXY_SERVER = "proxy-server";
 
     private Jaxb2Marshaller marshaller;
@@ -215,9 +209,9 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         webServiceTemplate.setMarshaller(this.marshaller);
         webServiceTemplate.setUnmarshaller(this.marshaller);
 
-        webServiceTemplate.setInterceptors(new ClientInterceptor[] {
-                new OrganisationIdentificationClientInterceptor(organisationIdentification, userName, applicationName,
-                        NAMESPACE, ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER) });
+        webServiceTemplate.setInterceptors(new ClientInterceptor[] { OrganisationIdentificationClientInterceptor
+                .newBuilder().withOrganisationIdentification(organisationIdentification).withUserName(userName)
+                .withApplicationName(applicationName).build() });
 
         if (this.isSecurityEnabled) {
             try {

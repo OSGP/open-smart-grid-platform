@@ -63,8 +63,7 @@ public abstract class BaseResponseMessageFinder {
 
     /**
      * Receive an object message from the JMS Template. This method has to be
-     * implemented for specific queues by classes that extend this abstract
-     * class.
+     * implemented for specific queues by classes that extend this abstract class.
      *
      * @param correlationUid
      *            The correlation UID of the message to receive.
@@ -107,7 +106,8 @@ public abstract class BaseResponseMessageFinder {
      * @return An empty not found message.
      */
     protected ResponseMessage createEmptyMessage(final String correlationUid) {
-        return new ResponseMessage(correlationUid, null, null, ResponseMessageResultType.NOT_FOUND, null, null);
-    }
 
+        return ResponseMessage.newResponseMessageBuilder().withCorrelationUid(correlationUid)
+                .withResult(ResponseMessageResultType.NOT_FOUND).build();
+    }
 }

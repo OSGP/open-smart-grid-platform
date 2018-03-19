@@ -32,49 +32,114 @@ public class DeviceMessageMetadata {
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime,
-            final boolean bypassRetry) {
-        this.deviceIdentification = deviceIdentification;
-        this.organisationIdentification = organisationIdentification;
-        this.correlationUid = correlationUid;
-        this.messageType = messageType;
-        this.messagePriority = messagePriority;
-        this.scheduleTime = scheduleTime;
-        this.bypassRetry = bypassRetry;
-    }
-
-    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority,
             final boolean byPassRetry) {
-        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority, null,
-                byPassRetry);
+
+        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
+                .withOrganisationIdentification(organisationIdentification).withCorrelationUid(correlationUid)
+                .withMessageType(messageType).withMessagePriority(messagePriority).withBypassRetry(byPassRetry));
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority) {
-        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
-                (Long) null, false);
+
+        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
+                .withOrganisationIdentification(organisationIdentification).withCorrelationUid(correlationUid)
+                .withMessageType(messageType).withMessagePriority(messagePriority));
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime) {
-        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
-                scheduleTime, false);
+
+        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
+                .withOrganisationIdentification(organisationIdentification).withCorrelationUid(correlationUid)
+                .withMessageType(messageType).withMessagePriority(messagePriority).withScheduleTime(scheduleTime));
     }
 
     public DeviceMessageMetadata(final Message message) throws JMSException {
-        this(message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
-                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
-                message.getJMSType(), message.getJMSPriority(),
-                message.propertyExists(Constants.SCHEDULE_TIME) ? message.getLongProperty(Constants.SCHEDULE_TIME)
-                        : null,
-                message.propertyExists(Constants.BYPASS_RETRY) ? message.getBooleanProperty(Constants.BYPASS_RETRY)
-                        : false);
+
+        this(DeviceMessageMetadata.newBuilder()
+                .withDeviceIdentification(message.getStringProperty(Constants.DEVICE_IDENTIFICATION))
+                .withOrganisationIdentification(message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION))
+                .withCorrelationUid(message.getJMSCorrelationID()).withMessageType(message.getJMSType())
+                .withMessagePriority(message.getJMSPriority())
+                .withScheduleTime(message.propertyExists(Constants.SCHEDULE_TIME)
+                        ? message.getLongProperty(Constants.SCHEDULE_TIME)
+                        : null)
+                .withBypassRetry(message.propertyExists(Constants.BYPASS_RETRY)
+                        ? message.getBooleanProperty(Constants.BYPASS_RETRY)
+                        : false));
     }
 
     public DeviceMessageMetadata(final ProtocolResponseMessage message) {
-        this(message.getDeviceIdentification(), message.getOrganisationIdentification(), message.getCorrelationUid(),
-                message.getMessageType(), message.getMessagePriority());
+        this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(message.getDeviceIdentification())
+                .withOrganisationIdentification(message.getOrganisationIdentification())
+                .withCorrelationUid(message.getCorrelationUid()).withMessageType(message.getMessageType())
+                .withMessagePriority(message.getMessagePriority()));
+    }
+
+    private DeviceMessageMetadata(final Builder builder) {
+        this.deviceIdentification = builder.deviceIdentification;
+        this.organisationIdentification = builder.organisationIdentification;
+        this.correlationUid = builder.correlationUid;
+        this.messageType = builder.messageType;
+        this.messagePriority = builder.messagePriority;
+        this.scheduleTime = builder.scheduleTime;
+        this.bypassRetry = builder.bypassRetry;
+    }
+
+    public static class Builder {
+
+        private String deviceIdentification = null;
+        private String organisationIdentification = null;
+        private String correlationUid = null;
+        private String messageType = null;
+        private int messagePriority = 0;
+        private Long scheduleTime = null;
+        private boolean bypassRetry = false;
+
+        public DeviceMessageMetadata build() {
+            return new DeviceMessageMetadata(this);
+        }
+
+        public Builder withDeviceIdentification(final String deviceIdentification) {
+            this.deviceIdentification = deviceIdentification;
+            return this;
+        }
+
+        public Builder withOrganisationIdentification(final String organisationIdentification) {
+            this.organisationIdentification = organisationIdentification;
+            return this;
+        }
+
+        public Builder withCorrelationUid(final String correlationUid) {
+            this.correlationUid = correlationUid;
+            return this;
+        }
+
+        public Builder withMessageType(final String messageType) {
+            this.messageType = messageType;
+            return this;
+        }
+
+        public Builder withMessagePriority(final int messagePriority) {
+            this.messagePriority = messagePriority;
+            return this;
+        }
+
+        public Builder withScheduleTime(final Long scheduleTime) {
+            this.scheduleTime = scheduleTime;
+            return this;
+        }
+
+        public Builder withBypassRetry(final boolean bypassRetry) {
+            this.bypassRetry = bypassRetry;
+            return this;
+        }
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     public String getDeviceIdentification() {
