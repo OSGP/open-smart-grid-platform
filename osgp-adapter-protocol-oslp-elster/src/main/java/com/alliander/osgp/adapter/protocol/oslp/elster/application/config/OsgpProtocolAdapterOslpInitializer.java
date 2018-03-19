@@ -17,19 +17,15 @@ import com.alliander.osgp.shared.application.config.AbstractApplicationInitializ
 /**
  * Web application Java configuration class.
  */
-public class OsgpProtocolAdapterOslpInitializer extends AbstractApplicationInitializer implements WebApplicationInitializer {
+public class OsgpProtocolAdapterOslpInitializer extends AbstractApplicationInitializer
+        implements WebApplicationInitializer {
 
     public OsgpProtocolAdapterOslpInitializer() {
         super(ApplicationContext.class, "java:comp/env/osgp/AdapterProtocolOslpElster/log-config");
     }
-    
-    /**
-     * 
-     */
+
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        startUp(servletContext);
+        this.startUp(servletContext);
     }
 }
-
-

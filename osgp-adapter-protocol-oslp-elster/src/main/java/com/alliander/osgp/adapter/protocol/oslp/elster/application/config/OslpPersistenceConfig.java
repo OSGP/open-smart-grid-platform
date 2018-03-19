@@ -10,11 +10,13 @@ package com.alliander.osgp.adapter.protocol.oslp.elster.application.config;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import org.flywaydb.core.Flyway;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -84,8 +86,14 @@ public class OslpPersistenceConfig extends AbstractPersistenceConfig {
         return super.transactionManager();
     }
 
+    @Bean(initMethod = "migrate")
+    public Flyway oslpFlyway() {
+        return super.createFlyway(this.getDataSourceOslp());
+    }
+
     @Override
     @Bean(name = "oslpEntityManagerFactory")
+    @DependsOn("oslpFlyway")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         return super.entityManagerFactory("OSGP_PROTOCOL_ADAPTER_OSLP_SETTINGS", this.getDataSourceOslp(),
                 this.entitymanagerPackagesToScan);

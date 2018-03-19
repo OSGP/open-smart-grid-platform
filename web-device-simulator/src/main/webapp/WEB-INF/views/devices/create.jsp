@@ -93,7 +93,7 @@ body {
 										<spring:message code="entity.device.ipAddress" />
 									</form:label>
 									<div class="controls">
-										<form:input path="ipAddress" />
+										<form:input path="ipAddress" value="127.0.0.1" />
 									</div>
 								</div>
 								<div class="control-group">
@@ -101,7 +101,7 @@ body {
 										<spring:message code="entity.device.deviceType" />
 									</form:label>
 									<div class="controls">
-										<form:input path="deviceType" />
+										<form:input path="deviceType" value="SSLD" />
 									</div>
 								</div>
 								<div class="control-group">
@@ -109,7 +109,7 @@ body {
 										<spring:message code="entity.device.protocol" />
 									</form:label>
 									<div class="controls">
-										<form:input path="protocol" />
+										<form:input path="protocol" value="OSLP_ELSTER" />
 									</div>
 								</div>
 
