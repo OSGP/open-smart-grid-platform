@@ -50,40 +50,6 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="GetActualPowerUsageRequest">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:Identification"
-          minOccurs="1" maxOccurs="1" />
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="GetActualPowerUsageAsyncResponse">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="GetActualPowerUsageAsyncRequest">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="AsyncRequest" type="common:AsyncRequest" />
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-  <xsd:element name="GetActualPowerUsageResponse">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
-        <xsd:element name="Description" type="xsd:string" />
-        <xsd:element name="PowerUsageData" type="tns:PowerUsageData"
-          minOccurs="1" maxOccurs="1" />
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
   <xsd:complexType name="TimePeriod">
     <xsd:sequence>
       <xsd:element name="StartTime" type="xsd:dateTime"

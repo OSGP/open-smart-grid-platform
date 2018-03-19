@@ -19,38 +19,6 @@
     </xsd:schema>
   </wsdl:types>
 
-  <wsdl:message name="GetActualPowerUsageHeader">
-    <wsdl:part element="common:OrganisationIdentification"
-      name="OrganisationIdentification" />
-    <wsdl:part element="common:UserName" name="UserName" />
-    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
-  </wsdl:message>
-  <wsdl:message name="GetActualPowerUsageRequest">
-    <wsdl:part element="dmon:GetActualPowerUsageRequest" name="GetActualPowerUsageRequest">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="GetActualPowerUsageAsyncResponse">
-    <wsdl:part element="dmon:GetActualPowerUsageAsyncResponse"
-      name="GetActualPowerUsageAsyncResponse">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="GetActualPowerUsageAsyncHeader">
-    <wsdl:part element="common:OrganisationIdentification"
-      name="OrganisationIdentification" />
-    <wsdl:part element="common:UserName" name="UserName" />
-    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
-  </wsdl:message>
-  <wsdl:message name="GetActualPowerUsageAsyncRequest">
-    <wsdl:part element="dmon:GetActualPowerUsageAsyncRequest"
-      name="GetActualPowerUsageAsyncRequest">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="GetActualPowerUsageResponse">
-    <wsdl:part element="dmon:GetActualPowerUsageResponse"
-      name="GetActualPowerUsageResponse">
-    </wsdl:part>
-  </wsdl:message>
-
   <wsdl:message name="GetPowerUsageHistoryHeader">
     <wsdl:part element="common:OrganisationIdentification"
       name="OrganisationIdentification" />
@@ -86,23 +54,6 @@
 
 
   <wsdl:portType name="DeviceMonitoringPort">
-    <wsdl:operation name="GetActualPowerUsage">
-      <wsdl:input message="tns:GetActualPowerUsageRequest"
-        name="GetActualPowerUsageRequest">
-      </wsdl:input>
-      <wsdl:output message="tns:GetActualPowerUsageAsyncResponse"
-        name="GetActualPowerUsageAsyncResponse">
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetActualPowerUsageResponse">
-      <wsdl:input message="tns:GetActualPowerUsageAsyncRequest"
-        name="GetActualPowerUsageAsyncRequest">
-      </wsdl:input>
-      <wsdl:output message="tns:GetActualPowerUsageResponse"
-        name="GetActualPowerUsageResponse">
-      </wsdl:output>
-    </wsdl:operation>
-
     <wsdl:operation name="GetPowerUsageHistory">
       <wsdl:input message="tns:GetPowerUsageHistoryRequest"
         name="GetPowerUsageHistoryRequest">
@@ -124,37 +75,6 @@
   <wsdl:binding name="DeviceMonitoringPortSoap11" type="tns:DeviceMonitoringPort">
     <soap:binding style="document"
       transport="http://schemas.xmlsoap.org/soap/http" />
-
-    <wsdl:operation name="GetActualPowerUsage">
-      <soap:operation soapAction="" />
-      <wsdl:input name="GetActualPowerUsageRequest">
-        <soap:header message="tns:GetActualPowerUsageHeader"
-          part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:GetActualPowerUsageHeader"
-          part="UserName" use="literal" />
-        <soap:header message="tns:GetActualPowerUsageHeader"
-          part="ApplicationName" use="literal" />
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="GetActualPowerUsageAsyncResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetActualPowerUsageResponse">
-      <soap:operation soapAction="" />
-      <wsdl:input name="GetActualPowerUsageAsyncRequest">
-        <soap:header message="tns:GetActualPowerUsageAsyncHeader"
-          part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:GetActualPowerUsageAsyncHeader"
-          part="UserName" use="literal" />
-        <soap:header message="tns:GetActualPowerUsageAsyncHeader"
-          part="ApplicationName" use="literal" />
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="GetActualPowerUsageResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
 
     <wsdl:operation name="GetPowerUsageHistory">
       <soap:operation soapAction="" />
