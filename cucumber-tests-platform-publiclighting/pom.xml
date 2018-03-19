@@ -129,7 +129,7 @@
 
     <dependency>
       <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-protocol-adapter-oslp</artifactId>
+      <artifactId>osgp-protocol-adapter-oslp-elster</artifactId>
       <classifier>classes</classifier>
     </dependency>
     <dependency>

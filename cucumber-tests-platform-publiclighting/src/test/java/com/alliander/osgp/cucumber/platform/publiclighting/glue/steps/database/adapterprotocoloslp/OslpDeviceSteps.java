@@ -17,8 +17,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
-import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
+import com.alliander.osgp.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
+import com.alliander.osgp.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.core.Wait;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;

@@ -21,7 +21,6 @@ Feature: CoreDeviceInstallation Device Starting
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   Scenario Outline: Start device with incorrect parameters

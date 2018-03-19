@@ -21,7 +21,6 @@ Feature: CoreAdhocManagement Set Reboot
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   Scenario: Set reboot as an unknown organization

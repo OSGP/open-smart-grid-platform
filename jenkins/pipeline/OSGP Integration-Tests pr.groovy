@@ -4,6 +4,8 @@ def stream = 'osgp'
 def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 def repo = 'git@github.com:OSGP/Integration-Tests.git'
+// Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
+def branchReleaseRepo = 'master'
 
 pipeline {
     agent any
@@ -55,6 +57,9 @@ pipeline {
                 // Clone the release repository in order to deploy
                 sh "rm -rf release && git clone git@github.com:SmartSocietyServices/release.git"
 
+                // Checkout branch for release repository
+                sh "cd release && git checkout ${branchReleaseRepo}"
+
                 script {
                     // Determine the actual pom version from the pom.
                     POMVERSION = sh ( script: "grep \"<version>\" pom.xml | sed \"s#<[/]\\?version>##g;s# ##g\" | grep SNAPSHOT", returnStdout: true).trim()
@@ -83,7 +88,8 @@ pipeline {
                         booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
                         string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
                         string(name: 'OSGP_VERSION', value: POMVERSION),
-                        booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true)]
+                        booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true),
+                        string(name: 'BRANCH', value: branchReleaseRepo)]
             }
         }
        
@@ -155,7 +161,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         }
         failure {
             // Mail everyone that the job failed
-            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com,hans.rooden@cgi.com,martijn.sips@cgi.com', sendToIndividuals: false])
+            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com', sendToIndividuals: false])
             step([$class: 'GitHubSetCommitStatusBuilder', contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
 
             // Clean only those things which are unnecessary to keep.

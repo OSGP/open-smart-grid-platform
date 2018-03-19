@@ -36,11 +36,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
 
     Examples: 
       | Protocol    | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues       | TriggerType   |
-      | OSLP        | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
-      | OSLP        | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 1,true,;2,true,50 |               |
-      | OSLP        | ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
-      | OSLP        | MONDAY      |            |            | SUNSET       |              |         30,30 | 0,true,           | LIGHT_TRIGGER |
-      | OSLP        | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
       | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
       | OSLP ELSTER | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 1,true,;2,true,50 |               |
       | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
@@ -80,7 +75,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -116,7 +110,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   Scenario Outline: Set light schedule with invalid schedule
@@ -178,7 +171,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
 
     Examples: 
       | Protocol    | WeekDay     | StartDay   | EndDay     | ScheduledTime | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |
-      | OSLP        | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 2016-12-15    | ABSOLUTETIME | 18:00:00.000 |         30,30 | 0,true,     | LIGHT_TRIGGER |
       | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 2016-12-15    | ABSOLUTETIME | 18:00:00.000 |         30,30 | 0,true,     | LIGHT_TRIGGER |
 
   Scenario Outline: Set light schedule with 51 schedules # Fail

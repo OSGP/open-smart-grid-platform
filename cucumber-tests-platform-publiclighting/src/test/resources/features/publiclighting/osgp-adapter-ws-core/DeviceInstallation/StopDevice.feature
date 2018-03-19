@@ -20,7 +20,6 @@ Feature: CoreDeviceInstallation Device Stopping
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   Scenario Outline: Stop device with incorrect parameters

@@ -1,4 +1,4 @@
-@PublicLighting @Platform @PublicLightingAdhocManagement
+@PublicLighting @Platform @PublicLightingAdhocManagement @SetLight
 Feature: PublicLightingAdhocManagement Set Light
   As a platform 
   I want to asynchronously handle set light requests
@@ -9,6 +9,7 @@ Feature: PublicLightingAdhocManagement Set Light
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set light response "OK" over "<Protocol>"
+    And the device returns a resume schedule response "OK" over "<Protocol>"
     When receiving a set light request
       | DeviceIdentification | TEST1024000000001 |
       | Index                | <Index>           |
@@ -17,21 +18,19 @@ Feature: PublicLightingAdhocManagement Set Light
     Then the set light async response contains
       | DeviceIdentification | TEST1024000000001 |
     And a set light "<Protocol>" message with one light value is sent to the device
+      | Protocol | <Protocol> |
       | Index    | <Index>    |
       | On       | <On>       |
       | DimValue | <DimValue> |
+    And a resume schedule "<Protocol>" message is sent to device "TEST1024000000001"
+      | Protocol  | <Protocol> |
+      | Index     | 0          |
+      | Immediate | false      |
     And the platform buffers a set light response message for device "TEST1024000000001"
       | Result | OK |
 
     Examples: 
       | Protocol    | Index | On    | DimValue |
-      | OSLP        |     0 | true  |          |
-      | OSLP        |     1 | true  |          |
-      | OSLP        |     6 | true  |          |
-      | OSLP        |     1 | false |          |
-      | OSLP        |     1 | true  |        1 |
-      | OSLP        |     1 | true  |       75 |
-      | OSLP        |     1 | true  |      100 |
       | OSLP ELSTER |     0 | true  |          |
       | OSLP ELSTER |     1 | true  |          |
       | OSLP ELSTER |     6 | true  |          |
@@ -76,18 +75,21 @@ Feature: PublicLightingAdhocManagement Set Light
       | DeviceIdentification | TEST1024000000001 |
       | relayType            | LIGHT             |
     And the device returns a set light response "OK" over "<Protocol>"
+    And the device returns a resume schedule response "OK" over "<Protocol>"
     When receiving a set light request with "<nofLightValues>" light values
       | DeviceIdentification | TEST1024000000001 |
     Then the set light async response contains
       | DeviceIdentification | TEST1024000000001 |
     And a set light "<Protocol>" message with "<nofLightValues>" lightvalues is sent to the device
+    And a resume schedule "<Protocol>" message is sent to device "TEST1024000000001"
+      | Protocol  | <Protocol> |
+      | Index     | 0          |
+      | Immediate | false      |
     And the platform buffers a set light response message for device "TEST1024000000001"
       | Result | OK |
 
     Examples: 
       | Protocol    | nofLightValues |
-      | OSLP        |              1 |
-      | OSLP        |              6 |
       | OSLP ELSTER |              1 |
       | OSLP ELSTER |              6 |
 

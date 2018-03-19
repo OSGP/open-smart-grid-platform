@@ -31,7 +31,7 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
@@ -225,11 +225,13 @@ public class OslpDeviceSteps {
         Assert.assertTrue(message.hasResumeScheduleRequest());
 
         final ResumeScheduleRequest request = message.getResumeScheduleRequest();
-
-        Assert.assertEquals(getBoolean(expectedRequest, PlatformPubliclightingKeys.KEY_ISIMMEDIATE),
-                request.getImmediate());
+        /*
+         * resumeScheduleRequest { index: "\000" immediate: false }
+         */
         Assert.assertEquals(getInteger(expectedRequest, PlatformPubliclightingKeys.KEY_INDEX),
                 OslpUtils.byteStringToInteger(request.getIndex()));
+        Assert.assertEquals(getBoolean(expectedRequest, PlatformPubliclightingKeys.KEY_ISIMMEDIATE),
+                request.getImmediate());
     }
 
     /**
@@ -535,7 +537,6 @@ public class OslpDeviceSteps {
      */
     @Then("^a start device \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aStartDeviceOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        // TODO: Sent an OSLP start device message to device
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.START_SELF_TEST);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasStartSelfTestRequest());
@@ -550,7 +551,6 @@ public class OslpDeviceSteps {
      */
     @Then("^a stop device \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aStopDeviceOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        // TODO: Send an OSLP start device message to device
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.STOP_SELF_TEST);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasStopSelfTestRequest());
@@ -1215,23 +1215,13 @@ public class OslpDeviceSteps {
             throws IOException, DeviceSimulatorException {
         final String deviceIdentification = getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION);
         final String hostname = this.configuration.getPlatform();
-        final String protocol = getString(settings, PlatformPubliclightingKeys.KEY_PROTOCOL,
-                PlatformPubliclightingDefaults.DEFAULT_PROTOCOL);
 
-        InetSocketAddress address = null;
+        // See PlatformPubliclightingKeys.KEY_PROTOCOL and
+        // PlatformPubliclightingDefaults.DEFAULT_PROTOCOL when using the
+        // 'Protocol' key value pair in the settings.
 
-        switch (protocol) {
-        case "OSLP ELSTER":
-            address = new InetSocketAddress(hostname, PlatformPubliclightingDefaults.OSLP_ELSTER_SERVER_PORT);
-            break;
-        case "OSLP":
-            address = new InetSocketAddress(hostname, PlatformPubliclightingDefaults.OSLP_SERVER_PORT);
-            break;
-        default:
-            address = new InetSocketAddress(hostname, PlatformPubliclightingDefaults.OSLP_SERVER_PORT);
-            break;
-        }
-
+        final InetSocketAddress address = new InetSocketAddress(hostname,
+                PlatformPubliclightingDefaults.OSLP_ELSTER_SERVER_PORT);
         return this.oslpMockServer.send(address, request, deviceIdentification);
     }
 

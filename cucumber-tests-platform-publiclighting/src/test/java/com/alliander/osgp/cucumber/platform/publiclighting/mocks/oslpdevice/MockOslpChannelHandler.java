@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.oslp.Oslp;
@@ -280,10 +280,11 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                 LOGGER.debug("sending OSLP response with sequence number: {}",
                         this.convertByteArrayToInteger(response.getSequenceNumber()));
 
-                // wait for the response to actually be written. This improves stability of the tests
-                ChannelFuture future = e.getChannel().write(response);
+                // wait for the response to actually be written. This improves
+                // stability of the tests
+                final ChannelFuture future = e.getChannel().write(response);
                 future.await();
-                
+
                 LOGGER.debug("Send OSLP Response: {}", response.getPayloadMessage().toString().split(" ")[0]);
             }
         } else {
@@ -464,7 +465,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     public void reset() {
         this.sequenceNumber = 0;
     }
-    
+
     public int doGetNextSequence() {
         int numberToAddToSequenceNumberValue = 1;
 

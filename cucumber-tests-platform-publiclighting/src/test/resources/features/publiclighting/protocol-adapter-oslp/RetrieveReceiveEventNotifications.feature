@@ -143,10 +143,6 @@ Feature: OslpAdapter Retrieve Received Event Notifications
 		# Failure on last of OSLP and last of OSLP ELSTER
     Examples: 
       | Protocol    | filterDevice      | Result |
-      | OSLP        |                   |      2 |
-      | OSLP        | TESTDEVICE0000001 |      1 |
-      | OSLP        | TESTDEVICE0000002 |      1 |
-      | OSLP        | TESTDEVICE0000003 |      0 |
       | OSLP ELSTER |                   |      2 |
       | OSLP ELSTER | TESTDEVICE0000001 |      1 |
       | OSLP ELSTER | TESTDEVICE0000002 |      1 |
@@ -175,12 +171,6 @@ Feature: OslpAdapter Retrieve Received Event Notifications
 
     Examples:
       | Protocol    | TotalNumber | PageSize | RequestedPage | TotalPages |
-      | OSLP        |           0 |       10 |             1 |          0 |
-      | OSLP        |           1 |       10 |             1 |          1 |
-      | OSLP        |          15 |       10 |             1 |          2 |
-      | OSLP        |          15 |       10 |             2 |          2 |
-      | OSLP        |         500 |       30 |             1 |         17 |
-      | OSLP        |         500 |      400 |             1 |          2 |
       | OSLP ELSTER |           0 |       10 |             1 |          0 |
       | OSLP ELSTER |           1 |       10 |             1 |          1 |
       | OSLP ELSTER |          15 |       10 |             1 |          2 |

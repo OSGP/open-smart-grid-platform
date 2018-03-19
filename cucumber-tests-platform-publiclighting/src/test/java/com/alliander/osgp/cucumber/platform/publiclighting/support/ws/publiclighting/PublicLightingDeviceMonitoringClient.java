@@ -14,10 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryRequest;
@@ -31,20 +27,6 @@ public class PublicLightingDeviceMonitoringClient extends BaseClient {
 
     @Autowired
     private DefaultWebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
-
-    public GetActualPowerUsageAsyncResponse getActualPowerUsage(final GetActualPowerUsageRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetActualPowerUsageAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
-
-    public GetActualPowerUsageResponse getGetActualPowerUsageResponse(final GetActualPowerUsageAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetActualPowerUsageResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
 
     public GetPowerUsageHistoryResponse getGetPowerUsageHistoryResponse(final GetPowerUsageHistoryAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {

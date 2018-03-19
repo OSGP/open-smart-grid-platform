@@ -44,20 +44,6 @@ Feature: CoreConfigurationManagement GetConfiguration
 
     Examples: 
       | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType | OsgpIpAddress | OsgpPort |
-      | OSLP        | RELAY                   |          |         |            |                   | AUX       |               |              |              |               |          |
-      | OSLP        | RELAY                   |          |         | 1,1,TARIFF |                   |           |               |              |              |               |          |
-      | OSLP        | ONE_TO_TEN_VOLT         |          |         |            |                   |           |               |              |              |               |          |
-      | OSLP        | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   |           |               |              |              |               |          |
-      | OSLP        | DALI                    |        2 | 1,2;2,1 |            |                   |           |               |              |              |               |          |
-      | OSLP        |                         |          |         |            |                   |           |            30 |              |              |               |          |
-      | OSLP        |                         |          |         |            | GPRS              |           |               |              |              |               |          |
-      | OSLP        | DALI                    |          |         |            |                   |           |               |              |              |               |          |
-      | OSLP        |                         |          |         |            |                   |           |               |              |              |               |          |
-      | OSLP        |                         |          |         |            |                   | P1        |               |              |              |               |          |
-      | OSLP        |                         |          |         |            |                   |           |               |           10 | DAYS         |               |          |
-      | OSLP        |                         |          |         |            |                   |           |               |           10 | MONTHS       |               |          |
-      | OSLP        | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | PULSE     |            15 |           30 | DAYS         |               |          |
-      | OSLP        | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | P1        |            15 |            1 | DAYS         |               |          |
       | OSLP ELSTER | RELAY                   |          |         |            |                   | AUX       |               |              |              | 10.20.30.40   |    12122 |
       | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   |           |               |              |              | 10.20.30.40   |    12122 |
       | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   |           |               |              |              | 10.20.30.40   |    12122 |
@@ -105,7 +91,6 @@ Feature: CoreConfigurationManagement GetConfiguration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -134,5 +119,4 @@ Feature: CoreConfigurationManagement GetConfiguration
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |

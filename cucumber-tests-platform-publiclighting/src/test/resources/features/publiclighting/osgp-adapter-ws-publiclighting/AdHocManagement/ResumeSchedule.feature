@@ -25,10 +25,6 @@ Feature: PublicLightingAdhocManagement Resume Schedule
 
     Examples: 
       | Protocol    | Index | IsImmediate |
-      | OSLP        |     0 | true        |
-      | OSLP        |     0 | false       |
-      | OSLP        |     1 | true        |
-      | OSLP        |     6 | true        |
       | OSLP ELSTER |     0 | true        |
       | OSLP ELSTER |     0 | false       |
       | OSLP ELSTER |     1 | true        |
@@ -51,7 +47,6 @@ Feature: PublicLightingAdhocManagement Resume Schedule
 
     Examples: 
       | Protocol    | Index | IsImmediate | FaultString        |
-      | OSLP        |     1 | true        | UNSCHEDULED_DEVICE |
       | OSLP ELSTER |     1 | true        | UNSCHEDULED_DEVICE |
 
   Scenario: Resume Schedule as an unknown organization

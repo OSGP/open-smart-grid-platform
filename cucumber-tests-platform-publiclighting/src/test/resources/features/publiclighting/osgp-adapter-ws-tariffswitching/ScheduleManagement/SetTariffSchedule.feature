@@ -31,12 +31,6 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
 
     Examples: 
       | Protocol    | WeekDay     | StartDay   | EndDay     | Time         | TariffValues |
-      | OSLP        | MONDAY      |            |            | 08:00:00.000 | 1,true       |
-      | OSLP        | WEEKDAY     |            |            | 21:00:00.000 | 1,false      |
-      | OSLP        | MONDAY      |            |            | 18:00:00.000 | 1,true       |
-      | OSLP        | ABSOLUTEDAY | 2013-03-01 |            | 18:00:00.000 | 1,true       |
-      | OSLP        | MONDAY      |            |            |              | 1,true       |
-      | OSLP        | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       |
       | OSLP ELSTER | MONDAY      |            |            | 08:00:00.000 | 1,true       |
       | OSLP ELSTER | WEEKDAY     |            |            | 21:00:00.000 | 1,false      |
       | OSLP ELSTER | MONDAY      |            |            | 18:00:00.000 | 1,true       |
@@ -72,7 +66,6 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   @OslpMockServer
@@ -103,7 +96,6 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
 
     Examples: 
       | Protocol    |
-      | OSLP        |
       | OSLP ELSTER |
 
   Scenario: Set tariff schedule with invalid schedule
@@ -152,7 +144,6 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
 
     Examples: 
       | Protocol    | WeekDay     | StartDay   | EndDay     | Time         | TariffValues | ScheduledTime |
-      | OSLP        | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       | 2016-12-15    |
       | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       | 2016-12-15    |
 
   Scenario Outline: Set tariff schedule with 51 schedules # Fail

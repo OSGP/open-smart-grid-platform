@@ -59,7 +59,6 @@
     <module>Protocol-Adapter-OSLP/oslp</module>
     <module>Protocol-Adapter-OSLP/web-device-simulator</module>
     <module>Protocol-Adapter-OSLP/osgp-core-db-api</module>
-    <module>Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp</module>
     <module>Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp-elster</module>
     <module>Protocol-Adapter-OSLP/signing-server</module>
 
