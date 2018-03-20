@@ -46,8 +46,8 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreResponseMessageProcessor.class);
 
     /**
-     * This is the message sender needed for the message processor
-     * implementation to forward response messages to web service adapter.
+     * This is the message sender needed for the message processor implementation to
+     * forward response messages to web service adapter.
      */
     @Autowired
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
@@ -76,8 +76,8 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     }
 
     /**
-     * In case a message processor instance can process multiple message types,
-     * a message type can be added.
+     * In case a message processor instance can process multiple message types, a
+     * message type can be added.
      *
      * @param deviceFunction
      *            The message type a message processor can handle.
@@ -87,10 +87,9 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     }
 
     /**
-     * Initialization function executed after dependency injection has finished.
-     * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * Initialization function executed after dependency injection has finished. The
+     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
+     * key for the HashMap is the integer value of the enumeration member.
      */
     @PostConstruct
     public void init() {
@@ -134,8 +133,9 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
             } else {
                 LOGGER.error(
                         "No osgpException, yet dataObject ({}) is not of the regular type for handling response: {}",
-                        responseMessage.getDataObject() == null ? null : responseMessage.getDataObject().getClass()
-                                .getName(), deviceMessageMetadata.getMessageType());
+                        responseMessage.getDataObject() == null ? null
+                                : responseMessage.getDataObject().getClass().getName(),
+                        deviceMessageMetadata.getMessageType());
 
                 this.handleError(new TechnicalException(ComponentType.DOMAIN_SMART_METERING,
                         "Unexpected response data handling request.", null), deviceMessageMetadata);
@@ -147,22 +147,21 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     }
 
     /**
-     * The {@code dataObject} in the {@code responseMessage} can either have a
-     * value that would normally be returned as an answer, or it can contain an
-     * object that was used in the request message (or other unexpected value).
+     * The {@code dataObject} in the {@code responseMessage} can either have a value
+     * that would normally be returned as an answer, or it can contain an object
+     * that was used in the request message (or other unexpected value).
      * <p>
-     * The object from the request message is sometimes returned as object in
-     * the response message to allow retries of requests without other knowledge
-     * of what was sent earlier.
+     * The object from the request message is sometimes returned as object in the
+     * response message to allow retries of requests without other knowledge of what
+     * was sent earlier.
      * <p>
      * To filter out these, or other unexpected situations that may occur in the
-     * future, each message processor is supposed to check the response message
-     * for expected types of data objects.
+     * future, each message processor is supposed to check the response message for
+     * expected types of data objects.
      *
      * @param responseMessage
-     * @return {@code true} if {@code responseMessage} contains a
-     *         {@code dataObject} that can be processed normally; {@code false}
-     *         otherwise.
+     * @return {@code true} if {@code responseMessage} contains a {@code dataObject}
+     *         that can be processed normally; {@code false} otherwise.
      */
     protected abstract boolean hasRegularResponseObject(final ResponseMessage responseMessage);
 
@@ -170,12 +169,12 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException;
 
     /**
-     * In case of an error, this function can be used to send a response
-     * containing the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response containing
+     * the exception to the web-service-adapter.
      * <p>
-     * The response message is provided to allow manipulation of certain
-     * responses, for instance in case the error has to be incorporated in the
-     * response instead of defining the response at its own.
+     * The response message is provided to allow manipulation of certain responses,
+     * for instance in case the error has to be incorporated in the response instead
+     * of defining the response at its own.
      *
      * @param e
      *            the exception.
@@ -195,8 +194,8 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     }
 
     /**
-     * In case of an error, this function can be used to send a response
-     * containing the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response containing
+     * the exception to the web-service-adapter.
      *
      * @param e
      *            the exception.
@@ -206,10 +205,14 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), deviceMessageMetadata.getMessageType());
         final OsgpException osgpException = this.ensureOsgpException(e);
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                ResponseMessageResultType.NOT_OK, osgpException, null, deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(ResponseMessageResultType.NOT_OK).withOsgpException(osgpException)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     protected OsgpException ensureOsgpException(final Exception e) {

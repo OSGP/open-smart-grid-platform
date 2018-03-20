@@ -27,18 +27,18 @@ public abstract class AbstractRequestMessageProcessor {
 
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
-        throw new UnsupportedOperationException(String.format(ERROR_MSG_UNSUPPORTED_OPERATION,
-                "handleMessage(deviceMessageMetadata, dataObject)"));
+        throw new UnsupportedOperationException(
+                String.format(ERROR_MSG_UNSUPPORTED_OPERATION, "handleMessage(deviceMessageMetadata, dataObject)"));
     }
 
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
-        throw new UnsupportedOperationException(String.format(ERROR_MSG_UNSUPPORTED_OPERATION,
-                "handleMessage(deviceMessageMetadata)"));
+        throw new UnsupportedOperationException(
+                String.format(ERROR_MSG_UNSUPPORTED_OPERATION, "handleMessage(deviceMessageMetadata)"));
     }
 
     /**
-     * In case of an error, this function can be used to send a response
-     * containing the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response containing
+     * the exception to the web-service-adapter.
      *
      * @param e
      *            The exception
@@ -50,10 +50,13 @@ public abstract class AbstractRequestMessageProcessor {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), deviceMessageMetadata.getMessageType());
         final OsgpException osgpException = this.ensureOsgpException(e, errorMessage);
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                ResponseMessageResultType.NOT_OK, osgpException, null, deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(ResponseMessageResultType.NOT_OK).withOsgpException(osgpException)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     protected OsgpException ensureOsgpException(final Exception e, final String errorMessage) {

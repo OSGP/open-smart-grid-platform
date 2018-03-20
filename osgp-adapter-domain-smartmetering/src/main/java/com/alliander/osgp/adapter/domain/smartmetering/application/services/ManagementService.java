@@ -90,10 +90,13 @@ public class ManagementService {
                 EventMessagesResponse.class);
 
         // Send the response containing the events to the webservice-adapter
-        final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                responseMessageResultType, osgpException, eventMessageDataContainer,
-                deviceMessageMetadata.getMessagePriority());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(ResponseMessageResultType.NOT_OK).withOsgpException(osgpException)
+                .withDataObject(eventMessageDataContainer)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -187,12 +190,15 @@ public class ManagementService {
         final SetDeviceLifecycleStatusByChannelResponseData responseData = this.managementMapper.map(responseDto,
                 SetDeviceLifecycleStatusByChannelResponseData.class);
 
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(gatewayDeviceIdentification).withResult(result)
+                .withOsgpException(osgpException).withDataObject(responseData)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
         this.webServiceResponseMessageSender.send(
-                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), gatewayDeviceIdentification, result,
-                        osgpException, responseData, deviceMessageMetadata.getMessagePriority()),
+                responseMessage,
                 deviceMessageMetadata.getMessageType());
-
     }
 
     public void setDeviceLifecycleStatusByChannel(final SetDeviceLifecycleStatusByChannelResponseDto responseDto) {
@@ -226,10 +232,12 @@ public class ManagementService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification()).withResult(result)
+                .withOsgpException(exception).withMessagePriority(deviceMessageMetadata.getMessagePriority()).build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
 }

@@ -16,8 +16,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.alliander.osgp.adapter.ws.shared.services.ResponseDataCleanupJob;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.ResponseUrlDataCleanupJob;
 import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
+import com.alliander.osgp.shared.application.config.AbstractSchedulingConfigBuilder;
 
 @EnableScheduling
 @Configuration
@@ -59,17 +59,23 @@ public class SchedulingConfig extends AbstractSchedulingConfig {
     }
 
     @Bean(destroyMethod = "shutdown")
-    public Scheduler cleanupResponseDataScheduler() throws SchedulerException {
-        return this.constructScheduler(ResponseDataCleanupJob.class, KEY_CLEANUP_JOB_THREAD_COUNT,
-                KEY_CLEANUP_JOB_CRON_EXPRESSION, this.getDatabaseUrl(), this.databaseUsername, this.databasePassword,
-                this.databaseDriver);
+    public Scheduler cleanupJobScheduler() throws SchedulerException {
+        AbstractSchedulingConfigBuilder abstractSchedulingConfig = AbstractSchedulingConfigBuilder.newBuilder()
+                .withJobClass(ResponseDataCleanupJob.class).withThreadCountKey(KEY_CLEANUP_JOB_THREAD_COUNT)
+                .withCronExpressionKey(KEY_CLEANUP_JOB_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
+                .withJobStoreDbUsername(this.databaseUsername).withJobStoreDbPassword(this.databasePassword)
+                .withJobStoreDbDriver(this.databaseDriver).build();
+        return this.constructScheduler(abstractSchedulingConfig);
     }
 
     @Bean(destroyMethod = "shutdown")
     public Scheduler cleanupResponseUrlDataScheduler() throws SchedulerException {
-        return this.constructScheduler(ResponseUrlDataCleanupJob.class, KEY_CLEANUP_JOB_THREAD_COUNT,
-                KEY_CLEANUP_JOB_CRON_EXPRESSION, this.getDatabaseUrl(), this.databaseUsername, this.databasePassword,
-                this.databaseDriver);
+        AbstractSchedulingConfigBuilder abstractSchedulingConfig = AbstractSchedulingConfigBuilder.newBuilder()
+                .withJobClass(ResponseDataCleanupJob.class).withThreadCountKey(KEY_CLEANUP_JOB_THREAD_COUNT)
+                .withCronExpressionKey(KEY_CLEANUP_JOB_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
+                .withJobStoreDbUsername(this.databaseUsername).withJobStoreDbPassword(this.databasePassword)
+                .withJobStoreDbDriver(this.databaseDriver).build();
+        return this.constructScheduler(abstractSchedulingConfig);
     }
 
     private String getDatabaseUrl() {

@@ -112,8 +112,10 @@ public class DeviceManagementService extends AbstractService {
 
         final ResponseMessageResultType result = ResponseMessageResultType.OK;
 
-        this.webServiceResponseMessageSender.send(
-                new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, null));
+        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).build();
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 
 }
