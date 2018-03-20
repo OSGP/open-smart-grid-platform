@@ -19,10 +19,8 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsConnectionMessageProcessor;
-import org.osgp.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.slf4j.Logger;
@@ -31,19 +29,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
-import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.alliander.osgp.shared.infra.jms.RetryHeader;
 
 /**
- * Base class for MessageProcessor implementations. Each MessageProcessor implementation should be annotated
- * with @Component. Further the MessageType the MessageProcessor implementation can process should be passed in at
- * construction. The Singleton instance is added to the HashMap of MessageProcessors after dependency injection has
- * completed.
+ * Base class for MessageProcessor implementations. Each MessageProcessor
+ * implementation should be annotated with @Component. Further the MessageType
+ * the MessageProcessor implementation can process should be passed in at
+ * construction. The Singleton instance is added to the HashMap of
+ * MessageProcessors after dependency injection has completed.
  */
 public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessageProcessor implements MessageProcessor {
 
@@ -62,9 +58,6 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     @Autowired
     protected DomainHelperService domainHelperService;
 
-    @Autowired
-    private RetryHeaderFactory retryHeaderFactory;
-
     protected final OsgpRequestMessageType osgpRequestMessageType;
 
     /**
@@ -78,8 +71,9 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     }
 
     /**
-     * Initialization function executed after dependency injection has finished. The MessageProcessor Singleton is added
-     * to the HashMap of MessageProcessors. The key for the HashMap is the integer value of the enumeration member.
+     * Initialization function executed after dependency injection has finished. The
+     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
+     * key for the HashMap is the integer value of the enumeration member.
      */
     @PostConstruct
     public void init() {
@@ -126,9 +120,10 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     }
 
     /**
-     * Implementation of this method should call a service that can handle the requestObject and return a response
-     * object to be put on the response queue. This response object can also be null for methods that don't provide
-     * result data.
+     * Implementation of this method should call a service that can handle the
+     * requestObject and return a response object to be put on the response queue.
+     * This response object can also be null for methods that don't provide result
+     * data.
      *
      * @param DlmsConnection
      *            the connection to the device.
@@ -152,34 +147,9 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }
 
-    protected void sendResponseMessage(final MessageMetadata messageMetadata, final ResponseMessageResultType result,
-            final Exception exception, final DeviceResponseMessageSender responseMessageSender,
-            final Serializable responseObject) {
-
-        OsgpException osgpException = null;
-        if (exception != null) {
-            osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
-        }
-
-        RetryHeader retryHeader;
-        if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof RetryableException)) {
-            retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
-        } else {
-            retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
-        }
-
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata)).domain(messageMetadata.getDomain())
-                .domainVersion(messageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
-                .dataObject(responseObject).retryCount(messageMetadata.getRetryCount()).retryHeader(retryHeader)
-                .scheduled(messageMetadata.isScheduled()).build();
-
-        responseMessageSender.send(responseMessage);
-    }
-
     /**
-     * Used to determine if the handleMessage needs a device connection or not. Default value is true, override to alter
-     * behaviour of subclasses.
+     * Used to determine if the handleMessage needs a device connection or not.
+     * Default value is true, override to alter behaviour of subclasses.
      *
      * @return Use device connection in handleMessage.
      */

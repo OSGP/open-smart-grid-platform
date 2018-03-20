@@ -7,12 +7,18 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 
 import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodResultCode;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +46,8 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
     }
 
     /**
-     * Constructor for CommandExecutors that need to be executed in the context
-     * of bundle actions.
+     * Constructor for CommandExecutors that need to be executed in the context of
+     * bundle actions.
      *
      * @param clazz
      *            the class of the ActionRequestDto subtype for which this
@@ -131,6 +137,36 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
         if (MethodResultCode.SUCCESS != methodResultCode) {
             throw new ProtocolAdapterException("MethodResultCode: " + methodResultCode);
         }
+    }
+
+    /**
+     * Retrieves connection, gets result data and validates it before returning.
+     *
+     * @param conn
+     *            holds connection
+     * @param getParameter
+     *            for attribute to retrieve result data from
+     * @return dataObject
+     * @throws ProtocolAdapterException
+     */
+    public DataObject getValidatedResultData(final DlmsConnectionHolder conn, final AttributeAddress getParameter)
+            throws ProtocolAdapterException {
+        GetResult getResult = null;
+        try {
+            getResult = conn.getConnection().get(getParameter);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
+
+        if (getResult == null) {
+            throw new ProtocolAdapterException("No GetResult received while retrieving M-Bus encryption key status.");
+        }
+
+        final DataObject dataObject = getResult.getResultData();
+        if (!dataObject.isNumber()) {
+            throw new ProtocolAdapterException("Received unexpected result data.");
+        }
+        return dataObject;
     }
 
 }
