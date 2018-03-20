@@ -1,7 +1,7 @@
 @SmartMetering @Platform
 Feature: SmartMetering functional exceptions regarding encryption keys
 
-  Scenario: HLS5 connect without an encryption key
+  Scenario: HLS5 connect with an invalid key
     Given a dlms device
       | DeviceIdentification  | TEST1024000000001      |
       | DeviceType            | SMART_METER_E          |
