@@ -57,11 +57,37 @@ public class LightMeasurementRtu extends LogicalDevice {
             // light sensors, because we use changes in SPGGIO.Ind.d to trigger
             // their update.
             values.addAll(this.setGeneralIO(newValue));
+        } else if (LogicalDeviceNode.SPGGIO2_IND_D.getDescription().equals(node)) {
+            LOGGER.info("Update reporting control block enabled value");
+            final byte[] bool = ((BdaVisibleString) value).getValue();
+            final BasicDataAttribute bda = this.setReportingControlBlock(bool);
+            if (bda != null) {
+                values.add(bda);
+            }
         } else {
             LOGGER.info("No special update action needed for setting node " + value);
         }
 
         return values;
+    }
+
+    private BasicDataAttribute setReportingControlBlock(final byte[] bool) {
+        try {
+            if (bool == null) {
+                LOGGER.error("Null");
+                return null;
+            }
+            if (bool.length == 0) {
+                LOGGER.error("Empty array");
+                return null;
+            }
+            final boolean rcbEnabled = (bool[0] - 48) == 1;
+            LOGGER.info("rcbEnabled = {}", rcbEnabled);
+            return this.setBoolean(LogicalDeviceNode.RCB_ENABLED, rcbEnabled);
+        } catch (final Exception e) {
+            LOGGER.error("Unable to set BRC.enabled", e);
+            return null;
+        }
     }
 
     /**
@@ -83,8 +109,8 @@ public class LightMeasurementRtu extends LogicalDevice {
             if (bdaValue != null && bdaValue.length >= lmIndex) {
                 stVal = bdaValue[lmIndex - 1] - 48 > 0;
             }
-            final BasicDataAttribute bda = this.setBoolean(LogicalDeviceNode.fromDescription("SPGGIO" + lmIndex + ".Ind.stVal"),
-                    stVal);
+            final BasicDataAttribute bda = this
+                    .setBoolean(LogicalDeviceNode.fromDescription("SPGGIO" + lmIndex + ".Ind.stVal"), stVal);
             values.add(bda);
         }
 

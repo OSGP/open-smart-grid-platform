@@ -226,6 +226,10 @@ public enum LogicalDeviceNode {
     SPGGIO3_IND_STVAL("SPGGIO3.Ind.stVal", BdaType.BOOLEAN, Fc.ST),
     SPGGIO4_IND_STVAL("SPGGIO4.Ind.stVal", BdaType.BOOLEAN, Fc.ST),
 
+    SPGGIO2_IND_D("SPGGIO2.Ind.d", BdaType.VISIBLE_STRING, Fc.DC),
+
+    RCB_ENABLED("LLN0.rcb_A.RptEna", BdaType.BOOLEAN, Fc.RP),
+
     MMXU1_HZ_MAG_F("MMXU1.Hz.mag.f", BdaType.FLOAT32, Fc.MX),
     MMXU1_HZ_Q("MMXU1.Hz.q", BdaType.QUALITY, Fc.MX),
     MMXU1_HZ_T("MMXU1.Hz.t", BdaType.TIMESTAMP, Fc.MX),
