@@ -137,16 +137,6 @@ Feature: BasicOsgpFunctions Common Authorizing Device Functions
       | SET_REBOOT               | CONFIGURATION       | false   |
       | SET_REBOOT               | MONITORING          | false   |
       | SET_REBOOT               | METADATA_MANAGEMENT | false   |
-      | DEACTIVATE_DEVICE        | OWNER               | true    |
-      | DEACTIVATE_DEVICE        | INSTALLATION        | true    |
-      | DEACTIVATE_DEVICE        | AD_HOC              | true    |
-      | DEACTIVATE_DEVICE        | MANAGEMENT          | true    |
-      | DEACTIVATE_DEVICE        | FIRMWARE            | true    |
-      | DEACTIVATE_DEVICE        | SCHEDULING          | true    |
-      | DEACTIVATE_DEVICE        | TARIFF_SCHEDULING   | true    |
-      | DEACTIVATE_DEVICE        | CONFIGURATION       | true    |
-      | DEACTIVATE_DEVICE        | MONITORING          | true    |
-      | DEACTIVATE_DEVICE        | METADATA_MANAGEMENT | true    |
 
   Scenario Outline: Change device authorization
     Given a device

@@ -68,5 +68,3 @@ Feature: BasicOsgpFunctions Authorizing Platform Functions
       | CHANGE_FIRMWARE        | USER                  | false   |
       | REMOVE_FIRMWARE        | ADMIN                 | true    |
       | REMOVE_FIRMWARE        | USER                  | false   |
-      | ACTIVATE_DEVICE        | ADMIN                 | true    |
-      | ACTIVATE_DEVICE        | USER                  | false   |

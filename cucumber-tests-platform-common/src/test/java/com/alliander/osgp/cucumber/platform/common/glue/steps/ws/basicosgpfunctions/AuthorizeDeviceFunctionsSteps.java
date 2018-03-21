@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceAuthorisation;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceFunctionGroup;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsRequest;
@@ -141,9 +140,6 @@ public class AuthorizeDeviceFunctionsSteps {
                     break;
                 case SET_REBOOT:
                     this.setReboot(requestParameters);
-                    break;
-                case DEACTIVATE_DEVICE:
-                    this.deactivateDevice(requestParameters);
                     break;
                 default:
                     throw new OperationNotSupportedException(
@@ -341,15 +337,6 @@ public class AuthorizeDeviceFunctionsSteps {
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, this.coreAdHocManagementClient.setReboot(request));
-    }
-
-    private void deactivateDevice(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final DeactivateDeviceRequest request = new DeactivateDeviceRequest();
-        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.adminDeviceManagementClient.deactivateDevice(request));
     }
 
     private void setDeviceAuthorization(final Map<String, String> requestParameters)
