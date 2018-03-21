@@ -25,17 +25,12 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.alliander.osgp.adapter.ws.admin.application.mapping.DeviceManagementMapper;
 import com.alliander.osgp.adapter.ws.admin.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import com.alliander.osgp.adapter.ws.schema.admin.common.OsgpResultType;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationResponse;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceAuthorisation;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsResponse;
@@ -486,70 +481,6 @@ public class DeviceManagementEndpoint {
         }
 
         return new UpdateDeviceProtocolResponse();
-    }
-
-    @PayloadRoot(localPart = "ActivateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public ActivateDeviceResponse activateDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ActivateDeviceRequest request) throws OsgpException {
-
-        LOGGER.info("Incoming ActivateDeviceRequest for device: {}.", request.getDeviceIdentification());
-
-        try {
-
-            this.deviceManagementService.activateDeviceRequest(organisationIdentification,
-                    request.getDeviceIdentification());
-
-        } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception: {} while activating device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
-
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
-                    new ValidationException(e.getConstraintViolations()));
-
-        } catch (final Exception e) {
-
-            LOGGER.error("Exception: {} while activating device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
-
-            this.handleException(e);
-        }
-        final ActivateDeviceResponse response = new ActivateDeviceResponse();
-        response.setResult(OsgpResultType.OK);
-        return response;
-    }
-
-    @PayloadRoot(localPart = "DeactivateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public DeactivateDeviceResponse deactivateDevice(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final DeactivateDeviceRequest request) throws OsgpException {
-
-        LOGGER.info("Incoming DeactivateDeviceRequest for device: {}.", request.getDeviceIdentification());
-
-        try {
-
-            this.deviceManagementService.deactivateDeviceRequest(organisationIdentification,
-                    request.getDeviceIdentification());
-
-        } catch (final MethodConstraintViolationException e) {
-
-            LOGGER.error("Exception: {} while deactivating device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
-
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
-                    new ValidationException(e.getConstraintViolations()));
-
-        } catch (final Exception e) {
-
-            LOGGER.error("Exception: {} while deactivating device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
-
-            this.handleException(e);
-        }
-        final DeactivateDeviceResponse response = new DeactivateDeviceResponse();
-        response.setResult(OsgpResultType.OK);
-        return response;
     }
 
     private void handleException(final Exception e) throws OsgpException {
