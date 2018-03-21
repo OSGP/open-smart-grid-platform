@@ -7,7 +7,7 @@
 
   <artifactId>os-webapps</artifactId>
   <groupId>org.osgpfoundation.osgp</groupId>
-  <version>4.26.0-SNAPSHOT</version>
+  <version>4.27.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
     to generate a maven site -->
