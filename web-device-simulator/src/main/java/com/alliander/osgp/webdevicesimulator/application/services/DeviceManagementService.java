@@ -10,8 +10,6 @@ package com.alliander.osgp.webdevicesimulator.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +20,6 @@ import com.alliander.osgp.webdevicesimulator.domain.valueobjects.EventNotificati
 @Service
 public class DeviceManagementService {
 
-    @Resource
     @Autowired
     private DeviceRepository deviceRepository;
 

@@ -508,7 +508,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
             response = createStopSelfTestResponse();
         } else if (request.hasSetLightRequest()) {
-            handleSetLightRequest(device, request.getSetLightRequest());
+            this.handleSetLightRequest(device, request.getSetLightRequest());
 
             response = createSetLightResponse();
         } else if (request.hasSetEventNotificationsRequest()) {
@@ -1001,7 +1001,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .setSetTransitionResponse(Oslp.SetTransitionResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
-    private static void handleSetLightRequest(final Device device, final SetLightRequest request) {
+    private void handleSetLightRequest(final Device device, final SetLightRequest request) {
         // Device simulator will only use first light value,
         // other light values will be ignored
         final LightValue lightValue = request.getValues(0);
@@ -1014,6 +1014,22 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         } else {
             device.setDimValue(null);
         }
+
+        // Send an event.
+        final Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                final Oslp.Event event = device.isLightOn() ? Oslp.Event.LIGHT_EVENTS_LIGHT_ON
+                        : Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
+                final String description = "setLightRequest [SET_LIGHT] SCHED[-]";
+
+                OslpChannelHandler.this.registerDevice.sendEventNotificationCommand(device.getId(), event.getNumber(),
+                        description, null);
+            }
+
+        }, 3000);
     }
 
     private void handleSetTransitionRequest(final Device device) {
@@ -1023,6 +1039,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         // reverse the light.
         device.setLightOn(!device.isLightOn());
 
+        // Send an event.
         final EventNotificationToBeSent eventNotificationToBeSent = new EventNotificationToBeSent(device.getId(),
                 device.isLightOn());
         this.deviceManagementService.getEventNotificationToBeSent().add(eventNotificationToBeSent);
