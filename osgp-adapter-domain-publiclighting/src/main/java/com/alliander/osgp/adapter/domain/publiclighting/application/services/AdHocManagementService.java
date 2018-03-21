@@ -92,8 +92,8 @@ public class AdHocManagementService extends AbstractService {
     // === GET STATUS ===
 
     /**
-     * Retrieve status of device and provide a mapped response (PublicLighting or
-     * TariffSwitching)
+     * Retrieve status of device and provide a mapped response (PublicLighting
+     * or TariffSwitching)
      *
      * @param organisationIdentification
      *            identification of organisation
@@ -150,7 +150,7 @@ public class AdHocManagementService extends AbstractService {
             }
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(response.getResult())
                 .withOsgpException(response.getOsgpException()).withDataObject(response.getDeviceStatusMapped())
@@ -253,7 +253,7 @@ public class AdHocManagementService extends AbstractService {
 
     private void setTransition(final String organisationIdentification, final Device device,
             final String correlationUid, final TransitionType transitionType, final DateTime transitionTime,
-            final String messageType) throws FunctionalException {
+            final String messageType) {
 
         LOGGER.debug("Private setTransition called for device {} with organisation {}",
                 device.getDeviceIdentification(), organisationIdentification);
@@ -270,7 +270,8 @@ public class AdHocManagementService extends AbstractService {
     // === TRANSITION MESSAGE FROM LIGHT MEASUREMENT DEVICE ===
 
     /**
-     * Send transition message to SSLD's based on light measurement device trigger.
+     * Send transition message to SSLD's based on light measurement device
+     * trigger.
      *
      * @param organisationIdentification
      *            Organization issuing the request.
@@ -317,8 +318,7 @@ public class AdHocManagementService extends AbstractService {
         final TransitionType transitionType = this.determineTransitionTypeForEvent(event);
 
         // Send SET_TRANSITION messages to the SSLDs.
-        this.transitionSslds(ssldsToTransition, organisationIdentification, correlationUid, transitionType,
-                DateTime.now());
+        this.transitionSslds(ssldsToTransition, organisationIdentification, correlationUid, transitionType);
     }
 
     private LightMeasurementDevice updateLmdLastCommunicationTime(final LightMeasurementDevice lmd) {
@@ -366,13 +366,15 @@ public class AdHocManagementService extends AbstractService {
     }
 
     private void transitionSslds(final List<Ssld> ssldsToTransition, final String organisationIdentification,
-            final String correlationUid, final TransitionType transitionType, final DateTime transitionTime) {
+            final String correlationUid, final TransitionType transitionType) {
+        // Don't send time stamp to switch device.
+        final DateTime transitionTime = null;
         for (final Ssld ssld : ssldsToTransition) {
             try {
                 this.setTransition(organisationIdentification, ssld, correlationUid, transitionType, transitionTime,
                         DeviceFunction.SET_TRANSITION.name());
-            } catch (final FunctionalException e) {
-                LOGGER.error("Caught unexpected FunctionalException", e);
+            } catch (final Exception e) {
+                LOGGER.error("Caught unexpected Exception", e);
             }
         }
     }
@@ -427,7 +429,8 @@ public class AdHocManagementService extends AbstractService {
     }
 
     /**
-     * Updates the relay overview from a device based on the given device status.
+     * Updates the relay overview from a device based on the given device
+     * status.
      *
      * @param device
      *            The device to update.
