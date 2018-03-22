@@ -16,7 +16,6 @@ import javax.jms.ObjectMessage;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +44,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     @Autowired
     @Qualifier("protocolDlmsDeviceRequestMessageProcessorMap")
     protected MessageProcessorMap dlmsRequestMessageProcessorMap;
-
-    @Autowired
-    protected OsgpExceptionConverter osgpExceptionConverter;
 
     @Autowired
     protected DomainHelperService domainHelperService;
