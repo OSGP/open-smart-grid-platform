@@ -84,7 +84,8 @@ public class SecurityKeyService {
      *         inside the DLMS protocol adapter, or an empty byte array if
      *         {@code externallyEncryptedKey == null}
      * @throws FunctionalException
-     *             in case of a encryption errors while handling the key
+     *             in case of a encryption/decryption errors while handling the
+     *             key
      */
     public byte[] reEncryptKey(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
             throws FunctionalException {
@@ -93,14 +94,32 @@ public class SecurityKeyService {
             return new byte[0];
         }
 
+        final byte[] key = this.rsaDecrypt(externallyEncryptedKey, keyType);
+        return this.aesEncrypt(key, keyType);
+    }
+
+    private final byte[] rsaDecrypt(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
+            throws FunctionalException {
         try {
-            final byte[] key = this.rsaEncryptionService.decrypt(externallyEncryptedKey);
+            return this.rsaEncryptionService.decrypt(externallyEncryptedKey);
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during decryption", e);
+
+            throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS,
+                    new EncrypterException(
+                            String.format("Unexpected exception during decryption of %s key.", keyType)));
+        }
+    }
+
+    private final byte[] aesEncrypt(final byte[] key, final SecurityKeyType keyType) throws FunctionalException {
+        try {
             return this.encryptionService.encrypt(key);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during encryption", e);
 
             throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS,
-                    new EncrypterException(String.format("Error encryption process with %s key.", keyType)));
+                    new EncrypterException(
+                            String.format("Unexpected exception during encryption of %s key.", keyType)));
         }
     }
 
