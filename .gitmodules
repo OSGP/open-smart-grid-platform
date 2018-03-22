@@ -1,4 +1,4 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
+	branch = OC-446_Resolve_a_lot_of_too_many_parameters_sonar_issues_from_shared
