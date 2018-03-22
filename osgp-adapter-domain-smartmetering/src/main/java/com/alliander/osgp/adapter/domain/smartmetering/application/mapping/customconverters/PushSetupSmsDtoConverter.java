@@ -8,28 +8,18 @@
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ClockStatusBit;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObisCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObjectDefinition;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SendDestinationAndMethod;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.TransportServiceType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WindowElement;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusBitDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElementDto;
 
 import ma.glasnost.orika.CustomConverter;
@@ -38,6 +28,16 @@ import ma.glasnost.orika.metadata.Type;
 
 public class PushSetupSmsDtoConverter
         extends CustomConverter<PushSetupSms, com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto> {
+
+    private final ConfigurationMapper configurationMapper;
+
+    public PushSetupSmsDtoConverter() {
+        this.configurationMapper = new ConfigurationMapper();
+    }
+
+    public PushSetupSmsDtoConverter(final ConfigurationMapper mapper) {
+        this.configurationMapper = mapper;
+    }
 
     @Override
     public PushSetupSmsDto convert(final PushSetupSms source,
@@ -54,39 +54,9 @@ public class PushSetupSmsDtoConverter
         final List<WindowElement> communicationWindows = source.getCommunicationWindow();
         if (communicationWindows != null) {
             for (final WindowElement element : communicationWindows) {
-                final CosemDateDto cosemDateDtoStart = new CosemDateDto(element.getStartTime().getDate().getYear(),
-                        element.getStartTime().getDate().getMonth(), element.getStartTime().getDate().getDayOfMonth(),
-                        element.getStartTime().getDate().getDayOfWeek());
-
-                final CosemTimeDto cosemTimeDtoStart = new CosemTimeDto(element.getStartTime().getTime().getHour(),
-                        element.getStartTime().getTime().getMinute(), element.getStartTime().getTime().getSecond(),
-                        element.getStartTime().getTime().getHundredths());
-
-                final Set<ClockStatusBitDto> clockStatusBitDtoStart = this.addClockStatusBitStartDto(element);
-
-                final CosemDateTimeDto cosemDateTimeDtoStart = new CosemDateTimeDto(cosemDateDtoStart,
-                        cosemTimeDtoStart, element.getStartTime().getDeviation(),
-                        new ClockStatusDto((clockStatusBitDtoStart.isEmpty()) ? null : clockStatusBitDtoStart));
-
-                final CosemDateDto cosemDateDtoEnd = new CosemDateDto(element.getEndTime().getDate().getYear(),
-                        element.getEndTime().getDate().getMonth(), element.getEndTime().getDate().getDayOfMonth(),
-                        element.getEndTime().getDate().getDayOfWeek());
-
-                final CosemTimeDto cosemTimeDtoEnd = new CosemTimeDto(element.getEndTime().getTime().getHour(),
-                        element.getEndTime().getTime().getMinute(), element.getEndTime().getTime().getSecond(),
-                        element.getEndTime().getTime().getHundredths());
-
-                final Set<ClockStatusBitDto> clockStatusBitDtoEnd = this.addClockStatusBitEndDto(element);
-
-                final CosemDateTimeDto cosemDateTimeDtoEnd = new CosemDateTimeDto(cosemDateDtoEnd, cosemTimeDtoEnd,
-                        element.getEndTime().getDeviation(),
-                        new ClockStatusDto((clockStatusBitDtoEnd.isEmpty()) ? null : clockStatusBitDtoEnd));
-
-                final WindowElementDto windowElementDto = new WindowElementDto(cosemDateTimeDtoStart,
-                        cosemDateTimeDtoEnd);
+                final WindowElementDto windowElementDto = this.configurationMapper.map(element, WindowElementDto.class);
                 windowElementDtos.add(windowElementDto);
             }
-
             builder.withCommunicationWindow(windowElementDtos);
         }
 
@@ -122,49 +92,21 @@ public class PushSetupSmsDtoConverter
         builder.withRepetitionDelay(source.getRepetitionDelay());
 
         final SendDestinationAndMethod sendDestinationAndMethod = source.getSendDestinationAndMethod();
-        if (sendDestinationAndMethod != null) {
-
-            final TransportServiceType transportService = sendDestinationAndMethod.getTransportService();
-            final String transportServiceName = transportService.name();
-            TransportServiceTypeDto.valueOf(transportServiceName);
-
-            final SendDestinationAndMethodDto sendDestinationAndMethodDto = new SendDestinationAndMethodDto(
-                    TransportServiceTypeDto.valueOf(transportServiceName),
-                    source.getSendDestinationAndMethod().getDestination(),
-                    MessageTypeDto.valueOf(source.getSendDestinationAndMethod().getMessage().name()));
-
-            builder.withSendDestinationAndMethod(sendDestinationAndMethodDto);
-        }
+        final SendDestinationAndMethodDto a = this.mapSendDestinationMethod(source, builder, sendDestinationAndMethod);
+        builder.withSendDestinationAndMethod(a);
         return builder.build();
     }
 
     /**
-     * @param element
-     * @return clockStatusBitDtoStart with ClockStatusBit name if present
+     * @param source
+     * @param builder
+     * @param sendDestinationAndMethod
      */
-    private Set<ClockStatusBitDto> addClockStatusBitStartDto(final WindowElement element) {
-        final Set<ClockStatusBitDto> clockStatusBitDtoStart = new HashSet<>();
-        final Set<ClockStatusBit> statusBitsStart = element.getStartTime().getClockStatus().getStatusBits();
-        if (statusBitsStart != null) {
-            for (final ClockStatusBit ClockStatusBit : statusBitsStart) {
-                clockStatusBitDtoStart.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
-            }
+    private SendDestinationAndMethodDto mapSendDestinationMethod(final PushSetupSms source,
+            final PushSetupSmsDto.Builder builder, final SendDestinationAndMethod sendDestinationAndMethod) {
+        if (sendDestinationAndMethod != null) {
+            return this.configurationMapper.map(sendDestinationAndMethod, SendDestinationAndMethodDto.class);
         }
-        return clockStatusBitDtoStart;
-    }
-
-    /**
-     * @param element
-     * @return clockStatusBitDtoEnd with ClockStatusBit name if present
-     */
-    private Set<ClockStatusBitDto> addClockStatusBitEndDto(final WindowElement element) {
-        final Set<ClockStatusBitDto> clockStatusBitDtoEnd = new HashSet<>();
-        final Set<ClockStatusBit> statusBitsEnd = element.getEndTime().getClockStatus().getStatusBits();
-        if (statusBitsEnd != null) {
-            for (final ClockStatusBit ClockStatusBit : statusBitsEnd) {
-                clockStatusBitDtoEnd.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
-            }
-        }
-        return clockStatusBitDtoEnd;
+        return null;
     }
 }

@@ -33,7 +33,7 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new FirmwareVersionConverter());
         mapperFactory.getConverterFactory().registerConverter(new GetAllAttributeValuesResponseConverter());
         mapperFactory.getConverterFactory().registerConverter(new WeekProfileConverter(this));
-        mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsDtoConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmDtoConverter());
+        mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsDtoConverter(this));
+        mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmDtoConverter(this));
     }
 }
