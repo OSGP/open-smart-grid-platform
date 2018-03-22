@@ -65,13 +65,15 @@ public class PushSetupAlarmDtoConverter
 
                 final Set<ClockStatusBitDto> clockStatusBitDtoStart = new HashSet<>();
                 final Set<ClockStatusBit> statusBitsStart = element.getStartTime().getClockStatus().getStatusBits();
-                for (final ClockStatusBit ClockStatusBit : statusBitsStart) {
-                    clockStatusBitDtoStart.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
+                if (statusBitsStart != null) {
+                    for (final ClockStatusBit ClockStatusBit : statusBitsStart) {
+                        clockStatusBitDtoStart.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
+                    }
                 }
 
                 final CosemDateTimeDto cosemDateTimeDtoStart = new CosemDateTimeDto(cosemDateDtoStart,
                         cosemTimeDtoStart, element.getStartTime().getDeviation(),
-                        new ClockStatusDto(clockStatusBitDtoStart));
+                        new ClockStatusDto((clockStatusBitDtoStart.isEmpty()) ? null : clockStatusBitDtoStart));
 
                 final CosemDateDto cosemDateDtoEnd = new CosemDateDto(element.getEndTime().getDate().getYear(),
                         element.getEndTime().getDate().getMonth(), element.getEndTime().getDate().getDayOfMonth(),
@@ -83,12 +85,15 @@ public class PushSetupAlarmDtoConverter
 
                 final Set<ClockStatusBitDto> clockStatusBitDtoEnd = new HashSet<>();
                 final Set<ClockStatusBit> statusBitsEnd = element.getEndTime().getClockStatus().getStatusBits();
-                for (final ClockStatusBit ClockStatusBit : statusBitsEnd) {
-                    clockStatusBitDtoEnd.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
+                if (statusBitsEnd != null) {
+                    for (final ClockStatusBit ClockStatusBit : statusBitsEnd) {
+                        clockStatusBitDtoEnd.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
+                    }
                 }
 
                 final CosemDateTimeDto cosemDateTimeDtoEnd = new CosemDateTimeDto(cosemDateDtoEnd, cosemTimeDtoEnd,
-                        element.getEndTime().getDeviation(), new ClockStatusDto(clockStatusBitDtoEnd));
+                        element.getEndTime().getDeviation(),
+                        new ClockStatusDto((clockStatusBitDtoEnd.isEmpty()) ? null : clockStatusBitDtoEnd));
 
                 final WindowElementDto windowElementDto = new WindowElementDto(cosemDateTimeDtoStart,
                         cosemDateTimeDtoEnd);
@@ -130,16 +135,18 @@ public class PushSetupAlarmDtoConverter
         builder.withRepetitionDelay(source.getRepetitionDelay());
 
         final SendDestinationAndMethod sendDestinationAndMethod = source.getSendDestinationAndMethod();
-        final TransportServiceType transportService = sendDestinationAndMethod.getTransportService();
-        final String transportServiceName = transportService.name();
-        TransportServiceTypeDto.valueOf(transportServiceName);
+        if (sendDestinationAndMethod != null) {
+            final TransportServiceType transportService = sendDestinationAndMethod.getTransportService();
+            final String transportServiceName = transportService.name();
+            TransportServiceTypeDto.valueOf(transportServiceName);
 
-        final SendDestinationAndMethodDto sendDestinationAndMethodDto = new SendDestinationAndMethodDto(
-                TransportServiceTypeDto.valueOf(transportServiceName),
-                source.getSendDestinationAndMethod().getDestination(),
-                MessageTypeDto.valueOf(source.getSendDestinationAndMethod().getMessage().name()));
+            final SendDestinationAndMethodDto sendDestinationAndMethodDto = new SendDestinationAndMethodDto(
+                    TransportServiceTypeDto.valueOf(transportServiceName),
+                    source.getSendDestinationAndMethod().getDestination(),
+                    MessageTypeDto.valueOf(source.getSendDestinationAndMethod().getMessage().name()));
 
-        builder.withSendDestinationAndMethod(sendDestinationAndMethodDto);
+            builder.withSendDestinationAndMethod(sendDestinationAndMethodDto);
+        }
 
         return builder.build();
     }
