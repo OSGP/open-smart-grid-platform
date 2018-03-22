@@ -18,18 +18,19 @@ public class FaultResponseDto extends ActionResponseDto {
     private final String component;
     private final String innerException;
     private final String innerMessage;
-    private final FaultResponseParametersDto parameters;
+    private final FaultResponseParametersDto faultResponseParameters;
 
-    public FaultResponseDto(final Integer code, final String message, final String component,
-            final String innerException, final String innerMessage, final FaultResponseParametersDto parameters) {
+    private FaultResponseDto(final Builder builder) {
         super(OsgpResultTypeDto.NOT_OK, null, null);
-        Objects.requireNonNull("message", message);
-        this.code = code;
-        this.message = message;
-        this.component = component;
-        this.innerException = innerException;
-        this.innerMessage = innerMessage;
-        this.parameters = parameters;
+
+        Objects.requireNonNull("Message is not allowed to be null", builder.message);
+
+        this.code = builder.code;
+        this.message = builder.message;
+        this.component = builder.component;
+        this.innerException = builder.innerException;
+        this.innerMessage = builder.innerMessage;
+        this.faultResponseParameters = builder.faultResponseParameters;
     }
 
     @Override
@@ -48,8 +49,8 @@ public class FaultResponseDto extends ActionResponseDto {
         if (this.hasInnerMessage()) {
             sb.append(", innerMessage=").append(this.innerMessage);
         }
-        if (this.hasParameters()) {
-            sb.append(", ").append(this.parameters);
+        if (this.hasFaultResponseParameters()) {
+            sb.append(", ").append(this.faultResponseParameters);
         }
         return sb.append(']').toString();
     }
@@ -90,11 +91,55 @@ public class FaultResponseDto extends ActionResponseDto {
         return this.innerMessage;
     }
 
-    public boolean hasParameters() {
-        return this.parameters != null;
+    public boolean hasFaultResponseParameters() {
+        return this.faultResponseParameters != null;
     }
 
-    public FaultResponseParametersDto getParameters() {
-        return this.parameters;
+    public FaultResponseParametersDto getFaultResponseParameters() {
+        return this.faultResponseParameters;
+    }
+
+    public static class Builder {
+
+        private Integer code;
+        private String message;
+        private String component;
+        private String innerException;
+        private String innerMessage;
+        private FaultResponseParametersDto faultResponseParameters;
+
+        public Builder withCode(final Integer code) {
+            this.code = code;
+            return this;
+        }
+
+        public Builder withMessage(final String message) {
+            this.message = message;
+            return this;
+        }
+
+        public Builder withComponent(final String component) {
+            this.component = component;
+            return this;
+        }
+
+        public Builder withInnerException(final String innerException) {
+            this.innerException = innerException;
+            return this;
+        }
+
+        public Builder withInnerMessage(final String innerMessage) {
+            this.innerMessage = innerMessage;
+            return this;
+        }
+
+        public Builder withFaultResponseParameters(final FaultResponseParametersDto faultResponseParameters) {
+            this.faultResponseParameters = faultResponseParameters;
+            return this;
+        }
+
+        public FaultResponseDto build() {
+            return new FaultResponseDto(this);
+        }
     }
 }

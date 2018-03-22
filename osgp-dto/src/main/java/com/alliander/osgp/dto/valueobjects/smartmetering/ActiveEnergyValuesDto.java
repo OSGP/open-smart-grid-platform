@@ -20,16 +20,13 @@ public class ActiveEnergyValuesDto implements Serializable {
     private final DlmsMeterValueDto activeEnergyExportTariffOne;
     private final DlmsMeterValueDto activeEnergyExportTariffTwo;
 
-    public ActiveEnergyValuesDto(final DlmsMeterValueDto activeEnergyImport, final DlmsMeterValueDto activeEnergyExport,
-            final DlmsMeterValueDto activeEnergyImportTariffOne, final DlmsMeterValueDto activeEnergyImportTariffTwo,
-            final DlmsMeterValueDto activeEnergyExportTariffOne, final DlmsMeterValueDto activeEnergyExportTariffTwo) {
-
-        this.activeEnergyImport = activeEnergyImport;
-        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
-        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
-        this.activeEnergyExport = activeEnergyExport;
-        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
-        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
+    public ActiveEnergyValuesDto(final DlmsMeterValueDto[] dlmsMeterValues) {
+        this.activeEnergyImport = dlmsMeterValues[0];
+        this.activeEnergyExport = dlmsMeterValues[1];
+        this.activeEnergyImportTariffOne = dlmsMeterValues[2];
+        this.activeEnergyImportTariffTwo = dlmsMeterValues[3];
+        this.activeEnergyExportTariffOne = dlmsMeterValues[4];
+        this.activeEnergyExportTariffTwo = dlmsMeterValues[5];
     }
 
     @Override

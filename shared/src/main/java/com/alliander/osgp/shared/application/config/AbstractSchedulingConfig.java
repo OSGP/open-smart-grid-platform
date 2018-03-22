@@ -42,20 +42,9 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     /**
      * Construct the scheduler taskpool with specified job and trigger
      *
-     * @param jobClass
-     *            references the Job class
-     * @param threadCountKey
-     *            the configuration key in the environment for threadpool size
-     * @param cronExpressionKey
-     *            the configuration key in the environment for cron expression
-     * @param jobStoreDbUrl
-     *            the database url which contains the jobstore tables
-     * @param jobStoreDbUsername
-     *            the associated database username
-     * @param jobStoreDbPassword
-     *            the associated database password
-     * @param jobStoreDbDriver
-     *            the associated database driver
+     * @param abstractSchedulingConfigBuilder
+     *            an object containing all the properties needed to configure
+     *            the Quartz scheduler instance
      * @return the Quartz scheduler instance
      * @throws SchedulerException
      *             when issues occur in constructing schedules
@@ -63,13 +52,7 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     protected Scheduler constructScheduler(final AbstractSchedulingConfigBuilder abstractSchedulingConfigBuilder)
             throws SchedulerException {
 
-        final Properties properties = this.constructQuartzConfiguration(
-                abstractSchedulingConfigBuilder.getJobClass().getSimpleName(),
-                this.environment.getRequiredProperty(abstractSchedulingConfigBuilder.getThreadCountKey()),
-                abstractSchedulingConfigBuilder.getJobStoreDbUrl(),
-                abstractSchedulingConfigBuilder.getJobStoreDbUsername(),
-                abstractSchedulingConfigBuilder.getJobStoreDbPassword(),
-                abstractSchedulingConfigBuilder.getJobStoreDbDriver());
+        final Properties properties = this.constructQuartzConfiguration(abstractSchedulingConfigBuilder);
 
         final StdSchedulerFactory factory = new StdSchedulerFactory();
         factory.initialize(properties);
@@ -88,12 +71,13 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         return scheduler;
     }
 
-    private Properties constructQuartzConfiguration(final String instanceName, final String threadCount,
-            final String dbUrl, final String dbUser, final String dbPassword, final String dbDriver) {
+    private Properties constructQuartzConfiguration(
+            final AbstractSchedulingConfigBuilder abstractSchedulingConfigBuilder) {
         final Properties properties = new Properties();
 
         // Default Properties
-        properties.put("org.quartz.scheduler.instanceName", instanceName);
+        properties.put("org.quartz.scheduler.instanceName",
+                abstractSchedulingConfigBuilder.getJobClass().getSimpleName());
         properties.put("org.quartz.scheduler.instanceId", "AUTO");
         properties.put("org.quartz.scheduler.rmi.export", Boolean.FALSE.toString());
         properties.put("org.quartz.scheduler.rmi.proxy", Boolean.FALSE.toString());
@@ -102,7 +86,8 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         properties.put("org.quartz.scheduler.interruptJobsOnShutdown", Boolean.TRUE.toString());
 
         properties.put("org.quartz.threadPool.class", SimpleThreadPool.class.getName());
-        properties.put("org.quartz.threadPool.threadCount", threadCount);
+        properties.put("org.quartz.threadPool.threadCount",
+                this.environment.getRequiredProperty(abstractSchedulingConfigBuilder.getThreadCountKey()));
         properties.put("org.quartz.threadPool.makeThreadsDaemons", Boolean.TRUE.toString());
         properties.put("org.quartz.threadPool.threadsInheritContextClassLoaderOfInitializingThread",
                 Boolean.TRUE.toString());
@@ -123,10 +108,13 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
         // DataSource configuration using Quartz implementation. HikariCP does
         // not work property (TX and auto commit).
-        properties.put("org.quartz.dataSource.quartzDefault.driver", dbDriver);
-        properties.put("org.quartz.dataSource.quartzDefault.URL", dbUrl);
-        properties.put("org.quartz.dataSource.quartzDefault.user", dbUser);
-        properties.put("org.quartz.dataSource.quartzDefault.password", dbPassword);
+        properties.put("org.quartz.dataSource.quartzDefault.driver",
+                abstractSchedulingConfigBuilder.getJobStoreDbDriver());
+        properties.put("org.quartz.dataSource.quartzDefault.URL", abstractSchedulingConfigBuilder.getJobStoreDbUrl());
+        properties.put("org.quartz.dataSource.quartzDefault.user",
+                abstractSchedulingConfigBuilder.getJobStoreDbUsername());
+        properties.put("org.quartz.dataSource.quartzDefault.password",
+                abstractSchedulingConfigBuilder.getJobStoreDbPassword());
 
         return properties;
     }
