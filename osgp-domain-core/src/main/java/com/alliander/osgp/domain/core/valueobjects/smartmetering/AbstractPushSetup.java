@@ -54,7 +54,6 @@ class AbstractPushSetup implements Serializable {
         protected Integer numberOfRetries;
         protected Integer repetitionDelay;
 
-        // public abstract AbstractPushSetup build();
         public AbstractPushSetup build() {
             return new AbstractPushSetup(this);
         }

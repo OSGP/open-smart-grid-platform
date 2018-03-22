@@ -40,7 +40,7 @@ public class PushSetupSmsDtoConverter
         extends CustomConverter<PushSetupSms, com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto> {
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto convert(final PushSetupSms source,
+    public PushSetupSmsDto convert(final PushSetupSms source,
             final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto> destinationType,
             final MappingContext context) {
 
@@ -62,13 +62,7 @@ public class PushSetupSmsDtoConverter
                         element.getStartTime().getTime().getMinute(), element.getStartTime().getTime().getSecond(),
                         element.getStartTime().getTime().getHundredths());
 
-                final Set<ClockStatusBitDto> clockStatusBitDtoStart = new HashSet<>();
-                final Set<ClockStatusBit> statusBitsStart = element.getStartTime().getClockStatus().getStatusBits();
-                if (statusBitsStart != null) {
-                    for (final ClockStatusBit ClockStatusBit : statusBitsStart) {
-                        clockStatusBitDtoStart.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
-                    }
-                }
+                final Set<ClockStatusBitDto> clockStatusBitDtoStart = this.addClockStatusBitStartDto(element);
 
                 final CosemDateTimeDto cosemDateTimeDtoStart = new CosemDateTimeDto(cosemDateDtoStart,
                         cosemTimeDtoStart, element.getStartTime().getDeviation(),
@@ -82,13 +76,7 @@ public class PushSetupSmsDtoConverter
                         element.getEndTime().getTime().getMinute(), element.getEndTime().getTime().getSecond(),
                         element.getEndTime().getTime().getHundredths());
 
-                final Set<ClockStatusBitDto> clockStatusBitDtoEnd = new HashSet<>();
-                final Set<ClockStatusBit> statusBitsEnd = element.getEndTime().getClockStatus().getStatusBits();
-                if (statusBitsEnd != null) {
-                    for (final ClockStatusBit ClockStatusBit : statusBitsEnd) {
-                        clockStatusBitDtoEnd.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
-                    }
-                }
+                final Set<ClockStatusBitDto> clockStatusBitDtoEnd = this.addClockStatusBitEndDto(element);
 
                 final CosemDateTimeDto cosemDateTimeDtoEnd = new CosemDateTimeDto(cosemDateDtoEnd, cosemTimeDtoEnd,
                         element.getEndTime().getDeviation(),
@@ -148,5 +136,35 @@ public class PushSetupSmsDtoConverter
             builder.withSendDestinationAndMethod(sendDestinationAndMethodDto);
         }
         return builder.build();
+    }
+
+    /**
+     * @param element
+     * @return clockStatusBitDtoStart with ClockStatusBit name if present
+     */
+    private Set<ClockStatusBitDto> addClockStatusBitStartDto(final WindowElement element) {
+        final Set<ClockStatusBitDto> clockStatusBitDtoStart = new HashSet<>();
+        final Set<ClockStatusBit> statusBitsStart = element.getStartTime().getClockStatus().getStatusBits();
+        if (statusBitsStart != null) {
+            for (final ClockStatusBit ClockStatusBit : statusBitsStart) {
+                clockStatusBitDtoStart.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
+            }
+        }
+        return clockStatusBitDtoStart;
+    }
+
+    /**
+     * @param element
+     * @return clockStatusBitDtoEnd with ClockStatusBit name if present
+     */
+    private Set<ClockStatusBitDto> addClockStatusBitEndDto(final WindowElement element) {
+        final Set<ClockStatusBitDto> clockStatusBitDtoEnd = new HashSet<>();
+        final Set<ClockStatusBit> statusBitsEnd = element.getEndTime().getClockStatus().getStatusBits();
+        if (statusBitsEnd != null) {
+            for (final ClockStatusBit ClockStatusBit : statusBitsEnd) {
+                clockStatusBitDtoEnd.add(ClockStatusBitDto.valueOf(ClockStatusBit.name()));
+            }
+        }
+        return clockStatusBitDtoEnd;
     }
 }
