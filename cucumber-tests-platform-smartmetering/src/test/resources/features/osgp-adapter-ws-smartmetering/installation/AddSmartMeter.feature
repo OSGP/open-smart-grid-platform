@@ -46,7 +46,7 @@ Feature: SmartMetering Installation - Add smart meter
       | Encryption_key        | abc0123456789def  |
     Then retrieving the AddDevice response results in an exception
     And a SOAP fault should have been returned
-      | Code         |                                               803 |
-      | Message      | ENCRYPTION_EXCEPTION                              |
-      | InnerMessage | Error encryption process with E_METER_MASTER key. |
+      | Code         |                                                           804 |
+      | Message      | DECRYPTION_EXCEPTION                                          |
+      | InnerMessage | Unexpected exception during decryption of E_METER_MASTER key. |
     And the dlms device with identification "TEST1024000000001" does not exist

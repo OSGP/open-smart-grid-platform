@@ -56,17 +56,28 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
         final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
                 PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+        final ReplaceKeysAsyncRequest replaceKeysAsyncRequest = ReplaceKeysRequestFactory
+                .fromParameterMapAsync(extendedParameters);
+
+        final ReplaceKeysResponse response = this.smartMeteringConfigurationClient
+                .getReplaceKeysResponse(replaceKeysAsyncRequest);
+
+        final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
+        assertNotNull("Result", response.getResult());
+        assertEquals("Result", expectedResult, response.getResult().name());
+    }
+
+    @Then("^the replace keys response generating an error is received$")
+    public void theReplaceKeysResponseGeneratingAnErrorIsReceived(final Map<String, String> responseParameters)
+            throws Throwable {
+        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+        final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
+                PlatformKeys.KEY_CORRELATION_UID, correlationUid);
         try {
             final ReplaceKeysAsyncRequest replaceKeysAsyncRequest = ReplaceKeysRequestFactory
                     .fromParameterMapAsync(extendedParameters);
 
-            final ReplaceKeysResponse response = this.smartMeteringConfigurationClient
-                    .getReplaceKeysResponse(replaceKeysAsyncRequest);
-
-            final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
-            assertNotNull("Result", response.getResult());
-            assertEquals("Result", expectedResult, response.getResult().name());
-
+            this.smartMeteringConfigurationClient.getReplaceKeysResponse(replaceKeysAsyncRequest);
         } catch (final Exception exception) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
         }

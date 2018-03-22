@@ -4,7 +4,7 @@ Feature: SmartMetering Configuration
   I want to be able to perform SmartMeteringConfiguration operations on a device
   In order to ...
 
-  Background:
+  Background: 
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -173,26 +173,6 @@ Feature: SmartMetering Configuration
       | Result               | OK                |
     And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
     And the stored keys are not equal to the received keys
-
-  Scenario: Replace keys on a device with incorrectly encrypted keys
-    When the replace keys request is received
-      | DeviceIdentification | TEST1024000000001 |
-      | Master_key           | abcdef0123456789  |
-      | Authentication_key   | def0123456789abc  |
-      | Encryption_key       | abc0123456789def  |
-    Then the replace keys response should be returned
-      | DeviceIdentification | TEST1024000000001 |
-      | Result               | NOT_OK            |
-    And the keys are not changed in the osgp_adapter_protocol_dlms database security_key table
-
-  @ResetKeysOnDevice
-  Scenario: Replace keys with generated ones on a device
-    When the generate and replace keys request is received
-      | DeviceIdentification | TEST1024000000001 |
-    Then the generate and replace keys response should be returned
-      | DeviceIdentification | TEST1024000000001 |
-      | Result               | OK                |
-    And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
 
   Scenario: Set push setup sms on a device
     When the set PushSetupSms request is received
