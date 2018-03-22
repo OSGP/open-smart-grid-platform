@@ -1,7 +1,8 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -15,7 +16,7 @@ import java.util.Set;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ClockStatusBit;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObisCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObjectDefinition;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SendDestinationAndMethod;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.TransportServiceType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WindowElement;
@@ -27,7 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElementDto;
@@ -36,19 +37,19 @@ import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
-public class PushSetupSmsDtoConverter
-        extends CustomConverter<PushSetupSms, com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto> {
+public class PushSetupAlarmDtoConverter
+        extends CustomConverter<PushSetupAlarm, com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto> {
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto convert(final PushSetupSms source,
-            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto> destinationType,
+    public com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto convert(final PushSetupAlarm source,
+            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto> destinationType,
             final MappingContext context) {
 
         if (source == null) {
             return null;
         }
 
-        final PushSetupSmsDto.Builder builder = new PushSetupSmsDto.Builder();
+        final PushSetupAlarmDto.Builder builder = new PushSetupAlarmDto.Builder();
 
         final List<WindowElementDto> windowElementDtos = new ArrayList<>();
         final List<WindowElement> communicationWindows = source.getCommunicationWindow();
