@@ -34,8 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.security.EncryptionService;
 import com.alliander.osgp.shared.security.RsaEncryptionService;
 
@@ -81,21 +83,43 @@ public class SecurityKeyService {
      * @return the key encrypted with the symmetrical secret key used only
      *         inside the DLMS protocol adapter, or an empty byte array if
      *         {@code externallyEncryptedKey == null}
-     * @throws ProtocolAdapterException
-     *             in case of a encryption errors while handling the key
+     * @throws FunctionalException
+     *             in case of a encryption/decryption errors while handling the
+     *             key
      */
     public byte[] reEncryptKey(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
-            throws ProtocolAdapterException {
+            throws FunctionalException {
 
         if (externallyEncryptedKey == null) {
             return new byte[0];
         }
 
+        final byte[] key = this.rsaDecrypt(externallyEncryptedKey, keyType);
+        return this.aesEncrypt(key, keyType);
+    }
+
+    private final byte[] rsaDecrypt(final byte[] externallyEncryptedKey, final SecurityKeyType keyType)
+            throws FunctionalException {
         try {
-            final byte[] key = this.rsaEncryptionService.decrypt(externallyEncryptedKey);
+            return this.rsaEncryptionService.decrypt(externallyEncryptedKey);
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during decryption", e);
+
+            throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS,
+                    new EncrypterException(
+                            String.format("Unexpected exception during decryption of %s key.", keyType)));
+        }
+    }
+
+    private final byte[] aesEncrypt(final byte[] key, final SecurityKeyType keyType) throws FunctionalException {
+        try {
             return this.encryptionService.encrypt(key);
         } catch (final Exception e) {
-            throw new ProtocolAdapterException("Error processing " + keyType + " key", e);
+            LOGGER.error("Unexpected exception during encryption", e);
+
+            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS,
+                    new EncrypterException(
+                            String.format("Unexpected exception during encryption of %s key.", keyType)));
         }
     }
 

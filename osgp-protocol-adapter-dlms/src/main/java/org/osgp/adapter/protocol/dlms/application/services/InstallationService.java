@@ -27,6 +27,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceRespo
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "dlmsInstallationService")
 public class InstallationService {
@@ -50,20 +51,20 @@ public class InstallationService {
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
     // === ADD METER ===
-    public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
+    public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
         this.reEncryptKeys(smartMeteringDevice);
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 
-    private void reEncryptKeys(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
+    private void reEncryptKeys(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
         this.reEncryptMasterKey(smartMeteringDevice);
         this.reEncryptAuthenticationKey(smartMeteringDevice);
         this.reEncryptEncryptionKey(smartMeteringDevice);
         this.reEncryptMbusDefaultKey(smartMeteringDevice);
     }
 
-    private void reEncryptMasterKey(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
+    private void reEncryptMasterKey(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
         if (ArrayUtils.isEmpty(smartMeteringDevice.getMasterKey())) {
             return;
         }
@@ -73,7 +74,7 @@ public class InstallationService {
     }
 
     private void reEncryptAuthenticationKey(final SmartMeteringDeviceDto smartMeteringDevice)
-            throws ProtocolAdapterException {
+            throws FunctionalException {
 
         if (ArrayUtils.isEmpty(smartMeteringDevice.getAuthenticationKey())) {
             return;
@@ -83,8 +84,7 @@ public class InstallationService {
         smartMeteringDevice.setAuthenticationKey(reEncryptedAuthenticationKey);
     }
 
-    private void reEncryptEncryptionKey(final SmartMeteringDeviceDto smartMeteringDevice)
-            throws ProtocolAdapterException {
+    private void reEncryptEncryptionKey(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
 
         if (ArrayUtils.isEmpty(smartMeteringDevice.getGlobalEncryptionUnicastKey())) {
             return;
@@ -94,8 +94,7 @@ public class InstallationService {
         smartMeteringDevice.setGlobalEncryptionUnicastKey(reEncryptedEncryptionKey);
     }
 
-    private void reEncryptMbusDefaultKey(final SmartMeteringDeviceDto smartMeteringDevice)
-            throws ProtocolAdapterException {
+    private void reEncryptMbusDefaultKey(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
 
         if (ArrayUtils.isEmpty(smartMeteringDevice.getMbusDefaultKey())) {
             return;
