@@ -21,31 +21,6 @@ public class CosemObisCode implements Serializable {
     private final int e;
     private final int f;
 
-    public CosemObisCode(final int a, final int b, final int c, final int d, final int e, final int f) {
-        this.checkValues(a, b, c, d, e, f);
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-        this.e = e;
-        this.f = f;
-    }
-
-    private void checkValues(final int a, final int b, final int c, final int d, final int e, final int f) {
-        this.checkValue("a", a);
-        this.checkValue("b", b);
-        this.checkValue("c", c);
-        this.checkValue("d", d);
-        this.checkValue("e", e);
-        this.checkValue("f", f);
-    }
-
-    private void checkValue(final String letter, final int value) {
-        if (value < 0 || value > 255) {
-            throw new IllegalArgumentException(letter + " not in [0..0xFF]");
-        }
-    }
-
     public CosemObisCode(final int[] code) {
         if (code.length != 6) {
             throw new IllegalArgumentException("ObisCode must have 6 values: " + code.length);
@@ -56,7 +31,7 @@ public class CosemObisCode implements Serializable {
         this.d = code[3];
         this.e = code[4];
         this.f = code[5];
-        this.checkValues(this.a, this.b, this.c, this.d, this.e, this.f);
+        this.checkValues();
     }
 
     public CosemObisCode(final byte[] code) {
@@ -75,6 +50,21 @@ public class CosemObisCode implements Serializable {
         this(parseCode(code));
     }
 
+    private void checkValues() {
+        this.checkValue("a", this.a);
+        this.checkValue("b", this.b);
+        this.checkValue("c", this.c);
+        this.checkValue("d", this.d);
+        this.checkValue("e", this.e);
+        this.checkValue("f", this.f);
+    }
+
+    private void checkValue(final String letter, final int value) {
+        if (value < 0 || value > 255) {
+            throw new IllegalArgumentException(letter + " not in [0..0xFF]");
+        }
+    }
+
     private static int[] parseCode(final String code) {
         final String[] parts = code.split("\\.|:|-");
         if (parts.length != 6) {
@@ -85,8 +75,8 @@ public class CosemObisCode implements Serializable {
             try {
                 values[i] = Integer.parseInt(parts[i]);
             } catch (final NumberFormatException e) {
-                throw new IllegalArgumentException("Unable to parse code into 6 integer parts: "
-                        + Arrays.toString(parts), e);
+                throw new IllegalArgumentException(
+                        "Unable to parse code into 6 integer parts: " + Arrays.toString(parts), e);
             }
         }
         return values;

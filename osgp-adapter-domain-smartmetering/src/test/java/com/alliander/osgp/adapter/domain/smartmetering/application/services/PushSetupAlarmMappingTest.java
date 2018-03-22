@@ -68,11 +68,11 @@ public class PushSetupAlarmMappingTest {
     public void testPushSetupAlarmMappingWithEmptyLists() {
 
         // build test data
-        final ArrayList<CosemObjectDefinition> pushObjectList = new ArrayList<CosemObjectDefinition>();
-        final ArrayList<WindowElement> communicationWindow = new ArrayList<WindowElement>();
+        final ArrayList<CosemObjectDefinition> pushObjectList = new ArrayList<>();
+        final ArrayList<WindowElement> communicationWindow = new ArrayList<>();
 
-        final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder().withEmptyLists(pushObjectList,
-                communicationWindow).build();
+        final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder()
+                .withEmptyLists(pushObjectList, communicationWindow).build();
 
         // actual mapping
         final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm,
@@ -93,7 +93,7 @@ public class PushSetupAlarmMappingTest {
     public void testPushSetupAlarmMappingWithLists() {
 
         // build test data
-        final CosemObisCode logicalName = new CosemObisCode(1, 2, 3, 4, 5, 6);
+        final CosemObisCode logicalName = new CosemObisCode(new int[] { 1, 2, 3, 4, 5, 6 });
         final CosemObjectDefinition cosemObjectDefinition = new CosemObjectDefinition(1, logicalName, 2);
         final CosemDateTime startTime = new CosemDateTime(new CosemDate(2016, 3, 17), new CosemTime(11, 52, 45), 0,
                 new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
@@ -101,8 +101,8 @@ public class PushSetupAlarmMappingTest {
                 new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
         final WindowElement windowElement = new WindowElement(startTime, endTime);
 
-        final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder().withFilledLists(cosemObjectDefinition,
-                windowElement).build();
+        final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder()
+                .withFilledLists(cosemObjectDefinition, windowElement).build();
 
         // actual mapping
         final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm,
@@ -157,14 +157,15 @@ public class PushSetupAlarmMappingTest {
         assertNotNull(sendDestinationAndMethodDto);
 
         // make sure all instance variables are equal
-        assertEquals(sendDestinationAndMethod.getTransportService().name(), sendDestinationAndMethodDto
-                .getTransportService().name());
+        assertEquals(sendDestinationAndMethod.getTransportService().name(),
+                sendDestinationAndMethodDto.getTransportService().name());
         assertEquals(sendDestinationAndMethod.getMessage().name(), sendDestinationAndMethodDto.getMessage().name());
         assertEquals(sendDestinationAndMethod.getDestination(), sendDestinationAndMethodDto.getDestination());
     }
 
     // method to test non-empty list mapping
-    private void checkNonEmptyListMapping(final PushSetupAlarm pushSetupAlarm, final PushSetupAlarmDto pushSetupAlarmDto) {
+    private void checkNonEmptyListMapping(final PushSetupAlarm pushSetupAlarm,
+            final PushSetupAlarmDto pushSetupAlarmDto) {
 
         // test pushObjectList mapping
         assertNotNull(pushSetupAlarm.getPushObjectList());

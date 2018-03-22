@@ -21,7 +21,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.WindowElement;
 
 public class PushSetupSmsBuilder {
 
-    private CosemObisCode logicalName = new CosemObisCode(1, 2, 3, 4, 5, 6);
+    private CosemObisCode logicalName = new CosemObisCode(new int[] { 1, 2, 3, 4, 5, 6 });
     private TransportServiceType transportServiceType = TransportServiceType.TCP;
     private MessageType messageType = MessageType.A_XDR_ENCODED_X_DLMS_APDU;
     private SendDestinationAndMethod sendDestinationAndMethod = new SendDestinationAndMethod(this.transportServiceType,
