@@ -167,13 +167,8 @@ public abstract class DlmsConnectionMessageProcessor {
             retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
         }
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification(),
-                messageMetadata.getCorrelationUid(), messageMetadata.getMessageType(),
-                messageMetadata.getMessagePriority(), messageMetadata.getScheduleTime());
-
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).domain(messageMetadata.getDomain())
+                .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata)).domain(messageMetadata.getDomain())
                 .domainVersion(messageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
                 .dataObject(responseObject).retryCount(messageMetadata.getRetryCount()).retryHeader(retryHeader)
                 .scheduled(messageMetadata.isScheduled()).build();

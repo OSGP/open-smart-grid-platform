@@ -90,8 +90,13 @@ public class ActionDtoBuilder {
         final SendDestinationAndMethodDto destinationAndMethod = new SendDestinationAndMethodDto(
                 TransportServiceTypeDto.TCP, "destination", MessageTypeDto.XML_ENCODED_X_DLMS_APDU);
         final List<WindowElementDto> windowElemenents = new ArrayList<>();
-        final PushSetupAlarmDto pushAlarm = new PushSetupAlarmDto(cosemCode, objectDefinitions, destinationAndMethod,
-                windowElemenents, 1, 1, 1);
+
+        final PushSetupAlarmDto.Builder pushSetupAlarmBuilder = new PushSetupAlarmDto.Builder();
+        pushSetupAlarmBuilder.withLogicalName(cosemCode).withPushObjectList(objectDefinitions)
+                .withSendDestinationAndMethod(destinationAndMethod).withCommunicationWindow(windowElemenents)
+                .withRandomisationStartInterval(1).withNumberOfRetries(1).withRepetitionDelay(1);
+        final PushSetupAlarmDto pushAlarm = pushSetupAlarmBuilder.build();
+
         final SetPushSetupAlarmRequestDto result = new SetPushSetupAlarmRequestDto(pushAlarm);
         return result;
     }
@@ -102,8 +107,13 @@ public class ActionDtoBuilder {
         final SendDestinationAndMethodDto destinationAndMethod = new SendDestinationAndMethodDto(
                 TransportServiceTypeDto.TCP, "destination", MessageTypeDto.XML_ENCODED_X_DLMS_APDU);
         final List<WindowElementDto> windowElemenents = new ArrayList<>();
-        final PushSetupSmsDto setupSms = new PushSetupSmsDto(cosemCode, objectDefinitions, destinationAndMethod,
-                windowElemenents, 1, 1, 1);
+
+        final PushSetupSmsDto.Builder pushSetupSmsBuilder = new PushSetupSmsDto.Builder();
+        pushSetupSmsBuilder.withLogicalName(cosemCode).withPushObjectList(objectDefinitions)
+                .withSendDestinationAndMethod(destinationAndMethod).withCommunicationWindow(windowElemenents)
+                .withRandomisationStartInterval(1).withNumberOfRetries(1).withRepetitionDelay(1);
+        final PushSetupSmsDto setupSms = pushSetupSmsBuilder.build();
+
         final SetPushSetupSmsRequestDto result = new SetPushSetupSmsRequestDto(setupSms);
         return result;
     }

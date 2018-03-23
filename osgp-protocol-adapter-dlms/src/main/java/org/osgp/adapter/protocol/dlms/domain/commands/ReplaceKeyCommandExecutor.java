@@ -28,6 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -113,7 +114,7 @@ public class ReplaceKeyCommandExecutor
         return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
     }
 
-    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
+    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws FunctionalException {
         final byte[] reEncryptedAuthenticationKey = this.securityKeyService
                 .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
         final byte[] reEncryptedEncryptionKey = this.securityKeyService

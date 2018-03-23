@@ -17,7 +17,6 @@ import javax.jms.ObjectMessage;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsConnectionMessageProcessor;
@@ -51,9 +50,6 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     @Autowired
     @Qualifier("protocolDlmsOsgpResponseMessageProcessorMap")
     protected MessageProcessorMap osgpResponseMessageProcessorMap;
-
-    @Autowired
-    protected OsgpExceptionConverter osgpExceptionConverter;
 
     @Autowired
     protected DomainHelperService domainHelperService;
