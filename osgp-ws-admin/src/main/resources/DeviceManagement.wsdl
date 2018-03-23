@@ -107,24 +107,6 @@
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="ActivateDeviceRequest">
-    <wsdl:part element="dman:ActivateDeviceRequest" name="ActivateDeviceRequest">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="ActivateDeviceResponse">
-    <wsdl:part element="dman:ActivateDeviceResponse" name="ActivateDeviceResponse">
-    </wsdl:part>
-  </wsdl:message>
-
-  <wsdl:message name="DeactivateDeviceRequest">
-    <wsdl:part element="dman:DeactivateDeviceRequest" name="DeactivateDeviceRequest">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="DeactivateDeviceResponse">
-    <wsdl:part element="dman:DeactivateDeviceResponse" name="DeactivateDeviceResponse">
-    </wsdl:part>
-  </wsdl:message>
-
   <wsdl:message name="SetOwnerRequest">
     <wsdl:part element="dman:SetOwnerRequest" name="SetOwnerRequest">
     </wsdl:part>
@@ -243,22 +225,6 @@
       <wsdl:input message="tns:RemoveDeviceRequest" name="RemoveDeviceRequest">
       </wsdl:input>
       <wsdl:output message="tns:RemoveDeviceResponse" name="RemoveDeviceResponse">
-      </wsdl:output>
-    </wsdl:operation>
-
-    <wsdl:operation name="ActivateDevice">
-      <wsdl:input message="tns:ActivateDeviceRequest" name="ActivateDeviceRequest">
-      </wsdl:input>
-      <wsdl:output message="tns:ActivateDeviceResponse"
-        name="ActivateDeviceResponse">
-      </wsdl:output>
-    </wsdl:operation>
-
-    <wsdl:operation name="DeactivateDevice">
-      <wsdl:input message="tns:DeactivateDeviceRequest" name="DeactivateDeviceRequest">
-      </wsdl:input>
-      <wsdl:output message="tns:DeactivateDeviceResponse"
-        name="DeactivateDeviceResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -442,38 +408,6 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="RemoveDeviceResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-
-    <wsdl:operation name="ActivateDevice">
-      <soap:operation soapAction="" />
-      <wsdl:input name="ActivateDeviceRequest">
-        <soap:header message="tns:SoapHeaders" part="OrganisationIdentification"
-          use="literal" />
-        <soap:header message="tns:SoapHeaders" part="UserName"
-          use="literal" />
-        <soap:header message="tns:SoapHeaders" part="ApplicationName"
-          use="literal" />
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="ActivateDeviceResponse">
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-
-    <wsdl:operation name="DeactivateDevice">
-      <soap:operation soapAction="" />
-      <wsdl:input name="DeactivateDeviceRequest">
-        <soap:header message="tns:SoapHeaders" part="OrganisationIdentification"
-          use="literal" />
-        <soap:header message="tns:SoapHeaders" part="UserName"
-          use="literal" />
-        <soap:header message="tns:SoapHeaders" part="ApplicationName"
-          use="literal" />
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output name="DeactivateDeviceResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
