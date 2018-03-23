@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.cust
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObisCode;
@@ -37,6 +38,26 @@ public class PushSetupSmsDtoConverter
 
     public PushSetupSmsDtoConverter(final ConfigurationMapper mapper) {
         this.configurationMapper = mapper;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (!(other instanceof PushSetupSmsDtoConverter)) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        final PushSetupSmsDtoConverter o = (PushSetupSmsDtoConverter) other;
+        if (this.configurationMapper == null) {
+            return o.configurationMapper == null;
+        }
+        return this.configurationMapper.getClass().equals(o.configurationMapper.getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hashCode(this.configurationMapper);
     }
 
     @Override
@@ -92,18 +113,17 @@ public class PushSetupSmsDtoConverter
         builder.withRepetitionDelay(source.getRepetitionDelay());
 
         final SendDestinationAndMethod sendDestinationAndMethod = source.getSendDestinationAndMethod();
-        final SendDestinationAndMethodDto a = this.mapSendDestinationMethod(source, builder, sendDestinationAndMethod);
-        builder.withSendDestinationAndMethod(a);
+        final SendDestinationAndMethodDto sendDestinationAndMethodDto = this
+                .mapSendDestinationMethod(sendDestinationAndMethod);
+        builder.withSendDestinationAndMethod(sendDestinationAndMethodDto);
         return builder.build();
     }
 
     /**
-     * @param source
-     * @param builder
      * @param sendDestinationAndMethod
      */
-    private SendDestinationAndMethodDto mapSendDestinationMethod(final PushSetupSms source,
-            final PushSetupSmsDto.Builder builder, final SendDestinationAndMethod sendDestinationAndMethod) {
+    private SendDestinationAndMethodDto mapSendDestinationMethod(
+            final SendDestinationAndMethod sendDestinationAndMethod) {
         if (sendDestinationAndMethod != null) {
             return this.configurationMapper.map(sendDestinationAndMethod, SendDestinationAndMethodDto.class);
         }
