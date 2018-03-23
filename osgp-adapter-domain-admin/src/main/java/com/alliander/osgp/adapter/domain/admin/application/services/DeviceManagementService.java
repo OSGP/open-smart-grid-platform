@@ -105,7 +105,8 @@ public class DeviceManagementService extends AbstractService {
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception).build();
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
@@ -166,7 +167,8 @@ public class DeviceManagementService extends AbstractService {
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception).build();
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
