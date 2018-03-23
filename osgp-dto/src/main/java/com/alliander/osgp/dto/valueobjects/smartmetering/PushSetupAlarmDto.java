@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.util.List;
-
 public class PushSetupAlarmDto extends AbstractPushSetupDto {
 
     private static final long serialVersionUID = -3541154908239512383L;
@@ -17,21 +15,18 @@ public class PushSetupAlarmDto extends AbstractPushSetupDto {
 
         @Override
         public PushSetupAlarmDto build() {
-            return new PushSetupAlarmDto(this.logicalName, this.pushObjectList, this.sendDestinationAndMethod,
-                    this.communicationWindow, this.randomisationStartInterval, this.numberOfRetries,
-                    this.repetitionDelay);
+            final AbstractPushSetupDto abstractPushSetupDto = AbstractPushSetupDto.newBuilder()
+                    .withLogicalName(this.logicalName).withPushObjectList(this.pushObjectList)
+                    .withSendDestinationAndMethod(this.sendDestinationAndMethod)
+                    .withCommunicationWindow(this.communicationWindow)
+                    .withRandomisationStartInterval(this.randomisationStartInterval)
+                    .withNumberOfRetries(this.numberOfRetries).withRepetitionDelay(this.repetitionDelay).build();
+            return new PushSetupAlarmDto(abstractPushSetupDto);
         }
     }
 
-    public PushSetupAlarmDto(final CosemObisCodeDto logicalName, final List<CosemObjectDefinitionDto> pushObjectList,
-            final SendDestinationAndMethodDto sendDestinationAndMethod,
-            final List<WindowElementDto> communicationWindow, final Integer randomisationStartInterval,
-            final Integer numberOfRetries, final Integer repetitionDelay) {
-
-        super(AbstractPushSetupDto.newBuilder().withLogicalName(logicalName).withPushObjectList(pushObjectList)
-                .withSendDestinationAndMethod(sendDestinationAndMethod).withCommunicationWindow(communicationWindow)
-                .withRandomisationStartInterval(randomisationStartInterval).withNumberOfRetries(numberOfRetries)
-                .withRepetitionDelay(repetitionDelay).build());
+    public PushSetupAlarmDto(final AbstractPushSetupDto abstractPushSetupDto) {
+        super(abstractPushSetupDto);
     }
 
 }
