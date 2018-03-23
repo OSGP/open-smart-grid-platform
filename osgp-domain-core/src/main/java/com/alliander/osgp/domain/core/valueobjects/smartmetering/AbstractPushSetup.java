@@ -24,7 +24,27 @@ class AbstractPushSetup implements Serializable {
     private final Integer numberOfRetries;
     private final Integer repetitionDelay;
 
-    public abstract static class AbstractBuilder {
+    AbstractPushSetup(final AbstractPushSetup abstractPushSetup) {
+        this.logicalName = abstractPushSetup.getLogicalName();
+        this.pushObjectList = abstractPushSetup.getPushObjectList();
+        this.sendDestinationAndMethod = abstractPushSetup.getSendDestinationAndMethod();
+        this.communicationWindow = abstractPushSetup.getCommunicationWindow();
+        this.randomisationStartInterval = abstractPushSetup.getRandomisationStartInterval();
+        this.numberOfRetries = abstractPushSetup.getNumberOfRetries();
+        this.repetitionDelay = abstractPushSetup.getRepetitionDelay();
+    }
+
+    private AbstractPushSetup(final AbstractBuilder builder) {
+        this.logicalName = builder.logicalName;
+        this.pushObjectList = builder.pushObjectList;
+        this.sendDestinationAndMethod = builder.sendDestinationAndMethod;
+        this.communicationWindow = builder.communicationWindow;
+        this.randomisationStartInterval = builder.randomisationStartInterval;
+        this.numberOfRetries = builder.numberOfRetries;
+        this.repetitionDelay = builder.repetitionDelay;
+    }
+
+    public static class AbstractBuilder {
 
         protected CosemObisCode logicalName;
         protected List<CosemObjectDefinition> pushObjectList;
@@ -34,68 +54,62 @@ class AbstractPushSetup implements Serializable {
         protected Integer numberOfRetries;
         protected Integer repetitionDelay;
 
-        public abstract AbstractPushSetup build();
+        public AbstractPushSetup build() {
+            return new AbstractPushSetup(this);
+        }
 
-        public AbstractBuilder logicalName(final CosemObisCode logicalName) {
+        public AbstractBuilder withLogicalName(final CosemObisCode logicalName) {
             this.logicalName = logicalName;
             return this;
         }
 
-        public AbstractBuilder pushObjectList(final List<CosemObjectDefinition> pushObjectList) {
-            this.pushObjectList = pushObjectList;
+        public AbstractBuilder withPushObjectList(final List<CosemObjectDefinition> pushObjectList) {
+            if (pushObjectList == null) {
+                this.pushObjectList = null;
+            } else {
+                this.pushObjectList = new ArrayList<>(pushObjectList);
+            }
             return this;
         }
 
-        public AbstractBuilder sendDestinationAndMethod(final SendDestinationAndMethod sendDestinationAndMethod) {
+        public AbstractBuilder withSendDestinationAndMethod(final SendDestinationAndMethod sendDestinationAndMethod) {
             this.sendDestinationAndMethod = sendDestinationAndMethod;
             return this;
         }
 
-        public AbstractBuilder communicationWindow(final List<WindowElement> communicationWindow) {
-            this.communicationWindow = communicationWindow;
+        public AbstractBuilder withCommunicationWindow(final List<WindowElement> communicationWindow) {
+            if (communicationWindow == null) {
+                this.communicationWindow = null;
+            } else {
+                this.communicationWindow = new ArrayList<>(communicationWindow);
+            }
             return this;
         }
 
-        public AbstractBuilder randomisationStartInterval(final Integer randomisationStartInterval) {
+        public AbstractBuilder withRandomisationStartInterval(final Integer randomisationStartInterval) {
+            AbstractPushSetup.checkRandomisationStartInterval(randomisationStartInterval);
             this.randomisationStartInterval = randomisationStartInterval;
             return this;
         }
 
-        public AbstractBuilder numberOfRetries(final Integer numberOfRetries) {
+        public AbstractBuilder withNumberOfRetries(final Integer numberOfRetries) {
+            AbstractPushSetup.checkNumberOfRetries(numberOfRetries);
             this.numberOfRetries = numberOfRetries;
             return this;
         }
 
-        public AbstractBuilder repetitionDelay(final Integer repetitionDelay) {
+        public AbstractBuilder withRepetitionDelay(final Integer repetitionDelay) {
+            AbstractPushSetup.checkRepetitionDelay(repetitionDelay);
             this.repetitionDelay = repetitionDelay;
             return this;
         }
     }
 
-    AbstractPushSetup(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
-            final SendDestinationAndMethod sendDestinationAndMethod, final List<WindowElement> communicationWindow,
-            final Integer randomisationStartInterval, final Integer numberOfRetries, final Integer repetitionDelay) {
-        this.checkRandomisationStartInterval(randomisationStartInterval);
-        this.checkNumberOfRetries(numberOfRetries);
-        this.checkRepetitionDelay(repetitionDelay);
-        this.logicalName = logicalName;
-        if (pushObjectList == null) {
-            this.pushObjectList = null;
-        } else {
-            this.pushObjectList = new ArrayList<>(pushObjectList);
-        }
-        this.sendDestinationAndMethod = sendDestinationAndMethod;
-        if (communicationWindow == null) {
-            this.communicationWindow = null;
-        } else {
-            this.communicationWindow = new ArrayList<>(communicationWindow);
-        }
-        this.randomisationStartInterval = randomisationStartInterval;
-        this.numberOfRetries = numberOfRetries;
-        this.repetitionDelay = repetitionDelay;
+    public static AbstractBuilder newBuilder() {
+        return new AbstractBuilder();
     }
 
-    private void checkRandomisationStartInterval(final Integer randomisationStartInterval) {
+    private static void checkRandomisationStartInterval(final Integer randomisationStartInterval) {
         if (randomisationStartInterval == null) {
             return;
         }
@@ -104,7 +118,7 @@ class AbstractPushSetup implements Serializable {
         }
     }
 
-    private void checkNumberOfRetries(final Integer numberOfRetries) {
+    private static void checkNumberOfRetries(final Integer numberOfRetries) {
         if (numberOfRetries == null) {
             return;
         }
@@ -113,7 +127,7 @@ class AbstractPushSetup implements Serializable {
         }
     }
 
-    private void checkRepetitionDelay(final Integer repetitionDelay) {
+    private static void checkRepetitionDelay(final Integer repetitionDelay) {
         if (repetitionDelay == null) {
             return;
         }

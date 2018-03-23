@@ -34,8 +34,14 @@ public class PushSetupAlarmBuilder {
     private List<WindowElement> communicationWindow;
 
     public PushSetupAlarm build() {
-        return new PushSetupAlarm(this.logicalName, this.pushObjectList, this.sendDestinationAndMethod,
-                this.communicationWindow, this.randomisationStartInterval, this.numberOfRetries, this.repetitionDelay);
+
+        final PushSetupAlarm.Builder pushSetupAlarmBuilder = new PushSetupAlarm.Builder();
+        pushSetupAlarmBuilder.withLogicalName(this.logicalName).withPushObjectList(this.pushObjectList)
+                .withSendDestinationAndMethod(this.sendDestinationAndMethod)
+                .withCommunicationWindow(this.communicationWindow)
+                .withRandomisationStartInterval(this.randomisationStartInterval)
+                .withNumberOfRetries(this.numberOfRetries).withRepetitionDelay(this.repetitionDelay);
+        return pushSetupAlarmBuilder.build();
     }
 
     public PushSetupAlarmBuilder withNullValues() {
