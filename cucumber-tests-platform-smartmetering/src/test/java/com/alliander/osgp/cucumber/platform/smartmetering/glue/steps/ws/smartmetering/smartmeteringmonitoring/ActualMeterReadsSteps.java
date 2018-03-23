@@ -36,12 +36,31 @@ public class ActualMeterReadsSteps {
 
     @When("^the get actual meter reads request is received$")
     public void theGetActualMeterReadsRequestIsReceived(final Map<String, String> settings) throws Throwable {
-
         final ActualMeterReadsRequest request = ActualMeterReadsRequestFactory.fromParameterMap(settings);
+
         final ActualMeterReadsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertNotNull("AsyncResponse should not be null", asyncResponse);
         ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+    }
+
+    @When("^the get actual meter reads request generating an error is received$")
+    public void theGetActualMeterReadsRequestGeneratingAnErrorIsReceived(final Map<String, String> settings)
+            throws Throwable {
+        final ActualMeterReadsRequest request = ActualMeterReadsRequestFactory.fromParameterMap(settings);
+        final ActualMeterReadsAsyncResponse asyncResponse = this.requestClient.doRequest(request);
+
+        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+
+        final ActualMeterReadsAsyncRequest actualMeterReadsAsyncRequest = ActualMeterReadsRequestFactory
+                .fromScenarioContext();
+        assertNotNull("ActualMeterReadsAsyncRequest should not be null", actualMeterReadsAsyncRequest);
+
+        try {
+            this.responseClient.getResponse(actualMeterReadsAsyncRequest);
+        } catch (final Exception exception) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
+        }
     }
 
     @Then("^the actual meter reads result should be returned$")
