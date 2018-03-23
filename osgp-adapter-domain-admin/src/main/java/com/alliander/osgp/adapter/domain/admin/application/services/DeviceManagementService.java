@@ -21,7 +21,6 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.validation.PublicKey;
-import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -104,9 +103,9 @@ public class DeviceManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while updating key", e);
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
                 .build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
@@ -166,42 +165,11 @@ public class DeviceManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while revoking key", e);
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
                 .build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
-    public void activateDevice(final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid, final String messageType) {
-        LOGGER.info("MessageType: {}. ActivateDevice for organisationIdentification: {} for deviceIdentification: {}",
-                messageType, organisationIdentification, deviceIdentification);
-
-        this.setDeviceLifecycleStatus(organisationIdentification, deviceIdentification, correlationUid,
-                DeviceLifecycleStatus.IN_USE);
-    }
-
-    public void deactivateDevice(final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid, final String messageType) {
-        LOGGER.info("MessageType: {}. DeactivateDevice for organisationIdentification: {} for deviceIdentification: {}",
-                messageType, organisationIdentification, deviceIdentification);
-
-        this.setDeviceLifecycleStatus(organisationIdentification, deviceIdentification, correlationUid,
-                DeviceLifecycleStatus.DESTROYED);
-    }
-
-    private void setDeviceLifecycleStatus(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DeviceLifecycleStatus deviceLifecycleStatus) {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-        device.setDeviceLifecycleStatus(deviceLifecycleStatus);
-
-        this.deviceRepository.save(device);
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.OK).build();
-        this.webServiceResponseMessageSender.send(responseMessage);
-    }
 }

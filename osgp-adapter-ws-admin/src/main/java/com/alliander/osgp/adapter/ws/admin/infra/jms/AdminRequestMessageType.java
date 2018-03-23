@@ -24,7 +24,5 @@ public enum AdminRequestMessageType {
     GET_CONFIGURATION,
     GET_STATUS,
     UPDATE_KEY,
-    REVOKE_KEY,
-    DEACTIVATE_DEVICE,
-    ACTIVATE_DEVICE
+    REVOKE_KEY
 }

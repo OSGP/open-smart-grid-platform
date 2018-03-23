@@ -37,22 +37,23 @@ public class SecurityService {
 
     private static Map<PlatformFunctionGroup, PlatformFunction[]> platformMapping;
     static {
-        platformMapping = new HashMap<PlatformFunctionGroup, PlatformFunction[]>();
-        platformMapping.put(PlatformFunctionGroup.ADMIN, new PlatformFunction[] { PlatformFunction.CREATE_ORGANISATION,
-                PlatformFunction.GET_ORGANISATIONS, PlatformFunction.REMOVE_ORGANISATION,
-                PlatformFunction.CHANGE_ORGANISATION, PlatformFunction.GET_DEVICE_NO_OWNER,
-                PlatformFunction.GET_MESSAGES, PlatformFunction.FIND_DEVICES, PlatformFunction.SET_OWNER,
-                PlatformFunction.UPDATE_KEY, PlatformFunction.REVOKE_KEY, PlatformFunction.FIND_SCHEDULED_TASKS,
-                PlatformFunction.CREATE_MANUFACTURER, PlatformFunction.GET_MANUFACTURERS,
-                PlatformFunction.DEACTIVATE_DEVICE, PlatformFunction.CHANGE_MANUFACTURER,
-                PlatformFunction.REMOVE_MANUFACTURER, PlatformFunction.GET_PROTOCOL_INFOS,
-                PlatformFunction.UPDATE_DEVICE_PROTOCOL, PlatformFunction.GET_DEVICE_MODELS,
-                PlatformFunction.CREATE_DEVICE_MODEL, PlatformFunction.REMOVE_DEVICE_MODEL,
-                PlatformFunction.CHANGE_DEVICE_MODEL, PlatformFunction.GET_FIRMWARE, PlatformFunction.CREATE_FIRMWARE,
-                PlatformFunction.REMOVE_FIRMWARE, PlatformFunction.CHANGE_FIRMWARE, PlatformFunction.ACTIVATE_DEVICE });
+        platformMapping = new HashMap<>();
+        platformMapping.put(PlatformFunctionGroup.ADMIN,
+                new PlatformFunction[] { PlatformFunction.CREATE_ORGANISATION, PlatformFunction.GET_ORGANISATIONS,
+                        PlatformFunction.REMOVE_ORGANISATION, PlatformFunction.CHANGE_ORGANISATION,
+                        PlatformFunction.GET_DEVICE_NO_OWNER, PlatformFunction.GET_MESSAGES,
+                        PlatformFunction.FIND_DEVICES, PlatformFunction.SET_OWNER, PlatformFunction.UPDATE_KEY,
+                        PlatformFunction.REVOKE_KEY, PlatformFunction.FIND_SCHEDULED_TASKS,
+                        PlatformFunction.CREATE_MANUFACTURER, PlatformFunction.GET_MANUFACTURERS,
+                        PlatformFunction.CHANGE_MANUFACTURER, PlatformFunction.REMOVE_MANUFACTURER,
+                        PlatformFunction.GET_PROTOCOL_INFOS, PlatformFunction.UPDATE_DEVICE_PROTOCOL,
+                        PlatformFunction.GET_DEVICE_MODELS, PlatformFunction.CREATE_DEVICE_MODEL,
+                        PlatformFunction.REMOVE_DEVICE_MODEL, PlatformFunction.CHANGE_DEVICE_MODEL,
+                        PlatformFunction.GET_FIRMWARE, PlatformFunction.CREATE_FIRMWARE,
+                        PlatformFunction.REMOVE_FIRMWARE, PlatformFunction.CHANGE_FIRMWARE });
 
-        platformMapping.put(PlatformFunctionGroup.USER, new PlatformFunction[] { PlatformFunction.GET_ORGANISATIONS,
-                PlatformFunction.FIND_DEVICES });
+        platformMapping.put(PlatformFunctionGroup.USER,
+                new PlatformFunction[] { PlatformFunction.GET_ORGANISATIONS, PlatformFunction.FIND_DEVICES });
     }
 
     @Autowired
@@ -101,17 +102,14 @@ public class SecurityService {
 
         final List<DeviceFunction> authorizedDeviceFunctions = this.getDeviceFunctionsForAuthorizations(authorizations);
         if (authorizedDeviceFunctions != null && authorizedDeviceFunctions.contains(function)) {
-            LOGGER.info(
-                    "Organisation {} is allowed {} for device {}",
-                    new Object[] { organisation.getOrganisationIdentification(), function,
-                            device.getDeviceIdentification() });
+            LOGGER.info("Organisation {} is allowed {} for device {}", new Object[] {
+                    organisation.getOrganisationIdentification(), function, device.getDeviceIdentification() });
             return;
         }
 
         // Not allowed to access requested function
-        LOGGER.warn(
-                "Organisation {} is not allowed {} for device {}",
-                new Object[] { organisation.getOrganisationIdentification(), function, device.getDeviceIdentification() });
+        LOGGER.warn("Organisation {} is not allowed {} for device {}", new Object[] {
+                organisation.getOrganisationIdentification(), function, device.getDeviceIdentification() });
         throw new NotAuthorizedException(organisation.getOrganisationIdentification());
     }
 
