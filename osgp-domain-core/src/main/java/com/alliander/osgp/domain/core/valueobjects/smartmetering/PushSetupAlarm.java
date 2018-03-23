@@ -8,7 +8,6 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class PushSetupAlarm extends AbstractPushSetup implements Serializable {
 
@@ -18,18 +17,18 @@ public class PushSetupAlarm extends AbstractPushSetup implements Serializable {
 
         @Override
         public PushSetupAlarm build() {
-            return new PushSetupAlarm(this.logicalName, this.pushObjectList, this.sendDestinationAndMethod,
-                    this.communicationWindow, this.randomisationStartInterval, this.numberOfRetries,
-                    this.repetitionDelay);
+            final AbstractPushSetup abstractPushSetup = AbstractPushSetup.newBuilder().withLogicalName(this.logicalName)
+                    .withPushObjectList(this.pushObjectList).withSendDestinationAndMethod(this.sendDestinationAndMethod)
+                    .withCommunicationWindow(this.communicationWindow)
+                    .withRandomisationStartInterval(this.randomisationStartInterval)
+                    .withNumberOfRetries(this.numberOfRetries).withRepetitionDelay(this.repetitionDelay).build();
+
+            return new PushSetupAlarm(abstractPushSetup);
         }
     }
 
-    public PushSetupAlarm(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
-            final SendDestinationAndMethod sendDestinationAndMethod, final List<WindowElement> communicationWindow,
-            final Integer randomisationStartInterval, final Integer numberOfRetries, final Integer repetitionDelay) {
-
-        super(logicalName, pushObjectList, sendDestinationAndMethod, communicationWindow, randomisationStartInterval,
-                numberOfRetries, repetitionDelay);
+    public PushSetupAlarm(final AbstractPushSetup abstractPushSetup) {
+        super(abstractPushSetup);
     }
 
 }

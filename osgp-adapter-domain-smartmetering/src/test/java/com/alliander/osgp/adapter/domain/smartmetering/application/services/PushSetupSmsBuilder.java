@@ -34,8 +34,14 @@ public class PushSetupSmsBuilder {
     private List<WindowElement> communicationWindow;
 
     public PushSetupSms build() {
-        return new PushSetupSms(this.logicalName, this.pushObjectList, this.sendDestinationAndMethod,
-                this.communicationWindow, this.randomisationStartInterval, this.numberOfRetries, this.repetitionDelay);
+
+        final PushSetupSms.Builder pushSetupSmsBuilder = new PushSetupSms.Builder();
+        pushSetupSmsBuilder.withLogicalName(this.logicalName).withPushObjectList(this.pushObjectList)
+                .withSendDestinationAndMethod(this.sendDestinationAndMethod)
+                .withCommunicationWindow(this.communicationWindow)
+                .withRandomisationStartInterval(this.randomisationStartInterval)
+                .withNumberOfRetries(this.numberOfRetries).withRepetitionDelay(this.repetitionDelay);
+        return pushSetupSmsBuilder.build();
     }
 
     public PushSetupSmsBuilder withNullValues() {
