@@ -134,46 +134,6 @@
     </xsd:complexType>
   </xsd:element>
 
-  <!-- activate device -->
-  <xsd:element name="ActivateDeviceRequest">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="ActivateDeviceResponse">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
-  <!-- deactivate device -->
-  <xsd:element name="DeactivateDeviceRequest">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="DeactivateDeviceResponse">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
   <xsd:element name="FindDevicesWhichHaveNoOwnerResponse">
     <xsd:complexType>
       <xsd:sequence>
