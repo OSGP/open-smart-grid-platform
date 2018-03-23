@@ -27,8 +27,7 @@ import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
-public class PushSetupSmsDtoConverter
-        extends CustomConverter<PushSetupSms, com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto> {
+public class PushSetupSmsDtoConverter extends CustomConverter<PushSetupSms, PushSetupSmsDto> {
 
     private final ConfigurationMapper configurationMapper;
 
@@ -91,20 +90,12 @@ public class PushSetupSmsDtoConverter
         builder.withNumberOfRetries(source.getNumberOfRetries());
 
         final List<CosemObjectDefinitionDto> cosemObjectDefinitionDtos = new ArrayList<>();
-        if (source.getPushObjectList() != null) {
-            for (final CosemObjectDefinition cosemObjectDefinition : source.getPushObjectList()) {
-                final CosemObjectDefinitionDto cosemObjectDefinitionDto = new CosemObjectDefinitionDto(
-                        cosemObjectDefinition.getClassId(),
-                        new CosemObisCodeDto(cosemObjectDefinition.getLogicalName().getA(),
-                                cosemObjectDefinition.getLogicalName().getB(),
-                                cosemObjectDefinition.getLogicalName().getC(),
-                                cosemObjectDefinition.getLogicalName().getD(),
-                                cosemObjectDefinition.getLogicalName().getE(),
-                                cosemObjectDefinition.getLogicalName().getF()),
-                        cosemObjectDefinition.getAttributeIndex(), cosemObjectDefinition.getDataIndex());
-
+        final List<CosemObjectDefinition> pushObjectLists = source.getPushObjectList();
+        if (pushObjectLists != null) {
+            for (final CosemObjectDefinition cosemObjectDefinition : pushObjectLists) {
+                final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.configurationMapper
+                        .map(cosemObjectDefinition, CosemObjectDefinitionDto.class);
                 cosemObjectDefinitionDtos.add(cosemObjectDefinitionDto);
-
             }
             builder.withPushObjectList(cosemObjectDefinitionDtos);
         }
