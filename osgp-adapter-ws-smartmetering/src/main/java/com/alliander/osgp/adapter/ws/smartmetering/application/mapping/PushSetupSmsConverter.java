@@ -56,7 +56,7 @@ public class PushSetupSmsConverter extends
         final String destination = source.getHost() + ":" + source.getPort();
         final SendDestinationAndMethod sendDestinationAndMethod = new SendDestinationAndMethod(TransportServiceType.TCP,
                 destination, MessageType.MANUFACTURER_SPECIFIC);
-        builder.sendDestinationAndMethod(sendDestinationAndMethod);
+        builder.withSendDestinationAndMethod(sendDestinationAndMethod);
         return builder.build();
     }
 }

@@ -922,6 +922,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
                     ComponentType.WS_SMART_METERING);
 
+            this.throwExceptionIfResultNotOk(responseData, "replacing keys on the device");
+
             response = new ReplaceKeysResponse();
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
