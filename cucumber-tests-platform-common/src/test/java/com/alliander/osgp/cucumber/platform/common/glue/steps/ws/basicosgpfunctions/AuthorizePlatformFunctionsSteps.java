@@ -22,10 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.GetProtocolInfosRequest;
@@ -139,9 +137,6 @@ public class AuthorizePlatformFunctionsSteps {
             case GET_MANUFACTURERS:
                 this.getManufacturers(requestParameters);
                 break;
-            case DEACTIVATE_DEVICE:
-                this.deactivateDevice(requestParameters);
-                break;
             case GET_PROTOCOL_INFOS:
                 this.getProtocolInfos(requestParameters);
                 break;
@@ -171,9 +166,6 @@ public class AuthorizePlatformFunctionsSteps {
                 break;
             case REMOVE_FIRMWARE:
                 this.removeFirmware(requestParameters);
-                break;
-            case ACTIVATE_DEVICE:
-                this.activateDevice(requestParameters);
                 break;
             default:
                 throw new OperationNotSupportedException(
@@ -296,14 +288,6 @@ public class AuthorizePlatformFunctionsSteps {
                 this.adminDeviceManagementClient.getRevokeKeyResponse(request));
     }
 
-    private void activateDevice(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final ActivateDeviceRequest request = new ActivateDeviceRequest();
-        request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.adminDeviceManagementClient.activateDevice(request));
-    }
-
     private void removeFirmware(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final RemoveFirmwareRequest request = new RemoveFirmwareRequest();
         request.setId(PlatformCommonDefaults.FIRMWARE_ID);
@@ -393,14 +377,6 @@ public class AuthorizePlatformFunctionsSteps {
     private void getProtocolInfos(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
                 this.adminDeviceManagementClient.getProtocolInfos(new GetProtocolInfosRequest()));
-    }
-
-    private void deactivateDevice(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final DeactivateDeviceRequest request = new DeactivateDeviceRequest();
-        request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-        ScenarioContext.current().put(PlatformCommonKeys.RESPONSE,
-                this.adminDeviceManagementClient.deactivateDevice(request));
     }
 
     private void getManufacturers(final Map<String, String> requestParameters) throws WebServiceSecurityException {

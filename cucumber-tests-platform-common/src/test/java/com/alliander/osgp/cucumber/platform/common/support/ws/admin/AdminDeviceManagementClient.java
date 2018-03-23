@@ -14,16 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationResponse;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
@@ -64,13 +60,6 @@ public class AdminDeviceManagementClient extends BaseClient {
     @Autowired
     private DefaultWebServiceTemplateFactory adminDeviceManagementWstf;
 
-    public ActivateDeviceResponse activateDevice(final ActivateDeviceRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (ActivateDeviceResponse) wst.marshalSendAndReceive(request);
-    }
-
     public ActivateOrganisationResponse activateOrganization(final ActivateOrganisationRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
@@ -90,13 +79,6 @@ public class AdminDeviceManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (CreateOrganisationResponse) wst.marshalSendAndReceive(request);
-    }
-
-    public DeactivateDeviceResponse deactivateDevice(final DeactivateDeviceRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (DeactivateDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
     public FindAllOrganisationsResponse findAllOrganizations(final FindAllOrganisationsRequest request)

@@ -46,8 +46,6 @@ Feature: BasicOsgpFunctions Authorizing Platform Functions
       | CHANGE_MANUFACTURER    | USER                  | false   |
       | GET_MANUFACTURERS      | ADMIN                 | true    |
       | GET_MANUFACTURERS      | USER                  | false   |
-      | DEACTIVATE_DEVICE      | ADMIN                 | true    |
-      | DEACTIVATE_DEVICE      | USER                  | false   |
       | GET_PROTOCOL_INFOS     | ADMIN                 | true    |
       | GET_PROTOCOL_INFOS     | USER                  | false   |
       | UPDATE_DEVICE_PROTOCOL | ADMIN                 | true    |
@@ -68,5 +66,3 @@ Feature: BasicOsgpFunctions Authorizing Platform Functions
       | CHANGE_FIRMWARE        | USER                  | false   |
       | REMOVE_FIRMWARE        | ADMIN                 | true    |
       | REMOVE_FIRMWARE        | USER                  | false   |
-      | ACTIVATE_DEVICE        | ADMIN                 | true    |
-      | ACTIVATE_DEVICE        | USER                  | false   |
