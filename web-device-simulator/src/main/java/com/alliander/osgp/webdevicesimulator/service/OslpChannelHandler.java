@@ -84,7 +84,6 @@ import com.alliander.osgp.webdevicesimulator.domain.entities.DeviceMessageStatus
 import com.alliander.osgp.webdevicesimulator.domain.entities.DeviceOutputSetting;
 import com.alliander.osgp.webdevicesimulator.domain.entities.OslpLogItem;
 import com.alliander.osgp.webdevicesimulator.domain.repositories.OslpLogItemRepository;
-import com.alliander.osgp.webdevicesimulator.domain.valueobjects.EventNotificationToBeSent;
 import com.alliander.osgp.webdevicesimulator.domain.valueobjects.LightType;
 import com.alliander.osgp.webdevicesimulator.domain.valueobjects.LinkType;
 import com.alliander.osgp.webdevicesimulator.domain.valueobjects.OutputType;
@@ -1016,33 +1015,95 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         }
 
         // Send an event.
+        final Oslp.Event event = device.isLightOn() ? Oslp.Event.LIGHT_EVENTS_LIGHT_ON
+                : Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
+        final String description = "setLightRequest [SET_LIGHT] SCHED[-]";
+        this.sendEvent(device, event, description);
+    }
+
+    private void handleSetTransitionRequest(final Device device) {
+        // Device simulator will only use first light value,
+        // other light values will be ignored.
+
+        // Reverse the light.
+        device.setLightOn(!device.isLightOn());
+
+        // Send an event.
+        final Oslp.Event event = device.isLightOn() ? Oslp.Event.LIGHT_EVENTS_LIGHT_ON
+                : Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
+        final String description = "SetTransition Switch [SET_TRANSIT] SCHED[-]";
+        this.sendEvent(device, event, description);
+    }
+
+    //@formatter:off
+    /*
+osgp_core=# select * from event where device = (select id from device where device_identification = 'ELS-108600000502016');
+   id    |      creation_time      |    modification_time    | version |                 description                 | event | index | device |      date_time
+---------+-------------------------+-------------------------+---------+---------------------------------------------+-------+-------+--------+---------------------
+ 5145795 | 2018-03-20 12:52:56.233 | 2018-03-20 12:52:56.233 |       0 | Power Reboot                                |    31 |     0 | 129869 | 2018-03-20 12:52:41
+ 5145796 | 2018-03-20 15:37:27.213 | 2018-03-20 15:37:27.213 |       0 | ETH disconnected                            |     0 |     0 | 129869 | 2018-03-20 12:57:23
+ 5145797 | 2018-03-20 15:37:27.351 | 2018-03-20 15:37:27.351 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[4]      |     8 |     0 | 129869 | 2018-03-20 13:00:00
+ 5145798 | 2018-03-20 15:37:27.354 | 2018-03-20 15:37:27.354 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[5]      |     9 |     0 | 129869 | 2018-03-20 14:00:00
+ 5145799 | 2018-03-20 15:37:27.356 | 2018-03-20 15:37:27.356 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[6]      |     8 |     0 | 129869 | 2018-03-20 15:00:00
+ 5145800 | 2018-03-20 15:37:27.359 | 2018-03-20 15:37:27.359 |       0 | StartSelfTest [SELF_TEST] SCHED[-]          |    29 |     0 | 129869 | 2018-03-20 15:35:04
+ 5145801 | 2018-03-20 15:37:27.361 | 2018-03-20 15:37:27.361 |       0 | StopSelfTest [SELF_TEST] SCHED[-]           |    30 |     0 | 129869 | 2018-03-20 15:35:09
+ 5145802 | 2018-03-20 15:37:29.512 | 2018-03-20 15:37:29.512 |       0 | InitSchedule [R. REFRESH] LIGHT_SCHED[11]   |     8 |     4 | 129869 | 2018-03-20 15:36:45
+ 5145803 | 2018-03-20 15:37:29.521 | 2018-03-20 15:37:29.521 |       0 | InitSchedule [R. REFRESH] LIGHT_SCHED[0]    |     9 |     4 | 129869 | 2018-03-20 15:36:53
+ 5145804 | 2018-03-20 17:12:44.427 | 2018-03-20 17:12:44.427 |       0 | EndOfWindow [SCHEDULE] LIGHT_SCHED[1]       |     8 |     0 | 129869 | 2018-03-20 17:12:41
+ 5145813 | 2018-03-21 05:04:06.305 | 2018-03-21 05:04:06.305 |       0 | EndOfWindow [SCHEDULE] LIGHT_SCHED[0]       |     9 |     0 | 129869 | 2018-03-21 05:04:04
+ 5145830 | 2018-03-21 12:44:45.704 | 2018-03-21 12:44:45.704 |       0 | SetTransition Switch [SET_TRANSIT] SCHED[-] |     8 |     3 | 129869 | 2018-03-21 12:44:40
+ 5145829 | 2018-03-21 12:44:45.696 | 2018-03-21 12:44:45.696 |       0 | SetTransition Switch [SET_TRANSIT] SCHED[-] |     8 |     2 | 129869 | 2018-03-21 12:44:40
+ 5145832 | 2018-03-21 13:12:08.327 | 2018-03-21 13:12:08.327 |       0 | InitSchedule [R. REFRESH] LIGHT_SCHED[6]    |     9 |     3 | 129869 | 2018-03-21 13:11:54
+ 5145831 | 2018-03-21 13:12:08.324 | 2018-03-21 13:12:08.324 |       0 | InitSchedule [R. REFRESH] LIGHT_SCHED[6]    |     9 |     2 | 129869 | 2018-03-21 13:11:54
+ 5145840 | 2018-03-21 15:00:04.685 | 2018-03-21 15:00:04.685 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[3]      |     8 |     0 | 129869 | 2018-03-21 15:00:00
+ 5145842 | 2018-03-21 16:00:03.777 | 2018-03-21 16:00:03.777 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[4]      |     9 |     0 | 129869 | 2018-03-21 16:00:00
+ 5145845 | 2018-03-21 16:18:49.86  | 2018-03-21 16:18:49.86  |       0 | SetTransition Switch [SET_TRANSIT] SCHED[-] |     8 |     2 | 129869 | 2018-03-21 16:18:44
+ 5145846 | 2018-03-21 16:25:43.803 | 2018-03-21 16:25:43.803 |       0 | setLightRequest [SET_LIGHT] SCHED[-]        |     9 |     2 | 129869 | 2018-03-21 16:25:38
+ 5145847 | 2018-03-21 16:29:03.702 | 2018-03-21 16:29:03.702 |       0 | SetTransition Switch [SET_TRANSIT] SCHED[-] |     8 |     2 | 129869 | 2018-03-21 16:29:00
+ 5145848 | 2018-03-21 16:35:06.786 | 2018-03-21 16:35:06.786 |       0 | InitSchedule [R. REFRESH] LIGHT_SCHED[7]    |     9 |     2 | 129869 | 2018-03-21 16:35:01
+ 5145849 | 2018-03-21 17:00:03.368 | 2018-03-21 17:00:03.368 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[8]      |     8 |     0 | 129869 | 2018-03-21 17:00:00
+ 5145864 | 2018-03-22 08:00:01.935 | 2018-03-22 08:00:01.935 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[9]      |     9 |     0 | 129869 | 2018-03-22 08:00:00
+ 5145866 | 2018-03-22 09:00:01.98  | 2018-03-22 09:00:01.98  |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[0]      |     8 |     0 | 129869 | 2018-03-22 09:00:00
+ 5145867 | 2018-03-22 10:00:05.389 | 2018-03-22 10:00:05.389 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[1]      |     9 |     0 | 129869 | 2018-03-22 10:00:00
+ 5145872 | 2018-03-22 11:00:01.912 | 2018-03-22 11:00:01.912 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[2]      |     8 |     0 | 129869 | 2018-03-22 11:00:00
+ 5145873 | 2018-03-22 12:00:01.603 | 2018-03-22 12:00:01.603 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[3]      |     9 |     0 | 129869 | 2018-03-22 12:00:00
+ 5145874 | 2018-03-22 13:00:01.839 | 2018-03-22 13:00:01.839 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[4]      |     8 |     0 | 129869 | 2018-03-22 13:00:00
+ 5145875 | 2018-03-22 14:00:03.416 | 2018-03-22 14:00:03.416 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[5]      |     9 |     0 | 129869 | 2018-03-22 14:00:00
+ 5145881 | 2018-03-22 14:55:23.633 | 2018-03-22 14:55:23.633 |       0 | setLightRequest [SET_LIGHT] SCHED[-]        |     9 |     3 | 129869 | 2018-03-22 14:55:13
+ 5145880 | 2018-03-22 14:55:23.629 | 2018-03-22 14:55:23.629 |       0 | setLightRequest [SET_LIGHT] SCHED[-]        |     9 |     2 | 129869 | 2018-03-22 14:55:13
+ 5145879 | 2018-03-22 14:55:17.939 | 2018-03-22 14:55:17.939 |       0 | setLightRequest [SET_LIGHT] SCHED[-]        |     8 |     3 | 129869 | 2018-03-22 14:55:13
+ 5145878 | 2018-03-22 14:55:17.937 | 2018-03-22 14:55:17.937 |       0 | setLightRequest [SET_LIGHT] SCHED[-]        |     8 |     2 | 129869 | 2018-03-22 14:55:13
+ 5145884 | 2018-03-22 15:00:03.978 | 2018-03-22 15:00:03.978 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[6]      |     8 |     0 | 129869 | 2018-03-22 15:00:00
+ 5145894 | 2018-03-22 16:00:03.905 | 2018-03-22 16:00:03.905 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[7]      |     9 |     0 | 129869 | 2018-03-22 16:00:00
+ 5145908 | 2018-03-22 17:00:05.524 | 2018-03-22 17:00:05.524 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[8]      |     8 |     0 | 129869 | 2018-03-22 17:00:00
+ 5145930 | 2018-03-23 08:00:02.116 | 2018-03-23 08:00:02.116 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[9]      |     9 |     0 | 129869 | 2018-03-23 08:00:00
+ 5145932 | 2018-03-23 09:00:02.048 | 2018-03-23 09:00:02.048 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[0]      |     8 |     0 | 129869 | 2018-03-23 09:00:00
+ 5145933 | 2018-03-23 10:00:01.51  | 2018-03-23 10:00:01.51  |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[1]      |     9 |     0 | 129869 | 2018-03-23 10:00:00
+ 5145943 | 2018-03-23 11:00:01.027 | 2018-03-23 11:00:01.027 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[2]      |     8 |     0 | 129869 | 2018-03-23 11:00:00
+ 5145944 | 2018-03-23 12:00:03.316 | 2018-03-23 12:00:03.316 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[3]      |     9 |     0 | 129869 | 2018-03-23 12:00:00
+ 5145957 | 2018-03-23 13:00:01.086 | 2018-03-23 13:00:01.086 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[4]      |     8 |     0 | 129869 | 2018-03-23 13:00:00
+ 5145958 | 2018-03-23 14:00:03.585 | 2018-03-23 14:00:03.585 |       0 | AbsoluteTime [SCHEDULE] LIGHT_SCHED[5]      |     9 |     0 | 129869 | 2018-03-23 14:00:00
+(43 rows)
+     */
+    //@formatter:on
+
+    private void sendEvent(final Device device, final Oslp.Event event, final String description) {
+        this.sendEventWithCustomDelay(device, event, description, 3000);
+    }
+
+    private void sendEventWithCustomDelay(final Device device, final Oslp.Event event, final String description,
+            final int delay) {
+        // Send an event.
         final Timer timer = new Timer();
         timer.schedule(new TimerTask() {
 
             @Override
             public void run() {
-                final Oslp.Event event = device.isLightOn() ? Oslp.Event.LIGHT_EVENTS_LIGHT_ON
-                        : Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
-                final String description = "setLightRequest [SET_LIGHT] SCHED[-]";
-
                 OslpChannelHandler.this.registerDevice.sendEventNotificationCommand(device.getId(), event.getNumber(),
                         description, null);
             }
 
-        }, 3000);
-    }
-
-    private void handleSetTransitionRequest(final Device device) {
-        // Device simulator will only use first light value,
-        // other light values will be ignored
-
-        // reverse the light.
-        device.setLightOn(!device.isLightOn());
-
-        // Send an event.
-        final EventNotificationToBeSent eventNotificationToBeSent = new EventNotificationToBeSent(device.getId(),
-                device.isLightOn());
-        this.deviceManagementService.getEventNotificationToBeSent().add(eventNotificationToBeSent);
+        }, delay);
     }
 
     private void handleSetEventNotificationsRequest(final Device device, final SetEventNotificationsRequest request) {
