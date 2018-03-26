@@ -14,20 +14,9 @@ public class SetTransitionDeviceRequest extends DeviceRequest {
 
     private TransitionMessageDataContainerDto transitionTypeContainer;
 
-    public SetTransitionDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final TransitionMessageDataContainerDto transitionTypeContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
-
-        this.transitionTypeContainer = transitionTypeContainer;
-    }
-
-    public SetTransitionDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final TransitionMessageDataContainerDto transitionTypeContainer,
-            final String domain, final String domainVersion, final String messageType, final String ipAddress,
-            final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SetTransitionDeviceRequest(final Builder deviceRequest,
+            final TransitionMessageDataContainerDto transitionTypeContainer) {
+        super(deviceRequest);
         this.transitionTypeContainer = transitionTypeContainer;
     }
 

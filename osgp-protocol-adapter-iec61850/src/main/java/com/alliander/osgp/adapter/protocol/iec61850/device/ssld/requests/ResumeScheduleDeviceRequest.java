@@ -14,20 +14,9 @@ public class ResumeScheduleDeviceRequest extends DeviceRequest {
 
     private ResumeScheduleMessageDataContainerDto resumeScheduleContainer;
 
-    public ResumeScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ResumeScheduleMessageDataContainerDto resumeScheduleContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
-
-        this.resumeScheduleContainer = resumeScheduleContainer;
-    }
-
-    public ResumeScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ResumeScheduleMessageDataContainerDto resumeScheduleContainer,
-            final String domain, final String domainVersion, final String messageType, final String ipAddress,
-            final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public ResumeScheduleDeviceRequest(final Builder deviceRequest,
+            final ResumeScheduleMessageDataContainerDto resumeScheduleContainer) {
+        super(deviceRequest);
         this.resumeScheduleContainer = resumeScheduleContainer;
     }
 

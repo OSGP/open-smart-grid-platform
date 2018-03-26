@@ -7,28 +7,16 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
-
 import java.io.Serializable;
+
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 
 public class DaDeviceRequest extends DeviceRequest {
 
     private Serializable request;
 
-    public DaDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-                           final String correlationUid, final Serializable request) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
-
-        this.request = request;
-    }
-
-    public DaDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-                           final String correlationUid, final Serializable request, final String domain,
-                           final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-                           final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public DaDeviceRequest(final Builder deviceRequest, final Serializable request) {
+        super(deviceRequest);
         this.request = request;
     }
 

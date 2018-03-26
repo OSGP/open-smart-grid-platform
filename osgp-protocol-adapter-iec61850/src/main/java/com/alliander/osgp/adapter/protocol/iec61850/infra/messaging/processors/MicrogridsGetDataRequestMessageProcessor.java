@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
@@ -71,7 +73,8 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
+                    : false;
             getDataRequest = (GetDataRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -93,11 +96,14 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final GetDataDeviceRequest deviceRequest = new GetDataDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, getDataRequest, domain, domainVersion, messageType, ipAddress,
-                retryCount, isScheduled);
+        final Builder deviceRequest = DeviceRequest.newDeviceRequestBuilder()
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withCorrelationUid(correlationUid).withDomain(domain)
+                .withDomainVersion(domainVersion).withMessageType(messageType).withIpAddress(ipAddress)
+                .withRetryCount(retryCount).withIsScheduled(isScheduled);
 
-        this.deviceService.getData(deviceRequest, iec61850DeviceResponseHandler);
+        this.deviceService.getData(new GetDataDeviceRequest(deviceRequest, getDataRequest),
+                iec61850DeviceResponseHandler);
     }
 
     @Override

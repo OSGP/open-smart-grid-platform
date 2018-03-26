@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.UpdateDeviceSslCertificationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
@@ -81,13 +83,17 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends S
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final UpdateDeviceSslCertificationDeviceRequest deviceRequest = new UpdateDeviceSslCertificationDeviceRequest(
-                organisationIdentification, deviceIdentification, correlationUid, certification, domain, domainVersion,
-                messageType, ipAddress, retryCount, isScheduled);
+        final Builder deviceRequest = DeviceRequest.newDeviceRequestBuilder()
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withCorrelationUid(correlationUid).withDomain(domain)
+                .withDomainVersion(domainVersion).withMessageType(messageType).withIpAddress(ipAddress)
+                .withRetryCount(retryCount).withIsScheduled(isScheduled);
 
-        this.deviceService.updateDeviceSslCertification(deviceRequest, iec61850DeviceResponseHandler);
+        this.deviceService.updateDeviceSslCertification(
+                new UpdateDeviceSslCertificationDeviceRequest(deviceRequest, certification),
+                iec61850DeviceResponseHandler);
     }
 }

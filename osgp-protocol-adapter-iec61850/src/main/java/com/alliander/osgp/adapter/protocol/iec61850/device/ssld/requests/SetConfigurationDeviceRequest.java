@@ -14,20 +14,8 @@ public class SetConfigurationDeviceRequest extends DeviceRequest {
 
     private ConfigurationDto configuration;
 
-    public SetConfigurationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ConfigurationDto configuration) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
-
-        this.configuration = configuration;
-    }
-
-    public SetConfigurationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ConfigurationDto configuration, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SetConfigurationDeviceRequest(final Builder deviceRequest, final ConfigurationDto configuration) {
+        super(deviceRequest);
         this.configuration = configuration;
     }
 

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetFirmwareVersionDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
@@ -71,8 +72,9 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
+                    : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -90,13 +92,16 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+        final Builder deviceRequest = DeviceRequest.newDeviceRequestBuilder()
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withCorrelationUid(correlationUid).withDomain(domain)
+                .withDomainVersion(domainVersion).withMessageType(messageType).withIpAddress(ipAddress)
+                .withRetryCount(retryCount).withIsScheduled(isScheduled);
 
-        this.deviceService.getFirmwareVersion(deviceRequest, iec61850DeviceResponseHandler);
+        this.deviceService.getFirmwareVersion(new DeviceRequest(deviceRequest), iec61850DeviceResponseHandler);
     }
 
     @Override

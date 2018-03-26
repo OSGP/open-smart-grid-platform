@@ -7,6 +7,18 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging;
 
+import java.io.Serializable;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceResponse;
@@ -22,14 +34,6 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-import java.io.Serializable;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -49,25 +53,25 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
      * Each MessageProcessor should register it's MessageType at construction.
      *
      * @param deviceRequestMessageType
-     *            The MessageType the MessageProcessor implementation can
-     *            process.
+     *            The MessageType the MessageProcessor implementation can process.
      */
     protected DaRtuDeviceRequestMessageProcessor(final DeviceRequestMessageType deviceRequestMessageType) {
         this.deviceRequestMessageType = deviceRequestMessageType;
     }
 
     /**
-     * Generic function to get the data from the rtu based on the device connection details
-     * and the deviceRequest. Must be implemented in each concrete MessageProcessor
+     * Generic function to get the data from the rtu based on the device connection
+     * details and the deviceRequest. Must be implemented in each concrete
+     * MessageProcessor
      *
      */
-    public abstract <T> Function<T> getDataFunction(Iec61850Client iec61850Client, DeviceConnection connection, DaDeviceRequest deviceRequest);
+    public abstract <T> Function<T> getDataFunction(Iec61850Client iec61850Client, DeviceConnection connection,
+            DaDeviceRequest deviceRequest);
 
     /**
-     * Initialization function executed after dependency injection has finished.
-     * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * Initialization function executed after dependency injection has finished. The
+     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
+     * key for the HashMap is the integer value of the enumeration member.
      */
     @PostConstruct
     public void init() {
@@ -100,7 +104,8 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
+                    : false;
             request = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -122,11 +127,13 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final DaDeviceRequest deviceRequest = new DaDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, request, domain, domainVersion, messageType, ipAddress,
-                retryCount, isScheduled);
+        final Builder deviceRequest = DeviceRequest.newDeviceRequestBuilder()
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withCorrelationUid(correlationUid).withDomain(domain)
+                .withDomainVersion(domainVersion).withMessageType(messageType).withIpAddress(ipAddress)
+                .withRetryCount(retryCount).withIsScheduled(isScheduled);
 
-        this.deviceService.getData(deviceRequest, iec61850DeviceResponseHandler, this);
+        this.deviceService.getData(new DaDeviceRequest(deviceRequest, request), iec61850DeviceResponseHandler, this);
     }
 
     /**
@@ -134,8 +141,8 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
      */
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
-                                     final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-                                     final String messageType, final int retryCount, final int messagePriority, final Long scheduleTime) {
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType, final int retryCount, final int messagePriority, final Long scheduleTime) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException ex = null;

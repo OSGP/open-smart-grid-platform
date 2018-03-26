@@ -12,26 +12,14 @@ import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 
 public class GetDataDeviceRequest extends DeviceRequest {
 
-    private GetDataRequestDto dataRequest;
+    private GetDataRequestDto getDataRequest;
 
-    public GetDataDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final GetDataRequestDto dataRequest) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
-
-        this.dataRequest = dataRequest;
-    }
-
-    public GetDataDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final GetDataRequestDto dataRequest, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
-        this.dataRequest = dataRequest;
+    public GetDataDeviceRequest(final Builder deviceRequest, final GetDataRequestDto getDataRequest) {
+        super(deviceRequest);
+        this.getDataRequest = getDataRequest;
     }
 
     public GetDataRequestDto getDataRequest() {
-        return this.dataRequest;
+        return this.getDataRequest;
     }
 }

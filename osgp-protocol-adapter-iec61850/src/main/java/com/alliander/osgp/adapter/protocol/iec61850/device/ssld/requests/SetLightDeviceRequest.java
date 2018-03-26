@@ -14,20 +14,9 @@ public class SetLightDeviceRequest extends DeviceRequest {
 
     private LightValueMessageDataContainerDto lightValuesContainer;
 
-    public SetLightDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final LightValueMessageDataContainerDto lightValuesContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
-
-        this.lightValuesContainer = lightValuesContainer;
-    }
-
-    public SetLightDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final LightValueMessageDataContainerDto lightValuesContainer,
-            final String domain, final String domainVersion, final String messageType, final String ipAddress,
-            final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SetLightDeviceRequest(final Builder deviceRequest,
+            final LightValueMessageDataContainerDto lightValuesContainer) {
+        super(deviceRequest);
         this.lightValuesContainer = lightValuesContainer;
     }
 
