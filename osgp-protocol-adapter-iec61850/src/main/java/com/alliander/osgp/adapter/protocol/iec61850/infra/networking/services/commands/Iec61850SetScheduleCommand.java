@@ -318,7 +318,7 @@ public class Iec61850SetScheduleCommand {
         final ScheduleEntry.Builder builder = new ScheduleEntry.Builder();
         try {
             if (schedule.getTime() != null) {
-                builder.time(this.convertTime(schedule.getTime()));
+                builder.withTime(this.convertTime(schedule.getTime()));
             }
             final WindowTypeDto triggerWindow = schedule.getTriggerWindow();
             if (triggerWindow != null) {
@@ -330,11 +330,11 @@ public class Iec61850SetScheduleCommand {
                     throw new IllegalArgumentException(
                             "Schedule TriggerWindow minutesAfter must not be greater than " + Integer.MAX_VALUE);
                 }
-                builder.triggerWindowMinutesBefore((int) triggerWindow.getMinutesBefore());
-                builder.triggerWindowMinutesAfter((int) triggerWindow.getMinutesAfter());
+                builder.withTriggerWindowMinutesBefore((int) triggerWindow.getMinutesBefore());
+                builder.withTriggerWindowMinutesAfter((int) triggerWindow.getMinutesAfter());
             }
-            builder.triggerType(this.extractTriggerType(schedule));
-            builder.enabled(schedule.getIsEnabled() == null ? true : schedule.getIsEnabled());
+            builder.withTriggerType(this.extractTriggerType(schedule));
+            builder.withEnabled(schedule.getIsEnabled() == null ? true : schedule.getIsEnabled());
             final WeekDayTypeDto weekDay = schedule.getWeekDay();
             if (WeekDayTypeDto.ABSOLUTEDAY.equals(weekDay)) {
                 final DateTime specialDay = schedule.getStartDay();
@@ -342,13 +342,13 @@ public class Iec61850SetScheduleCommand {
                     throw new IllegalArgumentException(
                             "Schedule startDay must not be null when weekDay equals ABSOLUTEDAY");
                 }
-                builder.specialDay(specialDay);
+                builder.withSpecialDay(specialDay);
             } else {
-                builder.weekday(ScheduleWeekday.valueOf(schedule.getWeekDay().name()));
+                builder.withWeekday(ScheduleWeekday.valueOf(schedule.getWeekDay().name()));
             }
-            builder.on(lightValue.isOn());
+            builder.withOn(lightValue.isOn());
             if (schedule.getMinimumLightsOn() != null) {
-                builder.minimumLightsOn(schedule.getMinimumLightsOn());
+                builder.withMinimumLightsOn(schedule.getMinimumLightsOn());
             }
             return builder.build();
         } catch (IllegalStateException | IllegalArgumentException e) {
