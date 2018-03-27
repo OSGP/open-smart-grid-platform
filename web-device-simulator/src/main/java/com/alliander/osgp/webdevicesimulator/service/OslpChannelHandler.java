@@ -1035,13 +1035,13 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         final String deviceId = device.getDeviceIdentification();
 
         if (TransitionType.DAY_NIGHT.equals(transitionType) && !device.isLightOn()) {
-            LOGGER.info("Switching relay on for device: {} after receiving transtion type: {}", deviceId,
+            LOGGER.info("Switching relay on for device: {} after receiving transition type: {}", deviceId,
                     transitionType);
             device.setLightOn(true);
             final Oslp.Event event = Oslp.Event.LIGHT_EVENTS_LIGHT_ON;
             this.sendEvent(device, event, description);
         } else if (TransitionType.NIGHT_DAY.equals(transitionType) && device.isLightOn()) {
-            LOGGER.info("Switching relay off for device: {} after receiving transtion type: {}", deviceId,
+            LOGGER.info("Switching relay off for device: {} after receiving transition type: {}", deviceId,
                     transitionType);
             device.setLightOn(false);
             final Oslp.Event event = Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
