@@ -71,9 +71,11 @@ import com.alliander.osgp.oslp.Oslp.SetLightRequest;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleResponse;
+import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.SsldData;
 import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
+import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.oslp.Oslp.UpdateFirmwareRequest;
 import com.alliander.osgp.oslp.Oslp.UpdateFirmwareResponse;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -557,7 +559,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
             this.sendDelayedDeviceRegistration(device);
         } else if (request.hasSetTransitionRequest()) {
-            this.handleSetTransitionRequest(device);
+            this.handleSetTransitionRequest(device, request.getSetTransitionRequest());
 
             response = createSetTransitionResponse();
         } else if (request.hasConfirmRegisterDeviceRequest()) {
@@ -1021,18 +1023,33 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         this.sendEvent(device, event, description);
     }
 
-    private void handleSetTransitionRequest(final Device device) {
-        // Device simulator will only use first light value,
-        // other light values will be ignored.
+    private void handleSetTransitionRequest(final Device device, final SetTransitionRequest setTransitionRequest) {
+        // Use the transition type to determine if the relay should be switched
+        // on or off. Assume that the simulated device is running a 'normal'
+        // light schedule, meaning that the light is on during the night and off
+        // during the day.
+        final TransitionType transitionType = setTransitionRequest.getTransitionType();
 
-        // Reverse the light.
-        device.setLightOn(!device.isLightOn());
-
-        // Send an event.
-        final Oslp.Event event = device.isLightOn() ? Oslp.Event.LIGHT_EVENTS_LIGHT_ON
-                : Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
+        // In case the relay is switched, send an event with this description.
         final String description = "SetTransition Switch [SET_TRANSIT] SCHED[-]";
-        this.sendEvent(device, event, description);
+        final String deviceId = device.getDeviceIdentification();
+
+        if (TransitionType.DAY_NIGHT.equals(transitionType) && !device.isLightOn()) {
+            LOGGER.info("Switching relay on for device: {} after receiving transtion type: {}", deviceId,
+                    transitionType);
+            device.setLightOn(true);
+            final Oslp.Event event = Oslp.Event.LIGHT_EVENTS_LIGHT_ON;
+            this.sendEvent(device, event, description);
+        } else if (TransitionType.NIGHT_DAY.equals(transitionType) && device.isLightOn()) {
+            LOGGER.info("Switching relay off for device: {} after receiving transtion type: {}", deviceId,
+                    transitionType);
+            device.setLightOn(false);
+            final Oslp.Event event = Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
+            this.sendEvent(device, event, description);
+        } else {
+            LOGGER.info("Not switching relay for device: {}. Relay state: {}, transition type: {}.", deviceId,
+                    device.isLightOn(), transitionType);
+        }
     }
 
     //@formatter:off
