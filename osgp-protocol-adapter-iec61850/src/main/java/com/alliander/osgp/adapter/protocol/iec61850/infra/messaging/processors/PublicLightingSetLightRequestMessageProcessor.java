@@ -80,9 +80,11 @@ public class PublicLightingSetLightRequestMessageProcessor extends SsldDeviceReq
             return;
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(lightValueMessageDataContainer, domain,
-                domainVersion, messageType, retryCount, isScheduled, correlationUid, organisationIdentification,
-                deviceIdentification);
+        final RequestMessageData requestMessageData = RequestMessageData.newRequestMessageDataBuilder()
+                .withMessageData(lightValueMessageDataContainer).withDomain(domain).withDomainVersion(domainVersion)
+                .withMessageType(messageType).withRetryCount(retryCount).withIsScheduled(isScheduled)
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 

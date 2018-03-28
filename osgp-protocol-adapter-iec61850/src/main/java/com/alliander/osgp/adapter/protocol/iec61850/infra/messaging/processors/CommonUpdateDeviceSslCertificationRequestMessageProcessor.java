@@ -78,8 +78,11 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends S
             return;
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
-                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+        final RequestMessageData requestMessageData = RequestMessageData.newRequestMessageDataBuilder()
+                .withDomain(domain).withDomainVersion(domainVersion).withMessageType(messageType)
+                .withRetryCount(retryCount).withIsScheduled(isScheduled).withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 

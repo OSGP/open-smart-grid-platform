@@ -99,8 +99,11 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
             messageType = DeviceFunctionDto.GET_STATUS.name();
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
-                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+        final RequestMessageData requestMessageData = RequestMessageData.newRequestMessageDataBuilder()
+                .withDomain(domain).withDomainVersion(domainVersion).withMessageType(messageType)
+                .withRetryCount(retryCount).withIsScheduled(isScheduled).withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).build();
 
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);

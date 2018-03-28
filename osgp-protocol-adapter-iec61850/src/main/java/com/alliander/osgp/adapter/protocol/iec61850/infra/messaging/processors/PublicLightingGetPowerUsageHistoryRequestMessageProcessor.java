@@ -97,9 +97,13 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
             return;
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(powerUsageHistoryMessageDataContainerDto,
-                domain, domainVersion, messageType, retryCount, isScheduled, correlationUid, organisationIdentification,
-                deviceIdentification, ipAddress, messagePriority, scheduleTime);
+        final RequestMessageData requestMessageData = RequestMessageData.newRequestMessageDataBuilder()
+                .withMessageData(powerUsageHistoryMessageDataContainerDto).withDomain(domain)
+                .withDomainVersion(domainVersion).withMessageType(messageType).withRetryCount(retryCount)
+                .withIsScheduled(isScheduled).withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withIpAddress(ipAddress)
+                .withMessagePriority(messagePriority).withScheduleTime(scheduleTime).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
