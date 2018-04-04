@@ -164,12 +164,12 @@ public class Iec61850DeviceConnectionService {
         final DeviceConnection connection = new DeviceConnection(iec61850Connection, deviceIdentification,
                 organisationIdentification, serverName);
 
-        this.iec61850RtuDeviceReportingService.enableReportingForDevice(connection, deviceIdentification, serverName);
-
         final DateTime endTime = DateTime.now();
         LOGGER.info(
                 "Connected to device: {}, fetched server model. Start time: {}, end time: {}, total time in milliseconds: {}",
                 deviceIdentification, startTime, endTime, endTime.minus(startTime.getMillis()).getMillis());
+
+        this.iec61850RtuDeviceReportingService.enableReportingForDevice(connection, deviceIdentification, serverName);
 
         return connection;
     }
