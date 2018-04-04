@@ -79,22 +79,22 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends SsldDevi
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newRequestMessageDataBuilder()
-                .withMessageData(transitionMessageDataContainer).withDomain(domain).withDomainVersion(domainVersion)
-                .withMessageType(messageType).withRetryCount(retryCount).withIsScheduled(isScheduled)
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).build();
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageData(transitionMessageDataContainer).domain(domain).domainVersion(domainVersion)
+                .messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
+                .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final Builder deviceRequest = DeviceRequest.newDeviceRequestBuilder()
-                .withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withCorrelationUid(correlationUid).withDomain(domain)
-                .withDomainVersion(domainVersion).withMessageType(messageType).withIpAddress(ipAddress)
-                .withRetryCount(retryCount).withIsScheduled(isScheduled);
+        final Builder deviceRequest = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
+                .retryCount(retryCount).isScheduled(isScheduled);
 
         this.deviceService.setTransition(new SetTransitionDeviceRequest(deviceRequest, transitionMessageDataContainer),
                 iec61850DeviceResponseHandler);

@@ -56,62 +56,62 @@ public class RequestMessageData {
         private int messagePriority = 0;
         private Long scheduleTime = 0L;
 
-        public Builder withMessageData(final Serializable messageData) {
+        public Builder messageData(final Serializable messageData) {
             this.messageData = messageData;
             return this;
         }
 
-        public Builder withDomain(final String domain) {
+        public Builder domain(final String domain) {
             this.domain = domain;
             return this;
         }
 
-        public Builder withDomainVersion(final String domainVersion) {
+        public Builder domainVersion(final String domainVersion) {
             this.domainVersion = domainVersion;
             return this;
         }
 
-        public Builder withMessageType(final String messageType) {
+        public Builder messageType(final String messageType) {
             this.messageType = messageType;
             return this;
         }
 
-        public Builder withRetryCount(final int retryCount) {
+        public Builder retryCount(final int retryCount) {
             this.retryCount = retryCount;
             return this;
         }
 
-        public Builder withIsScheduled(final boolean isScheduled) {
+        public Builder isScheduled(final boolean isScheduled) {
             this.isScheduled = isScheduled;
             return this;
         }
 
-        public Builder withCorrelationUid(final String correlationUid) {
+        public Builder correlationUid(final String correlationUid) {
             this.correlationUid = correlationUid;
             return this;
         }
 
-        public Builder withOrganisationIdentification(final String organisationIdentification) {
+        public Builder organisationIdentification(final String organisationIdentification) {
             this.organisationIdentification = organisationIdentification;
             return this;
         }
 
-        public Builder withDeviceIdentification(final String deviceIdentification) {
+        public Builder deviceIdentification(final String deviceIdentification) {
             this.deviceIdentification = deviceIdentification;
             return this;
         }
 
-        public Builder withIpAddress(final String ipAddress) {
+        public Builder ipAddress(final String ipAddress) {
             this.ipAddress = ipAddress;
             return this;
         }
 
-        public Builder withMessagePriority(final int messagePriority) {
+        public Builder messagePriority(final int messagePriority) {
             this.messagePriority = messagePriority;
             return this;
         }
 
-        public Builder withScheduleTime(final Long scheduleTime) {
+        public Builder scheduleTime(final Long scheduleTime) {
             this.scheduleTime = scheduleTime;
             return this;
         }
@@ -122,7 +122,7 @@ public class RequestMessageData {
 
     }
 
-    public static Builder newRequestMessageDataBuilder() {
+    public static Builder newBuilder() {
         return new Builder();
     }
 

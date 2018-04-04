@@ -49,12 +49,12 @@ public class ScheduleEntry {
         private int triggerWindowMinutesBefore = DEFAULT_WINDOW_MINUTES;
         private int triggerWindowMinutesAfter = DEFAULT_WINDOW_MINUTES;
 
-        public Builder withEnabled(final boolean enabled) {
+        public Builder enabled(final boolean enabled) {
             this.enabled = enabled;
             return this;
         }
 
-        public Builder withTriggerType(final TriggerType triggerType) {
+        public Builder triggerType(final TriggerType triggerType) {
             this.triggerType = triggerType;
             return this;
         }
@@ -62,12 +62,12 @@ public class ScheduleEntry {
         /**
          * Makes this {@link ScheduleEntry} work on the {@link ScheduleWeekday}
          * provided. To create an entry for special days, use
-         * {@link #withSpecialDay(DateTime)}.
+         * {@link #specialDay(DateTime)}.
          *
          * @param weekday
          * @return this builder.
          */
-        public Builder withWeekday(final ScheduleWeekday weekday) {
+        public Builder weekday(final ScheduleWeekday weekday) {
             this.day = weekday.getIndex();
             return this;
         }
@@ -75,12 +75,12 @@ public class ScheduleEntry {
         /**
          * Makes this {@link ScheduleEntry} work on the {@link DateTime} provided as a
          * special day. To create an entry for a certain day of the week, for weekdays,
-         * or for weekend days use {@link #withWeekday(ScheduleWeekday)}.
+         * or for weekend days use {@link #weekday(ScheduleWeekday)}.
          *
          * @param specialDate
          * @return this builder.
          */
-        public Builder withSpecialDay(final DateTime specialDate) {
+        public Builder specialDay(final DateTime specialDate) {
             // make weekday the int value corresponding with yyyyMMdd
             this.day = specialDate.getDayOfMonth() + 100 * specialDate.getMonthOfYear() + 10000 * specialDate.getYear();
             return this;
@@ -97,7 +97,7 @@ public class ScheduleEntry {
          *             if {@code time} is a value that does not match a time value as
          *             described.
          */
-        public Builder withTime(final short time) {
+        public Builder time(final short time) {
             if (time < 0 || time > 2359) {
                 throw new IllegalArgumentException("time value must be within [0..2359]: " + time);
             }
@@ -108,12 +108,12 @@ public class ScheduleEntry {
             return this;
         }
 
-        public Builder withOn(final boolean on) {
+        public Builder on(final boolean on) {
             this.on = on;
             return this;
         }
 
-        public Builder withTriggerWindowMinutesBefore(final int triggerWindowMinutesBefore) {
+        public Builder triggerWindowMinutesBefore(final int triggerWindowMinutesBefore) {
             if (triggerWindowMinutesBefore < 0) {
                 throw new IllegalArgumentException(
                         "triggerWindowMinutesBefore must be non-negative: " + triggerWindowMinutesBefore);
@@ -122,7 +122,7 @@ public class ScheduleEntry {
             return this;
         }
 
-        public Builder withTriggerWindowMinutesAfter(final int triggerWindowMinutesAfter) {
+        public Builder triggerWindowMinutesAfter(final int triggerWindowMinutesAfter) {
             if (triggerWindowMinutesAfter < 0) {
                 throw new IllegalArgumentException(
                         "triggerWindowMinutesAfter must be non-negative: " + triggerWindowMinutesAfter);
@@ -131,7 +131,7 @@ public class ScheduleEntry {
             return this;
         }
 
-        public Builder withMinimumLightsOn(final int minimumLightsOn) {
+        public Builder minimumLightsOn(final int minimumLightsOn) {
             if (minimumLightsOn < 0) {
                 throw new IllegalArgumentException("minimumLightsOn must be non-negative: " + minimumLightsOn);
             }
@@ -177,7 +177,7 @@ public class ScheduleEntry {
             return new ScheduleEntry(this);
         }
 
-        public static Builder newScheduleEntryBuilder() {
+        public static Builder newBuilder() {
             return new Builder();
         }
     }

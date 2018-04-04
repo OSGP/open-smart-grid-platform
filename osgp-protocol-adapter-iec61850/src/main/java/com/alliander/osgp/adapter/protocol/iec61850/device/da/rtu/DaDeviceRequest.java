@@ -15,8 +15,8 @@ public class DaDeviceRequest extends DeviceRequest {
 
     private Serializable request;
 
-    public DaDeviceRequest(final Builder deviceRequest, final Serializable request) {
-        super(deviceRequest);
+    public DaDeviceRequest(final Builder deviceRequestBuilder, final Serializable request) {
+        super(deviceRequestBuilder);
         this.request = request;
     }
 

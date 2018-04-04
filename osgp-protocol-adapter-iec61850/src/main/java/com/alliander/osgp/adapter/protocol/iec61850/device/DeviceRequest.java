@@ -42,47 +42,47 @@ public class DeviceRequest {
         private int retryCount = 0;
         private boolean isScheduled = false;
 
-        public Builder withOrganisationIdentification(final String organisationIdentification) {
+        public Builder organisationIdentification(final String organisationIdentification) {
             this.organisationIdentification = organisationIdentification;
             return this;
         }
 
-        public Builder withDeviceIdentification(final String deviceIdentification) {
+        public Builder deviceIdentification(final String deviceIdentification) {
             this.deviceIdentification = deviceIdentification;
             return this;
         }
 
-        public Builder withCorrelationUid(final String correlationUid) {
+        public Builder correlationUid(final String correlationUid) {
             this.correlationUid = correlationUid;
             return this;
         }
 
-        public Builder withDomain(final String domain) {
+        public Builder domain(final String domain) {
             this.domain = domain;
             return this;
         }
 
-        public Builder withDomainVersion(final String domainVersion) {
+        public Builder domainVersion(final String domainVersion) {
             this.domainVersion = domainVersion;
             return this;
         }
 
-        public Builder withMessageType(final String messageType) {
+        public Builder messageType(final String messageType) {
             this.messageType = messageType;
             return this;
         }
 
-        public Builder withIpAddress(final String ipAddress) {
+        public Builder ipAddress(final String ipAddress) {
             this.ipAddress = ipAddress;
             return this;
         }
 
-        public Builder withRetryCount(final int retryCount) {
+        public Builder retryCount(final int retryCount) {
             this.retryCount = retryCount;
             return this;
         }
 
-        public Builder withIsScheduled(final boolean isScheduled) {
+        public Builder isScheduled(final boolean isScheduled) {
             this.isScheduled = isScheduled;
             return this;
         }
@@ -93,7 +93,7 @@ public class DeviceRequest {
 
     }
 
-    public static Builder newDeviceRequestBuilder() {
+    public static Builder newBuilder() {
         return new Builder();
     }
 
