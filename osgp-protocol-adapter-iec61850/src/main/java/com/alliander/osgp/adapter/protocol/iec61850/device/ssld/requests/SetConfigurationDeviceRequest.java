@@ -14,8 +14,8 @@ public class SetConfigurationDeviceRequest extends DeviceRequest {
 
     private ConfigurationDto configuration;
 
-    public SetConfigurationDeviceRequest(final Builder deviceRequest, final ConfigurationDto configuration) {
-        super(deviceRequest);
+    public SetConfigurationDeviceRequest(final Builder deviceRequestBuilder, final ConfigurationDto configuration) {
+        super(deviceRequestBuilder);
         this.configuration = configuration;
     }
 

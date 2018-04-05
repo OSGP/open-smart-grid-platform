@@ -91,13 +91,13 @@ public class PublicLightingSetLightRequestMessageProcessor extends SsldDeviceReq
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final Builder deviceRequest = DeviceRequest.newBuilder()
+        final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
                 .organisationIdentification(organisationIdentification)
                 .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
                 .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
                 .retryCount(retryCount).isScheduled(isScheduled);
 
-        this.deviceService.setLight(new SetLightDeviceRequest(deviceRequest, lightValueMessageDataContainer),
+        this.deviceService.setLight(new SetLightDeviceRequest(deviceRequestBuilder, lightValueMessageDataContainer),
                 iec61850DeviceResponseHandler);
     }
 }

@@ -16,9 +16,9 @@ public class SetScheduleDeviceRequest extends DeviceRequest {
     private ScheduleMessageDataContainerDto scheduleMessageDataContainer;
     private RelayTypeDto relayType;
 
-    public SetScheduleDeviceRequest(final Builder deviceRequest,
+    public SetScheduleDeviceRequest(final Builder deviceRequestBuilder,
             final ScheduleMessageDataContainerDto scheduleMessageDataContainer, final RelayTypeDto relayType) {
-        super(deviceRequest);
+        super(deviceRequestBuilder);
         this.scheduleMessageDataContainer = scheduleMessageDataContainer;
         this.relayType = relayType;
     }

@@ -14,9 +14,9 @@ public class UpdateDeviceSslCertificationDeviceRequest extends DeviceRequest {
 
     private CertificationDto certification;
 
-    public UpdateDeviceSslCertificationDeviceRequest(final Builder deviceRequest,
+    public UpdateDeviceSslCertificationDeviceRequest(final Builder deviceRequestBuilder,
             final CertificationDto certification) {
-        super(deviceRequest);
+        super(deviceRequestBuilder);
         this.certification = certification;
     }
 

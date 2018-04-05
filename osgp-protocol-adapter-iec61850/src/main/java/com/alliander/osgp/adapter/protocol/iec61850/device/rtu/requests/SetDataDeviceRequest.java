@@ -14,8 +14,8 @@ public class SetDataDeviceRequest extends DeviceRequest {
 
     private SetDataRequestDto setDataRequest;
 
-    public SetDataDeviceRequest(final Builder deviceRequest, final SetDataRequestDto setDataRequest) {
-        super(deviceRequest);
+    public SetDataDeviceRequest(final Builder deviceRequestBuilder, final SetDataRequestDto setDataRequest) {
+        super(deviceRequestBuilder);
         this.setDataRequest = setDataRequest;
     }
 

@@ -14,9 +14,9 @@ public class SetEventNotificationsDeviceRequest extends DeviceRequest {
 
     private EventNotificationMessageDataContainerDto eventNotificationsContainer;
 
-    public SetEventNotificationsDeviceRequest(final Builder deviceRequest,
+    public SetEventNotificationsDeviceRequest(final Builder deviceRequestBuilder,
             final EventNotificationMessageDataContainerDto eventNotificationsContainer) {
-        super(deviceRequest);
+        super(deviceRequestBuilder);
         this.eventNotificationsContainer = eventNotificationsContainer;
     }
 

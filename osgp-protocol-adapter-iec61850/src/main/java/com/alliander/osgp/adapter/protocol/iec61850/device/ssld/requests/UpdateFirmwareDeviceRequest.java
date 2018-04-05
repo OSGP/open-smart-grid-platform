@@ -16,9 +16,9 @@ public class UpdateFirmwareDeviceRequest extends DeviceRequest {
     private String firmwareUrl;
     private FirmwareModuleData firmwareModuleData;
 
-    public UpdateFirmwareDeviceRequest(final Builder deviceRequest, final String firmwareDomain,
+    public UpdateFirmwareDeviceRequest(final Builder deviceRequestBuilder, final String firmwareDomain,
             final String firmwareUrl, final FirmwareModuleData firmwareModuleData) {
-        super(deviceRequest);
+        super(deviceRequestBuilder);
         this.firmwareDomain = firmwareDomain;
         this.firmwareUrl = firmwareUrl;
         this.firmwareModuleData = firmwareModuleData;

@@ -14,8 +14,8 @@ public class GetDataDeviceRequest extends DeviceRequest {
 
     private GetDataRequestDto getDataRequest;
 
-    public GetDataDeviceRequest(final Builder deviceRequest, final GetDataRequestDto getDataRequest) {
-        super(deviceRequest);
+    public GetDataDeviceRequest(final Builder deviceRequestBuilder, final GetDataRequestDto getDataRequest) {
+        super(deviceRequestBuilder);
         this.getDataRequest = getDataRequest;
     }
 

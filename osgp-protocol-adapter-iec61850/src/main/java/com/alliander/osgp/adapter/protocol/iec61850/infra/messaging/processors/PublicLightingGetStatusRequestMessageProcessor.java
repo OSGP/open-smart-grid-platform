@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
@@ -86,13 +85,12 @@ public class PublicLightingGetStatusRequestMessageProcessor extends SsldDeviceRe
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final Builder deviceRequest = DeviceRequest.newBuilder()
-                .organisationIdentification(organisationIdentification)
-                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
-                .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
-                .retryCount(retryCount).isScheduled(isScheduled);
+        final DeviceRequest deviceRequest = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid).domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled).build();
 
-        this.deviceService.getStatus(new DeviceRequest(deviceRequest), iec61850DeviceResponseHandler);
+        this.deviceService.getStatus(deviceRequest, iec61850DeviceResponseHandler);
     }
 
     @Override

@@ -14,9 +14,9 @@ public class SetTransitionDeviceRequest extends DeviceRequest {
 
     private TransitionMessageDataContainerDto transitionTypeContainer;
 
-    public SetTransitionDeviceRequest(final Builder deviceRequest,
+    public SetTransitionDeviceRequest(final Builder deviceRequestBuilder,
             final TransitionMessageDataContainerDto transitionTypeContainer) {
-        super(deviceRequest);
+        super(deviceRequestBuilder);
         this.transitionTypeContainer = transitionTypeContainer;
     }
 

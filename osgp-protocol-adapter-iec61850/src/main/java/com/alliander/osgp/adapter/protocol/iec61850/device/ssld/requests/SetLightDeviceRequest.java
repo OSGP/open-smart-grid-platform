@@ -14,9 +14,9 @@ public class SetLightDeviceRequest extends DeviceRequest {
 
     private LightValueMessageDataContainerDto lightValuesContainer;
 
-    public SetLightDeviceRequest(final Builder deviceRequest,
+    public SetLightDeviceRequest(final Builder deviceRequestBuilder,
             final LightValueMessageDataContainerDto lightValuesContainer) {
-        super(deviceRequest);
+        super(deviceRequestBuilder);
         this.lightValuesContainer = lightValuesContainer;
     }
 

@@ -14,9 +14,9 @@ public class GetPowerUsageHistoryDeviceRequest extends DeviceRequest {
 
     private PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer;
 
-    public GetPowerUsageHistoryDeviceRequest(final Builder deviceRequest,
+    public GetPowerUsageHistoryDeviceRequest(final Builder deviceRequestBuilder,
             final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer) {
-        super(deviceRequest);
+        super(deviceRequestBuilder);
         this.powerUsageHistoryContainer = powerUsageHistoryContainer;
     }
 

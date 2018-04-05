@@ -88,13 +88,13 @@ public class CommonSetConfigurationRequestMessageProcessor extends SsldDeviceReq
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final Builder deviceRequest = DeviceRequest.newBuilder()
+        final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
                 .organisationIdentification(organisationIdentification)
                 .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
                 .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
                 .retryCount(retryCount).isScheduled(isScheduled);
 
-        this.deviceService.setConfiguration(new SetConfigurationDeviceRequest(deviceRequest, configuration),
+        this.deviceService.setConfiguration(new SetConfigurationDeviceRequest(deviceRequestBuilder, configuration),
                 iec61850DeviceResponseHandler);
     }
 }

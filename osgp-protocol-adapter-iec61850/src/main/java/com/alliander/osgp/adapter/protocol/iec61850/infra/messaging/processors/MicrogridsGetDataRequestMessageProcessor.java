@@ -99,13 +99,13 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final Builder deviceRequest = DeviceRequest.newBuilder()
+        final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
                 .organisationIdentification(organisationIdentification)
                 .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
                 .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
                 .retryCount(retryCount).isScheduled(isScheduled);
 
-        this.deviceService.getData(new GetDataDeviceRequest(deviceRequest, getDataRequest),
+        this.deviceService.getData(new GetDataDeviceRequest(deviceRequestBuilder, getDataRequest),
                 iec61850DeviceResponseHandler);
     }
 

@@ -14,9 +14,9 @@ public class ResumeScheduleDeviceRequest extends DeviceRequest {
 
     private ResumeScheduleMessageDataContainerDto resumeScheduleContainer;
 
-    public ResumeScheduleDeviceRequest(final Builder deviceRequest,
+    public ResumeScheduleDeviceRequest(final Builder deviceRequestBuilder,
             final ResumeScheduleMessageDataContainerDto resumeScheduleContainer) {
-        super(deviceRequest);
+        super(deviceRequestBuilder);
         this.resumeScheduleContainer = resumeScheduleContainer;
     }
 
