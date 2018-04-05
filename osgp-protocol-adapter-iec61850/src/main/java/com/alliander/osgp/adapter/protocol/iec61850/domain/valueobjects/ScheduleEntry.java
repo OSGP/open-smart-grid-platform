@@ -23,6 +23,17 @@ public class ScheduleEntry {
     private final int triggerWindowMinutesBefore;
     private final int triggerWindowMinutesAfter;
 
+    public ScheduleEntry(final Builder builder) {
+        this.enabled = builder.enabled;
+        this.triggerType = builder.triggerType;
+        this.day = builder.day;
+        this.time = builder.time;
+        this.on = builder.on;
+        this.minimumLightsOn = builder.minimumLightsOn;
+        this.triggerWindowMinutesBefore = builder.triggerWindowMinutesBefore;
+        this.triggerWindowMinutesAfter = builder.triggerWindowMinutesAfter;
+    }
+
     public static final class Builder {
 
         private static final boolean DEFAULT_ENABLED = true;
@@ -62,10 +73,9 @@ public class ScheduleEntry {
         }
 
         /**
-         * Makes this {@link ScheduleEntry} work on the {@link DateTime}
-         * provided as a special day. To create an entry for a certain day of
-         * the week, for weekdays, or for weekend days use
-         * {@link #weekday(ScheduleWeekday)}.
+         * Makes this {@link ScheduleEntry} work on the {@link DateTime} provided as a
+         * special day. To create an entry for a certain day of the week, for weekdays,
+         * or for weekend days use {@link #weekday(ScheduleWeekday)}.
          *
          * @param specialDate
          * @return this builder.
@@ -84,8 +94,8 @@ public class ScheduleEntry {
          *            a time formatted as hhmm, interpreted as {@code short}.
          * @return this builder.
          * @throws IllegalArgumentException
-         *             if {@code time} is a value that does not match a time
-         *             value as described.
+         *             if {@code time} is a value that does not match a time value as
+         *             described.
          */
         public Builder time(final short time) {
             if (time < 0 || time > 2359) {
@@ -105,8 +115,8 @@ public class ScheduleEntry {
 
         public Builder triggerWindowMinutesBefore(final int triggerWindowMinutesBefore) {
             if (triggerWindowMinutesBefore < 0) {
-                throw new IllegalArgumentException("triggerWindowMinutesBefore must be non-negative: "
-                        + triggerWindowMinutesBefore);
+                throw new IllegalArgumentException(
+                        "triggerWindowMinutesBefore must be non-negative: " + triggerWindowMinutesBefore);
             }
             this.triggerWindowMinutesBefore = triggerWindowMinutesBefore;
             return this;
@@ -114,8 +124,8 @@ public class ScheduleEntry {
 
         public Builder triggerWindowMinutesAfter(final int triggerWindowMinutesAfter) {
             if (triggerWindowMinutesAfter < 0) {
-                throw new IllegalArgumentException("triggerWindowMinutesAfter must be non-negative: "
-                        + triggerWindowMinutesAfter);
+                throw new IllegalArgumentException(
+                        "triggerWindowMinutesAfter must be non-negative: " + triggerWindowMinutesAfter);
             }
             this.triggerWindowMinutesAfter = triggerWindowMinutesAfter;
             return this;
@@ -130,18 +140,17 @@ public class ScheduleEntry {
         }
 
         /**
-         * Constructs a {@link ScheduleEntry} for the given inputs, where
-         * enabled (default {@value #DEFAULT_ENABLED}), minimumLightsOn (default
-         * {@value #DEFAULT_MINIMUM_LIGHTS_ON}), triggerWindowMinutesBefore
-         * (default {@value #DEFAULT_WINDOW_MINUTES}) and ,
-         * triggerWindowMinutesAfter (default {@value #DEFAULT_WINDOW_MINUTES})
-         * do not need to have been set explicitly when they should have their
-         * default values.
+         * Constructs a {@link ScheduleEntry} for the given inputs, where enabled
+         * (default {@value #DEFAULT_ENABLED}), minimumLightsOn (default
+         * {@value #DEFAULT_MINIMUM_LIGHTS_ON}), triggerWindowMinutesBefore (default
+         * {@value #DEFAULT_WINDOW_MINUTES}) and , triggerWindowMinutesAfter (default
+         * {@value #DEFAULT_WINDOW_MINUTES}) do not need to have been set explicitly
+         * when they should have their default values.
          *
          * @return a {@link ScheduleEntry} for the given inputs.
          * @throws IllegalStateException
-         *             if triggerType, day (weekday or special day), time (for
-         *             fixed time entries) or on/off has not been set.
+         *             if triggerType, day (weekday or special day), time (for fixed
+         *             time entries) or on/off has not been set.
          */
         public ScheduleEntry build() {
             if (this.triggerType == null) {
@@ -156,8 +165,8 @@ public class ScheduleEntry {
                     throw new IllegalStateException("A ScheduleEntry for fixed time can only be created with a time.");
                 } else {
                     /*
-                     * Use a default value 0 for time, when triggered by sensor
-                     * or astronomical time.
+                     * Use a default value 0 for time, when triggered by sensor or astronomical
+                     * time.
                      */
                     this.time = 0;
                 }
@@ -165,22 +174,12 @@ public class ScheduleEntry {
             if (this.on == null) {
                 throw new IllegalStateException("A ScheduleEntry can only be created with on/off switching.");
             }
-            return new ScheduleEntry(this.enabled, this.triggerType, this.day, this.time, this.on,
-                    this.minimumLightsOn, this.triggerWindowMinutesBefore, this.triggerWindowMinutesAfter);
+            return new ScheduleEntry(this);
         }
-    }
 
-    private ScheduleEntry(final boolean enabled, final TriggerType triggerType, final int day, final short time,
-            final boolean on, final int minimumLightsOn, final int triggerWindowMinutesBefore,
-            final int triggerWindowMinutesAfter) {
-        this.enabled = enabled;
-        this.triggerType = triggerType;
-        this.day = day;
-        this.time = time;
-        this.on = on;
-        this.minimumLightsOn = minimumLightsOn;
-        this.triggerWindowMinutesBefore = triggerWindowMinutesBefore;
-        this.triggerWindowMinutesAfter = triggerWindowMinutesAfter;
+        public static Builder newBuilder() {
+            return new Builder();
+        }
     }
 
     public boolean isEnabled() {

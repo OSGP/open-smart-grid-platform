@@ -83,16 +83,21 @@ public class CommonGetConfigurationRequestMessageProcessor extends SsldDeviceReq
             return;
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
-                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .retryCount(retryCount).isScheduled(isScheduled).correlationUid(correlationUid)
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+        final DeviceRequest deviceRequest = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid).domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled).build();
 
         this.deviceService.getConfiguration(deviceRequest, iec61850DeviceResponseHandler);
     }

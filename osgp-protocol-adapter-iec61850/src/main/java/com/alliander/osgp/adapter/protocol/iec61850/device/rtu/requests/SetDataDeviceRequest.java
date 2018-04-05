@@ -14,20 +14,8 @@ public class SetDataDeviceRequest extends DeviceRequest {
 
     private SetDataRequestDto setDataRequest;
 
-    public SetDataDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SetDataRequestDto setDataRequest) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
-
-        this.setDataRequest = setDataRequest;
-    }
-
-    public SetDataDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SetDataRequestDto setDataRequest, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SetDataDeviceRequest(final Builder deviceRequestBuilder, final SetDataRequestDto setDataRequest) {
+        super(deviceRequestBuilder);
         this.setDataRequest = setDataRequest;
     }
 

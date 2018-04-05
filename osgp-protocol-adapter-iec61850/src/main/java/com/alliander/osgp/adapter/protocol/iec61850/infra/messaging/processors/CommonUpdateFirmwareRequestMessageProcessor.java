@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.FirmwareLocation;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
@@ -80,20 +82,28 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends SsldDeviceReque
             return;
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
-                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .retryCount(retryCount).isScheduled(isScheduled).correlationUid(correlationUid)
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final UpdateFirmwareDeviceRequest deviceRequest = new UpdateFirmwareDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, this.firmwareLocation.getDomain(),
-                this.firmwareLocation.getFullPath(firmwareUpdateMessageDataContainer.getFirmwareUrl()),
-                firmwareUpdateMessageDataContainer.getFirmwareModuleData(), domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
+        final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
+                .retryCount(retryCount).isScheduled(isScheduled);
 
-        this.deviceService.updateFirmware(deviceRequest, iec61850DeviceResponseHandler);
+        this.deviceService
+                .updateFirmware(
+                        new UpdateFirmwareDeviceRequest(deviceRequestBuilder, this.firmwareLocation.getDomain(),
+                                this.firmwareLocation.getFullPath(firmwareUpdateMessageDataContainer.getFirmwareUrl()),
+                                firmwareUpdateMessageDataContainer.getFirmwareModuleData()),
+                        iec61850DeviceResponseHandler);
     }
 }

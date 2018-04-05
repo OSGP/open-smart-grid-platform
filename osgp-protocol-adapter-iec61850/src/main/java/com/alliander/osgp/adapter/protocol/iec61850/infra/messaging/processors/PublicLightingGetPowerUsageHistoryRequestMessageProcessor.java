@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.GetPowerUsageHistoryDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetPowerUsageHistoryDeviceResponse;
@@ -75,8 +77,9 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             messagePriority = message.getJMSPriority();
-            scheduleTime = message.propertyExists(Constants.SCHEDULE_TIME) ? message
-                    .getLongProperty(Constants.SCHEDULE_TIME) : null;
+            scheduleTime = message.propertyExists(Constants.SCHEDULE_TIME)
+                    ? message.getLongProperty(Constants.SCHEDULE_TIME)
+                    : null;
             powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainerDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -94,21 +97,27 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
             return;
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(powerUsageHistoryMessageDataContainerDto,
-                domain, domainVersion, messageType, retryCount, isScheduled, correlationUid,
-                organisationIdentification, deviceIdentification, ipAddress, messagePriority, scheduleTime);
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageData(powerUsageHistoryMessageDataContainerDto).domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).retryCount(retryCount)
+                .isScheduled(isScheduled).correlationUid(correlationUid)
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).ipAddress(ipAddress)
+                .messagePriority(messagePriority).scheduleTime(scheduleTime).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final GetPowerUsageHistoryDeviceRequest deviceRequest = new GetPowerUsageHistoryDeviceRequest(
-                organisationIdentification, deviceIdentification, correlationUid,
-                powerUsageHistoryMessageDataContainerDto, domain, domainVersion, messageType, ipAddress, retryCount,
-                isScheduled);
+        final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid).domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled);
 
-        this.deviceService.getPowerUsageHistory(deviceRequest, iec61850DeviceResponseHandler);
+        this.deviceService.getPowerUsageHistory(
+                new GetPowerUsageHistoryDeviceRequest(deviceRequestBuilder, powerUsageHistoryMessageDataContainerDto),
+                iec61850DeviceResponseHandler);
     }
 
     @Override

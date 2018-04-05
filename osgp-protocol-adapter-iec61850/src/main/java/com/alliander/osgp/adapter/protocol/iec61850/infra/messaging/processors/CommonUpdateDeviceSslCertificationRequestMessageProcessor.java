@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.UpdateDeviceSslCertificationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
@@ -76,18 +78,25 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends S
             return;
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
-                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .retryCount(retryCount).isScheduled(isScheduled).correlationUid(correlationUid)
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final UpdateDeviceSslCertificationDeviceRequest deviceRequest = new UpdateDeviceSslCertificationDeviceRequest(
-                organisationIdentification, deviceIdentification, correlationUid, certification, domain, domainVersion,
-                messageType, ipAddress, retryCount, isScheduled);
+        final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
+                .retryCount(retryCount).isScheduled(isScheduled);
 
-        this.deviceService.updateDeviceSslCertification(deviceRequest, iec61850DeviceResponseHandler);
+        this.deviceService.updateDeviceSslCertification(
+                new UpdateDeviceSslCertificationDeviceRequest(deviceRequestBuilder, certification),
+                iec61850DeviceResponseHandler);
     }
 }

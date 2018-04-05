@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
@@ -60,8 +62,9 @@ public class PublicLightingSetLightRequestMessageProcessor extends SsldDeviceReq
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
+                    : false;
 
             lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message.getObject();
 
@@ -77,19 +80,24 @@ public class PublicLightingSetLightRequestMessageProcessor extends SsldDeviceReq
             return;
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(lightValueMessageDataContainer, domain,
-                domainVersion, messageType, retryCount, isScheduled, correlationUid, organisationIdentification,
-                deviceIdentification);
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageData(lightValueMessageDataContainer).domain(domain).domainVersion(domainVersion)
+                .messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
+                .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final SetLightDeviceRequest deviceRequest = new SetLightDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, lightValueMessageDataContainer, domain, domainVersion,
-                messageType, ipAddress, retryCount, isScheduled);
+        final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
+                .retryCount(retryCount).isScheduled(isScheduled);
 
-        this.deviceService.setLight(deviceRequest, iec61850DeviceResponseHandler);
+        this.deviceService.setLight(new SetLightDeviceRequest(deviceRequestBuilder, lightValueMessageDataContainer),
+                iec61850DeviceResponseHandler);
     }
 }

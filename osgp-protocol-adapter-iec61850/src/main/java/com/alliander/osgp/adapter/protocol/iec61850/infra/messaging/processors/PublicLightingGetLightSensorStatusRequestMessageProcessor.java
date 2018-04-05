@@ -41,7 +41,7 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
@@ -69,8 +69,9 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
+                    : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -97,14 +98,19 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
             messageType = DeviceFunctionDto.GET_STATUS.name();
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
-                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .retryCount(retryCount).isScheduled(isScheduled).correlationUid(correlationUid)
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).build();
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+        final DeviceRequest deviceRequest = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid).domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled).build();
 
         this.deviceService.getStatus(deviceRequest, iec61850DeviceResponseHandler);
     }

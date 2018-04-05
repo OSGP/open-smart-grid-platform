@@ -14,20 +14,9 @@ public class SetEventNotificationsDeviceRequest extends DeviceRequest {
 
     private EventNotificationMessageDataContainerDto eventNotificationsContainer;
 
-    public SetEventNotificationsDeviceRequest(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
+    public SetEventNotificationsDeviceRequest(final Builder deviceRequestBuilder,
             final EventNotificationMessageDataContainerDto eventNotificationsContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
-        this.eventNotificationsContainer = eventNotificationsContainer;
-    }
-
-    public SetEventNotificationsDeviceRequest(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
-            final EventNotificationMessageDataContainerDto eventNotificationsContainer, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
+        super(deviceRequestBuilder);
         this.eventNotificationsContainer = eventNotificationsContainer;
     }
 

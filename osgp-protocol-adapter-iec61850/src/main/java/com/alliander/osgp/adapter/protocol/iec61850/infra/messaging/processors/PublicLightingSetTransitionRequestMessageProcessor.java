@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.SetTransitionDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
@@ -61,8 +63,9 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends SsldDevi
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
+                    : false;
             transitionMessageDataContainer = (TransitionMessageDataContainerDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -76,19 +79,24 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends SsldDevi
             return;
         }
 
-        final RequestMessageData requestMessageData = new RequestMessageData(transitionMessageDataContainer, domain,
-                domainVersion, messageType, retryCount, isScheduled, correlationUid, organisationIdentification,
-                deviceIdentification);
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
+                .messageData(transitionMessageDataContainer).domain(domain).domainVersion(domainVersion)
+                .messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
+                .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final SetTransitionDeviceRequest deviceRequest = new SetTransitionDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, transitionMessageDataContainer, domain, domainVersion,
-                messageType, ipAddress, retryCount, isScheduled);
+        final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
+                .retryCount(retryCount).isScheduled(isScheduled);
 
-        this.deviceService.setTransition(deviceRequest, iec61850DeviceResponseHandler);
+        this.deviceService.setTransition(new SetTransitionDeviceRequest(deviceRequestBuilder, transitionMessageDataContainer),
+                iec61850DeviceResponseHandler);
     }
 }

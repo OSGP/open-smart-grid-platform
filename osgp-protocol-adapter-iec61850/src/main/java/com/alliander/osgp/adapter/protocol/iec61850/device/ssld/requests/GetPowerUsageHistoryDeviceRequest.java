@@ -14,20 +14,9 @@ public class GetPowerUsageHistoryDeviceRequest extends DeviceRequest {
 
     private PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer;
 
-    public GetPowerUsageHistoryDeviceRequest(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
+    public GetPowerUsageHistoryDeviceRequest(final Builder deviceRequestBuilder,
             final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
-        this.powerUsageHistoryContainer = powerUsageHistoryContainer;
-    }
-
-    public GetPowerUsageHistoryDeviceRequest(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
-            final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
+        super(deviceRequestBuilder);
         this.powerUsageHistoryContainer = powerUsageHistoryContainer;
     }
 
