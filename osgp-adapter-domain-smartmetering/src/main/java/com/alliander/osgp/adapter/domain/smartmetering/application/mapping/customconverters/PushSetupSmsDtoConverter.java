@@ -82,8 +82,14 @@ public class PushSetupSmsDtoConverter extends CustomConverter<PushSetupSms, Push
 
         final CosemObisCode cosemObisCode = source.getLogicalName();
         if (cosemObisCode != null) {
-            final CosemObisCodeDto cosemObisCodeDto = new CosemObisCodeDto(cosemObisCode.getA(), cosemObisCode.getB(),
-                    cosemObisCode.getC(), cosemObisCode.getD(), cosemObisCode.getE(), cosemObisCode.getF());
+            final CosemObisCodeDto cosemObisCodeDto = new CosemObisCodeDto(
+                    new int[] { cosemObisCode.getA(), cosemObisCode.getB(), cosemObisCode.getC(), cosemObisCode.getD(),
+                            cosemObisCode.getE(), cosemObisCode.getF() });
+
+            // final CosemObisCodeDto cosemObisCodeDto = new
+            // CosemObisCodeDto(cosemObisCode.getA(), cosemObisCode.getB(),
+            // cosemObisCode.getC(), cosemObisCode.getD(), cosemObisCode.getE(),
+            // cosemObisCode.getF());
             builder.withLogicalName(cosemObisCodeDto);
         }
 
