@@ -21,7 +21,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class NotificationWebServiceConfig {
 
-    private static final String COMMON_XSD_PATH = "schemas/common.xsd";
+    private static final String COMMON_XSD_PATH = "schemas/common-ws-core.xsd";
 
     private static final String NOTIFICATION_XSD_PATH = "schemas/notification-ws-core.xsd";
 
@@ -39,7 +39,7 @@ public class NotificationWebServiceConfig {
         return payloadValidatingInterceptor;
     }
 
-    @Bean(name = "common-xsd")
+    @Bean(name = "common-ws-core")
     public SimpleXsdSchema commonXsd() {
         return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
     }
@@ -49,7 +49,7 @@ public class NotificationWebServiceConfig {
         return new SimpleWsdl11Definition(new ClassPathResource(NOTIFICATION_WSDL_PATH));
     }
 
-    @Bean(name = "notification")
+    @Bean(name = "notification-ws-core")
     public SimpleXsdSchema notificationXsd() {
         return new SimpleXsdSchema(new ClassPathResource(NOTIFICATION_XSD_PATH));
     }
