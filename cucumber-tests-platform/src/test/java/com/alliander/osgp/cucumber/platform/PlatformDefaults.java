@@ -63,6 +63,7 @@ public class PlatformDefaults {
     public static final Integer DEFAULT_DIMVALUE = 100;
     public static final String DEFAULT_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
 
+    public static final String DEFAULT_EAN_DESCRIPTION = "dummy EAN description";
     public static final String DEFAULT_END_DATE = "";
     public static final String DEFAULT_EVENTNOTIFICATIONS = "";
     public static final String DEFAULT_EVENTNOTIFICATIONTYPES = "";

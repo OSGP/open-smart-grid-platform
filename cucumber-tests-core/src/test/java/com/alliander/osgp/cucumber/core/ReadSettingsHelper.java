@@ -144,11 +144,10 @@ public class ReadSettingsHelper {
     public static Long getLong(final Map<String, String> settings, final String key) {
 
         if (!settings.containsKey(key)) {
-            return new java.util.Random().nextLong();
+            return null;
         }
 
-        final Long value = Long.parseLong(settings.get(key));
-        return value;
+        return Long.parseLong(settings.get(key));
     }
 
     /**
@@ -168,8 +167,7 @@ public class ReadSettingsHelper {
             return defaultValue;
         }
 
-        final Long value = Long.parseLong(settings.get(key));
-        return value;
+        return Long.parseLong(settings.get(key));
     }
 
     public static Short getShort(final Map<String, String> settings, final String key) {
@@ -193,17 +191,15 @@ public class ReadSettingsHelper {
             return defaultValue;
         }
 
-        final Short value = Short.parseShort(settings.get(key));
-        return value;
+        return Short.parseShort(settings.get(key));
     }
 
     public static String getString(final Map<String, String> settings, final String key) {
         String value = null;
-        if (settings.containsKey(key)) {
-            if (!settings.get(key).equalsIgnoreCase("null")) {
-                value = settings.get(key);
-            }
+        if (settings.containsKey(key) && !settings.get(key).equalsIgnoreCase("null")) {
+            value = settings.get(key);
         }
+
         return value;
     }
 
@@ -236,8 +232,7 @@ public class ReadSettingsHelper {
             return defaultValue;
         }
 
-        final Byte value = Byte.parseByte(settings.get(key));
-        return value;
+        return Byte.parseByte(settings.get(key));
     }
 
     public static String getNullOrNonEmptyString(final Map<String, String> settings, final String key,

@@ -29,10 +29,12 @@ import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.EanRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
@@ -51,6 +53,9 @@ public abstract class BaseDeviceSteps extends GlueBase {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private EanRepository eanRepository;
 
     @Autowired
     private OrganisationRepository organizationRepository;
@@ -113,7 +118,6 @@ public abstract class BaseDeviceSteps extends GlueBase {
                 getString(settings, PlatformKeys.KEY_DEVICE_TYPE, PlatformDefaults.DEFAULT_DEVICE_TYPE));
 
         device.updateInMaintenance(getBoolean(settings, PlatformKeys.IN_MAINTENANCE, PlatformDefaults.IN_MAINTENANCE));
-        device.setVersion(getLong(settings, PlatformKeys.KEY_VERSION));
         device.setDeviceLifecycleStatus(getEnum(settings, PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS,
                 DeviceLifecycleStatus.class, PlatformDefaults.DEFAULT_DEVICE_LIFECYCLE_STATUS));
         if (getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
@@ -128,8 +132,7 @@ public abstract class BaseDeviceSteps extends GlueBase {
                 getString(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
                 getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY),
                 (settings.containsKey(PlatformKeys.KEY_LATITUDE) && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
-                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE)
-                        : null,
+                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE) : null,
                 (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
                         && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
                                 ? getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformDefaults.DEFAULT_LONGITUDE)
@@ -155,7 +158,20 @@ public abstract class BaseDeviceSteps extends GlueBase {
             device = savedDevice;
         }
 
+        this.addEanToDevice(device, settings);
+
         return device;
+    }
+
+    private void addEanToDevice(final Device device, final Map<String, String> settings) {
+
+        final Long eanCode = getLong(settings, PlatformKeys.EAN_CODE);
+        if (eanCode != null) {
+            final String eanDescription = getString(settings, PlatformKeys.EAN_DESCRIPTION,
+                    PlatformDefaults.DEFAULT_EAN_DESCRIPTION);
+            final Ean ean = new Ean(device, eanCode, eanDescription);
+            this.eanRepository.save(ean);
+        }
     }
 
     /**

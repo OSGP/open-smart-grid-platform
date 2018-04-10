@@ -14,6 +14,7 @@ import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getInteger;
 import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -101,8 +102,18 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
         for (final String rs : relayStatuses) {
             final String[] relayStatus = rs.split(PlatformKeys.SEPARATOR_COMMA);
-            this.relayStatusRepository.save(new RelayStatus(ssld, Integer.parseInt(relayStatus[0]),
-                    Boolean.parseBoolean(relayStatus[1]), getDateTime2(relayStatus[2], DateTime.now()).toDate()));
+            final int index = Integer.parseInt(relayStatus[0]);
+            final boolean lastKnownState = Boolean.parseBoolean(relayStatus[1]);
+            final Date lastKnownSwitchingTime = getDateTime2(relayStatus[2], DateTime.now()).toDate();
+
+            final RelayStatus currentRelayStatus = ssld.getRelayStatusByIndex(index);
+            if (currentRelayStatus == null) {
+                this.relayStatusRepository.save(new RelayStatus(ssld, index, lastKnownState, lastKnownSwitchingTime));
+            } else {
+                currentRelayStatus.setLastKnownState(lastKnownState);
+                currentRelayStatus.setLastKnowSwitchingTime(lastKnownSwitchingTime);
+                this.relayStatusRepository.save(currentRelayStatus);
+            }
         }
     }
 

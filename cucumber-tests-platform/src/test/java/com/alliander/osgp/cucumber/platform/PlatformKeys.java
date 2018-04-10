@@ -43,6 +43,8 @@ public class PlatformKeys extends Keys {
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
     public static final String DEVICEMODEL_MODELCODE = "ModelCode";
     public static final String DEVICEMODEL_NAME = "DeviceModelName";
+    public static final String EAN_CODE = "EanCode";
+    public static final String EAN_DESCRIPTION = "EanDescription";
     public static final String EMAIL = "Email";
     public static final String END_TIME = "EndTime";
     public static final String FAILED_LOGIN_ATTEMP_TIME_STAMP = "FailedLoginAttemptTimeStamp";

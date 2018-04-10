@@ -38,7 +38,7 @@ public class OslpDeviceSteps extends GlueBase {
             + "00M3m/Ice7wABNN+oAYKQbw/OceqvZmFF1+r4nO/vCm/f1JO5nEorE2jNQ==";
 
     @Autowired
-    private OslpDeviceRepository oslpDeviceRespository;
+    private OslpDeviceRepository oslpDeviceRepository;
 
     @Autowired
     private SsldDeviceSteps ssldDeviceSteps;
@@ -59,7 +59,7 @@ public class OslpDeviceSteps extends GlueBase {
         device.setRandomDevice(0);
         device.setRandomPlatform(0);
         device.updatePublicKey(DEVICE_PUBLIC_KEY);
-        this.oslpDeviceRespository.save(device);
+        this.oslpDeviceRepository.save(device);
     }
 
     @Given("^(\\d++) ssld oslp devices$")
@@ -81,7 +81,7 @@ public class OslpDeviceSteps extends GlueBase {
     public void theSsldOslpDeviceContains(final Map<String, String> expectedEntity) {
 
         Wait.until(() -> {
-            final OslpDevice entity = this.oslpDeviceRespository
+            final OslpDevice entity = this.oslpDeviceRepository
                     .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
             Assert.assertEquals(getString(expectedEntity, PlatformKeys.KEY_DEVICE_TYPE), entity.getDeviceType());

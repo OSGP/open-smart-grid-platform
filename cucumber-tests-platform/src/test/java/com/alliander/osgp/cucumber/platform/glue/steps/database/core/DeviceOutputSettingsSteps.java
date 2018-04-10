@@ -21,7 +21,9 @@ import com.alliander.osgp.cucumber.core.GlueBase;
 import com.alliander.osgp.cucumber.platform.PlatformDefaults;
 import com.alliander.osgp.cucumber.platform.PlatformKeys;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.repositories.RelayStatusRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
@@ -31,6 +33,9 @@ public class DeviceOutputSettingsSteps extends GlueBase {
 
     @Autowired
     private SsldRepository ssldRepository;
+
+    @Autowired
+    private RelayStatusRepository relayStatusRepository;
 
     /**
      *
@@ -55,9 +60,8 @@ public class DeviceOutputSettingsSteps extends GlueBase {
                         PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE),
                 getString(settings, PlatformKeys.KEY_ALIAS, PlatformDefaults.DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS));
         outputSettings.add(deviceOutputSetting);
-        device.updateOutputSettings(outputSettings);
 
-        this.ssldRepository.save(device);
+        this.saveDeviceOutputSettingsAndRelayStatuses(outputSettings, device);
     }
 
     @Given("^device output settings$")
@@ -80,9 +84,7 @@ public class DeviceOutputSettingsSteps extends GlueBase {
             outputSettings.add(deviceOutputSettingsForLightValue);
         }
 
-        device.updateOutputSettings(outputSettings);
-
-        this.ssldRepository.save(device);
+        this.saveDeviceOutputSettingsAndRelayStatuses(outputSettings, device);
     }
 
     @Given("^device output settings for lightvalues$")
@@ -111,8 +113,23 @@ public class DeviceOutputSettingsSteps extends GlueBase {
             outputSettings.add(deviceOutputSettingsForLightValue);
         }
 
-        device.updateOutputSettings(outputSettings);
+        this.saveDeviceOutputSettingsAndRelayStatuses(outputSettings, device);
+    }
 
+    private void saveDeviceOutputSettingsAndRelayStatuses(final List<DeviceOutputSetting> deviceOutputSettings,
+            final Ssld device) {
+        device.updateOutputSettings(deviceOutputSettings);
         this.ssldRepository.save(device);
+
+        // Create a dummy relay status for each device output setting
+        for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettings) {
+            final RelayStatus relayStatus = new RelayStatus();
+            relayStatus.setDevice(device);
+            relayStatus.setIndex(deviceOutputSetting.getExternalId());
+            relayStatus.setLastKnownState(false);
+            relayStatus.setLastKnowSwitchingTime(new java.util.Date());
+
+            this.relayStatusRepository.save(relayStatus);
+        }
     }
 }
