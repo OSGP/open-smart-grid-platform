@@ -87,10 +87,6 @@ public class PushSetupAlarmDtoConverter extends CustomConverter<PushSetupAlarm, 
                     new int[] { cosemObisCode.getA(), cosemObisCode.getB(), cosemObisCode.getC(), cosemObisCode.getD(),
                             cosemObisCode.getE(), cosemObisCode.getF() });
 
-            // final CosemObisCodeDto cosemObisCodeDto = new
-            // CosemObisCodeDto(cosemObisCode.getA(), cosemObisCode.getB(),
-            // cosemObisCode.getC(), cosemObisCode.getD(), cosemObisCode.getE(),
-            // cosemObisCode.getF());
             builder.withLogicalName(cosemObisCodeDto);
         }
 
