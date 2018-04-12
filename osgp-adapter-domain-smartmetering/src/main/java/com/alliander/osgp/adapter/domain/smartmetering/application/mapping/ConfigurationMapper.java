@@ -36,6 +36,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new WeekProfileConverter(this));
         mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsDtoConverter(this));
         mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmDtoConverter(this));
-        mapperFactory.getConverterFactory().registerConverter(new CosemObisCodeDtoConverter(this));
+        mapperFactory.getConverterFactory().registerConverter(new CosemObisCodeDtoConverter());
     }
 }

@@ -8,56 +8,45 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters;
 
-import java.util.Objects;
-
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObisCode;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
 
-import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-public class CosemObisCodeDtoConverter extends CustomConverter<CosemObisCode, CosemObisCodeDto> {
-
-    private final ConfigurationMapper configurationMapper;
-
-    public CosemObisCodeDtoConverter() {
-        this.configurationMapper = new ConfigurationMapper();
-    }
-
-    public CosemObisCodeDtoConverter(final ConfigurationMapper configurationMapper) {
-        this.configurationMapper = configurationMapper;
-    }
+public class CosemObisCodeDtoConverter extends BidirectionalConverter<CosemObisCodeDto, CosemObisCode> {
 
     @Override
     public boolean equals(final Object other) {
         if (!(other instanceof CosemObisCodeDtoConverter)) {
             return false;
         }
-        if (!super.equals(other)) {
-            return false;
-        }
-        final CosemObisCodeDtoConverter o = (CosemObisCodeDtoConverter) other;
-        if (this.configurationMapper == null) {
-            return o.configurationMapper == null;
-        }
-        return this.configurationMapper.getClass().equals(o.configurationMapper.getClass());
+        return super.equals(other);
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode() + Objects.hashCode(this.configurationMapper);
+        return super.hashCode();
     }
 
     @Override
-    public CosemObisCodeDto convert(final CosemObisCode source, final Type<? extends CosemObisCodeDto> destinationType,
+    public CosemObisCodeDto convertFrom(final CosemObisCode source, final Type<CosemObisCodeDto> destinationType,
             final MappingContext mappingContext) {
-
         if (source == null) {
             return null;
         }
 
-        return new CosemObisCodeDto(source.toByteArray());
+        return new CosemObisCodeDto(source.toIntArray());
+    }
+
+    @Override
+    public CosemObisCode convertTo(final CosemObisCodeDto source, final Type<CosemObisCode> destinationType,
+            final MappingContext mappingContext) {
+        if (source == null) {
+            return null;
+        }
+
+        return new CosemObisCode(source.toIntArray());
     }
 }

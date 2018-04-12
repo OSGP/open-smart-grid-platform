@@ -27,7 +27,7 @@ public class SetPushSetupAlarmRequestData implements ActionRequest {
     @Override
     public void validate() throws FunctionalException {
         // No validation needed
-    };
+    }
 
     @Override
     public DeviceFunction getDeviceFunction() {
