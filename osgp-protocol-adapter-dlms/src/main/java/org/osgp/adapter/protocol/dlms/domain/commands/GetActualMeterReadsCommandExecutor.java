@@ -30,8 +30,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 
 @Component()
-public class GetActualMeterReadsCommandExecutor
-        extends AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsResponseDto> {
+public class GetActualMeterReadsCommandExecutor extends
+        AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
@@ -105,8 +105,7 @@ public class GetActualMeterReadsCommandExecutor
             final ActualMeterReadsQueryDto actualMeterReadsQuery) throws ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isMbusQuery()) {
-            throw new IllegalArgumentException(
-                    "ActualMeterReadsQuery object for energy reads should not be about gas.");
+            throw new IllegalArgumentException("ActualMeterReadsQuery object for energy reads should not be about gas.");
         }
 
         conn.getDlmsMessageListener().setDescription("GetActualMeterReads retrieve attributes: "
@@ -142,9 +141,8 @@ public class GetActualMeterReadsCommandExecutor
                 getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2_SCALER_UNIT), "Actual Energy Reads -A rate 2");
 
         return new MeterReadsResponseDto(time.toDate(),
-                new ActiveEnergyValuesDto(
-                        new DlmsMeterValueDto[] { activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
-                                activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2 }));
+                new ActiveEnergyValuesDto(activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
+                        activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2));
     }
 
 }
