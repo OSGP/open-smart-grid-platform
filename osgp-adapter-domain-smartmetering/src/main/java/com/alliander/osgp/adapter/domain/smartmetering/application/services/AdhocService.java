@@ -170,10 +170,6 @@ public class AdhocService {
         final AssociationLnListType associationLnListValueDomain = this.configurationMapper.map(resultData,
                 AssociationLnListType.class);
 
-        // final AssociationLnListType associationLnListValueDomain =
-        // this.mapperFactory.getMapperFacade().map(resultData,
-        // AssociationLnListType.class);
-
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
                 .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
