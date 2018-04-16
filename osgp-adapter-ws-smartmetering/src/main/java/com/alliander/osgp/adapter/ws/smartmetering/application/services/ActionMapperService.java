@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ClearAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelRequest;
@@ -78,6 +79,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
@@ -245,6 +247,9 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelRequestData.class,
                 this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequestData.class,
+                this.adhocMapper);
     }
 
     /**
@@ -363,7 +368,7 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelRequestData.class,
                 GetMbusEncryptionKeyStatusByChannelRequestData.class);
-
+        CLASS_MAP.put(ScanMbusChannelsRequest.class, ScanMbusChannelsRequestData.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {

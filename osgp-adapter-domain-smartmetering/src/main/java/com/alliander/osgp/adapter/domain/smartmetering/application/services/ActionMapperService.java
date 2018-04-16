@@ -52,6 +52,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
@@ -89,6 +90,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetMbusEncryptionKeySta
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
@@ -177,6 +179,7 @@ public class ActionMapperService {
                 GetMbusEncryptionKeyStatusByChannelRequestDataDto.class);
         CLASS_MAP.put(SetDeviceLifecycleStatusByChannelRequestData.class,
                 SetDeviceLifecycleStatusByChannelRequestDataDto.class);
+        CLASS_MAP.put(ScanMbusChannelsRequestData.class, ScanMbusChannelsRequestDataDto.class);
     }
 
     /**
@@ -222,6 +225,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ClearAlarmRegisterData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelRequestData.class, this.managementMapper);
+        CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.commonMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageDataContainer,
