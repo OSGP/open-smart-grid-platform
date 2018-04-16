@@ -81,6 +81,7 @@
       <xsd:enumeration value="CLEAR_ALARM_REGISTER" />
       <xsd:enumeration value="GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL" />
       <xsd:enumeration value="SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL" />
+      <xsd:enumeration value="SCAN_MBUS_CHANNELS" />
     </xsd:restriction>
   </xsd:simpleType>
 

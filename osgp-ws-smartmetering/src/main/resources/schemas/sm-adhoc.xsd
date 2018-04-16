@@ -208,7 +208,64 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
+  
+  <xsd:element name="ScanMbusChannelsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:ScanMbusChannelsRequestData">
+          <xsd:sequence>
+            <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ScanMbusChannelsAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ScanMbusChannelsAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ScanMbusChannelsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:Response">
+          <xsd:sequence>
+            <xsd:element name="AttributeValueData" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="ScanMbusChannelsRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="ClassId" type="xsd:integer" />
+          <xsd:element name="Attribute" type="xsd:integer" />
+          <xsd:element name="ObisCode" type="common:ObisCodeValues" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ScanMbusChannelsResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="AttributeValueData" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
   <xsd:complexType name="AssociationLnListType">
     <xsd:sequence>
       <xsd:element name="AssociationLnListElement" type="tns:AssociationLnListElement"
