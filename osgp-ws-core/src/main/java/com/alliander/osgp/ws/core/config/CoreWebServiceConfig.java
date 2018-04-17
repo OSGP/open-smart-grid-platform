@@ -7,7 +7,6 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package com.alliander.osgp.ws.core.config;
 
 import org.springframework.context.annotation.Bean;
@@ -47,7 +46,7 @@ public class CoreWebServiceConfig {
         return payloadValidatingInterceptor;
     }
 
-    @Bean(name = "common")
+    @Bean(name = "common-ws-core")
     public SimpleXsdSchema commonXsd() {
         return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
     }
@@ -57,7 +56,7 @@ public class CoreWebServiceConfig {
         return new SimpleWsdl11Definition(new ClassPathResource(ADHOC_MANAGEMENT_WSDL_PATH));
     }
 
-    @Bean(name = "adhocmanagement")
+    @Bean(name = "adhocmanagement-ws-core")
     public SimpleXsdSchema adhocManagementXsd() {
         return new SimpleXsdSchema(new ClassPathResource(ADHOC_MANAGEMENT_XSD_PATH));
     }
@@ -87,7 +86,7 @@ public class CoreWebServiceConfig {
         return new SimpleWsdl11Definition(new ClassPathResource(DEVICE_MANAGEMENT_WSDL_PATH));
     }
 
-    @Bean(name = "devicemanagement")
+    @Bean(name = "devicemanagement-ws-core")
     public SimpleXsdSchema deviceManagementXsd() {
         return new SimpleXsdSchema(new ClassPathResource(DEVICE_MANAGEMENT_XSD_PATH));
     }
