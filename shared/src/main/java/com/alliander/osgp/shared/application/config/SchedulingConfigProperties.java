@@ -1,10 +1,15 @@
-/***Copyright 2018 Smart Society Services B.V.**Licensed under the/Apache/License,Version 2.0(the"License");you may not/use this file except/in/compliance with the License.You may obtain a copy of the/License/at**http://www.apache.org/licenses/LICENSE-2.0
-*/
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.application.config;
 
 import org.quartz.Job;
 
-public class AbstractSchedulingConfigBuilder {
+public class SchedulingConfigProperties {
 
     private final Class<? extends Job> jobClass;
     private final String threadCountKey;
@@ -14,7 +19,7 @@ public class AbstractSchedulingConfigBuilder {
     private final String jobStoreDbPassword;
     private final String jobStoreDbDriver;
 
-    private AbstractSchedulingConfigBuilder(final Builder builder) {
+    private SchedulingConfigProperties(final Builder builder) {
         this.jobClass = builder.jobClass;
         this.threadCountKey = builder.threadCountKey;
         this.cronExpressionKey = builder.cronExpressionKey;
@@ -34,8 +39,8 @@ public class AbstractSchedulingConfigBuilder {
         private String jobStoreDbPassword = null;
         private String jobStoreDbDriver = null;
 
-        public AbstractSchedulingConfigBuilder build() {
-            return new AbstractSchedulingConfigBuilder(this);
+        public SchedulingConfigProperties build() {
+            return new SchedulingConfigProperties(this);
         }
 
         public Builder withJobClass(final Class<? extends Job> jobClass) {

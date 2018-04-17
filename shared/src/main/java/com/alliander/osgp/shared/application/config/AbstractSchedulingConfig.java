@@ -49,7 +49,7 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
      * @throws SchedulerException
      *             when issues occur in constructing schedules
      */
-    protected Scheduler constructScheduler(final AbstractSchedulingConfigBuilder abstractSchedulingConfigBuilder)
+    protected Scheduler constructScheduler(final SchedulingConfigProperties abstractSchedulingConfigBuilder)
             throws SchedulerException {
 
         final Properties properties = this.constructQuartzConfiguration(abstractSchedulingConfigBuilder);
@@ -72,7 +72,7 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     }
 
     private Properties constructQuartzConfiguration(
-            final AbstractSchedulingConfigBuilder abstractSchedulingConfigBuilder) {
+            final SchedulingConfigProperties abstractSchedulingConfigBuilder) {
         final Properties properties = new Properties();
 
         // Default Properties
