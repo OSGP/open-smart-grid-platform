@@ -1,8 +1,7 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -22,13 +21,11 @@ public class AssociationLnListTypeDtoBuilder {
         return new AssociationLnListTypeDto(this.associationLnListElementDto);
     }
 
-    public AssociationLnListTypeDtoBuilder withEmptyLists(
-            final List<AssociationLnListElementDto> associationLnListElementDto) {
-        this.associationLnListElementDto = associationLnListElementDto;
+    public AssociationLnListTypeDtoBuilder withEmptyLists() {
         return this;
     }
 
-    public AssociationLnListTypeDtoBuilder withFilledArguments(
+    public AssociationLnListTypeDtoBuilder withNonEmptyLists(
             final AssociationLnListElementDto associationLnListElementDto) {
         this.associationLnListElementDto = new ArrayList<>();
         this.associationLnListElementDto.add(associationLnListElementDto);

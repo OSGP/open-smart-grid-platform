@@ -1,8 +1,7 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -14,7 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
@@ -39,64 +37,43 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MethodAccessDescriptorDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MethodAccessItemDto;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
 public class AssociationLnListTypeMappingTest {
 
     private ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();;
-
-    @Before
-    public void setup() {
-        this.configurationMapper.configure(this.mapperFactory);
-    }
-
-    // To test if a AssociationLnListElement can be mapped if instance variables are
-    // initialized and lists are empty.
     @Test
     public void testAssociationLnListTypeMappingWithEmptyLists() {
 
         // build test data
-        final List<AssociationLnListElement> associationLnListElement = new ArrayList<>();
-        final AssociationLnListType associationLnListType = new AssociationLnListTypeBuilder()
-                .withEmptyLists(associationLnListElement).build();
+        final AssociationLnListType associationLnListType = new AssociationLnListTypeBuilder().withEmptyLists().build();
 
         // actual mapping
-        final AssociationLnListTypeDto associationLnListTypeDto = this.mapperFactory.getMapperFacade()
-                .map(associationLnListType, AssociationLnListTypeDto.class);
+        final AssociationLnListTypeDto associationLnListTypeDto = this.configurationMapper.map(associationLnListType,
+                AssociationLnListTypeDto.class);
 
         // check values
+        assertNotNull(associationLnListTypeDto);
         this.checkAssociationLnListElementMapping(associationLnListType.getAssociationLnListElement(),
                 associationLnListTypeDto.getAssociationLnListElement());
-
-        assertNotNull(associationLnListTypeDto);
     }
 
-    // To test if a AssociationLnListElementDto can be mapped if instance variables
-    // are initialized and lists are empty.
     @Test
     public void testAssociationLnListTypeDtoMappingWithEmptyLists() {
 
         // build test data
-        final List<AssociationLnListElementDto> associationLnListElementDto = new ArrayList<>();
-        final AssociationLnListTypeDto associationLnListTypeDto = new AssociationLnListTypeDto(
-                associationLnListElementDto);
+        final AssociationLnListTypeDto associationLnListTypeDto = new AssociationLnListTypeDtoBuilder().withEmptyLists()
+                .build();
 
         // actual mapping
-        final AssociationLnListType associationLnListType = this.mapperFactory.getMapperFacade()
-                .map(associationLnListTypeDto, AssociationLnListType.class);
+        final AssociationLnListType associationLnListType = this.configurationMapper.map(associationLnListTypeDto,
+                AssociationLnListType.class);
 
         // check values
+        assertNotNull(associationLnListType);
         this.checkAssociationLnListElementMapping(associationLnListType.getAssociationLnListElement(),
                 associationLnListTypeDto.getAssociationLnListElement());
-
-        assertNotNull(associationLnListType);
     }
 
-    // To test if a AssociationLnListElement can be mapped if instance variables are
-    // initialized and lists are empty.
     @Test
     public void testAssociationLnListTypeMappingWithNonEmptyLists() {
 
@@ -117,11 +94,11 @@ public class AssociationLnListTypeMappingTest {
                 new AccessRight(attributeAccessDescriptor, methodAccessDescriptor));
 
         final AssociationLnListType associationLnListType = new AssociationLnListTypeBuilder()
-                .withFilledLists(associationLnElement).build();
+                .withNonEmptyLists(associationLnElement).build();
 
         // actual mapping
-        final AssociationLnListTypeDto associationLnListTypeDto = this.mapperFactory.getMapperFacade()
-                .map(associationLnListType, AssociationLnListTypeDto.class);
+        final AssociationLnListTypeDto associationLnListTypeDto = this.configurationMapper.map(associationLnListType,
+                AssociationLnListTypeDto.class);
 
         // check values
         assertNotNull(associationLnListTypeDto);
@@ -129,10 +106,9 @@ public class AssociationLnListTypeMappingTest {
                 associationLnListTypeDto.getAssociationLnListElement());
     }
 
-    // To test if a AssociationLnListElementDto can be mapped if instance variables
-    // are initialized and lists are empty.
     @Test
     public void testAssociationLnListTypeDtoMappingWithNonEmptyLists() {
+
         // build test data
         final List<AttributeAccessItemDto> listAttributeAccessItemDto = new ArrayList<>();
         final AttributeAccessModeTypeDto accessMode = AttributeAccessModeTypeDto.NO_ACCESS;
@@ -151,11 +127,11 @@ public class AssociationLnListTypeMappingTest {
                 new AccessRightDto(attributeAccessDescriptorDto, methodAccessDescriptorDto));
 
         final AssociationLnListTypeDto associationLnListTypeDto = new AssociationLnListTypeDtoBuilder()
-                .withFilledArguments(associationLnElementDto).build();
+                .withNonEmptyLists(associationLnElementDto).build();
 
         // actual mapping
-        final AssociationLnListType associationLnListType = this.mapperFactory.getMapperFacade()
-                .map(associationLnListTypeDto, AssociationLnListType.class);
+        final AssociationLnListType associationLnListType = this.configurationMapper.map(associationLnListTypeDto,
+                AssociationLnListType.class);
 
         // check values
         assertNotNull(associationLnListType);
@@ -163,15 +139,12 @@ public class AssociationLnListTypeMappingTest {
                 associationLnListTypeDto.getAssociationLnListElement());
     }
 
-    // method to test AssociationLnListElement object mapping
     private void checkAssociationLnListElementMapping(final List<AssociationLnListElement> associationLnListElements,
             final List<AssociationLnListElementDto> associationLnListElementDtos) {
 
-        // make sure neither is null
         assertNotNull(associationLnListElements);
         assertNotNull(associationLnListElementDtos);
 
-        // make sure all instance variables are equal
         assertEquals(associationLnListElements.size(), associationLnListElementDtos.size());
         for (int i = 0; i < associationLnListElements.size(); i++) {
             this.checkElement(associationLnListElements.get(i), associationLnListElementDtos.get(i));
@@ -200,9 +173,15 @@ public class AssociationLnListTypeMappingTest {
                 attributeAccessDto.getAttributeAccessItem());
     }
 
-    private void checkAttributeAccessItem(final List<AttributeAccessItem> attributeAccessItem,
-            final List<AttributeAccessItemDto> attributeAccessItemDto) {
-        assertEquals(attributeAccessItem.size(), attributeAccessItemDto.size());
+    private void checkAttributeAccessItem(final List<AttributeAccessItem> attributeAccessItemList,
+            final List<AttributeAccessItemDto> attributeAccessItemDtoList) {
+        assertEquals(attributeAccessItemList.size(), attributeAccessItemDtoList.size());
+
+        for (final AttributeAccessItem attributeAccessItem : attributeAccessItemList) {
+            assertEquals(attributeAccessItem.getAccessMode(), attributeAccessItem.getAccessMode());
+            assertEquals(attributeAccessItem.getAccessSelectors(), attributeAccessItem.getAccessSelectors());
+            assertEquals(attributeAccessItem.getAttributeId(), attributeAccessItem.getAttributeId());
+        }
     }
 
     private void checkMethodAccess(final MethodAccessDescriptor methodAccess,
@@ -210,9 +189,14 @@ public class AssociationLnListTypeMappingTest {
         this.checkMethodAccessItem(methodAccess.getMethodAccessItem(), methodAccessDto.getMethodAccessItem());
     }
 
-    private void checkMethodAccessItem(final List<MethodAccessItem> methodAccessItem,
-            final List<MethodAccessItemDto> methodAccessItemDto) {
-        assertEquals(methodAccessItem.size(), methodAccessItemDto.size());
+    private void checkMethodAccessItem(final List<MethodAccessItem> methodAccessItemList,
+            final List<MethodAccessItemDto> methodAccessItemDtoList) {
+        assertEquals(methodAccessItemList.size(), methodAccessItemDtoList.size());
+
+        for (final MethodAccessItemDto methodAccessItemDto : methodAccessItemDtoList) {
+            assertEquals(methodAccessItemDto.getAccessMode(), methodAccessItemDto.getAccessMode());
+            assertEquals(methodAccessItemDto.getMethodId(), methodAccessItemDto.getMethodId());
+        }
     }
 
     private void checkCosemObisCode(final CosemObisCode logicalName, final CosemObisCodeDto logicalNameDto) {

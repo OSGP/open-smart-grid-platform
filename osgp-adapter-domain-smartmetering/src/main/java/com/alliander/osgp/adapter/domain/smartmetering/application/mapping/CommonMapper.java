@@ -9,7 +9,7 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.CosemObisCodeDtoConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.CosemObisCodeConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.FaultResponseConverter;
 
 import ma.glasnost.orika.MapperFactory;
@@ -21,7 +21,7 @@ public class CommonMapper extends ConfigurableMapper {
     @Override
     public final void configure(final MapperFactory mapperFactory) {
         mapperFactory.getConverterFactory().registerConverter(new FaultResponseConverter());
-        mapperFactory.getConverterFactory().registerConverter(new CosemObisCodeDtoConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemObisCodeConverter());
     }
 
 }

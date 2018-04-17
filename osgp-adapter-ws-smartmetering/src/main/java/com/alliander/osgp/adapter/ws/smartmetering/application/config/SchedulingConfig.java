@@ -18,8 +18,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import com.alliander.osgp.adapter.ws.shared.services.ResponseDataCleanupJob;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ResponseUrlDataCleanupJob;
 import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
-import com.alliander.osgp.shared.application.config.AbstractSchedulingConfigBuilder;
-import com.alliander.osgp.shared.application.config.AbstractSchedulingConfigBuilder.Builder;
+import com.alliander.osgp.shared.application.config.SchedulingConfigProperties;
+import com.alliander.osgp.shared.application.config.SchedulingConfigProperties.Builder;
 
 @EnableScheduling
 @Configuration
@@ -77,7 +77,7 @@ public class SchedulingConfig extends AbstractSchedulingConfig {
     }
 
     private Builder abstractSchedulingConfigBuilder() {
-        return AbstractSchedulingConfigBuilder.newBuilder().withJobClass(ResponseDataCleanupJob.class)
+        return SchedulingConfigProperties.newBuilder().withJobClass(ResponseDataCleanupJob.class)
                 .withThreadCountKey(KEY_CLEANUP_JOB_THREAD_COUNT).withCronExpressionKey(KEY_CLEANUP_JOB_CRON_EXPRESSION)
                 .withJobStoreDbUrl(this.getDatabaseUrl()).withJobStoreDbUsername(this.databaseUsername)
                 .withJobStoreDbPassword(this.databasePassword).withJobStoreDbDriver(this.databaseDriver);

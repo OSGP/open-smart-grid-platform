@@ -1,8 +1,7 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -22,12 +21,11 @@ public class AssociationLnListTypeBuilder {
         return new AssociationLnListType(this.associationLnListElement);
     }
 
-    public AssociationLnListTypeBuilder withEmptyLists(final List<AssociationLnListElement> associationLnListElement) {
-        this.associationLnListElement = associationLnListElement;
+    public AssociationLnListTypeBuilder withEmptyLists() {
         return this;
     }
 
-    public AssociationLnListTypeBuilder withFilledLists(final AssociationLnListElement associationLnListElement) {
+    public AssociationLnListTypeBuilder withNonEmptyLists(final AssociationLnListElement associationLnListElement) {
         this.associationLnListElement = new ArrayList<>();
         this.associationLnListElement.add(associationLnListElement);
         return this;

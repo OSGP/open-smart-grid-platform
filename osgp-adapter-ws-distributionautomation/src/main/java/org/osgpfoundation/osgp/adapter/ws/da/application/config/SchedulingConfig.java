@@ -17,7 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.alliander.osgp.adapter.ws.shared.services.ResponseDataCleanupJob;
 import com.alliander.osgp.shared.application.config.AbstractSchedulingConfig;
-import com.alliander.osgp.shared.application.config.AbstractSchedulingConfigBuilder;
+import com.alliander.osgp.shared.application.config.SchedulingConfigProperties;
 
 @EnableScheduling
 @Configuration
@@ -61,12 +61,12 @@ public class SchedulingConfig extends AbstractSchedulingConfig {
     @Bean(destroyMethod = "shutdown")
     public Scheduler cleanupJobScheduler() throws SchedulerException {
 
-        AbstractSchedulingConfigBuilder abstractSchedulingConfig = AbstractSchedulingConfigBuilder.newBuilder()
+        SchedulingConfigProperties schedulingConfigProperties = SchedulingConfigProperties.newBuilder()
                 .withJobClass(ResponseDataCleanupJob.class).withThreadCountKey(KEY_CLEANUP_JOB_THREAD_COUNT)
                 .withCronExpressionKey(KEY_CLEANUP_JOB_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
                 .withJobStoreDbUsername(this.databaseUsername).withJobStoreDbPassword(this.databasePassword)
                 .withJobStoreDbDriver(this.databaseDriver).build();
-        return this.constructScheduler(abstractSchedulingConfig);
+        return this.constructScheduler(schedulingConfigProperties);
     }
 
     private String getDatabaseUrl() {
