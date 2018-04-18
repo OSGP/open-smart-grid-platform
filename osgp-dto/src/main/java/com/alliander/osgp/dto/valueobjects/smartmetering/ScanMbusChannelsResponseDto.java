@@ -8,11 +8,22 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.alliander.osgp.dto.valueobjects.MbusAttributesDto;
+
 public class ScanMbusChannelsResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -880241546092002960L;
 
-    public ScanMbusChannelsResponseDto() {
-        // default constructor
+    private final List<MbusAttributesDto> scanMbusChannelsRequestDataDto;
+
+    public ScanMbusChannelsResponseDto(final List<MbusAttributesDto> resultList) {
+        this.scanMbusChannelsRequestDataDto = resultList;
+    }
+
+    public List<MbusAttributesDto> scanMbusChannels() {
+        return new ArrayList<>(this.scanMbusChannelsRequestDataDto);
     }
 }

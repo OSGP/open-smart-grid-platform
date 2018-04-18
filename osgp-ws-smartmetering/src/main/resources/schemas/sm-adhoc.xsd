@@ -211,13 +211,9 @@
   
   <xsd:element name="ScanMbusChannelsRequest">
     <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension base="tns:ScanMbusChannelsRequestData">
-          <xsd:sequence>
-            <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-          </xsd:sequence>
-        </xsd:extension>
-      </xsd:complexContent>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+      </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="ScanMbusChannelsAsyncResponse">
@@ -236,31 +232,32 @@
   </xsd:element>
   <xsd:element name="ScanMbusChannelsResponse">
     <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension base="common:Response">
-          <xsd:sequence>
-            <xsd:element name="AttributeValueData" type="xsd:string" />
-          </xsd:sequence>
-        </xsd:extension>
-      </xsd:complexContent>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="MbusIdentificationNumber1" type="xsd:string" />
+        <xsd:element name="MbusIdentificationNumber2" type="xsd:string" />
+        <xsd:element name="MbusIdentificationNumber3" type="xsd:string" />
+        <xsd:element name="MbusIdentificationNumber4" type="xsd:string" />
+      </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
   <xsd:complexType name="ScanMbusChannelsRequestData">
     <xsd:complexContent>
-      <xsd:extension base="common:Query">
+      <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="ClassId" type="xsd:integer" />
-          <xsd:element name="Attribute" type="xsd:integer" />
-          <xsd:element name="ObisCode" type="common:ObisCodeValues" />
         </xsd:sequence>
       </xsd:extension>
-    </xsd:complexContent>
+    </xsd:complexContent> 
   </xsd:complexType>
   <xsd:complexType name="ScanMbusChannelsResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="AttributeValueData" type="xsd:string" />
+          <xsd:element name="MbusIdentificationNumber1" type="xsd:string" />
+          <xsd:element name="MbusIdentificationNumber2" type="xsd:string" />
+          <xsd:element name="MbusIdentificationNumber3" type="xsd:string" />
+          <xsd:element name="MbusIdentificationNumber4" type="xsd:string" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
