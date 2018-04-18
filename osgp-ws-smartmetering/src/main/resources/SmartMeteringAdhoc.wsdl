@@ -190,7 +190,6 @@
       <wsdl:output message="tns:GetAssociationLnObjectsResponse"
         name="GetAssociationLnObjectsResponse" />
     </wsdl:operation>
-  </wsdl:portType>
 
     <wsdl:operation name="ScanMbusChannels">
       <wsdl:input message="tns:ScanMbusChannelsRequest"
@@ -205,7 +204,8 @@
       <wsdl:output message="tns:ScanMbusChannelsResponse"
         name="ScanMbusChannelsResponse" />
     </wsdl:operation>
-    
+  </wsdl:portType>
+      
   <wsdl:binding name="SmartMeteringAdhocPortSoap11" type="tns:SmartMeteringAdhocPort">
     <soap:binding style="document"
       transport="http://schemas.xmlsoap.org/soap/http" />
@@ -336,7 +336,6 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-  </wsdl:binding>
 
     <wsdl:operation name="ScanMbusChannels">
       <soap:operation soapAction="" />
@@ -369,6 +368,7 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+  </wsdl:binding>
     
   <wsdl:service name="SmartMeteringAdhocPortService">
     <wsdl:port binding="tns:SmartMeteringAdhocPortSoap11"
