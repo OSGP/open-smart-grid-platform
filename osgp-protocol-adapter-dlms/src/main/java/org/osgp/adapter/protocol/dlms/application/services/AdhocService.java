@@ -13,6 +13,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAllAttributeValuesCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificAttributeValueCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ScanMbusChannelsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -41,6 +42,9 @@ public class AdhocService {
     @Autowired
     private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
 
+    @Autowired
+    private ScanMbusChannelsCommandExecutor scanMbusChannelsCommandExecutor;
+
     // === REQUEST Synchronize Time DATA ===
 
     public void synchronizeTime(final DlmsConnectionHolder conn, final DlmsDevice device,
@@ -67,5 +71,10 @@ public class AdhocService {
             final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto) throws FunctionalException {
         return this.getSpecificAttributeValueCommandExecutor.execute(conn, device,
                 specificAttributeValueRequestDataDto);
+    }
+
+    public Serializable scanMbusChannels(final DlmsConnectionHolder conn, final DlmsDevice device)
+            throws ProtocolAdapterException, FunctionalException {
+        return this.scanMbusChannelsCommandExecutor.execute(conn, device, null);
     }
 }
