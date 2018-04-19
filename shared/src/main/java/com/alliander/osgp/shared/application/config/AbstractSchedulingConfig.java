@@ -42,28 +42,28 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     /**
      * Construct the scheduler taskpool with specified job and trigger
      *
-     * @param abstractSchedulingConfigBuilder
+     * @param schedulingConfigProperties
      *            an object containing all the properties needed to configure
      *            the Quartz scheduler instance
      * @return the Quartz scheduler instance
      * @throws SchedulerException
      *             when issues occur in constructing schedules
      */
-    protected Scheduler constructScheduler(final SchedulingConfigProperties abstractSchedulingConfigBuilder)
+    protected Scheduler constructScheduler(final SchedulingConfigProperties schedulingConfigProperties)
             throws SchedulerException {
 
-        final Properties properties = this.constructQuartzConfiguration(abstractSchedulingConfigBuilder);
+        final Properties properties = this.constructQuartzConfiguration(schedulingConfigProperties);
 
         final StdSchedulerFactory factory = new StdSchedulerFactory();
         factory.initialize(properties);
         final Scheduler scheduler = factory.getScheduler();
         scheduler.setJobFactory(this.springBeanJobFactory());
 
-        final JobDetail jobDetail = this.createJobDetail(abstractSchedulingConfigBuilder.getJobClass());
+        final JobDetail jobDetail = this.createJobDetail(schedulingConfigProperties.getJobClass());
         scheduler.addJob(jobDetail, true);
 
         final Trigger trigger = this.createJobTrigger(jobDetail,
-                this.environment.getRequiredProperty(abstractSchedulingConfigBuilder.getCronExpressionKey()));
+                this.environment.getRequiredProperty(schedulingConfigProperties.getCronExpressionKey()));
         scheduler.scheduleJob(jobDetail, new HashSet<>(Arrays.asList(trigger)), true);
 
         scheduler.start();
@@ -72,12 +72,12 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     }
 
     private Properties constructQuartzConfiguration(
-            final SchedulingConfigProperties abstractSchedulingConfigBuilder) {
+            final SchedulingConfigProperties schedulingConfigProperties) {
         final Properties properties = new Properties();
 
         // Default Properties
         properties.put("org.quartz.scheduler.instanceName",
-                abstractSchedulingConfigBuilder.getJobClass().getSimpleName());
+                schedulingConfigProperties.getJobClass().getSimpleName());
         properties.put("org.quartz.scheduler.instanceId", "AUTO");
         properties.put("org.quartz.scheduler.rmi.export", Boolean.FALSE.toString());
         properties.put("org.quartz.scheduler.rmi.proxy", Boolean.FALSE.toString());
@@ -87,7 +87,7 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
         properties.put("org.quartz.threadPool.class", SimpleThreadPool.class.getName());
         properties.put("org.quartz.threadPool.threadCount",
-                this.environment.getRequiredProperty(abstractSchedulingConfigBuilder.getThreadCountKey()));
+                this.environment.getRequiredProperty(schedulingConfigProperties.getThreadCountKey()));
         properties.put("org.quartz.threadPool.makeThreadsDaemons", Boolean.TRUE.toString());
         properties.put("org.quartz.threadPool.threadsInheritContextClassLoaderOfInitializingThread",
                 Boolean.TRUE.toString());
@@ -109,12 +109,12 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         // DataSource configuration using Quartz implementation. HikariCP does
         // not work property (TX and auto commit).
         properties.put("org.quartz.dataSource.quartzDefault.driver",
-                abstractSchedulingConfigBuilder.getJobStoreDbDriver());
-        properties.put("org.quartz.dataSource.quartzDefault.URL", abstractSchedulingConfigBuilder.getJobStoreDbUrl());
+                schedulingConfigProperties.getJobStoreDbDriver());
+        properties.put("org.quartz.dataSource.quartzDefault.URL", schedulingConfigProperties.getJobStoreDbUrl());
         properties.put("org.quartz.dataSource.quartzDefault.user",
-                abstractSchedulingConfigBuilder.getJobStoreDbUsername());
+                schedulingConfigProperties.getJobStoreDbUsername());
         properties.put("org.quartz.dataSource.quartzDefault.password",
-                abstractSchedulingConfigBuilder.getJobStoreDbPassword());
+                schedulingConfigProperties.getJobStoreDbPassword());
 
         return properties;
     }
