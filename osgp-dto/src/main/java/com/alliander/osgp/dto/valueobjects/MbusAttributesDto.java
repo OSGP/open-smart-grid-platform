@@ -14,9 +14,9 @@ public class MbusAttributesDto implements Serializable {
     private static final long serialVersionUID = 454136243796705695L;
 
     private MbusAttributes mbusAttributes;
-    private String version;
+    private Long version;
 
-    public MbusAttributesDto(final MbusAttributes mbusAttributes, final String version) {
+    public MbusAttributesDto(final MbusAttributes mbusAttributes, final Long version) {
         this.mbusAttributes = mbusAttributes;
         this.version = version;
     }
@@ -30,7 +30,7 @@ public class MbusAttributesDto implements Serializable {
         return this.mbusAttributes;
     }
 
-    public String getVersion() {
+    public Long getVersion() {
         return this.version;
     }
 
