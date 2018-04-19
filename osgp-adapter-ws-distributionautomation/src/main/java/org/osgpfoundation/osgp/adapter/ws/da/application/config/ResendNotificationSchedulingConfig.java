@@ -85,14 +85,14 @@ public class ResendNotificationSchedulingConfig extends AbstractSchedulingConfig
     @Bean(destroyMethod = "shutdown")
     public Scheduler resendNotificationScheduler() throws SchedulerException {
 
-        final SchedulingConfigProperties abstractSchedulingConfigBuilder = SchedulingConfigProperties
+        final SchedulingConfigProperties schedulingConfigProperties = SchedulingConfigProperties
                 .newBuilder().withJobClass(ResendNotificationJob.class)
                 .withThreadCountKey(KEY_RESEND_NOTIFICATION_THREAD_COUNT)
                 .withCronExpressionKey(KEY_RESEND_NOTIFICATION_CRON_EXPRESSION).withJobStoreDbUrl(this.getDatabaseUrl())
                 .withJobStoreDbUsername(this.databaseUsername).withJobStoreDbPassword(this.databasePassword)
                 .withJobStoreDbDriver(this.databaseDriver).build();
 
-        return this.constructScheduler(abstractSchedulingConfigBuilder);
+        return this.constructScheduler(schedulingConfigProperties);
     }
 
     private String getDatabaseUrl() {

@@ -22,6 +22,7 @@ public class AssociationLnListTypeBuilder {
     }
 
     public AssociationLnListTypeBuilder withEmptyLists() {
+        this.associationLnListElement = new ArrayList<>();
         return this;
     }
 

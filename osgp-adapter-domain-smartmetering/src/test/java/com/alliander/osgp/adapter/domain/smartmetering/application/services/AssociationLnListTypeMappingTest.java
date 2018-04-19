@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -177,10 +178,15 @@ public class AssociationLnListTypeMappingTest {
             final List<AttributeAccessItemDto> attributeAccessItemDtoList) {
         assertEquals(attributeAccessItemList.size(), attributeAccessItemDtoList.size());
 
-        for (final AttributeAccessItem attributeAccessItem : attributeAccessItemList) {
-            assertEquals(attributeAccessItem.getAccessMode(), attributeAccessItem.getAccessMode());
-            assertEquals(attributeAccessItem.getAccessSelectors(), attributeAccessItem.getAccessSelectors());
-            assertEquals(attributeAccessItem.getAttributeId(), attributeAccessItem.getAttributeId());
+        final Iterator<AttributeAccessItem> attributeAccessItemIterator = attributeAccessItemList.iterator();
+        final Iterator<AttributeAccessItemDto> attributeAccessItemDtoIterator = attributeAccessItemDtoList.iterator();
+        while (attributeAccessItemIterator.hasNext() && attributeAccessItemDtoIterator.hasNext()) {
+            final AttributeAccessItem attributeAccessItem = attributeAccessItemIterator.next();
+            final AttributeAccessItemDto attributeAccessItemDto = attributeAccessItemDtoIterator.next();
+            assertEquals(attributeAccessItem.getAccessMode().name(), attributeAccessItemDto.getAccessMode().name());
+            assertEquals(attributeAccessItem.getAccessSelectors().getAccessSelector(),
+                    attributeAccessItemDto.getAccessSelectors().getAccessSelector());
+            assertEquals(attributeAccessItem.getAttributeId(), attributeAccessItemDto.getAttributeId());
         }
     }
 
@@ -193,9 +199,13 @@ public class AssociationLnListTypeMappingTest {
             final List<MethodAccessItemDto> methodAccessItemDtoList) {
         assertEquals(methodAccessItemList.size(), methodAccessItemDtoList.size());
 
-        for (final MethodAccessItemDto methodAccessItemDto : methodAccessItemDtoList) {
-            assertEquals(methodAccessItemDto.getAccessMode(), methodAccessItemDto.getAccessMode());
-            assertEquals(methodAccessItemDto.getMethodId(), methodAccessItemDto.getMethodId());
+        final Iterator<MethodAccessItem> methodAccessItemIterator = methodAccessItemList.iterator();
+        final Iterator<MethodAccessItemDto> methodAccessItemDtoIterator = methodAccessItemDtoList.iterator();
+        while (methodAccessItemIterator.hasNext() && methodAccessItemDtoIterator.hasNext()) {
+            final MethodAccessItem methodAccessItem = methodAccessItemIterator.next();
+            final MethodAccessItemDto methodAccessItemDto = methodAccessItemDtoIterator.next();
+            assertEquals(methodAccessItem.getAccessMode().name(), methodAccessItemDto.getAccessMode().name());
+            assertEquals(methodAccessItem.getMethodId(), methodAccessItemDto.getMethodId());
         }
     }
 
