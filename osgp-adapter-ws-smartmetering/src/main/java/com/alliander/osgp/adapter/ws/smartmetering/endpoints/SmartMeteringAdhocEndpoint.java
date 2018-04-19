@@ -300,8 +300,15 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                     ComponentType.WS_SMART_METERING);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+            final ScanMbusChannelsResponse scanMbusChannelsResponse = (ScanMbusChannelsResponse) responseData
+                    .getMessageData();
+
             if (ResponseMessageResultType.OK == responseData.getResultType()) {
-                response.setAttributeValueData((String) responseData.getMessageData());
+                response.setMbusIdentificationNumber1(scanMbusChannelsResponse.getMbusIdentificationNumber1());
+                response.setMbusIdentificationNumber2(scanMbusChannelsResponse.getMbusIdentificationNumber2());
+                response.setMbusIdentificationNumber3(scanMbusChannelsResponse.getMbusIdentificationNumber3());
+                response.setMbusIdentificationNumber4(scanMbusChannelsResponse.getMbusIdentificationNumber4());
             } else if (responseData.getMessageData() instanceof OsgpException) {
                 throw (OsgpException) responseData.getMessageData();
             } else if (responseData.getMessageData() instanceof Exception) {
