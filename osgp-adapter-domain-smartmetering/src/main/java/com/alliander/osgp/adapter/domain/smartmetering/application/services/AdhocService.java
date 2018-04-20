@@ -26,6 +26,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -234,7 +235,8 @@ public class AdhocService {
     }
 
     public void handleScanMbusChannelsResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception, final String resultData) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final ScanMbusChannelsResponseDto resultData) {
         LOGGER.debug("handleScanMbusChannelsResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
         ResponseMessageResultType result = deviceResult;
