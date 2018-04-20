@@ -105,10 +105,10 @@ public class BundleResponseMessageProcessorTest {
         assertEquals("innerMessage", expectedInnerMessage, actualResponse.getInnerMessage());
 
         if (expectedParameterList == null || expectedParameterList.isEmpty()) {
-            assertNull("parameters", actualResponse.getParameters());
+            assertNull("parameters", actualResponse.getFaultResponseParameters());
         } else {
-            assertNotNull("parameters", actualResponse.getParameters());
-            final List<FaultResponseParameterDto> actualParameterList = actualResponse.getParameters()
+            assertNotNull("parameters", actualResponse.getFaultResponseParameters());
+            final List<FaultResponseParameterDto> actualParameterList = actualResponse.getFaultResponseParameters()
                     .getParameterList();
             assertNotNull("parameter list", actualParameterList);
             final int numberOfParameters = expectedParameterList.size();

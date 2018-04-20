@@ -68,8 +68,8 @@ public class PushSetupSmsMappingTest {
     public void testPushSetupSmsMappingWithEmptyLists() {
 
         // build test data
-        final ArrayList<CosemObjectDefinition> pushObjectList = new ArrayList<CosemObjectDefinition>();
-        final ArrayList<WindowElement> communicationWindow = new ArrayList<WindowElement>();
+        final ArrayList<CosemObjectDefinition> pushObjectList = new ArrayList<>();
+        final ArrayList<WindowElement> communicationWindow = new ArrayList<>();
 
         final PushSetupSms pushSetupSms = new PushSetupSmsBuilder().withEmptyLists(pushObjectList, communicationWindow)
                 .build();
@@ -92,7 +92,7 @@ public class PushSetupSmsMappingTest {
     public void testPushSetupSmsMappingWithLists() {
 
         // build test data
-        final CosemObisCode logicalName = new CosemObisCode(1, 2, 3, 4, 5, 6);
+        final CosemObisCode logicalName = new CosemObisCode(new int[] { 1, 2, 3, 4, 5, 6 });
         final CosemObjectDefinition cosemObjectDefinition = new CosemObjectDefinition(1, logicalName, 2);
         final CosemDateTime startTime = new CosemDateTime(new CosemDate(2016, 3, 17), new CosemTime(11, 52, 45), 0,
                 new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
@@ -100,8 +100,8 @@ public class PushSetupSmsMappingTest {
                 new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
         final WindowElement windowElement = new WindowElement(startTime, endTime);
 
-        final PushSetupSms pushSetupSms = new PushSetupSmsBuilder().withFilledLists(cosemObjectDefinition,
-                windowElement).build();
+        final PushSetupSms pushSetupSms = new PushSetupSmsBuilder()
+                .withFilledLists(cosemObjectDefinition, windowElement).build();
 
         // actual mapping
         final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
@@ -156,8 +156,8 @@ public class PushSetupSmsMappingTest {
         assertNotNull(sendDestinationAndMethodDto);
 
         // make sure all instance variables are equal
-        assertEquals(sendDestinationAndMethod.getTransportService().name(), sendDestinationAndMethodDto
-                .getTransportService().name());
+        assertEquals(sendDestinationAndMethod.getTransportService().name(),
+                sendDestinationAndMethodDto.getTransportService().name());
         assertEquals(sendDestinationAndMethod.getMessage().name(), sendDestinationAndMethodDto.getMessage().name());
         assertEquals(sendDestinationAndMethod.getDestination(), sendDestinationAndMethodDto.getDestination());
     }
