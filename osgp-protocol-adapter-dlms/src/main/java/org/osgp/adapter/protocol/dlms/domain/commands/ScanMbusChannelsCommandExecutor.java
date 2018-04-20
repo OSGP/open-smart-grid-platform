@@ -8,7 +8,6 @@
 
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
@@ -20,8 +19,6 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.MbusAttributes;
-import com.alliander.osgp.dto.valueobjects.MbusAttributesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
@@ -44,7 +41,10 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
             new AttributeAddress(CLASS_ID, OBIS_CODE_CHANNEL_3, ATTRIBUTE_ID_IDENTIFICATION_NUMBER),
             new AttributeAddress(CLASS_ID, OBIS_CODE_CHANNEL_4, ATTRIBUTE_ID_IDENTIFICATION_NUMBER) };
 
-    private static final int INDEX_IDENTIFICATION_NUMBER = 0;
+    private static final int INDEX_CHANNEL_1 = 0;
+    private static final int INDEX_CHANNEL_2 = 1;
+    private static final int INDEX_CHANNEL_3 = 2;
+    private static final int INDEX_CHANNEL_4 = 3;
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -73,18 +73,17 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
     public ScanMbusChannelsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Void mbusAttributesDto) throws ProtocolAdapterException, FunctionalException {
 
-        final List<MbusAttributesDto> resultList = new ArrayList<>();
-
         conn.getDlmsMessageListener().setDescription("ScanMbusChannels, retrieve attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_ADDRESSES));
 
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device, "Scan Mbus channels",
                 ATTRIBUTE_ADDRESSES);
 
-        resultList.add(new MbusAttributesDto(MbusAttributes.IDENTIFICATION_NUMBER,
-                this.dlmsHelperService.readLong(getResultList.get(INDEX_IDENTIFICATION_NUMBER).getResultData(),
-                        MbusAttributes.IDENTIFICATION_NUMBER.getDescription())));
+        final String result1 = getResultList.get(INDEX_CHANNEL_1).getResultData().getValue().toString();
+        final String result2 = getResultList.get(INDEX_CHANNEL_2).getResultData().getValue().toString();
+        final String result3 = getResultList.get(INDEX_CHANNEL_3).getResultData().getValue().toString();
+        final String result4 = getResultList.get(INDEX_CHANNEL_4).getResultData().getValue().toString();
 
-        return new ScanMbusChannelsResponseDto(resultList);
+        return new ScanMbusChannelsResponseDto(result1, result2, result3, result4);
     }
 }
