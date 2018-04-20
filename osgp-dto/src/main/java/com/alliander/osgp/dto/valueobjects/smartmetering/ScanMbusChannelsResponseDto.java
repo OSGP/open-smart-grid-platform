@@ -8,22 +8,36 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.alliander.osgp.dto.valueobjects.MbusAttributesDto;
-
 public class ScanMbusChannelsResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -880241546092002960L;
 
-    private final List<MbusAttributesDto> scanMbusChannelsRequestDataDto;
+    private String mbusIdentificationNumber1;
+    private String mbusIdentificationNumber2;
+    private String mbusIdentificationNumber3;
+    private String mbusIdentificationNumber4;
 
-    public ScanMbusChannelsResponseDto(final List<MbusAttributesDto> resultList) {
-        this.scanMbusChannelsRequestDataDto = resultList;
+    public ScanMbusChannelsResponseDto(final String mbusIdentificationNumber1, final String mbusIdentificationNumber2,
+            final String mbusIdentificationNumber3, final String mbusIdentificationNumber4) {
+        this.mbusIdentificationNumber1 = mbusIdentificationNumber1;
+        this.mbusIdentificationNumber2 = mbusIdentificationNumber2;
+        this.mbusIdentificationNumber3 = mbusIdentificationNumber3;
+        this.mbusIdentificationNumber4 = mbusIdentificationNumber4;
     }
 
-    public List<MbusAttributesDto> scanMbusChannels() {
-        return new ArrayList<>(this.scanMbusChannelsRequestDataDto);
+    public String getMbusIdentificationNumber1() {
+        return this.mbusIdentificationNumber1;
+    }
+
+    public String getMbusIdentificationNumber2() {
+        return this.mbusIdentificationNumber2;
+    }
+
+    public String getMbusIdentificationNumber3() {
+        return this.mbusIdentificationNumber3;
+    }
+
+    public String getMbusIdentificationNumber4() {
+        return this.mbusIdentificationNumber4;
     }
 }
