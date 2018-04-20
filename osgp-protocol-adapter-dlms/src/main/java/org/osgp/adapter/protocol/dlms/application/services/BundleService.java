@@ -66,7 +66,8 @@ public class BundleService {
                     LOGGER.debug("**************************************************");
                     actionDto.setResponse(executor.executeBundleAction(conn, device, actionDto.getRequest()));
                 } catch (final ConnectionException connectionException) {
-                    LOGGER.warn("A connection exception occurred while executing {}", executorName, connectionException);
+                    LOGGER.warn("A connection exception occurred while executing {}", executorName,
+                            connectionException);
 
                     final List<ActionDto> remainingActionDtoList = actionList.subList(actionList.indexOf(actionDto),
                             actionList.size());
@@ -114,8 +115,9 @@ public class BundleService {
                     faultResponseParameters, defaultMessage);
         }
 
-        return new FaultResponseDto(null, defaultMessage, ComponentType.PROTOCOL_DLMS.name(),
-                exception.getClass().getName(), exception.getMessage(), faultResponseParameters);
+        return new FaultResponseDto.Builder().withMessage(defaultMessage)
+                .withComponent(ComponentType.PROTOCOL_DLMS.name()).withInnerException(exception.getClass().getName())
+                .withInnerMessage(exception.getMessage()).withFaultResponseParameters(faultResponseParameters).build();
     }
 
     private FaultResponseParametersDto faultResponseParametersForList(
@@ -161,17 +163,18 @@ public class BundleService {
             message = exception.getMessage();
         }
 
-        return new FaultResponseDto(code, message, component, innerException, innerMessage, faultResponseParameters);
+        return new FaultResponseDto.Builder().withCode(code).withMessage(message).withComponent(component)
+                .withInnerException(innerException).withInnerMessage(innerMessage)
+                .withFaultResponseParameters(faultResponseParameters).build();
     }
 
     private void checkIfExecutorExists(final Class<? extends ActionRequestDto> actionRequestClass,
             final CommandExecutor<?, ?> executor) throws ProtocolAdapterException {
         if (executor == null) {
             LOGGER.error("bundleCommandExecutorMap in " + this.getClass().getName()
-                    + " does not have a CommandExecutor registered for action: "
-                    + actionRequestClass.getName());
-            throw new ProtocolAdapterException("No CommandExecutor available to handle "
-                    + actionRequestClass.getSimpleName());
+                    + " does not have a CommandExecutor registered for action: " + actionRequestClass.getName());
+            throw new ProtocolAdapterException(
+                    "No CommandExecutor available to handle " + actionRequestClass.getSimpleName());
         }
     }
 }
