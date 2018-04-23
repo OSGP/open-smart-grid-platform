@@ -85,7 +85,7 @@ public class ActionDtoBuilder {
     }
 
     public SetPushSetupAlarmRequestDto makeSetPushSetupAlarmRequestDataDto() {
-        final CosemObisCodeDto cosemCode = new CosemObisCodeDto(1, 1, 1, 1, 1, 1);
+        final CosemObisCodeDto cosemCode = new CosemObisCodeDto(new int[] { 1, 1, 1, 1, 1, 1 });
         final List<CosemObjectDefinitionDto> objectDefinitions = new ArrayList<>();
         final SendDestinationAndMethodDto destinationAndMethod = new SendDestinationAndMethodDto(
                 TransportServiceTypeDto.TCP, "destination", MessageTypeDto.XML_ENCODED_X_DLMS_APDU);
@@ -102,7 +102,7 @@ public class ActionDtoBuilder {
     }
 
     public SetPushSetupSmsRequestDto makeSetPushSetupSmsRequestDataDto() {
-        final CosemObisCodeDto cosemCode = new CosemObisCodeDto(1, 1, 1, 1, 1, 1);
+        final CosemObisCodeDto cosemCode = new CosemObisCodeDto(new int[] { 1, 1, 1, 1, 1, 1 });
         final List<CosemObjectDefinitionDto> objectDefinitions = new ArrayList<>();
         final SendDestinationAndMethodDto destinationAndMethod = new SendDestinationAndMethodDto(
                 TransportServiceTypeDto.TCP, "destination", MessageTypeDto.XML_ENCODED_X_DLMS_APDU);
