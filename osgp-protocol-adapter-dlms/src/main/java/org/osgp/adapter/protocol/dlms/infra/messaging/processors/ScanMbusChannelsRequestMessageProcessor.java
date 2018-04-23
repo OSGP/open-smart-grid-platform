@@ -27,7 +27,7 @@ public class ScanMbusChannelsRequestMessageProcessor extends DeviceRequestMessag
     @Autowired
     private AdhocService adhocService;
 
-    protected ScanMbusChannelsRequestMessageProcessor() {
+    public ScanMbusChannelsRequestMessageProcessor() {
         super(DeviceRequestMessageType.SCAN_MBUS_CHANNELS);
     }
 

@@ -57,8 +57,7 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
     public Void fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
         /*
          * ScanMbusChannelsRequestDto does not contain any values to pass on, and the
-         * ScanMbusChannelsCommandExecutor takes a MbusAttributesDto as input that is
-         * ignored.
+         * ScanMbusChannelsCommandExecutor takes a Void as input that is ignored.
          */
         return null;
     }
