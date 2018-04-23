@@ -12,8 +12,4 @@ public class ScanMbusChannelsRequestDataDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 7019660756660728821L;
 
-    public ScanMbusChannelsRequestDataDto() {
-        // default constructor
-    }
-
 }
