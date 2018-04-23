@@ -34,7 +34,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttri
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
@@ -44,6 +43,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnListType;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -271,9 +271,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         final ScanMbusChannelsAsyncResponse response = new ScanMbusChannelsAsyncResponse();
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequestData scanMbusChannelsRequest = this.adhocMapper
-                .map(request,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequestData.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest scanMbusChannelsRequest = this.adhocMapper
+                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest.class);
 
         final String correlationUid = this.adhocService.enqueueScanMbusChannelsRequest(organisationIdentification,
                 request.getDeviceIdentification(), scanMbusChannelsRequest,
