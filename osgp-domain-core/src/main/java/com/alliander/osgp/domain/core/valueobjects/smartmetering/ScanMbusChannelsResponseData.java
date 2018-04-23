@@ -8,18 +8,39 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public class ScanMbusChannelsResponseData extends ActionResponse {
+import java.io.Serializable;
+
+public class ScanMbusChannelsResponseData extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -7904676670230333481L;
 
-    private final String attributeValuesData;
+    private String mbusIdentificationNumber1;
+    private String mbusIdentificationNumber2;
+    private String mbusIdentificationNumber3;
+    private String mbusIdentificationNumber4;
 
-    public ScanMbusChannelsResponseData(final String attributeValuesData) {
-        this.attributeValuesData = attributeValuesData;
+    public ScanMbusChannelsResponseData(final String mbusIdentificationNumber1, final String mbusIdentificationNumber2,
+            final String mbusIdentificationNumber3, final String mbusIdentificationNumber4) {
+        this.mbusIdentificationNumber1 = mbusIdentificationNumber1;
+        this.mbusIdentificationNumber2 = mbusIdentificationNumber2;
+        this.mbusIdentificationNumber3 = mbusIdentificationNumber3;
+        this.mbusIdentificationNumber4 = mbusIdentificationNumber4;
     }
 
-    public String getAttributeValuesData() {
-        return this.attributeValuesData;
+    public String getMbusIdentificationNumber1() {
+        return this.mbusIdentificationNumber1;
+    }
+
+    public String getMbusIdentificationNumber2() {
+        return this.mbusIdentificationNumber2;
+    }
+
+    public String getMbusIdentificationNumber3() {
+        return this.mbusIdentificationNumber3;
+    }
+
+    public String getMbusIdentificationNumber4() {
+        return this.mbusIdentificationNumber4;
     }
 
 }
