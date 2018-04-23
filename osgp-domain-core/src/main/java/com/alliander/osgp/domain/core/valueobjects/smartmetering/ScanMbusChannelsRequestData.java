@@ -17,7 +17,7 @@ public class ScanMbusChannelsRequestData implements ActionRequest {
 
     @Override
     public void validate() throws FunctionalException {
-        // No validation neededb
+        // No validation needed
     }
 
     @Override

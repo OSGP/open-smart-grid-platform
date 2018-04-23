@@ -31,6 +31,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ObjectFactory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsGasResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetDeviceLifecycleStatusByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
@@ -57,6 +58,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -114,6 +116,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelResponseData.class, this.managementMapper);
+        CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsResponseData.class, this.adhocMapper);
     }
 
     /**
@@ -149,6 +152,7 @@ public class ActionMapperResponseService {
                 GetMbusEncryptionKeyStatusByChannelResponse.class);
         CLASS_MAP.put(SetDeviceLifecycleStatusByChannelResponseData.class,
                 SetDeviceLifecycleStatusByChannelResponse.class);
+        CLASS_MAP.put(ScanMbusChannelsResponseData.class, ScanMbusChannelsResponse.class);
     }
 
     public BundleResponse mapAllActions(final Serializable actionList) throws FunctionalException {
