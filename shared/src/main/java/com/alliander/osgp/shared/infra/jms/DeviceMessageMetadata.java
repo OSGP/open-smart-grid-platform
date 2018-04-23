@@ -13,6 +13,9 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 public class DeviceMessageMetadata {
+
+    private static final int EMPTY_MESSAGE_PRIORITY = 0;
+
     private final String deviceIdentification;
     private final String organisationIdentification;
     private final String correlationUid;
@@ -41,6 +44,11 @@ public class DeviceMessageMetadata {
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType) {
+        this(deviceIdentification, organisationIdentification, correlationUid, messageType, EMPTY_MESSAGE_PRIORITY);
+    }
+
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority) {
 
         this(DeviceMessageMetadata.newBuilder().withDeviceIdentification(deviceIdentification)
@@ -64,11 +72,9 @@ public class DeviceMessageMetadata {
                 .withCorrelationUid(message.getJMSCorrelationID()).withMessageType(message.getJMSType())
                 .withMessagePriority(message.getJMSPriority())
                 .withScheduleTime(message.propertyExists(Constants.SCHEDULE_TIME)
-                        ? message.getLongProperty(Constants.SCHEDULE_TIME)
-                        : null)
+                        ? message.getLongProperty(Constants.SCHEDULE_TIME) : null)
                 .withBypassRetry(message.propertyExists(Constants.BYPASS_RETRY)
-                        ? message.getBooleanProperty(Constants.BYPASS_RETRY)
-                        : false));
+                        ? message.getBooleanProperty(Constants.BYPASS_RETRY) : false));
     }
 
     public DeviceMessageMetadata(final ProtocolResponseMessage message) {
