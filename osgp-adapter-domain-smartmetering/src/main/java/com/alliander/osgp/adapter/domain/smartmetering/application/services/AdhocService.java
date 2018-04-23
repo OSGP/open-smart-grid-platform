@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
@@ -58,6 +59,9 @@ public class AdhocService {
 
     @Autowired
     private MapperFactory mapperFactory;
+
+    @Autowired
+    private ConfigurationMapper configurationMapper;
 
     public AdhocService() {
         // Parameterless constructor required for transactions...
@@ -165,7 +169,7 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final AssociationLnListType associationLnListValueDomain = this.mapperFactory.getMapperFacade().map(resultData,
+        final AssociationLnListType associationLnListValueDomain = this.configurationMapper.map(resultData,
                 AssociationLnListType.class);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()

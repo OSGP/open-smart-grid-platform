@@ -72,8 +72,7 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
                 final FaultResponseParameterDto deviceIdentificationParameter = new FaultResponseParameterDto(
                         "deviceIdentification", deviceMessageMetadata.getDeviceIdentification());
                 parameterList.add(deviceIdentificationParameter);
-                action.setResponse(
-                        this.faultResponseForException(e, parameterList, "Unable to handle request"));
+                action.setResponse(this.faultResponseForException(e, parameterList, "Unable to handle request"));
             }
         }
 
@@ -91,8 +90,10 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
                     faultResponseParameters, defaultMessage);
         }
 
-        return new FaultResponseDto(null, defaultMessage, ComponentType.DOMAIN_SMART_METERING.name(),
-                exception.getClass().getName(), exception.getMessage(), faultResponseParameters);
+        return new FaultResponseDto.Builder().withMessage(defaultMessage)
+                .withComponent(ComponentType.DOMAIN_SMART_METERING.name())
+                .withInnerException(exception.getClass().getName()).withInnerMessage(exception.getMessage())
+                .withFaultResponseParameters(faultResponseParameters).build();
     }
 
     private FaultResponseParametersDto faultResponseParametersForList(
@@ -138,6 +139,8 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
             message = exception.getMessage();
         }
 
-        return new FaultResponseDto(code, message, component, innerException, innerMessage, faultResponseParameters);
+        return new FaultResponseDto.Builder().withCode(code).withMessage(message).withComponent(component)
+                .withInnerException(innerException).withInnerMessage(innerMessage)
+                .withFaultResponseParameters(faultResponseParameters).build();
     }
 }

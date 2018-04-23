@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -151,8 +152,7 @@ public class AdhocService {
     }
 
     public String enqueueScanMbusChannelsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequestData request,
+            @Identification final String deviceIdentification, final ScanMbusChannelsRequestData request,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

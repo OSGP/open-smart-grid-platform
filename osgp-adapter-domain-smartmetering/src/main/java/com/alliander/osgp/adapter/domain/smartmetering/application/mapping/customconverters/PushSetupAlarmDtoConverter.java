@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObisCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObjectDefinition;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SendDestinationAndMethod;
@@ -81,12 +80,7 @@ public class PushSetupAlarmDtoConverter extends CustomConverter<PushSetupAlarm, 
             builder.withCommunicationWindow(windowElementDtos);
         }
 
-        final CosemObisCode cosemObisCode = source.getLogicalName();
-        if (cosemObisCode != null) {
-            final CosemObisCodeDto cosemObisCodeDto = new CosemObisCodeDto(cosemObisCode.getA(), cosemObisCode.getB(),
-                    cosemObisCode.getC(), cosemObisCode.getD(), cosemObisCode.getE(), cosemObisCode.getF());
-            builder.withLogicalName(cosemObisCodeDto);
-        }
+        builder.withLogicalName(this.configurationMapper.map(source.getLogicalName(), CosemObisCodeDto.class, context));
 
         builder.withNumberOfRetries(source.getNumberOfRetries());
 
