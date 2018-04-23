@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler
 import com.alliander.osgp.adapter.protocol.iec61850.device.lmd.LmdDeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceConnectionParameters;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -85,9 +86,14 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
     // ======================================
 
     private DeviceConnection connectToDevice(final DeviceRequest deviceRequest) throws ConnectionFailureException {
-        return this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getOrganisationIdentification(), IED.ABB_RTU,
-                IED.ABB_RTU.getDescription(), LogicalDevice.LD0.getDescription());
+
+        final DeviceConnectionParameters deviceConnectionParameters = DeviceConnectionParameters.newBuilder()
+                .ipAddress(deviceRequest.getIpAddress()).deviceIdentification(deviceRequest.getDeviceIdentification())
+                .ied(IED.ABB_RTU).serverName(IED.ABB_RTU.getDescription())
+                .logicalDevice(LogicalDevice.LD0.getDescription()).build();
+
+        return this.iec61850DeviceConnectionService.connect(deviceConnectionParameters,
+                deviceRequest.getOrganisationIdentification());
     }
 
     // ========================

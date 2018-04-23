@@ -109,8 +109,9 @@ public class Iec61850SetScheduleCommand {
                         // relay.
                         for (int i = 0; i < numberOfScheduleEntries; i++) {
 
-                            this.writeScheduleEntryForRelay(tariffOrLight, deviceMessageLog, relayIndex,
-                                    scheduleEntries, logicalNode, schedule, i);
+                            LOGGER.info("Write {} schedule entry {} for relay {}", tariffOrLight, i + 1, relayIndex);
+                            this.writeScheduleEntryForRelay(deviceMessageLog, scheduleEntries, logicalNode, schedule,
+                                    i);
                         }
                     }
                     DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
@@ -118,12 +119,9 @@ public class Iec61850SetScheduleCommand {
                     return null;
                 }
 
-                private void writeScheduleEntryForRelay(final String tariffOrLight,
-                        final DeviceMessageLog deviceMessageLog, final Integer relayIndex,
+                private void writeScheduleEntryForRelay(final DeviceMessageLog deviceMessageLog,
                         final List<ScheduleEntry> scheduleEntries, final LogicalNode logicalNode,
                         final NodeContainer schedule, final int i) throws NodeWriteException {
-                    LOGGER.info("Writing {} schedule entry {} for relay {}", tariffOrLight, i + 1, relayIndex);
-
                     final ScheduleEntry scheduleEntry = scheduleEntries.get(i);
 
                     final String scheduleEntryName = SubDataAttribute.SCHEDULE_ENTRY.getDescription() + (i + 1);

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.LmdDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
@@ -70,8 +71,7 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
-                    : false;
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -98,10 +98,9 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
             messageType = DeviceFunctionDto.GET_STATUS.name();
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
-                .domain(domain).domainVersion(domainVersion).messageType(messageType)
-                .retryCount(retryCount).isScheduled(isScheduled).correlationUid(correlationUid)
-                .organisationIdentification(organisationIdentification)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
+                .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
                 .deviceIdentification(deviceIdentification).build();
 
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
@@ -117,10 +116,10 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
 
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
-            final com.alliander.osgp.shared.infra.jms.ResponseMessageSender responseMessageSender, final String domain,
-            final String domainVersion, final String messageType, final int retryCount) {
+            final com.alliander.osgp.shared.infra.jms.ResponseMessageSender responseMessageSender,
+            final DomainInformation domainInformation, final String messageType, final int retryCount) {
         LOGGER.info("Override for handleDeviceResponse() by PublicLightingGetLightSensorStatusRequestMessageProcessor");
-        this.handleGetStatusDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType,
+        this.handleGetStatusDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
                 retryCount);
     }
 }

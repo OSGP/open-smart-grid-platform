@@ -27,6 +27,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaRtuDeviceSer
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceConnectionParameters;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
@@ -102,9 +103,12 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
     private ServerModel connectAndRetrieveServerModel(final DeviceRequest deviceRequest, final String serverName)
             throws ProtocolAdapterException {
 
-        this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getOrganisationIdentification(), IED.DA_RTU,
-                serverName, LogicalDevice.RTU.getDescription() + 1);
+        final DeviceConnectionParameters deviceConnectionParameters = DeviceConnectionParameters.newBuilder()
+                .ipAddress(deviceRequest.getIpAddress()).deviceIdentification(deviceRequest.getDeviceIdentification())
+                .ied(IED.DA_RTU).serverName(serverName).logicalDevice(LogicalDevice.RTU.getDescription() + 1).build();
+
+        this.iec61850DeviceConnectionService.connect(deviceConnectionParameters,
+                deviceRequest.getOrganisationIdentification());
         return this.iec61850DeviceConnectionService.getServerModel(deviceRequest.getDeviceIdentification());
     }
 

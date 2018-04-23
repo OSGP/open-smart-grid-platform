@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.core.db.api.iec61850.entities;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,17 +61,6 @@ public class Ssld extends Device {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public Ssld(final String deviceIdentification, final String deviceType, final InetAddress networkAddress,
-            final boolean activated, final boolean hasSchedule) {
-        this.deviceIdentification = deviceIdentification;
-    }
-
-    public Ssld(final String deviceIdentification, final String alias, final String containerCity,
-            final String containerPostalCode, final String containerStreet, final String containerNumber,
-            final String containerMunicipality, final Float latitude, final Float longitude) {
-        this.deviceIdentification = deviceIdentification;
-    }
-
     public List<DeviceOutputSetting> getOutputSettings() {
         if (this.outputSettings == null || this.outputSettings.isEmpty()) {
             return Collections.unmodifiableList(this.createDefaultConfiguration());
@@ -91,7 +79,7 @@ public class Ssld extends Device {
 
     /*
      * Create default configuration for a device (based on type).
-     * 
+     *
      * @return default configuration
      */
     private List<DeviceOutputSetting> createDefaultConfiguration() {

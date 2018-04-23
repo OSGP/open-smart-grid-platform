@@ -95,14 +95,6 @@ public class Device implements Serializable {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public Device(final String deviceIdentification, final String alias, final String containerCity,
-            final String containerPostalCode, final String containerStreet, final String containerNumber,
-            final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
-        this.deviceIdentification = deviceIdentification;
-        this.gpsLatitude = gpsLatitude;
-        this.gpsLongitude = gpsLongitude;
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

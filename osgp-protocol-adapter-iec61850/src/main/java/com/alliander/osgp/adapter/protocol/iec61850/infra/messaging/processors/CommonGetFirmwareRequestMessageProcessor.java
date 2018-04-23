@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetFirmwareVersionDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
@@ -72,8 +73,7 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
-                    : false;
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -86,10 +86,9 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
-                .domain(domain).domainVersion(domainVersion).messageType(messageType)
-                .retryCount(retryCount).isScheduled(isScheduled).correlationUid(correlationUid)
-                .organisationIdentification(organisationIdentification)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
+                .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
                 .deviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
@@ -107,15 +106,15 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
 
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
             final String messageType, final int retryCount) {
         LOGGER.info("Override for handleDeviceResponse() by CommonGetFirmwareRequestMessageProcessor");
-        this.handleGetFirmwareVersionDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion,
+        this.handleGetFirmwareVersionDeviceResponse(deviceResponse, responseMessageSender, domainInformation,
                 messageType, retryCount);
     }
 
     private void handleGetFirmwareVersionDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
             final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
@@ -134,10 +133,10 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
         final DeviceMessageMetadata deviceMessageMetaData = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getCorrelationUid(), messageType, 0);
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().domain(domain)
-                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetaData).result(result)
-                .osgpException(osgpException).dataObject((Serializable) firmwareVersions).retryCount(retryCount)
-                .build();
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetaData).result(result).osgpException(osgpException)
+                .dataObject((Serializable) firmwareVersions).retryCount(retryCount).build();
 
         responseMessageSender.send(responseMessage);
     }

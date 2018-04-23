@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceConnectionParameters;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeNotFoundException;
@@ -77,9 +78,12 @@ public class DeviceRegistrationService {
     public void disableRegistration(final String deviceIdentification, final InetAddress ipAddress, final IED ied,
             final String serverName) throws ProtocolAdapterException {
 
-        final DeviceConnection deviceConnection = this.iec61850DeviceConnectionService.connectWithoutConnectionCaching(
-                ipAddress.getHostAddress(), deviceIdentification, "", ied, serverName,
-                LogicalDevice.LIGHTING.getDescription());
+        final DeviceConnectionParameters deviceConnectionParameters = DeviceConnectionParameters.newBuilder()
+                .ipAddress(ipAddress.getHostAddress()).deviceIdentification(deviceIdentification).ied(ied)
+                .serverName(serverName).logicalDevice(LogicalDevice.LIGHTING.getDescription()).build();
+
+        final DeviceConnection deviceConnection = this.iec61850DeviceConnectionService
+                .connectWithoutConnectionCaching(deviceConnectionParameters, "");
 
         final Function<Void> function = new Function<Void>() {
 

@@ -19,6 +19,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
@@ -73,8 +74,7 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
-                    : false;
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
             getDataRequest = (GetDataRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -88,10 +88,9 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
-                .domain(domain).domainVersion(domainVersion).messageType(messageType)
-                .retryCount(retryCount).isScheduled(isScheduled).correlationUid(correlationUid)
-                .organisationIdentification(organisationIdentification)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
+                .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
                 .deviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
@@ -100,10 +99,9 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
         final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
-                .organisationIdentification(organisationIdentification)
-                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
-                .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
-                .retryCount(retryCount).isScheduled(isScheduled);
+                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid).domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled);
 
         this.deviceService.getData(new GetDataDeviceRequest(deviceRequestBuilder, getDataRequest),
                 iec61850DeviceResponseHandler);
@@ -111,15 +109,15 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
 
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
             final String messageType, final int retryCount) {
         LOGGER.info("Override for handleDeviceResponse() by MicrogridsGetDataRequestMessageProcessor");
-        this.handleGetDataDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType,
+        this.handleGetDataDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
                 retryCount);
     }
 
     private void handleGetDataDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
             final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
@@ -139,9 +137,10 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
         final DeviceMessageMetadata deviceMessageMetaData = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getCorrelationUid(), messageType, 0);
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().domain(domain)
-                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetaData).result(result)
-                .osgpException(osgpException).dataObject(dataResponse).retryCount(retryCount).build();
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetaData).result(result).osgpException(osgpException)
+                .dataObject(dataResponse).retryCount(retryCount).build();
 
         responseMessageSender.send(responseMessage);
     }

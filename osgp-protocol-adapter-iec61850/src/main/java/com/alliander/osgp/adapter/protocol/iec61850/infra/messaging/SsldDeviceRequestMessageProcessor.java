@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.SsldDeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
 import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
@@ -62,7 +63,7 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
 
     // This function is used in 3 domains.
     protected void handleGetStatusDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
             final String messageType, final int retryCount) {
         LOGGER.info("Handling getStatusDeviceResponse for device: {}", deviceResponse.getDeviceIdentification());
         if (StringUtils.isEmpty(deviceResponse.getCorrelationUid())) {
@@ -78,10 +79,10 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getCorrelationUid(), messageType, 0);
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder().domain(domain)
-                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata)
-                .result(ResponseMessageResultType.OK).osgpException(null).retryCount(retryCount).dataObject(status)
-                .build();
+        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
+                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.OK).osgpException(null)
+                .retryCount(retryCount).dataObject(status).build();
         responseMessageSender.send(protocolResponseMessage);
     }
 }

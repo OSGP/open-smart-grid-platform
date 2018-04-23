@@ -23,6 +23,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu.DaRtuDeviceService;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
@@ -53,25 +54,27 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
      * Each MessageProcessor should register it's MessageType at construction.
      *
      * @param deviceRequestMessageType
-     *            The MessageType the MessageProcessor implementation can process.
+     *            The MessageType the MessageProcessor implementation can
+     *            process.
      */
     protected DaRtuDeviceRequestMessageProcessor(final DeviceRequestMessageType deviceRequestMessageType) {
         this.deviceRequestMessageType = deviceRequestMessageType;
     }
 
     /**
-     * Generic function to get the data from the rtu based on the device connection
-     * details and the deviceRequest. Must be implemented in each concrete
-     * MessageProcessor
+     * Generic function to get the data from the rtu based on the device
+     * connection details and the deviceRequest. Must be implemented in each
+     * concrete MessageProcessor
      *
      */
     public abstract <T> Function<T> getDataFunction(Iec61850Client iec61850Client, DeviceConnection connection,
             DaDeviceRequest deviceRequest);
 
     /**
-     * Initialization function executed after dependency injection has finished. The
-     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
-     * key for the HashMap is the integer value of the enumeration member.
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the HashMap of
+     * MessageProcessors. The key for the HashMap is the integer value of the
+     * enumeration member.
      */
     @PostConstruct
     public void init() {
@@ -104,8 +107,7 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
-                    : false;
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
             request = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -119,10 +121,9 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
-                .domain(domain).domainVersion(domainVersion).messageType(messageType)
-                .retryCount(retryCount).isScheduled(isScheduled).correlationUid(correlationUid)
-                .organisationIdentification(organisationIdentification)
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
+                .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
                 .deviceIdentification(deviceIdentification).build();
 
         this.printDomainInfo(messageType, domain, domainVersion);
@@ -131,12 +132,12 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
         final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
-                .organisationIdentification(organisationIdentification)
-                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
-                .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
-                .retryCount(retryCount).isScheduled(isScheduled);
+                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid).domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled);
 
-        this.deviceService.getData(new DaDeviceRequest(deviceRequestBuilder, request), iec61850DeviceResponseHandler, this);
+        this.deviceService.getData(new DaDeviceRequest(deviceRequestBuilder, request), iec61850DeviceResponseHandler,
+                this);
     }
 
     /**
@@ -144,8 +145,8 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
      */
     @Override
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType, final int retryCount, final int messagePriority, final Long scheduleTime) {
+            final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
+            final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException ex = null;
@@ -163,10 +164,11 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, messagePriority, scheduleTime);
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder().domain(domain)
-                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
-                .osgpException(ex).dataObject(dataObject).retryCount(retryCount).build();
+                deviceResponse.getCorrelationUid(), messageType);
+        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
+                .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata).result(result).osgpException(ex).dataObject(dataObject)
+                .retryCount(retryCount).build();
         responseMessageSender.send(protocolResponseMessage);
     }
 }
