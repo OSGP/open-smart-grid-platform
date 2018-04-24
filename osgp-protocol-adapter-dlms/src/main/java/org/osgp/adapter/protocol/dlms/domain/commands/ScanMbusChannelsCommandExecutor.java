@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.List;
 
+import com.alliander.osgp.dto.valueobjects.FirmwareModuleType;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -78,11 +79,14 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device, "Scan Mbus channels",
                 ATTRIBUTE_ADDRESSES);
 
-        final String result1 = getResultList.get(INDEX_CHANNEL_1).getResultData().getValue().toString();
-        final String result2 = getResultList.get(INDEX_CHANNEL_2).getResultData().getValue().toString();
-        final String result3 = getResultList.get(INDEX_CHANNEL_3).getResultData().getValue().toString();
-        final String result4 = getResultList.get(INDEX_CHANNEL_4).getResultData().getValue().toString();
-
-        return new ScanMbusChannelsResponseDto(result1, result2, result3, result4);
+        return new ScanMbusChannelsResponseDto(
+                this.dlmsHelperService.readString(getResultList.get(INDEX_CHANNEL_1).getResultData(),
+                        "Mbus channel " + INDEX_CHANNEL_1 + " attribute"),
+                this.dlmsHelperService.readString(getResultList.get(INDEX_CHANNEL_2).getResultData(),
+                        "Mbus channel " + INDEX_CHANNEL_2 + " attribute"),
+                this.dlmsHelperService.readString(getResultList.get(INDEX_CHANNEL_3).getResultData(),
+                        "Mbus channel " + INDEX_CHANNEL_3 + " attribute"),
+                this.dlmsHelperService.readString(getResultList.get(INDEX_CHANNEL_4).getResultData(),
+                        "Mbus channel " + INDEX_CHANNEL_4 + " attribute"));
     }
 }
