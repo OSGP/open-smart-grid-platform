@@ -1,11 +1,9 @@
 @SmartMetering @Platform
-Feature: SmartMetering Scan M-Bus Channels
-  As a grid operator
-  I want to be able to scan the M-Bus channels 
-  So I can use the outcome in my installation flow
+Feature: SmartMetering Bundle - ScanMbusChannels
+  As a grid operator 
+  I want to be able to scan the M-Bus channels via a bundle request
 
-  @test
-  Scenario: scan the four m-bus channels of an dlms gateway device
+  Background: 
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -18,9 +16,15 @@ Feature: SmartMetering Scan M-Bus Channels
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    When the scan M-Bus channels request is received
+
+  #@test
+  Scenario: Bundled Scan M-Bus Channels Action
+    Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
-    Then the found M-bus devices are in the response
+    And the bundle request contains a scan mbus channels action
+    When the bundle request is received
+    Then the bundle response should contain a scan mbus channels response with values
+      | Result                           | OK                |
       | DeviceIdentification             | TEST1024000000001 |
       | Channel1MbusIdentificationNumber |          12056731 |
       | Channel2MbusIdentificationNumber |                   |
