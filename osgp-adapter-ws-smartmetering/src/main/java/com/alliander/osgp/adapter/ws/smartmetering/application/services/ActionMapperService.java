@@ -250,6 +250,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequestData.class,
                 this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequest.class, this.adhocMapper);
     }
 
     /**
