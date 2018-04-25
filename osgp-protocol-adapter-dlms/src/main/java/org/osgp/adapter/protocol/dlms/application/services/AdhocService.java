@@ -74,7 +74,7 @@ public class AdhocService {
     }
 
     public Serializable scanMbusChannels(final DlmsConnectionHolder conn, final DlmsDevice device)
-            throws ProtocolAdapterException, FunctionalException {
+            throws OsgpException {
         return this.scanMbusChannelsCommandExecutor.execute(conn, device, null);
     }
 }

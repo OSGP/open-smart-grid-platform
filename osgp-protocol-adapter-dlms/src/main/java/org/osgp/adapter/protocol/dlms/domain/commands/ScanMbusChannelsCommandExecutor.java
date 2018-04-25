@@ -23,7 +23,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
 public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Void, ScanMbusChannelsResponseDto> {
@@ -70,7 +70,7 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
 
     @Override
     public ScanMbusChannelsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final Void mbusAttributesDto) throws ProtocolAdapterException, FunctionalException {
+            final Void mbusAttributesDto) throws OsgpException {
 
         conn.getDlmsMessageListener().setDescription("ScanMbusChannels, retrieve attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_ADDRESSES));
