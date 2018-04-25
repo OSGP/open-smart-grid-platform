@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.List;
 
-import com.alliander.osgp.dto.valueobjects.FirmwareModuleType;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -80,13 +79,13 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
                 ATTRIBUTE_ADDRESSES);
 
         return new ScanMbusChannelsResponseDto(
-                this.dlmsHelperService.readString(getResultList.get(INDEX_CHANNEL_1).getResultData(),
-                        "Mbus channel " + INDEX_CHANNEL_1 + " attribute"),
-                this.dlmsHelperService.readString(getResultList.get(INDEX_CHANNEL_2).getResultData(),
-                        "Mbus channel " + INDEX_CHANNEL_2 + " attribute"),
-                this.dlmsHelperService.readString(getResultList.get(INDEX_CHANNEL_3).getResultData(),
-                        "Mbus channel " + INDEX_CHANNEL_3 + " attribute"),
-                this.dlmsHelperService.readString(getResultList.get(INDEX_CHANNEL_4).getResultData(),
-                        "Mbus channel " + INDEX_CHANNEL_4 + " attribute"));
+                Long.toHexString(this.dlmsHelperService.readLong(getResultList.get(INDEX_CHANNEL_1).getResultData(),
+                        "Mbus channel 1 identification number")),
+                Long.toHexString(this.dlmsHelperService.readLong(getResultList.get(INDEX_CHANNEL_2).getResultData(),
+                        "Mbus channel 2 identification number")),
+                Long.toHexString(this.dlmsHelperService.readLong(getResultList.get(INDEX_CHANNEL_3).getResultData(),
+                        "Mbus channel 3 identification number")),
+                Long.toHexString(this.dlmsHelperService.readLong(getResultList.get(INDEX_CHANNEL_4).getResultData(),
+                        "Mbus channel 4 identification number")));
     }
 }
