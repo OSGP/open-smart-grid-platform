@@ -37,9 +37,6 @@ public class ScanMbusChannels {
     @Autowired
     private SmartMeteringAdHocResponseClient<ScanMbusChannelsResponse, ScanMbusChannelsAsyncRequest> responseClient;
 
-    private String EXPECTED_CHANNEL1 = "12056731";
-    private String EMPTY_CHANNEL = "";
-
     @When("^the scan M-Bus channels request is received$")
     public void theScanMBusChannelsRequestIsReceived(final Map<String, String> settings) throws Throwable {
 
@@ -55,26 +52,22 @@ public class ScanMbusChannels {
         final ScanMbusChannelsAsyncRequest asyncRequest = ScanMbusChannelsRequestFactory.fromScenarioContext();
         final ScanMbusChannelsResponse response = this.responseClient.getResponse(asyncRequest);
 
-        // TODO: Assert
+        final String EXPECTED_CHANNEL1 = settings.get("Channel1MbusIdentificationNumber");
+        final String EMPTY_CHANNEL = "0";
+
         assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT),
                 response.getResult().name());
 
         assertEquals(
                 "Mbus Identification Number Channel 1 has value: " + response.getMbusIdentificationNumber1()
-                        + " instead of: " + this.EXPECTED_CHANNEL1,
-                this.EXPECTED_CHANNEL1, response.getMbusIdentificationNumber1());
-        assertEquals(
-                "Mbus Identification Number Channel 2 has value: " + response.getMbusIdentificationNumber1()
-                        + " instead of: " + this.EMPTY_CHANNEL,
-                this.EMPTY_CHANNEL, response.getMbusIdentificationNumber2());
-        assertEquals(
-                "Mbus Identification Number Channel 3 has value: " + response.getMbusIdentificationNumber1()
-                        + " instead of: " + this.EMPTY_CHANNEL,
-                this.EMPTY_CHANNEL, response.getMbusIdentificationNumber3());
-        assertEquals(
-                "Mbus Identification Number Channel 4 has value: " + response.getMbusIdentificationNumber1()
-                        + " instead of: " + this.EMPTY_CHANNEL,
-                this.EMPTY_CHANNEL, response.getMbusIdentificationNumber4());
+                        + " instead of: " + EXPECTED_CHANNEL1,
+                EXPECTED_CHANNEL1, response.getMbusIdentificationNumber1());
+        assertEquals("Mbus Identification Number Channel 2 has value: " + response.getMbusIdentificationNumber2()
+                + " instead of: " + EMPTY_CHANNEL, EMPTY_CHANNEL, response.getMbusIdentificationNumber2());
+        assertEquals("Mbus Identification Number Channel 3 has value: " + response.getMbusIdentificationNumber3()
+                + " instead of: " + EMPTY_CHANNEL, EMPTY_CHANNEL, response.getMbusIdentificationNumber3());
+        assertEquals("Mbus Identification Number Channel 4 has value: " + response.getMbusIdentificationNumber4()
+                + " instead of: " + EMPTY_CHANNEL, EMPTY_CHANNEL, response.getMbusIdentificationNumber4());
     }
 
 }
