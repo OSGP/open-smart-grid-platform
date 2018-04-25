@@ -17,7 +17,6 @@ Feature: SmartMetering Bundle - ScanMbusChannels
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
 
-  #@test
   Scenario: Bundled Scan M-Bus Channels Action
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
