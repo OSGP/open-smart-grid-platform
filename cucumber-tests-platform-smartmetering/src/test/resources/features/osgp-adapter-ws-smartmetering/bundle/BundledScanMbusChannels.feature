@@ -27,9 +27,8 @@ Feature: SmartMetering Bundle - ScanMbusChannels
     And the bundle request contains a scan mbus channels action
     When the bundle request is received
     Then the bundle response should contain a scan mbus channels response with values
-      | Result                           | OK                |
       | DeviceIdentification             | TEST1024000000001 |
       | Channel1MbusIdentificationNumber |          12056731 |
-      | Channel2MbusIdentificationNumber |                   |
-      | Channel3MbusIdentificationNumber |                   |
-      | Channel4MbusIdentificationNumber |                   |
+      | Channel2MbusIdentificationNumber |                 0 |
+      | Channel3MbusIdentificationNumber |                 0 |
+      | Channel4MbusIdentificationNumber |                 0 |

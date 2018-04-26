@@ -13,12 +13,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
-import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -46,13 +44,23 @@ public class BundledScanMbusChannelsSteps extends BaseBundleSteps {
     public void theBundleResponseShouldContainAScanMbusChannelsResponse(final Map<String, String> values)
             throws Throwable {
 
-        final Response response = this.getNextBundleResponse();
+        final ScanMbusChannelsResponse response = (ScanMbusChannelsResponse) this.getNextBundleResponse();
 
-        assertTrue("Not a valid response", response instanceof ActionResponse);
-        assertEquals("Result is not as expected.", values.get(PlatformSmartmeteringKeys.RESULT),
-                response.getResult().name());
-        assertTrue("Result contains no data.", StringUtils.isNotBlank(response.getResultString()));
-        assertTrue("Result data is not as expected",
-                response.getResultString().contains(values.get(PlatformSmartmeteringKeys.RESPONSE_PART)));
+        final String EXPECTED_CHANNEL1 = values.get("Channel1MbusIdentificationNumber");
+        final String EMPTY_CHANNEL = "0";
+
+        assertTrue("Not a valid response", response instanceof ScanMbusChannelsResponse);
+
+        assertEquals(
+                "Mbus Identification Number Channel 1 has value: " + response.getMbusIdentificationNumber1()
+                        + " instead of: " + EXPECTED_CHANNEL1,
+                EXPECTED_CHANNEL1, response.getMbusIdentificationNumber1());
+        assertEquals("Mbus Identification Number Channel 2 has value: " + response.getMbusIdentificationNumber2()
+                + " instead of: " + EMPTY_CHANNEL, EMPTY_CHANNEL, response.getMbusIdentificationNumber2());
+        assertEquals("Mbus Identification Number Channel 3 has value: " + response.getMbusIdentificationNumber3()
+                + " instead of: " + EMPTY_CHANNEL, EMPTY_CHANNEL, response.getMbusIdentificationNumber3());
+        assertEquals("Mbus Identification Number Channel 4 has value: " + response.getMbusIdentificationNumber4()
+                + " instead of: " + EMPTY_CHANNEL, EMPTY_CHANNEL, response.getMbusIdentificationNumber4());
+
     }
 }

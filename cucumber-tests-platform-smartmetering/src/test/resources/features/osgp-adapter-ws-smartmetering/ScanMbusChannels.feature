@@ -29,6 +29,6 @@ Feature: SmartMetering Scan M-Bus Channels
       | Result                           | OK                |
       | DeviceIdentification             | TEST1024000000001 |
       | Channel1MbusIdentificationNumber |          12056731 |
-      | Channel2MbusIdentificationNumber |                   |
-      | Channel3MbusIdentificationNumber |                   |
-      | Channel4MbusIdentificationNumber |                   |
+      | Channel2MbusIdentificationNumber |                 0 |
+      | Channel3MbusIdentificationNumber |                 0 |
+      | Channel4MbusIdentificationNumber |                 0 |
