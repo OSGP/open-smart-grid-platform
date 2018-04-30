@@ -13,6 +13,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAllAttributeValuesCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificAttributeValueCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ScanMbusChannelsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -40,6 +42,9 @@ public class AdhocService {
 
     @Autowired
     private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
+
+    @Autowired
+    private ScanMbusChannelsCommandExecutor scanMbusChannelsCommandExecutor;
 
     // === REQUEST Synchronize Time DATA ===
 
@@ -67,5 +72,10 @@ public class AdhocService {
             final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto) throws FunctionalException {
         return this.getSpecificAttributeValueCommandExecutor.execute(conn, device,
                 specificAttributeValueRequestDataDto);
+    }
+
+    public ScanMbusChannelsResponseDto scanMbusChannels(final DlmsConnectionHolder conn, final DlmsDevice device)
+            throws OsgpException {
+        return this.scanMbusChannelsCommandExecutor.execute(conn, device, null);
     }
 }
