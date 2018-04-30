@@ -32,6 +32,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttri
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
@@ -40,6 +44,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnListType;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsResponseData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -255,6 +260,68 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         } catch (final Exception e) {
             this.handleException(e);
         }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "ScanMbusChannelsRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @ResponsePayload
+    public ScanMbusChannelsAsyncResponse scanMbusChannels(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ScanMbusChannelsRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+
+        final ScanMbusChannelsAsyncResponse response = new ScanMbusChannelsAsyncResponse();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest scanMbusChannelsRequest = this.adhocMapper
+                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest.class);
+
+        final String correlationUid = this.adhocService.enqueueScanMbusChannelsRequest(organisationIdentification,
+                request.getDeviceIdentification(), scanMbusChannelsRequest,
+                MessagePriorityEnum.getMessagePriority(messagePriority),
+                this.adhocMapper.map(scheduleTime, Long.class));
+
+        response.setCorrelationUid(correlationUid);
+        response.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "ScanMbusChannelsAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @ResponsePayload
+    public ScanMbusChannelsResponse getScanMbusChannelsResponse(
+            @RequestPayload final ScanMbusChannelsAsyncRequest request) throws OsgpException {
+
+        ScanMbusChannelsResponse response = null;
+        try {
+            response = new ScanMbusChannelsResponse();
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
+
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+            final ScanMbusChannelsResponseData scanMbusChannelsResponse = (ScanMbusChannelsResponseData) responseData
+                    .getMessageData();
+
+            if (ResponseMessageResultType.OK == responseData.getResultType()) {
+                response.setMbusIdentificationNumber1(scanMbusChannelsResponse.getMbusIdentificationNumber1());
+                response.setMbusIdentificationNumber2(scanMbusChannelsResponse.getMbusIdentificationNumber2());
+                response.setMbusIdentificationNumber3(scanMbusChannelsResponse.getMbusIdentificationNumber3());
+                response.setMbusIdentificationNumber4(scanMbusChannelsResponse.getMbusIdentificationNumber4());
+            } else if (responseData.getMessageData() instanceof OsgpException) {
+                throw (OsgpException) responseData.getMessageData();
+            } else if (responseData.getMessageData() instanceof Exception) {
+                throw new TechnicalException(ComponentType.WS_SMART_METERING,
+                        "An exception occurred: Scan M-Bus Channels", (Exception) responseData.getMessageData());
+            } else {
+                throw new TechnicalException(ComponentType.WS_SMART_METERING,
+                        "An exception occurred: Scan M-Bus Channels", null);
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
         return response;
     }
 }

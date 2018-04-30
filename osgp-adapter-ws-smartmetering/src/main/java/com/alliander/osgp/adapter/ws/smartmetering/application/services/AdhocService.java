@@ -149,4 +149,31 @@ public class AdhocService {
 
         return correlationUid;
     }
+
+    public String enqueueScanMbusChannelsRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest request,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SCAN_MBUS_CHANNELS);
+
+        LOGGER.debug("enqueueScanMbusChannelsRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SCAN_MBUS_CHANNELS.toString(), messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
 }
