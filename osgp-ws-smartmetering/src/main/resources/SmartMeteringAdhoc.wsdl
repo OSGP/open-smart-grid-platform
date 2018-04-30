@@ -112,6 +112,29 @@
     </wsdl:part>
   </wsdl:message>
 
+
+  <!-- RETRIEVE MBUS CHANNEL IDENTIFICATION -->
+  <wsdl:message name="ScanMbusChannelsRequest">
+    <wsdl:part element="smadhoc:ScanMbusChannelsRequest"
+      name="ScanMbusChannelsRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ScanMbusChannelsAsyncResponse">
+    <wsdl:part element="smadhoc:ScanMbusChannelsAsyncResponse"
+      name="ScanMbusChannelsAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ScanMbusChannelsAsyncRequest">
+    <wsdl:part element="smadhoc:ScanMbusChannelsAsyncRequest"
+      name="ScanMbusChannelsAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ScanMbusChannelsResponse">
+    <wsdl:part element="smadhoc:ScanMbusChannelsResponse"
+      name="ScanMbusChannelsResponse">
+    </wsdl:part>
+  </wsdl:message>
+  
   <wsdl:portType name="SmartMeteringAdhocPort">
     <wsdl:operation name="SynchronizeTime">
       <wsdl:input message="tns:SynchronizeTimeRequest" name="SynchronizeTimeRequest" />
@@ -167,8 +190,22 @@
       <wsdl:output message="tns:GetAssociationLnObjectsResponse"
         name="GetAssociationLnObjectsResponse" />
     </wsdl:operation>
-  </wsdl:portType>
 
+    <wsdl:operation name="ScanMbusChannels">
+      <wsdl:input message="tns:ScanMbusChannelsRequest"
+        name="ScanMbusChannelsRequest" />
+      <wsdl:output message="tns:ScanMbusChannelsAsyncResponse"
+        name="ScanMbusChannelsAsyncResponse" />
+    </wsdl:operation>
+
+    <wsdl:operation name="ScanMbusChannelsResponse">
+      <wsdl:input message="tns:ScanMbusChannelsAsyncRequest"
+        name="ScanMbusChannelsAsyncRequest" />
+      <wsdl:output message="tns:ScanMbusChannelsResponse"
+        name="ScanMbusChannelsResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+      
   <wsdl:binding name="SmartMeteringAdhocPortSoap11" type="tns:SmartMeteringAdhocPort">
     <soap:binding style="document"
       transport="http://schemas.xmlsoap.org/soap/http" />
@@ -299,8 +336,40 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-  </wsdl:binding>
 
+    <wsdl:operation name="ScanMbusChannels">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ScanMbusChannelsRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ScanMbusChannelsAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="ScanMbusChannelsResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ScanMbusChannelsAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ScanMbusChannelsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+    
   <wsdl:service name="SmartMeteringAdhocPortService">
     <wsdl:port binding="tns:SmartMeteringAdhocPortSoap11"
       name="SmartMeteringAdhocPortSoap11">
