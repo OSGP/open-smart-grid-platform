@@ -8,7 +8,7 @@ Feature: SmartMetering Bundle - ScanMbusChannels
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And a dlms device
-      | DeviceIdentification           | TESTG102400000001 |
+      | DeviceIdentification           | TESTG101205673101 |
       | DeviceType                     | SMART_METER_G     |
       | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
