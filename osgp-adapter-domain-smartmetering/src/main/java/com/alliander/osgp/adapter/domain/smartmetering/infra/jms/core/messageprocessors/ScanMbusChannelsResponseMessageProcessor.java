@@ -37,7 +37,7 @@ public class ScanMbusChannelsResponseMessageProcessor extends OsgpCoreResponseMe
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof ScanMbusChannelsResponseDto; // ArrayList
+        return responseMessage.getDataObject() instanceof ScanMbusChannelsResponseDto;
     }
 
     @Override
@@ -45,7 +45,6 @@ public class ScanMbusChannelsResponseMessageProcessor extends OsgpCoreResponseMe
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
         if (responseMessage.getDataObject() instanceof ScanMbusChannelsResponseDto) {
-            @SuppressWarnings("unchecked")
             final ScanMbusChannelsResponseDto mbusAttributesList = (ScanMbusChannelsResponseDto) responseMessage
                     .getDataObject();
 
@@ -54,7 +53,7 @@ public class ScanMbusChannelsResponseMessageProcessor extends OsgpCoreResponseMe
         } else {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
                     new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "DataObject for response message should be of type MbusAttributesDto"));
+                            "DataObject for response message should be of type ScanMbusChannelsResponseDto"));
         }
 
     }

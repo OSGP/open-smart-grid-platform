@@ -22,7 +22,7 @@ public class ScanMbusChannelsRequestData implements ActionRequest {
 
     @Override
     public DeviceFunction getDeviceFunction() {
-        return DeviceFunction.GET_CONFIGURATION;
+        return DeviceFunction.SCAN_MBUS_CHANNELS;
     }
 
 }

@@ -9,7 +9,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetAllAttributeValuesRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -250,7 +250,7 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final ScanMbusChannelsResponseData scanMbusChannelsResponseData  = this.configurationMapper.map(resultData,
+        final ScanMbusChannelsResponseData scanMbusChannelsResponseData = this.configurationMapper.map(resultData,
                 ScanMbusChannelsResponseData.class);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
