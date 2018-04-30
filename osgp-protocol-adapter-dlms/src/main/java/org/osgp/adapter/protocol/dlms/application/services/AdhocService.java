@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -73,7 +74,7 @@ public class AdhocService {
                 specificAttributeValueRequestDataDto);
     }
 
-    public Serializable scanMbusChannels(final DlmsConnectionHolder conn, final DlmsDevice device)
+    public ScanMbusChannelsResponseDto scanMbusChannels(final DlmsConnectionHolder conn, final DlmsDevice device)
             throws OsgpException {
         return this.scanMbusChannelsCommandExecutor.execute(conn, device, null);
     }
