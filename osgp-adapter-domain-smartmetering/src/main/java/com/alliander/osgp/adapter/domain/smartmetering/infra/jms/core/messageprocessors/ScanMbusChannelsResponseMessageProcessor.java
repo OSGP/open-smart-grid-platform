@@ -45,11 +45,11 @@ public class ScanMbusChannelsResponseMessageProcessor extends OsgpCoreResponseMe
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
         if (responseMessage.getDataObject() instanceof ScanMbusChannelsResponseDto) {
-            final ScanMbusChannelsResponseDto mbusAttributesList = (ScanMbusChannelsResponseDto) responseMessage
+            final ScanMbusChannelsResponseDto scanMbusChannelsResponseDto = (ScanMbusChannelsResponseDto) responseMessage
                     .getDataObject();
 
             this.adhocService.handleScanMbusChannelsResponse(deviceMessageMetadata, responseMessage.getResult(),
-                    osgpException, mbusAttributesList);
+                    osgpException, scanMbusChannelsResponseDto);
         } else {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
                     new OsgpException(ComponentType.DOMAIN_SMART_METERING,

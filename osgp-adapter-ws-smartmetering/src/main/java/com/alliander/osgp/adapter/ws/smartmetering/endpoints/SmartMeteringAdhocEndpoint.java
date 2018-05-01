@@ -299,6 +299,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
                     ComponentType.WS_SMART_METERING);
 
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the scan m-bus channels response");
+
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
             final ScanMbusChannelsResponseData scanMbusChannelsResponse = (ScanMbusChannelsResponseData) responseData
