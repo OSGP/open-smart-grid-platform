@@ -41,6 +41,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterRe
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ProfileGenericDataResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAlarmNotificationsRequest;
@@ -52,9 +54,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTime
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.smartmetering.ScenarioContextHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import com.alliander.osgp.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import com.alliander.osgp.cucumber.platform.smartmetering.ScenarioContextHelper;
 import com.alliander.osgp.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
 
 import cucumber.api.java.en.Given;
@@ -84,6 +86,7 @@ public class BundleSteps extends BaseBundleSteps {
         REQUEST_RESPONSE_MAP.put(SetSpecialDaysRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(SynchronizeTimeRequest.class, ActionResponse.class);
         REQUEST_RESPONSE_MAP.put(GetMbusEncryptionKeyStatusRequest.class, GetMbusEncryptionKeyStatusResponse.class);
+        REQUEST_RESPONSE_MAP.put(ScanMbusChannelsRequest.class, ScanMbusChannelsResponse.class);
     }
 
     @Autowired
