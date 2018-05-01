@@ -75,7 +75,7 @@
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
-    <quartz.version>2.2.3</quartz.version>
+    <quartz.version>2.3.0</quartz.version>
     <hikaricp.version>2.6.0</hikaricp.version>
   </properties>
 

@@ -71,13 +71,11 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         return scheduler;
     }
 
-    private Properties constructQuartzConfiguration(
-            final SchedulingConfigProperties schedulingConfigProperties) {
+    private Properties constructQuartzConfiguration(final SchedulingConfigProperties schedulingConfigProperties) {
         final Properties properties = new Properties();
 
         // Default Properties
-        properties.put("org.quartz.scheduler.instanceName",
-                schedulingConfigProperties.getJobClass().getSimpleName());
+        properties.put("org.quartz.scheduler.instanceName", schedulingConfigProperties.getJobClass().getSimpleName());
         properties.put("org.quartz.scheduler.instanceId", "AUTO");
         properties.put("org.quartz.scheduler.rmi.export", Boolean.FALSE.toString());
         properties.put("org.quartz.scheduler.rmi.proxy", Boolean.FALSE.toString());
@@ -106,15 +104,12 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         properties.put("org.quartz.jobStore.misfireThreshold", "60000");
         properties.put("org.quartz.jobStore.dataSource", "quartzDefault");
 
-        // DataSource configuration using Quartz implementation. HikariCP does
-        // not work property (TX and auto commit).
-        properties.put("org.quartz.dataSource.quartzDefault.driver",
-                schedulingConfigProperties.getJobStoreDbDriver());
+        properties.put("org.quartz.dataSource.quartzDefault.driver", schedulingConfigProperties.getJobStoreDbDriver());
         properties.put("org.quartz.dataSource.quartzDefault.URL", schedulingConfigProperties.getJobStoreDbUrl());
-        properties.put("org.quartz.dataSource.quartzDefault.user",
-                schedulingConfigProperties.getJobStoreDbUsername());
+        properties.put("org.quartz.dataSource.quartzDefault.user", schedulingConfigProperties.getJobStoreDbUsername());
         properties.put("org.quartz.dataSource.quartzDefault.password",
                 schedulingConfigProperties.getJobStoreDbPassword());
+        properties.put("org.quartz.dataSource.quartzDefault.provider", "hikaricp");
 
         return properties;
     }
