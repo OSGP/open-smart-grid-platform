@@ -1,7 +1,7 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
+	branch = SLIM-1668_Scan_M-Bus_channels
 [submodule "Protocol-Adapter-OSLP"]
 	path = Protocol-Adapter-OSLP
 	url = https://github.com/OSGP/Protocol-Adapter-OSLP.git
@@ -9,11 +9,11 @@
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
-	branch = development
+	branch = SLIM-1668_Scan_M-Bus_channels
 [submodule "Protocol-Adapter-DLMS"]
 	path = Protocol-Adapter-DLMS
 	url = https://github.com/OSGP/Protocol-Adapter-DLMS.git
-	branch = development
+	branch = SLIM-1668_Scan_M-Bus_channels
 [submodule "Protocol-Adapter-IEC61850"]
 	path = Protocol-Adapter-IEC61850
 	url = https://github.com/OSGP/Protocol-Adapter-IEC61850.git
