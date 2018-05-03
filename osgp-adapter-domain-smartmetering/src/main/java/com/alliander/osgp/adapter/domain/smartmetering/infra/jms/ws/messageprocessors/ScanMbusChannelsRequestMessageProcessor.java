@@ -32,6 +32,6 @@ public class ScanMbusChannelsRequestMessageProcessor extends WebServiceRequestMe
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        this.adhocService.getScanMbusChannels(deviceMessageMetadata);
+        this.adhocService.scanMbusChannels(deviceMessageMetadata);
     }
 }
