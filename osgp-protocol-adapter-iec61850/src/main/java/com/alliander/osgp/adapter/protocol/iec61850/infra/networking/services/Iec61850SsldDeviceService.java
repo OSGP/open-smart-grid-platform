@@ -412,7 +412,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
             new Iec61850SetScheduleCommand().setScheduleOnDevice(this.iec61850Client, deviceConnection,
-                    deviceRequest.getRelayType(), deviceRequest.getScheduleMessageDataContainer().getScheduleList(),
+                    deviceRequest.getRelayType(), deviceRequest.getSchedule().getScheduleList(),
                     ssld, this.ssldDataService);
 
             this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);

@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRe
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
-import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.ScheduleDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -53,7 +53,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends SsldDevic
         String ipAddress = null;
         Boolean isScheduled = null;
         int retryCount = 0;
-        ScheduleMessageDataContainerDto scheduleMessageDataContainer = null;
+        ScheduleDto scheduleDto = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -65,7 +65,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends SsldDevic
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            scheduleMessageDataContainer = (ScheduleMessageDataContainerDto) message.getObject();
+            scheduleDto = (ScheduleDto) message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -81,7 +81,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends SsldDevic
         }
 
         final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
-                .messageData(scheduleMessageDataContainer).domain(domain).domainVersion(domainVersion)
+                .messageData(scheduleDto).domain(domain).domainVersion(domainVersion)
                 .messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
                 .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
                 .deviceIdentification(deviceIdentification).build();
@@ -98,7 +98,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends SsldDevic
                 .retryCount(retryCount).isScheduled(isScheduled);
 
         this.deviceService.setSchedule(
-                new SetScheduleDeviceRequest(deviceRequestBuilder, scheduleMessageDataContainer, RelayTypeDto.TARIFF),
+                new SetScheduleDeviceRequest(deviceRequestBuilder, scheduleDto, RelayTypeDto.TARIFF),
                 iec61850DeviceResponseHandler);
     }
 }

@@ -41,7 +41,7 @@ import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
 import com.alliander.osgp.dto.valueobjects.ActionTimeTypeDto;
 import com.alliander.osgp.dto.valueobjects.LightValueDto;
 import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
-import com.alliander.osgp.dto.valueobjects.ScheduleDto;
+import com.alliander.osgp.dto.valueobjects.ScheduleEntryDto;
 import com.alliander.osgp.dto.valueobjects.WeekDayTypeDto;
 import com.alliander.osgp.dto.valueobjects.WindowTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -59,7 +59,7 @@ public class Iec61850SetScheduleCommand {
     private static final int MAX_NUMBER_OF_SCHEDULE_ENTRIES = 64;
 
     public void setScheduleOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
-            final RelayTypeDto relayType, final List<ScheduleDto> scheduleList, final Ssld ssld,
+            final RelayTypeDto relayType, final List<ScheduleEntryDto> scheduleList, final Ssld ssld,
             final SsldDataService ssldDataService) throws ProtocolAdapterException {
 
         final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
@@ -243,7 +243,7 @@ public class Iec61850SetScheduleCommand {
     /**
      * Returns a map of schedule entries, grouped by the internal index.
      */
-    private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleDto> scheduleList,
+    private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleEntryDto> scheduleList,
             final Ssld ssld, final RelayTypeDto relayTypeDto, final SsldDataService ssldDataService)
             throws FunctionalException {
 
@@ -253,7 +253,7 @@ public class Iec61850SetScheduleCommand {
 
         final List<DeviceOutputSetting> settings = ssldDataService.findByRelayType(ssld, relayType);
 
-        for (final ScheduleDto schedule : scheduleList) {
+        for (final ScheduleEntryDto schedule : scheduleList) {
             for (final LightValueDto lightValue : schedule.getLightValue()) {
 
                 final List<Integer> indexes = new ArrayList<>();
@@ -311,7 +311,7 @@ public class Iec61850SetScheduleCommand {
         return relaySchedulesEntries;
     }
 
-    private ScheduleEntry convertToScheduleEntry(final ScheduleDto schedule, final LightValueDto lightValue)
+    private ScheduleEntry convertToScheduleEntry(final ScheduleEntryDto schedule, final LightValueDto lightValue)
             throws ProtocolAdapterException {
         final ScheduleEntry.Builder builder = new ScheduleEntry.Builder();
         try {
@@ -367,7 +367,7 @@ public class Iec61850SetScheduleCommand {
         this.checkRelay(actual, expected, internalAddress);
     }
 
-    private TriggerType extractTriggerType(final ScheduleDto schedule) {
+    private TriggerType extractTriggerType(final ScheduleEntryDto schedule) {
         final TriggerType triggerType;
         if (ActionTimeTypeDto.ABSOLUTETIME.equals(schedule.getActionTime())) {
             triggerType = TriggerType.FIX;

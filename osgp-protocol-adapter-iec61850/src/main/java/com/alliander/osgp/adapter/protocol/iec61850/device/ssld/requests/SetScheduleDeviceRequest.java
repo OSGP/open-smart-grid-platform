@@ -9,17 +9,17 @@ package com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
-import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.ScheduleDto;
 
 public class SetScheduleDeviceRequest extends DeviceRequest {
 
-    private ScheduleMessageDataContainerDto scheduleMessageDataContainer;
+    private ScheduleDto schedule;
     private RelayTypeDto relayType;
 
     public SetScheduleDeviceRequest(final Builder deviceRequestBuilder,
-            final ScheduleMessageDataContainerDto scheduleMessageDataContainer, final RelayTypeDto relayType) {
+            final ScheduleDto schedule, final RelayTypeDto relayType) {
         super(deviceRequestBuilder);
-        this.scheduleMessageDataContainer = scheduleMessageDataContainer;
+        this.schedule = schedule;
         this.relayType = relayType;
     }
 
@@ -27,7 +27,7 @@ public class SetScheduleDeviceRequest extends DeviceRequest {
         return this.relayType;
     }
 
-    public ScheduleMessageDataContainerDto getScheduleMessageDataContainer() {
-        return this.scheduleMessageDataContainer;
+    public ScheduleDto getSchedule() {
+        return this.schedule;
     }
 }
