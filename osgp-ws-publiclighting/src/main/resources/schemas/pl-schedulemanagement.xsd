@@ -14,9 +14,10 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification" />
-        <xsd:element maxOccurs="50" name="Schedules" type="tns:Schedule" />
-        <xsd:element name="scheduled_time" type="xsd:dateTime"
-          minOccurs="0" maxOccurs="1" />
+        <xsd:element name="AstronomicalSunriseOffset" type="xsd:short" minOccurs="0" maxOccurs="1" />
+        <xsd:element name="AstronomicalSunsetOffset" type="xsd:short" minOccurs="0" maxOccurs="1" />
+        <xsd:element name="Schedules" type="tns:Schedule" maxOccurs="50" />
+        <xsd:element name="scheduled_time" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
