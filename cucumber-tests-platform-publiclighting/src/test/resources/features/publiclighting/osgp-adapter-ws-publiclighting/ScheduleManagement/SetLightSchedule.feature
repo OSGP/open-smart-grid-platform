@@ -42,6 +42,35 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | OSLP ELSTER | MONDAY      |            |            | SUNSET       |              |         30,30 | 0,true,           | LIGHT_TRIGGER |
       | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
 
+
+  #Note: the astronomical offsets are part of the set schedule request in the web services, 
+  #      while in the oslp elster protocol adapter they are sent to the device using a set configuration message
+  @OslpMockServer
+  Scenario: Set light schedule with astronomical offsets
+    Given an ssld oslp device
+      | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | OSLP ELSTER       |
+    And the device returns a set configuration status "OK" over "OSLP ELSTER"
+    And the device returns a set light schedule response "OK" over "OSLP ELSTER"
+    When receiving a set light schedule request with astronomical offsets
+      | DeviceIdentification | TEST1024000000001 |
+      | SunriseOffset        |               -15 |
+      | SunsetOffset         |                45 |
+    Then the set light schedule async response contains
+      | DeviceIdentification | TEST1024000000001 |
+    And a set configuration "OSLP ELSTER" message is sent to device "TEST1024000000001"
+      | SunriseOffset | -15 |
+      | SunsetOffset  |  45 |
+    And a set light schedule "OSLP ELSTER" message is sent to device "TEST1024000000001"
+      | WeekDay       | ALL          |
+      | ActionTime    | SUNRISE      |
+      | LightValues   | 0,false,     |
+      | TriggerType   | ASTRONOMICAL |
+    And the platform buffers a set light schedule response message for device "TEST1024000000001"
+      | Result | OK |
+
+
+
   @OslpMockServer
   Scenario Outline: Failed set light schedule
     Given an ssld oslp device
@@ -133,8 +162,8 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     Examples: 
       | WeekDay     | ActionTime   | Time         | TriggerType   | Message                                                                                                      |
       | ABSOLUTEDAY | ABSOLUTETIME | 18:00:00.000 |               | Validation Exception, violations: startDay may not be null when weekDay is set to ABSOLUTEDAY;               |
-      | MONDAY      | SUNRISE      |              | LIGHT_TRIGGER | Validation Exception, violations: triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET; |
-      | MONDAY      | SUNSET       |              | ASTRONOMICAL  | Validation Exception, violations: triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET; |
+      | MONDAY      | SUNRISE      |              | LIGHT_TRIGGER | Validation Exception, violations: triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET and triggerType is LIGHT_TRIGGER; |
+      | MONDAY      | SUNSET       |              | LIGHT_TRIGGER | Validation Exception, violations: triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET and triggerType is LIGHT_TRIGGER; |
 
   # Note: Result is 'NOT_FOUND' because there isn't a record in the database with a CorrelationUID
   # Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'

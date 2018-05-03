@@ -198,4 +198,7 @@ public class PlatformDefaults {
     public static final String RELAY_STATUSES = DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID + ", "
             + DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID + ", " + DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE + ", "
             + DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS;
+
+    public static final Short DEFAULT_ASTRONOMICAL_SUNRISE_OFFSET = 0;
+    public static final Short DEFAULT_ASTRONOMICAL_SUNSET_OFFSET = 0;
 }

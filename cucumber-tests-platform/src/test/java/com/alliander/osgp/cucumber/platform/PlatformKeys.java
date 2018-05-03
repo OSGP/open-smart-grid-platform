@@ -331,6 +331,9 @@ public class PlatformKeys extends Keys {
     public static final String TIME_UNTIL_ON = "TimeUntilOn";
     public static final String KEY_NUMBER_OF_NOTIFICATIONS_SENT = "NumberOfNotificationsSent";
 
+    public static final String KEY_ASTRONOMICAL_SUNRISE_OFFSET = "SunriseOffset";
+    public static final String KEY_ASTRONOMICAL_SUNSET_OFFSET = "SunsetOffset";
+
     public static final String MBUS_IDENTIFICATION_NUMBER_CHANNEL1 = "MbusIdentificationNumberChannel1";
     public static final String MBUS_IDENTIFICATION_NUMBER_CHANNEL2 = "MbusIdentificationNumberChannel2";
     public static final String MBUS_IDENTIFICATION_NUMBER_CHANNEL3 = "MbusIdentificationNumberChannel3";
