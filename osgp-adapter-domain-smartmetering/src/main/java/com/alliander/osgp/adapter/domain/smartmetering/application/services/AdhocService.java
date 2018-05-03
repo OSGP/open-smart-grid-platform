@@ -222,7 +222,7 @@ public class AdhocService {
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
-    public void getScanMbusChannels(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
+    public void scanMbusChannels(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
 
         LOGGER.debug("ScanMbusChannels for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -250,8 +250,8 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final ScanMbusChannelsResponseData scanMbusChannelsResponseData = this.configurationMapper.map(resultData,
-                ScanMbusChannelsResponseData.class);
+        final ScanMbusChannelsResponseData scanMbusChannelsResponseData = this.mapperFactory.getMapperFacade()
+                .map(resultData, ScanMbusChannelsResponseData.class);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())

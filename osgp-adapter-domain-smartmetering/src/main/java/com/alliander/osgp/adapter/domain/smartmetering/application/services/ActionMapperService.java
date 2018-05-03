@@ -225,7 +225,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ClearAlarmRegisterData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelRequestData.class, this.managementMapper);
-        CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.configurationMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageDataContainer,
