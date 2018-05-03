@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.tariffswitching.application.services.ScheduleManagementService;
 import com.alliander.osgp.adapter.domain.tariffswitching.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.ScheduleMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.Schedule;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -73,10 +73,10 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServic
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final ScheduleMessageDataContainer tariffScheduleMessageDataContainer = (ScheduleMessageDataContainer) dataObject;
+            final Schedule tariffSchedule = (Schedule) dataObject;
 
             this.scheduleManagementService.setTariffSchedule(organisationIdentification, deviceIdentification,
-                    correlationUid, tariffScheduleMessageDataContainer.getScheduleList(), scheduleTime, messageType);
+                    correlationUid, tariffSchedule.getScheduleEntries(), scheduleTime, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

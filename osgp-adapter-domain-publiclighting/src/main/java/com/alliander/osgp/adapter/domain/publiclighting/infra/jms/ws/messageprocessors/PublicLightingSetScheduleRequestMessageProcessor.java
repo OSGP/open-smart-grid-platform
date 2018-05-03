@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.publiclighting.application.services.ScheduleManagementService;
 import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.ScheduleMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.Schedule;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -73,10 +73,10 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends WebService
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final ScheduleMessageDataContainer lightScheduleMessageDataContainer = (ScheduleMessageDataContainer) dataObject;
+            final Schedule schedule = (Schedule) dataObject;
 
             this.scheduleManagementService.setLightSchedule(organisationIdentification, deviceIdentification,
-                    correlationUid, lightScheduleMessageDataContainer.getScheduleList(), scheduleTime, messageType);
+                    correlationUid, schedule, scheduleTime, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

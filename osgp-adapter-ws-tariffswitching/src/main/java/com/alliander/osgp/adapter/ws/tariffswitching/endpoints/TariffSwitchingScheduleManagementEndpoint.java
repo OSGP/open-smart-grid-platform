@@ -82,7 +82,7 @@ public class TariffSwitchingScheduleManagementEndpoint {
             final String correlationUid = this.scheduleManagementService.enqueueSetTariffSchedule(
                     organisationIdentification, request.getDeviceIdentification(), this.scheduleManagementMapper
                             .mapAsList(request.getSchedules(),
-                                    com.alliander.osgp.domain.core.valueobjects.Schedule.class), scheduleTime);
+                                    com.alliander.osgp.domain.core.valueobjects.ScheduleEntry.class), scheduleTime);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);

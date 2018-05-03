@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.publiclighting.application.services;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.joda.time.DateTime;
@@ -29,7 +27,6 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
-import com.alliander.osgp.domain.core.valueobjects.ScheduleMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -60,7 +57,7 @@ public class ScheduleManagementService {
     }
 
     public String enqueueSetLightSchedule(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Valid final List<Schedule> mapAsList,
+            @Identification final String deviceIdentification, @Valid final Schedule schedule,
             final DateTime scheduledTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -75,11 +72,9 @@ public class ScheduleManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final ScheduleMessageDataContainer scheduleMessageDataContainer = new ScheduleMessageDataContainer(mapAsList);
-
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
                 PublicLightingRequestMessageType.SET_LIGHT_SCHEDULE, correlationUid, organisationIdentification,
-                deviceIdentification, scheduleMessageDataContainer, scheduledTime);
+                deviceIdentification, schedule, scheduledTime);
 
         this.publicLightingRequestMessageSender.send(message);
 

@@ -30,8 +30,8 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
-import com.alliander.osgp.domain.core.valueobjects.ScheduleMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -63,7 +63,7 @@ public class ScheduleManagementService {
 
     public String enqueueSetTariffSchedule(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
-            @NotNull @Size(min = 1, max = 50) @Valid final List<Schedule> mapAsList, final DateTime scheduledTime)
+            @NotNull @Size(min = 1, max = 50) @Valid final List<ScheduleEntry> mapAsList, final DateTime scheduledTime)
                     throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -78,11 +78,11 @@ public class ScheduleManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final ScheduleMessageDataContainer scheduleMessageDataContainer = new ScheduleMessageDataContainer(mapAsList);
+        final Schedule schedule = new Schedule(mapAsList);
 
         final TariffSwitchingRequestMessage message = new TariffSwitchingRequestMessage(
                 TariffSwitchingRequestMessageType.SET_TARIFF_SCHEDULE, correlationUid, organisationIdentification,
-                deviceIdentification, scheduleMessageDataContainer, scheduledTime);
+                deviceIdentification, schedule, scheduledTime);
 
         this.tariffSwitchingRequestMessageSender.send(message);
 

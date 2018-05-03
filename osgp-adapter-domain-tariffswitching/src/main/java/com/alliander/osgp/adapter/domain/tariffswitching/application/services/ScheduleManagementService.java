@@ -20,8 +20,8 @@ import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.LightValue;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
-import com.alliander.osgp.domain.core.valueobjects.Schedule;
-import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
+import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
+import com.alliander.osgp.dto.valueobjects.ScheduleDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -48,7 +48,7 @@ public class ScheduleManagementService extends AbstractService {
      * @throws FunctionalException
      */
     public void setTariffSchedule(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<Schedule> schedules, final Long scheduleTime,
+            final String correlationUid, final List<ScheduleEntry> schedules, final Long scheduleTime,
             final String messageType) throws FunctionalException {
 
         LOGGER.info("setTariffSchedule called with organisation {} and device {}.", organisationIdentification,
@@ -65,7 +65,7 @@ public class ScheduleManagementService extends AbstractService {
         // Reverse schedule switching for TARIFF_REVERSED relays.
         for (final DeviceOutputSetting dos : this.getSsldForDevice(device).getOutputSettings()) {
             if (dos.getOutputType().equals(RelayType.TARIFF_REVERSED)) {
-                for (final Schedule schedule : schedules) {
+                for (final ScheduleEntry schedule : schedules) {
                     for (final LightValue lightValue : schedule.getLightValue()) {
                         lightValue.invertIsOn();
                     }
@@ -75,15 +75,15 @@ public class ScheduleManagementService extends AbstractService {
 
         LOGGER.info("Mapping to schedule DTO");
 
-        final List<com.alliander.osgp.dto.valueobjects.ScheduleDto> schedulesDto = this.domainCoreMapper.mapAsList(
-                schedules, com.alliander.osgp.dto.valueobjects.ScheduleDto.class);
-        final ScheduleMessageDataContainerDto scheduleMessageDataContainerDto = new ScheduleMessageDataContainerDto(
+        final List<com.alliander.osgp.dto.valueobjects.ScheduleEntryDto> schedulesDto = this.domainCoreMapper.mapAsList(
+                schedules, com.alliander.osgp.dto.valueobjects.ScheduleEntryDto.class);
+        final ScheduleDto scheduleDto = new ScheduleDto(
                 schedulesDto);
 
         LOGGER.info("Sending message");
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, scheduleMessageDataContainerDto), messageType, device.getIpAddress(),
+                deviceIdentification, scheduleDto), messageType, device.getIpAddress(),
                 scheduleTime);
     }
 }

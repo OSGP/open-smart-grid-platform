@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.publiclighting.endpoints;
 
+import java.util.List;
+
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -29,6 +31,8 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.Se
 import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleResponse;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.valueobjects.Schedule;
+import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -82,13 +86,17 @@ public class PublicLightingScheduleManagementEndpoint {
             // Get the request parameters, make sure that they are in UTC.
             // Maybe add an adapter to the service, so that all datetime are
             // converted to utc automatically.
-            final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request
-                    .getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+            final DateTime scheduleTime = request.getScheduledTime() == null ? null
+                    : new DateTime(request.getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+
+            final List<ScheduleEntry> scheduleEntries = this.scheduleManagementMapper.mapAsList(request.getSchedules(),
+                    com.alliander.osgp.domain.core.valueobjects.ScheduleEntry.class);
+
+            final Schedule schedule = new Schedule(scheduleEntries, request.getAstronomicalSunriseOffset(),
+                    request.getAstronomicalSunsetOffset());
 
             final String correlationUid = this.scheduleManagementService.enqueueSetLightSchedule(
-                    organisationIdentification, request.getDeviceIdentification(), this.scheduleManagementMapper
-                            .mapAsList(request.getSchedules(),
-                                    com.alliander.osgp.domain.core.valueobjects.Schedule.class), scheduleTime);
+                    organisationIdentification, request.getDeviceIdentification(), schedule, scheduleTime);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -117,8 +125,8 @@ public class PublicLightingScheduleManagementEndpoint {
         final SetScheduleResponse response = new SetScheduleResponse();
 
         try {
-            final ResponseMessage message = this.scheduleManagementService.dequeueSetLightScheduleResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.scheduleManagementService
+                    .dequeueSetLightScheduleResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }

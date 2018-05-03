@@ -7,63 +7,32 @@
  */
 package com.alliander.osgp.adapter.domain.publiclighting.application.mapping;
 
-import com.alliander.osgp.domain.core.valueobjects.ActionTimeType;
-import com.alliander.osgp.domain.core.valueobjects.LightValue;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
-import com.alliander.osgp.domain.core.valueobjects.TriggerType;
-import com.alliander.osgp.domain.core.valueobjects.WeekDayType;
-import com.alliander.osgp.domain.core.valueobjects.WindowType;
+import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
+import com.alliander.osgp.dto.valueobjects.ScheduleDto;
+import com.alliander.osgp.dto.valueobjects.ScheduleEntryDto;
 
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-public class ScheduleConverter
-        extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ScheduleDto, Schedule> {
+public class ScheduleConverter extends BidirectionalConverter<ScheduleDto, Schedule> {
 
     @Override
-    public Schedule convertTo(final com.alliander.osgp.dto.valueobjects.ScheduleDto source,
-            final Type<Schedule> destinationType, final MappingContext context) {
+    public Schedule convertTo(final ScheduleDto source, final Type<Schedule> destinationType,
+            final MappingContext context) {
 
-        final Schedule schedule = new Schedule();
-        schedule.setActionTime(this.mapperFacade.map(source.getActionTime(), ActionTimeType.class));
-        schedule.setEndDay(source.getEndDay());
-        schedule.setLightValue(this.mapperFacade.mapAsList(source.getLightValue(), LightValue.class));
-        schedule.setStartDay(source.getStartDay());
-        schedule.setTime(source.getTime());
-        schedule.setTriggerType(this.mapperFacade.map(source.getTriggerType(), TriggerType.class));
-        schedule.setTriggerWindow(this.mapperFacade.map(source.getTriggerWindow(), WindowType.class));
-        schedule.setWeekDay(this.mapperFacade.map(source.getWeekDay(), WeekDayType.class));
-        schedule.setIndex(source.getIndex());
-        schedule.setIsEnabled(source.getIsEnabled());
-        schedule.setMinimumLightsOn(source.getMinimumLightsOn());
-
-        return schedule;
+        return new Schedule(this.mapperFacade.mapAsList(source.getScheduleList(), ScheduleEntry.class),
+                source.getAstronomicalSunriseOffset(), source.getAstronomicalSunsetOffset());
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.ScheduleDto convertFrom(final Schedule source,
-            final Type<com.alliander.osgp.dto.valueobjects.ScheduleDto> destinationType, final MappingContext context) {
+    public ScheduleDto convertFrom(final Schedule source, final Type<ScheduleDto> destinationType,
+            final MappingContext context) {
 
-        final com.alliander.osgp.dto.valueobjects.ScheduleDto schedule = new com.alliander.osgp.dto.valueobjects.ScheduleDto();
-        schedule.setActionTime(this.mapperFacade.map(source.getActionTime(),
-                com.alliander.osgp.dto.valueobjects.ActionTimeTypeDto.class));
-        schedule.setEndDay(source.getEndDay());
-        schedule.setLightValue(this.mapperFacade.mapAsList(source.getLightValue(),
-                com.alliander.osgp.dto.valueobjects.LightValueDto.class));
-        schedule.setStartDay(source.getStartDay());
-        schedule.setTime(source.getTime());
-        schedule.setTriggerType(this.mapperFacade.map(source.getTriggerType(),
-                com.alliander.osgp.dto.valueobjects.TriggerTypeDto.class));
-        schedule.setTriggerWindow(this.mapperFacade.map(source.getTriggerWindow(),
-                com.alliander.osgp.dto.valueobjects.WindowTypeDto.class));
-        schedule.setWeekDay(
-                this.mapperFacade.map(source.getWeekDay(), com.alliander.osgp.dto.valueobjects.WeekDayTypeDto.class));
-        schedule.setIndex(source.getIndex());
-        schedule.setIsEnabled(source.getIsEnabled());
-        schedule.setMinimumLightsOn(source.getMinimumLightsOn());
+        return new ScheduleDto(this.mapperFacade.mapAsList(source.getScheduleEntries(), ScheduleEntryDto.class),
+                source.getAstronomicalSunriseOffset(), source.getAstronomicalSunsetOffset());
 
-        return schedule;
     }
 
 }

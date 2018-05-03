@@ -17,19 +17,19 @@ import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.T
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.ActionTimeType;
 import com.alliander.osgp.domain.core.valueobjects.LightValue;
-import com.alliander.osgp.domain.core.valueobjects.Schedule;
+import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
 import com.alliander.osgp.domain.core.valueobjects.WeekDayType;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
-public class TariffScheduleToScheduleConverter extends CustomConverter<TariffSchedule, Schedule> {
+public class TariffScheduleToScheduleConverter extends CustomConverter<TariffSchedule, ScheduleEntry> {
 
     @Override
-    public Schedule convert(final TariffSchedule source, final Type<? extends Schedule> destinationType,
+    public ScheduleEntry convert(final TariffSchedule source, final Type<? extends ScheduleEntry> destinationType,
             final MappingContext context) {
-        final Schedule schedule = new Schedule();
+        final ScheduleEntry schedule = new ScheduleEntry();
 
         // Copy values
         schedule.setWeekDay(this.mapperFacade.map(source.getWeekDay(), WeekDayType.class));

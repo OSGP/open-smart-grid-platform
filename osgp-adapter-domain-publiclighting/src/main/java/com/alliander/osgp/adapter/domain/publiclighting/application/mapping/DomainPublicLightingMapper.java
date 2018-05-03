@@ -7,10 +7,10 @@
  */
 package com.alliander.osgp.adapter.domain.publiclighting.application.mapping;
 
+import org.springframework.stereotype.Component;
+
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
-
-import org.springframework.stereotype.Component;
 
 @Component
 public class DomainPublicLightingMapper extends ConfigurableMapper {
@@ -21,5 +21,6 @@ public class DomainPublicLightingMapper extends ConfigurableMapper {
         factory.getConverterFactory().registerConverter(new LinkTypeConverter());
         factory.getConverterFactory().registerConverter(new PowerUsageDataConverter());
         factory.getConverterFactory().registerConverter(new ScheduleConverter());
+        factory.getConverterFactory().registerConverter(new ScheduleEntryConverter());
     }
 }

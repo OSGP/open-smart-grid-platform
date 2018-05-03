@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.domain.tariffswitching.application.mapping;
+package com.alliander.osgp.adapter.domain.publiclighting.application.mapping;
 
 import com.alliander.osgp.domain.core.valueobjects.ActionTimeType;
 import com.alliander.osgp.domain.core.valueobjects.LightValue;
@@ -18,7 +18,7 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-public class ScheduleConverter
+public class ScheduleEntryConverter
         extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ScheduleEntryDto, ScheduleEntry> {
 
     @Override

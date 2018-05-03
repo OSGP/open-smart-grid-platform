@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.publiclighting.application.services;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,7 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
-import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.ScheduleDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -44,8 +42,8 @@ public class ScheduleManagementService extends AbstractService {
      * @throws ValidationException
      */
     public void setLightSchedule(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<Schedule> schedules, final Long scheduleTime,
-            final String messageType) throws FunctionalException {
+            final String correlationUid, final Schedule schedule, final Long scheduleTime, final String messageType)
+            throws FunctionalException {
 
         LOGGER.info("setSchedule called with organisation {} and device {}.", organisationIdentification,
                 deviceIdentification);
@@ -53,14 +51,11 @@ public class ScheduleManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.ScheduleDto> schedulesDto = this.domainCoreMapper.mapAsList(
-                schedules, com.alliander.osgp.dto.valueobjects.ScheduleDto.class);
-        final ScheduleMessageDataContainerDto scheduleMessageDataContainerDto = new ScheduleMessageDataContainerDto(
-                schedulesDto);
+        final ScheduleDto scheduleDto = this.domainCoreMapper.map(schedule, ScheduleDto.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, scheduleMessageDataContainerDto), messageType, device.getIpAddress(),
-                scheduleTime);
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, scheduleDto),
+                messageType, device.getIpAddress(), scheduleTime);
     }
 
     // === SET HAS SCHEDULE ===
@@ -70,7 +65,8 @@ public class ScheduleManagementService extends AbstractService {
      *
      * @throws FunctionalException
      */
-    public void setHasSchedule(final String deviceIdentification, final Boolean hasSchedule) throws FunctionalException {
+    public void setHasSchedule(final String deviceIdentification, final Boolean hasSchedule)
+            throws FunctionalException {
 
         LOGGER.info("setHasSchedule called for device {} with hasSchedule: {}.", deviceIdentification, hasSchedule);
 

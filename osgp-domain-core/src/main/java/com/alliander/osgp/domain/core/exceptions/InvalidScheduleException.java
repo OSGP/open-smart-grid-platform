@@ -14,7 +14,7 @@ import javax.validation.ConstraintViolation;
 import org.springframework.ws.soap.server.endpoint.annotation.FaultCode;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 
-import com.alliander.osgp.domain.core.valueobjects.Schedule;
+import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
 
 @SoapFault(faultCode = FaultCode.SERVER)
 public class InvalidScheduleException extends Exception {
@@ -25,14 +25,14 @@ public class InvalidScheduleException extends Exception {
     private static final long serialVersionUID = 3700196675363961125L;
     private static final String MESSAGE = "Invalid schedule, validation errors: %1$s";
 
-    public InvalidScheduleException(final Set<ConstraintViolation<Schedule>> constraintViolations) {
+    public InvalidScheduleException(final Set<ConstraintViolation<ScheduleEntry>> constraintViolations) {
         super(String.format(MESSAGE, convertToString(constraintViolations)));
     }
 
-    private static String convertToString(final Set<ConstraintViolation<Schedule>> constraintViolations) {
+    private static String convertToString(final Set<ConstraintViolation<ScheduleEntry>> constraintViolations) {
         final StringBuilder violations = new StringBuilder();
 
-        for (final ConstraintViolation<Schedule> violation : constraintViolations) {
+        for (final ConstraintViolation<ScheduleEntry> violation : constraintViolations) {
             violations.append(violation.getPropertyPath() + " " + violation.getMessage() + "; ");
         }
 
