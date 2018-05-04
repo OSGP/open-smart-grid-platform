@@ -23,7 +23,11 @@ public class ScheduleDto implements Serializable {
     private final List<ScheduleEntryDto> scheduleList;
 
     private PageInfoDto pageInfo;
-    private boolean setAstroOffsets = true;
+
+    // Additional fields required for setting the astronomical offsets
+    private boolean setAstroOffsets;
+    private boolean getConfigurationFirst;
+    private ConfigurationDto configuration;
 
     public ScheduleDto(final List<ScheduleEntryDto> scheduleList) {
         this(scheduleList, null, null);
@@ -35,6 +39,7 @@ public class ScheduleDto implements Serializable {
         this.astronomicalSunriseOffset = astronomicalSunriseOffset;
         this.astronomicalSunsetOffset = astronomicalSunsetOffset;
         this.setAstroOffsets = astronomicalSunriseOffset != null || astronomicalSunsetOffset != null;
+        this.getConfigurationFirst = this.setAstroOffsets;
     }
 
     public Short getAstronomicalSunriseOffset() {
@@ -64,5 +69,22 @@ public class ScheduleDto implements Serializable {
 
     public void setSetAstronomicalOffsets(final boolean setAstroOffsets) {
         this.setAstroOffsets = setAstroOffsets;
+    }
+
+    public boolean isGetConfigurationFirst() {
+        return this.getConfigurationFirst;
+    }
+
+    public void setGetConfigurationFirst(final boolean getConfigurationFirst) {
+        this.getConfigurationFirst = getConfigurationFirst;
+    }
+
+    public ConfigurationDto getConfiguration() {
+        return this.configuration;
+    }
+
+    public void setConfiguration(final ConfigurationDto configuration) {
+        this.getConfigurationFirst = false;
+        this.configuration = configuration;
     }
 }
