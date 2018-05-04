@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.SetScheduleDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.elster.device.responses.GetConfigurationDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
@@ -88,8 +89,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, schedule, RelayTypeDto.LIGHT, domain,
-                    domainVersion, messageType, ipAddress, retryCount, isScheduled);
+                    deviceIdentification, correlationUid, schedule, RelayTypeDto.LIGHT, domain, domainVersion,
+                    messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.setSchedule(deviceRequest);
         } catch (final Exception e) {
@@ -120,13 +121,18 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 
-            private final boolean setAstronomicalOffsets = deviceRequest.getSchedule()
-                    .isSetAstronomicalOffsets();
+            private final boolean getConfigurationFirst = deviceRequest.getSchedule().isGetConfigurationFirst();
+            private final boolean setAstronomicalOffsets = deviceRequest.getSchedule().isSetAstronomicalOffsets();
 
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
 
-                if (this.setAstronomicalOffsets) {
+                if (this.getConfigurationFirst) {
+                    final GetConfigurationDeviceResponse response = (GetConfigurationDeviceResponse) deviceResponse;
+                    PublicLightingSetScheduleRequestMessageProcessor.this
+                            .handleGetConfigurationBeforeSetScheduleResponse(deviceRequest, response);
+
+                } else if (this.setAstronomicalOffsets) {
                     PublicLightingSetScheduleRequestMessageProcessor.this
                             .handleSetScheduleAstronomicalOffsetsResponse(deviceRequest);
                 } else {
@@ -143,7 +149,6 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                         PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
                         domain, domainVersion, messageType, isScheduled, retryCount);
             }
-
         };
 
         try {
@@ -155,6 +160,26 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         }
     }
 
+    private void handleGetConfigurationBeforeSetScheduleResponse(final SetScheduleDeviceRequest deviceRequest,
+            final GetConfigurationDeviceResponse deviceResponse) {
+        // Configuration is retrieved, so now continue with setting the
+        // astronomical offsets
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", deviceRequest.getMessageType(),
+                deviceRequest.getDomain(), deviceRequest.getDomainVersion());
+
+        final ScheduleDto scheduleDto = deviceRequest.getSchedule();
+        scheduleDto.setConfiguration(deviceResponse.getConfiguration());
+        scheduleDto.setGetConfigurationFirst(false);
+
+        final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
+                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), scheduleDto, RelayTypeDto.LIGHT, deviceRequest.getDomain(),
+                deviceRequest.getDomainVersion(), deviceRequest.getMessageType(), deviceRequest.getIpAddress(),
+                deviceRequest.getRetryCount(), deviceRequest.isScheduled());
+
+        this.deviceService.setSchedule(newDeviceRequest);
+    }
+
     private void handleSetScheduleAstronomicalOffsetsResponse(final SetScheduleDeviceRequest deviceRequest) {
 
         // Astronomical offsets are set, so now continue with the actual
@@ -164,12 +189,13 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         final ScheduleDto scheduleDto = deviceRequest.getSchedule();
         scheduleDto.setSetAstronomicalOffsets(false);
+        scheduleDto.setGetConfigurationFirst(false);
 
         final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
                 deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), deviceRequest.getSchedule(), RelayTypeDto.LIGHT,
-                deviceRequest.getDomain(), deviceRequest.getDomainVersion(), deviceRequest.getMessageType(),
-                deviceRequest.getIpAddress(), deviceRequest.getRetryCount(), deviceRequest.isScheduled());
+                deviceRequest.getCorrelationUid(), scheduleDto, RelayTypeDto.LIGHT, deviceRequest.getDomain(),
+                deviceRequest.getDomainVersion(), deviceRequest.getMessageType(), deviceRequest.getIpAddress(),
+                deviceRequest.getRetryCount(), deviceRequest.isScheduled());
 
         this.deviceService.setSchedule(newDeviceRequest);
     }
