@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -52,6 +53,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private String applicationName;
     private int maxConnectionsPerRoute;
     private int maxConnectionsTotal;
+    private int connectionTimeout;
 
     private DefaultWebServiceTemplateFactory() {
         this.webServiceTemplates = new HashMap<>();
@@ -81,6 +83,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         private KeyStoreFactoryBean trustStoreFactory;
         private int maxConnectionsPerRoute = 2;
         private int maxConnectionsTotal = 20;
+        private int connectionTimeout = 120000;
 
         public Builder setApplicationName(final String applicationName) {
             this.applicationName = applicationName;
@@ -137,6 +140,11 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             return this;
         }
 
+        public Builder setConnectionTimeout(final int connectionTimeout) {
+            this.connectionTimeout = connectionTimeout;
+            return this;
+        }
+
         public DefaultWebServiceTemplateFactory build() {
             final DefaultWebServiceTemplateFactory webServiceTemplateFactory = new DefaultWebServiceTemplateFactory();
             webServiceTemplateFactory.marshaller = this.marshaller;
@@ -152,6 +160,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             webServiceTemplateFactory.applicationName = this.applicationName;
             webServiceTemplateFactory.maxConnectionsPerRoute = this.maxConnectionsPerRoute;
             webServiceTemplateFactory.maxConnectionsTotal = this.maxConnectionsTotal;
+            webServiceTemplateFactory.connectionTimeout = this.connectionTimeout;
             return webServiceTemplateFactory;
         }
     }
@@ -234,6 +243,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         // http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
         clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
 
+        final RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(this.connectionTimeout).build();
+        clientbuilder.setDefaultRequestConfig(requestConfig);
         return new HttpComponentsMessageSender(clientbuilder.build());
     }
 
@@ -271,6 +282,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         // http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
         clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
 
+        final RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(this.connectionTimeout).build();
+        clientbuilder.setDefaultRequestConfig(requestConfig);
         return new HttpComponentsMessageSender(clientbuilder.build());
     }
 }
