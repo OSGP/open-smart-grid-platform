@@ -10,7 +10,7 @@ package com.alliander.osgp.adapter.ws.shared.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ws.client.WebServiceTransportException;
+import org.springframework.ws.client.WebServiceIOException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
@@ -47,7 +47,7 @@ public abstract class AbstractNotificationServiceWs {
             final WebServiceTemplate wsTemplate = wsTemplateFactory.getTemplate(this.notificationOrganisation, userName,
                     notificationURL);
             wsTemplate.marshalSendAndReceive(notification);
-        } catch (WebServiceTransportException | WebServiceSecurityException | SoapFaultClientException e) {
+        } catch (WebServiceSecurityException | WebServiceIOException | SoapFaultClientException e) {
             final String msg = String.format(
                     "error sending notification message org=%s, user=%s, to org=%s, notifyUrl=%s, errmsg=%s",
                     this.notificationOrganisation, userName, organisationIdentification, notificationURL,

@@ -93,6 +93,15 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${web.service.truststore.password}")
     private String webserviceTruststorePassword;
 
+    @Value("${web.service.max.connections.per.route:2}")
+    private int webserviceMaxConnectionsPerRoute;
+
+    @Value("${web.service.max.connections.total:20}")
+    private int webserviceMaxConnectionsTotal;
+
+    @Value("${web.service.connection.timeout:120000}")
+    private int webserviceConnectionTimeout;
+
     private static final String SERVER = "SERVER";
 
     // === MICROGRIDS MARSHALLERS ===
@@ -251,6 +260,9 @@ public class WebServiceConfig extends AbstractConfig {
                 .setMessageFactory(this.messageFactory()).setTargetUri(this.webserviceNotificationUrl)
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName("ZownStream").build();
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName("ZownStream")
+                .setMaxConnectionsPerRoute(this.webserviceMaxConnectionsPerRoute)
+                .setMaxConnectionsTotal(this.webserviceMaxConnectionsTotal)
+                .setConnectionTimeout(this.webserviceConnectionTimeout).build();
     }
 }
