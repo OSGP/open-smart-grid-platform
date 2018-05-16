@@ -10,8 +10,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -28,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 
 @Component()
 public class DeviceChannelsHelper {
@@ -65,7 +66,7 @@ public class DeviceChannelsHelper {
             final List<GetResult> resultList = this.getMBusClientAttributeValues(conn, device, channel);
             final ChannelElementValuesDto channelElementValues = this.makeChannelElementValues(channel, resultList);
             channelElementValuesList.add(channelElementValues);
-            if (requestDto!=null && FindMatchingChannelHelper.matches(requestDto, channelElementValues)) {
+            if (requestDto != null && FindMatchingChannelHelper.matches(requestDto, channelElementValues)) {
                 /*
                  * A complete match for all attributes from the request has been found. Stop
                  * retrieving M-Bus Client Setup attributes for other channels. Return a list
@@ -202,7 +203,8 @@ public class DeviceChannelsHelper {
         return null;
     }
 
-    protected ChannelElementValuesDto findChannelElementValueForChannel(final List<ChannelElementValuesDto> channelElementValuesList, short channel) {
+    protected ChannelElementValuesDto findChannelElementValueForChannel(
+            final List<ChannelElementValuesDto> channelElementValuesList, final short channel) {
         for (final ChannelElementValuesDto channelElementValues : channelElementValuesList) {
 
             if (channelElementValues.getChannel() == channel) {
@@ -228,13 +230,14 @@ public class DeviceChannelsHelper {
     private boolean checkChannelIdentificationValues(final ChannelElementValuesDto channelElementValues) {
         return (channelElementValues.getIdentificationNumber() == null
                 || "00000000".equals(channelElementValues.getIdentificationNumber())
-                && (channelElementValues.getPrimaryAddress() == 0));
+                        && (channelElementValues.getPrimaryAddress() == 0));
     }
 
     /*
      * @param channelElementValues
-     * @return 0-based offset for the channel as opposed to the channels in ChannelElementValues,
-     * where the channels are incremented from FIRST_CHANNEL.
+     * 
+     * @return 0-based offset for the channel as opposed to the channels in
+     * ChannelElementValues, where the channels are incremented from FIRST_CHANNEL.
      */
     protected short correctFirstChannelOffset(final ChannelElementValuesDto channelElementValues) {
         return (short) (channelElementValues.getChannel() - FIRST_CHANNEL);

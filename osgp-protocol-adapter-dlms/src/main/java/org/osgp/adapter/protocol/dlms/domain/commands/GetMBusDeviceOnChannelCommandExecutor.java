@@ -40,8 +40,8 @@ public class GetMBusDeviceOnChannelCommandExecutor
 
         LOGGER.info("Retrieving values for mbus channel {} on meter {}", requestDto.getChannel(),
                 requestDto.getGatewayDeviceIdentification());
-        final List<GetResult> resultList = this.deviceChannelsHelper.getMBusClientAttributeValues(conn,
-                device, requestDto.getChannel());
+        final List<GetResult> resultList = this.deviceChannelsHelper.getMBusClientAttributeValues(conn, device,
+                requestDto.getChannel());
         return this.deviceChannelsHelper.makeChannelElementValues(requestDto.getChannel(), resultList);
     }
 }

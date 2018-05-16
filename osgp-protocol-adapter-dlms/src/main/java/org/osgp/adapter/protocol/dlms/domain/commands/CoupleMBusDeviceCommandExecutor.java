@@ -41,8 +41,8 @@ public class CoupleMBusDeviceCommandExecutor
 
         LOGGER.debug("retrieving mbus info on e-meter");
 
-        final List<ChannelElementValuesDto> candidateChannelElementValues = this.deviceChannelsHelper.findCandidateChannelsForDevice(conn,
-                device, requestDto);
+        final List<ChannelElementValuesDto> candidateChannelElementValues = this.deviceChannelsHelper
+                .findCandidateChannelsForDevice(conn, device, requestDto);
 
         final ChannelElementValuesDto lastChannelElementValuesRetrieved = candidateChannelElementValues
                 .get(candidateChannelElementValues.size() - 1);
@@ -66,7 +66,8 @@ public class CoupleMBusDeviceCommandExecutor
                     candidateChannelElementValues);
         }
 
-        final ChannelElementValuesDto emptyChannelMatch = this.deviceChannelsHelper.findEmptyChannel(candidateChannelElementValues);
+        final ChannelElementValuesDto emptyChannelMatch = this.deviceChannelsHelper
+                .findEmptyChannel(candidateChannelElementValues);
         if (emptyChannelMatch == null) {
             /*
              * No channel free, all are occupied by M-Bus devices not matching the one to be
@@ -84,14 +85,16 @@ public class CoupleMBusDeviceCommandExecutor
          * to be invoked so a primary_address is set and its value is transferred to the
          * M-Bus slave device.
          */
-        final ChannelElementValuesDto updatedChannelElementValues = this.deviceChannelsHelper.writeUpdatedMbus(conn, requestDto,
-                emptyChannelMatch.getChannel());
+        final ChannelElementValuesDto updatedChannelElementValues = this.deviceChannelsHelper.writeUpdatedMbus(conn,
+                requestDto, emptyChannelMatch.getChannel());
 
         /*
-         * Also update the entry in the candidateChannelElementValues list. Take into account that
-         * the candidateChannelElementsValues List is 0-based, while the channel in emptyChannelMatch is not
+         * Also update the entry in the candidateChannelElementValues list. Take into
+         * account that the candidateChannelElementsValues List is 0-based, while the
+         * channel in emptyChannelMatch is not
          */
-        candidateChannelElementValues.set(this.deviceChannelsHelper.correctFirstChannelOffset(emptyChannelMatch), updatedChannelElementValues);
+        candidateChannelElementValues.set(this.deviceChannelsHelper.correctFirstChannelOffset(emptyChannelMatch),
+                updatedChannelElementValues);
 
         return new MbusChannelElementsResponseDto(requestDto, updatedChannelElementValues.getChannel(),
                 candidateChannelElementValues);
