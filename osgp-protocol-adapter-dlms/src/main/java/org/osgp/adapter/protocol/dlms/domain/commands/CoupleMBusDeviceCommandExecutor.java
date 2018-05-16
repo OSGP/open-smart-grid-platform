@@ -7,17 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.datatypes.DataObject;
-import org.openmuc.jdlms.interfaceclass.InterfaceClass;
-import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
-import org.osgp.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
-import org.osgp.adapter.protocol.dlms.domain.commands.mbus.ManufacturerId;
 import org.osgp.adapter.protocol.dlms.domain.commands.utils.FindMatchingChannelHelper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -36,25 +27,9 @@ public class CoupleMBusDeviceCommandExecutor
         extends AbstractCommandExecutor<MbusChannelElementsDto, MbusChannelElementsResponseDto> {
 
     @Autowired
-    private DlmsHelperService dlmsHelper;
+    private DeviceChannelsHelper deviceChannelsHelper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoupleMBusDeviceCommandExecutor.class);
-
-    private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
-    /**
-     * The ObisCode for the M-Bus Client Setup exists for a number of channels. DSMR
-     * specifies these M-Bus Client Setup channels as values from 1..4.
-     */
-    private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
-    private static final int FIRST_CHANNEL = 1;
-    private static final int NR_OF_CHANNELS = 4;
-
-    private static final int NUMBER_OF_ATTRIBUTES_MBUS_CLIENT = 5;
-    private static final int INDEX_PRIMARY_ADDRESS = 0;
-    private static final int INDEX_IDENTIFICATION_NUMBER = 1;
-    private static final int INDEX_MANUFACTURER_ID = 2;
-    private static final int INDEX_VERSION = 3;
-    private static final int INDEX_DEVICE_TYPE = 4;
 
     public CoupleMBusDeviceCommandExecutor() {
         super(MbusChannelElementsDto.class);
@@ -66,7 +41,7 @@ public class CoupleMBusDeviceCommandExecutor
 
         LOGGER.debug("retrieving mbus info on e-meter");
 
-        final List<ChannelElementValuesDto> candidateChannelElementValues = this.findCandidateChannelsForDevice(conn,
+        final List<ChannelElementValuesDto> candidateChannelElementValues = this.deviceChannelsHelper.findCandidateChannelsForDevice(conn,
                 device, requestDto);
 
         final ChannelElementValuesDto lastChannelElementValuesRetrieved = candidateChannelElementValues
@@ -91,7 +66,7 @@ public class CoupleMBusDeviceCommandExecutor
                     candidateChannelElementValues);
         }
 
-        final ChannelElementValuesDto emptyChannelMatch = this.findEmptyChannel(candidateChannelElementValues);
+        final ChannelElementValuesDto emptyChannelMatch = this.deviceChannelsHelper.findEmptyChannel(candidateChannelElementValues);
         if (emptyChannelMatch == null) {
             /*
              * No channel free, all are occupied by M-Bus devices not matching the one to be
@@ -109,183 +84,16 @@ public class CoupleMBusDeviceCommandExecutor
          * to be invoked so a primary_address is set and its value is transferred to the
          * M-Bus slave device.
          */
-        final ChannelElementValuesDto updatedChannelElementValues = this.writeUpdatedMbus(conn, requestDto,
+        final ChannelElementValuesDto updatedChannelElementValues = this.deviceChannelsHelper.writeUpdatedMbus(conn, requestDto,
                 emptyChannelMatch.getChannel());
 
         /*
-         * Also update the entry in the candidateChannelElementValues list. Because the
-         * List is 0-based, while the channels are incremented from FIRST_CHANNEL it is
-         * needed to subtract FIRST_CHANNEL to get the correct index to replace the
-         * correct element from the candidates.
+         * Also update the entry in the candidateChannelElementValues list. Take into account that
+         * the candidateChannelElementsValues List is 0-based, while the channel in emptyChannelMatch is not
          */
-        candidateChannelElementValues.set(emptyChannelMatch.getChannel() - FIRST_CHANNEL, updatedChannelElementValues);
+        candidateChannelElementValues.set(this.deviceChannelsHelper.correctFirstChannelOffset(emptyChannelMatch), updatedChannelElementValues);
 
         return new MbusChannelElementsResponseDto(requestDto, updatedChannelElementValues.getChannel(),
                 candidateChannelElementValues);
     }
-
-    private List<ChannelElementValuesDto> findCandidateChannelsForDevice(final DlmsConnectionHolder conn,
-            final DlmsDevice device, final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
-
-        final List<ChannelElementValuesDto> channelElementValuesList = new ArrayList<>();
-        for (short channel = FIRST_CHANNEL; channel < FIRST_CHANNEL + NR_OF_CHANNELS; channel++) {
-            final List<GetResult> resultList = this.getMBusClientAttributeValues(conn, device, channel);
-            final ChannelElementValuesDto channelElementValues = this.makeChannelElementValues(channel, resultList);
-            channelElementValuesList.add(channelElementValues);
-            if (FindMatchingChannelHelper.matches(requestDto, channelElementValues)) {
-                /*
-                 * A complete match for all attributes from the request has been found. Stop
-                 * retrieving M-Bus Client Setup attributes for other channels. Return a list
-                 * returning the values retrieved so far and don't retrieve any additional M-Bus
-                 * Client Setup data from the device.
-                 */
-                return channelElementValuesList;
-            }
-        }
-        /*
-         * A complete match for all attributes from the request has not been found. The
-         * best partial match that has no conflicting attribute values, or the first
-         * free channel has to be picked from this list.
-         */
-        return channelElementValuesList;
-    }
-
-    private ChannelElementValuesDto findEmptyChannel(final List<ChannelElementValuesDto> channelElementValuesList) {
-        for (final ChannelElementValuesDto channelElementValues : channelElementValuesList) {
-
-            if (this.checkChannelIdentificationValues(channelElementValues)
-                    && this.checkChannelConfigurationValues(channelElementValues)) {
-                return channelElementValues;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param channelElementValues
-     * @return true if all channel elements are 0 or null
-     */
-    private boolean checkChannelConfigurationValues(final ChannelElementValuesDto channelElementValues) {
-        return (channelElementValues.getVersion() == 0) && (channelElementValues.getDeviceTypeIdentification() == 0)
-                && channelElementValues.getManufacturerIdentification() == null;
-    }
-
-    /**
-     * @param channelElementValues
-     * @return true if all channel elements are 0 or null
-     */
-    private boolean checkChannelIdentificationValues(final ChannelElementValuesDto channelElementValues) {
-        return (channelElementValues.getIdentificationNumber() == null
-                || "00000000".equals(channelElementValues.getIdentificationNumber())
-                        && (channelElementValues.getPrimaryAddress() == 0));
-    }
-
-    private ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,
-            final MbusChannelElementsDto requestDto, final short channel) throws ProtocolAdapterException {
-
-        final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("CoupleMBusDevice")
-                .addExecutor(
-                        this.getMbusAttributeExecutor(MbusClientAttribute.IDENTIFICATION_NUMBER,
-                                IdentificationNumber.fromLast8Digits(requestDto.getMbusIdentificationNumber())
-                                        .asDataObject(),
-                                channel))
-                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.MANUFACTURER_ID,
-                        ManufacturerId.fromIdentification(requestDto.getMbusManufacturerIdentification())
-                                .asDataObject(),
-                        channel))
-                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.VERSION,
-                        DataObject.newUInteger8Data(requestDto.getMbusVersion()), channel))
-                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.DEVICE_TYPE,
-                        DataObject.newUInteger8Data(requestDto.getMbusDeviceTypeIdentification()), channel));
-
-        if (requestDto.getPrimaryAddress() != null) {
-            dataObjectExecutors.addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.PRIMARY_ADDRESS,
-                    DataObject.newUInteger8Data(requestDto.getPrimaryAddress()), channel));
-
-        }
-        conn.getDlmsMessageListener().setDescription("Write updated MBus attributes to channel " + channel
-                + ", set attributes: " + dataObjectExecutors.describeAttributes());
-
-        dataObjectExecutors.execute(conn);
-
-        LOGGER.info("Finished coupling the mbus device to the gateway device");
-
-        return new ChannelElementValuesDto(channel, requestDto.getPrimaryAddress(),
-                requestDto.getMbusIdentificationNumber(), requestDto.getMbusManufacturerIdentification(),
-                requestDto.getMbusVersion(), requestDto.getMbusDeviceTypeIdentification());
-    }
-
-    private DataObjectAttrExecutor getMbusAttributeExecutor(final MbusClientAttribute attribute, final DataObject value,
-            final short channel) {
-        final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, channel));
-        final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode, attribute.attributeId());
-
-        return new DataObjectAttrExecutor(attribute.attributeName(), attributeAddress, value, CLASS_ID, obiscode,
-                attribute.attributeId());
-    }
-
-    protected List<GetResult> getMBusClientAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final short channel) throws ProtocolAdapterException {
-        final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
-        conn.getDlmsMessageListener().setDescription("CoupleMBusDevice, retrieve M-Bus client setup attributes: "
-                + JdlmsObjectToStringUtil.describeAttributes(attrAddresses));
-        return this.dlmsHelper.getWithList(conn, device, attrAddresses);
-    }
-
-    private AttributeAddress[] makeAttributeAddresses(final int channel) {
-        final AttributeAddress[] attrAddresses = new AttributeAddress[NUMBER_OF_ATTRIBUTES_MBUS_CLIENT];
-        final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, channel));
-        attrAddresses[INDEX_PRIMARY_ADDRESS] = new AttributeAddress(CLASS_ID, obiscode,
-                MbusClientAttribute.PRIMARY_ADDRESS.attributeId());
-        attrAddresses[INDEX_IDENTIFICATION_NUMBER] = new AttributeAddress(CLASS_ID, obiscode,
-                MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId());
-        attrAddresses[INDEX_MANUFACTURER_ID] = new AttributeAddress(CLASS_ID, obiscode,
-                MbusClientAttribute.MANUFACTURER_ID.attributeId());
-        attrAddresses[INDEX_VERSION] = new AttributeAddress(CLASS_ID, obiscode,
-                MbusClientAttribute.VERSION.attributeId());
-        attrAddresses[INDEX_DEVICE_TYPE] = new AttributeAddress(CLASS_ID, obiscode,
-                MbusClientAttribute.DEVICE_TYPE.attributeId());
-        return attrAddresses;
-    }
-
-    protected ChannelElementValuesDto makeChannelElementValues(final short channel, final List<GetResult> resultList)
-            throws ProtocolAdapterException {
-        final short primaryAddress = this.readShort(resultList, INDEX_PRIMARY_ADDRESS, "primaryAddress");
-        final String identificationNumber = this.readIdentificationNumber(resultList, INDEX_IDENTIFICATION_NUMBER,
-                "identificationNumber");
-        final String manufacturerIdentification = this.readManufacturerIdentification(resultList, INDEX_MANUFACTURER_ID,
-                "manufacturerIdentification");
-        final short version = this.readShort(resultList, INDEX_VERSION, "version");
-        final short deviceTypeIdentification = this.readShort(resultList, INDEX_DEVICE_TYPE,
-                "deviceTypeIdentification");
-        return new ChannelElementValuesDto(channel, primaryAddress, identificationNumber, manufacturerIdentification,
-                version, deviceTypeIdentification);
-    }
-
-    private String readIdentificationNumber(final List<GetResult> resultList, final int index, final String description)
-            throws ProtocolAdapterException {
-
-        final Long identification = this.dlmsHelper.readLong(resultList.get(index), description);
-        return IdentificationNumber.fromIdentification(identification).getLast8Digits();
-    }
-
-    private String readManufacturerIdentification(final List<GetResult> resultList, final int index,
-            final String description) throws ProtocolAdapterException {
-
-        final int manufacturerId = this.readInt(resultList, index, description);
-        return ManufacturerId.fromId(manufacturerId).getIdentification();
-    }
-
-    private int readInt(final List<GetResult> resultList, final int index, final String description)
-            throws ProtocolAdapterException {
-        final Integer value = this.dlmsHelper.readInteger(resultList.get(index), description);
-        return value == null ? 0 : value;
-    }
-
-    private short readShort(final List<GetResult> resultList, final int index, final String description)
-            throws ProtocolAdapterException {
-        final Short value = this.dlmsHelper.readShort(resultList.get(index), description);
-        return value == null ? 0 : value;
-    }
-
 }

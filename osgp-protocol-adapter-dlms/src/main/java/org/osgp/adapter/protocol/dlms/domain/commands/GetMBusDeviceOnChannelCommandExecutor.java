@@ -26,7 +26,7 @@ public class GetMBusDeviceOnChannelCommandExecutor
         extends AbstractCommandExecutor<GetMBusDeviceOnChannelRequestDataDto, ChannelElementValuesDto> {
 
     @Autowired
-    private CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
+    private DeviceChannelsHelper deviceChannelsHelper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetMBusDeviceOnChannelCommandExecutor.class);
 
@@ -40,8 +40,8 @@ public class GetMBusDeviceOnChannelCommandExecutor
 
         LOGGER.info("Retrieving values for mbus channel {} on meter {}", requestDto.getChannel(),
                 requestDto.getGatewayDeviceIdentification());
-        final List<GetResult> resultList = this.coupleMBusDeviceCommandExecutor.getMBusClientAttributeValues(conn,
+        final List<GetResult> resultList = this.deviceChannelsHelper.getMBusClientAttributeValues(conn,
                 device, requestDto.getChannel());
-        return this.coupleMBusDeviceCommandExecutor.makeChannelElementValues(requestDto.getChannel(), resultList);
+        return this.deviceChannelsHelper.makeChannelElementValues(requestDto.getChannel(), resultList);
     }
 }

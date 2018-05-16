@@ -8,19 +8,23 @@
 
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import static org.osgp.adapter.protocol.dlms.domain.commands.DeviceChannelsHelper.FIRST_CHANNEL;
+import static org.osgp.adapter.protocol.dlms.domain.commands.DeviceChannelsHelper.SECOND_CHANNEL;
+import static org.osgp.adapter.protocol.dlms.domain.commands.DeviceChannelsHelper.THIRD_CHANNEL;
+import static org.osgp.adapter.protocol.dlms.domain.commands.DeviceChannelsHelper.FOURTH_CHANNEL;
+
 import java.util.List;
 
-import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -28,26 +32,10 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 @Component
 public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Void, ScanMbusChannelsResponseDto> {
 
-    private static final int CLASS_ID = 72;
-    private static final ObisCode OBIS_CODE_CHANNEL_1 = new ObisCode("0.1.24.1.0.255");
-    private static final ObisCode OBIS_CODE_CHANNEL_2 = new ObisCode("0.2.24.1.0.255");
-    private static final ObisCode OBIS_CODE_CHANNEL_3 = new ObisCode("0.3.24.1.0.255");
-    private static final ObisCode OBIS_CODE_CHANNEL_4 = new ObisCode("0.4.24.1.0.255");
-    private static final int ATTRIBUTE_ID_IDENTIFICATION_NUMBER = 6;
-
-    private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
-            new AttributeAddress(CLASS_ID, OBIS_CODE_CHANNEL_1, ATTRIBUTE_ID_IDENTIFICATION_NUMBER),
-            new AttributeAddress(CLASS_ID, OBIS_CODE_CHANNEL_2, ATTRIBUTE_ID_IDENTIFICATION_NUMBER),
-            new AttributeAddress(CLASS_ID, OBIS_CODE_CHANNEL_3, ATTRIBUTE_ID_IDENTIFICATION_NUMBER),
-            new AttributeAddress(CLASS_ID, OBIS_CODE_CHANNEL_4, ATTRIBUTE_ID_IDENTIFICATION_NUMBER) };
-
-    private static final int INDEX_CHANNEL_1 = 0;
-    private static final int INDEX_CHANNEL_2 = 1;
-    private static final int INDEX_CHANNEL_3 = 2;
-    private static final int INDEX_CHANNEL_4 = 3;
-
     @Autowired
-    private DlmsHelperService dlmsHelperService;
+    private DeviceChannelsHelper deviceChannelsHelper;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScanMbusChannelsCommandExecutor.class);
 
     public ScanMbusChannelsCommandExecutor() {
         super(ScanMbusChannelsRequestDataDto.class);
@@ -63,29 +51,18 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
     }
 
     @Override
-    public ActionResponseDto asBundleResponse(final ScanMbusChannelsResponseDto executionResult)
-            throws ProtocolAdapterException {
-        return executionResult;
-    }
-
-    @Override
     public ScanMbusChannelsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Void mbusAttributesDto) throws OsgpException {
+        LOGGER.debug("retrieving mbus info on e-meter");
 
-        conn.getDlmsMessageListener().setDescription("ScanMbusChannels, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_ADDRESSES));
-
-        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device, "Scan Mbus channels",
-                ATTRIBUTE_ADDRESSES);
+        final List<ChannelElementValuesDto> candidateChannelElementValues = this.deviceChannelsHelper.findCandidateChannelsForDevice(conn,
+                device, null);
 
         return new ScanMbusChannelsResponseDto(
-                Long.toHexString(this.dlmsHelperService.readLong(getResultList.get(INDEX_CHANNEL_1).getResultData(),
-                        "Mbus channel 1 identification number")),
-                Long.toHexString(this.dlmsHelperService.readLong(getResultList.get(INDEX_CHANNEL_2).getResultData(),
-                        "Mbus channel 2 identification number")),
-                Long.toHexString(this.dlmsHelperService.readLong(getResultList.get(INDEX_CHANNEL_3).getResultData(),
-                        "Mbus channel 3 identification number")),
-                Long.toHexString(this.dlmsHelperService.readLong(getResultList.get(INDEX_CHANNEL_4).getResultData(),
-                        "Mbus channel 4 identification number")));
+                this.deviceChannelsHelper.findChannelElementValueForChannel(candidateChannelElementValues, FIRST_CHANNEL).getIdentificationNumber(),
+                this.deviceChannelsHelper.findChannelElementValueForChannel(candidateChannelElementValues, SECOND_CHANNEL).getIdentificationNumber(),
+                this.deviceChannelsHelper.findChannelElementValueForChannel(candidateChannelElementValues, THIRD_CHANNEL).getIdentificationNumber(),
+                this.deviceChannelsHelper.findChannelElementValueForChannel(candidateChannelElementValues, FOURTH_CHANNEL).getIdentificationNumber()
+        );
     }
 }
