@@ -12,9 +12,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-class AbstractPushSetup implements Serializable {
+public abstract class AbstractPushSetup implements Serializable {
+
     private static final long serialVersionUID = -1080411684155651756L;
-    private static final char TAB_CHAR = '\t';
 
     private final CosemObisCode logicalName;
     private final List<CosemObjectDefinition> pushObjectList;
@@ -24,17 +24,7 @@ class AbstractPushSetup implements Serializable {
     private final Integer numberOfRetries;
     private final Integer repetitionDelay;
 
-    AbstractPushSetup(final AbstractPushSetup abstractPushSetup) {
-        this.logicalName = abstractPushSetup.getLogicalName();
-        this.pushObjectList = abstractPushSetup.getPushObjectList();
-        this.sendDestinationAndMethod = abstractPushSetup.getSendDestinationAndMethod();
-        this.communicationWindow = abstractPushSetup.getCommunicationWindow();
-        this.randomisationStartInterval = abstractPushSetup.getRandomisationStartInterval();
-        this.numberOfRetries = abstractPushSetup.getNumberOfRetries();
-        this.repetitionDelay = abstractPushSetup.getRepetitionDelay();
-    }
-
-    private AbstractPushSetup(final AbstractBuilder builder) {
+    public AbstractPushSetup(final AbstractBuilder<?> builder) {
         this.logicalName = builder.logicalName;
         this.pushObjectList = builder.pushObjectList;
         this.sendDestinationAndMethod = builder.sendDestinationAndMethod;
@@ -44,119 +34,110 @@ class AbstractPushSetup implements Serializable {
         this.repetitionDelay = builder.repetitionDelay;
     }
 
-    public static class AbstractBuilder {
+    public abstract static class AbstractBuilder<T extends AbstractBuilder<T>> {
 
-        protected CosemObisCode logicalName;
-        protected List<CosemObjectDefinition> pushObjectList;
-        protected SendDestinationAndMethod sendDestinationAndMethod;
-        protected List<WindowElement> communicationWindow;
-        protected Integer randomisationStartInterval;
-        protected Integer numberOfRetries;
-        protected Integer repetitionDelay;
+        private CosemObisCode logicalName = null;
+        private List<CosemObjectDefinition> pushObjectList = null;
+        private SendDestinationAndMethod sendDestinationAndMethod = null;
+        private List<WindowElement> communicationWindow = null;
+        private Integer randomisationStartInterval = null;
+        private Integer numberOfRetries = null;
+        private Integer repetitionDelay = null;
 
-        public AbstractPushSetup build() {
-            return new AbstractPushSetup(this);
-        }
+        protected abstract T self();
 
-        public AbstractBuilder withLogicalName(final CosemObisCode logicalName) {
+        public abstract AbstractPushSetup build();
+
+        public T withLogicalName(final CosemObisCode logicalName) {
             this.logicalName = logicalName;
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withPushObjectList(final List<CosemObjectDefinition> pushObjectList) {
+        public T withPushObjectList(final List<CosemObjectDefinition> pushObjectList) {
             if (pushObjectList == null) {
                 this.pushObjectList = null;
             } else {
                 this.pushObjectList = new ArrayList<>(pushObjectList);
             }
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withSendDestinationAndMethod(final SendDestinationAndMethod sendDestinationAndMethod) {
+        public T withSendDestinationAndMethod(final SendDestinationAndMethod sendDestinationAndMethod) {
             this.sendDestinationAndMethod = sendDestinationAndMethod;
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withCommunicationWindow(final List<WindowElement> communicationWindow) {
+        public T withCommunicationWindow(final List<WindowElement> communicationWindow) {
             if (communicationWindow == null) {
                 this.communicationWindow = null;
             } else {
                 this.communicationWindow = new ArrayList<>(communicationWindow);
             }
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withRandomisationStartInterval(final Integer randomisationStartInterval) {
-            AbstractPushSetup.checkRandomisationStartInterval(randomisationStartInterval);
+        public T withRandomisationStartInterval(final Integer randomisationStartInterval) {
+            AbstractBuilder.checkRandomisationStartInterval(randomisationStartInterval);
             this.randomisationStartInterval = randomisationStartInterval;
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withNumberOfRetries(final Integer numberOfRetries) {
-            AbstractPushSetup.checkNumberOfRetries(numberOfRetries);
+        public T withNumberOfRetries(final Integer numberOfRetries) {
+            AbstractBuilder.checkNumberOfRetries(numberOfRetries);
             this.numberOfRetries = numberOfRetries;
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withRepetitionDelay(final Integer repetitionDelay) {
-            AbstractPushSetup.checkRepetitionDelay(repetitionDelay);
+        public T withRepetitionDelay(final Integer repetitionDelay) {
+            AbstractBuilder.checkRepetitionDelay(repetitionDelay);
             this.repetitionDelay = repetitionDelay;
-            return this;
+            return this.self();
         }
-    }
 
-    public static AbstractBuilder newBuilder() {
-        return new AbstractBuilder();
-    }
+        private static void checkRandomisationStartInterval(final Integer randomisationStartInterval) {
+            if (randomisationStartInterval == null) {
+                return;
+            }
+            if (randomisationStartInterval < 0 || randomisationStartInterval > 0xFFFF) {
+                throw new IllegalArgumentException("randomisationStartInterval not in [0..65535]");
+            }
+        }
 
-    private static void checkRandomisationStartInterval(final Integer randomisationStartInterval) {
-        if (randomisationStartInterval == null) {
-            return;
+        private static void checkNumberOfRetries(final Integer numberOfRetries) {
+            if (numberOfRetries == null) {
+                return;
+            }
+            if (numberOfRetries < 0 || numberOfRetries > 0xFF) {
+                throw new IllegalArgumentException("numberOfRetries not in [0..255]");
+            }
         }
-        if (randomisationStartInterval < 0 || randomisationStartInterval > 0xFFFF) {
-            throw new IllegalArgumentException("randomisationStartInterval not in [0..65535]");
-        }
-    }
 
-    private static void checkNumberOfRetries(final Integer numberOfRetries) {
-        if (numberOfRetries == null) {
-            return;
-        }
-        if (numberOfRetries < 0 || numberOfRetries > 0xFF) {
-            throw new IllegalArgumentException("numberOfRetries not in [0..255]");
-        }
-    }
-
-    private static void checkRepetitionDelay(final Integer repetitionDelay) {
-        if (repetitionDelay == null) {
-            return;
-        }
-        if (repetitionDelay < 0 || repetitionDelay > 0xFFFF) {
-            throw new IllegalArgumentException("repetitionDelay not in [0..65535]");
+        private static void checkRepetitionDelay(final Integer repetitionDelay) {
+            if (repetitionDelay == null) {
+                return;
+            }
+            if (repetitionDelay < 0 || repetitionDelay > 0xFFFF) {
+                throw new IllegalArgumentException("repetitionDelay not in [0..65535]");
+            }
         }
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder(this.getClass().getSimpleName()).append("[")
-                .append(System.lineSeparator()).append(TAB_CHAR);
-        this.appendToString(sb, "logicalName", this.logicalName, true);
-        this.appendToString(sb, "pushObjectList", this.pushObjectList, true);
-        this.appendToString(sb, "sendDestinationAndMethod", this.sendDestinationAndMethod, true);
-        this.appendToString(sb, "communicationWindow", this.communicationWindow, true);
-        this.appendToString(sb, "randomisationStartInterval", this.randomisationStartInterval, true);
-        this.appendToString(sb, "numberOfRetries", this.numberOfRetries, true);
-        this.appendToString(sb, "repetitionDelay", this.repetitionDelay, false);
+                .append(System.lineSeparator());
+        this.appendFieldInfo(sb, "logicalName", this.logicalName);
+        this.appendFieldInfo(sb, "pushObjectList", this.pushObjectList);
+        this.appendFieldInfo(sb, "sendDestinationAndMethod", this.sendDestinationAndMethod);
+        this.appendFieldInfo(sb, "communicationWindow", this.communicationWindow);
+        this.appendFieldInfo(sb, "randomisationStartInterval", this.randomisationStartInterval);
+        this.appendFieldInfo(sb, "numberOfRetries", this.numberOfRetries);
+        this.appendFieldInfo(sb, "repetitionDelay", this.repetitionDelay);
         return sb.append(']').toString();
     }
 
-    private StringBuilder appendToString(final StringBuilder sb, final String fieldName, final Object fieldValue,
-            final boolean hasNext) {
-        sb.append(fieldName).append('=').append(fieldValue).append(System.lineSeparator());
-        if (hasNext) {
-            sb.append(TAB_CHAR);
-        }
-        return sb;
+    private void appendFieldInfo(final StringBuilder sb, final String fieldName, final Object fieldValue) {
+        sb.append('\t').append(fieldName).append('=').append(fieldValue).append(System.lineSeparator());
     }
 
     public boolean hasLogicalName() {
