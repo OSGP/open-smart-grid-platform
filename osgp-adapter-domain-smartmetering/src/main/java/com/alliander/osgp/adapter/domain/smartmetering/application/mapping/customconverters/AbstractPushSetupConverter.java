@@ -17,6 +17,12 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElementDto;
 
 import ma.glasnost.orika.CustomConverter;
 
+/*
+ * squid:S2160 Subclasses that add fields should override "equals"
+ *
+ * Following the advice for this rule would violate the Liskov substitution principle.
+ */
+@SuppressWarnings("squid:S2160")
 public abstract class AbstractPushSetupConverter<S, D> extends CustomConverter<S, D> {
 
     private final ConfigurationMapper configurationMapper;
