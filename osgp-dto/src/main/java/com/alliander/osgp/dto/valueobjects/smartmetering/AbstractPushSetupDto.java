@@ -10,9 +10,9 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.util.ArrayList;
 import java.util.List;
 
-class AbstractPushSetupDto implements ActionRequestDto {
+public abstract class AbstractPushSetupDto implements ActionRequestDto {
+
     private static final long serialVersionUID = -1080411684155651756L;
-    private static final char TAB_CHAR = '\t';
 
     private final CosemObisCodeDto logicalName;
     private final List<CosemObjectDefinitionDto> pushObjectList;
@@ -22,17 +22,7 @@ class AbstractPushSetupDto implements ActionRequestDto {
     private final Integer numberOfRetries;
     private final Integer repetitionDelay;
 
-    AbstractPushSetupDto(final AbstractPushSetupDto abstractPushSetupDto) {
-        this.logicalName = abstractPushSetupDto.getLogicalName();
-        this.pushObjectList = abstractPushSetupDto.getPushObjectList();
-        this.sendDestinationAndMethod = abstractPushSetupDto.getSendDestinationAndMethod();
-        this.communicationWindow = abstractPushSetupDto.getCommunicationWindow();
-        this.randomisationStartInterval = abstractPushSetupDto.getRandomisationStartInterval();
-        this.numberOfRetries = abstractPushSetupDto.getNumberOfRetries();
-        this.repetitionDelay = abstractPushSetupDto.getRepetitionDelay();
-    }
-
-    private AbstractPushSetupDto(final AbstractBuilder builder) {
+    public AbstractPushSetupDto(final AbstractBuilder<?> builder) {
         this.logicalName = builder.logicalName;
         this.pushObjectList = builder.pushObjectList;
         this.sendDestinationAndMethod = builder.sendDestinationAndMethod;
@@ -42,121 +32,110 @@ class AbstractPushSetupDto implements ActionRequestDto {
         this.repetitionDelay = builder.repetitionDelay;
     }
 
-    public static class AbstractBuilder {
+    public abstract static class AbstractBuilder<T extends AbstractBuilder<T>> {
 
-        protected CosemObisCodeDto logicalName = null;
-        protected List<CosemObjectDefinitionDto> pushObjectList = null;
-        protected SendDestinationAndMethodDto sendDestinationAndMethod = null;
-        protected List<WindowElementDto> communicationWindow = null;
-        protected Integer randomisationStartInterval = null;
-        protected Integer numberOfRetries = null;
-        protected Integer repetitionDelay = null;
+        private CosemObisCodeDto logicalName = null;
+        private List<CosemObjectDefinitionDto> pushObjectList = null;
+        private SendDestinationAndMethodDto sendDestinationAndMethod = null;
+        private List<WindowElementDto> communicationWindow = null;
+        private Integer randomisationStartInterval = null;
+        private Integer numberOfRetries = null;
+        private Integer repetitionDelay = null;
 
-        public AbstractPushSetupDto build() {
-            return new AbstractPushSetupDto(this);
-        }
+        protected abstract T self();
 
-        public AbstractBuilder withLogicalName(final CosemObisCodeDto logicalName) {
+        public abstract AbstractPushSetupDto build();
+
+        public T withLogicalName(final CosemObisCodeDto logicalName) {
             this.logicalName = logicalName;
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withPushObjectList(final List<CosemObjectDefinitionDto> pushObjectList) {
+        public T withPushObjectList(final List<CosemObjectDefinitionDto> pushObjectList) {
             if (pushObjectList == null) {
                 this.pushObjectList = null;
             } else {
-                this.pushObjectList = pushObjectList;
+                this.pushObjectList = new ArrayList<>(pushObjectList);
             }
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withSendDestinationAndMethod(
-                final SendDestinationAndMethodDto sendDestinationAndMethod) {
+        public T withSendDestinationAndMethod(final SendDestinationAndMethodDto sendDestinationAndMethod) {
             this.sendDestinationAndMethod = sendDestinationAndMethod;
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withCommunicationWindow(final List<WindowElementDto> communicationWindow) {
+        public T withCommunicationWindow(final List<WindowElementDto> communicationWindow) {
             if (communicationWindow == null) {
                 this.communicationWindow = null;
             } else {
-                this.communicationWindow = communicationWindow;
+                this.communicationWindow = new ArrayList<>(communicationWindow);
             }
-            this.communicationWindow = communicationWindow;
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withRandomisationStartInterval(final Integer randomisationStartInterval) {
-            AbstractPushSetupDto.checkRandomisationStartInterval(randomisationStartInterval);
+        public T withRandomisationStartInterval(final Integer randomisationStartInterval) {
+            AbstractBuilder.checkRandomisationStartInterval(randomisationStartInterval);
             this.randomisationStartInterval = randomisationStartInterval;
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withNumberOfRetries(final Integer numberOfRetries) {
-            AbstractPushSetupDto.checkNumberOfRetries(numberOfRetries);
+        public T withNumberOfRetries(final Integer numberOfRetries) {
+            AbstractBuilder.checkNumberOfRetries(numberOfRetries);
             this.numberOfRetries = numberOfRetries;
-            return this;
+            return this.self();
         }
 
-        public AbstractBuilder withRepetitionDelay(final Integer repetitionDelay) {
-            AbstractPushSetupDto.checkRepetitionDelay(repetitionDelay);
+        public T withRepetitionDelay(final Integer repetitionDelay) {
+            AbstractBuilder.checkRepetitionDelay(repetitionDelay);
             this.repetitionDelay = repetitionDelay;
-            return this;
+            return this.self();
         }
-    }
 
-    public static AbstractBuilder newBuilder() {
-        return new AbstractBuilder();
-    }
+        private static void checkRandomisationStartInterval(final Integer randomisationStartInterval) {
+            if (randomisationStartInterval == null) {
+                return;
+            }
+            if (randomisationStartInterval < 0 || randomisationStartInterval > 0xFFFF) {
+                throw new IllegalArgumentException("randomisationStartInterval not in [0..65535]");
+            }
+        }
 
-    static void checkRandomisationStartInterval(final Integer randomisationStartInterval) {
-        if (randomisationStartInterval == null) {
-            return;
+        private static void checkNumberOfRetries(final Integer numberOfRetries) {
+            if (numberOfRetries == null) {
+                return;
+            }
+            if (numberOfRetries < 0 || numberOfRetries > 0xFF) {
+                throw new IllegalArgumentException("numberOfRetries not in [0..255]");
+            }
         }
-        if (randomisationStartInterval < 0 || randomisationStartInterval > 0xFFFF) {
-            throw new IllegalArgumentException("randomisationStartInterval not in [0..65535]");
-        }
-    }
 
-    static void checkNumberOfRetries(final Integer numberOfRetries) {
-        if (numberOfRetries == null) {
-            return;
-        }
-        if (numberOfRetries < 0 || numberOfRetries > 0xFF) {
-            throw new IllegalArgumentException("numberOfRetries not in [0..255]");
-        }
-    }
-
-    static void checkRepetitionDelay(final Integer repetitionDelay) {
-        if (repetitionDelay == null) {
-            return;
-        }
-        if (repetitionDelay < 0 || repetitionDelay > 0xFFFF) {
-            throw new IllegalArgumentException("repetitionDelay not in [0..65535]");
+        private static void checkRepetitionDelay(final Integer repetitionDelay) {
+            if (repetitionDelay == null) {
+                return;
+            }
+            if (repetitionDelay < 0 || repetitionDelay > 0xFFFF) {
+                throw new IllegalArgumentException("repetitionDelay not in [0..65535]");
+            }
         }
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder(this.getClass().getSimpleName()).append("[")
-                .append(System.lineSeparator()).append(TAB_CHAR);
-        this.appendToString(sb, "logicalName", this.logicalName, true);
-        this.appendToString(sb, "pushObjectList", this.pushObjectList, true);
-        this.appendToString(sb, "sendDestinationAndMethod", this.sendDestinationAndMethod, true);
-        this.appendToString(sb, "communicationWindow", this.communicationWindow, true);
-        this.appendToString(sb, "randomisationStartInterval", this.randomisationStartInterval, true);
-        this.appendToString(sb, "numberOfRetries", this.numberOfRetries, true);
-        this.appendToString(sb, "repetitionDelay", this.repetitionDelay, false);
+                .append(System.lineSeparator());
+        this.appendFieldInfo(sb, "logicalName", this.logicalName);
+        this.appendFieldInfo(sb, "pushObjectList", this.pushObjectList);
+        this.appendFieldInfo(sb, "sendDestinationAndMethod", this.sendDestinationAndMethod);
+        this.appendFieldInfo(sb, "communicationWindow", this.communicationWindow);
+        this.appendFieldInfo(sb, "randomisationStartInterval", this.randomisationStartInterval);
+        this.appendFieldInfo(sb, "numberOfRetries", this.numberOfRetries);
+        this.appendFieldInfo(sb, "repetitionDelay", this.repetitionDelay);
         return sb.append(']').toString();
     }
 
-    private StringBuilder appendToString(final StringBuilder sb, final String fieldName, final Object fieldValue,
-            final boolean hasNext) {
-        sb.append(fieldName).append('=').append(fieldValue).append(System.lineSeparator());
-        if (hasNext) {
-            sb.append(TAB_CHAR);
-        }
-        return sb;
+    private void appendFieldInfo(final StringBuilder sb, final String fieldName, final Object fieldValue) {
+        sb.append('\t').append(fieldName).append('=').append(fieldValue).append(System.lineSeparator());
     }
 
     public boolean hasLogicalName() {

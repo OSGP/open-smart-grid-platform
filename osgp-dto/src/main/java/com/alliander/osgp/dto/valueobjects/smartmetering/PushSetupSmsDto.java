@@ -11,21 +11,22 @@ public class PushSetupSmsDto extends AbstractPushSetupDto {
 
     private static final long serialVersionUID = -3541154908239512383L;
 
-    public static class Builder extends AbstractPushSetupDto.AbstractBuilder {
+    public static class Builder extends AbstractPushSetupDto.AbstractBuilder<Builder> {
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
 
         @Override
         public PushSetupSmsDto build() {
-            final AbstractPushSetupDto abstractPushSetupDto = AbstractPushSetupDto.newBuilder()
-                    .withLogicalName(this.logicalName).withPushObjectList(this.pushObjectList)
-                    .withSendDestinationAndMethod(this.sendDestinationAndMethod)
-                    .withCommunicationWindow(this.communicationWindow)
-                    .withRandomisationStartInterval(this.randomisationStartInterval)
-                    .withNumberOfRetries(this.numberOfRetries).withRepetitionDelay(this.repetitionDelay).build();
-            return new PushSetupSmsDto(abstractPushSetupDto);
+            return new PushSetupSmsDto(this);
         }
+
     }
 
-    public PushSetupSmsDto(final AbstractPushSetupDto abstractPushSetupDto) {
-        super(abstractPushSetupDto);
+    public PushSetupSmsDto(final Builder builder) {
+        super(builder);
     }
+
 }
