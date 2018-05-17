@@ -9,10 +9,10 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openmuc.openiec61850.ModelNode;
@@ -33,15 +33,19 @@ public class Iec61850PqReportHandler implements Iec61850ReportHandler {
 
     private static final String SYSTEM_TYPE = "PQ";
 
-    private static final Set<String> NODES_USING_ID_LIST = new HashSet<>();
     private static final Set<String> COMPOSITE_NODES = new HashSet<>(Arrays.asList(new String[] { "PNV", "PF", "Z" }));
+
+    private static final Set<DataAttribute> NODES_USING_ID = EnumSet.of(DataAttribute.FREQUENCY,
+            DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_A, DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_B,
+            DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_C, DataAttribute.POWER_FACTOR_PHASE_A,
+            DataAttribute.POWER_FACTOR_PHASE_B, DataAttribute.POWER_FACTOR_PHASE_C, DataAttribute.IMPEDANCE_PHASE_A,
+            DataAttribute.IMPEDANCE_PHASE_B, DataAttribute.IMPEDANCE_PHASE_C, DataAttribute.VOLTAGE_DIPS);
 
     private static final Pattern NODE_PATTERN = Pattern
             .compile("\\A(.*)PQ([1-9]\\d*+)/(LLN0|DRCC|DGEN|MMXU|GGIO|QVVR)([1-9]\\d*+)?\\.(.*)\\Z");
 
-    static {
-        intializeNodesUsingIdList();
-    }
+    private static final Iec61850ReportNodeHelper NODE_HELPER = new Iec61850ReportNodeHelper(NODES_USING_ID,
+            NODE_PATTERN, 4);
 
     private final int systemId;
     private final Iec61850PqCommandFactory iec61850PqCommandFactory;
@@ -69,7 +73,7 @@ public class Iec61850PqReportHandler implements Iec61850ReportHandler {
             for (final ModelNode child : member.getFcmodelNode().getChildren()) {
 
                 final RtuReadCommand<MeasurementDto> command = this.iec61850PqCommandFactory
-                        .getCommand(this.getChildCommandName(child));
+                        .getCommand(NODE_HELPER.getChildCommandName(child));
 
                 if (command == null) {
                     LOGGER.warn("No command found for node {}", child.getReference().getName());
@@ -79,7 +83,7 @@ public class Iec61850PqReportHandler implements Iec61850ReportHandler {
             }
         } else {
             final RtuReadCommand<MeasurementDto> command = this.iec61850PqCommandFactory
-                    .getCommand(this.getCommandName(member));
+                    .getCommand(NODE_HELPER.getCommandName(member));
 
             if (command == null) {
                 LOGGER.warn("No command found for node {}", member.getFcmodelNode().getReference().getName());
@@ -90,60 +94,8 @@ public class Iec61850PqReportHandler implements Iec61850ReportHandler {
         return measurements;
     }
 
-    private static void intializeNodesUsingIdList() {
-
-        NODES_USING_ID_LIST.add(DataAttribute.FREQUENCY.getDescription());
-
-        NODES_USING_ID_LIST.add(DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_A.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_B.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_C.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.POWER_FACTOR_PHASE_A.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.POWER_FACTOR_PHASE_B.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.POWER_FACTOR_PHASE_C.getDescription());
-
-        NODES_USING_ID_LIST.add(DataAttribute.IMPEDANCE_PHASE_A.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.IMPEDANCE_PHASE_B.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.IMPEDANCE_PHASE_C.getDescription());
-
-        NODES_USING_ID_LIST.add(DataAttribute.VOLTAGE_DIPS.getDescription());
-    }
-
-    private static boolean useId(final String nodeName) {
-        return NODES_USING_ID_LIST.contains(nodeName);
-    }
-
     private boolean isCompositeNode(final ModelNode node) {
         return COMPOSITE_NODES.contains(node.getName());
     }
 
-    private String getCommandName(final ReadOnlyNodeContainer member) {
-
-        final String nodeName = member.getFcmodelNode().getName();
-        if (useId(nodeName)) {
-            final String refName = member.getFcmodelNode().getReference().toString();
-            return nodeName + this.getIndex(refName);
-        } else {
-            return nodeName;
-        }
-    }
-
-    private String getChildCommandName(final ModelNode child) {
-
-        final String nodeName = child.getParent().getName() + "." + child.getName();
-        if (useId(nodeName)) {
-            final String refName = child.getReference().toString();
-            return nodeName + this.getIndex(refName);
-        } else {
-            return nodeName;
-        }
-    }
-
-    private String getIndex(final String reference) {
-        String index = "";
-        final Matcher reportMatcher = NODE_PATTERN.matcher(reference);
-        if (reportMatcher.matches()) {
-            index = reportMatcher.group(4);
-        }
-        return index;
-    }
 }

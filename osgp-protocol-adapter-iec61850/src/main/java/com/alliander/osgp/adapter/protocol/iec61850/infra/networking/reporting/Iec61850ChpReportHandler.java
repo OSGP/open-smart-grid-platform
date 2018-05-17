@@ -8,7 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,11 +28,11 @@ public class Iec61850ChpReportHandler implements Iec61850ReportHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ChpReportHandler.class);
 
     private static final String SYSTEM_TYPE = "CHP";
-    private static final Set<String> NODES_USING_ID_LIST = new HashSet<>();
 
-    static {
-        intializeNodesUsingIdList();
-    }
+    private static final Set<DataAttribute> NODES_USING_ID = EnumSet.of(DataAttribute.TEMPERATURE,
+            DataAttribute.MATERIAL_FLOW, DataAttribute.MATERIAL_STATUS, DataAttribute.MATERIAL_TYPE);
+
+    private static final Iec61850ReportNodeHelper NODE_HELPER = new Iec61850ReportNodeHelper(NODES_USING_ID);
 
     private final int systemId;
     private final Iec61850ChpCommandFactory iec61850ChpCommandFactory;
@@ -56,7 +56,7 @@ public class Iec61850ChpReportHandler implements Iec61850ReportHandler {
 
         final List<MeasurementDto> measurements = new ArrayList<>();
         final RtuReadCommand<MeasurementDto> command = this.iec61850ChpCommandFactory
-                .getCommand(this.getCommandName(member));
+                .getCommand(NODE_HELPER.getCommandName(member));
 
         if (command == null) {
             LOGGER.warn("No command found for node {}", member.getFcmodelNode().getName());
@@ -66,25 +66,4 @@ public class Iec61850ChpReportHandler implements Iec61850ReportHandler {
         return measurements;
     }
 
-    private static void intializeNodesUsingIdList() {
-        NODES_USING_ID_LIST.add(DataAttribute.TEMPERATURE.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.MATERIAL_FLOW.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.MATERIAL_STATUS.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.MATERIAL_TYPE.getDescription());
-    }
-
-    private static boolean useId(final String nodeName) {
-        return NODES_USING_ID_LIST.contains(nodeName);
-    }
-
-    private String getCommandName(final ReadOnlyNodeContainer member) {
-        final String nodeName = member.getFcmodelNode().getName();
-        if (useId(nodeName)) {
-            final String refName = member.getFcmodelNode().getReference().toString();
-            final int startIndex = refName.length() - nodeName.length() - 2;
-            return nodeName + refName.substring(startIndex, startIndex + 1);
-        } else {
-            return nodeName;
-        }
-    }
 }
