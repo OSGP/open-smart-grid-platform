@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -84,6 +85,21 @@ public class DeviceChannelsHelper {
         return channelElementValuesList;
     }
 
+
+    public List<GetResult> findMbusIdentificationsForDevice(final DlmsConnectionHolder conn,
+            final DlmsDevice device) throws ProtocolAdapterException {
+        final AttributeAddress[] attributeAddresses = IntStream
+                .range(0, NR_OF_CHANNELS)
+                .mapToObj(i -> makeMbusIdentificationAttributeAddress(i + 1))
+                .toArray(AttributeAddress[]::new);
+
+        conn.getDlmsMessageListener().setDescription("DeviceChannelsHelper, retrieve M-Bus identification attributes: "
+                + JdlmsObjectToStringUtil.describeAttributes(attributeAddresses));
+
+        return this.dlmsHelperService.getAndCheck(conn, device, "Retrieve M-Bus identification attributes",
+                attributeAddresses);
+    }
+
     protected List<GetResult> getMBusClientAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device,
             final short channel) throws ProtocolAdapterException {
         final AttributeAddress[] attrAddresses = this.makeAttributeAddresses(channel);
@@ -104,6 +120,12 @@ public class DeviceChannelsHelper {
                 "deviceTypeIdentification");
         return new ChannelElementValuesDto(channel, primaryAddress, identificationNumber, manufacturerIdentification,
                 version, deviceTypeIdentification);
+    }
+
+    protected String findIdentificationNumberForChannel(
+            final List<GetResult> identificationNumbers, final short channel)
+            throws ProtocolAdapterException {
+        return this.readIdentificationNumber(identificationNumbers, channel - 1, "identificationNumber");
     }
 
     private String readIdentificationNumber(final List<GetResult> resultList, final int index, final String description)
@@ -146,6 +168,13 @@ public class DeviceChannelsHelper {
         attrAddresses[INDEX_DEVICE_TYPE] = new AttributeAddress(CLASS_ID, obiscode,
                 MbusClientAttribute.DEVICE_TYPE.attributeId());
         return attrAddresses;
+    }
+
+    private AttributeAddress makeMbusIdentificationAttributeAddress(final int channel) {
+        final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, channel));
+        final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode,
+                MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId());
+        return attributeAddress;
     }
 
     protected ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,
@@ -197,17 +226,6 @@ public class DeviceChannelsHelper {
 
             if (this.checkChannelIdentificationValues(channelElementValues)
                     && this.checkChannelConfigurationValues(channelElementValues)) {
-                return channelElementValues;
-            }
-        }
-        return null;
-    }
-
-    protected ChannelElementValuesDto findChannelElementValueForChannel(
-            final List<ChannelElementValuesDto> channelElementValuesList, final short channel) {
-        for (final ChannelElementValuesDto channelElementValues : channelElementValuesList) {
-
-            if (channelElementValues.getChannel() == channel) {
                 return channelElementValues;
             }
         }

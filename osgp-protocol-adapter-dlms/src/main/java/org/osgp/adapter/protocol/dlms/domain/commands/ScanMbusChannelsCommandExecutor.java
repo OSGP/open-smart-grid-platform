@@ -15,6 +15,7 @@ import static org.osgp.adapter.protocol.dlms.domain.commands.DeviceChannelsHelpe
 
 import java.util.List;
 
+import org.openmuc.jdlms.GetResult;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -24,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -55,21 +55,17 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
             final Void mbusAttributesDto) throws OsgpException {
         LOGGER.debug("retrieving mbus info on e-meter");
 
-        final List<ChannelElementValuesDto> candidateChannelElementValues = this.deviceChannelsHelper
-                .findCandidateChannelsForDevice(conn, device, null);
+        final List<GetResult> mbusIdentifications = this.deviceChannelsHelper
+                .findMbusIdentificationsForDevice(conn, device);
 
         return new ScanMbusChannelsResponseDto(
                 this.deviceChannelsHelper
-                        .findChannelElementValueForChannel(candidateChannelElementValues, FIRST_CHANNEL)
-                        .getIdentificationNumber(),
+                        .findIdentificationNumberForChannel(mbusIdentifications, FIRST_CHANNEL),
                 this.deviceChannelsHelper
-                        .findChannelElementValueForChannel(candidateChannelElementValues, SECOND_CHANNEL)
-                        .getIdentificationNumber(),
+                        .findIdentificationNumberForChannel(mbusIdentifications, SECOND_CHANNEL),
                 this.deviceChannelsHelper
-                        .findChannelElementValueForChannel(candidateChannelElementValues, THIRD_CHANNEL)
-                        .getIdentificationNumber(),
+                        .findIdentificationNumberForChannel(mbusIdentifications, THIRD_CHANNEL),
                 this.deviceChannelsHelper
-                        .findChannelElementValueForChannel(candidateChannelElementValues, FOURTH_CHANNEL)
-                        .getIdentificationNumber());
+                        .findIdentificationNumberForChannel(mbusIdentifications, FOURTH_CHANNEL));
     }
 }
