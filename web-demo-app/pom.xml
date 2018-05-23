@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.osgpfoundation.osgp</groupId>
     <artifactId>parent-os-webapps</artifactId>
-    <version>4.28.0-SNAPSHOT</version>
+    <version>4.29.0-SNAPSHOT</version>
     <relativePath>../parent-os-webapps/pom.xml</relativePath>
   </parent>
 
