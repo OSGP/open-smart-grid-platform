@@ -13,22 +13,22 @@ public class PushSetupAlarm extends AbstractPushSetup implements Serializable {
 
     private static final long serialVersionUID = -3541154908239512383L;
 
-    public static class Builder extends AbstractPushSetup.AbstractBuilder {
+    public static class Builder extends AbstractPushSetup.AbstractBuilder<Builder> {
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
 
         @Override
         public PushSetupAlarm build() {
-            final AbstractPushSetup abstractPushSetup = AbstractPushSetup.newBuilder().withLogicalName(this.logicalName)
-                    .withPushObjectList(this.pushObjectList).withSendDestinationAndMethod(this.sendDestinationAndMethod)
-                    .withCommunicationWindow(this.communicationWindow)
-                    .withRandomisationStartInterval(this.randomisationStartInterval)
-                    .withNumberOfRetries(this.numberOfRetries).withRepetitionDelay(this.repetitionDelay).build();
-
-            return new PushSetupAlarm(abstractPushSetup);
+            return new PushSetupAlarm(this);
         }
+
     }
 
-    public PushSetupAlarm(final AbstractPushSetup abstractPushSetup) {
-        super(abstractPushSetup);
+    public PushSetupAlarm(final Builder builder) {
+        super(builder);
     }
 
 }
