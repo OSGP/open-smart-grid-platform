@@ -36,7 +36,6 @@ import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "iec61850DeviceManagementService")
-@Transactional(value = "iec61850OsgpCoreDbApiTransactionManager")
 public class DeviceManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
@@ -60,6 +59,7 @@ public class DeviceManagementService {
         // Parameterless constructor required for transactions...
     }
 
+    @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
     public List<LightMeasurementDevice> findAllLightMeasurementDevices() {
         return this.lmdDataRepository.findAll();
     }
@@ -70,6 +70,7 @@ public class DeviceManagementService {
      *
      * @return List of 4 {@link LightMeasurementDevice}.
      */
+    @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
     public List<LightMeasurementDevice> findRealLightMeasurementDevices() {
         final short start = 1;
         final short end = 4;
@@ -91,6 +92,7 @@ public class DeviceManagementService {
      * @throws ProtocolAdapterException
      *             In case the device can not be found in the database.
      */
+    @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
     public void addEventNotifications(final String deviceIdentification,
             final List<EventNotificationDto> eventNotifications) throws ProtocolAdapterException {
 
@@ -123,6 +125,7 @@ public class DeviceManagementService {
      * @throws ProtocolAdapterException
      *             In case the device can not be found in the database.
      */
+    @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
     public List<DeviceOutputSetting> getDeviceOutputSettings(final String deviceIdentification)
             throws ProtocolAdapterException {
 

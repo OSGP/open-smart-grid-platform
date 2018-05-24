@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850ReportEntryRepository;
+import com.alliander.osgp.adapter.protocol.iec61850.application.services.ReportingService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 
@@ -23,7 +23,7 @@ public class Iec61850ClientEventListenerFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientEventListenerFactory.class);
 
     @Autowired
-    private Iec61850ReportEntryRepository iec61850ReportEntryRepository;
+    private ReportingService reportingService;
 
     public Iec61850ClientBaseEventListener getEventListener(final IED ied, final String deviceIdentification,
             final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
@@ -34,7 +34,7 @@ public class Iec61850ClientEventListenerFactory {
             return new Iec61850ClientLMDEventListener(deviceIdentification, deviceManagementService);
         case ZOWN_RTU:
             return new Iec61850ClientRTUEventListener(deviceIdentification, deviceManagementService,
-                    this.iec61850ReportEntryRepository);
+                    this.reportingService);
         case DA_RTU:
             return new Iec61850ClientDaRTUEventListener(deviceIdentification, deviceManagementService);
         default:
