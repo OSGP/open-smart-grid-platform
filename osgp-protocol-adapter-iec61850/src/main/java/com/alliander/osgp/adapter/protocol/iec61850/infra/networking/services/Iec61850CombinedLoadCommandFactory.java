@@ -7,31 +7,15 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmOtherCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850HealthCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850LoadActualPowerCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850LoadMaximumActualPowerCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850LoadMinimumActualPowerCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850LoadTotalEnergyCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
 /**
  *
@@ -42,94 +26,49 @@ import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
  */
 @Deprecated
 @Component
-public final class Iec61850CombinedLoadCommandFactory
-        implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
+public final class Iec61850CombinedLoadCommandFactory extends AbstractIec61850RtuReadCommandFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850CombinedLoadCommandFactory.class);
+    private static final int POWER_ID_START = 1;
+    private static final int POWER_ID_END = 5;
+    private static final int ENERGY_ID_START = 1;
+    private static final int ENERGY_ID_END = 5;
 
-    private static final int ID_START = 1;
-    private static final int ID_END = 5;
+    private static final class Iec61850CombinedLoadCommandFactoryHolder {
+        private static final Iec61850CombinedLoadCommandFactory instance = new Iec61850CombinedLoadCommandFactory();
+    }
 
-    private static final int ONE = 1;
-    private static final int TWO = 2;
-    private static final int THREE = 3;
-    private static final int FOUR = 4;
-
-    private static Iec61850CombinedLoadCommandFactory instance;
-
-    private static final Set<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new HashSet<>();
-    private static final Map<String, RtuReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
-
-    static {
-        initializeRtuCommandMap();
-        initializeDataAttributesUsingFilterIdList();
+    public static Iec61850CombinedLoadCommandFactory getInstance() {
+        return Iec61850CombinedLoadCommandFactoryHolder.instance;
     }
 
     private Iec61850CombinedLoadCommandFactory() {
+        super(rtuCommandMap(), dataAttributesUsingFilterId());
     }
 
-    public static synchronized Iec61850CombinedLoadCommandFactory getInstance() {
-        if (instance == null) {
-            instance = new Iec61850CombinedLoadCommandFactory();
-        }
-        return instance;
+    private static final Set<DataAttribute> dataAttributesUsingFilterId() {
+        return EnumSet.of(DataAttribute.ACTUAL_POWER, DataAttribute.MAX_ACTUAL_POWER, DataAttribute.MIN_ACTUAL_POWER,
+                DataAttribute.TOTAL_ENERGY);
     }
 
-    @Override
-    public RtuReadCommand<MeasurementDto> getCommand(final MeasurementFilterDto filter) {
-        final DataAttribute dataAttribute = DataAttribute.fromString(filter.getNode());
-        if (this.useFilterId(dataAttribute)) {
-            return this.getCommand(filter.getNode() + filter.getId());
-        } else {
-            return this.getCommand(filter.getNode());
-        }
+    private static Map<String, RtuReadCommand<MeasurementDto>> rtuCommandMap() {
+
+        final CommandsByAttributeBuilder builder = new CommandsByAttributeBuilder();
+
+        final Set<DataAttribute> simpleCommandAttributes = EnumSet.of(DataAttribute.BEHAVIOR, DataAttribute.HEALTH,
+                DataAttribute.MODE, DataAttribute.ALARM_ONE, DataAttribute.ALARM_TWO, DataAttribute.ALARM_THREE,
+                DataAttribute.ALARM_FOUR, DataAttribute.ALARM_OTHER, DataAttribute.WARNING_ONE,
+                DataAttribute.WARNING_TWO, DataAttribute.WARNING_THREE, DataAttribute.WARNING_FOUR,
+                DataAttribute.WARNING_OTHER);
+        builder.withSimpleCommandsFor(simpleCommandAttributes);
+
+        final Set<DataAttribute> powerCommandAttributes = EnumSet.of(DataAttribute.ACTUAL_POWER,
+                DataAttribute.MAX_ACTUAL_POWER, DataAttribute.MIN_ACTUAL_POWER);
+        builder.withIndexedCommandsFor(powerCommandAttributes, POWER_ID_START, POWER_ID_END);
+
+        final Set<DataAttribute> energyCommandAttributes = EnumSet.of(DataAttribute.TOTAL_ENERGY);
+        builder.withIndexedCommandsFor(energyCommandAttributes, ENERGY_ID_START, ENERGY_ID_END);
+
+        return builder.build();
     }
 
-    @Override
-    public RtuReadCommand<MeasurementDto> getCommand(final String node) {
-        final RtuReadCommand<MeasurementDto> command = RTU_COMMAND_MAP.get(node);
-
-        if (command == null) {
-            LOGGER.warn("No command found for node {}", node);
-        }
-        return command;
-    }
-
-    private static void initializeRtuCommandMap() {
-        RTU_COMMAND_MAP.put(DataAttribute.BEHAVIOR.getDescription(), new Iec61850BehaviourCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.HEALTH.getDescription(), new Iec61850HealthCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.MODE.getDescription(), new Iec61850ModeCommand());
-
-        for (int i = ID_START; i <= ID_END; i++) {
-            RTU_COMMAND_MAP.put(DataAttribute.ACTUAL_POWER.getDescription() + i, new Iec61850LoadActualPowerCommand(i));
-            RTU_COMMAND_MAP.put(DataAttribute.MAX_ACTUAL_POWER.getDescription() + i,
-                    new Iec61850LoadMaximumActualPowerCommand(i));
-            RTU_COMMAND_MAP.put(DataAttribute.MIN_ACTUAL_POWER.getDescription() + i,
-                    new Iec61850LoadMinimumActualPowerCommand(i));
-
-            RTU_COMMAND_MAP.put(DataAttribute.TOTAL_ENERGY.getDescription() + i, new Iec61850LoadTotalEnergyCommand(i));
-        }
-
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_ONE.getDescription(), new Iec61850AlarmCommand(ONE));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_TWO.getDescription(), new Iec61850AlarmCommand(TWO));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_THREE.getDescription(), new Iec61850AlarmCommand(THREE));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_FOUR.getDescription(), new Iec61850AlarmCommand(FOUR));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_OTHER.getDescription(), new Iec61850AlarmOtherCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_ONE.getDescription(), new Iec61850WarningCommand(ONE));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_TWO.getDescription(), new Iec61850WarningCommand(TWO));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_THREE.getDescription(), new Iec61850WarningCommand(THREE));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_FOUR.getDescription(), new Iec61850WarningCommand(FOUR));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_OTHER.getDescription(), new Iec61850WarningOtherCommand());
-    }
-
-    private static void initializeDataAttributesUsingFilterIdList() {
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.ACTUAL_POWER);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.MAX_ACTUAL_POWER);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.MIN_ACTUAL_POWER);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.TOTAL_ENERGY);
-    }
-
-    private boolean useFilterId(final DataAttribute dataAttribute) {
-        return DATA_ATTRIBUTE_USING_FILTER_ID_LIST.contains(dataAttribute);
-    }
 }
