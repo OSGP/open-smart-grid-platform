@@ -171,10 +171,9 @@ public class DeviceChannelsHelper {
     }
 
     private AttributeAddress makeMbusIdentificationAttributeAddress(final int channel) {
-        final ObisCode obiscode = new ObisCode(String.format(OBIS_CODE_TEMPLATE, channel));
-        final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode,
+        return new AttributeAddress(CLASS_ID,
+                new ObisCode(String.format(OBIS_CODE_TEMPLATE, channel)),
                 MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId());
-        return attributeAddress;
     }
 
     protected ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,
