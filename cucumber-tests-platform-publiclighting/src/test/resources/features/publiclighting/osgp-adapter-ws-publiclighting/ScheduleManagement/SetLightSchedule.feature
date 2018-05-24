@@ -50,6 +50,19 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | OSLP ELSTER       |
+    And the device returns a get configuration status over "OSLP_ELSTER"
+      | Status            | OK          |
+      | LightType         | RELAY       |
+      | DcLights          |             |
+      | DcMap             |             |
+      | RelayConf         |             |
+      | PreferredLinkType |             |
+      | MeterType         | AUX         |
+      | ShortInterval     |             |
+      | LongInterval      |             |
+      | IntervalType      |             |
+      | OsgpIpAddress     | 10.20.30.40 |
+      | OsgpPort          | 12122       |
     And the device returns a set configuration status "OK" over "OSLP ELSTER"
     And the device returns a set light schedule response "OK" over "OSLP ELSTER"
     When receiving a set light schedule request with astronomical offsets
@@ -58,9 +71,10 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | SunsetOffset         |                45 |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
+    And a get configuration "OSLP ELSTER" message is sent to device "TEST1024000000001"
     And a set configuration "OSLP ELSTER" message is sent to device "TEST1024000000001"
-      | SunriseOffset | -15 |
-      | SunsetOffset  |  45 |
+      | SunriseOffset | -900  |
+      | SunsetOffset  |  2700 |
     And a set light schedule "OSLP ELSTER" message is sent to device "TEST1024000000001"
       | WeekDay       | ALL          |
       | ActionTime    | SUNRISE      |
