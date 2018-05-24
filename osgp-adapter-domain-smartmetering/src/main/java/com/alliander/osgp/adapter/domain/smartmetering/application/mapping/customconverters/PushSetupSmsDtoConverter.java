@@ -16,10 +16,6 @@ import ma.glasnost.orika.metadata.Type;
 
 public class PushSetupSmsDtoConverter extends AbstractPushSetupConverter<PushSetupSms, PushSetupSmsDto> {
 
-    public PushSetupSmsDtoConverter() {
-        this(new ConfigurationMapper());
-    }
-
     public PushSetupSmsDtoConverter(final ConfigurationMapper mapper) {
         super(mapper);
     }
@@ -29,13 +25,22 @@ public class PushSetupSmsDtoConverter extends AbstractPushSetupConverter<PushSet
             final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto> destinationType,
             final MappingContext context) {
 
-        if (source == null) {
-            return null;
-        }
+        /*
+         * Cast to PushSetupSmsDto should be fine, because the builder returned
+         * from newBuilder is a PushSetupSmsDto.Builder, which builds a
+         * PushSetupSmsDto.
+         */
+        return (PushSetupSmsDto) super.convert(source);
+    }
 
-        final PushSetupSmsDto.Builder builder = new PushSetupSmsDto.Builder();
-        this.configureBuilder(builder, source);
-        return builder.build();
+    /*
+     * This more specific return type should be fine as PushSetupSmsDto.Builder
+     * extends AbstractBuilder<PushSetupSmsDto.Builder>
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    protected PushSetupSmsDto.Builder newBuilder() {
+        return new PushSetupSmsDto.Builder();
     }
 
 }

@@ -16,10 +16,6 @@ import ma.glasnost.orika.metadata.Type;
 
 public class PushSetupAlarmDtoConverter extends AbstractPushSetupConverter<PushSetupAlarm, PushSetupAlarmDto> {
 
-    public PushSetupAlarmDtoConverter() {
-        this(new ConfigurationMapper());
-    }
-
     public PushSetupAlarmDtoConverter(final ConfigurationMapper configurationMapper) {
         super(configurationMapper);
     }
@@ -29,13 +25,22 @@ public class PushSetupAlarmDtoConverter extends AbstractPushSetupConverter<PushS
             final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto> destinationType,
             final MappingContext context) {
 
-        if (source == null) {
-            return null;
-        }
-
-        final PushSetupAlarmDto.Builder builder = new PushSetupAlarmDto.Builder();
-        this.configureBuilder(builder, source);
-        return builder.build();
+        /*
+         * Cast to PushSetupAlarmDto should be fine, because the builder
+         * returned from newBuilder is a PushSetupAlarmDto.Builder, which builds
+         * a PushSetupAlarmDto.
+         */
+        return (PushSetupAlarmDto) super.convert(source);
     }
 
+    /*
+     * This more specific return type should be fine as
+     * PushSetupAlarmDto.Builder extends
+     * AbstractBuilder<PushSetupAlarmDto.Builder>
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    protected PushSetupAlarmDto.Builder newBuilder() {
+        return new PushSetupAlarmDto.Builder();
+    }
 }
