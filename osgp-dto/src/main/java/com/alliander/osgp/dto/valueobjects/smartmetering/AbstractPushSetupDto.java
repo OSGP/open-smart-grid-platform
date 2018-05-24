@@ -22,7 +22,7 @@ public abstract class AbstractPushSetupDto implements ActionRequestDto {
     private final Integer numberOfRetries;
     private final Integer repetitionDelay;
 
-    public AbstractPushSetupDto(final AbstractBuilder<?> builder) {
+    protected AbstractPushSetupDto(final AbstractBuilder<?> builder) {
         this.logicalName = builder.logicalName;
         this.pushObjectList = builder.pushObjectList;
         this.sendDestinationAndMethod = builder.sendDestinationAndMethod;

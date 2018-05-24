@@ -25,7 +25,7 @@ public class PushSetupAlarmDto extends AbstractPushSetupDto {
 
     }
 
-    public PushSetupAlarmDto(final Builder builder) {
+    private PushSetupAlarmDto(final Builder builder) {
         super(builder);
     }
 

@@ -25,7 +25,7 @@ public class PushSetupSmsDto extends AbstractPushSetupDto {
 
     }
 
-    public PushSetupSmsDto(final Builder builder) {
+    private PushSetupSmsDto(final Builder builder) {
         super(builder);
     }
 
