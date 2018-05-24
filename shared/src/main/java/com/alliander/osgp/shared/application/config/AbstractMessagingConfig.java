@@ -31,8 +31,26 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.activemq.connection.pool.max.active.sessions:500}")
     private int maximumActiveSessionPerConnection;
 
+    @Value("${jms.activemq.connection.pool.block.if.session.pool.is.full:true}")
+    private boolean blockIfSessionPoolIsFull;
+
+    @Value("${jms.activemq.connection.pool.block.if.session.pool.is.full.timeout:-1}")
+    private long blockIfSessionPoolIsFullTimeout;
+
+    @Value("${jms.activemq.connection.pool.expiry.timeout:0}")
+    private long expiryTimeout;
+
+    @Value("${jms.activemq.connection.pool.time.between.expiration.check.millis:-1}")
+    private long timeBetweenExpirationCheckMillis;
+
+    @Value("${jms.activemq.connection.pool.idle.timeout:30000}")
+    private int idleTimeout;
+
     @Value("${jms.activemq.connection.queue.prefetch:1000}")
     private int queuePrefetch;
+
+    @Value("${jms.activemq.connection.send.timeout:0}")
+    private int sendTimeout;
 
     protected String getActiveMQBroker() {
         return this.activeMqBroker;
@@ -62,6 +80,13 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
         pooledConnectionFactory.setMaxConnections(this.getConnectionPoolSize());
         pooledConnectionFactory.setMaximumActiveSessionPerConnection(this.getMaximumActiveSessionPerConnection());
+        pooledConnectionFactory.setBlockIfSessionPoolIsFull(this.blockIfSessionPoolIsFull);
+        if (this.blockIfSessionPoolIsFull) {
+            pooledConnectionFactory.setBlockIfSessionPoolIsFullTimeout(this.blockIfSessionPoolIsFullTimeout);
+        }
+        pooledConnectionFactory.setExpiryTimeout(this.expiryTimeout);
+        pooledConnectionFactory.setIdleTimeout(this.idleTimeout);
+        pooledConnectionFactory.setTimeBetweenExpirationCheckMillis(this.timeBetweenExpirationCheckMillis);
         return pooledConnectionFactory;
     }
 
@@ -74,6 +99,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         activeMQConnectionFactory.setBrokerURL(this.getActiveMQBroker());
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
         activeMQConnectionFactory.setPrefetchPolicy(activeMQPrefetchPolicy);
+        activeMQConnectionFactory.setSendTimeout(this.sendTimeout);
         return activeMQConnectionFactory;
     }
 
