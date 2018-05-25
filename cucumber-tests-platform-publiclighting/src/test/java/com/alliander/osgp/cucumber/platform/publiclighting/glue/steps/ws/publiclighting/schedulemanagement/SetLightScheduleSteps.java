@@ -11,6 +11,7 @@ package com.alliander.osgp.cucumber.platform.publiclighting.glue.steps.ws.public
 
 import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getDate;
 import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getEnum;
+import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getShort;
 import static com.alliander.osgp.cucumber.core.ReadSettingsHelper.getString;
 import static com.alliander.osgp.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -82,6 +84,39 @@ public class SetLightScheduleSteps {
      *            The table with the request parameters.
      * @throws Throwable
      */
+    @When("^receiving a set light schedule request with astronomical offsets$")
+    public void receivingASetLightScheduleRequestWithAstronomicalOffsets(final Map<String, String> requestParameters)
+            throws Throwable {
+        final SetScheduleRequest request = new SetScheduleRequest();
+
+        request.setDeviceIdentification(
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setAstronomicalSunriseOffset(
+                getShort(requestParameters, PlatformPubliclightingKeys.KEY_ASTRONOMICAL_SUNRISE_OFFSET,
+                        PlatformPubliclightingDefaults.DEFAULT_ASTRONOMICAL_SUNRISE_OFFSET));
+        request.setAstronomicalSunsetOffset(
+                getShort(requestParameters, PlatformPubliclightingKeys.KEY_ASTRONOMICAL_SUNSET_OFFSET,
+                        PlatformPubliclightingDefaults.DEFAULT_ASTRONOMICAL_SUNSET_OFFSET));
+
+        this.addScheduleForRequest(request, WeekDayType.ALL, null, null, ActionTimeType.SUNRISE, null, "0,false",
+                TriggerType.ASTRONOMICAL.name(), null);
+
+        try {
+            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.client.setSchedule(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, ex);
+        }
+    }
+
+    /**
+     * Sends a Set Schedule request to the platform for a given device
+     * identification.
+     *
+     * @param requestParameters
+     *            The table with the request parameters.
+     * @throws Throwable
+     */
     @When("^receiving a set light schedule request for (\\d+) schedules?$")
     public void receivingASetLightScheduleRequestForSchedules(final Integer countSchedules,
             final Map<String, String> requestParameters) throws Throwable {
@@ -128,11 +163,11 @@ public class SetLightScheduleSteps {
             throws DatatypeConfigurationException {
         final Schedule schedule = new Schedule();
         schedule.setWeekDay(weekDay);
-        if (!startDay.isEmpty()) {
+        if (StringUtils.isNotBlank(startDay)) {
             schedule.setStartDay(DatatypeFactory.newInstance().newXMLGregorianCalendar(
                     DateTime.parse(startDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
         }
-        if (!endDay.isEmpty()) {
+        if (StringUtils.isNotBlank(endDay)) {
             schedule.setEndDay(DatatypeFactory.newInstance().newXMLGregorianCalendar(
                     DateTime.parse(endDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
         }
@@ -155,13 +190,15 @@ public class SetLightScheduleSteps {
             schedule.setTriggerType(TriggerType.valueOf(triggerType));
         }
 
-        final String[] windowTypeValues = triggerWindow.split(",");
-        if (windowTypeValues.length == 2) {
-            final WindowType windowType = new WindowType();
-            windowType.setMinutesBefore(Integer.parseInt(windowTypeValues[0]));
-            windowType.setMinutesAfter(Integer.parseInt(windowTypeValues[1]));
+        if (StringUtils.isNotBlank(triggerWindow)) {
+            final String[] windowTypeValues = triggerWindow.split(",");
+            if (windowTypeValues.length == 2) {
+                final WindowType windowType = new WindowType();
+                windowType.setMinutesBefore(Integer.parseInt(windowTypeValues[0]));
+                windowType.setMinutesAfter(Integer.parseInt(windowTypeValues[1]));
 
-            schedule.setTriggerWindow(windowType);
+                schedule.setTriggerWindow(windowType);
+            }
         }
 
         request.getSchedules().add(schedule);

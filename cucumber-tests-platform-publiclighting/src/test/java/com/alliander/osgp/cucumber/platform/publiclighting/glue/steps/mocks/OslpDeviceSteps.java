@@ -381,6 +381,16 @@ public class OslpDeviceSteps {
                     receivedConfiguration.getOsgpPortNumber());
         }
 
+        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNRISE_OFFSET))) {
+            Assert.assertEquals(
+                    Integer.parseInt(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNRISE_OFFSET)),
+                    receivedConfiguration.getAstroGateSunRiseOffset());
+        }
+
+        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNSET_OFFSET))) {
+            Assert.assertEquals(Integer.parseInt(expectedResponseData.get(PlatformKeys.KEY_ASTRONOMICAL_SUNSET_OFFSET)),
+                    receivedConfiguration.getAstroGateSunSetOffset());
+        }
     }
 
     /**
@@ -579,13 +589,13 @@ public class OslpDeviceSteps {
                         getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, Weekday.class),
                         schedule.getWeekday());
             }
-            if (!expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_STARTDAY).isEmpty()) {
+            if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_STARTDAY))) {
                 final String startDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_STARTDAY)
                         .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
 
                 Assert.assertEquals(startDay, schedule.getStartDay());
             }
-            if (!expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_ENDDAY).isEmpty()) {
+            if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_ENDDAY))) {
                 final String endDay = getDate(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ENDDAY)
                         .toDateTime(DateTimeZone.UTC).toString("yyyyMMdd");
 
@@ -597,11 +607,14 @@ public class OslpDeviceSteps {
                         getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ACTIONTIME, ActionTime.class),
                         schedule.getActionTime());
             }
-            String expectedTime = getString(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TIME).replace(":", "");
-            if (expectedTime.contains(".")) {
-                expectedTime = expectedTime.substring(0, expectedTime.indexOf("."));
+            if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_TIME))) {
+                String expectedTime = getString(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TIME).replace(":",
+                        "");
+                if (expectedTime.contains(".")) {
+                    expectedTime = expectedTime.substring(0, expectedTime.indexOf("."));
+                }
+                Assert.assertEquals(expectedTime, schedule.getTime());
             }
-            Assert.assertEquals(expectedTime, schedule.getTime());
             final String scheduleLightValue = getString(expectedRequest,
                     (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE)
                             ? PlatformPubliclightingKeys.SCHEDULE_LIGHTVALUES
@@ -628,11 +641,15 @@ public class OslpDeviceSteps {
                                 : TriggerType.TT_NOT_SET,
                         schedule.getTriggerType());
 
-                final String[] windowTypeValues = getString(expectedRequest,
-                        PlatformPubliclightingKeys.SCHEDULE_TRIGGERWINDOW).split(",");
-                if (windowTypeValues.length == 2) {
-                    Assert.assertEquals(Integer.parseInt(windowTypeValues[0]), schedule.getWindow().getMinutesBefore());
-                    Assert.assertEquals(Integer.parseInt(windowTypeValues[1]), schedule.getWindow().getMinutesAfter());
+                if (StringUtils.isNotBlank(expectedRequest.get(PlatformPubliclightingKeys.SCHEDULE_TRIGGERWINDOW))) {
+                    final String[] windowTypeValues = getString(expectedRequest,
+                            PlatformPubliclightingKeys.SCHEDULE_TRIGGERWINDOW).split(",");
+                    if (windowTypeValues.length == 2) {
+                        Assert.assertEquals(Integer.parseInt(windowTypeValues[0]),
+                                schedule.getWindow().getMinutesBefore());
+                        Assert.assertEquals(Integer.parseInt(windowTypeValues[1]),
+                                schedule.getWindow().getMinutesAfter());
+                    }
                 }
             }
         }
