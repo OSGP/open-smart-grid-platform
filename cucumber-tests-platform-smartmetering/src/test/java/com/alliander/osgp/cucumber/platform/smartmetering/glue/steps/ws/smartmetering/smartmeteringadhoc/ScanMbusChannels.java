@@ -52,22 +52,18 @@ public class ScanMbusChannels {
         final ScanMbusChannelsAsyncRequest asyncRequest = ScanMbusChannelsRequestFactory.fromScenarioContext();
         final ScanMbusChannelsResponse response = this.responseClient.getResponse(asyncRequest);
 
-        final String EXPECTED_CHANNEL1 = settings.get("Channel1MbusIdentificationNumber");
-        final String EMPTY_CHANNEL = "0";
+        final String expectedChannel1 = settings.get("Channel1MbusIdentificationNumber");
+        final String expectedChannel2 = settings.get("Channel2MbusIdentificationNumber");
+        final String expectedChannel3 = settings.get("Channel3MbusIdentificationNumber");
+        final String expectedChannel4 = settings.get("Channel4MbusIdentificationNumber");
 
         assertEquals("Result is not as expected.", settings.get(PlatformSmartmeteringKeys.RESULT),
                 response.getResult().name());
 
-        assertEquals(
-                "Mbus Identification Number Channel 1 has value: " + response.getMbusIdentificationNumber1()
-                        + " instead of: " + EXPECTED_CHANNEL1,
-                EXPECTED_CHANNEL1, response.getMbusIdentificationNumber1());
-        assertEquals("Mbus Identification Number Channel 2 has value: " + response.getMbusIdentificationNumber2()
-                + " instead of: " + EMPTY_CHANNEL, EMPTY_CHANNEL, response.getMbusIdentificationNumber2());
-        assertEquals("Mbus Identification Number Channel 3 has value: " + response.getMbusIdentificationNumber3()
-                + " instead of: " + EMPTY_CHANNEL, EMPTY_CHANNEL, response.getMbusIdentificationNumber3());
-        assertEquals("Mbus Identification Number Channel 4 has value: " + response.getMbusIdentificationNumber4()
-                + " instead of: " + EMPTY_CHANNEL, EMPTY_CHANNEL, response.getMbusIdentificationNumber4());
+        assertEquals("Mbus Identification Number Channel 1", expectedChannel1, response.getMbusIdentificationNumber1());
+        assertEquals("Mbus Identification Number Channel 2", expectedChannel2, response.getMbusIdentificationNumber2());
+        assertEquals("Mbus Identification Number Channel 3", expectedChannel3, response.getMbusIdentificationNumber3());
+        assertEquals("Mbus Identification Number Channel 4", expectedChannel4, response.getMbusIdentificationNumber4());
     }
 
 }
