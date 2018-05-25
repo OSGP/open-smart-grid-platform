@@ -33,16 +33,20 @@ public final class Iec61850CombinedLoadCommandFactory extends AbstractIec61850Rt
     private static final int ENERGY_ID_START = 1;
     private static final int ENERGY_ID_END = 5;
 
+    private Iec61850CombinedLoadCommandFactory() {
+        super(rtuCommandMap(), dataAttributesUsingFilterId());
+    }
+
     private static final class Iec61850CombinedLoadCommandFactoryHolder {
         private static final Iec61850CombinedLoadCommandFactory instance = new Iec61850CombinedLoadCommandFactory();
+
+        private Iec61850CombinedLoadCommandFactoryHolder() {
+            throw new AssertionError("Noninstantiable static lazy initialization Holder class");
+        }
     }
 
     public static Iec61850CombinedLoadCommandFactory getInstance() {
         return Iec61850CombinedLoadCommandFactoryHolder.instance;
-    }
-
-    private Iec61850CombinedLoadCommandFactory() {
-        super(rtuCommandMap(), dataAttributesUsingFilterId());
     }
 
     private static final Set<DataAttribute> dataAttributesUsingFilterId() {
