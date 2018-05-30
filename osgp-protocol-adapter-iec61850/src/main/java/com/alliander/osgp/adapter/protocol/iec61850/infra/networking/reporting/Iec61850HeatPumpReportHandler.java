@@ -1,15 +1,10 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.adapter.protocol.iec61850.application.config.BeanUtil;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850HeatPumpCommandFactory;
@@ -18,14 +13,14 @@ import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
 public class Iec61850HeatPumpReportHandler implements Iec61850ReportHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850HeatPumpReportHandler.class);
-
     private static final String SYSTEM_TYPE = "HEAT_PUMP";
-    private static final Set<String> NODES_USING_ID_LIST = new HashSet<>();
 
-    static {
-        intializeNodesUsingIdList();
-    }
+    private static final Set<DataAttribute> NODES_USING_ID = EnumSet.of(DataAttribute.TEMPERATURE,
+            DataAttribute.MATERIAL_FLOW, DataAttribute.MATERIAL_STATUS, DataAttribute.MATERIAL_TYPE,
+            DataAttribute.SCHEDULE_ID, DataAttribute.SCHEDULE_CAT, DataAttribute.SCHEDULE_CAT_RTU,
+            DataAttribute.SCHEDULE_TYPE);
+
+    private static final Iec61850ReportNodeHelper NODE_HELPER = new Iec61850ReportNodeHelper(NODES_USING_ID);
 
     private final int systemId;
     private final Iec61850HeatPumpCommandFactory iec61850HeatPumpCommandFactory;
@@ -37,52 +32,12 @@ public class Iec61850HeatPumpReportHandler implements Iec61850ReportHandler {
 
     @Override
     public GetDataSystemIdentifierDto createResult(final List<MeasurementDto> measurements) {
-        final GetDataSystemIdentifierDto systemResult = new GetDataSystemIdentifierDto(this.systemId, SYSTEM_TYPE,
-                measurements);
-        final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
-        systems.add(systemResult);
-        return systemResult;
+        return new GetDataSystemIdentifierDto(this.systemId, SYSTEM_TYPE, measurements);
     }
 
     @Override
     public List<MeasurementDto> handleMember(final ReadOnlyNodeContainer member) {
-
-        final List<MeasurementDto> measurements = new ArrayList<>();
-        final RtuReadCommand<MeasurementDto> command = this.iec61850HeatPumpCommandFactory
-                .getCommand(this.getCommandName(member));
-
-        if (command == null) {
-            LOGGER.warn("No command found for node {}", member.getFcmodelNode().getName());
-        } else {
-            measurements.add(command.translate(member));
-        }
-        return measurements;
-    }
-
-    private static void intializeNodesUsingIdList() {
-        NODES_USING_ID_LIST.add(DataAttribute.TEMPERATURE.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.MATERIAL_FLOW.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.MATERIAL_STATUS.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.MATERIAL_TYPE.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.SCHEDULE_ID.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.SCHEDULE_CAT.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.SCHEDULE_CAT_RTU.getDescription());
-        NODES_USING_ID_LIST.add(DataAttribute.SCHEDULE_TYPE.getDescription());
-    }
-
-    private static boolean useId(final String nodeName) {
-        return NODES_USING_ID_LIST.contains(nodeName);
-    }
-
-    private String getCommandName(final ReadOnlyNodeContainer member) {
-        final String nodeName = member.getFcmodelNode().getName();
-        if (useId(nodeName)) {
-            final String refName = member.getFcmodelNode().getReference().toString();
-            final int startIndex = refName.length() - nodeName.length() - 2;
-            return nodeName + refName.substring(startIndex, startIndex + 1);
-        } else {
-            return nodeName;
-        }
+        return NODE_HELPER.getMeasurements(member, this.iec61850HeatPumpCommandFactory);
     }
 
 }

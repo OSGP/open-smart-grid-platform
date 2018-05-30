@@ -7,106 +7,52 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmOtherCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850HealthCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialFlowCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialStatusCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialTypeCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850TemperatureCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
 @Component
-public class Iec61850GasFurnaceCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
+public class Iec61850GasFurnaceCommandFactory extends AbstractIec61850RtuReadCommandFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850GasFurnaceCommandFactory.class);
+    private static final int TEMPERATURE_ID_START = 1;
+    private static final int TEMPERATURE_ID_END = 2;
+    private static final int MATERIAL_ID_START = 1;
+    private static final int MATERIAL_ID_END = 2;
 
-    private static final int ONE = 1;
-    private static final int TWO = 2;
-    private static final int THREE = 3;
-    private static final int FOUR = 4;
-
-    private static final Map<String, RtuReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
-    private static final Set<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new HashSet<>();
-
-    static {
-        initializeRtuCommandMap();
-        initializeDataAttributesUsingFilterIdList();
+    public Iec61850GasFurnaceCommandFactory() {
+        super(rtuCommandMap(), dataAttributesUsingFilterId());
     }
 
-    @Override
-    public RtuReadCommand<MeasurementDto> getCommand(final MeasurementFilterDto filter) {
-        final DataAttribute dataAttribute = DataAttribute.fromString(filter.getNode());
-        if (this.useFilterId(dataAttribute)) {
-            return this.getCommand(filter.getNode() + filter.getId());
-        } else {
-            return this.getCommand(filter.getNode());
-        }
+    private static final Set<DataAttribute> dataAttributesUsingFilterId() {
+        return EnumSet.of(DataAttribute.TEMPERATURE, DataAttribute.MATERIAL_STATUS, DataAttribute.MATERIAL_TYPE,
+                DataAttribute.MATERIAL_FLOW);
     }
 
-    @Override
-    public RtuReadCommand<MeasurementDto> getCommand(final String node) {
-        final RtuReadCommand<MeasurementDto> command = RTU_COMMAND_MAP.get(node);
+    private static Map<String, RtuReadCommand<MeasurementDto>> rtuCommandMap() {
 
-        if (command == null) {
-            LOGGER.warn("No command found for node {}", node);
-        }
+        final CommandsByAttributeBuilder builder = new CommandsByAttributeBuilder();
 
-        return command;
-    }
+        final Set<DataAttribute> simpleCommandAttributes = EnumSet.of(DataAttribute.BEHAVIOR, DataAttribute.HEALTH,
+                DataAttribute.MODE, DataAttribute.ALARM_ONE, DataAttribute.ALARM_TWO, DataAttribute.ALARM_THREE,
+                DataAttribute.ALARM_FOUR, DataAttribute.ALARM_OTHER, DataAttribute.WARNING_ONE,
+                DataAttribute.WARNING_TWO, DataAttribute.WARNING_THREE, DataAttribute.WARNING_FOUR,
+                DataAttribute.WARNING_OTHER);
+        builder.withSimpleCommandsFor(simpleCommandAttributes);
 
-    private boolean useFilterId(final DataAttribute dataAttribute) {
-        return DATA_ATTRIBUTE_USING_FILTER_ID_LIST.contains(dataAttribute);
-    }
+        final Set<DataAttribute> temperatureCommandAttributes = EnumSet.of(DataAttribute.TEMPERATURE);
+        builder.withIndexedCommandsFor(temperatureCommandAttributes, TEMPERATURE_ID_START, TEMPERATURE_ID_END);
 
-    private static void initializeRtuCommandMap() {
-        RTU_COMMAND_MAP.put(DataAttribute.BEHAVIOR.getDescription(), new Iec61850BehaviourCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.HEALTH.getDescription(), new Iec61850HealthCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.MODE.getDescription(), new Iec61850ModeCommand());
+        final Set<DataAttribute> materialCommandAttributes = EnumSet.of(DataAttribute.MATERIAL_STATUS,
+                DataAttribute.MATERIAL_TYPE, DataAttribute.MATERIAL_FLOW);
+        builder.withIndexedCommandsFor(materialCommandAttributes, MATERIAL_ID_START, MATERIAL_ID_END);
 
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_ONE.getDescription(), new Iec61850AlarmCommand(ONE));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_TWO.getDescription(), new Iec61850AlarmCommand(TWO));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_THREE.getDescription(), new Iec61850AlarmCommand(THREE));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_FOUR.getDescription(), new Iec61850AlarmCommand(FOUR));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_OTHER.getDescription(), new Iec61850AlarmOtherCommand());
-
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_ONE.getDescription(), new Iec61850WarningCommand(ONE));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_TWO.getDescription(), new Iec61850WarningCommand(TWO));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_THREE.getDescription(), new Iec61850WarningCommand(THREE));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_FOUR.getDescription(), new Iec61850WarningCommand(FOUR));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_OTHER.getDescription(), new Iec61850WarningOtherCommand());
-
-        for (int i = ONE; i <= TWO; i++) {
-            RTU_COMMAND_MAP.put(DataAttribute.TEMPERATURE.getDescription() + i, new Iec61850TemperatureCommand(i));
-            RTU_COMMAND_MAP.put(DataAttribute.MATERIAL_STATUS.getDescription() + i,
-                    new Iec61850MaterialStatusCommand(i));
-            RTU_COMMAND_MAP.put(DataAttribute.MATERIAL_TYPE.getDescription() + i, new Iec61850MaterialTypeCommand(i));
-            RTU_COMMAND_MAP.put(DataAttribute.MATERIAL_FLOW.getDescription() + i, new Iec61850MaterialFlowCommand(i));
-        }
-    }
-
-    private static void initializeDataAttributesUsingFilterIdList() {
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.TEMPERATURE);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.MATERIAL_STATUS);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.MATERIAL_TYPE);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.MATERIAL_FLOW);
+        return builder.build();
     }
 
 }

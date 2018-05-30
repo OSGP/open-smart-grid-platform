@@ -93,25 +93,7 @@ public class Iec61850SetLightCommand {
 
         final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(index);
 
-        // Check if CfSt.enbOper [CF] is set to true. If it is
-        // not set to true, the relay can not be operated.
-        final NodeContainer masterControl = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING, logicalNode,
-                DataAttribute.MASTER_CONTROL, Fc.CF);
-        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                masterControl.getFcmodelNode());
-
-        final BdaBoolean enbOper = masterControl.getBoolean(SubDataAttribute.ENABLE_OPERATION);
-        if (enbOper.getValue()) {
-            LOGGER.info("masterControl.enbOper is true, switching of relay {} is enabled", index);
-        } else {
-            LOGGER.info("masterControl.enbOper is false, switching of relay {} is disabled", index);
-            // Set the value to true.
-            masterControl.writeBoolean(SubDataAttribute.ENABLE_OPERATION, true);
-            LOGGER.info("set masterControl.enbOper to true to enable switching of relay {}", index);
-
-            deviceMessageLog.addVariable(logicalNode, DataAttribute.MASTER_CONTROL, Fc.CF,
-                    SubDataAttribute.ENABLE_OPERATION, Boolean.toString(true));
-        }
+        Iec61850Commands.enableOperationOfRelay(deviceConnection, iec61850Client, deviceMessageLog, logicalNode, index);
 
         // Switch the relay using Pos.Oper.ctlVal [CO].
         final NodeContainer position = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING, logicalNode,

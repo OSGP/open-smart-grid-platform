@@ -7,139 +7,76 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmOtherCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850FrequencyCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850HealthCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ImpedanceCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850PhaseToNeutralVoltageCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850PowerFactorCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850VoltageDipsCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
 @Component
-public class Iec61850PqCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
+public class Iec61850PqCommandFactory extends AbstractIec61850RtuReadCommandFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850PqCommandFactory.class);
+    private static final int IMPEDANCE_PHASE_ID_START = 1;
+    private static final int IMPEDANCE_PHASE_ID_END = 1;
+    private static final int VOLTAGE_DIPS_ID_START = 1;
+    private static final int VOLTAGE_DIPS_ID_END = 1;
+    private static final int POWER_FACTOR_PHASE_ID_START = 1;
+    private static final int POWER_FACTOR_PHASE_ID_END = 2;
+    private static final int FREQUENCY_ID_START = 1;
+    private static final int FREQUENCY_ID_END = 3;
+    private static final int PHASE_TO_NEUTRAL_VOLTAGE_PHASE_ID_START = 1;
+    private static final int PHASE_TO_NEUTRAL_VOLTAGE_PHASE_ID_END = 3;
 
-    private static final int ONE = 1;
-    private static final int TWO = 2;
-    private static final int THREE = 3;
-    private static final int FOUR = 4;
-    private static final Map<String, RtuReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
-    private static final Set<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new HashSet<>();
-
-    static {
-        initializeRtuCommandMap();
-        initializeDataAttributesUsingFilterIdList();
+    public Iec61850PqCommandFactory() {
+        super(rtuCommandMap(), dataAttributesUsingFilterId());
     }
 
-    @Override
-    public RtuReadCommand<MeasurementDto> getCommand(final MeasurementFilterDto filter) {
-        final DataAttribute dataAttribute = DataAttribute.fromString(filter.getNode());
-        if (this.useFilterId(dataAttribute)) {
-            return this.getCommand(filter.getNode() + filter.getId());
-        } else {
-            return this.getCommand(filter.getNode());
-        }
+    private static final Set<DataAttribute> dataAttributesUsingFilterId() {
+        return EnumSet.of(DataAttribute.FREQUENCY, DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_A,
+                DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_B, DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_C,
+                DataAttribute.POWER_FACTOR_PHASE_A, DataAttribute.POWER_FACTOR_PHASE_B,
+                DataAttribute.POWER_FACTOR_PHASE_C, DataAttribute.IMPEDANCE_PHASE_A, DataAttribute.IMPEDANCE_PHASE_B,
+                DataAttribute.IMPEDANCE_PHASE_C, DataAttribute.VOLTAGE_DIPS);
     }
 
-    @Override
-    public RtuReadCommand<MeasurementDto> getCommand(final String node) {
-        final RtuReadCommand<MeasurementDto> command = RTU_COMMAND_MAP.get(node);
+    private static Map<String, RtuReadCommand<MeasurementDto>> rtuCommandMap() {
 
-        if (command == null) {
-            LOGGER.warn("No command found for node {}", node);
-        }
+        final CommandsByAttributeBuilder builder = new CommandsByAttributeBuilder();
 
-        return command;
+        final Set<DataAttribute> simpleCommandAttributes = EnumSet.of(DataAttribute.BEHAVIOR, DataAttribute.HEALTH,
+                DataAttribute.MODE, DataAttribute.ALARM_ONE, DataAttribute.ALARM_TWO, DataAttribute.ALARM_THREE,
+                DataAttribute.ALARM_FOUR, DataAttribute.ALARM_OTHER, DataAttribute.WARNING_ONE,
+                DataAttribute.WARNING_TWO, DataAttribute.WARNING_THREE, DataAttribute.WARNING_FOUR,
+                DataAttribute.WARNING_OTHER);
+        builder.withSimpleCommandsFor(simpleCommandAttributes);
+
+        final Set<DataAttribute> impedancePhaseCommandAttributes = EnumSet.of(DataAttribute.IMPEDANCE_PHASE_A,
+                DataAttribute.IMPEDANCE_PHASE_B, DataAttribute.IMPEDANCE_PHASE_C);
+        builder.withIndexedCommandsFor(impedancePhaseCommandAttributes, IMPEDANCE_PHASE_ID_START,
+                IMPEDANCE_PHASE_ID_END);
+
+        final Set<DataAttribute> voltageDipsCommandAttributes = EnumSet.of(DataAttribute.VOLTAGE_DIPS);
+        builder.withIndexedCommandsFor(voltageDipsCommandAttributes, VOLTAGE_DIPS_ID_START, VOLTAGE_DIPS_ID_END);
+
+        final Set<DataAttribute> powerFactorPhaseCommandAttributes = EnumSet.of(DataAttribute.POWER_FACTOR_PHASE_A,
+                DataAttribute.POWER_FACTOR_PHASE_B, DataAttribute.POWER_FACTOR_PHASE_C);
+        builder.withIndexedCommandsFor(powerFactorPhaseCommandAttributes, POWER_FACTOR_PHASE_ID_START,
+                POWER_FACTOR_PHASE_ID_END);
+
+        final Set<DataAttribute> frequencyCommandAttributes = EnumSet.of(DataAttribute.FREQUENCY);
+        builder.withIndexedCommandsFor(frequencyCommandAttributes, FREQUENCY_ID_START, FREQUENCY_ID_END);
+
+        final Set<DataAttribute> phaseToNeutralVoltagePhaseCommandAttributes = EnumSet.of(
+                DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_A, DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_B,
+                DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_C);
+        builder.withIndexedCommandsFor(phaseToNeutralVoltagePhaseCommandAttributes,
+                PHASE_TO_NEUTRAL_VOLTAGE_PHASE_ID_START, PHASE_TO_NEUTRAL_VOLTAGE_PHASE_ID_END);
+
+        return builder.build();
     }
 
-    private static void initializeRtuCommandMap() {
-        RTU_COMMAND_MAP.put(DataAttribute.BEHAVIOR.getDescription(), new Iec61850BehaviourCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.HEALTH.getDescription(), new Iec61850HealthCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.MODE.getDescription(), new Iec61850ModeCommand());
-
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_ONE.getDescription(), new Iec61850AlarmCommand(ONE));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_TWO.getDescription(), new Iec61850AlarmCommand(TWO));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_THREE.getDescription(), new Iec61850AlarmCommand(THREE));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_FOUR.getDescription(), new Iec61850AlarmCommand(FOUR));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_OTHER.getDescription(), new Iec61850AlarmOtherCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_ONE.getDescription(), new Iec61850WarningCommand(ONE));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_TWO.getDescription(), new Iec61850WarningCommand(TWO));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_THREE.getDescription(), new Iec61850WarningCommand(THREE));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_FOUR.getDescription(), new Iec61850WarningCommand(FOUR));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_OTHER.getDescription(), new Iec61850WarningOtherCommand());
-
-        RTU_COMMAND_MAP.put(DataAttribute.IMPEDANCE_PHASE_A.getDescription() + ONE,
-                new Iec61850ImpedanceCommand(ONE, DataAttribute.IMPEDANCE_PHASE_A));
-        RTU_COMMAND_MAP.put(DataAttribute.IMPEDANCE_PHASE_B.getDescription() + ONE,
-                new Iec61850ImpedanceCommand(ONE, DataAttribute.IMPEDANCE_PHASE_B));
-        RTU_COMMAND_MAP.put(DataAttribute.IMPEDANCE_PHASE_C.getDescription() + ONE,
-                new Iec61850ImpedanceCommand(ONE, DataAttribute.IMPEDANCE_PHASE_C));
-
-        RTU_COMMAND_MAP.put(DataAttribute.VOLTAGE_DIPS.getDescription() + ONE,
-                new Iec61850VoltageDipsCommand(ONE, DataAttribute.VOLTAGE_DIPS));
-
-        for (int i = 1; i <= TWO; i++) {
-            RTU_COMMAND_MAP.put(DataAttribute.POWER_FACTOR_PHASE_A.getDescription() + i,
-                    new Iec61850PowerFactorCommand(i, DataAttribute.POWER_FACTOR_PHASE_A));
-            RTU_COMMAND_MAP.put(DataAttribute.POWER_FACTOR_PHASE_B.getDescription() + i,
-                    new Iec61850PowerFactorCommand(i, DataAttribute.POWER_FACTOR_PHASE_B));
-            RTU_COMMAND_MAP.put(DataAttribute.POWER_FACTOR_PHASE_C.getDescription() + i,
-                    new Iec61850PowerFactorCommand(i, DataAttribute.POWER_FACTOR_PHASE_C));
-        }
-
-        for (int i = 1; i <= THREE; i++) {
-            RTU_COMMAND_MAP.put(DataAttribute.FREQUENCY.getDescription() + i,
-                    new Iec61850FrequencyCommand(i, DataAttribute.FREQUENCY));
-            RTU_COMMAND_MAP.put(DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_A.getDescription() + i,
-                    new Iec61850PhaseToNeutralVoltageCommand(i, DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_A));
-            RTU_COMMAND_MAP.put(DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_B.getDescription() + i,
-                    new Iec61850PhaseToNeutralVoltageCommand(i, DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_B));
-            RTU_COMMAND_MAP.put(DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_C.getDescription() + i,
-                    new Iec61850PhaseToNeutralVoltageCommand(i, DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_C));
-        }
-
-    }
-
-    private boolean useFilterId(final DataAttribute dataAttribute) {
-        return DATA_ATTRIBUTE_USING_FILTER_ID_LIST.contains(dataAttribute);
-    }
-
-    private static void initializeDataAttributesUsingFilterIdList() {
-
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.FREQUENCY);
-
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_A);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_B);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.PHASE_TO_NEUTRAL_VOLTAGE_PHASE_C);
-
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.POWER_FACTOR_PHASE_A);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.POWER_FACTOR_PHASE_B);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.POWER_FACTOR_PHASE_C);
-
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.IMPEDANCE_PHASE_A);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.IMPEDANCE_PHASE_B);
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.IMPEDANCE_PHASE_C);
-
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.VOLTAGE_DIPS);
-    }
 }
