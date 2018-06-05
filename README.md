@@ -1,9 +1,5 @@
 # Shared Component for OSGP and Protocol Adapters
 
-### Build Status
-
-[![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_Shared_master/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_Shared_master/)
-
 ### Component Description
 
 These components are used as sub modules by other repositories.
