@@ -1,9 +1,5 @@
 # OSGP Components
 
-### Build Status
-
-[![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_Platform_development/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_Platform_development)
-
 ### Component Description
 
 The OSGP components implement SOAP web services, domain logic and message routing to Protocol Adapters.
