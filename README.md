@@ -1,9 +1,5 @@
 ## Web Demo App
 
-### Build Status
-
-[![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_PublicLightingDemoApp_development/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_PublicLightingDemoApp_development)
-
 ### Component Description
 
 This repository contains a simple demo app for the Open Smart Grid Platform.
