@@ -1,10 +1,5 @@
 # Protocol Adapter for IEC61850 Protocol
 
-### Build Status
-
-[![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_Protocol-Adapter-IEC61850_development/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_Protocol-Adapter-IEC61850_development/)
-
-
 ## Open smart grid platform information and news
 
 High-level project information and news can be found on the open smart grid platform website: 
