@@ -1,9 +1,5 @@
 # Protocol Adapter for Device Language Message Specification protocol
 
-### Build Status
-
-[![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_Protocol-Adapter-DLMS_development/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_Protocol-Adapter-DLMS_development)
-
 ### Component Description
 
 These components offer an implementation of DLMS. At the moment, it can send and receive jms message from and to the OSGP.
