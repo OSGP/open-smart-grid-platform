@@ -1,10 +1,5 @@
 # Protocol Adapter for Open Street Light Protocol
 
-### Build Status
-
-[![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_Protocol-Adapter-OSLP_development/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_Protocol-Adapter-OSLP_development)
-
-
 ### Component Description
 
 These components offer an implementation of OSLP. There's the Protocol Adapter that can map a domain message to a OSLP message and send it to a SSLD/PSLD smart device. For development and testing there's the Device Simulator that has similar interface and behaviour as SSLD/PSLD smart devices.
