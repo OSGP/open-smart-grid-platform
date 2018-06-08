@@ -34,12 +34,11 @@ public class RtuSimulatorConfig {
     private ServerSapEventProducer serverSapEventProducer;
 
     @Bean
-    public RtuSimulator rtuSimulator(@Value("${rtu.icd:Pampus_v0.4.5.icd}") final String icdFilename,
-            @Value("${rtu.port:60102}") final Integer port,
-            @Value("${rtu.serverName:WAGO61850Server}") final String serverName,
-            @Value("${rtu.stopGeneratingValues:false}") final Boolean stopGeneratingValues,
-            @Value("${rtu.updateValuesDelay:2000}") final Long updateValuesDelay,
-            @Value("${rtu.updateValuesPeriod:10000}") final Long updateValuesPeriod) throws IOException {
+    public RtuSimulator rtuSimulator(@Value("${rtu.icd}") final String icdFilename,
+            @Value("${rtu.port}") final Integer port, @Value("${rtu.serverName}") final String serverName,
+            @Value("${rtu.stopGeneratingValues}") final Boolean stopGeneratingValues,
+            @Value("${rtu.updateValuesDelay}") final Long updateValuesDelay,
+            @Value("${rtu.updateValuesPeriod}") final Long updateValuesPeriod) throws IOException {
         LOGGER.info(
                 "Start simulator with icdFilename={}, port={}, serverName={}, stopGeneratingValues={}, updateValuesDelay={}, updateValuesPeriod={}",
                 icdFilename, port, serverName, stopGeneratingValues, updateValuesDelay, updateValuesPeriod);
