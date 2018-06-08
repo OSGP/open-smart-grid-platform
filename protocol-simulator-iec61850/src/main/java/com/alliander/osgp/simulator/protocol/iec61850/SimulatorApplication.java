@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.simulator.protocol.iec61850;
 
-import java.io.IOException;
 import java.util.TimeZone;
 
 import org.springframework.boot.SpringApplication;
@@ -17,7 +16,6 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -26,10 +24,9 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 @Configuration
 @EnableScheduling
 @SpringBootApplication
-@PropertySources({
-        @PropertySource(value = "classpath:osgp-simulator-protocol-iec61850.properties", ignoreResourceNotFound = false),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/SimulatorProtocolIec61850/config}", ignoreResourceNotFound = true) })
+@PropertySource(value = "classpath:osgp-simulator-protocol-iec61850.properties", ignoreResourceNotFound = false)
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/SimulatorProtocolIec61850/config}", ignoreResourceNotFound = true)
 public class SimulatorApplication extends SpringBootServletInitializer {
 
     protected static final ConfigurableEnvironment ENVIRONMENT = new StandardServletEnvironment();
@@ -53,7 +50,7 @@ public class SimulatorApplication extends SpringBootServletInitializer {
         return application.sources(SimulatorApplication.class);
     }
 
-    public static void main(final String[] args) throws NumberFormatException, IOException {
+    public static void main(final String[] args) {
         // Force UTC timezone
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
