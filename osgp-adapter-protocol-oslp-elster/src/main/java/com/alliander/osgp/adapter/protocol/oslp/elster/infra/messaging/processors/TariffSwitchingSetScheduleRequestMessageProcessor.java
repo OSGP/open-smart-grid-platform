@@ -85,13 +85,13 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
 
         try {
             final ScheduleDto schedule = (ScheduleDto) message.getObject();
-            final ScheduleMessageDataContainerDto scheduleDataContainer = new ScheduleMessageDataContainerDto.Builder(
+            final ScheduleMessageDataContainerDto scheduleMessageDataContainer = new ScheduleMessageDataContainerDto.Builder(
                     schedule).build();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, scheduleDataContainer, RelayTypeDto.TARIFF, domain,
+                    deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.TARIFF, domain,
                     domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.setSchedule(deviceRequest);
@@ -115,7 +115,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
-        final ScheduleMessageDataContainerDto scheduleDataContainer = (ScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
+        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = (ScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
                 .getExtraData();
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
@@ -138,12 +138,12 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
         };
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleDataContainer, RelayTypeDto.TARIFF, domain, domainVersion,
+                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.TARIFF, domain, domainVersion,
                 messageType, ipAddress, retryCount, isScheduled);
 
         try {
             this.deviceService.doSetSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress, domain,
-                    domainVersion, messageType, retryCount, isScheduled, scheduleDataContainer.getPageInfo());
+                    domainVersion, messageType, retryCount, isScheduled, scheduleMessageDataContainer.getPageInfo());
         } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
                     messageType, retryCount);
