@@ -129,7 +129,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 
-            private final ScheduleMessageTypeDto scheduleMessageTypeDto = deviceRequest.getScheduleDataContainer()
+            private final ScheduleMessageTypeDto scheduleMessageTypeDto = deviceRequest.getScheduleMessageDataContainer()
                     .getScheduleMessageType();
 
             @Override
@@ -178,7 +178,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 deviceRequest.getDomain(), deviceRequest.getDomainVersion());
 
         final ScheduleMessageDataContainerDto scheduleDataContainer = new ScheduleMessageDataContainerDto.Builder(
-                deviceRequest.getScheduleDataContainer().getSchedule())
+                deviceRequest.getScheduleMessageDataContainer().getSchedule())
                         .withConfiguration(deviceResponse.getConfiguration())
                         .withScheduleMessageType(ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS).build();
 
@@ -199,7 +199,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 deviceRequest.getDomain(), deviceRequest.getDomainVersion());
 
         final ScheduleMessageDataContainerDto scheduleDataContainer = new ScheduleMessageDataContainerDto.Builder(
-                deviceRequest.getScheduleDataContainer().getSchedule())
+                deviceRequest.getScheduleMessageDataContainer().getSchedule())
                         .withScheduleMessageType(ScheduleMessageTypeDto.SET_SCHEDULE).build();
 
         final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(

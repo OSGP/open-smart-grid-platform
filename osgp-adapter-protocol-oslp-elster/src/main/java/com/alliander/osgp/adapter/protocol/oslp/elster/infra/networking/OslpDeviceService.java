@@ -425,7 +425,7 @@ public class OslpDeviceService implements DeviceService {
     public void setSchedule(final SetScheduleDeviceRequest deviceRequest) {
         LOGGER.info("setSchedule() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        switch (deviceRequest.getScheduleDataContainer().getScheduleMessageType()) {
+        switch (deviceRequest.getScheduleMessageDataContainer().getScheduleMessageType()) {
         case RETRIEVE_CONFIGURATION:
             this.processOslpRequestGetConfigurationBeforeSetSchedule(deviceRequest);
             break;
@@ -435,14 +435,14 @@ public class OslpDeviceService implements DeviceService {
         default:
             final int pageSize = 5;
             final int numberOfPages = (int) Math
-                    .ceil((double) deviceRequest.getScheduleDataContainer().getSchedule().getScheduleList().size()
+                    .ceil((double) deviceRequest.getScheduleMessageDataContainer().getSchedule().getScheduleList().size()
                             / pageSize);
 
             if (numberOfPages == 1) {
                 this.processOslpRequestSetScheduleSingle(deviceRequest);
             } else {
                 final Pager pager = new Pager(
-                        deviceRequest.getScheduleDataContainer().getSchedule().getScheduleList().size(), pageSize);
+                        deviceRequest.getScheduleMessageDataContainer().getSchedule().getScheduleList().size(), pageSize);
 
                 this.processOslpRequestSetSchedulePaged(deviceRequest, pager);
             }
@@ -471,7 +471,7 @@ public class OslpDeviceService implements DeviceService {
             final PageInfoDto pageInfo) throws IOException {
         LOGGER.info("doSetSchedule() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        switch (deviceRequest.getScheduleDataContainer().getScheduleMessageType()) {
+        switch (deviceRequest.getScheduleMessageDataContainer().getScheduleMessageType()) {
         case RETRIEVE_CONFIGURATION:
             this.doProcessOslpRequestSetScheduleGetConfiguration(oslpRequest, deviceRequest, deviceResponseHandler,
                     ipAddress);
@@ -487,7 +487,7 @@ public class OslpDeviceService implements DeviceService {
                         ipAddress);
             } else {
                 final Pager pager = new Pager(
-                        deviceRequest.getScheduleDataContainer().getSchedule().getScheduleList().size(), 5);
+                        deviceRequest.getScheduleMessageDataContainer().getSchedule().getScheduleList().size(), 5);
                 pager.setCurrentPage(pageInfo.getCurrentPage());
                 pager.setNumberOfPages(pageInfo.getTotalPages());
                 this.doProcessOslpRequestSetSchedulePaged(oslpRequest, deviceRequest, deviceResponseHandler, ipAddress,
@@ -638,7 +638,7 @@ public class OslpDeviceService implements DeviceService {
 
     private void buildOslpRequestGetConfigurationBeforeSetSchedule(final SetScheduleDeviceRequest deviceRequest) {
 
-        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = deviceRequest.getScheduleDataContainer();
+        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = deviceRequest.getScheduleMessageDataContainer();
 
         final Oslp.GetConfigurationRequest.Builder request = GetConfigurationRequest.newBuilder();
         this.buildAndSignEnvelope(deviceRequest,
@@ -648,7 +648,7 @@ public class OslpDeviceService implements DeviceService {
 
     private void buildOslpRequestSetScheduleAstronomicalOffsets(final SetScheduleDeviceRequest deviceRequest) {
 
-        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = deviceRequest.getScheduleDataContainer();
+        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = deviceRequest.getScheduleMessageDataContainer();
         final ScheduleDto schedule = scheduleMessageDataContainer.getSchedule();
         final ConfigurationDto configuration = scheduleMessageDataContainer.getConfiguration();
 
@@ -679,14 +679,14 @@ public class OslpDeviceService implements DeviceService {
 
     private void buildOslpRequestSetScheduleSingle(final SetScheduleDeviceRequest deviceRequest) {
         final List<Oslp.Schedule> oslpSchedules = this
-                .convertToOslpSchedules(deviceRequest.getScheduleDataContainer().getSchedule().getScheduleList());
+                .convertToOslpSchedules(deviceRequest.getScheduleMessageDataContainer().getSchedule().getScheduleList());
 
         final Oslp.SetScheduleRequest.Builder request = SetScheduleRequest.newBuilder().addAllSchedules(oslpSchedules)
                 .setScheduleType(
                         this.mapper.map(deviceRequest.getRelayType(), com.alliander.osgp.oslp.Oslp.RelayType.class));
 
         final ScheduleDto schedule = new ScheduleDto(
-                deviceRequest.getScheduleDataContainer().getSchedule().getScheduleList());
+                deviceRequest.getScheduleMessageDataContainer().getSchedule().getScheduleList());
         final ScheduleMessageDataContainerDto scheduleMessageDataContainer = new ScheduleMessageDataContainerDto.Builder(
                 schedule).build();
 
@@ -762,7 +762,7 @@ public class OslpDeviceService implements DeviceService {
 
     private void buildOslpRequestSetSchedulePaged(final SetScheduleDeviceRequest deviceRequest, final Pager pager) {
 
-        final List<Oslp.Schedule> oslpSchedules = this.convertToOslpSchedules(deviceRequest.getScheduleDataContainer()
+        final List<Oslp.Schedule> oslpSchedules = this.convertToOslpSchedules(deviceRequest.getScheduleMessageDataContainer()
                 .getSchedule().getScheduleList().subList(pager.getIndexFrom(), pager.getIndexTo()));
 
         final Oslp.SetScheduleRequest.Builder oslpRequestBuilder = SetScheduleRequest.newBuilder()
@@ -775,7 +775,7 @@ public class OslpDeviceService implements DeviceService {
         final PageInfoDto pageInfo = new PageInfoDto(pager.getCurrentPage(), pager.getPageSize(),
                 pager.getNumberOfPages());
         final ScheduleDto schedule = new ScheduleDto(
-                deviceRequest.getScheduleDataContainer().getSchedule().getScheduleList());
+                deviceRequest.getScheduleMessageDataContainer().getSchedule().getScheduleList());
         final ScheduleMessageDataContainerDto scheduleMessageDataContainer = new ScheduleMessageDataContainerDto.Builder(
                 schedule).withPageInfo(pageInfo).build();
 

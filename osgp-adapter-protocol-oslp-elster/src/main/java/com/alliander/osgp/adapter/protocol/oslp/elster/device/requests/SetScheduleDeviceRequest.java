@@ -13,24 +13,24 @@ import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
 
 public class SetScheduleDeviceRequest extends DeviceRequest {
 
-    private ScheduleMessageDataContainerDto scheduleDataContainer;
+    private ScheduleMessageDataContainerDto scheduleMessageDataContainer;
     private RelayTypeDto relayType;
 
     public SetScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ScheduleMessageDataContainerDto scheduleDataContainer,
+            final String correlationUid, final ScheduleMessageDataContainerDto scheduleMessageDataContainer,
             final RelayTypeDto relayType) {
         super(organisationIdentification, deviceIdentification, correlationUid);
-        this.scheduleDataContainer = scheduleDataContainer;
+        this.scheduleMessageDataContainer = scheduleMessageDataContainer;
         this.relayType = relayType;
     }
 
     public SetScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ScheduleMessageDataContainerDto scheduleDataContainer,
+            final String correlationUid, final ScheduleMessageDataContainerDto scheduleMessageDataContainer,
             final RelayTypeDto relayType, final String domain, final String domainVersion, final String messageType,
             final String ipAddress, final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
-        this.scheduleDataContainer = scheduleDataContainer;
+        this.scheduleMessageDataContainer = scheduleMessageDataContainer;
         this.relayType = relayType;
     }
 
@@ -38,11 +38,7 @@ public class SetScheduleDeviceRequest extends DeviceRequest {
         return this.relayType;
     }
 
-    // public ScheduleDto getSchedule() {
-    // return this.scheduleDataContainer.getSchedule();
-    // }
-
     public ScheduleMessageDataContainerDto getScheduleDataContainer() {
-        return this.scheduleDataContainer;
+        return this.scheduleMessageDataContainer;
     }
 }
