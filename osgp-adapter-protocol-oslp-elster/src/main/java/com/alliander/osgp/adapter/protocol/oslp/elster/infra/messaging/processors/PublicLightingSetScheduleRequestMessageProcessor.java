@@ -124,32 +124,14 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 .getExtraData();
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.LIGHT, domain, domainVersion,
-                messageType, ipAddress, retryCount, isScheduled);
+                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.LIGHT, domain,
+                domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 
-            private final ScheduleMessageTypeDto scheduleMessageTypeDto = deviceRequest.getScheduleMessageDataContainer()
-                    .getScheduleMessageType();
-
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
-
-                switch (this.scheduleMessageTypeDto) {
-                case RETRIEVE_CONFIGURATION:
-                    final GetConfigurationDeviceResponse response = (GetConfigurationDeviceResponse) deviceResponse;
-                    PublicLightingSetScheduleRequestMessageProcessor.this
-                            .handleGetConfigurationBeforeSetScheduleResponse(deviceRequest, response);
-                    break;
-                case SET_ASTRONOMICAL_OFFSETS:
-                    PublicLightingSetScheduleRequestMessageProcessor.this
-                            .handleSetScheduleAstronomicalOffsetsResponse(deviceRequest);
-                    break;
-                default:
-                    PublicLightingSetScheduleRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                            PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender, domain,
-                            domainVersion, messageType, retryCount);
-                }
+                PublicLightingSetScheduleRequestMessageProcessor.this.handleResponse(deviceResponse, deviceRequest);
             }
 
             @Override
@@ -170,6 +152,25 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         }
     }
 
+    private void handleResponse(final DeviceResponse deviceResponse, final SetScheduleDeviceRequest deviceRequest) {
+        final ScheduleMessageTypeDto scheduleMessageTypeDto = deviceRequest.getScheduleMessageDataContainer()
+                .getScheduleMessageType();
+
+        switch (scheduleMessageTypeDto) {
+        case RETRIEVE_CONFIGURATION:
+            final GetConfigurationDeviceResponse response = (GetConfigurationDeviceResponse) deviceResponse;
+            this.handleGetConfigurationBeforeSetScheduleResponse(deviceRequest, response);
+            break;
+        case SET_ASTRONOMICAL_OFFSETS:
+            this.handleSetScheduleAstronomicalOffsetsResponse(deviceRequest);
+            break;
+        default:
+            this.handleEmptyDeviceResponse(deviceResponse, this.responseMessageSender, deviceRequest.getDomain(),
+                    deviceRequest.getDomainVersion(), deviceRequest.getMessageType(), deviceRequest.getRetryCount());
+        }
+
+    }
+
     private void handleGetConfigurationBeforeSetScheduleResponse(final SetScheduleDeviceRequest deviceRequest,
             final GetConfigurationDeviceResponse deviceResponse) {
         // Configuration is retrieved, so now continue with setting the
@@ -184,9 +185,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
                 deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), scheduleMessageDataContainer, RelayTypeDto.LIGHT, deviceRequest.getDomain(),
-                deviceRequest.getDomainVersion(), deviceRequest.getMessageType(), deviceRequest.getIpAddress(),
-                deviceRequest.getRetryCount(), deviceRequest.isScheduled());
+                deviceRequest.getCorrelationUid(), scheduleMessageDataContainer, RelayTypeDto.LIGHT,
+                deviceRequest.getDomain(), deviceRequest.getDomainVersion(), deviceRequest.getMessageType(),
+                deviceRequest.getIpAddress(), deviceRequest.getRetryCount(), deviceRequest.isScheduled());
 
         this.deviceService.setSchedule(newDeviceRequest);
     }
@@ -204,9 +205,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
                 deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), scheduleMessageDataContainer, RelayTypeDto.LIGHT, deviceRequest.getDomain(),
-                deviceRequest.getDomainVersion(), deviceRequest.getMessageType(), deviceRequest.getIpAddress(),
-                deviceRequest.getRetryCount(), deviceRequest.isScheduled());
+                deviceRequest.getCorrelationUid(), scheduleMessageDataContainer, RelayTypeDto.LIGHT,
+                deviceRequest.getDomain(), deviceRequest.getDomainVersion(), deviceRequest.getMessageType(),
+                deviceRequest.getIpAddress(), deviceRequest.getRetryCount(), deviceRequest.isScheduled());
 
         this.deviceService.setSchedule(newDeviceRequest);
     }
