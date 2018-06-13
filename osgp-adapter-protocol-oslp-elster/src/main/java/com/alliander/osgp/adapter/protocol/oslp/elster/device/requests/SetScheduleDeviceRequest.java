@@ -38,7 +38,7 @@ public class SetScheduleDeviceRequest extends DeviceRequest {
         return this.relayType;
     }
 
-    public ScheduleMessageDataContainerDto getScheduleDataContainer() {
+    public ScheduleMessageDataContainerDto getScheduleMessageDataContainer() {
         return this.scheduleMessageDataContainer;
     }
 }
