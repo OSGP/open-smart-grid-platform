@@ -22,13 +22,6 @@ public class ScheduleDto implements Serializable {
 
     private final List<ScheduleEntryDto> scheduleList;
 
-    private PageInfoDto pageInfo;
-
-    // Additional fields required for setting the astronomical offsets
-    private boolean setAstroOffsets;
-    private boolean getConfigurationFirst;
-    private ConfigurationDto configuration;
-
     public ScheduleDto(final List<ScheduleEntryDto> scheduleList) {
         this(scheduleList, null, null);
     }
@@ -38,8 +31,6 @@ public class ScheduleDto implements Serializable {
         this.scheduleList = scheduleList;
         this.astronomicalSunriseOffset = astronomicalSunriseOffset;
         this.astronomicalSunsetOffset = astronomicalSunsetOffset;
-        this.setAstroOffsets = astronomicalSunriseOffset != null || astronomicalSunsetOffset != null;
-        this.getConfigurationFirst = this.setAstroOffsets;
     }
 
     public Short getAstronomicalSunriseOffset() {
@@ -52,39 +43,5 @@ public class ScheduleDto implements Serializable {
 
     public List<ScheduleEntryDto> getScheduleList() {
         return this.scheduleList;
-    }
-
-    public PageInfoDto getPageInfo() {
-        return this.pageInfo;
-    }
-
-    public void setPageInfo(final PageInfoDto pageInfo) {
-        this.pageInfo = pageInfo;
-    }
-
-    // boolean indicating whether the astronomical offsets should be set first
-    public boolean isSetAstronomicalOffsets() {
-        return this.setAstroOffsets;
-    }
-
-    public void setSetAstronomicalOffsets(final boolean setAstroOffsets) {
-        this.setAstroOffsets = setAstroOffsets;
-    }
-
-    public boolean isGetConfigurationFirst() {
-        return this.getConfigurationFirst;
-    }
-
-    public void setGetConfigurationFirst(final boolean getConfigurationFirst) {
-        this.getConfigurationFirst = getConfigurationFirst;
-    }
-
-    public ConfigurationDto getConfiguration() {
-        return this.configuration;
-    }
-
-    public void setConfiguration(final ConfigurationDto configuration) {
-        this.getConfigurationFirst = false;
-        this.configuration = configuration;
     }
 }
