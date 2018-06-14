@@ -44,6 +44,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
     private static final Logger LOGGER = LoggerFactory
             .getLogger(PublicLightingSetScheduleRequestMessageProcessor.class);
 
+    private static final String LOG_MESSAGE_CALL_DEVICE_SERVICE = "Calling DeviceService function: {} of type {} for domain: {} {}";
+
     public PublicLightingSetScheduleRequestMessageProcessor() {
         super(DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
     }
@@ -93,7 +95,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             }
             final ScheduleMessageDataContainerDto scheduleMessageDataContainer = builder.build();
 
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+            LOGGER.info(LOG_MESSAGE_CALL_DEVICE_SERVICE, messageType,
+                    scheduleMessageDataContainer.getScheduleMessageType(), domain, domainVersion);
 
             final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
                     deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.LIGHT, domain,
@@ -164,6 +167,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         case SET_ASTRONOMICAL_OFFSETS:
             this.handleSetScheduleAstronomicalOffsetsResponse(deviceRequest);
             break;
+        case SET_SCHEDULE:
         default:
             this.handleEmptyDeviceResponse(deviceResponse, this.responseMessageSender, deviceRequest.getDomain(),
                     deviceRequest.getDomainVersion(), deviceRequest.getMessageType(), deviceRequest.getRetryCount());
@@ -175,8 +179,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             final GetConfigurationDeviceResponse deviceResponse) {
         // Configuration is retrieved, so now continue with setting the
         // astronomical offsets
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", deviceRequest.getMessageType(),
-                deviceRequest.getDomain(), deviceRequest.getDomainVersion());
+        LOGGER.info(LOG_MESSAGE_CALL_DEVICE_SERVICE, deviceRequest.getMessageType(),
+                ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS, deviceRequest.getDomain(),
+                deviceRequest.getDomainVersion());
 
         final ScheduleMessageDataContainerDto scheduleMessageDataContainer = new ScheduleMessageDataContainerDto.Builder(
                 deviceRequest.getScheduleMessageDataContainer().getSchedule())
@@ -196,8 +201,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         // Astronomical offsets are set, so now continue with the actual
         // schedule
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", deviceRequest.getMessageType(),
-                deviceRequest.getDomain(), deviceRequest.getDomainVersion());
+        LOGGER.info(LOG_MESSAGE_CALL_DEVICE_SERVICE, deviceRequest.getMessageType(),
+                ScheduleMessageTypeDto.SET_SCHEDULE, deviceRequest.getDomain(), deviceRequest.getDomainVersion());
 
         final ScheduleMessageDataContainerDto scheduleMessageDataContainer = new ScheduleMessageDataContainerDto.Builder(
                 deviceRequest.getScheduleMessageDataContainer().getSchedule())
