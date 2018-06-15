@@ -23,20 +23,23 @@ public class Iec61850ClientEventListenerFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ClientEventListenerFactory.class);
 
     @Autowired
+    private DeviceManagementService deviceManagementService;
+
+    @Autowired
     private ReportingService reportingService;
 
-    public Iec61850ClientBaseEventListener getEventListener(final IED ied, final String deviceIdentification,
-            final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
+    public Iec61850ClientBaseEventListener getEventListener(final IED ied, final String deviceIdentification)
+            throws ProtocolAdapterException {
         switch (ied) {
         case FLEX_OVL:
-            return new Iec61850ClientSSLDEventListener(deviceIdentification, deviceManagementService);
+            return new Iec61850ClientSSLDEventListener(deviceIdentification, this.deviceManagementService);
         case ABB_RTU:
-            return new Iec61850ClientLMDEventListener(deviceIdentification, deviceManagementService);
+            return new Iec61850ClientLMDEventListener(deviceIdentification, this.deviceManagementService);
         case ZOWN_RTU:
-            return new Iec61850ClientRTUEventListener(deviceIdentification, deviceManagementService,
+            return new Iec61850ClientRTUEventListener(deviceIdentification, this.deviceManagementService,
                     this.reportingService);
         case DA_RTU:
-            return new Iec61850ClientDaRTUEventListener(deviceIdentification, deviceManagementService);
+            return new Iec61850ClientDaRTUEventListener(deviceIdentification, this.deviceManagementService);
         default:
             LOGGER.warn("Unknown IED {}, could not create event listener for device {}", ied, deviceIdentification);
             return null;

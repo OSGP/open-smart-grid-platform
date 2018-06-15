@@ -74,7 +74,8 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED)
+                    : false;
             getDataRequest = (GetDataRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -143,5 +144,6 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
                 .dataObject(dataResponse).retryCount(retryCount).build();
 
         responseMessageSender.send(responseMessage);
+
     }
 }

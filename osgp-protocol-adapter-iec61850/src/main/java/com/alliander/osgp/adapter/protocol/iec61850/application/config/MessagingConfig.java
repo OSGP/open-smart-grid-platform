@@ -9,12 +9,9 @@ package com.alliander.osgp.adapter.protocol.iec61850.application.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -35,22 +32,23 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true)
 public class MessagingConfig extends AbstractMessagingConfig {
-
-    @Autowired
-    @Qualifier("iec61850RequestsMessageListener")
-    private DeviceRequestMessageListener iec61850RequestsMessageListener;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
     // === JMS SETTINGS IEC61850 REQUESTS ===
     @Bean
+    public DeviceRequestMessageListener iec61850RequestsMessageListener() {
+        return new DeviceRequestMessageListener();
+    }
+
+    @Bean
     public JmsConfiguration iec61850RequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeReceiveConfiguration("jms.iec61850.requests",
-                this.iec61850RequestsMessageListener);
+                this.iec61850RequestsMessageListener());
     }
 
     @Bean
@@ -95,12 +93,14 @@ public class MessagingConfig extends AbstractMessagingConfig {
     // === JMS SETTINGS: IEC61850 LOG ITEM REQUESTS ===
 
     @Bean
-    public JmsConfiguration iec61850LogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+    public JmsConfiguration iec61850LogItemRequestJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeConfiguration("jms.iec61850.log.item.requests");
     }
 
     @Bean
-    public JmsTemplate iec61850LogItemRequestsJmsTemplate(final JmsConfiguration iec61850LogItemRequestJmsConfiguration) {
+    public JmsTemplate iec61850LogItemRequestsJmsTemplate(
+            final JmsConfiguration iec61850LogItemRequestJmsConfiguration) {
         return iec61850LogItemRequestJmsConfiguration.getJmsTemplate();
     }
 

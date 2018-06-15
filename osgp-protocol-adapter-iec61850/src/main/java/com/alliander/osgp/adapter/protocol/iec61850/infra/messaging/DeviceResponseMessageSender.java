@@ -17,9 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.IllegalStateException;
+import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceConnectionService;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -29,14 +32,25 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageSender.class);
 
+    private static final String LOG_MESSAGE_RESPONSE_MESSAGE_OF_WRONG_TYPE = "Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender, received responseMessage of type {}.";
+    private static final String LOG_MESSAGE_JMS_EXCEPTION = "JMS Exception, closing all connections.";
+    private static final String LOG_MESSAGE_BLANK_FIELD = "{} is blank.";
+    private static final String LOG_MESSAGE_NULL_FIELD = "{} is null.";
+
     @Autowired
     @Qualifier("iec61850ResponsesJmsTemplate")
     private JmsTemplate iec61850ResponsesJmsTemplate;
 
+    @Autowired
+    private Iec61850DeviceConnectionService iec61850deviceConnectionService;
+
+    @Autowired
+    private boolean isCloseConnectionsOnBrokerFailure;
+
     @Override
     public void send(final ResponseMessage responseMessage) {
         if (!(responseMessage instanceof ProtocolResponseMessage)) {
-            LOGGER.error("Only ProtocolResponseMessage type is expected for DeviceResponseMessageSender");
+            LOGGER.error(LOG_MESSAGE_RESPONSE_MESSAGE_OF_WRONG_TYPE, responseMessage.getClass().getName());
             return;
         }
 
@@ -46,32 +60,46 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
             return;
         }
 
-        this.sendMessage(msg);
+        try {
+            this.sendMessage(msg);
+        } catch (final IllegalStateException | UncategorizedJmsException e) {
+            /*
+             * IllegalStateException occurs when activemq connection pool is
+             * exhausted or activemq failover timeout is reached
+             * UncategorizedJmsException might also occur when activemq failover
+             * timeout is reached
+             */
+            if (this.isCloseConnectionsOnBrokerFailure) {
+                LOGGER.error(LOG_MESSAGE_JMS_EXCEPTION, e);
+                this.iec61850deviceConnectionService.closeAllConnections();
+            }
+            throw e;
+        }
     }
 
     private boolean checkMessage(final ProtocolResponseMessage msg) {
         if (StringUtils.isBlank(msg.getOrganisationIdentification())) {
-            LOGGER.error("OrganisationIdentification is blank");
+            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "OrganisationIdentification");
             return false;
         }
         if (StringUtils.isBlank(msg.getDeviceIdentification())) {
-            LOGGER.error("DeviceIdentification is blank");
+            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "DeviceIdentification");
             return false;
         }
         if (StringUtils.isBlank(msg.getCorrelationUid())) {
-            LOGGER.error("CorrelationUid is blank");
+            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "CorrelationUid");
             return false;
         }
         if (msg.getResult() == null) {
-            LOGGER.error("Result is null");
+            LOGGER.error(LOG_MESSAGE_NULL_FIELD, "Result");
             return false;
         }
         if (StringUtils.isBlank(msg.getDomain())) {
-            LOGGER.error("Domain is blank");
+            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "Domain");
             return false;
         }
         if (StringUtils.isBlank(msg.getMessageType())) {
-            LOGGER.error("MessageType is blank");
+            LOGGER.error(LOG_MESSAGE_BLANK_FIELD, "MessageType");
             return false;
         }
 
@@ -93,8 +121,8 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
                 if (responseMessage.getOsgpException() != null) {
-                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
-                            .getMessage());
+                    objectMessage.setStringProperty(Constants.DESCRIPTION,
+                            responseMessage.getOsgpException().getMessage());
                 }
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, responseMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, responseMessage.getRetryCount());

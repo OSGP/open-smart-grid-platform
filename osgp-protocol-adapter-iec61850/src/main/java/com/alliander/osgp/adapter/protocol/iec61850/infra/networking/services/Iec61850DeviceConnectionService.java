@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
@@ -51,9 +50,6 @@ public class Iec61850DeviceConnectionService {
     private static ConcurrentHashMap<String, Iec61850Connection> cache = new ConcurrentHashMap<>();
 
     private static final int IEC61850_DEFAULT_PORT = 102;
-
-    @Autowired
-    private DeviceManagementService deviceManagementService;
 
     @Autowired
     private Iec61850DeviceRepository iec61850DeviceRepository;
@@ -123,8 +119,7 @@ public class Iec61850DeviceConnectionService {
         // Create instance of appropriate event listener.
         Iec61850ClientBaseEventListener eventListener = null;
         try {
-            eventListener = this.iec61850ClientEventListenerFactory.getEventListener(ied, deviceIdentification,
-                    this.deviceManagementService);
+            eventListener = this.iec61850ClientEventListenerFactory.getEventListener(ied, deviceIdentification);
         } catch (final ProtocolAdapterException e) {
             this.logProtocolAdapterException(deviceIdentification, e);
         }
@@ -170,11 +165,16 @@ public class Iec61850DeviceConnectionService {
         return connection;
     }
 
+    public void closeAllConnections() {
+        LOGGER.warn("Closing connections for {} devices", cache.size());
+        cache.values().forEach(c -> c.getClientAssociation().close());
+        cache.clear();
+    }
+
     private void logProtocolAdapterException(final String deviceIdentification, final ProtocolAdapterException e) {
         LOGGER.error(
-                "ProtocolAdapterException: no Iec61850ClientBaseEventListener instance could be contructed, continue without event listener for deviceIdentification: "
-                        + deviceIdentification,
-                e);
+                "ProtocolAdapterException: no Iec61850ClientBaseEventListener instance could be constructed, continue without event listener for deviceIdentification: {}",
+                deviceIdentification, e);
     }
 
     private int determinePortForIec61850Device(final IED ied, final Iec61850Device iec61850Device) {
@@ -227,7 +227,7 @@ public class Iec61850DeviceConnectionService {
         } catch (final NodeReadException e) {
             LOGGER.error("Connection is no longer active, removing connection from cache for deviceIdentification: "
                     + deviceIdentification, e);
-            this.removeIec61850Connection(deviceIdentification);
+            this.disconnect(deviceIdentification);
         }
         return false;
     }
@@ -359,12 +359,12 @@ public class Iec61850DeviceConnectionService {
 
     public Iec61850ClientAssociation getIec61850ClientAssociation(final String deviceIdentification) {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
-        return iec61850Connection.getIec61850ClientAssociation();
+        return iec61850Connection != null ? iec61850Connection.getIec61850ClientAssociation() : null;
     }
 
     public ClientAssociation getClientAssociation(final String deviceIdentification) {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
-        return iec61850Connection.getClientAssociation();
+        return iec61850Connection != null ? iec61850Connection.getClientAssociation() : null;
     }
 
     public ServerModel getServerModel(final String deviceIdentification) {
@@ -437,5 +437,4 @@ public class Iec61850DeviceConnectionService {
             throw new ConnectionFailureException(e.getMessage(), e);
         }
     }
-
 }
