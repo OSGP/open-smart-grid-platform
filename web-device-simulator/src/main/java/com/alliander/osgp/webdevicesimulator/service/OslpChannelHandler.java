@@ -854,8 +854,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 configuration.setOsgpPortNumber(this.configurationOsgpPortNumber);
                 configuration.setIsTestButtonEnabled(false);
                 configuration.setIsAutomaticSummerTimingEnabled(false);
-                configuration.setAstroGateSunRiseOffset(-15);
-                configuration.setAstroGateSunSetOffset(15);
+                configuration.setAstroGateSunRiseOffset(-900);
+                configuration.setAstroGateSunSetOffset(600);
                 configuration.addSwitchingDelay(1);
                 configuration.addSwitchingDelay(2);
                 configuration.addSwitchingDelay(3);
