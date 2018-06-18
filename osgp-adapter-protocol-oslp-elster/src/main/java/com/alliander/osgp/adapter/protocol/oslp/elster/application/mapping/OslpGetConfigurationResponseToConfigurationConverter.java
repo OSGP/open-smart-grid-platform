@@ -38,6 +38,8 @@ public class OslpGetConfigurationResponseToConfigurationConverter
     private static final Logger LOGGER = LoggerFactory
             .getLogger(OslpGetConfigurationResponseToConfigurationConverter.class);
 
+    private static final int SECONDS_PER_MINUTE = 60;
+
     @Override
     public ConfigurationDto convert(final Oslp.GetConfigurationResponse source,
             final Type<? extends ConfigurationDto> destinationType, final MappingContext context) {
@@ -99,8 +101,8 @@ public class OslpGetConfigurationResponseToConfigurationConverter
         }
         configuration.setTestButtonEnabled(source.getIsTestButtonEnabled());
         configuration.setAutomaticSummerTimingEnabled(source.getIsAutomaticSummerTimingEnabled());
-        configuration.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
-        configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
+        configuration.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset() / SECONDS_PER_MINUTE);
+        configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset() / SECONDS_PER_MINUTE);
         configuration.setSwitchingDelays(source.getSwitchingDelayList());
         if (source.getRelayLinkingList() != null) {
             configuration

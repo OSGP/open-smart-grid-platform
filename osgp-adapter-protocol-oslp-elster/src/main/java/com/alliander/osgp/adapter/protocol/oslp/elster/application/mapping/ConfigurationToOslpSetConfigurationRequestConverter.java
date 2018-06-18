@@ -29,6 +29,8 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ConfigurationToOslpSetConfigurationRequestConverter.class);
 
+    private static final int SECONDS_PER_MINUTE = 60;
+
     @Override
     public SetConfigurationRequest convert(final ConfigurationDto source,
             final Type<? extends Oslp.SetConfigurationRequest> destinationType, final MappingContext context) {
@@ -66,10 +68,10 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
             setConfigurationRequest.setMeterType(this.mapperFacade.map(source.getMeterType(), Oslp.MeterType.class));
         }
         if (source.getAstroGateSunRiseOffset() != null) {
-            setConfigurationRequest.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
+            setConfigurationRequest.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset() * SECONDS_PER_MINUTE);
         }
         if (source.getAstroGateSunSetOffset() != null) {
-            setConfigurationRequest.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
+            setConfigurationRequest.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset() * SECONDS_PER_MINUTE);
         }
         if (source.isAutomaticSummerTimingEnabled() != null) {
             setConfigurationRequest.setIsAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled());

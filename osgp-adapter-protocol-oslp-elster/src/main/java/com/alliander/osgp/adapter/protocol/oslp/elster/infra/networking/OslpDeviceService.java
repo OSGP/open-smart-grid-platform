@@ -87,7 +87,6 @@ public class OslpDeviceService implements DeviceService {
     private static final String DATE_FORMAT = "yyyyMMdd";
     private static final String TIME_FORMAT = "HHmmss";
     private static final String DATETIME_FORMAT = DATE_FORMAT + TIME_FORMAT;
-    private static final int SECONDS_PER_MINUTE = 60;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpDeviceService.class);
 
@@ -672,12 +671,12 @@ public class OslpDeviceService implements DeviceService {
 
         int sunriseOffset = 0;
         if (schedule.getAstronomicalSunriseOffset() != null) {
-            sunriseOffset = schedule.getAstronomicalSunriseOffset() * SECONDS_PER_MINUTE;
+            sunriseOffset = schedule.getAstronomicalSunriseOffset();
         }
 
         int sunsetOffset = 0;
         if (schedule.getAstronomicalSunsetOffset() != null) {
-            sunsetOffset = schedule.getAstronomicalSunsetOffset() * SECONDS_PER_MINUTE;
+            sunsetOffset = schedule.getAstronomicalSunsetOffset();
         }
 
         configuration.setAstroGateSunRiseOffset(sunriseOffset);
