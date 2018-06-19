@@ -1,5 +1,5 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
+	branch = SLIM-1775-Read-all-attributes-on-scan-m-bus-channels
 
