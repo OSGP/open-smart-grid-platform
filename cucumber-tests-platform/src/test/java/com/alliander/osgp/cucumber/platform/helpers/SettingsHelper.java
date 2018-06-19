@@ -13,6 +13,8 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.alliander.osgp.cucumber.platform.inputparsers.XmlGregorianCalendarInputParser;
 
 import cucumber.api.DataTable;
@@ -95,7 +97,7 @@ public class SettingsHelper {
     public static Double getDoubleValue(final Map<String, String> settings, final String keyPrefix,
             final int... indexes) {
         final String stringValue = getStringValue(settings, keyPrefix, indexes);
-        if (stringValue == null) {
+        if (StringUtils.isBlank(stringValue)) {
             return null;
         }
         return Double.valueOf(stringValue);
@@ -103,16 +105,25 @@ public class SettingsHelper {
 
     public static Byte getByteValue(final Map<String, String> settings, final String keyPrefix, final int... indexes) {
         final String stringValue = getStringValue(settings, keyPrefix, indexes);
-        if (stringValue == null) {
+        if (StringUtils.isBlank(stringValue)) {
             return null;
         }
         return Byte.valueOf(stringValue);
     }
 
+    public static Short getShortValue(final Map<String, String> settings, final String keyPrefix,
+            final int... indexes) {
+        final String stringValue = getStringValue(settings, keyPrefix, indexes);
+        if (StringUtils.isBlank(stringValue)) {
+            return null;
+        }
+        return Short.valueOf(stringValue);
+    }
+
     public static Integer getIntegerValue(final Map<String, String> settings, final String keyPrefix,
             final int... indexes) {
         final String stringValue = getStringValue(settings, keyPrefix, indexes);
-        if (stringValue == null) {
+        if (StringUtils.isBlank(stringValue)) {
             return null;
         }
         return Integer.valueOf(stringValue);
@@ -120,7 +131,7 @@ public class SettingsHelper {
 
     public static Long getLongValue(final Map<String, String> settings, final String keyPrefix, final int... indexes) {
         final String stringValue = getStringValue(settings, keyPrefix, indexes);
-        if (stringValue == null) {
+        if (StringUtils.isBlank(stringValue)) {
             return null;
         }
         return Long.valueOf(stringValue);
@@ -129,7 +140,7 @@ public class SettingsHelper {
     public static BigInteger getBigIntegerValue(final Map<String, String> settings, final String keyPrefix,
             final int... indexes) {
         final String stringValue = getStringValue(settings, keyPrefix, indexes);
-        if (stringValue == null) {
+        if (StringUtils.isBlank(stringValue)) {
             return null;
         }
         return new BigInteger(stringValue);
@@ -141,10 +152,19 @@ public class SettingsHelper {
         return settings.get(key);
     }
 
+    public static String getNonBlankStringValue(final Map<String, String> settings, final String keyPrefix,
+            final int... indexes) {
+        final String stringValue = getStringValue(settings, keyPrefix, indexes);
+        if (StringUtils.isBlank(stringValue)) {
+            return null;
+        }
+        return stringValue;
+    }
+
     public static XMLGregorianCalendar getXmlGregorianCalendarValue(final Map<String, String> settings,
             final String keyPrefix, final int... indexes) {
         final String stringValue = getStringValue(settings, keyPrefix, indexes);
-        if (stringValue == null) {
+        if (StringUtils.isBlank(stringValue)) {
             return null;
         }
         return XmlGregorianCalendarInputParser.parse(stringValue);
