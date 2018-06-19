@@ -16,7 +16,7 @@
     
     <jxb:bindings node="//xs:complexType[@name='ProfileEntries']//xs:element[@name='ProfileEntry']">
       <jxb:property name="profileEntries" />
-    </jxb:bindings>    
+    </jxb:bindings>
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="sm-adhoc.xsd">
@@ -24,6 +24,13 @@
       <jxb:package
         name="com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc"></jxb:package>
     </jxb:schemaBindings>
+
+    <jxb:bindings node="//xs:element[@name='ScanMbusChannelsResponse']//xs:element[@name='ChannelShortId']">
+      <jxb:property name="channelShortIds" />
+    </jxb:bindings>
+    <jxb:bindings node="//xs:complexType[@name='ScanMbusChannelsResponseData']//xs:element[@name='ChannelShortId']">
+      <jxb:property name="channelShortIds" />
+    </jxb:bindings>
   </jxb:bindings>
 
 </jxb:bindings>

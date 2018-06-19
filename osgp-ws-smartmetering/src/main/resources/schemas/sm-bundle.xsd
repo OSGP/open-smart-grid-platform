@@ -489,6 +489,10 @@
           base="adhoc:ScanMbusChannelsResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
+    <xsd:unique name="UniqueBundledScanMbusChannelValues">
+      <xsd:selector xpath="adhoc:ChannelShortId" />
+      <xsd:field xpath="adhoc:Channel" />
+    </xsd:unique>
   </xsd:element>
   
   <xsd:complexType name="AllResponses">
