@@ -9,7 +9,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -38,8 +37,8 @@ public class DeviceChannelsHelper {
 
     private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
     /**
-     * The ObisCode for the M-Bus Client Setup exists for a number of channels. DSMR
-     * specifies these M-Bus Client Setup channels as values from 1..4.
+     * The ObisCode for the M-Bus Client Setup exists for a number of channels.
+     * DSMR specifies these M-Bus Client Setup channels as values from 1..4.
      */
     private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
 
@@ -69,35 +68,21 @@ public class DeviceChannelsHelper {
             channelElementValuesList.add(channelElementValues);
             if (requestDto != null && FindMatchingChannelHelper.matches(requestDto, channelElementValues)) {
                 /*
-                 * A complete match for all attributes from the request has been found. Stop
-                 * retrieving M-Bus Client Setup attributes for other channels. Return a list
-                 * returning the values retrieved so far and don't retrieve any additional M-Bus
-                 * Client Setup data from the device.
+                 * A complete match for all attributes from the request has been
+                 * found. Stop retrieving M-Bus Client Setup attributes for
+                 * other channels. Return a list returning the values retrieved
+                 * so far and don't retrieve any additional M-Bus Client Setup
+                 * data from the device.
                  */
                 return channelElementValuesList;
             }
         }
         /*
-         * A complete match for all attributes from the request has not been found. The
-         * best partial match that has no conflicting attribute values, or the first
-         * free channel has to be picked from this list.
+         * A complete match for all attributes from the request has not been
+         * found. The best partial match that has no conflicting attribute
+         * values, or the first free channel has to be picked from this list.
          */
         return channelElementValuesList;
-    }
-
-
-    public List<GetResult> findMbusIdentificationsForDevice(final DlmsConnectionHolder conn,
-            final DlmsDevice device) throws ProtocolAdapterException {
-        final AttributeAddress[] attributeAddresses = IntStream
-                .range(0, NR_OF_CHANNELS)
-                .mapToObj(i -> makeMbusIdentificationAttributeAddress(i + 1))
-                .toArray(AttributeAddress[]::new);
-
-        conn.getDlmsMessageListener().setDescription("DeviceChannelsHelper, retrieve M-Bus identification attributes: "
-                + JdlmsObjectToStringUtil.describeAttributes(attributeAddresses));
-
-        return this.dlmsHelperService.getAndCheck(conn, device, "Retrieve M-Bus identification attributes",
-                attributeAddresses);
     }
 
     protected List<GetResult> getMBusClientAttributeValues(final DlmsConnectionHolder conn, final DlmsDevice device,
@@ -120,12 +105,6 @@ public class DeviceChannelsHelper {
                 "deviceTypeIdentification");
         return new ChannelElementValuesDto(channel, primaryAddress, identificationNumber, manufacturerIdentification,
                 version, deviceTypeIdentification);
-    }
-
-    protected String findIdentificationNumberForChannel(
-            final List<GetResult> identificationNumbers, final short channel)
-            throws ProtocolAdapterException {
-        return this.readIdentificationNumber(identificationNumbers, channel - 1, "identificationNumber");
     }
 
     private String readIdentificationNumber(final List<GetResult> resultList, final int index, final String description)
@@ -168,12 +147,6 @@ public class DeviceChannelsHelper {
         attrAddresses[INDEX_DEVICE_TYPE] = new AttributeAddress(CLASS_ID, obiscode,
                 MbusClientAttribute.DEVICE_TYPE.attributeId());
         return attrAddresses;
-    }
-
-    private AttributeAddress makeMbusIdentificationAttributeAddress(final int channel) {
-        return new AttributeAddress(CLASS_ID,
-                new ObisCode(String.format(OBIS_CODE_TEMPLATE, channel)),
-                MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId());
     }
 
     protected ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionHolder conn,
@@ -252,9 +225,10 @@ public class DeviceChannelsHelper {
 
     /*
      * @param channelElementValues
-     * 
+     *
      * @return 0-based offset for the channel as opposed to the channels in
-     * ChannelElementValues, where the channels are incremented from FIRST_CHANNEL.
+     * ChannelElementValues, where the channels are incremented from
+     * FIRST_CHANNEL.
      */
     protected short correctFirstChannelOffset(final ChannelElementValuesDto channelElementValues) {
         return (short) (channelElementValues.getChannel() - FIRST_CHANNEL);
