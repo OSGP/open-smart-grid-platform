@@ -5,7 +5,7 @@ def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 def repo = 'git@github.com:OSGP/Integration-Tests.git'
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
-def branchReleaseRepo = 'bug/FLEX-4386'
+def branchReleaseRepo = 'master'
 
 pipeline {
     agent any
