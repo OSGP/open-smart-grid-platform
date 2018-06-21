@@ -8,6 +8,8 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.joda.time.DateTimeZone;
@@ -70,13 +72,21 @@ public class Iec61850GetConfigurationCommand {
                 // Hardcoded (not supported)
                 final LongTermIntervalTypeDto longTermHistoryIntervalType = LongTermIntervalTypeDto.DAYS;
 
+                // Map the relay configuration.
                 final List<RelayMapDto> relayMaps = new ArrayList<>();
-
                 for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                     Iec61850GetConfigurationCommand.this.checkRelayType(iec61850Client, deviceConnection,
                             deviceOutputSetting, deviceMessageLog);
                     relayMaps.add(mapper.map(deviceOutputSetting, RelayMapDto.class));
                 }
+
+                // Sort the relay configuration on index.
+                Collections.sort(relayMaps, new Comparator<RelayMapDto>() {
+                    @Override
+                    public int compare(final RelayMapDto o1, final RelayMapDto o2) {
+                        return o1.getIndex().compareTo(o2.getIndex());
+                    }
+                });
 
                 final RelayConfigurationDto relayConfiguration = new RelayConfigurationDto(relayMaps);
 
