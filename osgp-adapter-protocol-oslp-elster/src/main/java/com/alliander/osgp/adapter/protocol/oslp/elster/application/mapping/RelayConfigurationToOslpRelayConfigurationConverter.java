@@ -8,6 +8,8 @@
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.mapping;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
@@ -53,17 +55,26 @@ public class RelayConfigurationToOslpRelayConfigurationConverter
             return null;
         }
 
-        final List<RelayMapDto> indexAddressMap = new ArrayList<RelayMapDto>();
+        // Map the relay configuration.
+        final List<RelayMapDto> indexAddressMap = new ArrayList<>();
         for (final IndexAddressMap entry : source.getAddressMapList()) {
             // Map OSLP RT_NOT_SET to null
             indexAddressMap.add(new RelayMapDto(this.mapperFacade.map(entry.getIndex(), Integer.class),
                     this.mapperFacade.map(entry.getAddress(), Integer.class),
                     entry.hasRelayType() && entry.getRelayType() != Oslp.RelayType.RT_NOT_SET
-                            ? this.mapperFacade.map(entry.getRelayType(), RelayTypeDto.class) : null,
+                            ? this.mapperFacade.map(entry.getRelayType(), RelayTypeDto.class)
+                            : null,
                     null));
         }
 
-        final List<RelayMapDto> relayMaps = new ArrayList<RelayMapDto>();
-        return new RelayConfigurationDto(!indexAddressMap.isEmpty() ? indexAddressMap : relayMaps);
+        // Sort the relay configuration on index.
+        Collections.sort(indexAddressMap, new Comparator<RelayMapDto>() {
+            @Override
+            public int compare(final RelayMapDto o1, final RelayMapDto o2) {
+                return o1.getIndex().compareTo(o2.getIndex());
+            }
+        });
+
+        return new RelayConfigurationDto(indexAddressMap);
     }
 }
