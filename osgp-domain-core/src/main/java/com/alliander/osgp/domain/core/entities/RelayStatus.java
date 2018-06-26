@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
@@ -105,5 +106,11 @@ public class RelayStatus extends AbstractEntity {
     @Override
     public int hashCode() {
         return Objects.hash(this.device, this.index);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("index: %d, lastKnownState: %s, lastKnownSwitchingTime: %s", this.index,
+                this.lastKnownState, Instant.ofEpochMilli(this.lastKnowSwitchingTime.getTime()).toString());
     }
 }

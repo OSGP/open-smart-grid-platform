@@ -23,6 +23,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.hibernate.annotations.LazyCollection;
@@ -64,6 +65,7 @@ public class Ssld extends Device {
 
     @OneToMany(mappedBy = "device", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
+    @OrderBy("index ASC")
     private List<RelayStatus> relayStatusses;
 
     @ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)

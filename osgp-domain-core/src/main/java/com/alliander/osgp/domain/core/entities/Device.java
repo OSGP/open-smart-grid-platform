@@ -255,7 +255,9 @@ public class Device implements Serializable {
     }
 
     public void addOrganisation(final String organisationIdentification) {
-        this.organisations.add(organisationIdentification);
+        if (!this.organisations.contains(organisationIdentification)) {
+            this.organisations.add(organisationIdentification);
+        }
     }
 
     public void clearNetworkAddress() {

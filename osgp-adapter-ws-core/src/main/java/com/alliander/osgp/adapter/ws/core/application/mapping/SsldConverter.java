@@ -145,10 +145,9 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     private void addRelayStatusses(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination,
             final Ssld ssld) {
         if (ssld.getRelayStatusses() != null) {
-            com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayStatus temp = null;
             for (final com.alliander.osgp.domain.core.entities.RelayStatus r : ssld.getRelayStatusses()) {
-                temp = this.convertRelayStatus(r);
-
+                final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayStatus temp = this
+                        .convertRelayStatus(r);
                 if (temp != null) {
                     destination.getRelayStatuses().add(temp);
                 }
