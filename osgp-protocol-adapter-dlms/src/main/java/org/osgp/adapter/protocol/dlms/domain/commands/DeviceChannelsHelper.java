@@ -49,10 +49,7 @@ public class DeviceChannelsHelper {
     private static final int INDEX_VERSION = 3;
     private static final int INDEX_DEVICE_TYPE = 4;
 
-    protected static final short FIRST_CHANNEL = 1;
-    protected static final short SECOND_CHANNEL = 2;
-    protected static final short THIRD_CHANNEL = 3;
-    protected static final short FOURTH_CHANNEL = 4;
+    private static final short FIRST_CHANNEL = 1;
     private static final short NR_OF_CHANNELS = 4;
 
     @Autowired
