@@ -235,12 +235,14 @@
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"
           minOccurs="1" />
-        <xsd:element name="MbusIdentificationNumber1" type="xsd:string" />
-        <xsd:element name="MbusIdentificationNumber2" type="xsd:string" />
-        <xsd:element name="MbusIdentificationNumber3" type="xsd:string" />
-        <xsd:element name="MbusIdentificationNumber4" type="xsd:string" />
+        <xsd:element name="ChannelShortId" type="tns:MbusChannelShortEquipmentIdentifier"
+          minOccurs="0" maxOccurs="4" />
       </xsd:sequence>
     </xsd:complexType>
+    <xsd:unique name="UniqueScanMbusChannelValues">
+      <xsd:selector xpath="tns:ChannelShortId" />
+      <xsd:field xpath="tns:Channel" />
+    </xsd:unique>
   </xsd:element>
   <xsd:complexType name="ScanMbusChannelsRequestData">
     <xsd:complexContent>
@@ -248,21 +250,25 @@
         <xsd:sequence>
         </xsd:sequence>
       </xsd:extension>
-    </xsd:complexContent> 
+    </xsd:complexContent>
   </xsd:complexType>
   <xsd:complexType name="ScanMbusChannelsResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="MbusIdentificationNumber1" type="xsd:string" />
-          <xsd:element name="MbusIdentificationNumber2" type="xsd:string" />
-          <xsd:element name="MbusIdentificationNumber3" type="xsd:string" />
-          <xsd:element name="MbusIdentificationNumber4" type="xsd:string" />
+          <xsd:element name="ChannelShortId" type="tns:MbusChannelShortEquipmentIdentifier"
+            minOccurs="0" maxOccurs="4" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
+  <xsd:complexType name="MbusChannelShortEquipmentIdentifier">
+    <xsd:sequence>
+      <xsd:element name="Channel" type="common:Channel" />
+      <xsd:element name="ShortId" type="common:MbusShortEquipmentIdentifier" nillable="true" />
+    </xsd:sequence>
+  </xsd:complexType>
+
   <xsd:complexType name="AssociationLnListType">
     <xsd:sequence>
       <xsd:element name="AssociationLnListElement" type="tns:AssociationLnListElement"

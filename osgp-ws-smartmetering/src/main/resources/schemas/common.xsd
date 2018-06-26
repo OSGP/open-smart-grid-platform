@@ -732,7 +732,7 @@
       <xsd:element name="LongValue" type="xsd:long" />
     </xsd:choice>
   </xsd:complexType>
-  
+
   <xsd:simpleType name="DeviceLifecycleStatus">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="NEW_IN_INVENTORY" />
@@ -751,5 +751,34 @@
       <xsd:maxInclusive value="4" />
     </xsd:restriction>
   </xsd:simpleType>
-  
+
+  <xsd:complexType name="MbusShortEquipmentIdentifier">
+    <xsd:sequence>
+      <xsd:element name="IdentificationNumber" type="tns:MbusIdentificationNumber" nillable="true" />
+      <xsd:element name="ManufacturerIdentification" type="tns:MbusManufacturerIdentification" nillable="true" />
+      <xsd:element name="VersionIdentification" type="tns:MbusVersionIdentification" nillable="true" />
+      <xsd:element name="DeviceTypeIdentification" type="tns:MbusDeviceTypeIdentification" nillable="true" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="MbusIdentificationNumber">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[0-9]{8}"></xsd:pattern>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MbusManufacturerIdentification">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Z]{3}"></xsd:pattern>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MbusVersionIdentification">
+    <xsd:restriction base="xsd:unsignedByte" />
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MbusDeviceTypeIdentification">
+    <xsd:restriction base="xsd:unsignedByte" />
+  </xsd:simpleType>
+
 </xsd:schema>

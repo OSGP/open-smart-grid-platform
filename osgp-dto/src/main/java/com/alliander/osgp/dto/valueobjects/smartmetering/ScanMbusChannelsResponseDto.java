@@ -1,43 +1,34 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ScanMbusChannelsResponseDto extends ActionResponseDto {
 
-    private static final long serialVersionUID = -880241546092002960L;
+    private static final long serialVersionUID = 778017393218321982L;
 
-    private String mbusIdentificationNumber1;
-    private String mbusIdentificationNumber2;
-    private String mbusIdentificationNumber3;
-    private String mbusIdentificationNumber4;
+    private final ArrayList<MbusChannelShortEquipmentIdentifierDto> channelShortIds = new ArrayList<>();
 
-    public ScanMbusChannelsResponseDto(final String mbusIdentificationNumber1, final String mbusIdentificationNumber2,
-            final String mbusIdentificationNumber3, final String mbusIdentificationNumber4) {
-        this.mbusIdentificationNumber1 = mbusIdentificationNumber1;
-        this.mbusIdentificationNumber2 = mbusIdentificationNumber2;
-        this.mbusIdentificationNumber3 = mbusIdentificationNumber3;
-        this.mbusIdentificationNumber4 = mbusIdentificationNumber4;
+    public ScanMbusChannelsResponseDto(final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds) {
+        if (channelShortIds != null) {
+            this.channelShortIds.addAll(channelShortIds);
+        }
     }
 
-    public String getMbusIdentificationNumber1() {
-        return this.mbusIdentificationNumber1;
+    @Override
+    public String toString() {
+        return String.format("ScanMbusChannelsResponseDto[channelShortIds=%s]", this.channelShortIds);
     }
 
-    public String getMbusIdentificationNumber2() {
-        return this.mbusIdentificationNumber2;
+    public List<MbusChannelShortEquipmentIdentifierDto> getChannelShortIds() {
+        return new ArrayList<>(this.channelShortIds);
     }
 
-    public String getMbusIdentificationNumber3() {
-        return this.mbusIdentificationNumber3;
-    }
-
-    public String getMbusIdentificationNumber4() {
-        return this.mbusIdentificationNumber4;
-    }
 }
