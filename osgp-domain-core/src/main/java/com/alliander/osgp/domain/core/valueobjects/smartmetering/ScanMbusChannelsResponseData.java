@@ -15,7 +15,7 @@ public class ScanMbusChannelsResponseData extends ActionResponse implements Seri
 
     private static final long serialVersionUID = -4198341767681440770L;
 
-    private final ArrayList<MbusChannelShortEquipmentIdentifier> channelShortIds = new ArrayList<>();
+    private final List<MbusChannelShortEquipmentIdentifier> channelShortIds = new ArrayList<>();
 
     public ScanMbusChannelsResponseData(final List<MbusChannelShortEquipmentIdentifier> channelShortIds) {
         if (channelShortIds != null) {
