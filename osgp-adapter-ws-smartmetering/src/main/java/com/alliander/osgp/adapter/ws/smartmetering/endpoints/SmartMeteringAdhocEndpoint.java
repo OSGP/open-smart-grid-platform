@@ -9,6 +9,8 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -32,6 +34,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttri
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.MbusChannelShortEquipmentIdentifier;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequest;
@@ -307,10 +310,9 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                     .getMessageData();
 
             if (ResponseMessageResultType.OK == responseData.getResultType()) {
-                response.setMbusIdentificationNumber1(scanMbusChannelsResponse.getMbusIdentificationNumber1());
-                response.setMbusIdentificationNumber2(scanMbusChannelsResponse.getMbusIdentificationNumber2());
-                response.setMbusIdentificationNumber3(scanMbusChannelsResponse.getMbusIdentificationNumber3());
-                response.setMbusIdentificationNumber4(scanMbusChannelsResponse.getMbusIdentificationNumber4());
+                final List<MbusChannelShortEquipmentIdentifier> channelShortIds = response.getChannelShortIds();
+                channelShortIds.addAll(this.adhocMapper.mapAsList(scanMbusChannelsResponse.getChannelShortIds(),
+                        MbusChannelShortEquipmentIdentifier.class));
             } else if (responseData.getMessageData() instanceof OsgpException) {
                 throw (OsgpException) responseData.getMessageData();
             } else if (responseData.getMessageData() instanceof Exception) {
@@ -326,4 +328,5 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         return response;
     }
+
 }
