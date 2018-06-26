@@ -8,20 +8,25 @@
  */
 package com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
+import com.alliander.osgp.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringadhoc.ScanMbusChannelsSteps;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 public class BundledScanMbusChannelsSteps extends BaseBundleSteps {
+
+    @Autowired
+    private ScanMbusChannelsSteps scanMbusChannelsSteps;
 
     @Given("^the bundle request contains a scan mbus channels action$")
     public void theBundleRequestContainsAScanMbusChannelsAction() throws Throwable {
@@ -45,18 +50,7 @@ public class BundledScanMbusChannelsSteps extends BaseBundleSteps {
             throws Throwable {
 
         final ScanMbusChannelsResponse response = (ScanMbusChannelsResponse) this.getNextBundleResponse();
-
-        final String expectedChannel1 = values.get("Channel1MbusIdentificationNumber");
-        final String expectedChannel2 = values.get("Channel2MbusIdentificationNumber");
-        final String expectedChannel3 = values.get("Channel3MbusIdentificationNumber");
-        final String expectedChannel4 = values.get("Channel4MbusIdentificationNumber");
-
-        assertTrue("Not a valid response", response instanceof ScanMbusChannelsResponse);
-
-        assertEquals("Mbus Identification Number Channel 1", expectedChannel1, response.getMbusIdentificationNumber1());
-        assertEquals("Mbus Identification Number Channel 2", expectedChannel2, response.getMbusIdentificationNumber2());
-        assertEquals("Mbus Identification Number Channel 3", expectedChannel3, response.getMbusIdentificationNumber3());
-        assertEquals("Mbus Identification Number Channel 4", expectedChannel4, response.getMbusIdentificationNumber4());
+        this.scanMbusChannelsSteps.assertChannelShortIds(values, response.getChannelShortIds());
     }
 
 }
