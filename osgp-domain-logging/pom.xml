@@ -29,13 +29,13 @@
   </properties>
 
   <dependencies>
-        <!-- Alliander -->
+    <!-- Alliander -->
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>shared</artifactId>
     </dependency>
 
-        <!-- Spring Framework -->
+    <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
@@ -65,13 +65,13 @@
       <artifactId>spring-tx</artifactId>
     </dependency>
 
-        <!-- Spring Data -->
+    <!-- Spring Data -->
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-jpa</artifactId>
     </dependency>
 
-        <!-- Spring WS -->
+    <!-- Spring WS -->
     <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-core</artifactId>
@@ -85,19 +85,19 @@
       <artifactId>spring-ws-support</artifactId>
     </dependency>
 
-        <!-- Joda Time (Date/Time util) -->
+    <!-- Joda Time (Date/Time util) -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
 
-        <!-- Hikari connection pooling -->
+    <!-- Hikari connection pooling -->
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
     </dependency>
 
-        <!-- Hibernate -->
+    <!-- Hibernate -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
@@ -107,13 +107,13 @@
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
 
-        <!-- Hibernate validator -->
+    <!-- Hibernate validator -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
-        <!-- Logging -->
+    <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -127,20 +127,20 @@
       <artifactId>logback-ext-spring</artifactId>
     </dependency>
 
-        <!-- Servlet API 3.0 -->
+    <!-- Servlet API 3.0 -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
-        <!-- Jakarta commons codec -->
+    <!-- Jakarta commons codec -->
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
     </dependency>
 
-        <!-- Apache commons -->
+    <!-- Apache commons -->
     <dependency>
       <groupId>org.apache.ws.xmlschema</groupId>
       <artifactId>xmlschema-core</artifactId>
@@ -152,13 +152,13 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
-        <!-- Orika (mapping framework) -->
+    <!-- Orika (mapping framework) -->
     <dependency>
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
     </dependency>
 
-        <!-- Apache ActiveMQ -->
+    <!-- Apache ActiveMQ -->
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
@@ -168,7 +168,7 @@
       <artifactId>activemq-spring</artifactId>
     </dependency>
 
-        <!-- Testing dependencies -->
+    <!-- Testing dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

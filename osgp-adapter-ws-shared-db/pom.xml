@@ -14,7 +14,7 @@
   <artifactId>osgp-adapter-ws-shared-db</artifactId>
   <name>osgp-adapter-ws-shared-db</name>
   <packaging>jar</packaging>
-    <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
   <description>Database acces module for web service modules.</description>
 
   <parent>
@@ -34,7 +34,7 @@
   </build>
 
   <dependencies>
-        <!-- Alliander -->
+    <!-- Alliander -->
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-domain-core</artifactId>
@@ -44,7 +44,7 @@
       <artifactId>shared</artifactId>
     </dependency>
 
-        <!-- Spring Framework -->
+    <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
@@ -74,25 +74,25 @@
       <artifactId>spring-tx</artifactId>
     </dependency>
 
-        <!-- Spring Data -->
+    <!-- Spring Data -->
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-jpa</artifactId>
     </dependency>
 
-        <!-- Joda Time (Date/Time util) -->
+    <!-- Joda Time (Date/Time util) -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
 
-        <!-- Hikari connection pooling -->
+    <!-- Hikari connection pooling -->
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
     </dependency>
 
-        <!-- Hibernate -->
+    <!-- Hibernate -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
@@ -102,13 +102,13 @@
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
 
-        <!-- Hibernate validator -->
+    <!-- Hibernate validator -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>    
 
-        <!-- Logging -->
+    <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -122,7 +122,7 @@
       <artifactId>logback-ext-spring</artifactId>
     </dependency>
 
-        <!-- Testing dependencies -->
+    <!-- Testing dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
