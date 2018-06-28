@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
-  License, Version 2.0 (the "License"); you may not use this file except in 
-  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -71,7 +77,6 @@
     <givwenzen.version>1.0.2</givwenzen.version>
     <checkstyle.version>2.12.1</checkstyle.version>
     <pmd.version>3.8</pmd.version>
-    <jxr.version>2.5</jxr.version>
     <findbug.version>3.0.0</findbug.version>
     <apache.activemq.version>5.10.0</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
@@ -83,7 +88,9 @@
     <SunriseSunsetCalculator.version>1.1</SunriseSunsetCalculator.version>
     <mockito.version>1.9.5</mockito.version>
     <apache.commons.schema>2.0.3</apache.commons.schema>
-    <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
+    <jxr.version>2.5</jxr.version>
+    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.7.1</maven.site.plugin>
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
     <cucumber.version>1.2.5</cucumber.version>
@@ -751,6 +758,7 @@
           <artifactId>findbugs-maven-plugin</artifactId>
           <version>${findbug.version}</version>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -761,6 +769,12 @@
           <artifactId>maven-jxr-plugin</artifactId>
           <version>${jxr.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${maven.site.plugin}</version>
+        </plugin>
+
         <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
