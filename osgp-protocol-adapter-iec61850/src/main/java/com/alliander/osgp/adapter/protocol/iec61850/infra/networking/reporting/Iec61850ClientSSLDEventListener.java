@@ -375,6 +375,46 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
                 this.logger.info("No event notifications received from device: {}", this.deviceIdentification);
                 return;
             }
+
+            if (!this.eventNotifications.isEmpty()) {
+                final EventTypeDto typeTariff = EventTypeDto.LIGHT_EVENTS_LIGHT_OFF
+                        .equals(this.eventNotifications.get(0).getEventType()) ? EventTypeDto.TARIFF_EVENTS_TARIFF_OFF
+                                : EventTypeDto.TARIFF_EVENTS_TARIFF_ON;
+                final EventTypeDto typeLight = EventTypeDto.LIGHT_EVENTS_LIGHT_OFF
+                        .equals(this.eventNotifications.get(0).getEventType()) ? EventTypeDto.LIGHT_EVENTS_LIGHT_OFF
+                                : EventTypeDto.LIGHT_EVENTS_LIGHT_ON;
+                final DateTime now = DateTime.now();
+
+                final EventNotificationDto e1 = new EventNotificationDto(this.deviceIdentification, now.plusMillis(100),
+                        typeTariff, "e1", 1);
+                final EventNotificationDto e2 = new EventNotificationDto(this.deviceIdentification, now.plusMillis(200),
+                        typeLight, "e2", 2);
+                final EventNotificationDto e3 = new EventNotificationDto(this.deviceIdentification, now.plusMillis(300),
+                        typeLight, "e3", 3);
+                final EventNotificationDto e4 = new EventNotificationDto(this.deviceIdentification, now.plusMillis(400),
+                        typeLight, "e4", 4);
+
+                final EventNotificationDto e5 = new EventNotificationDto(this.deviceIdentification, now.plusMillis(500),
+                        typeTariff, "e5", 1);
+                final EventNotificationDto e6 = new EventNotificationDto(this.deviceIdentification, now.plusMillis(600),
+                        typeLight, "e6", 2);
+                final EventNotificationDto e7 = new EventNotificationDto(this.deviceIdentification, now.plusMillis(700),
+                        typeLight, "e7", 3);
+                final EventNotificationDto e8 = new EventNotificationDto(this.deviceIdentification, now.plusMillis(800),
+                        typeLight, "e8", 4);
+
+                this.eventNotifications.clear();
+                this.eventNotifications.add(e1);
+                this.eventNotifications.add(e2);
+                this.eventNotifications.add(e3);
+                this.eventNotifications.add(e4);
+
+                this.eventNotifications.add(e5);
+                this.eventNotifications.add(e6);
+                this.eventNotifications.add(e7);
+                this.eventNotifications.add(e8);
+            }
+
             Collections.sort(this.eventNotifications, NOTIFICATIONS_BY_TIME);
             try {
                 this.deviceManagementService.addEventNotifications(this.deviceIdentification, this.eventNotifications);
