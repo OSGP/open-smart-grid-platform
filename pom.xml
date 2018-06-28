@@ -22,7 +22,7 @@
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
   </properties>
-  
+
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
     to generate a maven site -->
   <description>Open Source Webapps for the OSGP Platform.</description>
@@ -49,6 +49,26 @@
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>${maven.project.info.reports.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>${jxr.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>${maven.site.plugin}</version>
+      </plugin>
+    </plugins>
+  </build>
 
   <modules>
     <module>parent-os-webapps</module>
