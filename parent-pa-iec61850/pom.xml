@@ -525,7 +525,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>${xjr.version}</version>
+        <version>${jxr.version}</version>
       </plugin>
     </plugins>
   </reporting>
