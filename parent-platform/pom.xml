@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
-  License, Version 2.0 (the "License"); you may not use this file except in 
-  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -59,7 +65,8 @@
     <commons.codec.version>1.9</commons.codec.version>
     <orika.version>1.5.1</orika.version>
     <jxr.version>2.5</jxr.version>
-    <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
+    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.7.1</maven.site.plugin>
     <apache.activemq.version>5.10.0</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
     <proton-jms.version>0.7</proton-jms.version>
@@ -574,11 +581,13 @@
             </flowInitContext>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven.compiler.plugin.version}</version>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -589,6 +598,12 @@
           <artifactId>maven-jxr-plugin</artifactId>
           <version>${jxr.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${maven.site.plugin}</version>
+        </plugin>
+
         <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
