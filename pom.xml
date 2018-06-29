@@ -16,6 +16,13 @@
   <groupId>com.alliander.osgp</groupId>
   <version>4.29.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+
+  <properties>
+    <jxr.version>2.5</jxr.version>
+    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.7.1</maven.site.plugin>
+  </properties>
+
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Protocol Adapter for OSLP smart devices.</description>
   <organization>
@@ -59,6 +66,21 @@
             <versionTagPrefix>${project.artifactId}-</versionTagPrefix>
           </flowInitContext>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>${maven.project.info.reports.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>${jxr.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>${maven.site.plugin}</version>
       </plugin>
     </plugins>
   </build>
