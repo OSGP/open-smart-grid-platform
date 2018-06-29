@@ -375,6 +375,7 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
                 this.logger.info("No event notifications received from device: {}", this.deviceIdentification);
                 return;
             }
+
             Collections.sort(this.eventNotifications, NOTIFICATIONS_BY_TIME);
             try {
                 this.deviceManagementService.addEventNotifications(this.deviceIdentification, this.eventNotifications);

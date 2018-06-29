@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<!--
+
+    Copyright 2016 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -7,8 +17,8 @@
   <artifactId>osgp-protocol-simulator-iec61850</artifactId>
   <name>osgp-protocol-simulator-iec61850</name>
   <packaging>war</packaging>
-  <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin 
-    to generate a maven site -->
+  <!-- Description, Organization, Licenses, URL and Distribution Management 
+    elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Simulator for IEC61850 Protocol.</description>
   <organization>
     <name>OSGP</name>
@@ -32,14 +42,6 @@
   </distributionManagement>
   <version>4.29.0-SNAPSHOT</version>
 
-  <!-- <parent> -->
-  <!-- <groupId>com.alliander.osgp</groupId> -->
-  <!-- <artifactId>parent-pa-iec61850</artifactId> -->
-  <!-- <version>3.2.0-SNAPSHOT</version> -->
-  <!-- <relativePath>../parent-pa-iec61850/pom.xml</relativePath> -->
-  <!-- </parent> -->
-
-
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -54,7 +56,10 @@
     <java.version>1.8</java.version>
     <spring.boot.version>1.5.13.RELEASE</spring.boot.version>
     <openmuc.openiec61850.version>1.5.0</openmuc.openiec61850.version>
-    
+
+    <jxr.version>2.5</jxr.version>
+    <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
+    <maven.site.plugin>3.7.1</maven.site.plugin>
   </properties>
 
   <dependencies>
@@ -94,9 +99,10 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
+
       <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-war-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <attachClasses>true</attachClasses>
           <archive>
@@ -104,9 +110,10 @@
               <addClasspath>true</addClasspath>
               <mainClass>com.alliander.osgp.simulator.protocol.iec61850.SimulatorApplication</mainClass>
             </manifest>
-         </archive>
-       </configuration>
-    </plugin>
+          </archive>
+        </configuration>
+      </plugin>
+
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -128,9 +135,24 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>${maven.project.info.reports.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>${jxr.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>${maven.site.plugin}</version>
+      </plugin>
     </plugins>
 
   </build>
-
 
 </project>
