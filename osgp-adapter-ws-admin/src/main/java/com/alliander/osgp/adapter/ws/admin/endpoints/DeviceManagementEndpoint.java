@@ -258,6 +258,12 @@ public class DeviceManagementEndpoint {
 
         try {
             for (final DeviceAuthorisation authorization : request.getDeviceAuthorisations()) {
+                LOGGER.info("device: {}, organisation: {}, isRevoked: {}, functionGroup: {}",
+                        authorization.getDeviceIdentification(), authorization.getOrganisationIdentification(),
+                        authorization.isRevoked(), authorization.getFunctionGroup());
+            }
+
+            for (final DeviceAuthorisation authorization : request.getDeviceAuthorisations()) {
                 if (authorization.isRevoked() != null && authorization.isRevoked()) {
                     this.deviceManagementService.removeDeviceAuthorization(organisationIdentification,
                             authorization.getOrganisationIdentification(), authorization.getDeviceIdentification(),

@@ -49,6 +49,8 @@ public class ApplicationContext extends AbstractConfig {
     private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
     private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
 
+    private static final String PROPERTY_NAME_NET_MANAGEMENT_ORGANISATION = "net.management.organisation";
+
     @Bean
     public String defaultProtocol() {
         return this.environment.getRequiredProperty(PROPERTY_NAME_DEFAULT_PROTOCOL);
@@ -94,5 +96,10 @@ public class ApplicationContext extends AbstractConfig {
         final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
         m.setValidatorFactory(this.validator());
         return m;
+    }
+
+    @Bean
+    public String netManagementOrganisation() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_NET_MANAGEMENT_ORGANISATION);
     }
 }

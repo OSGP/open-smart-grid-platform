@@ -36,6 +36,8 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesReq
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindOrganisationRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledTasksResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceAliasRequest;
@@ -108,6 +110,32 @@ public class DeviceManagementEndpoint {
             @Qualifier(value = "coreDeviceManagementMapper") final DeviceManagementMapper deviceManagementMapper) {
         this.deviceManagementService = deviceManagementService;
         this.deviceManagementMapper = deviceManagementMapper;
+    }
+
+    @PayloadRoot(localPart = "FindOrganisationRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public FindOrganisationResponse findOrganisation(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final FindOrganisationRequest request) throws OsgpException {
+
+        LOGGER.info("Find organisation for organisation: {}.", organisationIdentification);
+
+        final FindOrganisationResponse response = new FindOrganisationResponse();
+
+        try {
+            final Organisation organisation = this.deviceManagementService.findOrganisation(organisationIdentification,
+                    request.getOrganisationIdentification());
+            response.setOrganisation(this.deviceManagementMapper.map(organisation,
+                    com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation.class));
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
     }
 
     @PayloadRoot(localPart = "FindAllOrganisationsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)

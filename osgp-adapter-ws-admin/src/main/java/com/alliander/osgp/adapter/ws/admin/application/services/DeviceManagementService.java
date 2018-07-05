@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.ws.admin.application.services;
 
 import java.util.List;
 
-import javax.naming.OperationNotSupportedException;
 import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -50,7 +49,6 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
 import com.alliander.osgp.domain.core.services.SecurityService;
-import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.validation.PublicKey;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
@@ -92,9 +90,6 @@ public class DeviceManagementService {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private DeviceSpecifications deviceSpecifications;
-
-    @Autowired
     private DeviceLogItemRepository logItemRepository;
 
     @Autowired
@@ -114,6 +109,9 @@ public class DeviceManagementService {
 
     @Autowired
     private ProtocolInfoRepository protocolRepository;
+
+    @Autowired
+    private String netManagementOrganisation;
 
     /**
      * Constructor
@@ -233,11 +231,6 @@ public class DeviceManagementService {
             @Identification final String organisationIdentification, @Identification final String deviceIdentification,
             @NotNull final DeviceFunctionGroup group) throws FunctionalException {
 
-        if (group == DeviceFunctionGroup.OWNER) {
-            throw new FunctionalException(FunctionalExceptionType.METHOD_NOT_ALLOWED_FOR_OWNER, ComponentType.WS_ADMIN,
-                    new OperationNotSupportedException("Owner not allowed to set via this method."));
-        }
-
         // Check input data and authorization
         final Organisation organisation = this.findOrganisation(organisationIdentification);
 
@@ -264,17 +257,11 @@ public class DeviceManagementService {
 
         LOGGER.info("Organisation {} now has authorization for function group {} on device {}",
                 organisationIdentification, group, deviceIdentification);
-
     }
 
     public void removeDeviceAuthorization(@Identification final String ownerOrganisationIdentification,
             @Identification final String organisationIdentification, @Identification final String deviceIdentification,
             @NotNull final DeviceFunctionGroup group) throws FunctionalException {
-
-        if (group == DeviceFunctionGroup.OWNER) {
-            throw new FunctionalException(FunctionalExceptionType.METHOD_NOT_ALLOWED_FOR_OWNER, ComponentType.WS_ADMIN,
-                    new OperationNotSupportedException("Owner not allowed to set via this method."));
-        }
 
         // Check input data and authorization
         final Organisation organisation = this.findOrganisation(organisationIdentification);
@@ -284,6 +271,15 @@ public class DeviceManagementService {
         final Device device = this.findDevice(deviceIdentification);
 
         this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
+
+        // Never remove the OWNER authorization for the net management
+        // organization.
+        if (this.netManagementOrganisation.equals(organisationIdentification)
+                && DeviceFunctionGroup.OWNER.equals(group)) {
+            LOGGER.info("Not removing DeviceFunctionGroup.OWNER for net management organisation: {}",
+                    this.netManagementOrganisation);
+            return;
+        }
 
         // All checks pass, remove authorization
         device.removeAuthorization(organisation, group);
