@@ -19,7 +19,7 @@ public class RelayMapDto implements Serializable {
     private final Integer index;
     private final Integer address;
     private RelayTypeDto relayType;
-    private String alias;
+    private final String alias;
 
     public RelayMapDto(final Integer index, final Integer address, final RelayTypeDto relayType, final String alias) {
         this.index = index;
@@ -46,5 +46,11 @@ public class RelayMapDto implements Serializable {
 
     public void changeRelayType(final RelayTypeDto relayType) {
         this.relayType = relayType;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("RelayMapDto [index: %d, address: %d relayType: %s, alias: %s]", this.index, this.address,
+                this.relayType.name(), this.alias);
     }
 }

@@ -67,20 +67,32 @@
     <wsdl:part element="dman:FindEventsRequest" name="FindEventsRequest">
     </wsdl:part>
   </wsdl:message>
+
+  <wsdl:message name="FindOrganisationResponse">
+    <wsdl:part element="dman:FindOrganisationResponse" name="FindOrganisationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="FindOrganisationHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="FindOrganisationRequest">
+    <wsdl:part element="dman:FindOrganisationRequest" name="FindOrganisationRequest">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:message name="FindAllOrganisationsResponse">
-    <wsdl:part element="dman:FindAllOrganisationsResponse"
-      name="FindAllOrganisationsResponse">
+    <wsdl:part element="dman:FindAllOrganisationsResponse" name="FindAllOrganisationsResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="FindAllOrganisationsHeader">
-    <wsdl:part element="common:OrganisationIdentification"
-      name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
   <wsdl:message name="FindAllOrganisationsRequest">
-    <wsdl:part element="dman:FindAllOrganisationsRequest"
-      name="FindAllOrganisationsRequest">
+    <wsdl:part element="dman:FindAllOrganisationsRequest" name="FindAllOrganisationsRequest">
     </wsdl:part>
   </wsdl:message>
 
@@ -285,6 +297,15 @@
       </wsdl:output>
     </wsdl:operation>
 
+    <wsdl:operation name="FindOrganisation">
+      <wsdl:input message="tns:FindOrganisationRequest"
+        name="FindOrganisationRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:FindOrganisationResponse"
+        name="FindOrganisationResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
     <wsdl:operation name="FindAllOrganisations">
       <wsdl:input message="tns:FindAllOrganisationsRequest"
         name="FindAllOrganisationsRequest">
@@ -432,6 +453,22 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SetEventNotificationsResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="FindOrganisation">
+      <soap:operation soapAction="" />
+      <wsdl:input name="FindOrganisationRequest">
+        <soap:header message="tns:FindOrganisationHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:FindOrganisationHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:FindOrganisationHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="FindOrganisationResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
