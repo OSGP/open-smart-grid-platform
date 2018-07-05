@@ -5,14 +5,14 @@ package com.alliander.osgp.shared.infra.ws;
 
 import javax.xml.namespace.QName;
 
-import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
 import org.springframework.xml.namespace.QNameUtils;
 
-public class OrganisationIdentificationClientInterceptor implements ClientInterceptor {
+public class OrganisationIdentificationClientInterceptor extends ClientInterceptorAdapter {
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String USER_NAME_HEADER = "UserName";
     private static final String APPLICATION_NAME_HEADER = "ApplicationName";
@@ -109,20 +109,5 @@ public class OrganisationIdentificationClientInterceptor implements ClientInterc
         userElement.setText(this.userName);
 
         return true;
-    }
-
-    @Override
-    public boolean handleResponse(final MessageContext messageContext) {
-        return true;
-    }
-
-    @Override
-    public boolean handleFault(final MessageContext messageContext) {
-        return true;
-    }
-
-    @Override
-    public void afterCompletion(final MessageContext messageContext, final Exception ex) {
-        // Required to implement, but functionality not needed
     }
 }
