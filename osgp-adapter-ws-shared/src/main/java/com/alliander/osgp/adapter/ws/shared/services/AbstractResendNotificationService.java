@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort.Direction;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
 import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
+import com.alliander.osgp.shared.exceptionhandling.CircuitBreakerOpenException;
 
 public abstract class AbstractResendNotificationService {
 
@@ -65,7 +66,14 @@ public abstract class AbstractResendNotificationService {
              * the results this eliminates the chance of repeatedly getting a
              * full page of response data of which none are actually re-sent.)
              */
-            this.resendNotifications((short) notificationsResent, createdBefore);
+            try {
+                this.resendNotifications((short) notificationsResent, createdBefore);
+            } catch (final CircuitBreakerOpenException exc) {
+                LOGGER.warn(
+                        "Processing notifications for this run will be stopped, because the circuit breaker is open.",
+                        exc);
+                break;
+            }
         }
     }
 
