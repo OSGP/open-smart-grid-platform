@@ -172,6 +172,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_ORGANIZATION = "Organization";
     public static final String KEY_ORGANIZATION_DESCRIPTION = "Description";
     public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
+    public static final String KEY_ORGANIZATION_IDENTIFICATION_TO_FIND = "OrganizationIdentificationToFind";
     public static final String KEY_OSLP_RESULT = "OSLPResult";
 
     public static final String KEY_OWNER = "Owner";

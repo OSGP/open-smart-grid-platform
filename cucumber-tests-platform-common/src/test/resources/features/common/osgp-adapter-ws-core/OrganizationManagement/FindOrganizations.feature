@@ -1,8 +1,61 @@
 @Common @Platform @CoreOrganizationManagement
 Feature: CoreOrganizationManagement Finding Organizations
-  As a ...  
-  I want to ...  
+  As a ...
+  I want to ...
   In order ...
+
+  Scenario: Get an organization by net management organization
+    Given an organization
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | MAA                                     |
+    And an organization
+      | OrganizationIdentification | LianderNetManagement |
+      | Name                       | An Organization      |
+      | Domains                    | COMMON               |
+      | Prefix                     | LIA                  |
+    When receiving a get organization request
+      | OrganizationIdentification       | LianderNetManagement |
+      | OrganizationIdentificationToFind | test-org             |
+    Then the get organization response contains 1 organization
+    And the get organization response contains
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | MAA                                     |
+
+  Scenario: Get an organization by municipality organization
+    Given an organization
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | MAA                                     |
+    And an organization
+      | OrganizationIdentification | LianderNetManagement |
+      | Name                       | An Organization      |
+      | Domains                    | COMMON               |
+      | Prefix                     | LIA                  |
+    When receiving a get organization request
+      | OrganizationIdentification       | test-org |
+      | OrganizationIdentificationToFind | test-org |
+    Then the get organization response contains 1 organizations
+    And the get organization response contains
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | MAA                                     |
+
+  Scenario: Try to get a non existent organization
+    Given an organization
+      | OrganizationIdentification | LianderNetManagement |
+      | Name                       | An Organization      |
+      | Domains                    | COMMON               |
+      | Prefix                     | LIA                  |
+    When receiving a get organization request
+      | OrganizationIdentification       | LianderNetManagement |
+      | OrganizationIdentificationToFind | non-existent-org     |
+    Then the get organization response contains 0 organizations
 
   Scenario: Get all organizations
     Given an organization

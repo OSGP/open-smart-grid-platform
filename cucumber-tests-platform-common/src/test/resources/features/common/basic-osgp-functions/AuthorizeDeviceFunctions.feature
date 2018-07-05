@@ -149,7 +149,7 @@ Feature: BasicOsgpFunctions Common Authorizing Device Functions
 
     Examples: 
       | DeviceFunctionGroup | DelegateFunctionGroup | Allowed |
-      | OWNER               | OWNER                 | false   |
+      | OWNER               | OWNER                 | true    |
       | OWNER               | INSTALLATION          | true    |
       | OWNER               | AD_HOC                | true    |
       | OWNER               | MANAGEMENT            | true    |

@@ -22,6 +22,8 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesReq
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindOrganisationRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledTasksResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceLifecycleStatusAsyncRequest;
@@ -76,6 +78,20 @@ public class CoreDeviceManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetOwnerResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public FindOrganisationResponse findOrganization(final FindOrganisationRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (FindOrganisationResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public FindOrganisationResponse findOrganization(final String organizationIdentification,
+            final FindOrganisationRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(organizationIdentification,
+                this.getUserName());
+        return (FindOrganisationResponse) wst.marshalSendAndReceive(request);
     }
 
     public FindAllOrganisationsResponse findAllOrganizations(final FindAllOrganisationsRequest request)

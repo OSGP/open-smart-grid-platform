@@ -22,6 +22,8 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindOrganisationRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.PlatformDomain;
 import com.alliander.osgp.cucumber.core.ScenarioContext;
@@ -43,12 +45,23 @@ public class FindOrganizationsSteps {
     @Autowired
     private CoreDeviceManagementClient client;
 
-    /**
-     *
-     * @throws IOException
-     * @throws GeneralSecurityException
-     * @throws WebServiceSecurityException
-     */
+    @When("^receiving a get organization request$")
+    public void receivingGetOrganizationRequest(final Map<String, String> settings)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        ScenarioContext.current().put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
+                PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+
+        final FindOrganisationRequest request = new FindOrganisationRequest();
+        request.setOrganisationIdentification(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION_TO_FIND,
+                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION_TO_FIND));
+
+        try {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.findOrganization(request));
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
+        }
+    }
+
     @When("^receiving a get all organizations request$")
     public void receivingGetAllOrganizationsRequest(final Map<String, String> settings)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
@@ -62,12 +75,6 @@ public class FindOrganizationsSteps {
         }
     }
 
-    /**
-     *
-     * @throws IOException
-     * @throws GeneralSecurityException
-     * @throws WebServiceSecurityException
-     */
     @When("^receiving an own unknown organization request$")
     public void receivingAnOwnUnknownOrganizationRequest(final Map<String, String> settings)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
@@ -78,6 +85,22 @@ public class FindOrganizationsSteps {
                     this.client.findAllOrganizations(new FindAllOrganisationsRequest()));
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
+        }
+    }
+
+    @Then("^the get organization response contains (\\d++) organizations?$")
+    public void theGetOrganizationResponseContainsOrganization(final Integer expectedCount) {
+        final FindOrganisationResponse response = (FindOrganisationResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
+
+        if (expectedCount == 0) {
+            Assert.assertNull("Organisation object should be null.", response.getOrganisation());
+        } else if (expectedCount == 1) {
+            Assert.assertNotNull("Organisation object should not be null.", response.getOrganisation());
+        } else {
+            Assert.fail(
+                    "This Then step should be used to test if an organisation object is null or if there's exactly 1 organisation object. The argument 'expectedCount' with value "
+                            + expectedCount + " is not valid for this step.");
         }
     }
 
@@ -92,6 +115,21 @@ public class FindOrganizationsSteps {
     @Then("^the get own unknown organization response contains soap fault$")
     public void theGetOwnUnknownOrganizationResponseContainsSoapFault(final Map<String, String> expectedResult) {
         GenericResponseSteps.verifySoapFault(expectedResult);
+    }
+
+    @Then("^the get organization response contains$")
+    public void theGetOrganizationResponseContains(final Map<String, String> expectedResult) {
+        final FindOrganisationResponse response = (FindOrganisationResponse) ScenarioContext.current()
+                .get(PlatformCommonKeys.RESPONSE);
+
+        final Organisation organisation = response.getOrganisation();
+
+        final Organisation expected = this.createOrganisation(expectedResult);
+
+        Assert.assertTrue(
+                "Expected organization \"" + expected.getOrganisationIdentification()
+                        + "\" was not found as the organization in the response",
+                this.organisationMatches(expected, organisation));
     }
 
     @Then("^the get all organizations response contains$")
@@ -111,7 +149,6 @@ public class FindOrganizationsSteps {
 
         Assert.fail("Expected organization \"" + expected.getOrganisationIdentification()
                 + "\" was not found as one of the " + organisations.size() + " organizations in the response");
-
     }
 
     private Organisation createOrganisation(final Map<String, String> expectedResult) {
