@@ -176,6 +176,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_OSLP_RESULT = "OSLPResult";
 
     public static final String KEY_OWNER = "Owner";
+    public static final String KEY_SECOND_OWNER = "SecondOwner";
     public static final String KEY_PAGE = "Page";
     public static final String KEY_PAGE_SIZE = "PageSize";
     public static final String KEY_PERIOD_TYPE = "PeriodType";
