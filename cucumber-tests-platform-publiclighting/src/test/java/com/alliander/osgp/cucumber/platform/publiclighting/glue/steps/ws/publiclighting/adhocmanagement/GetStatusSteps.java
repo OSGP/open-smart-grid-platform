@@ -40,6 +40,7 @@ import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import com.alliander.osgp.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import com.alliander.osgp.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingAdHocManagementClient;
+import com.alliander.osgp.cucumber.platform.publiclighting.support.ws.tariffswitching.TariffSwitchingAdHocManagementClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
@@ -51,7 +52,10 @@ import cucumber.api.java.en.When;
 public class GetStatusSteps {
 
     @Autowired
-    private PublicLightingAdHocManagementClient client;
+    private PublicLightingAdHocManagementClient publicLightingClient;
+
+    @Autowired
+    private TariffSwitchingAdHocManagementClient tariffSwitchingClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetStatusSteps.class);
 
@@ -72,7 +76,24 @@ public class GetStatusSteps {
                         PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.client.getStatus(request));
+            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                    this.publicLightingClient.getStatus(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, ex);
+        }
+    }
+
+    @When("^receiving a get tariff status request$")
+    public void receivingAGetTariffStatusRequest(final Map<String, String> requestParameters) throws Throwable {
+
+        final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest request = new com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        try {
+            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE,
+                    this.tariffSwitchingClient.getStatus(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, ex);
         }
@@ -86,6 +107,16 @@ public class GetStatusSteps {
                 "unknown-organization");
 
         this.receivingAGetStatusRequest(requestParameters);
+    }
+
+    @When("^receiving a get tariff status request by an unknown organization$")
+    public void receivingAGetTariffStatusRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
+            throws Throwable {
+        // Force the request being sent to the platform as a given organization.
+        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                "unknown-organization");
+
+        this.receivingAGetTariffStatusRequest(requestParameters);
     }
 
     /**
@@ -117,6 +148,27 @@ public class GetStatusSteps {
                 + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
     }
 
+    @Then("^the get tariff status async response contains$")
+    public void theGetTariffStatusAsyncResponseContains(final Map<String, String> expectedResponseData)
+            throws Throwable {
+
+        final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncResponse asyncResponse = (com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncResponse) ScenarioContext
+                .current().get(PlatformPubliclightingKeys.RESPONSE);
+
+        Assert.assertNotNull(asyncResponse.getAsyncResponse().getCorrelationUid());
+        Assert.assertEquals(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION),
+                asyncResponse.getAsyncResponse().getDeviceId());
+
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
+        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
+                getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                        PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+
+        LOGGER.info("Got CorrelationUid: ["
+                + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
+    }
+
     @Then("^the get status response contains soap fault$")
     public void theGetStatusResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
         GenericResponseSteps.verifySoapFault(expectedResponseData);
@@ -127,7 +179,7 @@ public class GetStatusSteps {
             final Map<String, String> expectedResult) throws Throwable {
         final GetStatusAsyncRequest request = this.getGetStatusAsyncRequest(deviceIdentification);
         final GetStatusResponse response = Wait.untilAndReturn(() -> {
-            final GetStatusResponse retval = this.client.getGetStatusResponse(request);
+            final GetStatusResponse retval = this.publicLightingClient.getGetStatusResponse(request);
             Assert.assertNotNull(retval);
             Assert.assertEquals(
                     Enum.valueOf(OsgpResultType.class, expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)),
@@ -191,12 +243,34 @@ public class GetStatusSteps {
         }
     }
 
+    @Then("^the platform buffers a get tariff status response message for device \"([^\"]*)\"$")
+    public void thePlatformBuffersAGetTariffStatusResponseMessageForDevice(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws Throwable {
+        final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncRequest request = this
+                .getGetTariffStatusAsyncRequest(deviceIdentification);
+        final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusResponse response = Wait
+                .untilAndReturn(() -> {
+                    final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusResponse retval = this.tariffSwitchingClient
+                            .getGetStatusResponse(request);
+                    Assert.assertNotNull(retval);
+                    Assert.assertEquals(Enum.valueOf(
+                            com.alliander.osgp.adapter.ws.schema.tariffswitching.common.OsgpResultType.class,
+                            expectedResult.get(PlatformPubliclightingKeys.KEY_RESULT)), retval.getResult());
+                    return retval;
+                });
+
+        final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.DeviceStatus deviceStatus = response
+                .getDeviceStatus();
+        Assert.assertNotNull(deviceStatus);
+        Assert.assertNotNull(deviceStatus.getTariffValues());
+    }
+
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\" which contains soap fault$")
     public void thePlatformBuffersAGetStatusResponseMessageForDeviceWhichContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         try {
-            this.client.getGetStatusResponse(this.getGetStatusAsyncRequest(deviceIdentification));
+            this.publicLightingClient.getGetStatusResponse(this.getGetStatusAsyncRequest(deviceIdentification));
         } catch (final SoapFaultClientException sfce) {
             ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, sfce);
         }
@@ -207,6 +281,18 @@ public class GetStatusSteps {
     private GetStatusAsyncRequest getGetStatusAsyncRequest(final String deviceIdentification) {
         final GetStatusAsyncRequest request = new GetStatusAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid(
+                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        return request;
+    }
+
+    private com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncRequest getGetTariffStatusAsyncRequest(
+            final String deviceIdentification) {
+        final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncRequest request = new com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusAsyncRequest();
+        final com.alliander.osgp.adapter.ws.schema.tariffswitching.common.AsyncRequest asyncRequest = new com.alliander.osgp.adapter.ws.schema.tariffswitching.common.AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
         asyncRequest.setCorrelationUid(
                 (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));

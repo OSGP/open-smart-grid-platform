@@ -147,7 +147,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       | 2016-12-15    |
 
   Scenario Outline: Set tariff schedule with 51 schedules # Fail
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
     When receiving a set tariff schedule request for 51 schedules

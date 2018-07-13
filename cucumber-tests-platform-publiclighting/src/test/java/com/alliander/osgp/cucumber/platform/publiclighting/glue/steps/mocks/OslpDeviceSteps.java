@@ -42,7 +42,6 @@ import com.alliander.osgp.cucumber.platform.publiclighting.mocks.oslpdevice.Devi
 import com.alliander.osgp.cucumber.platform.publiclighting.mocks.oslpdevice.MockOslpServer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.domain.core.valueobjects.RelayMap;
-import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.ActionTime;
 import com.alliander.osgp.oslp.Oslp.DaliConfiguration;
@@ -801,59 +800,6 @@ public class OslpDeviceSteps {
      * Setup method to get a status which should be returned by the mock.
      *
      * @param result
-     *            The get status to respond.
-     */
-    @Given("^the device returns a get status response over \"([^\"]*)\"$")
-    public void theDeviceReturnsAGetStatusResponseOverOSLP(final String protocol, final Map<String, String> result) {
-        int eventNotificationTypes = 0;
-        final String eventNotificationTypesString = getString(result,
-                PlatformPubliclightingKeys.KEY_EVENTNOTIFICATIONTYPES,
-                PlatformPubliclightingDefaults.DEFAULT_EVENTNOTIFICATIONTYPES);
-        for (final String eventNotificationType : eventNotificationTypesString
-                .split(PlatformPubliclightingKeys.SEPARATOR_COMMA)) {
-            if (!eventNotificationType.isEmpty()) {
-                eventNotificationTypes = eventNotificationTypes
-                        + Enum.valueOf(EventNotificationTypeDto.class, eventNotificationType.trim()).getValue();
-            }
-        }
-
-        final List<LightValue> lightValues = new ArrayList<>();
-        if (!getString(result, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
-                PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES).isEmpty()
-                && getString(result, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
-                        PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
-                                .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON).length > 0) {
-
-            for (final String lightValueString : getString(result, PlatformPubliclightingKeys.KEY_LIGHTVALUES,
-                    PlatformPubliclightingDefaults.DEFAULT_LIGHTVALUES)
-                            .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON)) {
-                final String[] parts = lightValueString.split(PlatformPubliclightingKeys.SEPARATOR_COMMA);
-
-                final LightValue lightValue = LightValue.newBuilder()
-                        .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
-                        .setOn(parts[1].toLowerCase().equals("true"))
-                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2]))).build();
-
-                lightValues.add(lightValue);
-            }
-        }
-
-        this.oslpMockServer.mockGetStatusResponse(
-                getEnum(result, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
-                        PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
-                getEnum(result, PlatformPubliclightingKeys.KEY_ACTUAL_LINKTYPE, LinkType.class,
-                        PlatformPubliclightingDefaults.DEFAULT_ACTUAL_LINKTYPE),
-                getEnum(result, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class,
-                        PlatformPubliclightingDefaults.DEFAULT_LIGHTTYPE),
-                eventNotificationTypes, getEnum(result, PlatformPubliclightingKeys.KEY_STATUS, Oslp.Status.class,
-                        PlatformPubliclightingDefaults.DEFAULT_STATUS),
-                lightValues);
-    }
-
-    /**
-     * Setup method to get a status which should be returned by the mock.
-     *
-     * @param result
      */
     @Given("^the device returns a get status response \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetStatusResponseWithResultOverOSLP(final String result, final String protocol,
@@ -895,6 +841,26 @@ public class OslpDeviceSteps {
             }
         }
 
+        final List<LightValue> tariffValues = new ArrayList<>();
+        if (!getString(requestParameters, PlatformPubliclightingKeys.KEY_TARIFFVALUES,
+                PlatformPubliclightingDefaults.DEFAULT_TARIFFVALUES).isEmpty()
+                && getString(requestParameters, PlatformPubliclightingKeys.KEY_TARIFFVALUES,
+                        PlatformPubliclightingDefaults.DEFAULT_TARIFFVALUES)
+                                .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON).length > 0) {
+
+            for (final String tariffValueString : getString(requestParameters,
+                    PlatformPubliclightingKeys.KEY_TARIFFVALUES, PlatformPubliclightingDefaults.DEFAULT_TARIFFVALUES)
+                            .split(PlatformPubliclightingKeys.SEPARATOR_SEMICOLON)) {
+                final String[] parts = tariffValueString.split(PlatformPubliclightingKeys.SEPARATOR_COMMA);
+
+                final LightValue tariffValue = LightValue.newBuilder()
+                        .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
+                        .setOn(parts[1].toLowerCase().equals("true")).build();
+
+                tariffValues.add(tariffValue);
+            }
+        }
+
         this.oslpMockServer.mockGetStatusResponse(
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
                         PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
@@ -902,7 +868,7 @@ public class OslpDeviceSteps {
                         PlatformPubliclightingDefaults.DEFAULT_ACTUAL_LINKTYPE),
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_LIGHTTYPE, LightType.class,
                         PlatformPubliclightingDefaults.DEFAULT_LIGHTTYPE),
-                eventNotificationTypes, Enum.valueOf(Status.class, result), lightValues);
+                eventNotificationTypes, Enum.valueOf(Status.class, result), lightValues, tariffValues);
     }
 
     /**

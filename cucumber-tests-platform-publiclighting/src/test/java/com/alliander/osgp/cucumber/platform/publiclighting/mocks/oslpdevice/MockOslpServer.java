@@ -423,7 +423,8 @@ public class MockOslpServer {
     }
 
     public void mockGetStatusResponse(final LinkType preferred, final LinkType actual, final LightType lightType,
-            final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues) {
+            final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues,
+            final List<LightValue> tariffValues) {
 
         final Builder response = GetStatusResponse.newBuilder().setPreferredLinktype(preferred)
                 .setActualLinktype(actual).setLightType(lightType).setEventNotificationMask(eventNotificationMask)
@@ -431,6 +432,9 @@ public class MockOslpServer {
 
         for (final LightValue lightValue : lightValues) {
             response.addValue(lightValue);
+        }
+        for (final LightValue tariffValue : tariffValues) {
+            response.addValue(tariffValue);
         }
 
         this.mockResponses.put(DeviceRequestMessageType.GET_STATUS,

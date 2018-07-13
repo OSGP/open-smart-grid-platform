@@ -217,7 +217,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 2016-12-15    | ABSOLUTETIME | 18:00:00.000 |         30,30 | 0,true,     | LIGHT_TRIGGER |
 
   Scenario Outline: Set light schedule with 51 schedules # Fail
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     When receiving a set light schedule request for 51 schedules
       | DeviceIdentification | TEST1024000000001 |

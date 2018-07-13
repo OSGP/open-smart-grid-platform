@@ -80,6 +80,7 @@ public class PlatformDefaults {
     public static final Boolean DEFAULT_ISIMMEDIATE = false;
     public static final Float DEFAULT_LATITUDE = new Float(0);
     public static final String DEFAULT_LIGHTVALUES = "";
+    public static final String DEFAULT_TARIFFVALUES = "";
 
     public static final Integer DEFAULT_LONG_INTERVAL = 1;
     public static final Float DEFAULT_LONGITUDE = new Float(0);

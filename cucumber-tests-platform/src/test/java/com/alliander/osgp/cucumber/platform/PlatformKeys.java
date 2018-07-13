@@ -146,6 +146,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_LATITUDE = "gpsLatitude";
     public static final String KEY_LIGHTTYPE = "LightType";
     public static final String KEY_LIGHTVALUES = "LightValues";
+    public static final String KEY_TARIFFVALUES = "TariffValues";
     public static final String KEY_LONGITUDE = "gpsLongitude";
     public static final String KEY_MANUFACTURER = "Manufacturer";
     public static final String KEY_MEASUREMENT_FILTER_ID = "MeasurementFilterId";
