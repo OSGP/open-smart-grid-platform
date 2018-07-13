@@ -12,21 +12,19 @@ import com.alliander.osgp.dto.valueobjects.CertificationDto;
 
 public class UpdateDeviceSslCertificationDeviceRequest extends DeviceRequest {
 
-    private CertificationDto certification;
+    private final CertificationDto certification;
 
-    public UpdateDeviceSslCertificationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final CertificationDto certification) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+    public UpdateDeviceSslCertificationDeviceRequest(final String organisationIdentification,
+            final String deviceIdentification, final String correlationUid, final int messagePriority,
+            final CertificationDto certification) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
 
         this.certification = certification;
     }
 
-    public UpdateDeviceSslCertificationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final CertificationDto certification, final String domain, final String domainVersion,
-            final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public UpdateDeviceSslCertificationDeviceRequest(final Builder deviceRequestBuilder,
+            final CertificationDto certification) {
+        super(deviceRequestBuilder);
         this.certification = certification;
     }
 

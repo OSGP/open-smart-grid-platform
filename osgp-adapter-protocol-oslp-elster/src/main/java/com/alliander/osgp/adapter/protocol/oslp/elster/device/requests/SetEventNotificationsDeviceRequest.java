@@ -12,22 +12,18 @@ import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainer
 
 public class SetEventNotificationsDeviceRequest extends DeviceRequest {
 
-    private EventNotificationMessageDataContainerDto eventNotificationsContainer;
+    private final EventNotificationMessageDataContainerDto eventNotificationsContainer;
 
     public SetEventNotificationsDeviceRequest(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
+            final String deviceIdentification, final String correlationUid, final int messagePriority,
             final EventNotificationMessageDataContainerDto eventNotificationsContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
         this.eventNotificationsContainer = eventNotificationsContainer;
     }
 
-    public SetEventNotificationsDeviceRequest(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
-            final EventNotificationMessageDataContainerDto eventNotificationsContainer, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
+    public SetEventNotificationsDeviceRequest(final Builder deviceRequestBuilder,
+            final EventNotificationMessageDataContainerDto eventNotificationsContainer) {
+        super(deviceRequestBuilder);
         this.eventNotificationsContainer = eventNotificationsContainer;
     }
 

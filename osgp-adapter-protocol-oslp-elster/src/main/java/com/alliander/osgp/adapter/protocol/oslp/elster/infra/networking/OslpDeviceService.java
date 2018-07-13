@@ -469,8 +469,8 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void doSetSchedule(final OslpEnvelope oslpRequest, final SetScheduleDeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled,
-            final PageInfoDto pageInfo) throws IOException {
+            final String domainVersion, final String messageType, final int messagePriority, final int retryCount,
+            final boolean isScheduled, final PageInfoDto pageInfo) throws IOException {
         LOGGER.info("doSetSchedule() for device: {}.", deviceRequest.getDeviceIdentification());
 
         switch (deviceRequest.getScheduleMessageDataContainer().getScheduleMessageType()) {
@@ -593,7 +593,8 @@ public class OslpDeviceService implements DeviceService {
             final DeviceResponseHandler deviceResponseHandler) {
 
         final DeviceResponse deviceResponse = new DeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid());
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority());
 
         if (t instanceof IOException) {
             // Replace t by an OSGP Exception
@@ -621,7 +622,8 @@ public class OslpDeviceService implements DeviceService {
         this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -641,7 +643,8 @@ public class OslpDeviceService implements DeviceService {
         this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -762,7 +765,8 @@ public class OslpDeviceService implements DeviceService {
             this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
 
             final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                    deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                    deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                    deviceRequest.getMessagePriority(), status);
             deviceResponseHandler.handleResponse(deviceResponse);
         } else {
             // Process next page
@@ -985,8 +989,7 @@ public class OslpDeviceService implements DeviceService {
     public void doGetPowerUsageHistory(final OslpEnvelope oslpRequest,
             final PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainer,
             final GetPowerUsageHistoryDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
-            final String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled) throws IOException {
+            final String ipAddress) throws IOException {
         LOGGER.info("doGetPowerUsageHistory() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
@@ -1001,8 +1004,7 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleResponse(final OslpEnvelope oslpResponse) {
                 OslpDeviceService.this.handleOslpResponseGetPowerUsageHistory(deviceRequest, oslpResponse, pager,
-                        powerUsageHistoryData, deviceResponseHandler, ipAddress, domain, domainVersion, messageType,
-                        retryCount, isScheduled);
+                        powerUsageHistoryData, deviceResponseHandler);
             }
 
             @Override
@@ -1015,21 +1017,16 @@ public class OslpDeviceService implements DeviceService {
     }
 
     private void processOslpRequestGetPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest,
-            final Pager pager, final List<PowerUsageDataDto> powerUsageHistoryData,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled)
-            throws IOException {
-        LOGGER.info("GetPowerUsageHistory() for device: {}, page: {}", deviceRequest.getDeviceIdentification(),
-                pager.getCurrentPage());
-        LOGGER.debug("deviceResponseHandler is not used in this function: {}", deviceResponseHandler.toString());
+            final Pager pager, final List<PowerUsageDataDto> powerUsageHistoryData) {
+        LOGGER.info("GetPowerUsageHistory() for device: {}, page: {} of {}", deviceRequest.getDeviceIdentification(),
+                pager.getCurrentPage(), pager.getNumberOfPages());
 
         this.buildOslpRequestGetPowerUsageHistory(deviceRequest, pager, powerUsageHistoryData);
     }
 
     private void handleOslpResponseGetPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest,
             final OslpEnvelope oslpResponse, final Pager pager, final List<PowerUsageDataDto> powerUsageHistoryData,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+            final DeviceResponseHandler deviceResponseHandler) {
 
         this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -1058,21 +1055,18 @@ public class OslpDeviceService implements DeviceService {
             this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
 
             final GetPowerUsageHistoryDeviceResponse deviceResponse = new GetPowerUsageHistoryDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), status, powerUsageHistoryData);
+                    deviceRequest, status, powerUsageHistoryData);
             deviceResponseHandler.handleResponse(deviceResponse);
 
         } else {
             // Process next page
             pager.nextPage();
             try {
-                this.processOslpRequestGetPowerUsageHistory(deviceRequest, pager, powerUsageHistoryData,
-                        deviceResponseHandler, ipAddress, domain, domainVersion, messageType, retryCount, isScheduled);
-            } catch (final IOException e) {
-                LOGGER.error("IOException", e);
+                this.processOslpRequestGetPowerUsageHistory(deviceRequest, pager, powerUsageHistoryData);
+            } catch (final Exception e) {
+                LOGGER.error("Exception", e);
                 final GetPowerUsageHistoryDeviceResponse deviceResponse = new GetPowerUsageHistoryDeviceResponse(
-                        deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                        deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE, null);
+                        deviceRequest, DeviceMessageStatus.FAILURE, null);
                 deviceResponseHandler.handleResponse(deviceResponse);
             }
         }
@@ -1247,9 +1241,7 @@ public class OslpDeviceService implements DeviceService {
             status = DeviceMessageStatus.FAILURE;
         }
 
-        return new GetActualPowerUsageDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status,
-                actualPowerUsageData);
+        return new GetActualPowerUsageDeviceResponse(deviceRequest, status, actualPowerUsageData);
     }
 
     private DeviceResponse buildDeviceResponseGetConfiguration(final DeviceRequest deviceRequest,
@@ -1266,8 +1258,7 @@ public class OslpDeviceService implements DeviceService {
             status = DeviceMessageStatus.FAILURE;
         }
 
-        return new GetConfigurationDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status, configuration);
+        return new GetConfigurationDeviceResponse(deviceRequest, status, configuration);
     }
 
     private DeviceResponse buildDeviceResponseSwitchConfiguration(final DeviceRequest deviceRequest,
@@ -1283,7 +1274,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
     }
 
     private DeviceResponse buildDeviceResponseSwitchFirmware(final DeviceRequest deviceRequest,
@@ -1299,7 +1291,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
     }
 
     private DeviceResponse buildDeviceResponseUpdateDeviceSslCertification(final DeviceRequest deviceRequest,
@@ -1316,7 +1309,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
     }
 
     private DeviceResponse buildDeviceResponseSetDeviceVerificationKey(final DeviceRequest deviceRequest,
@@ -1333,7 +1327,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
     }
 
     private void buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest) {
@@ -1538,9 +1533,7 @@ public class OslpDeviceService implements DeviceService {
             firmwareVersion = oslpResponse.getPayloadMessage().getGetFirmwareVersionResponse().getFirmwareVersion();
         }
 
-        final DeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
-                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), firmwareVersion);
+        final DeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(deviceRequest, firmwareVersion);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1673,8 +1666,7 @@ public class OslpDeviceService implements DeviceService {
             }
         }
 
-        final DeviceResponse deviceResponse = new GetStatusDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), deviceStatus);
+        final DeviceResponse deviceResponse = new GetStatusDeviceResponse(deviceRequest, deviceStatus);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1719,7 +1711,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1740,7 +1733,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1761,17 +1755,18 @@ public class OslpDeviceService implements DeviceService {
         }
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
-    private void handleOslpResponseSetLight(final DeviceRequest setLightdeviceRequest,
+    private void handleOslpResponseSetLight(final DeviceRequest deviceRequest,
             final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest, final OslpEnvelope oslpResponse,
             final DeviceResponseHandler setLightDeviceResponseHandler,
             final DeviceResponseHandler resumeScheduleDeviceResponseHandler) {
-        this.saveOslpResponseLogEntry(setLightdeviceRequest, oslpResponse);
+        this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
-        this.updateSequenceNumber(setLightdeviceRequest.getDeviceIdentification(), oslpResponse);
+        this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
 
         DeviceMessageStatus status;
 
@@ -1783,23 +1778,22 @@ public class OslpDeviceService implements DeviceService {
         }
 
         // Send response to the message processor's device response handler.
-        final DeviceResponse deviceResponse = new EmptyDeviceResponse(
-                setLightdeviceRequest.getOrganisationIdentification(), setLightdeviceRequest.getDeviceIdentification(),
-                setLightdeviceRequest.getCorrelationUid(), status);
+        final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         setLightDeviceResponseHandler.handleResponse(deviceResponse);
 
         if (this.executeResumeScheduleAfterSetLight && status.equals(DeviceMessageStatus.OK)) {
-            LOGGER.info("Sending ResumeScheduleRequest for device: {}",
-                    setLightdeviceRequest.getDeviceIdentification());
+            LOGGER.info("Sending ResumeScheduleRequest for device: {}", deviceRequest.getDeviceIdentification());
             this.resumeSchedule(resumeScheduleDeviceRequest);
         } else {
             LOGGER.info(
                     "Not sending ResumeScheduleRequest for device: {} because executeResumeScheduleAfterSetLight is false or DeviceMessageStatus is not OK",
-                    setLightdeviceRequest.getDeviceIdentification());
+                    deviceRequest.getDeviceIdentification());
 
             final DeviceResponse emptyDeviceResponse = new EmptyDeviceResponse(
-                    setLightdeviceRequest.getOrganisationIdentification(),
-                    setLightdeviceRequest.getDeviceIdentification(), setLightdeviceRequest.getCorrelationUid(), status);
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority(), status);
             resumeScheduleDeviceResponseHandler.handleResponse(emptyDeviceResponse);
         }
     }
@@ -1820,7 +1814,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1840,7 +1835,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1859,7 +1855,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1878,7 +1875,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1898,7 +1896,8 @@ public class OslpDeviceService implements DeviceService {
         }
 
         final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), status);
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1912,18 +1911,24 @@ public class OslpDeviceService implements DeviceService {
         final String domain = deviceRequest.getDomain();
         final String domainVersion = deviceRequest.getDomainVersion();
         final String messageType = deviceRequest.getMessageType();
+        final int messagePriority = deviceRequest.getMessagePriority();
         final int retryCount = deviceRequest.getRetryCount();
         final boolean isScheduled = deviceRequest.isScheduled();
 
         // Get some values from the database.
         final OslpDevice oslpDevice = this.oslpDeviceSettingsService
                 .getDeviceByDeviceIdentification(deviceIdentification);
+        if (oslpDevice == null) {
+            LOGGER.error("Unable to find OSLP device: {}", deviceIdentification);
+            return;
+        }
+
         final byte[] deviceId = Base64.decodeBase64(oslpDevice.getDeviceUid());
         final byte[] sequenceNumber = SequenceNumberUtils.convertIntegerToByteArray(oslpDevice.getSequenceNumber());
 
         this.oslpSigningService.buildAndSignEnvelope(organisationIdentification, deviceIdentification, correlationUid,
-                deviceId, sequenceNumber, ipAddress, domain, domainVersion, messageType, retryCount, isScheduled,
-                payloadMessage, extraData);
+                deviceId, sequenceNumber, ipAddress, domain, domainVersion, messageType, messagePriority, retryCount,
+                isScheduled, payloadMessage, extraData);
     }
 
     private Oslp.LightValue buildLightValue(final LightValueDto lightValue) {

@@ -76,6 +76,7 @@ public class SigningService {
         final byte[] sequenceNumber = unsignedOslpEnvelopeDto.getSequenceNumber();
         final Message payloadMessage = unsignedOslpEnvelopeDto.getPayloadMessage();
         final String organisationIdentification = unsignedOslpEnvelopeDto.getOrganisationIdentification();
+        final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
 
         final OslpEnvelope oslpEnvelope = new OslpEnvelope.Builder().withDeviceId(deviceId)
                 .withSequenceNumber(sequenceNumber).withPrimaryKey(this.privateKey).withSignature(this.signature)
@@ -84,7 +85,7 @@ public class SigningService {
         ResponseMessage responseMessage = null;
 
         if (oslpEnvelope == null) {
-            LOGGER.error("Message for device: {} with correlationId: {} NOT SIGNED, sending error to protocol-adpater",
+            LOGGER.error("Message for device: {} with correlationId: {} NOT SIGNED, sending error to protocol-adapter",
                     deviceIdentification, correlationUid);
 
             responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(correlationUid)
@@ -92,7 +93,7 @@ public class SigningService {
                     .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.NOT_OK)
                     .withOsgpException(
                             new OsgpException(ComponentType.UNKNOWN, "Failed to build signed OslpEnvelope", null))
-                    .withDataObject(unsignedOslpEnvelopeDto).build();
+                    .withDataObject(unsignedOslpEnvelopeDto).withMessagePriority(messagePriority).build();
 
         } else {
             LOGGER.info("Message for device: {} with correlationId: {} signed, sending response to protocol-adapter",
@@ -104,7 +105,7 @@ public class SigningService {
             responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(correlationUid)
                     .withOrganisationIdentification(organisationIdentification)
                     .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.OK)
-                    .withDataObject(signedOslpEnvelopeDto).build();
+                    .withDataObject(signedOslpEnvelopeDto).withMessagePriority(messagePriority).build();
         }
 
         this.signingServerResponseMessageSender.send(responseMessage, "SIGNING_RESPONSE", replyToQueue);

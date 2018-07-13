@@ -23,17 +23,18 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.UpdateDev
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
+import com.alliander.osgp.dto.valueobjects.CertificationDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 /**
  * Class for processing common update device ssl certification request messages
  */
 @Component("oslpCommonUpdateDeviceSslCertificationRequestMessageProcessor")
-public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends DeviceRequestMessageProcessor
+        implements OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -48,55 +49,27 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing common update device ssl certification message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String ipAddress = null;
-        Boolean isScheduled = null;
-        int retryCount = 0;
-
+        MessageMetadata messageMetadata = null;
+        CertificationDto certification = null;
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+            messageMetadata = MessageMetadata.fromMessage(message);
+            certification = (CertificationDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
-            LOGGER.debug("scheduled: {}", isScheduled);
             return;
         }
 
         try {
-            final com.alliander.osgp.dto.valueobjects.CertificationDto certification = (com.alliander.osgp.dto.valueobjects.CertificationDto) message
-                    .getObject();
-
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+            this.printDomainInfo(messageMetadata.getMessageType(), messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion());
 
             final UpdateDeviceSslCertificationDeviceRequest deviceRequest = new UpdateDeviceSslCertificationDeviceRequest(
-                    organisationIdentification, deviceIdentification, correlationUid, certification, domain,
-                    domainVersion, messageType, ipAddress, retryCount, isScheduled);
+                    DeviceRequest.newBuilder().messageMetaData(messageMetadata), certification);
 
             this.deviceService.updateDeviceSslCertification(deviceRequest);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, messageMetadata);
         }
     }
 
@@ -111,6 +84,7 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
         final String domain = unsignedOslpEnvelopeDto.getDomain();
         final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
         final String messageType = unsignedOslpEnvelopeDto.getMessageType();
+        final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
@@ -119,8 +93,7 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
 
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
-                CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.handleEmptyDeviceResponse(
-                        deviceResponse,
+                CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
                         CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.responseMessageSender, domain,
                         domainVersion, messageType, retryCount);
             }
@@ -136,14 +109,14 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
         };
 
         final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid);
+                correlationUid, messagePriority);
 
         try {
             this.deviceService.doUpdateDeviceSslCertification(oslpEnvelope, deviceRequest, deviceResponseHandler,
                     ipAddress);
         } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
+                    messageType, messagePriority, retryCount);
         }
     }
 }

@@ -12,22 +12,17 @@ import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 
 public class SetConfigurationDeviceRequest extends DeviceRequest {
 
-    private ConfigurationDto configuration;
+    private final ConfigurationDto configuration;
 
     public SetConfigurationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ConfigurationDto configuration) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final ConfigurationDto configuration, final int messagePriority) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
 
         this.configuration = configuration;
     }
 
-    public SetConfigurationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ConfigurationDto configuration, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SetConfigurationDeviceRequest(final Builder deviceRequestBuilder, final ConfigurationDto configuration) {
+        super(deviceRequestBuilder);
         this.configuration = configuration;
     }
 

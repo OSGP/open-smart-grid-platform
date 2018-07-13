@@ -29,7 +29,6 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Service
 public class OslpSigningService {
@@ -58,18 +57,19 @@ public class OslpSigningService {
      */
     public void buildAndSignEnvelope(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final byte[] deviceId, final byte[] sequenceNumber, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled, final Oslp.Message payloadMessage, final Serializable extraData) {
+            final String domain, final String domainVersion, final String messageType, final int messagePriority,
+            final int retryCount, final boolean isScheduled, final Oslp.Message payloadMessage,
+            final Serializable extraData) {
 
         // Create DTO to transfer data using request message.
         final UnsignedOslpEnvelopeDto oslpEnvelopeDto = new UnsignedOslpEnvelopeDto(sequenceNumber, deviceId,
-                payloadMessage, ipAddress, domain, domainVersion, messageType, retryCount, isScheduled,
+                payloadMessage, ipAddress, domain, domainVersion, messageType, messagePriority, retryCount, isScheduled,
                 organisationIdentification, correlationUid, extraData);
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, oslpEnvelopeDto);
 
         // Send request message to signing server.
-        this.signingServerRequestMessageSender.send(requestMessage, SIGNING_REQUEST_MESSAGE_TYPE);
+        this.signingServerRequestMessageSender.send(requestMessage, SIGNING_REQUEST_MESSAGE_TYPE, messagePriority);
     }
 
     /**
@@ -128,10 +128,11 @@ public class OslpSigningService {
         LOGGER.debug("unsignedOslpEnvelopeDto.getDomainVersion() : {}", unsignedOslpEnvelopeDto.getDomainVersion());
         LOGGER.debug("unsignedOslpEnvelopeDto.getIpAddress() : {}", unsignedOslpEnvelopeDto.getIpAddress());
         LOGGER.debug("unsignedOslpEnvelopeDto.getMessageType() : {}", unsignedOslpEnvelopeDto.getMessageType());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getMessagePriority() : {}", unsignedOslpEnvelopeDto.getMessagePriority());
         LOGGER.debug("unsignedOslpEnvelopeDto.getOrganisationIdentification() : {}",
                 unsignedOslpEnvelopeDto.getOrganisationIdentification());
-        LOGGER.debug("unsignedOslpEnvelopeDto.getPayloadMessage() : {}", unsignedOslpEnvelopeDto.getPayloadMessage()
-                .toString());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getPayloadMessage() : {}",
+                unsignedOslpEnvelopeDto.getPayloadMessage().toString());
         LOGGER.debug("unsignedOslpEnvelopeDto.getRetryCount() : {}", unsignedOslpEnvelopeDto.getRetryCount());
         LOGGER.debug("unsignedOslpEnvelopeDto.getSequenceNumber() : {}", unsignedOslpEnvelopeDto.getSequenceNumber());
         LOGGER.debug("unsignedOslpEnvelopeDto.isScheduled() : {}", unsignedOslpEnvelopeDto.isScheduled());
@@ -164,8 +165,8 @@ public class OslpSigningService {
         LOGGER.debug("unsignedOslpEnvelopeDto.getCorrelationUid() : {}", unsignedOslpEnvelopeDto.getCorrelationUid());
         LOGGER.debug("unsignedOslpEnvelopeDto.getDeviceId() : {}", unsignedOslpEnvelopeDto.getDeviceId());
         LOGGER.debug("unsignedOslpEnvelopeDto.getSequenceNumber() : {}", unsignedOslpEnvelopeDto.getSequenceNumber());
-        LOGGER.debug("unsignedOslpEnvelopeDto.getPayloadMessage() : {}", unsignedOslpEnvelopeDto.getPayloadMessage()
-                .toString());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getPayloadMessage() : {}",
+                unsignedOslpEnvelopeDto.getPayloadMessage().toString());
 
         // Send the signed OSLP envelope to the channel handler server.
         this.oslpChannelHandlerServer.processSignedOslpEnvelope(signedOslpEnvelopeDto);
@@ -180,7 +181,7 @@ public class OslpSigningService {
                 .getDataObject();
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 unsignedOslpEnvelopeDto.getOrganisationIdentification(), unsignedOslpEnvelopeDto.getCorrelationUid(),
-                unsignedOslpEnvelopeDto.getMessageType(), MessagePriorityEnum.DEFAULT.getPriority());
+                unsignedOslpEnvelopeDto.getMessageType(), responseMessage.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder()
                 .domain(unsignedOslpEnvelopeDto.getDomain()).domainVersion(unsignedOslpEnvelopeDto.getDomainVersion())
                 .deviceMessageMetadata(deviceMessageMetadata).result(responseMessage.getResult())

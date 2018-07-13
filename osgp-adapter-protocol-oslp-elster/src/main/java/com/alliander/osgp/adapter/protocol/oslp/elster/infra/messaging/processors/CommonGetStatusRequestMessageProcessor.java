@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.GetStatusDeviceRequest;
@@ -30,19 +31,18 @@ import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common get status request messages
  */
 @Component("oslpCommonGetStatusRequestMessageProcessor")
-public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor
+        implements OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -56,44 +56,19 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
     public void processMessage(final ObjectMessage message) {
         LOGGER.info("Processing common get status request message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String ipAddress = null;
-        int retryCount = 0;
-        boolean isScheduled = false;
-
+        MessageMetadata messageMetadata = null;
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            messageMetadata = MessageMetadata.fromMessage(message);
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
             return;
         }
 
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        this.printDomainInfo(messageMetadata.getMessageType(), messageMetadata.getDomain(),
+                messageMetadata.getDomainVersion());
 
-        final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, null, domain, domainVersion, messageType, ipAddress, retryCount,
-                isScheduled);
+        final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(
+                DeviceRequest.newBuilder().messageMetaData(messageMetadata), null);
 
         this.deviceService.getStatus(deviceRequest);
     }
@@ -109,6 +84,7 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
         final String domain = unsignedOslpEnvelopeDto.getDomain();
         final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
         final String messageType = unsignedOslpEnvelopeDto.getMessageType();
+        final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
@@ -124,21 +100,21 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
 
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
-                CommonGetStatusRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
-                        null, CommonGetStatusRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                CommonGetStatusRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t, null,
+                        CommonGetStatusRequestMessageProcessor.this.responseMessageSender, deviceResponse, domain,
+                        domainVersion, messageType, isScheduled, retryCount);
             }
 
         };
 
         final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, null);
+                deviceIdentification, correlationUid, null, messagePriority);
 
         try {
             this.deviceService.doGetStatus(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
         } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
+                    messageType, messagePriority, retryCount);
         }
     }
 
@@ -162,7 +138,7 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, MessagePriorityEnum.DEFAULT.getPriority());
+                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
                 .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
                 .osgpException(osgpException).dataObject(status).retryCount(retryCount).build();

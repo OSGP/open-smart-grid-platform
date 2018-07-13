@@ -7,15 +7,16 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.device.responses;
 
+import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceResponse;
 
 public class GetFirmwareVersionDeviceResponse extends DeviceResponse {
 
-    private String firmwareVersion;
+    private final String firmwareVersion;
 
-    public GetFirmwareVersionDeviceResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String firmwareVersion) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+    public GetFirmwareVersionDeviceResponse(final DeviceRequest deviceRequest, final String firmwareVersion) {
+        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority());
         this.firmwareVersion = firmwareVersion;
     }
 

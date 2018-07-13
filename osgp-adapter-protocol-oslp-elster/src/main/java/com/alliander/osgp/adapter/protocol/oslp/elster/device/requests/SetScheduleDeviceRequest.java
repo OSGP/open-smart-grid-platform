@@ -13,13 +13,13 @@ import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
 
 public class SetScheduleDeviceRequest extends DeviceRequest {
 
-    private ScheduleMessageDataContainerDto scheduleMessageDataContainer;
-    private RelayTypeDto relayType;
+    private final ScheduleMessageDataContainerDto scheduleMessageDataContainer;
+    private final RelayTypeDto relayType;
 
     public SetScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ScheduleMessageDataContainerDto scheduleMessageDataContainer,
-            final RelayTypeDto relayType) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final int messagePriority,
+            final ScheduleMessageDataContainerDto scheduleMessageDataContainer, final RelayTypeDto relayType) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
         this.scheduleMessageDataContainer = scheduleMessageDataContainer;
         this.relayType = relayType;
     }
@@ -27,18 +27,27 @@ public class SetScheduleDeviceRequest extends DeviceRequest {
     public SetScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final ScheduleMessageDataContainerDto scheduleMessageDataContainer,
             final RelayTypeDto relayType, final String domain, final String domainVersion, final String messageType,
-            final String ipAddress, final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
+            final int messagePriority, final String ipAddress, final int retryCount, final boolean isScheduled) {
+        super(DeviceRequest.newBuilder().organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
+                .domainVersion(domainVersion).messageType(messageType).messagePriority(messagePriority)
+                .ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled));
         this.scheduleMessageDataContainer = scheduleMessageDataContainer;
         this.relayType = relayType;
     }
 
-    public RelayTypeDto getRelayType() {
-        return this.relayType;
+    public SetScheduleDeviceRequest(final Builder deviceRequestBuilder,
+            final ScheduleMessageDataContainerDto scheduleMessageDataContainer, final RelayTypeDto relayType) {
+        super(deviceRequestBuilder);
+        this.scheduleMessageDataContainer = scheduleMessageDataContainer;
+        this.relayType = relayType;
     }
 
     public ScheduleMessageDataContainerDto getScheduleMessageDataContainer() {
         return this.scheduleMessageDataContainer;
+    }
+
+    public RelayTypeDto getRelayType() {
+        return this.relayType;
     }
 }

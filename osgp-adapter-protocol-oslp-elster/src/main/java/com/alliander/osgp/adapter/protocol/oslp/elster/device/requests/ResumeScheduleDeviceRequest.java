@@ -12,22 +12,19 @@ import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainerDto
 
 public class ResumeScheduleDeviceRequest extends DeviceRequest {
 
-    private ResumeScheduleMessageDataContainerDto resumeScheduleContainer;
+    private final ResumeScheduleMessageDataContainerDto resumeScheduleContainer;
 
     public ResumeScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ResumeScheduleMessageDataContainerDto resumeScheduleContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final int messagePriority,
+            final ResumeScheduleMessageDataContainerDto resumeScheduleContainer) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
 
         this.resumeScheduleContainer = resumeScheduleContainer;
     }
 
-    public ResumeScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ResumeScheduleMessageDataContainerDto resumeScheduleContainer,
-            final String domain, final String domainVersion, final String messageType, final String ipAddress,
-            final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public ResumeScheduleDeviceRequest(final Builder deviceRequestBuilder,
+            final ResumeScheduleMessageDataContainerDto resumeScheduleContainer) {
+        super(deviceRequestBuilder);
         this.resumeScheduleContainer = resumeScheduleContainer;
     }
 

@@ -38,6 +38,7 @@ public class SigningServerResponsesMessageListener implements MessageListener {
 
             final ObjectMessage objectMessage = (ObjectMessage) message;
             final String messageType = objectMessage.getJMSType();
+            final int messagePriority = objectMessage.getJMSPriority();
             final String correlationId = objectMessage.getJMSCorrelationID();
             final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             final ResponseMessage responseMessage = (ResponseMessage) objectMessage.getObject();
@@ -51,8 +52,9 @@ public class SigningServerResponsesMessageListener implements MessageListener {
                 return;
             }
 
-            LOGGER.info("messageType: {}, deviceIdentification: {}, result: {}, correlationId: {}", messageType,
-                    deviceIdentification, result, correlationId);
+            LOGGER.info(
+                    "Read signed message, messageType: {}, messagePriority: {}, deviceIdentification: {}, result: {}, correlationId: {}",
+                    messageType, messagePriority, deviceIdentification, result, correlationId);
 
             // Get the DTO object containing signed OslpEnvelope.
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto = (SignedOslpEnvelopeDto) responseMessage.getDataObject();

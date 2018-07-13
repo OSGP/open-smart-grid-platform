@@ -22,6 +22,7 @@ import org.springframework.jms.core.MessageCreator;
 
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 public class SigningServerRequestMessageSender {
 
@@ -35,7 +36,12 @@ public class SigningServerRequestMessageSender {
     private ActiveMQDestination replyToQueue;
 
     public void send(final RequestMessage requestMessage, final String messageType) {
-        LOGGER.info("Sending request message to signing server, with reply-to-queue: {}.", this.replyToQueue.toString());
+        this.send(requestMessage, messageType, MessagePriorityEnum.DEFAULT.getPriority());
+    }
+
+    public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority) {
+        LOGGER.info("Sending request message to signing server, with reply-to-queue: {}.",
+                this.replyToQueue.toString());
 
         this.signingServerRequestsJmsTemplate.send(new MessageCreator() {
 
@@ -43,6 +49,7 @@ public class SigningServerRequestMessageSender {
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
                 objectMessage.setJMSType(messageType);
+                objectMessage.setJMSPriority(messagePriority);
                 objectMessage.setJMSReplyTo(SigningServerRequestMessageSender.this.replyToQueue);
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,

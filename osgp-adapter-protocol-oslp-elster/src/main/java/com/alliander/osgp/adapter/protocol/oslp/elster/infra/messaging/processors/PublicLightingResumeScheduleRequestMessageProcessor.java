@@ -17,26 +17,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.ResumeScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
 import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 /**
  * Class for processing public lighting resume schedule request messages
  */
 @Component("oslpPublicLightingResumeScheduleRequestMessageProcessor")
-public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor
+        implements OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -51,54 +50,26 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing public lighting resume schedule request message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String ipAddress = null;
-        int retryCount = 0;
-        boolean isScheduled = false;
-
+        MessageMetadata messageMetadata = null;
+        ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer = null;
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            messageMetadata = MessageMetadata.fromMessage(message);
+            resumeScheduleMessageDataContainer = (ResumeScheduleMessageDataContainerDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
             return;
         }
 
         try {
-            final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer = (ResumeScheduleMessageDataContainerDto) message
-                    .getObject();
-
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+            this.printDomainInfo(messageMetadata.getMessageType(), messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion());
 
             final ResumeScheduleDeviceRequest deviceRequest = new ResumeScheduleDeviceRequest(
-                    organisationIdentification, deviceIdentification, correlationUid,
-                    resumeScheduleMessageDataContainer, domain, domainVersion, messageType, ipAddress, retryCount,
-                    isScheduled);
+                    DeviceRequest.newBuilder().messageMetaData(messageMetadata), resumeScheduleMessageDataContainer);
 
             this.deviceService.resumeSchedule(deviceRequest);
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, messageMetadata);
         }
     }
 
@@ -113,6 +84,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
         final String domain = unsignedOslpEnvelopeDto.getDomain();
         final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
         final String messageType = unsignedOslpEnvelopeDto.getMessageType();
+        final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
@@ -120,14 +92,16 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
         final DeviceResponseHandler deviceResponseHandler = this.createResumeScheduleDeviceResponseHandler(domain,
                 domainVersion, messageType, retryCount, unsignedOslpEnvelopeDto.getExtraData(), isScheduled);
 
-        final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, DomainTypeDto.PUBLIC_LIGHTING);
+        final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer = (ResumeScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
+                .getExtraData();
+        final ResumeScheduleDeviceRequest deviceRequest = new ResumeScheduleDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, messagePriority, resumeScheduleMessageDataContainer);
 
         try {
             this.deviceService.doResumeSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
         } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
+                    messageType, messagePriority, retryCount);
         }
     }
 

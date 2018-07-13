@@ -11,21 +11,17 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
 
 public class SwitchFirmwareDeviceRequest extends DeviceRequest {
 
-    private String version;
+    private final String version;
 
     public SwitchFirmwareDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String version) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final int messagePriority, final String version) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
 
         this.version = version;
     }
 
-    public SwitchFirmwareDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String version, final String domain, final String domainVersion,
-            final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SwitchFirmwareDeviceRequest(final Builder deviceRequestBuilder, final String version) {
+        super(deviceRequestBuilder);
         this.version = version;
     }
 

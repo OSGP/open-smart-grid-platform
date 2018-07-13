@@ -11,21 +11,18 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
 
 public class SetDeviceVerificationKeyDeviceRequest extends DeviceRequest {
 
-    private String verificationKey;
+    private final String verificationKey;
 
-    public SetDeviceVerificationKeyDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String verificationKey) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+    public SetDeviceVerificationKeyDeviceRequest(final String organisationIdentification,
+            final String deviceIdentification, final String correlationUid, final int messagePriority,
+            final String verificationKey) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
 
         this.verificationKey = verificationKey;
     }
 
-    public SetDeviceVerificationKeyDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String verificationKey, final String domain, final String domainVersion,
-            final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SetDeviceVerificationKeyDeviceRequest(final Builder deviceRequestBuilder, final String verificationKey) {
+        super(deviceRequestBuilder);
         this.verificationKey = verificationKey;
     }
 

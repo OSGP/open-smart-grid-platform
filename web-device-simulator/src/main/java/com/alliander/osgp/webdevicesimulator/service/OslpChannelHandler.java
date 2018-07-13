@@ -728,7 +728,10 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
         final int queryInterval = Minutes.minutesBetween(dateTimeFrom, dateTimeUntil).getMinutes();
         final int totalNumberOfItems = queryInterval / intervalMinutes;
-        final int numberOfPages = (int) Math.ceil((double) totalNumberOfItems / (double) itemsPerPage);
+        int numberOfPages = (int) Math.ceil((double) totalNumberOfItems / (double) itemsPerPage);
+        if (numberOfPages == 0) {
+            numberOfPages = 1;
+        }
 
         // Determine page number
         int currentPageNumber;

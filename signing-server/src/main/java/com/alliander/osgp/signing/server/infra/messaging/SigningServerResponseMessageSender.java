@@ -63,19 +63,21 @@ public class SigningServerResponseMessageSender {
 
     private void sendMessage(final ResponseMessage responseMessage, final String messageType,
             final Destination replyToQueue) {
+
         this.responsesJmsTemplate.send(replyToQueue, new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
                 objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
                 objectMessage.setJMSType(messageType);
+                objectMessage.setJMSPriority(responseMessage.getMessagePriority());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         responseMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
                 if (responseMessage.getOsgpException() != null) {
-                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
-                            .getMessage());
+                    objectMessage.setStringProperty(Constants.DESCRIPTION,
+                            responseMessage.getOsgpException().getMessage());
                 }
                 return objectMessage;
             }

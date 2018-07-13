@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 /**
  * Class for processing common update key request messages
@@ -44,42 +44,23 @@ public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageP
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing admin update key message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-
+        MessageMetadata messageMetadata = null;
+        String publicKey = null;
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            messageMetadata = MessageMetadata.fromMessage(message);
+            publicKey = (String) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
 
         try {
-            final String publicKey = (String) message.getObject();
+            this.printDomainInfo(messageMetadata.getMessageType(), messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion());
 
-            LOGGER.info("Calling application service function: {} for domain: {} {}", messageType, domain,
-                    domainVersion);
-
-            this.deviceManagementService.updateKey(organisationIdentification, deviceIdentification, correlationUid,
-                    this.responseMessageSender, domain, domainVersion, messageType, publicKey);
+            this.deviceManagementService.updateKey(messageMetadata, this.responseMessageSender, publicKey);
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType);
+            this.handleError(e, messageMetadata);
         }
     }
 }

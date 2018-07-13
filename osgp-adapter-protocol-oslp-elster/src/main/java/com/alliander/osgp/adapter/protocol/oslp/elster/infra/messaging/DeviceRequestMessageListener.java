@@ -46,10 +46,12 @@ public class DeviceRequestMessageListener implements MessageListener {
     public void onMessage(final Message message) {
         final ObjectMessage objectMessage = (ObjectMessage) message;
         String messageType = null;
+        int messagePriority;
 
         try {
             messageType = message.getJMSType();
-            LOGGER.info("Received message of type: {}", messageType);
+            messagePriority = message.getJMSPriority();
+            LOGGER.info("Received message of type: {} with message priority: {}", messageType, messagePriority);
             final MessageProcessor processor = this.oslpRequestMessageProcessorMap.getMessageProcessor(objectMessage);
             processor.processMessage(objectMessage);
         } catch (final JMSException ex) {
@@ -62,7 +64,8 @@ public class DeviceRequestMessageListener implements MessageListener {
         }
     }
 
-    private void sendException(final ObjectMessage objectMessage, final Exception exception, final String errorMessage) {
+    private void sendException(final ObjectMessage objectMessage, final Exception exception,
+            final String errorMessage) {
         try {
             final String domain = objectMessage.getStringProperty(Constants.DOMAIN);
             final String domainVersion = objectMessage.getStringProperty(Constants.DOMAIN_VERSION);

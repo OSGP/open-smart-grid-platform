@@ -12,19 +12,16 @@ import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
 
 public class GetStatusDeviceRequest extends DeviceRequest {
 
-    private DomainTypeDto domainType;
+    private final DomainTypeDto domainType;
 
     public GetStatusDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DomainTypeDto domainType) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final DomainTypeDto domainType, final int messagePriority) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
         this.domainType = domainType;
     }
 
-    public GetStatusDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DomainTypeDto domainType, final String domain, final String domainVersion,
-            final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
+    public GetStatusDeviceRequest(final Builder deviceRequestBuilder, final DomainTypeDto domainType) {
+        super(deviceRequestBuilder);
         this.domainType = domainType;
     }
 

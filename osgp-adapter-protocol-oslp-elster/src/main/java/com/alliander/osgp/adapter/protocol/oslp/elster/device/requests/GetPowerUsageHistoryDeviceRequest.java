@@ -12,22 +12,18 @@ import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer
 
 public class GetPowerUsageHistoryDeviceRequest extends DeviceRequest {
 
-    private PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer;
+    private final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer;
 
-    public GetPowerUsageHistoryDeviceRequest(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
+    public GetPowerUsageHistoryDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final int messagePriority,
             final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
         this.powerUsageHistoryContainer = powerUsageHistoryContainer;
     }
 
-    public GetPowerUsageHistoryDeviceRequest(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
-            final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
+    public GetPowerUsageHistoryDeviceRequest(final Builder deviceRequestBuilder,
+            final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer) {
+        super(deviceRequestBuilder);
         this.powerUsageHistoryContainer = powerUsageHistoryContainer;
     }
 

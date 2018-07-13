@@ -79,6 +79,11 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
     }
 
     private void sendMessage(final ProtocolResponseMessage responseMessage) {
+
+        LOGGER.info("Sending protocol response message for device: {} of message type: {} with message priority: {}",
+                responseMessage.getDeviceIdentification(), responseMessage.getMessageType(),
+                responseMessage.getMessagePriority());
+
         this.oslpResponsesJmsTemplate.send(new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
@@ -87,14 +92,15 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
                 objectMessage.setStringProperty(Constants.DOMAIN, responseMessage.getDomain());
                 objectMessage.setStringProperty(Constants.DOMAIN_VERSION, responseMessage.getDomainVersion());
                 objectMessage.setJMSType(responseMessage.getMessageType());
+                objectMessage.setJMSPriority(responseMessage.getMessagePriority());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         responseMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
                 if (responseMessage.getOsgpException() != null) {
-                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
-                            .getMessage());
+                    objectMessage.setStringProperty(Constants.DESCRIPTION,
+                            responseMessage.getOsgpException().getMessage());
                 }
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, responseMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, responseMessage.getRetryCount());

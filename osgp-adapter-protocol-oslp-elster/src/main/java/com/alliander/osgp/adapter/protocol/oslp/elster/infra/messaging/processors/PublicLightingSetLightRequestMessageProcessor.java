@@ -32,14 +32,14 @@ import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainerDto
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 /**
  * Class for processing public lighting set light request messages
  */
 @Component("oslpPublicLightingSetLightRequestMessageProcessor")
-public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequestMessageProcessor
+        implements OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -56,53 +56,26 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing public lighting set light request message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String ipAddress = null;
-        int retryCount = 0;
-        boolean isScheduled = false;
-
+        MessageMetadata messageMetadata = null;
+        LightValueMessageDataContainerDto lightValueMessageDataContainer = null;
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            messageMetadata = MessageMetadata.fromMessage(message);
+            lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
             return;
         }
 
         try {
-            final LightValueMessageDataContainerDto lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message
-                    .getObject();
+            this.printDomainInfo(messageMetadata.getMessageType(), messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion());
 
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
-
-            final SetLightDeviceRequest deviceRequest = new SetLightDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, lightValueMessageDataContainer, domain, domainVersion,
-                    messageType, ipAddress, retryCount, isScheduled);
+            final SetLightDeviceRequest deviceRequest = new SetLightDeviceRequest(
+                    DeviceRequest.newBuilder().messageMetaData(messageMetadata), lightValueMessageDataContainer);
 
             this.deviceService.setLight(deviceRequest);
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, messageMetadata);
         }
     }
 
@@ -117,6 +90,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
         final String domain = unsignedOslpEnvelopeDto.getDomain();
         final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
         final String messageType = unsignedOslpEnvelopeDto.getMessageType();
+        final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
@@ -147,8 +121,11 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             }
         };
 
-        final DeviceRequest setLightdeviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+        final DeviceRequest setLightdeviceRequest = DeviceRequest.newBuilder()
+                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
+                .correlationUid(correlationUid).domain(domain).domainVersion(domainVersion).messageType(messageType)
+                .messagePriority(messagePriority).ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled)
+                .build();
 
         // Execute a ResumeSchedule call with 'immediate = false' and 'index
         // = 0' as arguments.
@@ -157,23 +134,22 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
 
         final DeviceResponseHandler resumeScheduleDeviceResponseHandler = this.publicLightingResumeScheduleRequestMessageProcessor
                 .createResumeScheduleDeviceResponseHandler(domain, domainVersion,
-                        DeviceRequestMessageType.RESUME_SCHEDULE.name(), retryCount,
-                        resumeScheduleMessageDataContainer, isScheduled);
+                        DeviceRequestMessageType.RESUME_SCHEDULE.name(), retryCount, resumeScheduleMessageDataContainer,
+                        isScheduled);
 
-        // The data of the setLightdeviceRequest can be reused
-        final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest = new ResumeScheduleDeviceRequest(
-                setLightdeviceRequest.getOrganisationIdentification(), setLightdeviceRequest.getDeviceIdentification(),
-                setLightdeviceRequest.getCorrelationUid(), resumeScheduleMessageDataContainer,
-                setLightdeviceRequest.getDomain(), setLightdeviceRequest.getDomainVersion(),
-                DeviceRequestMessageType.RESUME_SCHEDULE.name(), setLightdeviceRequest.getIpAddress(),
-                setLightdeviceRequest.getRetryCount(), setLightdeviceRequest.isScheduled());
+        final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest = new ResumeScheduleDeviceRequest(DeviceRequest
+                .newBuilder().organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
+                .domainVersion(domainVersion).messageType(DeviceRequestMessageType.RESUME_SCHEDULE.name())
+                .messagePriority(messagePriority).ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled),
+                resumeScheduleMessageDataContainer);
 
         try {
             this.deviceService.doSetLight(oslpEnvelope, setLightdeviceRequest, resumeScheduleDeviceRequest,
                     setLightDeviceResponseHandler, resumeScheduleDeviceResponseHandler, ipAddress);
         } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
+                    messageType, messagePriority, retryCount);
         }
     }
 }

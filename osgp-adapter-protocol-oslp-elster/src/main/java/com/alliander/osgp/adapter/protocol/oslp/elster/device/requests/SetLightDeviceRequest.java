@@ -12,22 +12,19 @@ import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainerDto;
 
 public class SetLightDeviceRequest extends DeviceRequest {
 
-    private LightValueMessageDataContainerDto lightValuesContainer;
+    private final LightValueMessageDataContainerDto lightValuesContainer;
 
     public SetLightDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final LightValueMessageDataContainerDto lightValuesContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final int messagePriority,
+            final LightValueMessageDataContainerDto lightValuesContainer) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
 
         this.lightValuesContainer = lightValuesContainer;
     }
 
-    public SetLightDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final LightValueMessageDataContainerDto lightValuesContainer,
-            final String domain, final String domainVersion, final String messageType, final String ipAddress,
-            final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SetLightDeviceRequest(final Builder deviceRequestBuilder,
+            final LightValueMessageDataContainerDto lightValuesContainer) {
+        super(deviceRequestBuilder);
         this.lightValuesContainer = lightValuesContainer;
     }
 

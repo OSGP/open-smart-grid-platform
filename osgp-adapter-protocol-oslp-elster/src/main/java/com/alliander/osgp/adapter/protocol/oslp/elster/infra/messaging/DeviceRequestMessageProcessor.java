@@ -27,12 +27,12 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -73,6 +73,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         this.deviceRequestMessageType = deviceRequestMessageType;
     }
 
+    protected void printDomainInfo(final String messageType, final String domain, final String domainVersion) {
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+    }
+
     /**
      * Initialization function executed after dependency injection has finished.
      * The MessageProcessor Singleton is added to the HashMap of
@@ -103,7 +107,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, MessagePriorityEnum.DEFAULT.getPriority());
+                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
                 .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
                 .osgpException(ex).retryCount(retryCount).build();
@@ -129,7 +133,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, MessagePriorityEnum.DEFAULT.getPriority());
+                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
                 .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
                 .osgpException(ex).scheduled(isScheduled).retryCount(retryCount).build();
@@ -139,12 +143,12 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String domain, final String domainVersion,
-            final String messageType, final int retryCount) {
+            final String messageType, final int messagePriority, final int retryCount) {
         LOGGER.error("Error while processing message", e);
         final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, e);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, MessagePriorityEnum.DEFAULT.getPriority());
+                organisationIdentification, correlationUid, messageType, messagePriority);
         final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
                 .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata)
                 .result(ResponseMessageResultType.NOT_OK).osgpException(ex).retryCount(retryCount).build();
@@ -152,30 +156,28 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         this.responseMessageSender.send(protocolResponseMessage);
     }
 
-    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final String domain, final String domainVersion,
-            final String messageType) {
-        LOGGER.error("Error while processing message", e);
+    protected void handleError(final Exception e, final MessageMetadata messageMetadata) {
+        LOGGER.error("Error while processing message, using MessageMetadata to create error response", e);
         final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, e);
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, MessagePriorityEnum.DEFAULT.getPriority());
-        final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
-                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata)
-                .result(ResponseMessageResultType.NOT_OK).osgpException(ex).build();
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
+        final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder()
+                .domain(messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.NOT_OK).osgpException(ex)
+                .retryCount(messageMetadata.getRetryCount()).build();
 
         this.responseMessageSender.send(protocolResponseMessage);
     }
 
     protected void handleExpectedError(final Exception e, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification, final String domain,
-            final String domainVersion, final String messageType) {
+            final String domainVersion, final String messageType, final int messagePriority) {
         LOGGER.error("Expected error while processing message", e);
         final FunctionalException ex = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                 ComponentType.PROTOCOL_OSLP, e);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, MessagePriorityEnum.DEFAULT.getPriority());
+                organisationIdentification, correlationUid, messageType, messagePriority);
         final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
                 .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata)
                 .result(ResponseMessageResultType.NOT_OK).osgpException(ex).build();
@@ -194,7 +196,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, MessagePriorityEnum.DEFAULT.getPriority());
+                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
                 .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
                 .osgpException(ex).dataObject(messageData).scheduled(isScheduled).retryCount(retryCount).build();

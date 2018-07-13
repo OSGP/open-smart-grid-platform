@@ -11,22 +11,20 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
 
 public class UpdateFirmwareDeviceRequest extends DeviceRequest {
 
-    private String firmwareDomain;
-    private String firmwareUrl;
+    private final String firmwareDomain;
+    private final String firmwareUrl;
 
     public UpdateFirmwareDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String firmwareDomain, final String firmwareUrl) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final int messagePriority, final String firmwareDomain,
+            final String firmwareUrl) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
         this.firmwareDomain = firmwareDomain;
         this.firmwareUrl = firmwareUrl;
     }
 
-    public UpdateFirmwareDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String firmwareDomain, final String firmwareUrl, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
+    public UpdateFirmwareDeviceRequest(final Builder deviceRequestBuilder, final String firmwareDomain,
+            final String firmwareUrl) {
+        super(deviceRequestBuilder);
         this.firmwareDomain = firmwareDomain;
         this.firmwareUrl = firmwareUrl;
     }

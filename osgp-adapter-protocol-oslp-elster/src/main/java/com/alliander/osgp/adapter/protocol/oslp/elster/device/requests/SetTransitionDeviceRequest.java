@@ -12,22 +12,19 @@ import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainerDto;
 
 public class SetTransitionDeviceRequest extends DeviceRequest {
 
-    private TransitionMessageDataContainerDto transitionTypeContainer;
+    private final TransitionMessageDataContainerDto transitionTypeContainer;
 
     public SetTransitionDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final TransitionMessageDataContainerDto transitionTypeContainer) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final int messagePriority,
+            final TransitionMessageDataContainerDto transitionTypeContainer) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
 
         this.transitionTypeContainer = transitionTypeContainer;
     }
 
-    public SetTransitionDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final TransitionMessageDataContainerDto transitionTypeContainer,
-            final String domain, final String domainVersion, final String messageType, final String ipAddress,
-            final int retryCount, final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SetTransitionDeviceRequest(final Builder deviceRequestBuilder,
+            final TransitionMessageDataContainerDto transitionTypeContainer) {
+        super(deviceRequestBuilder);
         this.transitionTypeContainer = transitionTypeContainer;
     }
 

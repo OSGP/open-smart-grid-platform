@@ -23,17 +23,18 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.SetConfig
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 /**
  * Class for processing common set configuration request messages
  */
 @Component("oslpCommonSetConfigurationRequestMessageProcessor")
-public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor
+        implements OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -47,53 +48,26 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing common set configuration message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String ipAddress = null;
-        Boolean isScheduled = null;
-        int retryCount = 0;
-
+        MessageMetadata messageMetadata = null;
+        ConfigurationDto configuration = null;
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+            messageMetadata = MessageMetadata.fromMessage(message);
+            configuration = (ConfigurationDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
-            LOGGER.debug("scheduled: {}", isScheduled);
             return;
         }
 
         try {
-            final com.alliander.osgp.dto.valueobjects.ConfigurationDto configuration = (com.alliander.osgp.dto.valueobjects.ConfigurationDto) message
-                    .getObject();
-
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+            this.printDomainInfo(messageMetadata.getMessageType(), messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion());
 
             final SetConfigurationDeviceRequest deviceRequest = new SetConfigurationDeviceRequest(
-                    organisationIdentification, deviceIdentification, correlationUid, configuration, domain,
-                    domainVersion, messageType, ipAddress, retryCount, isScheduled);
+                    DeviceRequest.newBuilder().messageMetaData(messageMetadata), configuration);
 
             this.deviceService.setConfiguration(deviceRequest);
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, messageMetadata);
         }
     }
 
@@ -108,6 +82,7 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
         final String domain = unsignedOslpEnvelopeDto.getDomain();
         final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
         final String messageType = unsignedOslpEnvelopeDto.getMessageType();
+        final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
@@ -117,8 +92,8 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
                 CommonSetConfigurationRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(deviceResponse,
-                        CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, isScheduled, retryCount);
+                        CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender, domain, domainVersion,
+                        messageType, isScheduled, retryCount);
             }
 
             @Override
@@ -131,13 +106,13 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
         };
 
         final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid);
+                correlationUid, messagePriority);
 
         try {
             this.deviceService.doSetConfiguration(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
         } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
+                    messageType, messagePriority, retryCount);
         }
     }
 }

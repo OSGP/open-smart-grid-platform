@@ -35,10 +35,10 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Service(value = "oslpDeviceManagementService")
 @Transactional(value = "transactionManager")
@@ -125,15 +125,15 @@ public class DeviceManagementService {
             final int index = eventNotification.getIndex().isEmpty() ? 0 : (int) eventNotification.getIndex().byteAt(0);
             String timestamp = eventNotification.getTimestamp();
             LOGGER.debug("-->> timestamp: {}", timestamp);
-            // Hack for faulty firmware version. RTC_NOT_SET event can contains
+            // Hack for faulty firmware version. RTC_NOT_SET event can contain
             // illegal timestamp value of 20000000xxxxxx.
             if (!StringUtils.isEmpty(timestamp) && timestamp.startsWith("20000000")) {
                 final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("yyyyMMddHHmmss");
                 timestamp = DateTime.now().withZone(DateTimeZone.UTC).toString(dateTimeFormatter);
                 LOGGER.info("Using DateTime.now() instead of '20000000xxxxxx', value is: {}", timestamp);
             }
-            final EventNotificationDto dto = this.createEventNotificationDto(deviceIdentification, deviceUid,
-                    eventType, description, index, timestamp);
+            final EventNotificationDto dto = this.createEventNotificationDto(deviceIdentification, deviceUid, eventType,
+                    description, index, timestamp);
             eventNotificationDtos.add(dto);
         }
 
@@ -145,12 +145,13 @@ public class DeviceManagementService {
 
     // === UPDATE KEY ===
 
-    public void updateKey(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DeviceResponseMessageSender responseMessageSender, final String domain,
-            final String domainVersion, final String messageType, final String publicKey) {
+    public void updateKey(final MessageMetadata messageMetadata,
+            final DeviceResponseMessageSender responseMessageSender, final String publicKey) {
 
-        LOGGER.info("updateKey called for device: {} for organisation: {} with new publicKey: {}",
-                deviceIdentification, organisationIdentification, publicKey);
+        final String deviceIdentification = messageMetadata.getDeviceIdentification();
+        final String organisationIdentification = messageMetadata.getOrganisationIdentification();
+        LOGGER.info("updateKey called for device: {} for organisation: {} with new publicKey: {}", deviceIdentification,
+                organisationIdentification, publicKey);
 
         try {
             OslpDevice oslpDevice = this.oslpDeviceSettingsService
@@ -165,25 +166,24 @@ public class DeviceManagementService {
             oslpDevice.updatePublicKey(publicKey);
             this.oslpDeviceSettingsService.updateDevice(oslpDevice);
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during updateKey", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Exception occurred while updating key", e);
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
     // === REVOKE KEY ===
 
-    public void revokeKey(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DeviceResponseMessageSender responseMessageSender, final String domain,
-            final String domainVersion, final String messageType) {
+    public void revokeKey(final MessageMetadata messageMetadata,
+            final DeviceResponseMessageSender responseMessageSender) {
 
+        final String deviceIdentification = messageMetadata.getDeviceIdentification();
+        final String organisationIdentification = messageMetadata.getOrganisationIdentification();
         LOGGER.info("revokeKey called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
@@ -197,28 +197,23 @@ public class DeviceManagementService {
             oslpDevice.revokePublicKey();
             this.oslpDeviceSettingsService.updateDevice(oslpDevice);
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during revokeKey", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Exception occurred while revoking key", e);
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
-    private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
-            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender) {
+    private void sendResponseMessage(final MessageMetadata messageMetadata, final ResponseMessageResultType result,
+            final OsgpException osgpException, final DeviceResponseMessageSender responseMessageSender) {
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, MessagePriorityEnum.DEFAULT.getPriority());
-        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(domain)
-                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata).result(result)
-                .osgpException(osgpException).build();
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
+        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder()
+                .domain(messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata).result(result).osgpException(osgpException).build();
 
         responseMessageSender.send(responseMessage);
     }

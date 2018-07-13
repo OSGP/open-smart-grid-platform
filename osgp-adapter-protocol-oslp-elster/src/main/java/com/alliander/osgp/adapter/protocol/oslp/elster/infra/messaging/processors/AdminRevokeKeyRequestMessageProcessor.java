@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 /**
  * Class for processing common revoke key request messages
@@ -44,34 +44,17 @@ public class AdminRevokeKeyRequestMessageProcessor extends DeviceRequestMessageP
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing admin revoke key message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-
+        MessageMetadata messageMetadata = null;
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            messageMetadata = MessageMetadata.fromMessage(message);
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
 
-        LOGGER.info("Calling application service function: {} for domain: {} {}", messageType, domain, domainVersion);
+        this.printDomainInfo(messageMetadata.getMessageType(), messageMetadata.getDomain(),
+                messageMetadata.getDomainVersion());
 
-        this.deviceManagementService.revokeKey(organisationIdentification, deviceIdentification, correlationUid,
-                this.responseMessageSender, domain, domainVersion, messageType);
+        this.deviceManagementService.revokeKey(messageMetadata, this.responseMessageSender);
     }
 }

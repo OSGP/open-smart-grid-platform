@@ -47,7 +47,7 @@ public abstract class AbstractController {
 
     /**
      * Adds a new error message
-     * 
+     *
      * @param model
      *            A model which stores the the error message.
      * @param code
@@ -70,7 +70,7 @@ public abstract class AbstractController {
 
     /**
      * Adds a new feedback message.
-     * 
+     *
      * @param model
      *            A model which stores the feedback message.
      * @param code
@@ -106,7 +106,7 @@ public abstract class AbstractController {
 
     /**
      * Creates a redirect view path for a specific controller action
-     * 
+     *
      * @param path
      *            The path processed by the controller method.
      * @return A redirect view path to the given controller method.
@@ -120,7 +120,7 @@ public abstract class AbstractController {
 
     /**
      * This method should only be used by unit tests.
-     * 
+     *
      * @param messageSource
      */
     protected void setMessageSource(final MessageSource messageSource) {
@@ -132,7 +132,7 @@ public abstract class AbstractController {
      * binding
      */
     @InitBinder
-    protected void initBinder(final HttpServletRequest request, final ServletRequestDataBinder binder) throws Exception {
+    protected void initBinder(final HttpServletRequest request, final ServletRequestDataBinder binder) {
         // bind empty strings as null
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }

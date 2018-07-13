@@ -38,6 +38,7 @@ public class SigningServerRequestMessageListener implements MessageListener {
         try {
             final ObjectMessage objectMessage = (ObjectMessage) message;
             final Destination replyToQueue = objectMessage.getJMSReplyTo();
+            final int messagePriority = objectMessage.getJMSPriority();
             final RequestMessage requestMessage = (RequestMessage) objectMessage.getObject();
             final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = (UnsignedOslpEnvelopeDto) requestMessage
                     .getRequest();
@@ -48,6 +49,7 @@ public class SigningServerRequestMessageListener implements MessageListener {
                     objectMessage.getJMSType(), deviceIdentification, correlationUid, replyToQueue.toString());
 
             LOGGER.debug("-----------------------------------------------------------------------------");
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("unsignedOslpEnvelopeDto.getCorrelationUid() : {}",
                     unsignedOslpEnvelopeDto.getCorrelationUid());
             LOGGER.debug("unsignedOslpEnvelopeDto.getDeviceId() : {}", unsignedOslpEnvelopeDto.getDeviceId());
@@ -55,10 +57,12 @@ public class SigningServerRequestMessageListener implements MessageListener {
             LOGGER.debug("unsignedOslpEnvelopeDto.getDomainVersion() : {}", unsignedOslpEnvelopeDto.getDomainVersion());
             LOGGER.debug("unsignedOslpEnvelopeDto.getIpAddress() : {}", unsignedOslpEnvelopeDto.getIpAddress());
             LOGGER.debug("unsignedOslpEnvelopeDto.getMessageType() : {}", unsignedOslpEnvelopeDto.getMessageType());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getMessagePriority() : {}",
+                    unsignedOslpEnvelopeDto.getMessagePriority());
             LOGGER.debug("unsignedOslpEnvelopeDto.getOrganisationIdentification() : {}",
                     unsignedOslpEnvelopeDto.getOrganisationIdentification());
-            LOGGER.debug("unsignedOslpEnvelopeDto.getPayloadMessage() : {}", unsignedOslpEnvelopeDto
-                    .getPayloadMessage().toString());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getPayloadMessage() : {}",
+                    unsignedOslpEnvelopeDto.getPayloadMessage().toString());
             LOGGER.debug("unsignedOslpEnvelopeDto.getRetryCount() : {}", unsignedOslpEnvelopeDto.getRetryCount());
             LOGGER.debug("unsignedOslpEnvelopeDto.getSequenceNumber() : {}",
                     unsignedOslpEnvelopeDto.getSequenceNumber());

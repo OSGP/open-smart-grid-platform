@@ -11,22 +11,17 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
 
 public class SwitchConfigurationBankRequest extends DeviceRequest {
 
-    private String configurationBank;
+    private final String configurationBank;
 
     public SwitchConfigurationBankRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String configurationBank) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final int messagePriority, final String configurationBank) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
 
         this.configurationBank = configurationBank;
     }
 
-    public SwitchConfigurationBankRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String configurationBank, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
-        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
-
+    public SwitchConfigurationBankRequest(final Builder deviceRequestBuilder, final String configurationBank) {
+        super(deviceRequestBuilder);
         this.configurationBank = configurationBank;
     }
 

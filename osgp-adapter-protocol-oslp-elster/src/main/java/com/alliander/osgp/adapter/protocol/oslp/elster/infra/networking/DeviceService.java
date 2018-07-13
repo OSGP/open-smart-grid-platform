@@ -42,13 +42,13 @@ public interface DeviceService {
 
     void getStatus(GetStatusDeviceRequest deviceRequest);
 
-    void doGetStatus(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
-            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+    void doGetStatus(OslpEnvelope oslpRequest, DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
+            String ipAddress) throws IOException;
 
     void setReboot(DeviceRequest deviceRequest);
 
-    void doSetReboot(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
-            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+    void doSetReboot(OslpEnvelope oslpRequest, DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
+            String ipAddress) throws IOException;
 
     void setConfiguration(SetConfigurationDeviceRequest deviceRequest);
 
@@ -80,10 +80,10 @@ public interface DeviceService {
     void doUpdateFirmware(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
+    void switchFirmware(SwitchFirmwareDeviceRequest deviceRequest);
+
     void doSwitchFirmware(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
-
-    void switchFirmware(SwitchFirmwareDeviceRequest deviceRequest);
 
     void getActualPowerUsage(DeviceRequest deviceRequest);
 
@@ -95,8 +95,7 @@ public interface DeviceService {
     void doGetPowerUsageHistory(OslpEnvelope oslpRequest,
             PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainer,
             GetPowerUsageHistoryDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
-            String ipAddress, String domain, String domainVersion, String messageType, int retryCount,
-            boolean isScheduled) throws IOException;
+            String ipAddress) throws IOException;
 
     void resumeSchedule(ResumeScheduleDeviceRequest deviceRequest);
 
@@ -114,20 +113,21 @@ public interface DeviceService {
 
     void doSetSchedule(OslpEnvelope oslpRequest, SetScheduleDeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled, PageInfoDto pageInfo) throws IOException;
+            String messageType, int messagePriority, int retryCount, boolean isScheduled, PageInfoDto pageInfo)
+            throws IOException;
 
     void setTransition(SetTransitionDeviceRequest deviceRequest);
 
     void doSetTransition(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
+    void updateDeviceSslCertification(UpdateDeviceSslCertificationDeviceRequest deviceRequest);
+
     void doUpdateDeviceSslCertification(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void updateDeviceSslCertification(UpdateDeviceSslCertificationDeviceRequest deviceRequest);
+    void setDeviceVerificationKey(SetDeviceVerificationKeyDeviceRequest deviceRequest);
 
     void doSetDeviceVerificationKey(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
-
-    void setDeviceVerificationKey(SetDeviceVerificationKeyDeviceRequest deviceRequest);
 }
