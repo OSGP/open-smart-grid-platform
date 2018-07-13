@@ -10,16 +10,17 @@ package com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses;
 import java.util.List;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.dto.valueobjects.PowerUsageDataDto;
 
 public class GetPowerUsageHistoryDeviceResponse extends EmptyDeviceResponse {
 
-    private List<PowerUsageDataDto> powerUsageHistoryData;
+    private final List<PowerUsageDataDto> powerUsageHistoryData;
 
-    public GetPowerUsageHistoryDeviceResponse(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid, final DeviceMessageStatus status,
+    public GetPowerUsageHistoryDeviceResponse(final DeviceRequest deviceRequest, final DeviceMessageStatus status,
             final List<PowerUsageDataDto> powerUsageHistoryData) {
-        super(organisationIdentification, deviceIdentification, correlationUid, status);
+        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority(), status);
         this.powerUsageHistoryData = powerUsageHistoryData;
     }
 

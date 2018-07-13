@@ -49,8 +49,9 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
 
     protected DeviceRequestMessageType deviceRequestMessageType;
 
-    protected void printDomainInfo(final String messageType, final String domain, final String domainVersion) {
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+    protected void printDomainInfo(final RequestMessageData requestMessageData) {
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", requestMessageData.getMessageType(),
+                requestMessageData.getDomain(), requestMessageData.getDomainVersion());
     }
 
     /**
@@ -97,7 +98,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                     deviceMessageMetadata.getDeviceIdentification());
             final DeviceResponse deviceResponse = new DeviceResponse(
                     deviceMessageMetadata.getOrganisationIdentification(),
-                    deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getCorrelationUid());
+                    deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getCorrelationUid(),
+                    deviceMessageMetadata.getMessagePriority());
             this.handleExpectedError(deviceResponse, e, domainInformation, deviceMessageMetadata.getMessageType());
         }
     }
@@ -110,7 +112,6 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     public void handleDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
             final String messageType, final int retryCount) {
-        final int messagePriority = 0;
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException ex = null;
@@ -126,7 +127,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, messagePriority);
+                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
                 .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
                 .deviceMessageMetadata(deviceMessageMetadata).result(result).osgpException(ex).retryCount(retryCount)
@@ -142,7 +143,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, 0);
+                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
                 .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
                 .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.NOT_OK).osgpException(e)

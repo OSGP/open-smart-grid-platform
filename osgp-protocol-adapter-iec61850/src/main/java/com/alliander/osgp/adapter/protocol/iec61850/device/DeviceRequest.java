@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.device;
 
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
+
 public class DeviceRequest {
 
     private final String organisationIdentification;
@@ -15,6 +18,7 @@ public class DeviceRequest {
     private final String domain;
     private final String domainVersion;
     private final String messageType;
+    private final int messagePriority;
     private final String ipAddress;
     private final int retryCount;
     private final boolean isScheduled;
@@ -26,6 +30,7 @@ public class DeviceRequest {
         this.domain = builder.domain;
         this.domainVersion = builder.domainVersion;
         this.messageType = builder.messageType;
+        this.messagePriority = builder.messagePriority;
         this.ipAddress = builder.ipAddress;
         this.retryCount = builder.retryCount;
         this.isScheduled = builder.isScheduled;
@@ -38,9 +43,24 @@ public class DeviceRequest {
         private String domain = null;
         private String domainVersion = null;
         private String messageType = null;
+        private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         private String ipAddress = null;
         private int retryCount = 0;
         private boolean isScheduled = false;
+
+        public Builder messageMetaData(final MessageMetadata messageMetadata) {
+            this.organisationIdentification = messageMetadata.getOrganisationIdentification();
+            this.deviceIdentification = messageMetadata.getDeviceIdentification();
+            this.correlationUid = messageMetadata.getCorrelationUid();
+            this.domain = messageMetadata.getDomain();
+            this.domainVersion = messageMetadata.getDomainVersion();
+            this.messageType = messageMetadata.getMessageType();
+            this.messagePriority = messageMetadata.getMessagePriority();
+            this.ipAddress = messageMetadata.getIpAddress();
+            this.retryCount = messageMetadata.getRetryCount();
+            this.isScheduled = messageMetadata.isScheduled();
+            return this;
+        }
 
         public Builder organisationIdentification(final String organisationIdentification) {
             this.organisationIdentification = organisationIdentification;
@@ -69,6 +89,11 @@ public class DeviceRequest {
 
         public Builder messageType(final String messageType) {
             this.messageType = messageType;
+            return this;
+        }
+
+        public Builder messagePriority(final int messagePriority) {
+            this.messagePriority = messagePriority;
             return this;
         }
 
@@ -119,6 +144,10 @@ public class DeviceRequest {
 
     public String getMessageType() {
         return this.messageType;
+    }
+
+    public int getMessagePriority() {
+        return this.messagePriority;
     }
 
     public String getIpAddress() {

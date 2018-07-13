@@ -112,9 +112,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             final DeviceStatusDto deviceStatus = new Iec61850GetStatusCommand().getStatusFromDevice(this.iec61850Client,
                     deviceConnection, ssld);
 
-            final GetStatusDeviceResponse deviceResponse = new GetStatusDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), deviceStatus);
+            final GetStatusDeviceResponse deviceResponse = new GetStatusDeviceResponse(deviceRequest, deviceStatus);
 
             deviceResponseHandler.handleResponse(deviceResponse);
 
@@ -145,8 +143,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                             deviceRequest.getPowerUsageHistoryContainer(), deviceOutputSettingsLightRelays);
 
             final GetPowerUsageHistoryDeviceResponse deviceResponse = new GetPowerUsageHistoryDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, powerUsageHistoryData);
+                    deviceRequest, DeviceMessageStatus.OK, powerUsageHistoryData);
 
             deviceResponseHandler.handleResponse(deviceResponse);
         } catch (final ConnectionFailureException se) {
@@ -296,9 +293,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             final ConfigurationDto configuration = new Iec61850GetConfigurationCommand()
                     .getConfigurationFromDevice(this.iec61850Client, deviceConnection, ssld, this.mapper);
 
-            final GetConfigurationDeviceResponse response = new GetConfigurationDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, configuration);
+            final GetConfigurationDeviceResponse response = new GetConfigurationDeviceResponse(deviceRequest,
+                    DeviceMessageStatus.OK, configuration);
 
             deviceResponseHandler.handleResponse(response);
         } catch (final ConnectionFailureException se) {
@@ -412,8 +408,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
             new Iec61850SetScheduleCommand().setScheduleOnDevice(this.iec61850Client, deviceConnection,
-                    deviceRequest.getRelayType(), deviceRequest.getSchedule().getScheduleList(),
-                    ssld, this.ssldDataService);
+                    deviceRequest.getRelayType(), deviceRequest.getSchedule().getScheduleList(), ssld,
+                    this.ssldDataService);
 
             this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);
         } catch (final ConnectionFailureException se) {
@@ -436,9 +432,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             final List<FirmwareVersionDto> firmwareVersions = new Iec61850GetFirmwareVersionCommand()
                     .getFirmwareVersionFromDevice(this.iec61850Client, deviceConnection);
 
-            final GetFirmwareVersionDeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), firmwareVersions);
+            final GetFirmwareVersionDeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(deviceRequest,
+                    firmwareVersions);
 
             deviceResponseHandler.handleResponse(deviceResponse);
         } catch (final ConnectionFailureException se) {
@@ -556,7 +551,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     private EmptyDeviceResponse createDefaultResponse(final DeviceRequest deviceRequest,
             final DeviceMessageStatus deviceMessageStatus) {
         return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), deviceMessageStatus);
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),
+                deviceRequest.getMessagePriority(), deviceMessageStatus);
     }
 
     private void createSuccessfulDefaultResponse(final DeviceRequest deviceRequest,

@@ -8,15 +8,17 @@
 package com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 
 public class GetDataDeviceResponse extends EmptyDeviceResponse {
 
     GetDataResponseDto dataResponse;
 
-    public GetDataDeviceResponse(final String organisation, final String device, final String correlationUid,
-            final DeviceMessageStatus status, final GetDataResponseDto dataResponse) {
-        super(organisation, device, correlationUid, status);
+    public GetDataDeviceResponse(final DeviceRequest deviceRequest, final DeviceMessageStatus status,
+            final GetDataResponseDto dataResponse) {
+        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority(), status);
         this.dataResponse = dataResponse;
     }
 

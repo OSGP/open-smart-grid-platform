@@ -77,7 +77,7 @@ public abstract class LmdDeviceRequestMessageProcessor extends BaseMessageProces
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, 0);
+                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
                 .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
                 .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.OK).osgpException(null)

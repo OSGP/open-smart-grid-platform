@@ -9,6 +9,8 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
+
 /**
  * A value object, containing all data of an incoming ObjectMessage.
  */
@@ -58,6 +60,21 @@ public class RequestMessageData {
 
         public Builder messageData(final Serializable messageData) {
             this.messageData = messageData;
+            return this;
+        }
+
+        public Builder messageMetadata(final MessageMetadata messageMetadata) {
+            this.domain = messageMetadata.getDomain();
+            this.domainVersion = messageMetadata.getDomainVersion();
+            this.messageType = messageMetadata.getMessageType();
+            this.retryCount = messageMetadata.getRetryCount();
+            this.isScheduled = messageMetadata.isScheduled();
+            this.correlationUid = messageMetadata.getCorrelationUid();
+            this.organisationIdentification = messageMetadata.getOrganisationIdentification();
+            this.deviceIdentification = messageMetadata.getDeviceIdentification();
+            this.ipAddress = messageMetadata.getIpAddress();
+            this.messagePriority = messageMetadata.getMessagePriority();
+            this.scheduleTime = messageMetadata.getScheduleTime();
             return this;
         }
 

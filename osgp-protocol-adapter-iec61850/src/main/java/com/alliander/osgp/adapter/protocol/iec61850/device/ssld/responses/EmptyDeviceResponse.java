@@ -8,15 +8,22 @@
 package com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 
 public class EmptyDeviceResponse extends DeviceResponse {
 
-    private DeviceMessageStatus status;
+    private final DeviceMessageStatus status;
 
     public EmptyDeviceResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DeviceMessageStatus status) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+            final String correlationUid, final int messagePriority, final DeviceMessageStatus status) {
+        super(organisationIdentification, deviceIdentification, correlationUid, messagePriority);
+        this.status = status;
+    }
+
+    public EmptyDeviceResponse(final DeviceRequest deviceRequest, final DeviceMessageStatus status) {
+        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority());
         this.status = status;
     }
 

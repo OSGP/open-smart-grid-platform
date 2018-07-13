@@ -7,18 +7,20 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.device.da.rtu;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
-import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
-
 import java.io.Serializable;
+
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 
 public class DaDeviceResponse extends EmptyDeviceResponse {
 
-    private Serializable dataResponse;
+    private final Serializable dataResponse;
 
-    public DaDeviceResponse(final String organisation, final String device, final String correlationUid,
-                            final DeviceMessageStatus status, final Serializable dataResponse) {
-        super(organisation, device, correlationUid, status);
+    public DaDeviceResponse(final DeviceRequest deviceRequest, final DeviceMessageStatus status,
+            final Serializable dataResponse) {
+        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority(), status);
         this.dataResponse = dataResponse;
     }
 

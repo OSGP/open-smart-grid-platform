@@ -72,25 +72,22 @@ public class Iec61850DaRtuDeviceService implements DaRtuDeviceService {
                                     deviceRequest.getOrganisationIdentification(), serverName),
                             deviceRequest, messageProcessor);
 
-            final DaDeviceResponse deviceResponse = new DaDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                    deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK,
+            final DaDeviceResponse deviceResponse = new DaDeviceResponse(deviceRequest, DeviceMessageStatus.OK,
                     dataResponse);
 
             deviceResponseHandler.handleResponse(deviceResponse);
         } catch (final ConnectionFailureException se) {
             LOGGER.error("Could not connect to device after all retries", se);
 
-            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest,
+                    DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleConnectionFailure(se, deviceResponse);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during Get Data", e);
 
-            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest,
+                    DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleException(e, deviceResponse);
         }

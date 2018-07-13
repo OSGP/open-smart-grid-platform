@@ -78,7 +78,7 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, 0);
+                deviceResponse.getCorrelationUid(), messageType, response.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
                 .domain(domainInformation.getDomain()).domainVersion(domainInformation.getDomainVersion())
                 .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.OK).osgpException(null)

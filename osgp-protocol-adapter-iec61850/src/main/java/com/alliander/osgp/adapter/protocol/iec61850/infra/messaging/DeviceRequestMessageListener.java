@@ -53,10 +53,12 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
     public void onMessage(final Message message, final Session session) throws JMSException {
         final ObjectMessage objectMessage = (ObjectMessage) message;
         String messageType = null;
+        int messagePriority;
         MessageProcessor processor = null;
         try {
             messageType = message.getJMSType();
-            LOGGER.info("Received message of type: {}", messageType);
+            messagePriority = message.getJMSPriority();
+            LOGGER.info("Received message of type: {} with message priority: {}", messageType, messagePriority);
             processor = this.iec61850RequestMessageProcessorMap.getMessageProcessor(objectMessage);
         } catch (final IllegalArgumentException | JMSException e) {
             LOGGER.error("Unexpected IllegalArgumentException | JMSExceptionduring during onMessage(Message)", e);

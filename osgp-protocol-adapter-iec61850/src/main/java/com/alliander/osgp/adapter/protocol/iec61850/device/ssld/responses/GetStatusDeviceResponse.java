@@ -7,16 +7,17 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
 
 public class GetStatusDeviceResponse extends DeviceResponse {
 
-    private DeviceStatusDto deviceStatus;
+    private final DeviceStatusDto deviceStatus;
 
-    public GetStatusDeviceResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DeviceStatusDto deviceStatus) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+    public GetStatusDeviceResponse(final DeviceRequest deviceRequest, final DeviceStatusDto deviceStatus) {
+        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority());
         this.deviceStatus = deviceStatus;
     }
 

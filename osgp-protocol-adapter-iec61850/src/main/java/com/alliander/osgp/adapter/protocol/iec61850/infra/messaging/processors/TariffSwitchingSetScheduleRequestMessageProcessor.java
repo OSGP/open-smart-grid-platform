@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest.Builder;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
@@ -23,7 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Requ
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
 import com.alliander.osgp.dto.valueobjects.ScheduleDto;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 /**
  * Class for processing tariff switching set schedule request messages
@@ -44,58 +43,25 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends SsldDevic
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing tariff switching set schedule request message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String ipAddress = null;
-        Boolean isScheduled = null;
-        int retryCount = 0;
+        MessageMetadata messageMetadata = null;
         ScheduleDto scheduleDto = null;
-
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+            messageMetadata = MessageMetadata.fromMessage(message);
             scheduleDto = (ScheduleDto) message.getObject();
-
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
-            LOGGER.debug("scheduled: {}", isScheduled);
             return;
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
-                .messageData(scheduleDto).domain(domain).domainVersion(domainVersion)
-                .messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
-                .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
-                .deviceIdentification(deviceIdentification).build();
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(messageMetadata)
+                .build();
 
-        this.printDomainInfo(messageType, domain, domainVersion);
+        this.printDomainInfo(requestMessageData);
 
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final Builder deviceRequestBuilder = DeviceRequest.newBuilder()
-                .organisationIdentification(organisationIdentification)
-                .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
-                .domainVersion(domainVersion).messageType(messageType).ipAddress(ipAddress)
-                .retryCount(retryCount).isScheduled(isScheduled);
+        final DeviceRequest.Builder deviceRequestBuilder = DeviceRequest.newBuilder().messageMetaData(messageMetadata);
 
         this.deviceService.setSchedule(
                 new SetScheduleDeviceRequest(deviceRequestBuilder, scheduleDto, RelayTypeDto.TARIFF),

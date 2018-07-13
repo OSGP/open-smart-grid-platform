@@ -84,25 +84,22 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                 throw new ProtocolAdapterException("No valid response received during GetData");
             }
 
-            final GetDataDeviceResponse deviceResponse = new GetDataDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, getDataResponse);
+            final GetDataDeviceResponse deviceResponse = new GetDataDeviceResponse(deviceRequest,
+                    DeviceMessageStatus.OK, getDataResponse);
 
             deviceResponseHandler.handleResponse(deviceResponse);
         } catch (final ConnectionFailureException se) {
             LOGGER.error("Could not connect to device after all retries", se);
 
-            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest,
+                    DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleConnectionFailure(se, deviceResponse);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during Get Data", e);
 
-            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest,
+                    DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleException(e, deviceResponse);
         }
@@ -122,25 +119,21 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getDeviceIdentification(), deviceRequest.getOrganisationIdentification(), serverName),
                     deviceRequest);
 
-            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest, DeviceMessageStatus.OK);
 
             deviceResponseHandler.handleResponse(deviceResponse);
         } catch (final ConnectionFailureException se) {
             LOGGER.error("Could not connect to device after all retries", se);
 
-            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest,
+                    DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleConnectionFailure(se, deviceResponse);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during Set Data", e);
 
-            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest,
+                    DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleException(e, deviceResponse);
         }

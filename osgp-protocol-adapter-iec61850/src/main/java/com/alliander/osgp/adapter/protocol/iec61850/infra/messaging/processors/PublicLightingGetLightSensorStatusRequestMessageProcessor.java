@@ -23,7 +23,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Requ
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageMetadata;
 
 /**
  * Class for processing public lighting get light sensor status request messages
@@ -51,65 +51,38 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing public lighting get status request message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String ipAddress = null;
-        int retryCount = 0;
-        boolean isScheduled = false;
-
+        MessageMetadata messageMetadata = null;
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            messageMetadata = MessageMetadata.fromMessage(message);
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
             return;
         }
-
-        this.printDomainInfo(messageType, domain, domainVersion);
 
         // To ensure the response is sent to the public lighting or common
         // domain and can be parsed using the existing GetStatus functions, the
         // message type is changed from GET_LIGHT_SENSOR_STATUS to
         // GET_LIGHT_STATUS or to GET_STATUS, depending on domain.
-        if (DomainTypeDto.PUBLIC_LIGHTING.name().equals(domain)) {
+        String messageType = messageMetadata.getMessageType();
+        if (DomainTypeDto.PUBLIC_LIGHTING.name().equals(messageMetadata.getDomain())) {
             messageType = DeviceFunctionDto.GET_LIGHT_STATUS.name();
-        } else if (DomainTypeDto.TARIFF_SWITCHING.name().equals(domain)) {
-            LOGGER.warn("Unexpected domain request received: {} for messageType: {}", domain, messageType);
+        } else if (DomainTypeDto.TARIFF_SWITCHING.name().equals(messageMetadata.getDomain())) {
+            LOGGER.warn("Unexpected domain request received: {} for messageType: {}", messageMetadata.getDomain(),
+                    messageType);
         } else {
             messageType = DeviceFunctionDto.GET_STATUS.name();
         }
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().domain(domain)
-                .domainVersion(domainVersion).messageType(messageType).retryCount(retryCount).isScheduled(isScheduled)
-                .correlationUid(correlationUid).organisationIdentification(organisationIdentification)
-                .deviceIdentification(deviceIdentification).build();
+        final RequestMessageData requestMessageData = RequestMessageData.newBuilder().messageMetadata(messageMetadata)
+                .messageType(messageType).build();
+
+        this.printDomainInfo(requestMessageData);
 
         final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
                 .createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        final DeviceRequest deviceRequest = DeviceRequest.newBuilder()
-                .organisationIdentification(organisationIdentification).deviceIdentification(deviceIdentification)
-                .correlationUid(correlationUid).domain(domain).domainVersion(domainVersion).messageType(messageType)
-                .ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled).build();
+        final DeviceRequest deviceRequest = DeviceRequest.newBuilder().messageMetaData(messageMetadata)
+                .messageType(messageType).build();
 
         this.deviceService.getStatus(deviceRequest, iec61850DeviceResponseHandler);
     }

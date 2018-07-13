@@ -65,9 +65,7 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
             final DeviceStatusDto deviceStatus = new Iec61850GetLightSensorStatusCommand()
                     .getStatusFromDevice(this.iec61850Client, deviceConnection, lmd);
 
-            final GetStatusDeviceResponse deviceResponse = new GetStatusDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), deviceStatus);
+            final GetStatusDeviceResponse deviceResponse = new GetStatusDeviceResponse(deviceRequest, deviceStatus);
 
             deviceResponseHandler.handleResponse(deviceResponse);
 
@@ -102,8 +100,7 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
 
     private EmptyDeviceResponse createDefaultResponse(final DeviceRequest deviceRequest,
             final DeviceMessageStatus deviceMessageStatus) {
-        return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), deviceMessageStatus);
+        return new EmptyDeviceResponse(deviceRequest, deviceMessageStatus);
     }
 
     private void handleConnectionFailureException(final DeviceRequest deviceRequest,

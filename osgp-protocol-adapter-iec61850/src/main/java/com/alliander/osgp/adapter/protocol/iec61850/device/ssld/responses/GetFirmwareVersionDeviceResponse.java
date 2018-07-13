@@ -9,16 +9,18 @@ package com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses;
 
 import java.util.List;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 
 public class GetFirmwareVersionDeviceResponse extends DeviceResponse {
 
-    private List<FirmwareVersionDto> firmwareVersions;
+    private final List<FirmwareVersionDto> firmwareVersions;
 
-    public GetFirmwareVersionDeviceResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<FirmwareVersionDto> firmwareVersions) {
-        super(organisationIdentification, deviceIdentification, correlationUid);
+    public GetFirmwareVersionDeviceResponse(final DeviceRequest deviceRequest,
+            final List<FirmwareVersionDto> firmwareVersions) {
+        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority());
         this.firmwareVersions = firmwareVersions;
     }
 
