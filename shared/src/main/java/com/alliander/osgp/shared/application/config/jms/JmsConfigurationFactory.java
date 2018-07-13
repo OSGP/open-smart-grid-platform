@@ -22,6 +22,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 
+import com.alliander.osgp.shared.infra.jms.OsgpJmsTemplate;
+
 /**
  * Factory object for creating and initializing JMS configuration objects with
  * properties from the Environment.
@@ -120,8 +122,8 @@ public class JmsConfigurationFactory {
      * @param messageListener
      *            The {@link MessageListener} to put on the queue.
      * @param replyToQueue
-     *            {@link ActiveMQDestination} instance where reply messages should
-     *            be sent.
+     *            {@link ActiveMQDestination} instance where reply messages
+     *            should be sent.
      * @return JmsConfiguration containing created objects.
      */
     public JmsConfiguration initializeReceiveConfiguration(final String propertyPrefix,
@@ -225,7 +227,7 @@ public class JmsConfigurationFactory {
         }
 
         private JmsTemplate jmsTemplate() {
-            final JmsTemplate jmsTemplate = new JmsTemplate();
+            final OsgpJmsTemplate jmsTemplate = new OsgpJmsTemplate();
             jmsTemplate.setDefaultDestination(this.destinationQueue);
             jmsTemplate.setExplicitQosEnabled(this.property(PROPERTY_EXPLICIT_QOS_ENABLED, boolean.class));
             jmsTemplate.setTimeToLive(this.property(PROPERTY_TIME_TO_LIVE, long.class));

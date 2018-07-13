@@ -6,6 +6,8 @@ package com.alliander.osgp.shared.infra.ws;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
+
 public class RequestContext {
 
     public static final String BYPASS_RETRY = "BypassRetry";
@@ -16,6 +18,11 @@ public class RequestContext {
     private RequestContext(final boolean bypassRetryValue, final int messagePriority) {
         this.bypassRetry = bypassRetryValue;
         this.messagePriority = messagePriority;
+    }
+
+    private RequestContext(final boolean bypassRetryValue, final MessagePriorityEnum messagePriority) {
+        this.bypassRetry = bypassRetryValue;
+        this.messagePriority = messagePriority.getPriority();
     }
 
     public Map<String, String> asMap() {
@@ -47,6 +54,11 @@ public class RequestContext {
 
         public Builder messagePriority(final int messagePriority) {
             this.messagePriority = messagePriority;
+            return this;
+        }
+
+        public Builder messagePriority(final MessagePriorityEnum messagePriority) {
+            this.messagePriority = messagePriority.getPriority();
             return this;
         }
 

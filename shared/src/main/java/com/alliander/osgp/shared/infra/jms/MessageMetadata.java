@@ -36,7 +36,7 @@ public class MessageMetadata implements Serializable {
     private int retryCount;
 
     private MessageMetadata() {
-
+        // Default private constructor.
     }
 
     private MessageMetadata(final Builder builder) {
