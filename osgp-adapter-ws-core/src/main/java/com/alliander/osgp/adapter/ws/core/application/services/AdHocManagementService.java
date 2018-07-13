@@ -29,6 +29,7 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsCoreAdHocManagementService")
@@ -71,7 +72,7 @@ public class AdHocManagementService {
     }
 
     public String enqueueSetRebootRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -85,8 +86,12 @@ public class AdHocManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_REBOOT,
-                correlationUid, organisationIdentification, deviceIdentification, null, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.SET_REBOOT.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
 
         this.commonRequestMessageSender.send(message);
 

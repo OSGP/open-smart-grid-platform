@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.domain.publiclighting.application.services.AdH
 import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing public lighting set light measurement request messages.
@@ -46,6 +47,7 @@ public class PublicLightingSetLightMeasurementDeviceRequestMessageProcessor exte
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
         Object dataObject = null;
@@ -53,6 +55,7 @@ public class PublicLightingSetLightMeasurementDeviceRequestMessageProcessor exte
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             dataObject = message.getObject();
@@ -60,6 +63,7 @@ public class PublicLightingSetLightMeasurementDeviceRequestMessageProcessor exte
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -72,7 +76,8 @@ public class PublicLightingSetLightMeasurementDeviceRequestMessageProcessor exte
                     deviceIdentification, correlationUid, (String) dataObject, messageType);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

@@ -56,23 +56,27 @@ public class AdHocManagementService extends AbstractService {
     // === GET STATUS ===
 
     /**
-     * Retrieve status of device and provide a mapped response (PublicLighting or
-     * TariffSwitching)
+     * Retrieve status of device and provide a mapped response (PublicLighting
+     * or TariffSwitching)
      *
      * @param organisationIdentification
-     *            identification of organisation
+     *            identification of organization
      * @param deviceIdentification
      *            identification of device
      * @param allowedDomainType
      *            domain type performing requesting the status
-     *
-     * @return status of device
+     * @param messageType
+     *            the type of the message
+     * @param messagePriority
+     *            the priority of the message
      *
      * @throws FunctionalException
+     *             in case the organization is not authorized or the device is
+     *             not active
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DomainType allowedDomainType, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final DomainType allowedDomainType, final String messageType,
+            final int messagePriority) throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -81,13 +85,14 @@ public class AdHocManagementService extends AbstractService {
                 .map(allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, allowedDomainTypeDto), messageType, device.getIpAddress());
+                deviceIdentification, allowedDomainTypeDto), messageType, messagePriority, device.getIpAddress());
     }
 
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) throws OsgpException {
+            final int messagePriority, final ResponseMessageResultType deviceResult, final OsgpException exception)
+            throws OsgpException {
 
         ResponseMessageResultType result = deviceResult;
         OsgpException osgpException = exception;
@@ -124,15 +129,16 @@ public class AdHocManagementService extends AbstractService {
             }
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(deviceStatusMapped).build();
+                .withDataObject(deviceStatusMapped).withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     /**
-     * Updates the relay overview from a device based on the given device status.
+     * Updates the relay overview from a device based on the given device
+     * status.
      *
      * @param deviceIdentification
      *            The device to update.

@@ -24,6 +24,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.FirmwareManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagementService;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
@@ -90,6 +91,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined
@@ -129,11 +131,13 @@ public class FirmwareManagementEndpoint {
     @ResponsePayload
     public UpdateFirmwareAsyncResponse updateFirmware(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateFirmwareRequest request) throws OsgpException {
+            @RequestPayload final UpdateFirmwareRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("UpdateFirmware Request received from organisation {} for device {} with firmware name {}.",
+        LOGGER.info(
+                "UpdateFirmware Request received from organisation {} for device {} with firmware name {} with message priority: {}.",
                 organisationIdentification, request.getDeviceIdentification(), request.getFirmwareIdentification(),
-                request.getScheduledTime());
+                messagePriority);
 
         final UpdateFirmwareAsyncResponse response = new UpdateFirmwareAsyncResponse();
 
@@ -149,7 +153,7 @@ public class FirmwareManagementEndpoint {
 
             final String correlationUid = this.firmwareManagementService.enqueueUpdateFirmwareRequest(
                     organisationIdentification, request.getDeviceIdentification(), firmwareUpdateMessageDataContainer,
-                    scheduleTime);
+                    scheduleTime, MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -229,17 +233,19 @@ public class FirmwareManagementEndpoint {
     @ResponsePayload
     public GetFirmwareVersionAsyncResponse getFirmwareVersion(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetFirmwareVersionRequest request) throws OsgpException {
+            @RequestPayload final GetFirmwareVersionRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("GetFirmwareVersion Request received from organisation {} for device {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("GetFirmwareVersion Request received from organisation {} for device {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final GetFirmwareVersionAsyncResponse response = new GetFirmwareVersionAsyncResponse();
 
         try {
             final AsyncResponse asyncResponse = new AsyncResponse();
-            final String correlationUid = this.firmwareManagementService
-                    .enqueueGetFirmwareRequest(organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.firmwareManagementService.enqueueGetFirmwareRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
@@ -419,17 +425,18 @@ public class FirmwareManagementEndpoint {
     @ResponsePayload
     public SwitchFirmwareAsyncResponse switchFirmware(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SwitchFirmwareRequest request) throws OsgpException {
+            @RequestPayload final SwitchFirmwareRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Switch Firmware Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Switch Firmware Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SwitchFirmwareAsyncResponse response = new SwitchFirmwareAsyncResponse();
 
         try {
             final String correlationUid = this.firmwareManagementService.enqueueSwitchFirmwareRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    String.valueOf(request.getVersion()));
+                    organisationIdentification, request.getDeviceIdentification(), String.valueOf(request.getVersion()),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);

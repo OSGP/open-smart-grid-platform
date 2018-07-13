@@ -37,11 +37,9 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttr
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-admin.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-admin.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 
@@ -51,7 +49,6 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
     private static final String USER_NAME_HEADER = "UserName";
-
     private static final String APPLICATION_NAME_HEADER = "ApplicationName";
 
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
@@ -71,8 +68,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_MANAGEMENT));
+        marshaller.setContextPath(
+                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_MANAGEMENT));
 
         return marshaller;
     }
@@ -98,7 +95,7 @@ public class WebServiceConfig extends AbstractConfig {
 
         final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
 
-        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<MethodArgumentResolver>();
+        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
         methodArgumentResolvers.add(this.deviceManagementMarshallingPayloadMethodProcessor());
 
@@ -106,7 +103,7 @@ public class WebServiceConfig extends AbstractConfig {
                 OrganisationIdentification.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
-        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
+        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
         methodReturnValueHandlers.add(this.deviceManagementMarshallingPayloadMethodProcessor());
 
@@ -133,32 +130,24 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
-        LOGGER.debug("Creating Organisation Identification Interceptor Bean");
-
         return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
                 ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
-        LOGGER.debug("Creating X509 Certificate Subject CN Endpoint Interceptor Bean");
-
         return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
-        LOGGER.debug("Creating Certificate And Soap Header Authorization Endpoint Interceptor Bean");
-
         return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     @Bean
     public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
-        LOGGER.debug("Creating Web Service Monitor Interceptor Bean");
-
         return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
                 APPLICATION_NAME_HEADER);
     }

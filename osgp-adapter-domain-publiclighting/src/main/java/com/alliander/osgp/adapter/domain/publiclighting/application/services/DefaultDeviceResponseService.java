@@ -28,8 +28,8 @@ public class DefaultDeviceResponseService {
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     public void handleDefaultDeviceResponse(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+            final String correlationUid, final String messageType, final int messagePriority,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
 
@@ -45,10 +45,10 @@ public class DefaultDeviceResponseService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .build();
+                .withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 }

@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.ws.WebServiceR
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing public lighting set schedule request messages
@@ -47,6 +48,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends WebService
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
         Object dataObject = null;
@@ -55,6 +57,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends WebService
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             if (message.propertyExists(Constants.SCHEDULE_TIME)) {
@@ -65,6 +68,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends WebService
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -76,10 +80,11 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends WebService
             final Schedule schedule = (Schedule) dataObject;
 
             this.scheduleManagementService.setLightSchedule(organisationIdentification, deviceIdentification,
-                    correlationUid, schedule, scheduleTime, messageType);
+                    correlationUid, schedule, scheduleTime, messageType, messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

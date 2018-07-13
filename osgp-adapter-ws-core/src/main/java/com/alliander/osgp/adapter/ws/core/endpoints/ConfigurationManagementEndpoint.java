@@ -21,6 +21,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.ConfigurationManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.ConfigurationManagementService;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
@@ -46,6 +47,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined
@@ -76,10 +78,12 @@ public class ConfigurationManagementEndpoint {
     @ResponsePayload
     public SetConfigurationAsyncResponse setConfiguration(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetConfigurationRequest request) throws OsgpException {
+            @RequestPayload final SetConfigurationRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Set Configuration Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification(), request.getScheduledTime());
+        LOGGER.info(
+                "Set Configuration Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SetConfigurationAsyncResponse response = new SetConfigurationAsyncResponse();
 
@@ -94,7 +98,8 @@ public class ConfigurationManagementEndpoint {
                     Configuration.class);
 
             final String correlationUid = this.configurationManagementService.enqueueSetConfigurationRequest(
-                    organisationIdentification, request.getDeviceIdentification(), configuration, scheduleTime);
+                    organisationIdentification, request.getDeviceIdentification(), configuration, scheduleTime,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -150,16 +155,19 @@ public class ConfigurationManagementEndpoint {
     @ResponsePayload
     public GetConfigurationAsyncResponse getConfiguration(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetConfigurationRequest request) throws OsgpException {
+            @RequestPayload final GetConfigurationRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Get Configuration Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info(
+                "Get Configuration Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final GetConfigurationAsyncResponse response = new GetConfigurationAsyncResponse();
 
         try {
-            final String correlationUid = this.configurationManagementService
-                    .enqueueGetConfigurationRequest(organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.configurationManagementService.enqueueGetConfigurationRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -212,17 +220,20 @@ public class ConfigurationManagementEndpoint {
     @ResponsePayload
     public SwitchConfigurationAsyncResponse switchConfiguration(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SwitchConfigurationRequest request) throws OsgpException {
+            @RequestPayload final SwitchConfigurationRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Switch Configuration Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info(
+                "Switch Configuration Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SwitchConfigurationAsyncResponse response = new SwitchConfigurationAsyncResponse();
 
         try {
             final String correlationUid = this.configurationManagementService.enqueueSwitchConfigurationRequest(
                     organisationIdentification, request.getDeviceIdentification(),
-                    String.valueOf(request.getConfigurationBank()));
+                    String.valueOf(request.getConfigurationBank()),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);

@@ -21,6 +21,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.publiclighting.application.mapping.ScheduleManagementMapper;
 import com.alliander.osgp.adapter.ws.publiclighting.application.services.ScheduleManagementService;
@@ -39,6 +40,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined
@@ -75,10 +77,11 @@ public class PublicLightingScheduleManagementEndpoint {
     @ResponsePayload
     public SetScheduleAsyncResponse setLightSchedule(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetScheduleRequest request) throws OsgpException {
+            @RequestPayload final SetScheduleRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Set Schedule Request received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+        LOGGER.info("Set Schedule Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SetScheduleAsyncResponse response = new SetScheduleAsyncResponse();
 
@@ -96,7 +99,8 @@ public class PublicLightingScheduleManagementEndpoint {
                     request.getAstronomicalSunsetOffset());
 
             final String correlationUid = this.scheduleManagementService.enqueueSetLightSchedule(
-                    organisationIdentification, request.getDeviceIdentification(), schedule, scheduleTime);
+                    organisationIdentification, request.getDeviceIdentification(), schedule, scheduleTime,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);

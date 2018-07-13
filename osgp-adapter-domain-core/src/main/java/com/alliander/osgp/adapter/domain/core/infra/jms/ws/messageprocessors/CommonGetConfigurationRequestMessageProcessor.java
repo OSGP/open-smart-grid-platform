@@ -20,12 +20,10 @@ import com.alliander.osgp.adapter.domain.core.application.services.Configuration
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common get configuration request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainCoreCommonGetConfigurationRequestMessageProcessor")
 public class CommonGetConfigurationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -48,18 +46,21 @@ public class CommonGetConfigurationRequestMessageProcessor extends WebServiceReq
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -69,10 +70,11 @@ public class CommonGetConfigurationRequestMessageProcessor extends WebServiceReq
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.configurationManagementService.getConfiguration(organisationIdentification, deviceIdentification,
-                    correlationUid, messageType);
+                    correlationUid, messageType, messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

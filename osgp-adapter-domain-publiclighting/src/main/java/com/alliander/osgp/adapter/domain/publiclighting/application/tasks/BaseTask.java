@@ -34,6 +34,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Base class for scheduled tasks.
@@ -216,7 +217,8 @@ public class BaseTask {
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisation, deviceIdentification,
                 domain);
 
-        this.osgpCoreRequestMessageSender.send(requestMessage, deviceFunctionString, ipAddress);
+        this.osgpCoreRequestMessageSender.send(requestMessage, deviceFunctionString,
+                MessagePriorityEnum.LOW.getPriority(), ipAddress);
     }
 
 }

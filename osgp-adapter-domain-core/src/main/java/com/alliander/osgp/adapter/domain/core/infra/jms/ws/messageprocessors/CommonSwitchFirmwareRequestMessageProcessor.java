@@ -20,10 +20,10 @@ import com.alliander.osgp.adapter.domain.core.application.services.FirmwareManag
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common switch firmware request messages
- *
  */
 @Component("domainCoreCommonSwitchFirmwareRequestMessageProcessor")
 public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -31,8 +31,7 @@ public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceReque
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CommonSwitchFirmwareRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonSwitchFirmwareRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainCoreFirmwareManagementService")
@@ -48,6 +47,7 @@ public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceReque
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
         String version = null;
@@ -55,6 +55,7 @@ public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceReque
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             version = (String) message.getObject();
@@ -62,6 +63,7 @@ public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceReque
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -71,10 +73,11 @@ public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceReque
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.firmwareManagementService.switchFirmware(organisationIdentification, deviceIdentification,
-                    correlationUid, messageType, version);
+                    correlationUid, messageType, messagePriority, version);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

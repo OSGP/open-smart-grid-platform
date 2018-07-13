@@ -61,6 +61,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsCoreFirmwareManagementService")
@@ -116,8 +117,8 @@ public class FirmwareManagementService {
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
-            final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer, final DateTime scheduledTime)
-            throws FunctionalException {
+            final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer, final DateTime scheduledTime,
+            final int messagePriority) throws FunctionalException {
         LOGGER.debug("Queue update firmware request");
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -131,9 +132,14 @@ public class FirmwareManagementService {
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.UPDATE_FIRMWARE,
-                correlationUid, organisationIdentification, deviceIdentification, firmwareUpdateMessageDataContainer,
-                scheduledTime);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.UPDATE_FIRMWARE.name(),
+                messagePriority, scheduledTime == null ? null : scheduledTime.getMillis());
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(firmwareUpdateMessageDataContainer).build();
+
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
@@ -144,7 +150,7 @@ public class FirmwareManagementService {
     }
 
     public String enqueueGetFirmwareRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
         LOGGER.debug("Queue get firmware request");
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -158,8 +164,14 @@ public class FirmwareManagementService {
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.GET_FIRMWARE_VERSION,
-                correlationUid, organisationIdentification, deviceIdentification, null, null);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.GET_FIRMWARE_VERSION.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
+
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
@@ -715,7 +727,8 @@ public class FirmwareManagementService {
     }
 
     public String enqueueSwitchFirmwareRequest(final String organisationIdentification,
-            final String deviceIdentification, final String version) throws FunctionalException {
+            final String deviceIdentification, final String version, final int messagePriority)
+            throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
@@ -728,8 +741,12 @@ public class FirmwareManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SWITCH_FIRMWARE,
-                correlationUid, organisationIdentification, deviceIdentification, version, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.SWITCH_FIRMWARE.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(version).build();
 
         this.commonRequestMessageSender.send(message);
 

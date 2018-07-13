@@ -21,10 +21,10 @@ import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMess
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common update firmware request messages
- *
  */
 @Component("domainCoreCommonUpdateFirmwareRequestMessageProcessor")
 public class CommonUpdateFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -47,6 +47,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends WebServiceReque
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
         Boolean isScheduled = null;
@@ -55,6 +56,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends WebServiceReque
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
@@ -65,6 +67,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends WebServiceReque
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("isScheduled: {}", isScheduled);
@@ -78,10 +81,11 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends WebServiceReque
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.firmwareManagementService.updateFirmware(organisationIdentification, deviceIdentification,
-                    correlationUid, firmwareUpdateMessageDataContainer, scheduleTime, messageType);
+                    correlationUid, firmwareUpdateMessageDataContainer, scheduleTime, messageType, messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

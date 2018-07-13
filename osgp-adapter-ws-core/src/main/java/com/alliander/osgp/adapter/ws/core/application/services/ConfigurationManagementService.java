@@ -29,6 +29,7 @@ import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsCoreConfigurationManagementService")
@@ -56,7 +57,7 @@ public class ConfigurationManagementService {
 
     public String enqueueSetConfigurationRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Valid final Configuration configuration,
-            final DateTime scheduledTime) throws FunctionalException {
+            final DateTime scheduledTime, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -70,8 +71,12 @@ public class ConfigurationManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_CONFIGURATION,
-                correlationUid, organisationIdentification, deviceIdentification, configuration, scheduledTime);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.SET_CONFIGURATION.name(),
+                messagePriority, scheduledTime == null ? null : scheduledTime.getMillis());
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(configuration).build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -83,7 +88,7 @@ public class ConfigurationManagementService {
     }
 
     public String enqueueGetConfigurationRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -97,8 +102,12 @@ public class ConfigurationManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.GET_CONFIGURATION,
-                correlationUid, organisationIdentification, deviceIdentification, null, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.GET_CONFIGURATION.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -110,7 +119,8 @@ public class ConfigurationManagementService {
     }
 
     public String enqueueSwitchConfigurationRequest(final String organisationIdentification,
-            final String deviceIdentification, final String configurationBank) throws FunctionalException {
+            final String deviceIdentification, final String configurationBank, final int messagePriority)
+            throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
@@ -123,9 +133,12 @@ public class ConfigurationManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(
-                CommonRequestMessageType.SWITCH_CONFIGURATION_BANK, correlationUid, organisationIdentification,
-                deviceIdentification, configurationBank, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.SWITCH_CONFIGURATION_BANK.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(configurationBank).build();
 
         this.commonRequestMessageSender.send(message);
 

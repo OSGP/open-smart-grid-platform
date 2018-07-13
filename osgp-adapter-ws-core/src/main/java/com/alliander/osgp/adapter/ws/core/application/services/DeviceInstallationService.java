@@ -45,6 +45,7 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @SuppressWarnings("deprecation")
@@ -199,7 +200,7 @@ public class DeviceInstallationService {
 
     @Transactional(value = "transactionManager")
     public String enqueueGetStatusRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -212,8 +213,12 @@ public class DeviceInstallationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.GET_STATUS,
-                correlationUid, organisationIdentification, deviceIdentification, null, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.GET_STATUS.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -229,7 +234,7 @@ public class DeviceInstallationService {
 
     @Transactional(value = "transactionManager")
     public String enqueueStartDeviceTestRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("Queue start device test request");
 
@@ -243,8 +248,14 @@ public class DeviceInstallationService {
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.START_SELF_TEST,
-                correlationUid, organisationIdentification, deviceIdentification, null, null);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.START_SELF_TEST.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
+
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
@@ -261,7 +272,7 @@ public class DeviceInstallationService {
 
     @Transactional(value = "transactionManager")
     public String enqueueStopDeviceTestRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("Queue stop device test request");
 
@@ -272,10 +283,17 @@ public class DeviceInstallationService {
 
         LOGGER.debug("enqueueStopDeviceTestRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
+        
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.STOP_SELF_TEST,
-                correlationUid, organisationIdentification, deviceIdentification, null, null);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.STOP_SELF_TEST.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
+
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;

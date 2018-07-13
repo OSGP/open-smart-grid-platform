@@ -20,12 +20,10 @@ import com.alliander.osgp.adapter.domain.core.application.services.AdHocManageme
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common reboot request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainCoreCommonRebootRequestMessageProcessor")
 public class CommonRebootRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -48,18 +46,21 @@ public class CommonRebootRequestMessageProcessor extends WebServiceRequestMessag
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -69,10 +70,11 @@ public class CommonRebootRequestMessageProcessor extends WebServiceRequestMessag
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.adHocManagementService.setReboot(organisationIdentification, deviceIdentification, correlationUid,
-                    messageType);
+                    messageType, messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

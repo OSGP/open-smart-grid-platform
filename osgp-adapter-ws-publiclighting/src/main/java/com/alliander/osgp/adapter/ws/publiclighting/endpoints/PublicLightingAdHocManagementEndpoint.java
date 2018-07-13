@@ -22,6 +22,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.publiclighting.application.mapping.AdHocManagementMapper;
 import com.alliander.osgp.adapter.ws.publiclighting.application.services.AdHocManagementService;
@@ -60,6 +61,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined
@@ -100,9 +102,8 @@ public class PublicLightingAdHocManagementEndpoint {
 
             final DevicePage devicePage = new DevicePage();
             devicePage.setTotalPages(page.getTotalPages());
-            devicePage.getDevices().addAll(
-                    this.adHocManagementMapper.mapAsList(page.getContent(),
-                            com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Device.class));
+            devicePage.getDevices().addAll(this.adHocManagementMapper.mapAsList(page.getContent(),
+                    com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Device.class));
             response.setDevicePage(devicePage);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURRED, e);
@@ -120,10 +121,11 @@ public class PublicLightingAdHocManagementEndpoint {
     @PayloadRoot(localPart = "SetLightRequest", namespace = NAMESPACE)
     @ResponsePayload
     public SetLightAsyncResponse setLight(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetLightRequest request) throws OsgpException {
+            @RequestPayload final SetLightRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Set Light Request received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+        LOGGER.info("Set Light Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SetLightAsyncResponse response = new SetLightAsyncResponse();
 
@@ -131,8 +133,9 @@ public class PublicLightingAdHocManagementEndpoint {
             final List<LightValue> lightValues = new ArrayList<>();
             lightValues.addAll(this.adHocManagementMapper.mapAsList(request.getLightValue(), LightValue.class));
 
-            final String correlationUid = this.adHocManagementService.enqueueSetLightRequest(
-                    organisationIdentification, request.getDeviceIdentification(), lightValues);
+            final String correlationUid = this.adHocManagementService.enqueueSetLightRequest(organisationIdentification,
+                    request.getDeviceIdentification(), lightValues,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
 
@@ -162,8 +165,8 @@ public class PublicLightingAdHocManagementEndpoint {
         final SetLightResponse response = new SetLightResponse();
 
         try {
-            final ResponseMessage message = this.adHocManagementService.dequeueSetLightResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.adHocManagementService
+                    .dequeueSetLightResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
@@ -179,16 +182,18 @@ public class PublicLightingAdHocManagementEndpoint {
     @PayloadRoot(localPart = "GetStatusRequest", namespace = NAMESPACE)
     @ResponsePayload
     public GetStatusAsyncResponse getStatus(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetStatusRequest request) throws OsgpException {
+            @RequestPayload final GetStatusRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Get Status received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+        LOGGER.info("Get Status received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
 
         try {
             final String correlationUid = this.adHocManagementService.enqueueGetStatusRequest(
-                    organisationIdentification, request.getDeviceIdentification());
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -212,17 +217,14 @@ public class PublicLightingAdHocManagementEndpoint {
         final GetStatusResponse response = new GetStatusResponse();
 
         try {
-            final ResponseMessage message = this.adHocManagementService.dequeueGetStatusResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.adHocManagementService
+                    .dequeueGetStatusResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-
-                if (message.getDataObject() != null) {
-                    final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
-                    if (deviceStatus != null) {
-                        response.setDeviceStatus(this.adHocManagementMapper.map(deviceStatus,
-                                com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus.class));
-                    }
+                final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
+                if (deviceStatus != null) {
+                    response.setDeviceStatus(this.adHocManagementMapper.map(deviceStatus,
+                            com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus.class));
                 }
             }
         } catch (final Exception e) {
@@ -238,10 +240,11 @@ public class PublicLightingAdHocManagementEndpoint {
     @ResponsePayload
     public ResumeScheduleAsyncResponse resumeSchedule(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ResumeScheduleRequest request) throws OsgpException {
+            @RequestPayload final ResumeScheduleRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Resume Schedule Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Resume Schedule Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final ResumeScheduleAsyncResponse response = new ResumeScheduleAsyncResponse();
 
@@ -253,7 +256,8 @@ public class PublicLightingAdHocManagementEndpoint {
             resumeScheduleData.setIsImmediate(request.isIsImmediate());
 
             final String correlationUid = this.adHocManagementService.enqueueResumeScheduleRequest(
-                    organisationIdentification, request.getDeviceIdentification(), resumeScheduleData);
+                    organisationIdentification, request.getDeviceIdentification(), resumeScheduleData,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -282,8 +286,8 @@ public class PublicLightingAdHocManagementEndpoint {
         final ResumeScheduleResponse response = new ResumeScheduleResponse();
 
         try {
-            final ResponseMessage message = this.adHocManagementService.dequeueResumeScheduleResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.adHocManagementService
+                    .dequeueResumeScheduleResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
@@ -298,12 +302,12 @@ public class PublicLightingAdHocManagementEndpoint {
 
     @PayloadRoot(localPart = "SetTransitionRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public SetTransitionAsyncResponse setTransition(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetTransitionRequest request) throws OsgpException {
+    public SetTransitionAsyncResponse setTransition(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetTransitionRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Set Transition Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Set Transition Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SetTransitionAsyncResponse response = new SetTransitionAsyncResponse();
 
@@ -321,7 +325,8 @@ public class PublicLightingAdHocManagementEndpoint {
             transitionMessageDataContainer.setDateTime(dateTime);
 
             final String correlationUid = this.adHocManagementService.enqueueTransitionRequest(
-                    organisationIdentification, request.getDeviceIdentification(), transitionMessageDataContainer);
+                    organisationIdentification, request.getDeviceIdentification(), transitionMessageDataContainer,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -345,8 +350,8 @@ public class PublicLightingAdHocManagementEndpoint {
         final SetTransitionResponse response = new SetTransitionResponse();
 
         try {
-            final ResponseMessage message = this.adHocManagementService.dequeueSetTransitionResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.adHocManagementService
+                    .dequeueSetTransitionResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
@@ -363,18 +368,20 @@ public class PublicLightingAdHocManagementEndpoint {
     @ResponsePayload
     public SetLightMeasurementDeviceResponse setLightMeasurementDevice(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetLightMeasurementDeviceRequest request) throws OsgpException {
+            @RequestPayload final SetLightMeasurementDeviceRequest request,
+            @MessagePriority final String messagePriority) throws OsgpException {
 
         LOGGER.info(
-                "Set Light Measurement Device Request received from organisation: {} for device: {} for light measurement device: {}.",
+                "Set Light Measurement Device Request received from organisation: {} for device: {} for light measurement device: {} with message priority: {}",
                 organisationIdentification, request.getDeviceIdentification(),
-                request.getLightMeasurementDeviceIdentification());
+                request.getLightMeasurementDeviceIdentification(), messagePriority);
 
         final SetLightMeasurementDeviceResponse response = new SetLightMeasurementDeviceResponse();
 
         try {
             this.adHocManagementService.coupleLightMeasurementDeviceForSsld(organisationIdentification,
-                    request.getDeviceIdentification(), request.getLightMeasurementDeviceIdentification());
+                    request.getDeviceIdentification(), request.getLightMeasurementDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             response.setResult(OsgpResultType.OK);
         } catch (final Exception e) {

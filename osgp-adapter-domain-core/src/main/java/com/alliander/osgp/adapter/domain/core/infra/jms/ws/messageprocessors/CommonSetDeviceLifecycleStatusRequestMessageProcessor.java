@@ -21,10 +21,10 @@ import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMess
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common set device verification key request messages
- *
  */
 @Component("domainCoreCommonSetDeviceLifecycleStatusRequestMessageProcessor")
 public class CommonSetDeviceLifecycleStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -75,7 +75,8 @@ public class CommonSetDeviceLifecycleStatusRequestMessageProcessor extends WebSe
                     correlationUid, deviceLifecycleStatus);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    MessagePriorityEnum.DEFAULT.getPriority());
         }
     }
 }

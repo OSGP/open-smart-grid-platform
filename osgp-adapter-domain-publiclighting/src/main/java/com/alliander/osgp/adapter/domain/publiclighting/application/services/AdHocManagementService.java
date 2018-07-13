@@ -51,6 +51,7 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Service(value = "domainPublicLightingAdHocManagementService")
 @Transactional(value = "transactionManager")
@@ -71,8 +72,8 @@ public class AdHocManagementService extends AbstractService {
     // === SET LIGHT ===
 
     public void setLight(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<LightValue> lightValues, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final List<LightValue> lightValues, final String messageType,
+            final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -86,7 +87,8 @@ public class AdHocManagementService extends AbstractService {
                 lightValuesDto);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, lightValueMessageDataContainer), messageType, device.getIpAddress());
+                deviceIdentification, lightValueMessageDataContainer), messageType, messagePriority,
+                device.getIpAddress());
     }
 
     // === GET STATUS ===
@@ -96,19 +98,25 @@ public class AdHocManagementService extends AbstractService {
      * or TariffSwitching)
      *
      * @param organisationIdentification
-     *            identification of organisation
+     *            identification of organization
      * @param deviceIdentification
      *            identification of device
+     * @param correlationUid
+     *            the correlation UID of the message
      * @param allowedDomainType
      *            domain type performing requesting the status
-     *
-     * @return status of device
+     * @param messageType
+     *            the message type
+     * @param messagePriority
+     *            the priority of the message
      *
      * @throws FunctionalException
+     *             in case the organization is not authorized for this action or
+     *             the device is not active.
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DomainType allowedDomainType, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final DomainType allowedDomainType, final String messageType,
+            final int messagePriority) throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -121,13 +129,13 @@ public class AdHocManagementService extends AbstractService {
                 : messageType;
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, allowedDomainTypeDto), actualMessageType, device.getIpAddress());
+                deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority, device.getIpAddress());
     }
 
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final int messagePriority, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
         final GetStatusResponse response = new GetStatusResponse();
@@ -154,7 +162,7 @@ public class AdHocManagementService extends AbstractService {
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(response.getResult())
                 .withOsgpException(response.getOsgpException()).withDataObject(response.getDeviceStatusMapped())
-                .build();
+                .withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
@@ -215,8 +223,8 @@ public class AdHocManagementService extends AbstractService {
     // === RESUME SCHEDULE ===
 
     public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final Integer index, final boolean isImmediate, final String messageType,
+            final int messagePriority) throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -232,14 +240,15 @@ public class AdHocManagementService extends AbstractService {
                 index, isImmediate);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, resumeScheduleMessageDataContainerDto), messageType, device.getIpAddress());
+                deviceIdentification, resumeScheduleMessageDataContainerDto), messageType, messagePriority,
+                device.getIpAddress());
     }
 
     // === SET TRANSITION ===
 
     public void setTransition(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, @NotNull final TransitionType transitionType, final DateTime transitionTime,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("Public setTransition called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -248,12 +257,12 @@ public class AdHocManagementService extends AbstractService {
         final Device device = this.findActiveDevice(deviceIdentification);
 
         this.setTransition(organisationIdentification, device, correlationUid, transitionType, transitionTime,
-                messageType);
+                messageType, messagePriority);
     }
 
     private void setTransition(final String organisationIdentification, final Device device,
             final String correlationUid, final TransitionType transitionType, final DateTime transitionTime,
-            final String messageType) {
+            final String messageType, final int messagePriority) {
 
         LOGGER.debug("Private setTransition called for device {} with organisation {}",
                 device.getDeviceIdentification(), organisationIdentification);
@@ -263,7 +272,7 @@ public class AdHocManagementService extends AbstractService {
                 transitionTime);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                device.getDeviceIdentification(), transitionMessageDataContainerDto), messageType,
+                device.getDeviceIdentification(), transitionMessageDataContainerDto), messageType, messagePriority,
                 device.getIpAddress());
     }
 
@@ -372,7 +381,7 @@ public class AdHocManagementService extends AbstractService {
         for (final Ssld ssld : ssldsToTransition) {
             try {
                 this.setTransition(organisationIdentification, ssld, correlationUid, transitionType, transitionTime,
-                        DeviceFunction.SET_TRANSITION.name());
+                        DeviceFunction.SET_TRANSITION.name(), MessagePriorityEnum.LOW.getPriority());
             } catch (final Exception e) {
                 LOGGER.error("Caught unexpected Exception", e);
             }
@@ -464,19 +473,19 @@ public class AdHocManagementService extends AbstractService {
      * Logs the response of SET_TRANSITION calls.
      */
     public void handleSetTransitionResponse(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType,
+            final String correlationUid, final String messageType, final int messagePriority,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
 
         if (osgpException == null) {
             LOGGER.info(
-                    "Received response: {} for messageType: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
-                    responseMessageResultType.getValue(), messageType, deviceIdentification, organisationIdentification,
-                    correlationUid);
+                    "Received response: {} for messageType: {}, messagePriority: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
+                    responseMessageResultType.getValue(), messageType, messagePriority, deviceIdentification,
+                    organisationIdentification, correlationUid);
         } else {
             LOGGER.error(
-                    "Exception: {} for response: {} for messageType: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
-                    osgpException.getMessage(), responseMessageResultType.getValue(), messageType, deviceIdentification,
-                    organisationIdentification, correlationUid);
+                    "Exception: {} for response: {} for messageType: {}, messagePriority: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
+                    osgpException.getMessage(), responseMessageResultType.getValue(), messageType, messagePriority,
+                    deviceIdentification, organisationIdentification, correlationUid);
         }
 
     }

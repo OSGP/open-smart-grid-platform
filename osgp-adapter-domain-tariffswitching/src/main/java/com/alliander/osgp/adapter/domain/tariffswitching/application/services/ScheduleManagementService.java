@@ -44,12 +44,10 @@ public class ScheduleManagementService extends AbstractService {
 
     /**
      * Set a tariff schedule.
-     *
-     * @throws FunctionalException
      */
     public void setTariffSchedule(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<ScheduleEntry> schedules, final Long scheduleTime,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.info("setTariffSchedule called with organisation {} and device {}.", organisationIdentification,
                 deviceIdentification);
@@ -58,8 +56,8 @@ public class ScheduleManagementService extends AbstractService {
         final Device device = this.findActiveDevice(deviceIdentification);
         if (Ssld.PSLD_TYPE.equals(device.getDeviceType())) {
             throw new FunctionalException(FunctionalExceptionType.TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD,
-                    ComponentType.DOMAIN_TARIFF_SWITCHING, new ValidationException(
-                            "Set tariff schedule is not allowed for PSLD."));
+                    ComponentType.DOMAIN_TARIFF_SWITCHING,
+                    new ValidationException("Set tariff schedule is not allowed for PSLD."));
         }
 
         // Reverse schedule switching for TARIFF_REVERSED relays.
@@ -75,15 +73,14 @@ public class ScheduleManagementService extends AbstractService {
 
         LOGGER.info("Mapping to schedule DTO");
 
-        final List<com.alliander.osgp.dto.valueobjects.ScheduleEntryDto> schedulesDto = this.domainCoreMapper.mapAsList(
-                schedules, com.alliander.osgp.dto.valueobjects.ScheduleEntryDto.class);
-        final ScheduleDto scheduleDto = new ScheduleDto(
-                schedulesDto);
+        final List<com.alliander.osgp.dto.valueobjects.ScheduleEntryDto> schedulesDto = this.domainCoreMapper
+                .mapAsList(schedules, com.alliander.osgp.dto.valueobjects.ScheduleEntryDto.class);
+        final ScheduleDto scheduleDto = new ScheduleDto(schedulesDto);
 
         LOGGER.info("Sending message");
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, scheduleDto), messageType, device.getIpAddress(),
-                scheduleTime);
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, scheduleDto),
+                messageType, messagePriority, device.getIpAddress(), scheduleTime);
     }
 }

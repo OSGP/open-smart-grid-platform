@@ -29,6 +29,7 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsTariffSwitchingAdHocManagementService")
@@ -72,7 +73,7 @@ public class AdHocManagementService {
     }
 
     public String enqueueGetTariffStatusRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -85,9 +86,12 @@ public class AdHocManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final TariffSwitchingRequestMessage message = new TariffSwitchingRequestMessage(
-                TariffSwitchingRequestMessageType.GET_TARIFF_STATUS, correlationUid, organisationIdentification,
-                deviceIdentification, null, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, TariffSwitchingRequestMessageType.GET_TARIFF_STATUS.name(),
+                messagePriority);
+
+        final TariffSwitchingRequestMessage message = new TariffSwitchingRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
 
         this.tariffSwitchingRequestMessageSender.send(message);
 

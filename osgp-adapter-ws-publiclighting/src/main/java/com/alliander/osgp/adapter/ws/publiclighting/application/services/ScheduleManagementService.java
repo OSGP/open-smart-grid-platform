@@ -29,6 +29,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsPublicLightingScheduleManagementService")
@@ -58,7 +59,7 @@ public class ScheduleManagementService {
 
     public String enqueueSetLightSchedule(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Valid final Schedule schedule,
-            final DateTime scheduledTime) throws FunctionalException {
+            final DateTime scheduledTime, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -72,9 +73,12 @@ public class ScheduleManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
-                PublicLightingRequestMessageType.SET_LIGHT_SCHEDULE, correlationUid, organisationIdentification,
-                deviceIdentification, schedule, scheduledTime);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, PublicLightingRequestMessageType.SET_LIGHT_SCHEDULE.name(),
+                messagePriority, scheduledTime == null ? null : scheduledTime.getMillis());
+
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(schedule).build();
 
         this.publicLightingRequestMessageSender.send(message);
 

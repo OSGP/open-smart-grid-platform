@@ -19,6 +19,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.common.OsgpResultType;
@@ -35,6 +36,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Endpoint
 public class TariffSwitchingScheduleManagementEndpoint {
@@ -65,24 +67,27 @@ public class TariffSwitchingScheduleManagementEndpoint {
     @PayloadRoot(localPart = "SetScheduleRequest", namespace = NAMESPACE)
     @ResponsePayload
     public SetScheduleAsyncResponse setSchedule(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetScheduleRequest request) throws OsgpException {
+            @RequestPayload final SetScheduleRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Set Tariff Schedule Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info(
+                "Set Tariff Schedule Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         // Get the request parameters, make sure that they are in UTC.
         // Maybe add an adapter to the service, so that all datetime are
         // converted to utc automatically.
-        final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request
-                .getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+        final DateTime scheduleTime = request.getScheduledTime() == null ? null
+                : new DateTime(request.getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
         final SetScheduleAsyncResponse response = new SetScheduleAsyncResponse();
 
         try {
             final String correlationUid = this.scheduleManagementService.enqueueSetTariffSchedule(
-                    organisationIdentification, request.getDeviceIdentification(), this.scheduleManagementMapper
-                            .mapAsList(request.getSchedules(),
-                                    com.alliander.osgp.domain.core.valueobjects.ScheduleEntry.class), scheduleTime);
+                    organisationIdentification, request.getDeviceIdentification(),
+                    this.scheduleManagementMapper.mapAsList(request.getSchedules(),
+                            com.alliander.osgp.domain.core.valueobjects.ScheduleEntry.class),
+                    scheduleTime, MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -111,8 +116,8 @@ public class TariffSwitchingScheduleManagementEndpoint {
         final SetScheduleResponse response = new SetScheduleResponse();
 
         try {
-            final ResponseMessage message = this.scheduleManagementService.dequeueSetTariffScheduleResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.scheduleManagementService
+                    .dequeueSetTariffScheduleResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }

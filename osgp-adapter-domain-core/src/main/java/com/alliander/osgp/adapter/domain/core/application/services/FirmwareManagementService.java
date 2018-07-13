@@ -44,7 +44,7 @@ public class FirmwareManagementService extends AbstractService {
 
     public void updateFirmware(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer,
-            final Long scheduleTime, final String messageType) throws FunctionalException {
+            final Long scheduleTime, final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("Update firmware called with organisation [{}], device [{}], firmwareIdentification [{}].",
                 organisationIdentification, deviceIdentification, firmwareUpdateMessageDataContainer.getFirmwareUrl());
@@ -56,14 +56,14 @@ public class FirmwareManagementService extends AbstractService {
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
                         this.domainCoreMapper.map(firmwareUpdateMessageDataContainer,
                                 com.alliander.osgp.dto.valueobjects.FirmwareUpdateMessageDataContainer.class)),
-                messageType, device.getIpAddress(), scheduleTime);
+                messageType, messagePriority, device.getIpAddress(), scheduleTime);
     }
 
     // === GET FIRMWARE VERSION ===
 
     public void getFirmwareVersion(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid, final String messageType)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final String correlationUid, final String messageType,
+            final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("Get firmware version called with organisation [{}], device [{}].", organisationIdentification,
                 deviceIdentification);
@@ -73,12 +73,13 @@ public class FirmwareManagementService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
-                device.getIpAddress());
+                messagePriority, device.getIpAddress());
     }
 
     public void handleGetFirmwareVersionResponse(final List<FirmwareVersionDto> firmwareVersions,
             final String deviceIdentification, final String organisationIdentification, final String correlationUid,
-            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
@@ -97,17 +98,18 @@ public class FirmwareManagementService extends AbstractService {
                     "Exception occurred while getting device firmware version", e);
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject((Serializable) firmwareVersions).build();
+                .withDataObject((Serializable) firmwareVersions).withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     // === SWITCH TO OTHER FIRMWARE VERSION ===
 
     public void switchFirmware(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String messageType, final String version) throws FunctionalException {
+            final String correlationUid, final String messageType, final int messagePriority, final String version)
+            throws FunctionalException {
         LOGGER.debug("switchFirmware called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
@@ -116,6 +118,6 @@ public class FirmwareManagementService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, version),
-                messageType, device.getIpAddress());
+                messageType, messagePriority, device.getIpAddress());
     }
 }

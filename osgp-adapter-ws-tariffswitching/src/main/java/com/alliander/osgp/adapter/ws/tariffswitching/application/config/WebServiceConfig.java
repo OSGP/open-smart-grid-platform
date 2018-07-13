@@ -25,8 +25,10 @@ import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHa
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.tariffswitching.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
@@ -34,11 +36,9 @@ import com.alliander.osgp.adapter.ws.tariffswitching.application.exceptionhandli
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_TARIFF_SWITCHING_AD_HOC_MANAGEMENT = "jaxb2.marshaller.context.path.tariffswitching.adhocmanagement";
@@ -47,8 +47,8 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
+    private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
     private static final String USER_NAME_HEADER = "UserName";
-
     private static final String APPLICATION_NAME_HEADER = "ApplicationName";
 
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
@@ -122,7 +122,7 @@ public class WebServiceConfig extends AbstractConfig {
     public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
         final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
 
-        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<MethodArgumentResolver>();
+        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
         // TARIFFSWITCHING
         methodArgumentResolvers.add(this.tariffSwitchingAdHocManagementMarshallingPayloadMethodProcessor());
@@ -130,9 +130,11 @@ public class WebServiceConfig extends AbstractConfig {
 
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
+        methodArgumentResolvers
+                .add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_HEADER, MessagePriority.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
-        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
+        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
         // TARIFF
         methodReturnValueHandlers.add(this.tariffSwitchingAdHocManagementMarshallingPayloadMethodProcessor());
@@ -165,18 +167,17 @@ public class WebServiceConfig extends AbstractConfig {
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
         return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
                 ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
-    /**
-     * @return
-     */
+    @Bean
+    public SoapHeaderInterceptor messagePriorityInterceptor() {
+        return new SoapHeaderInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_HEADER);
+    }
+
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
         return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(

@@ -72,7 +72,6 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
             isCustomTimeToLiveSet = true;
         }
 
-        jmsTemplate.setPriority(requestMessage.getMessagePriority());
         jmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -80,6 +79,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setJMSType(requestMessage.getMessageType());
+                objectMessage.setJMSPriority(requestMessage.getMessagePriority());
                 objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
                 objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,

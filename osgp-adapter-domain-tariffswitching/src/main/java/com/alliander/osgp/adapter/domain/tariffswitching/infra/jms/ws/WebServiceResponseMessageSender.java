@@ -37,6 +37,7 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
+                objectMessage.setJMSPriority(responseMessage.getMessagePriority());
                 objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         responseMessage.getOrganisationIdentification());
@@ -44,8 +45,8 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
                 if (responseMessage.getOsgpException() != null) {
-                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
-                            .getMessage());
+                    objectMessage.setStringProperty(Constants.DESCRIPTION,
+                            responseMessage.getOsgpException().getMessage());
                 }
                 return objectMessage;
             }

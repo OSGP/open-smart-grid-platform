@@ -84,13 +84,14 @@ public class TariffSwitchingRequestMessageSender {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setJMSType(requestMessage.getMessageType().toString());
+                objectMessage.setJMSPriority(requestMessage.getMessagePriority());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
                 if (requestMessage.getScheduleTime() != null) {
-                    objectMessage
-                    .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
+                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME,
+                            requestMessage.getScheduleTime().getMillis());
                 }
                 return objectMessage;
             }

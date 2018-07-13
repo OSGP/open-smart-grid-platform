@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.domain.tariffswitching.infra.jms.ws.WebService
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing tariff switching set schedule request messages
@@ -47,6 +48,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServic
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
         Long scheduleTime = null;
@@ -55,6 +57,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServic
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             dataObject = message.getObject();
@@ -65,6 +68,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServic
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -76,10 +80,11 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServic
             final Schedule tariffSchedule = (Schedule) dataObject;
 
             this.scheduleManagementService.setTariffSchedule(organisationIdentification, deviceIdentification,
-                    correlationUid, tariffSchedule.getScheduleEntries(), scheduleTime, messageType);
+                    correlationUid, tariffSchedule.getScheduleEntries(), scheduleTime, messageType, messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

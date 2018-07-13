@@ -20,10 +20,10 @@ import com.alliander.osgp.adapter.domain.core.application.services.DeviceManagem
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common set device verification key request messages
- *
  */
 @Component("domainCoreCommonSetDeviceVerificationKeyRequestMessageProcessor")
 public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -31,7 +31,8 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebSe
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonSetDeviceVerificationKeyRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CommonSetDeviceVerificationKeyRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainCoreDeviceManagementService")
@@ -47,6 +48,7 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebSe
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
         String verificationKey = null;
@@ -54,6 +56,7 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebSe
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             verificationKey = (String) message.getObject();
@@ -61,6 +64,7 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebSe
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.info("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -70,10 +74,11 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebSe
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.deviceManagementService.setDeviceVerificationKey(organisationIdentification, deviceIdentification,
-                    correlationUid, verificationKey, messageType);
+                    correlationUid, verificationKey, messageType, messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

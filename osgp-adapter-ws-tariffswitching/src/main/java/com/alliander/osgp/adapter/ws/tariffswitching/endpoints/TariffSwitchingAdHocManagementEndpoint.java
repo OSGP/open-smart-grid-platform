@@ -18,6 +18,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.DevicePage;
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetDevicesRequest;
@@ -39,6 +40,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined
@@ -78,9 +80,8 @@ public class TariffSwitchingAdHocManagementEndpoint {
 
             final DevicePage devicePage = new DevicePage();
             devicePage.setTotalPages(page.getTotalPages());
-            devicePage.getDevices().addAll(
-                    this.adHocManagementMapper.mapAsList(page.getContent(),
-                            com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.Device.class));
+            devicePage.getDevices().addAll(this.adHocManagementMapper.mapAsList(page.getContent(),
+                    com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.Device.class));
             response.setDevicePage(devicePage);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
@@ -98,16 +99,18 @@ public class TariffSwitchingAdHocManagementEndpoint {
     @PayloadRoot(localPart = "GetStatusRequest", namespace = NAMESPACE)
     @ResponsePayload
     public GetStatusAsyncResponse getStatus(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetStatusRequest request) throws OsgpException {
+            @RequestPayload final GetStatusRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Get Status received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+        LOGGER.info("Get Status received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
 
         try {
             final String correlationUid = this.adHocManagementService.enqueueGetTariffStatusRequest(
-                    organisationIdentification, request.getDeviceIdentification());
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -131,18 +134,14 @@ public class TariffSwitchingAdHocManagementEndpoint {
         final GetStatusResponse response = new GetStatusResponse();
 
         try {
-            final ResponseMessage message = this.adHocManagementService.dequeueGetTariffStatusResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.adHocManagementService
+                    .dequeueGetTariffStatusResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-
-                if (message.getDataObject() != null) {
-                    final DeviceStatusMapped deviceStatus = (DeviceStatusMapped) message.getDataObject();
-                    if (deviceStatus != null) {
-                        response.setDeviceStatus(this.adHocManagementMapper
-                                .map(deviceStatus,
-                                        com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.DeviceStatus.class));
-                    }
+                final DeviceStatusMapped deviceStatus = (DeviceStatusMapped) message.getDataObject();
+                if (deviceStatus != null) {
+                    response.setDeviceStatus(this.adHocManagementMapper.map(deviceStatus,
+                            com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.DeviceStatus.class));
                 }
             }
         } catch (final Exception e) {

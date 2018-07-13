@@ -78,7 +78,6 @@ public class SmartMeteringRequestMessageSender {
     private void sendMessage(final SmartMeteringRequestMessage requestMessage) {
         LOGGER.info("Sending message to the smart metering requests queue");
 
-        this.smartMeteringRequestsJmsTemplate.setPriority(requestMessage.getMessagePriority());
         this.smartMeteringRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -86,6 +85,7 @@ public class SmartMeteringRequestMessageSender {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setJMSType(requestMessage.getMessageType().toString());
+                objectMessage.setJMSPriority(requestMessage.getMessagePriority());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,

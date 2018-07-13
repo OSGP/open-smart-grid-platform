@@ -77,6 +77,7 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsCoreDeviceManagementService")
@@ -469,8 +470,8 @@ public class DeviceManagementService {
     // === SET EVENT NOTIFICATIONS ===
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -487,9 +488,12 @@ public class DeviceManagementService {
         final EventNotificationMessageDataContainer eventNotificationMessageDataContainer = new EventNotificationMessageDataContainer(
                 eventNotifications);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_EVENT_NOTIFICATIONS,
-                correlationUid, organisationIdentification, deviceIdentification, eventNotificationMessageDataContainer,
-                null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.SET_EVENT_NOTIFICATIONS.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(eventNotificationMessageDataContainer).build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -675,7 +679,8 @@ public class DeviceManagementService {
     }
 
     public String enqueueUpdateDeviceSslCertificationRequest(final String organisationIdentification,
-            final String deviceIdentification, final Certification certification) throws FunctionalException {
+            final String deviceIdentification, final Certification certification, final int messagePriority)
+            throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
@@ -688,9 +693,12 @@ public class DeviceManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(
-                CommonRequestMessageType.UPDATE_DEVICE_SSL_CERTIFICATION, correlationUid, organisationIdentification,
-                deviceIdentification, certification, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                CommonRequestMessageType.UPDATE_DEVICE_SSL_CERTIFICATION.name(), messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(certification).build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -703,7 +711,8 @@ public class DeviceManagementService {
     }
 
     public String enqueueSetDeviceVerificationKeyRequest(final String organisationIdentification,
-            final String deviceIdentification, final String verificationKey) throws FunctionalException {
+            final String deviceIdentification, final String verificationKey, final int messagePriority)
+            throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
@@ -716,9 +725,12 @@ public class DeviceManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(
-                CommonRequestMessageType.SET_DEVICE_VERIFICATION_KEY, correlationUid, organisationIdentification,
-                deviceIdentification, verificationKey, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, CommonRequestMessageType.SET_DEVICE_VERIFICATION_KEY.name(),
+                messagePriority);
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(verificationKey).build();
 
         this.commonRequestMessageSender.send(message);
 
@@ -748,9 +760,12 @@ public class DeviceManagementService {
         final com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus newDeviceLifecycleStatus = com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus
                 .valueOf(deviceLifecycleStatus.name());
 
-        final CommonRequestMessage message = new CommonRequestMessage(
-                CommonRequestMessageType.SET_DEVICE_LIFECYCLE_STATUS, correlationUid, organisationIdentification,
-                deviceIdentification, newDeviceLifecycleStatus, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                CommonRequestMessageType.SET_DEVICE_LIFECYCLE_STATUS.name());
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(newDeviceLifecycleStatus).build();
 
         this.commonRequestMessageSender.send(message);
 

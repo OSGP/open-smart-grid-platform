@@ -37,7 +37,6 @@ public class OsgpCoreRequestMessageSender {
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
             final Long scheduleTime, final boolean bypassRetry) {
 
-        this.osgpCoreRequestsJmsTemplate.setPriority(messagePriority);
         this.osgpCoreRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -45,6 +44,7 @@ public class OsgpCoreRequestMessageSender {
                 final ObjectMessage objectMessage = session.createObjectMessage();
 
                 objectMessage.setJMSType(messageType);
+                objectMessage.setJMSPriority(messagePriority);
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         requestMessage.getOrganisationIdentification());

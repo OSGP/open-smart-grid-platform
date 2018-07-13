@@ -21,6 +21,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.DeviceInstallationService;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
@@ -54,6 +55,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 // MethodConstraintViolationException is deprecated.
 // Will by replaced by equivalent functionality defined
@@ -89,15 +91,17 @@ public class DeviceInstallationEndpoint {
     @PayloadRoot(localPart = "GetStatusRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
     @ResponsePayload
     public GetStatusAsyncResponse getStatus(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetStatusRequest request) throws OsgpException {
+            @RequestPayload final GetStatusRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Get Status received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+        LOGGER.info("Get Status received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
         try {
-            final String correlationUid = this.deviceInstallationService
-                    .enqueueGetStatusRequest(organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.deviceInstallationService.enqueueGetStatusRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -231,17 +235,20 @@ public class DeviceInstallationEndpoint {
     @ResponsePayload
     public StartDeviceTestAsyncResponse startDeviceTest(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final StartDeviceTestRequest request) throws OsgpException {
+            @RequestPayload final StartDeviceTestRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Start Device Test Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info(
+                "Start Device Test Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final StartDeviceTestAsyncResponse response = new StartDeviceTestAsyncResponse();
 
         try {
             final AsyncResponse asyncResponse = new AsyncResponse();
-            final String correlationUid = this.deviceInstallationService
-                    .enqueueStartDeviceTestRequest(organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.deviceInstallationService.enqueueStartDeviceTestRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
@@ -287,17 +294,19 @@ public class DeviceInstallationEndpoint {
     @ResponsePayload
     public StopDeviceTestAsyncResponse stopDeviceTest(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final StopDeviceTestRequest request) throws OsgpException {
+            @RequestPayload final StopDeviceTestRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Stop Device Test Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Stop Device Test Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final StopDeviceTestAsyncResponse response = new StopDeviceTestAsyncResponse();
 
         try {
             final AsyncResponse asyncResponse = new AsyncResponse();
-            final String correlationUid = this.deviceInstallationService
-                    .enqueueStopDeviceTestRequest(organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.deviceInstallationService.enqueueStopDeviceTestRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);

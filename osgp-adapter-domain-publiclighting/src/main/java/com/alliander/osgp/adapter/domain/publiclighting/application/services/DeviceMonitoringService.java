@@ -53,7 +53,7 @@ public class DeviceMonitoringService extends AbstractService {
     public void getPowerUsageHistory(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             @Valid final TimePeriod timePeriod, @NotNull final HistoryTermType historyTermType, final Long scheduleTime,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.info("GetPowerUsageHistory for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -68,15 +68,17 @@ public class DeviceMonitoringService extends AbstractService {
         final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryMessageDataContainerDto = new PowerUsageHistoryMessageDataContainerDto(
                 timePeriodDto, historyTermTypeDto);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, powerUsageHistoryMessageDataContainerDto), messageType, device.getIpAddress(),
-                scheduleTime);
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
+                        powerUsageHistoryMessageDataContainerDto),
+                messageType, messagePriority, device.getIpAddress(), scheduleTime);
     }
 
     public void handleGetPowerUsageHistoryResponse(
             final PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainerDto,
             final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
 
         LOGGER.info("handleResponse called for device: {} for organisation: {} for messageType: {}",
                 deviceIdentification, organisationIdentification, messageType);
@@ -104,7 +106,7 @@ public class DeviceMonitoringService extends AbstractService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(powerUsageHistoryResponse).build();
+                .withDataObject(powerUsageHistoryResponse).withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage, this.getPowerUsageHistoryResponseTimeToLive);
     }
 }

@@ -51,7 +51,7 @@ public class ConfigurationManagementService extends AbstractService {
 
     public void setConfiguration(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Configuration configuration, final Long scheduleTime,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("setConfiguration called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -83,7 +83,7 @@ public class ConfigurationManagementService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, configurationDto),
-                messageType, device.getIpAddress(), scheduleTime);
+                messageType, messagePriority, device.getIpAddress(), scheduleTime);
     }
 
     private void updateDeviceOutputSettings(final Device device, final Configuration configuration) {
@@ -113,7 +113,8 @@ public class ConfigurationManagementService extends AbstractService {
     // === GET CONFIGURATION ===
 
     public void getConfiguration(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String messageType) throws FunctionalException {
+            final String correlationUid, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         LOGGER.debug("getConfiguration called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -123,13 +124,14 @@ public class ConfigurationManagementService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
-                device.getIpAddress());
+                messagePriority, device.getIpAddress());
     }
 
     public void handleGetConfigurationResponse(
             final com.alliander.osgp.dto.valueobjects.ConfigurationDto configurationDto,
             final String deviceIdentification, final String organisationIdentification, final String correlationUid,
-            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -166,16 +168,16 @@ public class ConfigurationManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, e.getMessage(), e);
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(configuration).build();
+                .withDataObject(configuration).withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
     public void switchConfiguration(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String messageType, final String configurationBank)
-            throws FunctionalException {
+            final String correlationUid, final String messageType, final int messagePriority,
+            final String configurationBank) throws FunctionalException {
         LOGGER.debug("switchConfiguration called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
@@ -184,7 +186,7 @@ public class ConfigurationManagementService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, configurationBank),
-                messageType, device.getIpAddress());
+                messageType, messagePriority, device.getIpAddress());
     }
 
     private void replaceEmptyOutputSettings(final ConfigurationDto originalConfig,

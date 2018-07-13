@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 public class CommonRequestMessage extends RequestMessage {
@@ -20,14 +21,19 @@ public class CommonRequestMessage extends RequestMessage {
     private static final long serialVersionUID = 6094774737635965756L;
     private final CommonRequestMessageType messageType;
     private final DateTime scheduleTime;
+    private final Integer messagePriority;
 
-    public CommonRequestMessage(final CommonRequestMessageType messageType, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification, final Serializable ovlRequest,
-            final DateTime scheduleTime) {
-        super(correlationUid, organisationIdentification, deviceIdentification, ovlRequest);
-
-        this.messageType = messageType;
-        this.scheduleTime = scheduleTime;
+    private CommonRequestMessage(final DeviceMessageMetadata deviceMessageMetadata, final String ipAddress,
+            final Serializable request) {
+        super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
+                deviceMessageMetadata.getDeviceIdentification(), ipAddress, request);
+        this.messageType = CommonRequestMessageType.valueOf(deviceMessageMetadata.getMessageType());
+        this.messagePriority = deviceMessageMetadata.getMessagePriority();
+        if (deviceMessageMetadata.getScheduleTime() == null) {
+            this.scheduleTime = null;
+        } else {
+            this.scheduleTime = new DateTime(deviceMessageMetadata.getScheduleTime());
+        }
     }
 
     public CommonRequestMessageType getMessageType() {
@@ -36,5 +42,38 @@ public class CommonRequestMessage extends RequestMessage {
 
     public DateTime getScheduleTime() {
         return this.scheduleTime;
+    }
+
+    public Integer getMessagePriority() {
+        return this.messagePriority;
+    }
+
+    public static class Builder {
+        private DeviceMessageMetadata deviceMessageMetadata;
+        private String ipAddress;
+        private Serializable request;
+
+        public Builder() {
+            // empty constructor
+        }
+
+        public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
+            this.deviceMessageMetadata = deviceMessageMetadata;
+            return this;
+        }
+
+        public Builder ipAddress(final String ipAddress) {
+            this.ipAddress = ipAddress;
+            return this;
+        }
+
+        public Builder request(final Serializable request) {
+            this.request = request;
+            return this;
+        }
+
+        public CommonRequestMessage build() {
+            return new CommonRequestMessage(this.deviceMessageMetadata, this.ipAddress, this.request);
+        }
     }
 }

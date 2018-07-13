@@ -52,7 +52,8 @@ public class DeviceInstallationService extends AbstractService {
     // === GET STATUS ===
 
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String messageType) throws FunctionalException {
+            final String correlationUid, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -63,12 +64,13 @@ public class DeviceInstallationService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
-                actualMessageType, device.getIpAddress());
+                actualMessageType, messagePriority, device.getIpAddress());
     }
 
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final String deviceIdentification, final String organisationIdentification, final String correlationUid,
-            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
         final GetStatusResponse response = new GetStatusResponse();
@@ -91,11 +93,11 @@ public class DeviceInstallationService extends AbstractService {
             }
         }
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(response.getResult())
                 .withOsgpException(response.getOsgpException()).withDataObject(response.getDeviceStatusMapped())
-                .build();
+                .withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
@@ -173,7 +175,7 @@ public class DeviceInstallationService extends AbstractService {
 
     public void startSelfTest(@Identification final String deviceIdentification,
             @Identification final String organisationIdentification, final String correlationUid,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("startSelfTest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -183,14 +185,14 @@ public class DeviceInstallationService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
-                device.getIpAddress());
+                messagePriority, device.getIpAddress());
     }
 
     // === STOP DEVICE TEST ===
 
     public void stopSelfTest(@Identification final String deviceIdentification,
             @Identification final String organisationIdentification, final String correlationUid,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("stopSelfTest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -200,6 +202,6 @@ public class DeviceInstallationService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
-                device.getIpAddress());
+                messagePriority, device.getIpAddress());
     }
 }

@@ -47,7 +47,6 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
             this.webServiceResponsesJmsTemplate.setTimeToLive(timeToLive);
         }
 
-        this.webServiceResponsesJmsTemplate.setPriority(responseMessage.getMessagePriority());
         this.webServiceResponsesJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -55,6 +54,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
                 objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
                 objectMessage.setJMSType(messageType);
+                objectMessage.setJMSPriority(responseMessage.getMessagePriority());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         responseMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,

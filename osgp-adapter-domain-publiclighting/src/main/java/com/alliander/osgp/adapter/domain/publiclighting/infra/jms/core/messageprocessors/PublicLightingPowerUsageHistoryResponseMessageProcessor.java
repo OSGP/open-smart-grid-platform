@@ -24,6 +24,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing public lighting power usage history response messages
@@ -50,6 +51,7 @@ public class PublicLightingPowerUsageHistoryResponseMessageProcessor extends Osg
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
 
@@ -61,6 +63,7 @@ public class PublicLightingPowerUsageHistoryResponseMessageProcessor extends Osg
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
@@ -72,6 +75,7 @@ public class PublicLightingPowerUsageHistoryResponseMessageProcessor extends Osg
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
@@ -87,10 +91,11 @@ public class PublicLightingPowerUsageHistoryResponseMessageProcessor extends Osg
 
             this.deviceMonitoringService.handleGetPowerUsageHistoryResponse(
                     powerUsageHistoryResponseMessageDataContainer, organisationIdentification, deviceIdentification,
-                    correlationUid, messageType, responseMessageResultType, osgpException);
+                    correlationUid, messageType, messagePriority, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

@@ -25,6 +25,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.DeviceManagementService;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
@@ -77,6 +78,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Device Management Endpoint class
@@ -168,10 +170,12 @@ public class DeviceManagementEndpoint {
     @ResponsePayload
     public SetEventNotificationsAsyncResponse setEventNotifications(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetEventNotificationsRequest request) throws OsgpException {
+            @RequestPayload final SetEventNotificationsRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Set EventNotifications Request received from organisation: {} for event device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info(
+                "Set EventNotifications Request received from organisation: {} for event device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SetEventNotificationsAsyncResponse response = new SetEventNotificationsAsyncResponse();
 
@@ -181,7 +185,8 @@ public class DeviceManagementEndpoint {
                     EventNotificationType.class));
 
             final String correlationUid = this.deviceManagementService.enqueueSetEventNotificationsRequest(
-                    organisationIdentification, request.getDeviceIdentification(), eventNotifications);
+                    organisationIdentification, request.getDeviceIdentification(), eventNotifications,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -463,10 +468,12 @@ public class DeviceManagementEndpoint {
     @ResponsePayload
     public UpdateDeviceSslCertificationAsyncResponse updateDeviceSslCertification(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateDeviceSslCertificationRequest request) throws OsgpException {
+            @RequestPayload final UpdateDeviceSslCertificationRequest request,
+            @MessagePriority final String messagePriority) throws OsgpException {
 
-        LOGGER.info("Update Device Ssl Certification Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info(
+                "Update Device Ssl Certification Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final UpdateDeviceSslCertificationAsyncResponse response = new UpdateDeviceSslCertificationAsyncResponse();
 
@@ -475,7 +482,8 @@ public class DeviceManagementEndpoint {
                     Certification.class);
 
             final String correlationUid = this.deviceManagementService.enqueueUpdateDeviceSslCertificationRequest(
-                    organisationIdentification, request.getDeviceIdentification(), certification);
+                    organisationIdentification, request.getDeviceIdentification(), certification,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -523,16 +531,19 @@ public class DeviceManagementEndpoint {
     @ResponsePayload
     public SetDeviceVerificationKeyAsyncResponse setDeviceVerificationKey(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetDeviceVerificationKeyRequest request) throws OsgpException {
+            @RequestPayload final SetDeviceVerificationKeyRequest request,
+            @MessagePriority final String messagePriority) throws OsgpException {
 
-        LOGGER.info("Set Device Verification Key Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info(
+                "Set Device Verification Key Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SetDeviceVerificationKeyAsyncResponse response = new SetDeviceVerificationKeyAsyncResponse();
 
         try {
             final String correlationUid = this.deviceManagementService.enqueueSetDeviceVerificationKeyRequest(
-                    organisationIdentification, request.getDeviceIdentification(), request.getVerificationKey());
+                    organisationIdentification, request.getDeviceIdentification(), request.getVerificationKey(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);

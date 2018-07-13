@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.ws.WebServiceR
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.ResumeScheduleData;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing public lighting resume schedule request messages
@@ -47,6 +48,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends WebServ
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
         Object dataObject = null;
@@ -54,6 +56,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends WebServ
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             dataObject = message.getObject();
@@ -61,6 +64,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends WebServ
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -71,11 +75,12 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends WebServ
 
             final ResumeScheduleData resumeScheduleData = (ResumeScheduleData) dataObject;
 
-            this.adHocManagementService.resumeSchedule(organisationIdentification, deviceIdentification,
-                    correlationUid, resumeScheduleData.getIndex(), resumeScheduleData.getIsImmediate(), messageType);
+            this.adHocManagementService.resumeSchedule(organisationIdentification, deviceIdentification, correlationUid,
+                    resumeScheduleData.getIndex(), resumeScheduleData.getIsImmediate(), messageType, messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

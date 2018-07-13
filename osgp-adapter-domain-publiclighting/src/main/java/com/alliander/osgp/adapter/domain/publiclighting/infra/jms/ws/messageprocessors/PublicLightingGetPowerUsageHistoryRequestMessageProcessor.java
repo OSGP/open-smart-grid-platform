@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.ws.WebServiceR
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.PowerUsageHistoryMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing public lighting get power usage history request messages
@@ -47,6 +48,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends W
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
         Object dataObject = null;
@@ -55,6 +57,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends W
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             dataObject = message.getObject();
@@ -65,6 +68,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends W
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -77,10 +81,12 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends W
 
             this.deviceMonitoringService.getPowerUsageHistory(organisationIdentification, deviceIdentification,
                     correlationUid, powerUsageHistoryMessageDataContainer.getTimePeriod(),
-                    powerUsageHistoryMessageDataContainer.getHistoryTermType(), scheduleTime, messageType);
+                    powerUsageHistoryMessageDataContainer.getHistoryTermType(), scheduleTime, messageType,
+                    messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

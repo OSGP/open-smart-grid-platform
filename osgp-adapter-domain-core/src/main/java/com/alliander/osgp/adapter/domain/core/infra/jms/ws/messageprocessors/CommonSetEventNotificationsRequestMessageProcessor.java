@@ -21,12 +21,10 @@ import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMess
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common set event notifications request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainCoreCommonSetEventNotificationsRequestMessageProcessor")
 public class CommonSetEventNotificationsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -50,18 +48,21 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends WebServi
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -74,10 +75,12 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends WebServi
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.deviceManagementService.setEventNotifications(organisationIdentification, deviceIdentification,
-                    correlationUid, eventNotificationMessageDataContainer.getEventNotifications(), messageType);
+                    correlationUid, eventNotificationMessageDataContainer.getEventNotifications(), messageType,
+                    messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

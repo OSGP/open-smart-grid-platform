@@ -58,13 +58,13 @@ public class DomainResponseMessageSender implements DomainResponseService {
 
     private void send(final ResponseMessage message, final String messageType, final JmsTemplate jmsTemplate) {
 
-        jmsTemplate.setPriority(message.getMessagePriority());
         jmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(message);
                 objectMessage.setJMSType(messageType);
+                objectMessage.setJMSPriority(message.getMessagePriority());
                 objectMessage.setJMSCorrelationID(message.getCorrelationUid());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         message.getOrganisationIdentification());

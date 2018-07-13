@@ -17,6 +17,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.services.AdHocManagementService;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncResponse;
@@ -28,6 +29,7 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Endpoint(value = "coreAdHocManagementEndpoint")
 public class AdHocManagementEndpoint {
@@ -49,16 +51,18 @@ public class AdHocManagementEndpoint {
     @PayloadRoot(localPart = "SetRebootRequest", namespace = NAMESPACE)
     @ResponsePayload
     public SetRebootAsyncResponse setReboot(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetRebootRequest request) throws OsgpException {
+            @RequestPayload final SetRebootRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Set Reboot received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+        LOGGER.info("Set Reboot received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SetRebootAsyncResponse response = new SetRebootAsyncResponse();
 
         try {
             final String correlationUid = this.adHocManagementService.enqueueSetRebootRequest(
-                    organisationIdentification, request.getDeviceIdentification());
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -83,8 +87,8 @@ public class AdHocManagementEndpoint {
         final SetRebootResponse response = new SetRebootResponse();
 
         try {
-            final ResponseMessage message = this.adHocManagementService.dequeueSetRebootResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.adHocManagementService
+                    .dequeueSetRebootResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }

@@ -20,12 +20,10 @@ import com.alliander.osgp.adapter.domain.core.application.services.FirmwareManag
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common get firmware request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainCoreCommonGetFirmwareRequestMessageProcessor")
 public class CommonGetFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -48,12 +46,14 @@ public class CommonGetFirmwareRequestMessageProcessor extends WebServiceRequestM
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         } catch (final JMSException e) {
@@ -69,10 +69,11 @@ public class CommonGetFirmwareRequestMessageProcessor extends WebServiceRequestM
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.firmwareManagementService.getFirmwareVersion(organisationIdentification, deviceIdentification,
-                    correlationUid, messageType);
+                    correlationUid, messageType, messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

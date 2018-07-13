@@ -39,6 +39,7 @@ import com.alliander.osgp.domain.core.valueobjects.ResumeScheduleData;
 import com.alliander.osgp.domain.core.valueobjects.TransitionMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsPublicLightingAdHocManagementService")
@@ -84,7 +85,8 @@ public class AdHocManagementService {
 
     public String enqueueSetLightRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
-            @Size(min = 1, max = 6) @Valid final List<LightValue> lightValues) throws FunctionalException {
+            @Size(min = 1, max = 6) @Valid final List<LightValue> lightValues, final int messagePriority)
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -101,10 +103,12 @@ public class AdHocManagementService {
         final LightValueMessageDataContainer lightValueMessageDataContainer = new LightValueMessageDataContainer(
                 lightValues);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
-                PublicLightingRequestMessageType.SET_LIGHT, correlationUid, organisationIdentification,
-                deviceIdentification, lightValueMessageDataContainer, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, PublicLightingRequestMessageType.SET_LIGHT.name(),
+                messagePriority);
 
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(lightValueMessageDataContainer).build();
         this.publicLightingRequestMessageSender.send(message);
 
         return correlationUid;
@@ -116,7 +120,7 @@ public class AdHocManagementService {
     }
 
     public String enqueueGetStatusRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -129,9 +133,12 @@ public class AdHocManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
-                PublicLightingRequestMessageType.GET_LIGHT_STATUS, correlationUid, organisationIdentification,
-                deviceIdentification, null, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, PublicLightingRequestMessageType.GET_LIGHT_STATUS.name(),
+                messagePriority);
+
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
 
         this.publicLightingRequestMessageSender.send(message);
 
@@ -144,8 +151,8 @@ public class AdHocManagementService {
     }
 
     public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Valid final ResumeScheduleData resumeScheduleData)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, @Valid final ResumeScheduleData resumeScheduleData,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -159,9 +166,12 @@ public class AdHocManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
-                PublicLightingRequestMessageType.RESUME_SCHEDULE, correlationUid, organisationIdentification,
-                deviceIdentification, resumeScheduleData, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, PublicLightingRequestMessageType.RESUME_SCHEDULE.name(),
+                messagePriority);
+
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(resumeScheduleData).build();
 
         this.publicLightingRequestMessageSender.send(message);
 
@@ -174,7 +184,8 @@ public class AdHocManagementService {
 
     public String enqueueTransitionRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
-            final TransitionMessageDataContainer transitionMessageDataContainer) throws FunctionalException {
+            final TransitionMessageDataContainer transitionMessageDataContainer, final int messagePriority)
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -188,9 +199,12 @@ public class AdHocManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
-                PublicLightingRequestMessageType.SET_TRANSITION, correlationUid, organisationIdentification,
-                deviceIdentification, transitionMessageDataContainer, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, PublicLightingRequestMessageType.SET_TRANSITION.name(),
+                messagePriority);
+
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(transitionMessageDataContainer).build();
 
         this.publicLightingRequestMessageSender.send(message);
 
@@ -211,6 +225,8 @@ public class AdHocManagementService {
      *            The SSLD.
      * @param lightMeasurementDeviceIdentification
      *            The light measurement device.
+     * @param messagePriority
+     *            The priority of the message.
      *
      * @return Correlation UID.
      *
@@ -219,8 +235,8 @@ public class AdHocManagementService {
      *             can not be found.
      */
     public String coupleLightMeasurementDeviceForSsld(final String organisationIdentification,
-            final String deviceIdentification, final String lightMeasurementDeviceIdentification)
-            throws FunctionalException {
+            final String deviceIdentification, final String lightMeasurementDeviceIdentification,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findDevice(deviceIdentification);
@@ -232,9 +248,12 @@ public class AdHocManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
-                PublicLightingRequestMessageType.SET_LIGHT_MEASUREMENT_DEVICE, correlationUid,
-                organisationIdentification, deviceIdentification, lightMeasurementDeviceIdentification, null);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                PublicLightingRequestMessageType.SET_LIGHT_MEASUREMENT_DEVICE.name(), messagePriority);
+
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(lightMeasurementDeviceIdentification).build();
 
         this.publicLightingRequestMessageSender.send(message);
 

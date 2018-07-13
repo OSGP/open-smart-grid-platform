@@ -21,10 +21,10 @@ import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMess
 import com.alliander.osgp.domain.core.valueobjects.Certification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common update device ssl certification request messages
- *
  */
 @Component("domainCoreCommonUpdateDeviceSslCertificationRequestMessageProcessor")
 public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -32,7 +32,8 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends W
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonUpdateDeviceSslCertificationRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CommonUpdateDeviceSslCertificationRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainCoreDeviceManagementService")
@@ -48,12 +49,14 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends W
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
@@ -61,6 +64,7 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends W
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -72,10 +76,11 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends W
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.deviceManagementService.updateDeviceSslCertification(organisationIdentification, deviceIdentification,
-                    correlationUid, certification, messageType);
+                    correlationUid, certification, messageType, messagePriority);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

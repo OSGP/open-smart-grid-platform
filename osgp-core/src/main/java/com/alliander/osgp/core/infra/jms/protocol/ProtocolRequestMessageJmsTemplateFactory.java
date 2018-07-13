@@ -19,13 +19,14 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.alliander.osgp.core.infra.jms.JmsTemplateSettings;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
+import com.alliander.osgp.shared.infra.jms.OsgpJmsTemplate;
 
 public class ProtocolRequestMessageJmsTemplateFactory implements InitializingBean {
 
     private final ConnectionFactory connectionFactory;
     private final JmsTemplateSettings jmsTemplateSettings;
 
-    private Map<String, JmsTemplate> jmsTemplateMap = new HashMap<>();
+    private final Map<String, JmsTemplate> jmsTemplateMap = new HashMap<>();
 
     public ProtocolRequestMessageJmsTemplateFactory(final ConnectionFactory connectionFactory,
             final JmsTemplateSettings jmsTemplateSettings, final List<ProtocolInfo> protocolInfos) {
@@ -53,7 +54,7 @@ public class ProtocolRequestMessageJmsTemplateFactory implements InitializingBea
     }
 
     private JmsTemplate createJmsTemplate(final ProtocolInfo protocolInfo) {
-        final JmsTemplate jmsTemplate = new JmsTemplate();
+        final OsgpJmsTemplate jmsTemplate = new OsgpJmsTemplate();
         jmsTemplate.setDefaultDestination(new ActiveMQQueue(protocolInfo.getOutgoingProtocolRequestsQueue()));
         jmsTemplate.setConnectionFactory(this.connectionFactory);
         jmsTemplate.setExplicitQosEnabled(this.jmsTemplateSettings.isExplicitQosEnabled());

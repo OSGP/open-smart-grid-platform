@@ -20,10 +20,10 @@ import com.alliander.osgp.adapter.domain.core.application.services.Configuration
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common switch configuration request messages
- *
  */
 @Component("domainCoreCommonSwitchConfigurationRequestMessageProcessor")
 public class CommonSwitchConfigurationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -47,6 +47,7 @@ public class CommonSwitchConfigurationRequestMessageProcessor extends WebService
 
         String correlationUid = null;
         String messageType = null;
+        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
         String configurationBank = null;
@@ -54,6 +55,7 @@ public class CommonSwitchConfigurationRequestMessageProcessor extends WebService
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
+            messagePriority = message.getJMSPriority();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             configurationBank = (String) message.getObject();
@@ -61,6 +63,7 @@ public class CommonSwitchConfigurationRequestMessageProcessor extends WebService
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
@@ -70,10 +73,11 @@ public class CommonSwitchConfigurationRequestMessageProcessor extends WebService
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.configurationManagementService.switchConfiguration(organisationIdentification, deviceIdentification,
-                    correlationUid, messageType, configurationBank);
+                    correlationUid, messageType, messagePriority, configurationBank);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    messagePriority);
         }
     }
 }

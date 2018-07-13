@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Ssld;
-import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
 import com.alliander.osgp.dto.valueobjects.ScheduleDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -37,13 +36,10 @@ public class ScheduleManagementService extends AbstractService {
 
     /**
      * Set a light schedule.
-     *
-     * @throws FunctionalException
-     * @throws ValidationException
      */
     public void setLightSchedule(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Schedule schedule, final Long scheduleTime, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final Schedule schedule, final Long scheduleTime, final String messageType,
+            final int messagePriority) throws FunctionalException {
 
         LOGGER.info("setSchedule called with organisation {} and device {}.", organisationIdentification,
                 deviceIdentification);
@@ -55,7 +51,7 @@ public class ScheduleManagementService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, scheduleDto),
-                messageType, device.getIpAddress(), scheduleTime);
+                messageType, messagePriority, device.getIpAddress(), scheduleTime);
     }
 
     // === SET HAS SCHEDULE ===

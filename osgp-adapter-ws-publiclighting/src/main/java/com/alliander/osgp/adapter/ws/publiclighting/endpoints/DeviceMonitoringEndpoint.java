@@ -19,6 +19,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.publiclighting.application.mapping.DeviceMonitoringMapper;
 import com.alliander.osgp.adapter.ws.publiclighting.application.services.DeviceMonitoringService;
@@ -37,6 +38,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @SuppressWarnings("deprecation")
 @Endpoint
@@ -47,7 +49,7 @@ public class DeviceMonitoringEndpoint {
     private static final ComponentType COMPONENT_WS_PUBLIC_LIGHTING = ComponentType.WS_PUBLIC_LIGHTING;
 
     private final DeviceMonitoringService deviceMonitoringService;
-    private DeviceMonitoringMapper deviceMonitoringMapper;
+    private final DeviceMonitoringMapper deviceMonitoringMapper;
 
     @Autowired
     public DeviceMonitoringEndpoint(
@@ -61,10 +63,12 @@ public class DeviceMonitoringEndpoint {
     @ResponsePayload
     public GetPowerUsageHistoryAsyncResponse getPowerUsageHistory(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetPowerUsageHistoryRequest request) throws OsgpException {
+            @RequestPayload final GetPowerUsageHistoryRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
-        LOGGER.info("Get Power Usage History Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info(
+                "Get Power Usage History Request received from organisation: {} for device: {} with message priority: {}.",
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final GetPowerUsageHistoryAsyncResponse response = new GetPowerUsageHistoryAsyncResponse();
 
@@ -77,10 +81,6 @@ public class DeviceMonitoringEndpoint {
 
             final PowerUsageHistoryMessageDataContainer powerUsageHistoryMessageDataContainer = new PowerUsageHistoryMessageDataContainer();
 
-            if (this.deviceMonitoringMapper == null) {
-                this.deviceMonitoringMapper = new DeviceMonitoringMapper();
-            }
-
             powerUsageHistoryMessageDataContainer.setHistoryTermType(this.deviceMonitoringMapper.map(
                     request.getHistoryTermType(), com.alliander.osgp.domain.core.valueobjects.HistoryTermType.class));
 
@@ -89,7 +89,8 @@ public class DeviceMonitoringEndpoint {
 
             final String correlationUid = this.deviceMonitoringService.enqueueGetPowerUsageHistoryRequest(
                     organisationIdentification, request.getDeviceIdentification(),
-                    powerUsageHistoryMessageDataContainer, scheduleTime);
+                    powerUsageHistoryMessageDataContainer, scheduleTime,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);

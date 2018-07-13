@@ -38,8 +38,8 @@ public class DeviceManagementService extends AbstractService {
     }
 
     public void setEventNotifications(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<EventNotificationType> eventNotifications, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final List<EventNotificationType> eventNotifications, final String messageType,
+            final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("setEventNotifications called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -53,12 +53,13 @@ public class DeviceManagementService extends AbstractService {
                 eventNotificationsDto);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, eventNotificationMessageDataContainer), messageType, device.getIpAddress());
+                deviceIdentification, eventNotificationMessageDataContainer), messageType, messagePriority,
+                device.getIpAddress());
     }
 
     public void updateDeviceSslCertification(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Certification certification, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final Certification certification, final String messageType,
+            final int messagePriority) throws FunctionalException {
         LOGGER.debug("UpdateDeviceSslCertification called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
@@ -75,12 +76,12 @@ public class DeviceManagementService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, certificationDto),
-                messageType, device.getIpAddress());
+                messageType, messagePriority, device.getIpAddress());
     }
 
     public void setDeviceVerificationKey(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String verificationKey, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final String verificationKey, final String messageType,
+            final int messagePriority) throws FunctionalException {
         LOGGER.debug("SetDeviceVerificationKey called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
@@ -94,7 +95,7 @@ public class DeviceManagementService extends AbstractService {
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, verificationKey),
-                messageType, device.getIpAddress());
+                messageType, messagePriority, device.getIpAddress());
     }
 
     public void setDeviceLifecycleStatus(final String organisationIdentification, final String deviceIdentification,
@@ -112,7 +113,7 @@ public class DeviceManagementService extends AbstractService {
 
         final ResponseMessageResultType result = ResponseMessageResultType.OK;
 
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(result).build();
         this.webServiceResponseMessageSender.send(responseMessage);

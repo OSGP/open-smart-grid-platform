@@ -26,6 +26,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.PowerUsageHistoryMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsPublicLightingDeviceMonitoringService")
@@ -54,7 +55,7 @@ public class DeviceMonitoringService {
 
     public String enqueueGetPowerUsageHistoryRequest(final String organisationIdentification,
             final String deviceIdentification, final PowerUsageHistoryMessageDataContainer powerUsageContainer,
-            final DateTime scheduledTime) throws FunctionalException {
+            final DateTime scheduledTime, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug(
                 "enqueueing GetPowerUsageHistoryRequest for organisationIdentification: {} for deviceIdentification: {}",
@@ -68,9 +69,13 @@ public class DeviceMonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
-                PublicLightingRequestMessageType.GET_POWER_USAGE_HISTORY, correlationUid, organisationIdentification,
-                deviceIdentification, powerUsageContainer, scheduledTime);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                PublicLightingRequestMessageType.GET_POWER_USAGE_HISTORY.name(), messagePriority,
+                scheduledTime == null ? null : scheduledTime.getMillis());
+
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(powerUsageContainer).build();
 
         this.publicLightingRequestMessageSender.send(message);
 

@@ -27,6 +27,7 @@ import com.alliander.osgp.adapter.ws.core.application.exceptionhandling.DetailSo
 import com.alliander.osgp.adapter.ws.core.application.exceptionhandling.SoapFaultMapper;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderInterceptor;
@@ -50,9 +51,7 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
     private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
-
     private static final String USER_NAME_HEADER = "UserName";
-
     private static final String APPLICATION_NAME_HEADER = "ApplicationName";
 
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
@@ -75,8 +74,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_INSTALLATION));
+        marshaller.setContextPath(
+                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_INSTALLATION));
 
         return marshaller;
     }
@@ -92,8 +91,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_MANAGEMENT));
+        marshaller.setContextPath(
+                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_MANAGEMENT));
 
         return marshaller;
     }
@@ -109,8 +108,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_AD_HOC_MANAGEMENT));
+        marshaller.setContextPath(
+                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_AD_HOC_MANAGEMENT));
 
         return marshaller;
     }
@@ -126,8 +125,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_FIRMWARE_MANAGEMENT));
+        marshaller.setContextPath(
+                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_FIRMWARE_MANAGEMENT));
 
         return marshaller;
     }
@@ -143,8 +142,8 @@ public class WebServiceConfig extends AbstractConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_CONFIGURATION_MANAGEMENT));
+        marshaller.setContextPath(
+                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_CONFIGURATION_MANAGEMENT));
 
         return marshaller;
     }
@@ -187,7 +186,8 @@ public class WebServiceConfig extends AbstractConfig {
     public MarshallingPayloadMethodProcessor adHocManagementMarshallingPayloadMethodProcessor() {
         LOGGER.debug("Creating Ad Hoc Management Marshalling Payload Method Processor Bean");
 
-        return new MarshallingPayloadMethodProcessor(this.adHocManagementMarshaller(), this.adHocManagementMarshaller());
+        return new MarshallingPayloadMethodProcessor(this.adHocManagementMarshaller(),
+                this.adHocManagementMarshaller());
     }
 
     /**
@@ -229,7 +229,7 @@ public class WebServiceConfig extends AbstractConfig {
 
         final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
 
-        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<MethodArgumentResolver>();
+        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
         // Common method argument resolvers
         methodArgumentResolvers.add(this.adHocManagementMarshallingPayloadMethodProcessor());
@@ -240,9 +240,11 @@ public class WebServiceConfig extends AbstractConfig {
 
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
+        methodArgumentResolvers
+                .add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_HEADER, MessagePriority.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
-        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
+        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
         // Common method return value handlers
         methodReturnValueHandlers.add(this.adHocManagementMarshallingPayloadMethodProcessor());
@@ -272,50 +274,31 @@ public class WebServiceConfig extends AbstractConfig {
         return exceptionResolver;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
-        LOGGER.debug("Creating Organisation Identification Interceptor Bean");
-
         return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
                 ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
-    @Bean(name = "SoapHeaderMessagePriorityEndpointInterceptor")
+    @Bean
     public SoapHeaderInterceptor messagePriorityInterceptor() {
-        LOGGER.debug("Creating Message Priority Interceptor Bean");
-
         return new SoapHeaderInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_HEADER);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
-        LOGGER.debug("Creating X509 Certificate Subject CN Endpoint Interceptor Bean");
-
         return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
-        LOGGER.debug("Creating Certificate And Soap Header Authorization Endpoint Interceptor Bean");
-
         return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     @Bean
     public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
-        LOGGER.debug("Creating Web Service Monitor Interceptor Bean");
-
         return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
                 APPLICATION_NAME_HEADER);
     }

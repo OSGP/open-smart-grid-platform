@@ -41,8 +41,8 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreResponseMessageProcessor.class);
 
     /**
-     * This is the message sender needed for the message processor implementation to
-     * forward response messages to web service adapter.
+     * This is the message sender needed for the message processor
+     * implementation to forward response messages to web service adapter.
      */
     @Autowired
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
@@ -71,8 +71,8 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     }
 
     /**
-     * In case a message processor instance can process multiple message types, a
-     * message type can be added.
+     * In case a message processor instance can process multiple message types,
+     * a message type can be added.
      *
      * @param deviceFunction
      *            The message type a message processor can handle.
@@ -82,9 +82,10 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     }
 
     /**
-     * Initialization function executed after dependency injection has finished. The
-     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
-     * key for the HashMap is the integer value of the enumeration member.
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the HashMap of
+     * MessageProcessors. The key for the HashMap is the integer value of the
+     * enumeration member.
      */
     @PostConstruct
     public void init() {
@@ -95,22 +96,24 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     }
 
     /**
-     * In case of an error, this function can be used to send a response containing
-     * the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response
+     * containing the exception to the web-service-adapter.
      *
      * @param e
      *            The exception.
      * @param correlationUid
      *            The correlation UID.
      * @param organisationIdentification
-     *            The organisation identification.
+     *            The organization identification.
      * @param deviceIdentification
      *            The device identification.
      * @param messageType
      *            The message type.
+     * @param messagePriority
+     *            The priority of the message.
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final String messageType) {
+            final String deviceIdentification, final String messageType, final int messagePriority) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
         OsgpException osgpException = null;
         if (e instanceof OsgpException) {
@@ -119,10 +122,10 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
             osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING, "An unknown error occurred",
                     e);
         }
-        ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.NOT_OK)
-                .withOsgpException(osgpException).withDataObject(e).build();
+                .withOsgpException(osgpException).withDataObject(e).withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 }

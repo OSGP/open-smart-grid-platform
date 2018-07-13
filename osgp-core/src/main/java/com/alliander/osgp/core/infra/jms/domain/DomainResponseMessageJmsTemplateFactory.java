@@ -19,13 +19,14 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.alliander.osgp.core.infra.jms.JmsTemplateSettings;
 import com.alliander.osgp.domain.core.entities.DomainInfo;
+import com.alliander.osgp.shared.infra.jms.OsgpJmsTemplate;
 
 public class DomainResponseMessageJmsTemplateFactory implements InitializingBean {
 
     private final ConnectionFactory connectionFactory;
     private final JmsTemplateSettings jmsTemplateSettings;
 
-    private Map<String, JmsTemplate> jmsTemplateMap = new HashMap<>();
+    private final Map<String, JmsTemplate> jmsTemplateMap = new HashMap<>();
 
     public DomainResponseMessageJmsTemplateFactory(final ConnectionFactory connectionFactory,
             final JmsTemplateSettings jmsTemplateSettings, final List<DomainInfo> domainInfos) {
@@ -49,7 +50,7 @@ public class DomainResponseMessageJmsTemplateFactory implements InitializingBean
     }
 
     private JmsTemplate createJmsTemplate(final DomainInfo domainInfo) {
-        final JmsTemplate jmsTemplate = new JmsTemplate();
+        final OsgpJmsTemplate jmsTemplate = new OsgpJmsTemplate();
         jmsTemplate.setDefaultDestination(new ActiveMQQueue(domainInfo.getOutgoingDomainResponsesQueue()));
         // Enable the use of deliveryMode, priority, and timeToLive
         jmsTemplate.setExplicitQosEnabled(this.jmsTemplateSettings.isExplicitQosEnabled());
