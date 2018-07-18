@@ -10,8 +10,11 @@ package com.alliander.osgp.shared.infra.ws;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CircuitBreakerTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CircuitBreakerTest.class);
 
     private CircuitBreaker circuitBreaker;
 
@@ -23,6 +26,7 @@ public class CircuitBreakerTest {
 
     @Test
     public void testNegativeThreshold() {
+        LOGGER.info("Test: expect using a negative threshold fails");
         try {
             new CircuitBreaker.Builder().withThreshold(-1).build();
             this.failIllegalArgument("threshold");
@@ -33,6 +37,7 @@ public class CircuitBreakerTest {
 
     @Test
     public void testNegativeInitialDuration() {
+        LOGGER.info("Test: expect using a negative initial duration fails");
         try {
             new CircuitBreaker.Builder().withInitialDuration(-1).build();
             this.failIllegalArgument("initialDuration");
@@ -43,6 +48,7 @@ public class CircuitBreakerTest {
 
     @Test
     public void testNegativeMaximumDuration() {
+        LOGGER.info("Test: expect using a negative maximum duration fails");
         try {
             new CircuitBreaker.Builder().withMaximumDuration(-1).build();
             this.failIllegalArgument("maximumDuration");
@@ -53,6 +59,7 @@ public class CircuitBreakerTest {
 
     @Test
     public void testNegativeMultiplier() {
+        LOGGER.info("Test: expect using a negative multiplier fails");
         try {
             new CircuitBreaker.Builder().withMultiplier(-1).build();
             this.failIllegalArgument("multiplier");
@@ -63,6 +70,7 @@ public class CircuitBreakerTest {
 
     @Test
     public void testZeroValues() {
+        LOGGER.info("Test: expect using zero values for all parameters is allowed");
         try {
             new CircuitBreaker.Builder().withThreshold(0).withInitialDuration(0).withMaximumDuration(0)
                     .withMultiplier(0).build();
@@ -85,17 +93,20 @@ public class CircuitBreakerTest {
 
     @Test
     public void testInitiallyClosed() {
+        LOGGER.info("Test: expect initial status is CLOSED");
         Assert.assertTrue("Initial status should be CLOSED", this.circuitBreaker.isClosed());
     }
 
     @Test
     public void testOpenCircuit() {
+        LOGGER.info("Test: expect status is OPEN after an explicit open");
         this.circuitBreaker.openCircuit();
         Assert.assertFalse("Should be OPEN after explicit open circuit request", this.circuitBreaker.isClosed());
     }
 
     @Test
     public void testCloseCircuit() {
+        LOGGER.info("Test: expect status is OPEN after an explicit close");
         this.markTwoFailures();
         this.circuitBreaker.closeCircuit();
         Assert.assertTrue("Should be CLOSED after explicit close circuit request", this.circuitBreaker.isClosed());
@@ -103,14 +114,14 @@ public class CircuitBreakerTest {
 
     @Test
     public void testClosedAfter1Failure() {
+        LOGGER.info("Test: expect status is CLOSED after one failure");
         this.markFailure();
         Assert.assertTrue("Status should be CLOSED after 1 failure", this.circuitBreaker.isClosed());
     }
 
     @Test
     public void testOpenAfter2Failures() {
-        // The threshold is 2, so two consecutive failures open the
-        // circuit breaker.
+        LOGGER.info("Test: expect status is OPEN after two consecutive failures");
         this.markTwoFailures();
 
         Assert.assertFalse("Status should be OPEN after 2 failures", this.circuitBreaker.isClosed());
@@ -118,6 +129,7 @@ public class CircuitBreakerTest {
 
     @Test
     public void testClosedAfter2FailuresAndWait() {
+        LOGGER.info("Test: expect status is CLOSED after two failures and waiting longer than the initial duration");
         // Trigger the circuit breaker to open
         this.markTwoFailures();
         // Wait until the circuit breaker is closed
@@ -128,19 +140,23 @@ public class CircuitBreakerTest {
 
     @Test
     public void testDurationIncrease() {
+        LOGGER.info("Test: expect status is OPEN after waiting shorter than the current duration of 600 ms");
+        this.circuitBreaker = new CircuitBreaker.Builder().withThreshold(2).withInitialDuration(30)
+                .withMaximumDuration(1200).withMultiplier(20).build();
+
         // Trigger the circuit breaker to open
         this.markTwoFailures();
         // Wait until the circuit breaker is closed
         this.wait(35);
 
         // We are in a half open state now. Another failure results
-        // in tripling the duration from 30 to 90 milliseconds.
+        // in increasing the duration from 30 to 600 milliseconds.
         this.markFailure();
         // Wait longer then the initial duration, but shorter than
         // multiplier * initial duration.
-        this.wait(80);
+        this.wait(100);
 
-        Assert.assertFalse("Status should be OPEN after waiting for 80 ms", this.circuitBreaker.isClosed());
+        Assert.assertFalse("Status should be OPEN after waiting for 100 ms", this.circuitBreaker.isClosed());
     }
 
     @Test
