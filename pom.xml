@@ -14,7 +14,7 @@
 
   <groupId>com.alliander.osgp</groupId>
   <artifactId>shared-components</artifactId>
-  <version>4.29.0-SNAPSHOT</version>
+  <version>4.30.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>shared</name>
   <properties>
