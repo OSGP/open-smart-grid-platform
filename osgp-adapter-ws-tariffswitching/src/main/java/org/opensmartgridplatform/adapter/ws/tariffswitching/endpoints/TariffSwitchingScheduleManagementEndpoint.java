@@ -29,14 +29,14 @@ import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanag
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleResponse;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.application.mapping.ScheduleManagementMapper;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.application.services.ScheduleManagementService;
-import com.alliander.osgp.domain.core.exceptions.ValidationException;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Endpoint
 public class TariffSwitchingScheduleManagementEndpoint {
@@ -86,7 +86,7 @@ public class TariffSwitchingScheduleManagementEndpoint {
             final String correlationUid = this.scheduleManagementService.enqueueSetTariffSchedule(
                     organisationIdentification, request.getDeviceIdentification(),
                     this.scheduleManagementMapper.mapAsList(request.getSchedules(),
-                            com.alliander.osgp.domain.core.valueobjects.ScheduleEntry.class),
+                            org.opensmartgridplatform.domain.core.valueobjects.ScheduleEntry.class),
                     scheduleTime, MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();

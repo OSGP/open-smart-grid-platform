@@ -33,7 +33,7 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonit
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.application.exceptionhandling.SoapFaultMapper;
-import com.alliander.osgp.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
@@ -153,10 +153,10 @@ public class WebServiceConfig extends AbstractConfig {
         exceptionResolver.setOrder(1);
 
         final Properties props = new Properties();
-        props.put("com.alliander.osgp.shared.exceptionhandling.OsgpException", SERVER);
-        props.put("com.alliander.osgp.shared.exceptionhandling.FunctionalException", SERVER);
-        props.put("com.alliander.osgp.shared.exceptionhandling.TechnicalException", SERVER);
-        props.put("com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException", SERVER);
+        props.put("org.opensmartgridplatform.shared.exceptionhandling.OsgpException", SERVER);
+        props.put("org.opensmartgridplatform.shared.exceptionhandling.FunctionalException", SERVER);
+        props.put("org.opensmartgridplatform.shared.exceptionhandling.TechnicalException", SERVER);
+        props.put("org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException", SERVER);
         exceptionResolver.setExceptionMappings(props);
         return exceptionResolver;
     }

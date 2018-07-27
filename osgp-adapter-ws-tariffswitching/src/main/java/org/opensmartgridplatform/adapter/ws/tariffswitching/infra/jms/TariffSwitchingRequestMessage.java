@@ -11,8 +11,8 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
-import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
-import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 public class TariffSwitchingRequestMessage extends RequestMessage {
 

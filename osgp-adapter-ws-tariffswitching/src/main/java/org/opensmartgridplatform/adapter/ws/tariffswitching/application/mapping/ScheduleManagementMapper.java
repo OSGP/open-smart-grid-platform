@@ -13,7 +13,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.springframework.stereotype.Component;
 
 import org.opensmartgridplatform.adapter.ws.tariffswitching.application.mapping.ws.TariffScheduleToScheduleConverter;
-import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 @Component(value = "tariffSwitchingScheduleManagementMapper")
 public class ScheduleManagementMapper extends ConfigurableMapper {

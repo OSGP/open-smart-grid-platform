@@ -18,9 +18,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.shared.application.config.AbstractPersistenceConfig;
-import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
+import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {

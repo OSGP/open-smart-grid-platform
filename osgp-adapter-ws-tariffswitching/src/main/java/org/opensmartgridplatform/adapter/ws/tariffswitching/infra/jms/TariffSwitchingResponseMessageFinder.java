@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 
-import com.alliander.osgp.shared.infra.jms.BaseResponseMessageFinder;
+import org.opensmartgridplatform.shared.infra.jms.BaseResponseMessageFinder;
 
 /**
  * Class for retrieving response messages from the tariff switching responses

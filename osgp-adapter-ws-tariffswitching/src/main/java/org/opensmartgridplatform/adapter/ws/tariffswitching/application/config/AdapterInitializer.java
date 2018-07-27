@@ -12,7 +12,7 @@ import javax.servlet.ServletException;
 
 import org.springframework.web.WebApplicationInitializer;
 
-import com.alliander.osgp.shared.application.config.AbstractWsAdapterInitializer;
+import org.opensmartgridplatform.shared.application.config.AbstractWsAdapterInitializer;
 
 /**
  * Web application Java configuration class.

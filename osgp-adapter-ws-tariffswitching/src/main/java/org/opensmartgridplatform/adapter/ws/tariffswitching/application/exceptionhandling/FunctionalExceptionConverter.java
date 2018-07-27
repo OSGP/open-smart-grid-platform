@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.exceptionhandling;
 
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.FunctionalFault;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;

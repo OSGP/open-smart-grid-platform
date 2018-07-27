@@ -31,16 +31,16 @@ import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.AsyncR
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.application.mapping.AdHocManagementMapper;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.application.services.AdHocManagementService;
-import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.exceptions.ValidationException;
-import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined

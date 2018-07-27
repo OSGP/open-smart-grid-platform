@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import com.alliander.osgp.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 
 /**
  * Class for sending tariff switching request messages to a queue

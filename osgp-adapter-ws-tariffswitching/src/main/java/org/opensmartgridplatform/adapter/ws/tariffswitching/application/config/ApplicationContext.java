@@ -21,15 +21,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-import com.alliander.osgp.shared.application.config.AbstractConfig;
-import com.alliander.osgp.ws.tariffswitching.config.TariffSwitchingWebServiceConfig;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.ws.tariffswitching.config.TariffSwitchingWebServiceConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "org.opensmartgridplatform.adapter.ws.tariffswitching"})
+@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.tariffswitching"})
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class,

@@ -10,18 +10,18 @@ package org.opensmartgridplatform.adapter.ws.tariffswitching.application.service
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
-import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.services.DeviceDomainService;
-import com.alliander.osgp.domain.core.services.OrganisationDomainService;
-import com.alliander.osgp.domain.core.services.SecurityService;
-import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.exceptions.NotAuthorizedException;
+import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
+import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
+import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
+import org.opensmartgridplatform.domain.core.services.SecurityService;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service(value = "wsTariffSwitchingDomainHelperService")
 public class DomainHelperService {

@@ -14,11 +14,11 @@ import org.joda.time.DateTime;
 
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.TariffSchedule;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement.TariffValue;
-import com.alliander.osgp.domain.core.exceptions.ValidationException;
-import com.alliander.osgp.domain.core.valueobjects.ActionTimeType;
-import com.alliander.osgp.domain.core.valueobjects.LightValue;
-import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
-import com.alliander.osgp.domain.core.valueobjects.WeekDayType;
+import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
+import org.opensmartgridplatform.domain.core.valueobjects.ActionTimeType;
+import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
+import org.opensmartgridplatform.domain.core.valueobjects.ScheduleEntry;
+import org.opensmartgridplatform.domain.core.valueobjects.WeekDayType;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;

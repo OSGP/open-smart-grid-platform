@@ -20,11 +20,11 @@ import org.springframework.jms.core.JmsTemplate;
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms.TariffSwitchingResponseMessageFinder;
-import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
-import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
-import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
-import com.alliander.osgp.shared.application.config.jms.JmsConfigurationNames;
-import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
+import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
+import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
+import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
+import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
+import org.opensmartgridplatform.shared.application.config.jms.JmsPropertyNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),

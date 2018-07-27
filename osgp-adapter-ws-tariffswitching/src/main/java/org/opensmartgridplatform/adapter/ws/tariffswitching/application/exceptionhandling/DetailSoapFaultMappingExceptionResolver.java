@@ -20,8 +20,8 @@ import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionReso
 
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.FunctionalFault;
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common.TechnicalFault;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 
 public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExceptionResolver {
 
