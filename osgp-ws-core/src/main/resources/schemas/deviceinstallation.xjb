@@ -3,14 +3,14 @@
 
   <jxb:bindings schemaLocation="common-ws-core.xsd">
     <jxb:schemaBindings>
-      <jxb:package name="com.alliander.osgp.adapter.ws.schema.core.common"></jxb:package>
+      <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.core.common"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="deviceinstallation.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.core.deviceinstallation"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 

@@ -7,7 +7,7 @@
   <jxb:bindings schemaLocation="common.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.common"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.common"></jxb:package>
     </jxb:schemaBindings>
 
     <jxb:bindings node="//xs:complexType[@name='CaptureObjects']//xs:element[@name='CaptureObject']">
@@ -23,7 +23,7 @@
   <jxb:bindings schemaLocation="sm-configuration.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.configuration"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration"></jxb:package>
     </jxb:schemaBindings>
 
     <jxb:bindings node="//xs:complexType[@name='UpdateFirmwareRequestData']//xs:element[@name='FirmwareVersion']">

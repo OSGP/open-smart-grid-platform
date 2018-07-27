@@ -4,14 +4,14 @@
   <jxb:bindings schemaLocation="common.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.microgrids.common"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.microgrids.common"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="notification.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.microgrids.notification"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.microgrids.notification"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
