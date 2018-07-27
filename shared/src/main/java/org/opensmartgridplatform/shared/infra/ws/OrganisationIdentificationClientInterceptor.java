@@ -16,7 +16,7 @@ public class OrganisationIdentificationClientInterceptor extends ClientIntercept
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String USER_NAME_HEADER = "UserName";
     private static final String APPLICATION_NAME_HEADER = "ApplicationName";
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osp/common";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/common";
 
     private final String organisationIdentification;
     private final String userName;

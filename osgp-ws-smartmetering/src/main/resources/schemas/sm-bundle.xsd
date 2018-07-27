@@ -1,31 +1,31 @@
 <!-- Copyright 2015 Smart Society Services B.V. -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
-  xmlns:smman="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10"
-  xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
-  xmlns:smmon="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
-  xmlns:adhoc="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10"
-  xmlns:sminst="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10"
-  xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:smman="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
+  xmlns:smconf="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
+  xmlns:smmon="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
+  xmlns:adhoc="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
+  xmlns:sminst="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
   attributeFormDefault="unqualified" elementFormDefault="qualified"
-  targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10">
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10">
 
-  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
     schemaLocation="common.xsd" />
   <xsd:import
-    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10"
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
     schemaLocation="sm-management.xsd" />
   <xsd:import
-    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
     schemaLocation="sm-configuration.xsd" />
   <xsd:import
-    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
     schemaLocation="sm-monitoring.xsd" />
   <xsd:import
-    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10"
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
     schemaLocation="sm-adhoc.xsd" />
   <xsd:import
-    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10"
+    namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
     schemaLocation="sm-installation.xsd" />
 
   <!-- Requests and Responses -->

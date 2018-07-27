@@ -3,7 +3,7 @@
 
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     xmlns:da="http://www.osgpfoundation.org/schemas/osgp/distributionautomation/defs/2017/04"
-    xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+    xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
     xmlns:tns="http://www.osgpfoundation.org/definitions/osgp/distributionautomation/2017/04"
     targetNamespace="http://www.osgpfoundation.org/definitions/osgp/distributionautomation/2017/04">

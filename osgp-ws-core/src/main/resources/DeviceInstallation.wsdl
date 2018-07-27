@@ -2,18 +2,18 @@
 <!-- Platform version: ${display.version} -->
 
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-  xmlns:dinst="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10"
-  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+  xmlns:dinst="http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-  xmlns:tns="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0"
-  targetNamespace="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0">
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/common/deviceinstallation-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/common/deviceinstallation-v1.0">
 
   <wsdl:types>
     <xsd:schema
-      targetNamespace="http://www.alliander.com/definitions/osgp/common/deviceinstallation/imports"
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/common/deviceinstallation/imports"
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
-        namespace="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10"
+        namespace="http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10"
         schemaLocation="schemas/deviceinstallation.xsd" />
     </xsd:schema>
   </wsdl:types>

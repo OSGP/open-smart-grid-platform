@@ -17,7 +17,7 @@ import org.springframework.ws.soap.SoapMessage;
 
 public class WebServiceMessageCallbackHeaderFieldsAdder implements WebServiceMessageCallback {
 
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osp/common";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/common";
 
     private final Map<String, String> keyValues;
 
