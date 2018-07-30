@@ -84,7 +84,7 @@
       <artifactId>jdlms</artifactId>
     </dependency>
 
-    <!-- Alliander -->
+    <!-- OSGP -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-dto</artifactId>
