@@ -65,7 +65,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class DeviceInstallationEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceInstallationEndpoint.class);
-    private static final String DEVICE_INSTALLATION_NAMESPACE = "http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10";
+    private static final String DEVICE_INSTALLATION_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10";
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
     private static final String EXCEPTION_WHILE_ADDING_DEVICE = "Exception: {} while adding device: {} for organisation {}.";

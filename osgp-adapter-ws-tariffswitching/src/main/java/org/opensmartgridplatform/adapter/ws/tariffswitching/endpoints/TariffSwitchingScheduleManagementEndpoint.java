@@ -42,7 +42,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class TariffSwitchingScheduleManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TariffSwitchingScheduleManagementEndpoint.class);
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/tariffswitching/schedulemanagement/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/tariffswitching/schedulemanagement/2014/10";
     private static final ComponentType COMPONENT_WS_TARIFF_SWITCHING = ComponentType.WS_TARIFF_SWITCHING;
 
     private final ScheduleManagementService scheduleManagementService;

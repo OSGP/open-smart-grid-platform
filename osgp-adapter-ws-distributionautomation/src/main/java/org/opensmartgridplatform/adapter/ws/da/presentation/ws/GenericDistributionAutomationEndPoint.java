@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GenericDistributionAutomationEndPoint {
-    protected static final String NAMESPACE = "http://www.osgpfoundation.org/schemas/osgp/distributionautomation/defs/2017/04";
+    protected static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/distributionautomation/defs/2017/04";
 
     @Autowired
     protected DistributionAutomationService service;

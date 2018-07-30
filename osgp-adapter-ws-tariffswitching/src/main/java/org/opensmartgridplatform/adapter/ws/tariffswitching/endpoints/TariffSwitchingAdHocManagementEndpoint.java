@@ -51,7 +51,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class TariffSwitchingAdHocManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TariffSwitchingAdHocManagementEndpoint.class);
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/tariffswitching/adhocmanagement/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/tariffswitching/adhocmanagement/2014/10";
     private static final ComponentType COMPONENT_WS_TARIFF_SWITCHING = ComponentType.WS_TARIFF_SWITCHING;
 
     private final AdHocManagementService adHocManagementService;

@@ -101,7 +101,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class FirmwareManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementEndpoint.class);
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/common/firmwaremanagement/2014/10";
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
     private static final String ADD_DEVICEMODEL_EXISTING_DEVICEMODEL = "EXISTING_DEVICEMODEL";
     private static final String ADD_FIRMWARE_EXISTING_FIRMWARE = "EXISTING_FIRMWARE";
@@ -271,11 +271,10 @@ public class FirmwareManagementEndpoint {
                 organisationIdentification, request.getAsyncRequest().getDeviceId());
 
         final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
-        ResponseMessage message = null;
 
         try {
-            message = this.firmwareManagementService
-                    .dequeueGetFirmwareResponse(request.getAsyncRequest().getCorrelationUid());
+            ResponseMessage message = this.firmwareManagementService
+                .dequeueGetFirmwareResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 if (message.getDataObject() != null) {

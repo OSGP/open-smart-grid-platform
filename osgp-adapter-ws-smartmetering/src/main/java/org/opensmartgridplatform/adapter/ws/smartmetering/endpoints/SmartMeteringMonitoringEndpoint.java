@@ -71,7 +71,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringMonitoringEndpoint.class);
-    private static final String SMARTMETER_MONITORING_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10";
+    private static final String SMARTMETER_MONITORING_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10";
 
     @Autowired
     private MonitoringService monitoringService;
@@ -378,7 +378,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
             this.throwExceptionIfResultNotOk(responseData, "retrieving the push notification alarm");
 
-            response = this.monitoringMapper.map((PushNotificationAlarm) responseData.getMessageData(),
+            response = this.monitoringMapper.map(responseData.getMessageData(),
                     RetrievePushNotificationAlarmResponse.class);
 
         } catch (final FunctionalException e) {

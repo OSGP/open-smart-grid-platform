@@ -49,7 +49,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class PublicLightingScheduleManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingScheduleManagementEndpoint.class);
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/publiclighting/schedulemanagement/2014/10";
     private static final ComponentType COMPONENT_WS_PUBLIC_LIGHTING = ComponentType.WS_PUBLIC_LIGHTING;
 
     private final ScheduleManagementService scheduleManagementService;

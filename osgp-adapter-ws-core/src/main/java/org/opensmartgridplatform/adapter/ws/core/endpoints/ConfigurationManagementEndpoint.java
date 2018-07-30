@@ -56,7 +56,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 @Endpoint
 public class ConfigurationManagementEndpoint {
 
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/configurationmanagement/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/configurationmanagement/2014/10";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationManagementEndpoint.class);
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 

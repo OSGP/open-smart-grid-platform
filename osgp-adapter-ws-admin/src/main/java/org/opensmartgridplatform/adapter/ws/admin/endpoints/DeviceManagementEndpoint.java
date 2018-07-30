@@ -83,7 +83,7 @@ public class DeviceManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
 
-    private static final String DEVICE_MANAGEMENT_NAMESPACE = "http://www.alliander.com/schemas/osgp/admin/devicemanagement/2014/10";
+    private static final String DEVICE_MANAGEMENT_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/admin/devicemanagement/2014/10";
     private static final ComponentType COMPONENT_TYPE_WS_ADMIN = ComponentType.WS_ADMIN;
     private static final String EXCEPTION_OCCURED = "Exception Occured.";
 
@@ -95,8 +95,6 @@ public class DeviceManagementEndpoint {
 
     /**
      * Constructor
-     *
-     * @param deviceManagementService
      */
     @Autowired()
     public DeviceManagementEndpoint(

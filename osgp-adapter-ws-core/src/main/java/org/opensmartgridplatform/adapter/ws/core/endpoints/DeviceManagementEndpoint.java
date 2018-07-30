@@ -91,7 +91,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class DeviceManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
-    private static final String DEVICE_MANAGEMENT_NAMESPACE = "http://www.alliander.com/schemas/osgp/devicemanagement/2014/10";
+    private static final String DEVICE_MANAGEMENT_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/devicemanagement/2014/10";
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
     private static final String EXCEPTION = "Exception: {}, StackTrace: {}";

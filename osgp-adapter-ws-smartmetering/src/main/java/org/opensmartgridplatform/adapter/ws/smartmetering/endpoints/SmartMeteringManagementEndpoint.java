@@ -78,7 +78,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringManagementEndpoint.class);
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10";
     private static final ComponentType COMPONENT_WS_SMART_METERING = ComponentType.WS_SMART_METERING;
 
     private final ManagementService managementService;
@@ -330,12 +330,10 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
      * requests and notifications, the ws-admin implementation will replace this
      * one and this method can be removed.
      *
-     * @param organisationIdentification
      * @param messagePriority
      *            unused because this request fakes asynchronous behavior.
      * @param scheduleTime
      *            unused because this request fakes asynchronous behavior.
-     * @param request
      * @return AsyncResponse
      * @throws OsgpException
      */
@@ -370,11 +368,9 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
     /**
      * Retrieve the result of the
-     * {@link #findMessageLogsRequest(String, String, String, FindMessageLogsRequest)}
+     * {@link #findMessageLogsRequest(String, String, String, String, FindMessageLogsRequest)}
      * method.
      *
-     * @param organisationIdentification
-     * @param request
      * @return FindMessageLogsResponse
      * @throws OsgpException
      */

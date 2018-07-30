@@ -38,7 +38,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 public class AdHocManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementEndpoint.class);
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/microgrids/adhocmanagement/2016/06";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/microgrids/adhocmanagement/2016/06";
 
     @Autowired
     private MicrogridsService service;

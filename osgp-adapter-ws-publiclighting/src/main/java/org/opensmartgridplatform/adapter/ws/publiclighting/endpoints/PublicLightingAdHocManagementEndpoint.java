@@ -71,7 +71,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class PublicLightingAdHocManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingAdHocManagementEndpoint.class);
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/publiclighting/adhocmanagement/2014/10";
     private static final ComponentType COMPONENT_WS_PUBLIC_LIGHTING = ComponentType.WS_PUBLIC_LIGHTING;
 
     private static final String EXCEPTION_OCCURRED = "Exception Occurred";

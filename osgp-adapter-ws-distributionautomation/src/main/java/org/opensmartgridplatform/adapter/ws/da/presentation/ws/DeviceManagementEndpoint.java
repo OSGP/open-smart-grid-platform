@@ -28,7 +28,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class DeviceManagementEndpoint extends GenericDistributionAutomationEndPoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
-    protected static final String NAMESPACE = "http://www.osgpfoundation.org/schemas/osgp/distributionautomation/defs/2017/04";
+    protected static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/distributionautomation/defs/2017/04";
 
     @PayloadRoot(localPart = "GetHealthStatusRequest",
             namespace = NAMESPACE)

@@ -45,7 +45,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class DeviceMonitoringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceMonitoringEndpoint.class);
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/publiclighting/devicemonitoring/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/publiclighting/devicemonitoring/2014/10";
     private static final ComponentType COMPONENT_WS_PUBLIC_LIGHTING = ComponentType.WS_PUBLIC_LIGHTING;
 
     private final DeviceMonitoringService deviceMonitoringService;

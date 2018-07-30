@@ -57,7 +57,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 @Endpoint
 public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
-    private static final String SMARTMETER_ADHOC_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10";
+    private static final String SMARTMETER_ADHOC_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10";
 
     @Autowired
     private AdhocService adhocService;

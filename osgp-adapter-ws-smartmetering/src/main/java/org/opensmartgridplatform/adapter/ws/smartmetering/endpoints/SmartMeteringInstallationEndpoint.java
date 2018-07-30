@@ -58,7 +58,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringInstallationEndpoint.class);
-    private static final String SMARTMETER_INSTALLATION_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10";
+    private static final String SMARTMETER_INSTALLATION_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10";
 
     @Autowired
     private InstallationService installationService;

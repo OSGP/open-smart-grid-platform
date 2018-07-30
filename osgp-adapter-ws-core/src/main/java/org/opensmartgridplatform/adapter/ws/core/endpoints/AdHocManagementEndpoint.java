@@ -35,7 +35,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class AdHocManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementEndpoint.class);
-    private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/adhocmanagement/2014/10";
+    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/adhocmanagement/2014/10";
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
     private final AdHocManagementService adHocManagementService;
