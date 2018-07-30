@@ -51,7 +51,7 @@
 
   <dependencies>
 
-    <!-- Alliander -->
+    <!-- Open Smart Grid Platform -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-domain-core</artifactId>

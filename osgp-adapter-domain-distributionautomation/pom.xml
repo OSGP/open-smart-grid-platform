@@ -18,7 +18,7 @@
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
-  <groupId>org.osgpfoundation.osgp</groupId>
+  <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
   <packaging>war</packaging>
   <name>osgp-adapter-domain-distributionautomation</name>
@@ -30,7 +30,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.osgpfoundation.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-domain-distributionautomation</artifactId>
     </dependency>
     <dependency>

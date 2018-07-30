@@ -95,7 +95,7 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Alliander -->
+      <!-- Open Smart Grid Platform -->
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-dto</artifactId>
@@ -137,7 +137,7 @@
         <version>${shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.osgpfoundation.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-distributionautomation</artifactId>
         <version>${shared.version}</version>
       </dependency>
@@ -166,7 +166,7 @@
         <version>${osgp.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.osgpfoundation.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
       </dependency>
@@ -198,7 +198,7 @@
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>org.osgpfoundation.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
@@ -243,7 +243,7 @@
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>org.osgpfoundation.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>

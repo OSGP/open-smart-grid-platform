@@ -18,7 +18,7 @@
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
-  <groupId>org.osgpfoundation.osgp</groupId>
+  <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
 
   <packaging>war</packaging>
@@ -32,7 +32,7 @@
   </properties>
 
   <dependencies>
-    <!-- Alliander -->
+    <!-- Open Smart Grid Platform -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
@@ -46,7 +46,7 @@
       <artifactId>osgp-domain-logging</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.osgpfoundation.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-domain-distributionautomation</artifactId>
     </dependency>
     <dependency>
@@ -58,7 +58,7 @@
       <artifactId>osgp-adapter-ws-shared-db</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.osgpfoundation.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-ws-distributionautomation</artifactId>
     </dependency>
     <!-- Spring Framework -->

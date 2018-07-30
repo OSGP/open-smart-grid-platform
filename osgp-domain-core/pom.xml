@@ -55,7 +55,7 @@
   </build>
 
   <dependencies>
-    <!-- Alliander -->
+    <!-- Open Smart Grid Platform -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
