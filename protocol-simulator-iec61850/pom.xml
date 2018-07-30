@@ -108,7 +108,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>com.alliander.osgp.simulator.protocol.iec61850.SimulatorApplication</mainClass>
+              <mainClass>org.opensmartgridplatform.simulator.protocol.iec61850.SimulatorApplication</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -122,7 +122,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.alliander.osgp.simulator.protocol.iec61850.SimulatorApplication</mainClass>
+              <mainClass>org.opensmartgridplatform.simulator.protocol.iec61850.SimulatorApplication</mainClass>
             </manifest>
           </archive>
         </configuration>
