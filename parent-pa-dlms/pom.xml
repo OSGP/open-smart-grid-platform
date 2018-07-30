@@ -12,7 +12,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>parent-pa-dlms</artifactId>
-  <groupId>org.osgp</groupId>
+  <groupId>org.opensmartgridplatform</groupId>
   <version>4.30.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-pa-dlms</name>
@@ -122,23 +122,23 @@
 
       <!-- OSGP -->
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-dto</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>shared</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>jasper-interface</artifactId>
         <version>${osgp.jasper-interface.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-dlms</artifactId>
         <version>${osgp.dlms.version}</version>
       </dependency>

@@ -19,7 +19,7 @@
   <url>http://maven.apache.org</url>
 
   <parent>
-    <groupId>org.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
     <version>4.30.0-SNAPSHOT</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
@@ -175,7 +175,7 @@
 
     <!-- OSGP dependencies -->
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
 
