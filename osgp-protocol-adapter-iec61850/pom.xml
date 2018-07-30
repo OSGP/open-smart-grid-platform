@@ -18,7 +18,7 @@
   <description>Protocol adapter for IEC61850 Protocol.</description>
 
   <parent>
-    <groupId>com.alliander.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-iec61850</artifactId>
     <version>4.30.0-SNAPSHOT</version>
     <relativePath>../parent-pa-iec61850/pom.xml</relativePath>
@@ -50,21 +50,21 @@
   </build>
 
   <dependencies>
-    <!-- Alliander -->
+    <!-- OSGP -->
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-dto</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-iec61850</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-core-db-api-iec61850</artifactId>
     </dependency>
 

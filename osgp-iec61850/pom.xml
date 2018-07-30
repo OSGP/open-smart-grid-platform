@@ -17,7 +17,7 @@
   <description>IEC61850 library.</description>
 
   <parent>
-    <groupId>com.alliander.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-iec61850</artifactId>
     <version>4.30.0-SNAPSHOT</version>
     <relativePath>../parent-pa-iec61850/pom.xml</relativePath>
@@ -30,11 +30,11 @@
   <dependencies>
 
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-dto</artifactId>
     </dependency>
 
