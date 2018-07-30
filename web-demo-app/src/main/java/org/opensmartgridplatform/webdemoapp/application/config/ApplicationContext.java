@@ -5,15 +5,15 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.application.config;
+package org.opensmartgridplatform.webdemoapp.application.config;
 
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 
-import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpAdminClientSoapService;
-import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
-import org.osgpfoundation.osgp.webdemoapp.infra.platform.KeyStoreHelper;
-import org.osgpfoundation.osgp.webdemoapp.infra.platform.SoapRequestHelper;
+import org.opensmartgridplatform.webdemoapp.application.services.OsgpAdminClientSoapService;
+import org.opensmartgridplatform.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
+import org.opensmartgridplatform.webdemoapp.infra.platform.KeyStoreHelper;
+import org.opensmartgridplatform.webdemoapp.infra.platform.SoapRequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +42,7 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
  * </ul>
  */
 @Configuration
-@ComponentScan(basePackages = { "org.osgpfoundation.osgp.webdemoapp" })
+@ComponentScan(basePackages = {"org.opensmartgridplatform.webdemoapp"})
 @EnableWebMvc
 @ImportResource("classpath:applicationContext.xml")
 @PropertySources({ @PropertySource("classpath:web-demo-app.properties"),
@@ -156,8 +156,8 @@ public class ApplicationContext {
      */
     private MapperFacade adminAdHocMapperFacade() {
         final MapperFactory factory = new DefaultMapperFactory.Builder().build();
-        factory.classMap(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Device.class,
-                org.osgpfoundation.osgp.webdemoapp.domain.Device.class).byDefault().register();
+        factory.classMap(org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Device.class,
+                org.opensmartgridplatform.webdemoapp.domain.Device.class).byDefault().register();
 
         return factory.getMapperFacade();
     }
@@ -169,8 +169,8 @@ public class ApplicationContext {
      */
     private MapperFacade publicLightingAdHocMapperFacade() {
         final MapperFactory factory = new DefaultMapperFactory.Builder().build();
-        factory.classMap(com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Device.class,
-                org.osgpfoundation.osgp.webdemoapp.domain.Device.class).byDefault().register();
+        factory.classMap(org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device.class,
+                org.opensmartgridplatform.webdemoapp.domain.Device.class).byDefault().register();
 
         return factory.getMapperFacade();
     }

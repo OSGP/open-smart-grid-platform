@@ -1,4 +1,4 @@
-package org.osgpfoundation.osgp.webdemoapp.infra.platform;
+package org.opensmartgridplatform.webdemoapp.infra.platform;
 
 import java.io.IOException;
 

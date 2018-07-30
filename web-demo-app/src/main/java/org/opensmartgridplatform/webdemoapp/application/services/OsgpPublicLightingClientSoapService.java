@@ -5,24 +5,24 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.application.services;
+package org.opensmartgridplatform.webdemoapp.application.services;
 
 import java.util.List;
 
-import org.osgpfoundation.osgp.webdemoapp.infra.platform.SoapRequestHelper;
+import org.opensmartgridplatform.webdemoapp.infra.platform.SoapRequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesResponse;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesRequest;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesResponse;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetLightAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.AsyncRequest;
 
 import ma.glasnost.orika.MapperFacade;
 
@@ -48,7 +48,7 @@ public class OsgpPublicLightingClientSoapService {
      *
      * @return a list of devices
      */
-    public List<org.osgpfoundation.osgp.webdemoapp.domain.Device> findAllDevicesRequest() {
+    public List<org.opensmartgridplatform.webdemoapp.domain.Device> findAllDevicesRequest() {
         final FindAllDevicesRequest findAllDevicesRequest = new FindAllDevicesRequest();
 
         final WebServiceTemplate template = this.soapRequestHelper.createPublicLightingRequest();
@@ -56,11 +56,9 @@ public class OsgpPublicLightingClientSoapService {
         final FindAllDevicesResponse response = (FindAllDevicesResponse) template
                 .marshalSendAndReceive(findAllDevicesRequest);
 
-        final List<org.osgpfoundation.osgp.webdemoapp.domain.Device> result = this.publicLightingAdHocMapperFacade
+        return this.publicLightingAdHocMapperFacade
                 .mapAsList(response.getDevicePage().getDevices(),
-                        org.osgpfoundation.osgp.webdemoapp.domain.Device.class);
-
-        return result;
+                        org.opensmartgridplatform.webdemoapp.domain.Device.class);
     }
 
     /**
@@ -69,9 +67,6 @@ public class OsgpPublicLightingClientSoapService {
      * using the WebServiceTemplate. Returns the response (CorrelationId) from
      * the Platform.
      *
-     * @param deviceId
-     * @param dimValue
-     * @param lightOn
      * @return correlation id
      */
     public String setLightRequest(final String deviceId, final int dimValue, final boolean lightOn) {
@@ -95,10 +90,6 @@ public class OsgpPublicLightingClientSoapService {
      * Sends the request to the platform using the WebServiceTemplate.
      *
      * Returns the CorrelationId response from the Platform.
-     *
-     * @param deviceId
-     * @param lightOn
-     * @return
      */
     public String switchLightRequest(final String deviceId, final boolean lightOn) {
         final SetLightRequest request = new SetLightRequest();
@@ -120,9 +111,6 @@ public class OsgpPublicLightingClientSoapService {
      * to the Platform using a WebServiceTemplate.
      *
      * Returns the CorrelationId response from the platform.
-     *
-     * @param deviceId
-     * @return
      */
     public String getDeviceStatus(final String deviceId) {
         final WebServiceTemplate requestTemplate = this.soapRequestHelper.createPublicLightingRequest();
@@ -141,10 +129,6 @@ public class OsgpPublicLightingClientSoapService {
      * deviceId and correlationId parameters.
      *
      * Returns the response from the Platform.
-     *
-     * @param deviceId
-     * @param correlationId
-     * @return
      */
     public GetStatusResponse getGetStatusResponse(final String deviceId, final String correlationId) {
         final AsyncRequest asyncRequest = new AsyncRequest();
