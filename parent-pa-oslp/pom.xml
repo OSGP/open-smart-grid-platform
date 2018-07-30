@@ -13,7 +13,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>parent-pa-oslp</artifactId>
-  <groupId>com.alliander.osgp</groupId>
+  <groupId>org.opensmartgridplatform</groupId>
   <version>4.30.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-pa-oslp</name>
@@ -102,36 +102,36 @@
     <dependencies>
       <!-- Alliander -->
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>oslp</artifactId>
         <version>${osgp.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-dto</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>shared</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-core-db-api</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-protocol-adapter-oslp-elster</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>signing-server</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>

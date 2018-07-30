@@ -19,7 +19,7 @@
   <description>Open Street Light Protocol.</description>
 
   <parent>
-    <groupId>com.alliander.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-oslp</artifactId>
     <version>4.30.0-SNAPSHOT</version>
     <relativePath>../parent-pa-oslp/pom.xml</relativePath>
@@ -27,7 +27,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
     <dependency>
