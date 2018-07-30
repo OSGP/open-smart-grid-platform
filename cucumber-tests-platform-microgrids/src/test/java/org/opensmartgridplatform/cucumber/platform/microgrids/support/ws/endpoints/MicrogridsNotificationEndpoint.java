@@ -25,7 +25,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.WebServiceException;
 public class MicrogridsNotificationEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsNotificationEndpoint.class);
-    private static final String MICROGRIDS_NOTIFICATION_NAMESPACE = "http://www.alliander.com/schemas/osgp/microgrids/notification/2016/06";
+    private static final String MICROGRIDS_NOTIFICATION_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/microgrids/notification/2016/06";
 
     @Autowired
     private NotificationService notificationService;

@@ -25,7 +25,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.WebServiceException;
 public class SmartMeteringNotificationEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringNotificationEndpoint.class);
-    private static final String SMARTMETERING_NOTIFICATION_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-notification/2014/10";
+    private static final String SMARTMETERING_NOTIFICATION_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10";
 
     @Autowired
     private NotificationService notificationService;
