@@ -195,7 +195,7 @@
               </descriptors>
               <archive>
                 <manifest>
-                  <mainClass>com.alliander.osgp.cucumber.platform.smartmetering.App</mainClass>
+                  <mainClass>org.opensmartgridplatform.cucumber.platform.smartmetering.App</mainClass>
                 </manifest>
               </archive>
             </configuration>

@@ -167,7 +167,7 @@
               </descriptors>
               <archive>
                 <manifest>
-                  <mainClass>com.alliander.osgp.cucumber.platform.microgrids.App</mainClass>
+                  <mainClass>org.opensmartgridplatform.cucumber.platform.microgrids.App</mainClass>
                 </manifest>
               </archive>
             </configuration>

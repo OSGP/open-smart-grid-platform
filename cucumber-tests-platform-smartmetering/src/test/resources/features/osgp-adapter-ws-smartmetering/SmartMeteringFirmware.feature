@@ -119,7 +119,7 @@ Feature: SmartMetering Firmware
     And a SOAP fault should have been returned
       | Component      | PROTOCOL_DLMS                                                         |
       | Message        | Unexpected exception while handling protocol request/response message |
-      | InnerException | com.alliander.osgp.shared.exceptionhandling.OsgpException             |
+      | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException             |
       | InnerMessage   | Firmware file is not available.                                       |
     And the database should not be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002      |
@@ -157,7 +157,7 @@ Feature: SmartMetering Firmware
     And a SOAP fault should have been returned
       | Component      | PROTOCOL_DLMS                                                         |
       | Message        | Unexpected exception while handling protocol request/response message |
-      | InnerException | com.alliander.osgp.shared.exceptionhandling.OsgpException             |
+      | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException             |
       | InnerMessage   | Upgrade of firmware did not succeed.                                  |
     And the database should not be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002      |

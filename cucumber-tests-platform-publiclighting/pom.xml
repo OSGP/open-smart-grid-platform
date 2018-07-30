@@ -169,7 +169,7 @@
               </descriptors>
               <archive>
                 <manifest>
-                  <mainClass>com.alliander.osgp.cucumber.platform.publiclighting.App</mainClass>
+                  <mainClass>org.opensmartgridplatform.cucumber.platform.publiclighting.App</mainClass>
                 </manifest>
               </archive>
             </configuration>

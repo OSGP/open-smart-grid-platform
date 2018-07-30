@@ -44,7 +44,7 @@ Feature: AdminOrganizationManagement Organization Creating
       | Domains                    | COMMON                 |
     Then the create organization response contains soap fault
       | COMPONENT | WS_ADMIN                                                       |
-      | MESSAGE   | com.alliander.osgp.shared.exceptionhandling.TechnicalException |
+      | MESSAGE   | org.opensmartgridplatform.shared.exceptionhandling.TechnicalException |
     And the organization with name "Different Organization" should not be created
 
   Scenario: Create An Organization As An Unauthorized Organization
