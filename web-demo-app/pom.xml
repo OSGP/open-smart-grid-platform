@@ -20,7 +20,7 @@
   <description>Web Demo App for the OSGP Platform</description>
 
   <parent>
-    <groupId>org.osgpfoundation.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-os-webapps</artifactId>
     <version>4.30.0-SNAPSHOT</version>
     <relativePath>../parent-os-webapps/pom.xml</relativePath>
@@ -33,15 +33,15 @@
   <dependencies>
 
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-ws-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-ws-admin</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-ws-publiclighting</artifactId>
     </dependency>
 

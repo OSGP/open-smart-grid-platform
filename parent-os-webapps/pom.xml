@@ -13,7 +13,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>parent-os-webapps</artifactId>
-  <groupId>org.osgpfoundation.osgp</groupId>
+  <groupId>org.opensmartgridplatform</groupId>
   <version>4.30.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>os-webapps</name>
@@ -85,19 +85,19 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Alliander -->
+      <!-- OSGP -->
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-core</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-admin</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-publiclighting</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>

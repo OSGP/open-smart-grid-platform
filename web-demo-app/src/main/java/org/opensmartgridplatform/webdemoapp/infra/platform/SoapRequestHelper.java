@@ -85,7 +85,7 @@ public class SoapRequestHelper {
         webServiceTemplate.setCheckConnectionForFault(true);
 
         webServiceTemplate.setInterceptors(new ClientInterceptor[] {
-                this.createClientInterceptor("http://www.alliander.com/schemas/osp/common") });
+                this.createClientInterceptor("http://www.opensmartgridplatform.org/schemas/common") });
 
         webServiceTemplate.setMessageSender(this.createHttpMessageSender());
 
@@ -114,7 +114,7 @@ public class SoapRequestHelper {
         webServiceTemplate.setCheckConnectionForFault(true);
 
         webServiceTemplate.setInterceptors(new ClientInterceptor[] {
-                this.createClientInterceptor("http://www.alliander.com/schemas/osgp/common") });
+                this.createClientInterceptor("http://www.opensmartgridplatform.org/schemas/common") });
 
         webServiceTemplate.setMessageSender(this.createHttpMessageSender());
 
