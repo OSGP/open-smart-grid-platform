@@ -43,7 +43,6 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
         this.logger.info("newReport for {}", reportDescription);
-        boolean skipRecordBecauseOfOldSqNum;
 
         if (Boolean.TRUE.equals(report.getBufOvfl())) {
             this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
@@ -51,8 +50,8 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
         }
 
         if (this.firstNewSqNum != null && report.getSqNum() != null && report.getSqNum() < this.firstNewSqNum) {
-            skipRecordBecauseOfOldSqNum = true;
-            this.logger.warn("Unused boolean skipRecordBecauseOfOldSqNum is set to {}!", true);
+            this.logger.warn("report.getSqNum() < this.firstNewSqNum, report.getSqNum() = {}, this.firstNewSqNum = {}",
+                    report.getSqNum(), this.firstNewSqNum);
         }
         this.logReportDetails(report);
 
