@@ -161,7 +161,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
     Then the set tariff schedule response contains soap fault
       | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                                                                                             |
       | FaultString      | Validation error                                                                                                                                                                                                                                                                                            |
-      | ValidationErrors | cvc-complex-type.2.4.a: Invalid content was found starting with element 'ns2:Schedules'. One of '{"http://www.alliander.com/schemas/osgp/tariffswitching/schedulemanagement/2014/10":Page, "http://www.alliander.com/schemas/osgp/tariffswitching/schedulemanagement/2014/10":scheduled_time}' is expected. |
+      | ValidationErrors | cvc-complex-type.2.4.a: Invalid content was found starting with element 'ns2:Schedules'. One of '{"http://www.opensmartgridplatform.org/schemas/tariffswitching/schedulemanagement/2014/10":Page, "http://www.opensmartgridplatform.org/schemas/tariffswitching/schedulemanagement/2014/10":scheduled_time}' is expected. |
 
     Examples: 
       | WeekDay     | StartDay   | EndDay     | Time         | TariffValues |

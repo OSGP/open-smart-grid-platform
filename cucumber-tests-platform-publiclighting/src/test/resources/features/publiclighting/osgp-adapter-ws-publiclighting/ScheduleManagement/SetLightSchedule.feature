@@ -233,7 +233,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     Then the set light schedule response contains soap fault
       | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                   |
       | FaultString      | Validation error                                                                                                                                                                                                  |
-      | ValidationErrors | cvc-complex-type.2.4.a: Invalid content was found starting with element 'ns2:Schedules'. One of '{"http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10":scheduled_time}' is expected. |
+      | ValidationErrors | cvc-complex-type.2.4.a: Invalid content was found starting with element 'ns2:Schedules'. One of '{"http://www.opensmartgridplatform.org/schemas/publiclighting/schedulemanagement/2014/10":scheduled_time}' is expected. |
 
     Examples: 
       | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |

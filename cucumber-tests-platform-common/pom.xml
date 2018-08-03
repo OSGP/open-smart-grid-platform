@@ -7,13 +7,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.alliander.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-integration-tests</artifactId>
     <version>4.30.0-SNAPSHOT</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
-  <groupId>com.alliander</groupId>
+  <groupId>org.opensmartgridplatform</groupId>
   <artifactId>cucumber-tests-platform-common</artifactId>
   <packaging>jar</packaging>
 
@@ -109,27 +109,27 @@
 
     <!-- OSGP -->
     <dependency>
-      <groupId>com.alliander</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>cucumber-tests-core</artifactId>
       <type>test-jar</type>
     </dependency>
     <dependency>
-      <groupId>com.alliander</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>cucumber-tests-execution</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>cucumber-tests-platform</artifactId>
       <type>test-jar</type>
     </dependency>
 
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-admin</artifactId>
       <classifier>classes</classifier>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-core</artifactId>
       <classifier>classes</classifier>
     </dependency>
@@ -161,7 +161,7 @@
               </descriptors>
               <archive>
                 <manifest>
-                  <mainClass>com.alliander.osgp.cucumber.platform.common.App</mainClass>
+                  <mainClass>org.opensmartgridplatform.cucumber.platform.common.App</mainClass>
                 </manifest>
               </archive>
             </configuration>

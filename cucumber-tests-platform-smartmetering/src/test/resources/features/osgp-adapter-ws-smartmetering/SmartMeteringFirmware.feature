@@ -12,7 +12,7 @@ Feature: SmartMetering Firmware
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     |                 1 |
+      | Channel                     | 1                 |
     When the get firmware version request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the firmware version result should be returned
@@ -119,7 +119,7 @@ Feature: SmartMetering Firmware
     And a SOAP fault should have been returned
       | Component      | PROTOCOL_DLMS                                                         |
       | Message        | Unexpected exception while handling protocol request/response message |
-      | InnerException | com.alliander.osgp.shared.exceptionhandling.OsgpException             |
+      | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException      |
       | InnerMessage   | Firmware file is not available.                                       |
     And the database should not be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002      |
@@ -157,7 +157,7 @@ Feature: SmartMetering Firmware
     And a SOAP fault should have been returned
       | Component      | PROTOCOL_DLMS                                                         |
       | Message        | Unexpected exception while handling protocol request/response message |
-      | InnerException | com.alliander.osgp.shared.exceptionhandling.OsgpException             |
+      | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException      |
       | InnerMessage   | Upgrade of firmware did not succeed.                                  |
     And the database should not be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002      |
