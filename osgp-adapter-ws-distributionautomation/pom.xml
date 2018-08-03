@@ -12,13 +12,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.alliander.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
     <version>4.30.0-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
-  <groupId>org.osgpfoundation.osgp</groupId>
+  <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
 
   <packaging>war</packaging>
@@ -32,33 +32,33 @@
   </properties>
 
   <dependencies>
-    <!-- Alliander -->
+    <!-- Open Smart Grid Platform -->
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-domain-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-domain-logging</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.osgpfoundation.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-domain-distributionautomation</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-shared-db</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.osgpfoundation.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-ws-distributionautomation</artifactId>
     </dependency>
     <!-- Spring Framework -->

@@ -19,7 +19,7 @@
   <description>Web service module for public lighting.</description>
 
   <parent>
-    <groupId>com.alliander.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
     <version>4.30.0-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
@@ -57,17 +57,17 @@
   </build>
 
   <dependencies>
-    <!-- Alliander -->
+    <!-- Open Smart Grid Platform -->
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-shared</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-ws-publiclighting</artifactId>
     </dependency>
 

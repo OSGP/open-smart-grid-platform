@@ -13,7 +13,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>parent-platform</artifactId>
-  <groupId>com.alliander.osgp</groupId>
+  <groupId>org.opensmartgridplatform</groupId>
   <version>4.30.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-platform</name>
@@ -95,186 +95,186 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Alliander -->
+      <!-- Open Smart Grid Platform -->
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-dto</artifactId>
         <version>${shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>shared</artifactId>
         <version>${shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-smartmetering</artifactId>
         <version>${shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-core</artifactId>
         <version>${shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-admin</artifactId>
         <version>${shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-tariffswitching</artifactId>
         <version>${shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-publiclighting</artifactId>
         <version>${shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-microgrids</artifactId>
         <version>${shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.osgpfoundation.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-ws-distributionautomation</artifactId>
         <version>${shared.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-shared</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-shared-db</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-core</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-microgrids</artifactId>
         <version>${osgp.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.osgpfoundation.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-logging</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-admin</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-core</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-microgrids</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>org.osgpfoundation.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-publiclighting</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-tariffswitching</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-shared</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-admin</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-core</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-microgrids</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>org.osgpfoundation.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-publiclighting</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-tariffswitching</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-domain-smartmetering</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-core</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-logging</artifactId>
         <version>${osgp.version}</version>
       </dependency>

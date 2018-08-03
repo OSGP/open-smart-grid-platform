@@ -5,13 +5,13 @@
 
     <constraint-definition annotation="javax.validation.constraints.Future">
         <validated-by include-existing-validators="true">
-             <value>com.alliander.osgp.domain.core.validation.joda.FutureValidator</value>
+             <value>org.opensmartgridplatform.domain.core.validation.joda.FutureValidator</value>
         </validated-by>
     </constraint-definition>
 
     <constraint-definition annotation="javax.validation.constraints.Past">
         <validated-by include-existing-validators="true">
-             <value>com.alliander.osgp.domain.core.validation.joda.PastValidator</value>
+             <value>org.opensmartgridplatform.domain.core.validation.joda.PastValidator</value>
         </validated-by>
     </constraint-definition>
 
