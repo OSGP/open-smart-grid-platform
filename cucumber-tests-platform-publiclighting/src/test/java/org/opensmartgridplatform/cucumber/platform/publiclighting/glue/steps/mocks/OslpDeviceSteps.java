@@ -1014,8 +1014,8 @@ public class OslpDeviceSteps {
                     .build();
 
             this.send(request, settings);
-        } catch (final IOException | IllegalArgumentException ioe) {
-            ScenarioContext.current().put("Error", ioe);
+        } catch (final IOException | IllegalArgumentException e) {
+            ScenarioContext.current().put("Error", e);
         }
 
     }
