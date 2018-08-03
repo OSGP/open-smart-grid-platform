@@ -13,7 +13,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>parent-pa-iec61850</artifactId>
-  <groupId>com.alliander.osgp</groupId>
+  <groupId>org.opensmartgridplatform</groupId>
   <version>4.30.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-pa-iec61850</name>
@@ -100,31 +100,31 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Alliander -->
+      <!-- OSGP -->
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-dto</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>shared</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-iec61850</artifactId>
         <version>${osgp.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-core-db-api-iec61850</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.alliander.osgp</groupId>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-domain-microgrids</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
