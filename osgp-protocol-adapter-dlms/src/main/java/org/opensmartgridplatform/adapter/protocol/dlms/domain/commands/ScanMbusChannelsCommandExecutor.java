@@ -43,7 +43,7 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
      * IDs of the attributes of the M-Bus Client Setup that make up the Short
      * ID.
      *
-     * The order of the IDs in should match the
+     * The order of the IDs should match the
      * way attributes are used in {@link #makeAttributeAddressesShortIds()} and
      * {@link #channelShortIdsFromGetResults(List)}.
      */

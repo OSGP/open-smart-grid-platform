@@ -40,8 +40,7 @@ public class JdlmsObjectToStringUtil {
             return "";
         }
 
-        String sb = "{" + methodParameter.getClassId() + ',' + methodParameter.getInstanceId() +
+        return "{" + methodParameter.getClassId() + ',' + methodParameter.getInstanceId() +
                 ',' + methodParameter.getId() + '}';
-        return sb;
     }
 }

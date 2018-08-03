@@ -738,11 +738,9 @@ public class DlmsHelperService {
             throw new IllegalArgumentException("LogicalName values should be 6 bytes long: " + logicalNameValue.length);
         }
 
-        String sb = "logical name: " + (logicalNameValue[0] & 0xFF) + '-' + (logicalNameValue[1] & 0xFF) +
+        return "logical name: " + (logicalNameValue[0] & 0xFF) + '-' + (logicalNameValue[1] & 0xFF) +
                 ':' + (logicalNameValue[2] & 0xFF) + '.' + (logicalNameValue[3] & 0xFF) +
                 '.' + (logicalNameValue[4] & 0xFF) + '.' + (logicalNameValue[5] & 0xFF);
-
-        return sb;
     }
 
     public String getDebugInfoDateTimeBytes(final byte[] dateTimeValue) {
@@ -782,10 +780,8 @@ public class DlmsHelperService {
         final BigInteger bigValue = this.byteArrayToBigInteger(bitStringValue);
         final String stringValue = this.byteArrayToString(bitStringValue);
 
-        String sb = "number of bytes=" + bitStringValue.length + ", value=" + bigValue +
+        return "number of bytes=" + bitStringValue.length + ", value=" + bigValue +
                 ", bits=" + stringValue;
-
-        return sb;
     }
 
     private String byteArrayToString(final byte[] bitStringValue) {
