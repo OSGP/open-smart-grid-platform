@@ -83,7 +83,6 @@ public class SigningService {
                 .withProvider(this.signatureProvider).withPayloadMessage(payloadMessage).build();
 
         ResponseMessage responseMessage;
-        responseMessage = null;
 
         if (oslpEnvelope == null) {
             LOGGER.error("Message for device: {} with correlationId: {} NOT SIGNED, sending error to protocol-adapter",

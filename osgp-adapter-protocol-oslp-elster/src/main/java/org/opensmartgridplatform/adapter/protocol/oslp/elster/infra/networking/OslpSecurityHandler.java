@@ -42,7 +42,6 @@ public class OslpSecurityHandler extends SimpleChannelHandler {
         // Upon first registration, a deviceUid is unknown within the platform.
         // Search based on deviceIdentification in this case.
         OslpDevice oslpDevice;
-        oslpDevice = null;
 
         if (message.getPayloadMessage().hasRegisterDeviceRequest()) {
             final String deviceIdentification = message.getPayloadMessage().getRegisterDeviceRequest()
