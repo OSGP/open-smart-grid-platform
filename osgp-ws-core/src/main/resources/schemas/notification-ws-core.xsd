@@ -8,12 +8,12 @@
   http://www.apache.org/licenses/LICENSE-2.0
 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:tns="http://www.alliander.com/schemas/osgp/netmanagement/osgp-notification/2018/01"
-  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/2018/01"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   attributeFormDefault="unqualified" elementFormDefault="qualified"
-  targetNamespace="http://www.alliander.com/schemas/osgp/netmanagement/osgp-notification/2018/01">
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/2018/01">
 
-  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
     schemaLocation="common-ws-core.xsd" />
 
   <xsd:element name="SendNotificationRequest">

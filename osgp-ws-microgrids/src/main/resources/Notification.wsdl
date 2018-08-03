@@ -2,19 +2,19 @@
 <!-- Platform version: ${display.version} -->
 
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-  xmlns:not="http://www.alliander.com/schemas/osgp/microgrids/notification/2016/06"
-  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+  xmlns:not="http://www.opensmartgridplatform.org/schemas/microgrids/notification/2016/06"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-  xmlns:tns="http://www.alliander.com/definitions/osgp/microgrids/notification-v1.0"
-  targetNamespace="http://www.alliander.com/definitions/osgp/microgrids/notification-v1.0">
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/microgrids/notification-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/microgrids/notification-v1.0">
 
   <wsdl:types>
     <xsd:schema
-      targetNamespace="http://www.alliander.com/definitions/osgp/microgrids/notification/imports"
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/microgrids/notification/imports"
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
       <xsd:import
-        namespace="http://www.alliander.com/schemas/osgp/microgrids/notification/2016/06"
+        namespace="http://www.opensmartgridplatform.org/schemas/microgrids/notification/2016/06"
         schemaLocation="schemas/notification.xsd" />
     </xsd:schema>
   </wsdl:types>

@@ -4,14 +4,14 @@
   <jxb:bindings schemaLocation="common.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.tariffswitching.common"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.tariffswitching.common"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="ts-schedulemanagement.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.tariffswitching.schedulemanagement"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 

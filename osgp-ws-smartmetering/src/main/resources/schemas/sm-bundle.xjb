@@ -7,7 +7,7 @@
   <jxb:bindings schemaLocation="common.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.common"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.common"></jxb:package>
     </jxb:schemaBindings>
 
     <jxb:bindings node="//xs:complexType[@name='CaptureObjects']//xs:element[@name='CaptureObject']">
@@ -23,42 +23,42 @@
   <jxb:bindings schemaLocation="sm-bundle.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.bundle"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="sm-management.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.management"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.management"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="sm-monitoring.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="sm-configuration.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.configuration"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="sm-adhoc.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
   
     <jxb:bindings schemaLocation="sm-installation.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.installation"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 

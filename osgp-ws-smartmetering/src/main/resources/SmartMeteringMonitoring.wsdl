@@ -2,19 +2,19 @@
 <!-- Platform version: ${display.version} -->
 
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-  xmlns:smmon="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
-  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+  xmlns:smmon="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-  xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0"
-  targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0">
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-monitoring-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-monitoring-v1.0">
 
   <wsdl:types>
     <xsd:schema
-      targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring/imports"
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-monitoring/imports"
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
       <xsd:import
-        namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
+        namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
         schemaLocation="schemas/sm-monitoring.xsd" />
 
 

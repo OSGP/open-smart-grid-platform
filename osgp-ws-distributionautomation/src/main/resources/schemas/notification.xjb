@@ -4,14 +4,14 @@
   <jxb:bindings schemaLocation="common.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.common"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.distributionautomation.common"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 
   <jxb:bindings schemaLocation="notification.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="org.osgpfoundation.osgp.adapter.ws.schema.distributionautomation.notification"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 

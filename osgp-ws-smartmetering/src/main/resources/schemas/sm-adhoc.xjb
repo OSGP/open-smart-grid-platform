@@ -7,7 +7,7 @@
   <jxb:bindings schemaLocation="common.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.common"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.common"></jxb:package>
     </jxb:schemaBindings>
 
     <jxb:bindings node="//xs:complexType[@name='CaptureObjects']//xs:element[@name='CaptureObject']">
@@ -22,7 +22,7 @@
   <jxb:bindings schemaLocation="sm-adhoc.xsd">
     <jxb:schemaBindings>
       <jxb:package
-        name="com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc"></jxb:package>
+        name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc"></jxb:package>
     </jxb:schemaBindings>
 
     <jxb:bindings node="//xs:element[@name='ScanMbusChannelsResponse']//xs:element[@name='ChannelShortId']">

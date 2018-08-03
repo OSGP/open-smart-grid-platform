@@ -2,22 +2,22 @@
 <!-- Platform version: ${display.version} -->
 
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-  xmlns:bundle="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10"
-  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+  xmlns:bundle="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-  xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0"
-  targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0">
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-bundle-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-bundle-v1.0">
 
   <wsdl:types>
     <xsd:schema
-      targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle/imports"
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-bundle/imports"
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
       <xsd:import
-        namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10"
+        namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
         schemaLocation="schemas/sm-bundle.xsd" />
       <xsd:import
-        namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10"
+        namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
         schemaLocation="schemas/sm-management.xsd" />
     </xsd:schema>
   </wsdl:types>

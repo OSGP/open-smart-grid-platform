@@ -2,18 +2,18 @@
 <!-- Platform version: ${display.version} -->
 
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-  xmlns:sman="http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10"
-  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+  xmlns:sman="http://www.opensmartgridplatform.org/schemas/publiclighting/schedulemanagement/2014/10"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-  xmlns:tns="http://www.alliander.com/definitions/osgp/publiclighting/schedulemanagement-v1.0"
-  targetNamespace="http://www.alliander.com/definitions/osgp/publiclighting/schedulemanagement-v1.0">
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/publiclighting/schedulemanagement-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/publiclighting/schedulemanagement-v1.0">
 
   <wsdl:types>
     <xsd:schema
-      targetNamespace="http://www.alliander.com/definitions/osgp/publiclighting/schedulemanagement/imports"
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/publiclighting/schedulemanagement/imports"
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
-        namespace="http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10"
+        namespace="http://www.opensmartgridplatform.org/schemas/publiclighting/schedulemanagement/2014/10"
         schemaLocation="schemas/pl-schedulemanagement.xsd" />
     </xsd:schema>
   </wsdl:types>
