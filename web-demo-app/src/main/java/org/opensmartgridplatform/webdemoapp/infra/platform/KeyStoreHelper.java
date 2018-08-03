@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.infra.platform;
+package org.opensmartgridplatform.webdemoapp.infra.platform;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;

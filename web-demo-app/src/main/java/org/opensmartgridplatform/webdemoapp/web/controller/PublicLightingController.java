@@ -5,13 +5,13 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.web.controller;
+package org.opensmartgridplatform.webdemoapp.web.controller;
 
 import java.util.List;
 
-import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
-import org.osgpfoundation.osgp.webdemoapp.domain.Device;
-import org.osgpfoundation.osgp.webdemoapp.domain.DeviceLightStatus;
+import org.opensmartgridplatform.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
+import org.opensmartgridplatform.webdemoapp.domain.Device;
+import org.opensmartgridplatform.webdemoapp.domain.DeviceLightStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
 
 /**
  * Handles requests for the public lighting domain
@@ -69,9 +69,6 @@ public class PublicLightingController {
      * correlationId. The correlationId is passed back to the device-status
      * view, where it will poll the platform on a 2 second interval until the
      * status request is ready.
-     *
-     * @param deviceId
-     * @return ModelAndView
      */
     @RequestMapping(value = "/deviceDetails/{deviceId}", method = RequestMethod.GET)
     public ModelAndView devicesDetails(@PathVariable final String deviceId) {
@@ -97,9 +94,6 @@ public class PublicLightingController {
      * not send a lightvalue to the platform.
      *
      * Returns a View with the request parameters in a device object.
-     *
-     * @param deviceStatus
-     * @return ModelAndView
      */
     @RequestMapping(value = "/doSwitchDevice", method = RequestMethod.POST)
     public ModelAndView switchDevice(@ModelAttribute("SpringWeb") final DeviceLightStatus deviceStatus) {
@@ -130,10 +124,6 @@ public class PublicLightingController {
      * Creates a view to show the device details from a async GetStatus request.
      * This function is called from the async controller as soon as the
      * getStatus request is processed by the platform
-     *
-     * @param deviceStatus
-     * @param deviceIdentification
-     * @return ModelAndView
      */
     public ModelAndView getStatusRequest(final DeviceStatus deviceStatus, final String deviceIdentification) {
         final ModelAndView modelView = new ModelAndView("device");
@@ -151,9 +141,6 @@ public class PublicLightingController {
 
     /**
      * Displays an error message.
-     *
-     * @param error
-     * @return ModelAndView
      */
     public ModelAndView error(final String error) {
         final ModelAndView modelView = new ModelAndView("error");

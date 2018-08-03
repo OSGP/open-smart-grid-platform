@@ -11,7 +11,7 @@
 	</appender>
 	
 	<!-- Application Loggers -->
-	<logger name="com.alliander.osp">
+	<logger name="org.opensmartgridplatform">
 		<level value="info" />
 	</logger>
 	

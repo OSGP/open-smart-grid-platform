@@ -5,13 +5,13 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.application.services;
+package org.opensmartgridplatform.webdemoapp.application.services;
 
-import org.osgpfoundation.osgp.webdemoapp.infra.platform.SoapRequestHelper;
+import org.opensmartgridplatform.webdemoapp.infra.platform.SoapRequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
 
 import ma.glasnost.orika.MapperFacade;
 
@@ -34,10 +34,8 @@ public class OsgpAdminClientSoapService {
     /**
      * Create a new UpdateKey Request adds it to the WebServiceTemplate and
      * sends it to the platform.
-     *
-     * @param device
      */
-    public void updateKeyRequest(final org.osgpfoundation.osgp.webdemoapp.domain.Device device) {
+    public void updateKeyRequest(final org.opensmartgridplatform.webdemoapp.domain.Device device) {
 
         final UpdateKeyRequest keyRequest = new UpdateKeyRequest();
 

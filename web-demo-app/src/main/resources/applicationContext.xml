@@ -27,7 +27,7 @@
     
     <!--
        Configures Spring Data JPA and sets the base package of my DAOs.
-    <jpa:repositories base-package="com.alliander.osgp.webdevicesimulator.domain.repositories"/>
+    <jpa:repositories base-package="org.opensmartgridplatform.webdevicesimulator.domain.repositories"/>
    -->
 
 </beans>

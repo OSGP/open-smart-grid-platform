@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.application.config;
+package org.opensmartgridplatform.webdemoapp.application.config;
 
 import java.util.TimeZone;
 

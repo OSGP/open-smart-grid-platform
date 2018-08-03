@@ -5,9 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.web.controller;
+package org.opensmartgridplatform.webdemoapp.web.controller;
 
-import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
+import org.opensmartgridplatform.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
 
 @Controller
 public class AsyncController {
@@ -35,9 +35,6 @@ public class AsyncController {
      * platform. If this is not the case, it re-directs back to the
      * device-status page. If the request is ready, it calls the deviceStatus
      * controller to display the response of the platform.
-     *
-     * @param correlationId
-     * @return
      */
     @RequestMapping(value = "/asyncStatus/{correlationId}", method = RequestMethod.GET)
     public ModelAndView asyncGetStatusRequest(@PathVariable final String correlationId) {
@@ -62,13 +59,9 @@ public class AsyncController {
      * Splits a correlation Id into 3 seperate components. Correlation Id's
      * typically look like: <<org_id>>|||<<device_id>>|||<<uid>> The resulting
      * array will have org_id on pos 0, device_id on pos 1 en uid on pos 2.
-     *
-     * @param correlationId
-     * @return
      */
     private String[] splitCorrelationId(final String correlationId) {
-        final String result[] = correlationId.split("\\|\\|\\|");
-        return result;
+        return correlationId.split("\\|\\|\\|");
     }
 
 }

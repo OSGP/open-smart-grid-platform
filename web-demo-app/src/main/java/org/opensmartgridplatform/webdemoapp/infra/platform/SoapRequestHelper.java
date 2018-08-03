@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.infra.platform;
+package org.opensmartgridplatform.webdemoapp.infra.platform;
 
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -70,7 +70,7 @@ public class SoapRequestHelper {
      * @return WebServiceTemplate
      */
     public WebServiceTemplate createAdminRequest() {
-        this.initMarshaller("com.alliander.osgp.adapter.ws.schema.admin.devicemanagement");
+        this.initMarshaller("org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement");
 
         // Example URI:
         // "https://localhost/osgp-adapter-ws-admin/admin/deviceManagementService/DeviceManagement";
@@ -85,7 +85,7 @@ public class SoapRequestHelper {
         webServiceTemplate.setCheckConnectionForFault(true);
 
         webServiceTemplate.setInterceptors(new ClientInterceptor[] {
-                this.createClientInterceptor("http://www.alliander.com/schemas/osp/common") });
+                this.createClientInterceptor("http://www.opensmartgridplatform.org/schemas/common") });
 
         webServiceTemplate.setMessageSender(this.createHttpMessageSender());
 
@@ -99,7 +99,7 @@ public class SoapRequestHelper {
      * @return WebServiceTemplate
      */
     public WebServiceTemplate createPublicLightingRequest() {
-        this.initMarshaller("com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement");
+        this.initMarshaller("org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement");
 
         // Example URI:
         // "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
@@ -114,7 +114,7 @@ public class SoapRequestHelper {
         webServiceTemplate.setCheckConnectionForFault(true);
 
         webServiceTemplate.setInterceptors(new ClientInterceptor[] {
-                this.createClientInterceptor("http://www.alliander.com/schemas/osgp/common") });
+                this.createClientInterceptor("http://www.opensmartgridplatform.org/schemas/common") });
 
         webServiceTemplate.setMessageSender(this.createHttpMessageSender());
 
@@ -123,8 +123,6 @@ public class SoapRequestHelper {
 
     /**
      * Initializes the JaxB Marshaller
-     *
-     * @param marshallerContext
      */
     private void initMarshaller(final String marshallerContext) {
         this.marshaller = new Jaxb2Marshaller();
@@ -160,9 +158,6 @@ public class SoapRequestHelper {
 
     /**
      * Create a ClientIntercepter, used for the WebServiceTemplate.
-     *
-     * @param namespace
-     * @return ClientInterceptor
      */
     private ClientInterceptor createClientInterceptor(final String namespace) {
         return new IdentificationClientInterceptor(this.organisationIdentifcation, this.userName, this.applicationName,
