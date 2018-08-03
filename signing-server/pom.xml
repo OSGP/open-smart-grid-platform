@@ -18,7 +18,7 @@
   <description>Signing Server for RSA or ECDSA.</description>
 
   <parent>
-    <groupId>com.alliander.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-oslp</artifactId>
     <version>4.30.0-SNAPSHOT</version>
     <relativePath>../parent-pa-oslp/pom.xml</relativePath>
@@ -52,15 +52,15 @@
   <dependencies>
     <!-- Alliander -->
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>oslp</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-dto</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
 

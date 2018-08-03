@@ -14,7 +14,7 @@
 
 <html>
 <head>
-<title><spring:message code="com.alliander.osp.webdevicesimulator.web.title" /></title>
+<title><spring:message code="org.opensmartgridplatform.webdevicesimulator.web.title" /></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="<c:url value="/static/css/bootstrap.min.css"/>" rel="stylesheet">
 <style>
@@ -34,7 +34,7 @@ body {
 
 		<div class="navbar">
 			<div class="navbar-inner">
-				<a class="brand" href="#"><spring:message code="com.alliander.osp.webdevicesimulator.web.title" /></a>
+				<a class="brand" href="#"><spring:message code="org.opensmartgridplatform.webdevicesimulator.web.title" /></a>
 				<ul class="nav">
 					<li class="inactive"><a href="<c:url value="/devices"/>">Devices</a></li>
 					<li class="active"><a href="<c:url value="/logs"/>">Logs</a></li>
