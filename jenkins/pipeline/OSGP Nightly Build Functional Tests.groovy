@@ -83,9 +83,12 @@ pipeline {
 
     post {
         always {
-            if (destroy_server == 'YES') {
+            when {
+                destroy_server 'YES'
+            }
+            steps {
                 build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
-            }            
+            }
         }
         failure {
             step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com,hans.rooden@cgi.com,martijn.sips@cgi.com', sendToIndividuals: false])
