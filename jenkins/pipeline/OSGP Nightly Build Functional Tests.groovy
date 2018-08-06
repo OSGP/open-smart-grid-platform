@@ -83,15 +83,10 @@ pipeline {
 
     post {
         always {
-            when {
-                destroy_server 'YES'
-            }
-            steps {
-                build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
-            }
+            build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]            
         }
         failure {
-            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com,hans.rooden@cgi.com,martijn.sips@cgi.com', sendToIndividuals: false])
+            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'kevin.smeets@cgi.com,ruud.lemmers@cgi.com', sendToIndividuals: false])
         }
         success {
             // Clean the complete workspace
