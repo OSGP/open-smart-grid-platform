@@ -10,12 +10,6 @@ package org.opensmartgridplatform.adapter.domain.microgrids.application.services
 import javax.persistence.OptimisticLockException;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderUUIDService;
@@ -33,6 +27,11 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainMicrogridsAdHocManagementService")
 @Transactional(value = "transactionManager")
@@ -107,11 +106,11 @@ public class AdHocManagementService extends BaseService {
                     deviceIdentification);
         }
 
-        final ResponseMessage resopnseMessage = ResponseMessage.newResponseMessageBuilder()
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(actualCorrelationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
+                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
                 .withDataObject(dataResponse).build();
-        this.webServiceResponseMessageSender.send(resopnseMessage, messageType);
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 
     // === SET DATA ===
