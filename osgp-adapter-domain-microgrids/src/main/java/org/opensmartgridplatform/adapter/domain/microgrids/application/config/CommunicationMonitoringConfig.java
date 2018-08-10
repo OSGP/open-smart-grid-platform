@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.microgrids.application.config;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
-
-import org.opensmartgridplatform.adapter.domain.microgrids.application.tasks.CommunicationMonitoringTask;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class.
@@ -45,6 +43,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_SCHEDULER_THREAD_NAME_PREFIX = "communication.monitoring.scheduler.thread.name.prefix";
     private static final String PROPERTY_NAME_MAXIMUM_TIME_WITHOUT_COMMUNICATION = "communication.monitoring.maximum.time.without.communication";
     private static final String PROPERTY_NAME_LAST_COMMUNICATION_UPDATE_INTERVAL = "communication.monitoring.last.communication.update.interval";
+    private static final String PROPERTY_NAME_INITIAL_DELAY = "communication.monitoring.initial.delay";
 
     private static final Boolean DEFAULT_COMMUNICATION_MONITORING_ENABLED = true;
     private static final Integer DEFAULT_MINIMUM_TIME_BETWEEN_RUNS = 2;
@@ -60,11 +59,14 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     // Default last communication update interval in seconds
     private static final Integer DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL = 30;
 
+    // Default initial delay of 5 minutes
+    private static final Long DEFAULT_INITIAL_DELAY = 5L;
+
     @Resource
     private Environment environment;
 
     @Autowired
-    private CommunicationMonitoringTask communicationMonitoringTask;
+    private Runnable communicationMonitoringTask;
 
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
@@ -130,6 +132,24 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
                     DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL);
             return DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL;
         }
+    }
+
+    @Bean
+    public Long initialDelay() {
+        LOGGER.info("Initializing Initial Delay bean.");
+        final String value = this.environment.getProperty(PROPERTY_NAME_INITIAL_DELAY);
+        if (StringUtils.isNotBlank(value) && StringUtils.isNumeric(value)) {
+            LOGGER.info("Using value {} for initial delay.", value);
+            final Long minutes = Long.parseLong(value);
+            return this.minutesToMilliseconds(minutes);
+        } else {
+            LOGGER.info("Using default value {} for initial delay.", DEFAULT_INITIAL_DELAY);
+            return this.minutesToMilliseconds(DEFAULT_INITIAL_DELAY);
+        }
+    }
+
+    private Long minutesToMilliseconds(final Long minutes) {
+        return minutes * 60 * 1000;
     }
 
     private Boolean communicationMonitoringEnabled() {

@@ -34,9 +34,9 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainMicrogridsCommunicationRecoveryService")
 @Transactional(value = "transactionManager")
-public class CommunicatonRecoveryService extends BaseService {
+public class CommunicationRecoveryService extends BaseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommunicatonRecoveryService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationRecoveryService.class);
 
     private static final int SYSTEM_ID = 1;
     private static final String SYSTEM_TYPE = "RTU";

@@ -7,21 +7,21 @@
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.application.tasks;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.opensmartgridplatform.adapter.domain.microgrids.application.services.CommunicationRecoveryService;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.opensmartgridplatform.domain.microgrids.entities.RtuDevice;
+import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.microgrids.application.services.CommunicatonRecoveryService;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
-import org.opensmartgridplatform.domain.microgrids.entities.RtuDevice;
-import org.opensmartgridplatform.domain.microgrids.entities.Task;
-import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
-import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
-import org.opensmartgridplatform.domain.microgrids.valueobjects.TaskStatusType;
 
 @Component
 public class CommunicationMonitoringTask implements Runnable {
@@ -31,13 +31,13 @@ public class CommunicationMonitoringTask implements Runnable {
     private static final String TASK_IDENTIFICATION = "MicrogridsCommunicationMonitoring";
 
     @Autowired
-    private CommunicatonRecoveryService communicationRecoveryService;
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private CommunicationRecoveryService communicationRecoveryService;
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
-
-    @Autowired
-    private TaskRepository taskRepository;
 
     @Autowired
     private Integer minimumTimeBetweenRuns;
@@ -45,26 +45,29 @@ public class CommunicationMonitoringTask implements Runnable {
     @Autowired
     private Integer maximumTimeWithoutCommunication;
 
+    @Autowired
+    private Long initialDelay;
+
     @Override
     public void run() {
+        if (!this.hasInitialDelayExpired()) {
+            LOGGER.info(
+                    "Skipping communication monitoring task because the initial delay of {} milliseconds has not yet expired.",
+                    this.initialDelay);
+            return;
+        }
+
         LOGGER.info("Running communication monitoring task.");
 
-        Task task = this.loadTask();
+        final TaskManager taskManager = new TaskManager(this.taskRepository, TASK_IDENTIFICATION,
+                this.minimumTimeBetweenRuns);
+        final boolean taskStarted = taskManager.startTask();
 
-        if (this.taskAlreadyRunning(task)) {
-            LOGGER.info("Communication Monitoring Task already running. Skipping this run.");
+        if (!taskStarted) {
             return;
         }
 
-        if (this.taskAlreadyRan(task)) {
-            LOGGER.info(
-                    "Communication Monitoring Task already ran within minimum time between runs. Skipping this run.");
-            return;
-        }
-
-        task = this.startTask(task);
-
-        final List<RtuDevice> rtuDevices = this.loadDevices(task);
+        final List<RtuDevice> rtuDevices = this.loadDevices(taskManager.getTaskStartTime());
         LOGGER.info("Found {} device(s) for which communication should be restored.", rtuDevices.size());
 
         for (final RtuDevice rtu : rtuDevices) {
@@ -74,61 +77,24 @@ public class CommunicationMonitoringTask implements Runnable {
             this.communicationRecoveryService.restoreCommunication(rtu);
         }
 
-        this.finishTask(task);
+        taskManager.finishTask();
     }
 
-    private Task loadTask() {
-        LOGGER.debug("Loading task from repository.");
-        Task task = this.taskRepository.findByTaskIdentification(TASK_IDENTIFICATION);
-        if (task == null) {
-            LOGGER.info("No existing task found, creating new task");
-            task = this.createNewTask();
-        }
-        return task;
-    }
-
-    private Task createNewTask() {
-        LOGGER.debug("Creating new task.");
-        Task task = new Task(TASK_IDENTIFICATION);
-        task = this.taskRepository.save(task);
-        return task;
-    }
-
-    private boolean taskAlreadyRunning(final Task task) {
-        LOGGER.debug("Checking if task is already running.");
-        return TaskStatusType.RUNNING.equals(task.getTaskStatus());
-    }
-
-    private boolean taskAlreadyRan(final Task task) {
-        LOGGER.debug("Checking if task has already ran within minimum time between runs.");
-
-        if (task.getEndTime() == null) {
-            return false;
-        }
-
-        final DateTime now = DateTime.now();
-        final DateTime taskEndTime = new DateTime(task.getEndTime());
-        return now.isBefore(taskEndTime.plusMinutes(this.minimumTimeBetweenRuns));
-    }
-
-    private Task startTask(final Task task) {
-        LOGGER.debug("Starting task.");
-        task.start();
-        return this.taskRepository.save(task);
-    }
-
-    private Task finishTask(final Task task) {
-        LOGGER.debug("Finishing task.");
-        task.finish();
-        return this.taskRepository.save(task);
-    }
-
-    private List<RtuDevice> loadDevices(final Task task) {
+    private List<RtuDevice> loadDevices(final Date taskStartTime) {
         LOGGER.debug("Loading devices from repository for which communication should be restored.");
-        final DateTime lastCommunicationTime = new DateTime(task.getStartTime())
+        final DateTime lastCommunicationTime = new DateTime(taskStartTime)
                 .minusMinutes(this.maximumTimeWithoutCommunication);
         return this.rtuDeviceRepository.findByDeviceLifecycleStatusAndLastCommunicationTimeBefore(
                 DeviceLifecycleStatus.IN_USE, lastCommunicationTime.toDate());
+    }
+
+    /**
+     * Determine the up time of the JVM and test if the initial delay has
+     * expired.
+     */
+    protected boolean hasInitialDelayExpired() {
+        final RuntimeMXBean mx = ManagementFactory.getRuntimeMXBean();
+        return mx.getUptime() > this.initialDelay;
     }
 
 }
