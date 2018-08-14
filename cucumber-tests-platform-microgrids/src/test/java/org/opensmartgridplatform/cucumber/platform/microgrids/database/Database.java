@@ -7,14 +7,19 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.database;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
+import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.WebServiceConfigurationDataRepository;
+import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.WebServiceConfigurationDataBuilder;
+import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
-import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
 
 @Component
 public class Database {
@@ -26,6 +31,9 @@ public class Database {
     private ResponseDataRepository responseDataRepository;
 
     @Autowired
+    private WebServiceConfigurationDataRepository webServiceConfigurationDataRepository;
+
+    @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
@@ -33,6 +41,14 @@ public class Database {
 
     @Transactional
     private void insertDefaultData() {
+        this.webServiceConfigurationDataRepository.save(this.notificationEndpointConfigurations());
+    }
+
+    private List<WebServiceConfigurationData> notificationEndpointConfigurations() {
+        final WebServiceConfigurationData testOrgConfig = new WebServiceConfigurationDataBuilder().build();
+        final WebServiceConfigurationData noOrganisationConfig = new WebServiceConfigurationDataBuilder()
+                .withOrganisationIdentification("no-organisation").build();
+        return Arrays.asList(testOrgConfig, noOrganisationConfig);
     }
 
     @Transactional("txMgrCoreMicrogrids")
