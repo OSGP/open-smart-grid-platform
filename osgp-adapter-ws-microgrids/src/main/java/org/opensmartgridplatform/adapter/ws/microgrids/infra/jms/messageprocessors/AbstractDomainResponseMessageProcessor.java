@@ -48,7 +48,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     protected DomainResponseMessageProcessorMap domainResponseMessageProcessorMap;
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificationService microgridsNotificationService;
 
     @Autowired
     private ResponseDataService responseDataService;
@@ -190,8 +190,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
          */
 
         try {
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
-                    correlationUid, message, notificationType);
+            this.microgridsNotificationService.sendNotification(organisationIdentification, "ZownStream", deviceIdentification,
+                    result, correlationUid, message, notificationType);
         } catch (final RuntimeException e) {
             LOGGER.error("Exception sending notification for {} response data with correlation UID {} and result {}",
                     notificationType, correlationUid, result, e);

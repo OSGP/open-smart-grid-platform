@@ -22,19 +22,19 @@ import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 public class ResendNotificationService extends AbstractResendNotificationService {
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificationService microgridsNotificationService;
 
     @Override
     public void resendNotification(final ResponseData responseData) {
 
         if (!EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
             this.logUnknownNotificationTypeError(responseData.getCorrelationUid(), responseData.getMessageType(),
-                    this.notificationService.getClass().getName());
+                    this.microgridsNotificationService.getClass().getName());
             return;
         }
 
         final NotificationType notificationType = NotificationType.valueOf(responseData.getMessageType());
-        this.notificationService.sendNotification(responseData.getOrganisationIdentification(),
+        this.microgridsNotificationService.sendNotification(responseData.getOrganisationIdentification(), "ZownStream",
                 responseData.getDeviceIdentification(), responseData.getResultType().name(),
                 responseData.getCorrelationUid(), this.getNotificationMessage(responseData.getMessageType()),
                 notificationType);
