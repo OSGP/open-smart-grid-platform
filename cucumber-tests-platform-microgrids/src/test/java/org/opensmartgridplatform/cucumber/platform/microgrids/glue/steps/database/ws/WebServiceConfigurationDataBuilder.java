@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData;
-import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData.WebServiceConfigurationDataId;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 
 public class WebServiceConfigurationDataBuilder {
 
@@ -32,7 +32,7 @@ public class WebServiceConfigurationDataBuilder {
 
     public WebServiceConfigurationData build() {
         final WebServiceConfigurationData config = new WebServiceConfigurationData(
-                new WebServiceConfigurationDataId(this.organisationIdentification, this.applicationName),
+                new NotificationWebServiceLookupKey(this.organisationIdentification, this.applicationName),
                 this.marshallerContextPath, this.targetUri);
         config.useKeyStore(this.keyStoreType, this.keyStoreLocation, this.keyStorePassword);
         config.useTrustStore(this.trustStoreType, this.trustStoreLocation, this.trustStorePassword);
