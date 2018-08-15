@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.cucumber.platform;
 
 import org.joda.time.DateTime;
-
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
@@ -37,6 +36,10 @@ public class PlatformDefaults {
     public static final Integer DEFAULT_AVERAGE_POWER_FACTOR2 = 2;
     public static final Integer DEFAULT_AVERAGE_POWER_FACTOR3 = 3;
     public static final String DEFAULT_BEGIN_DATE = "";
+
+    public static final Short DEFAULT_CDMA_BATCH_NUMBER = null;
+    public static final String DEFAULT_CDMA_MAST_SEGMENT = null;
+
     public static final Short DEFAULT_CHANNEL = (short) 1;
     public static final String DEFAULT_CONTAINER_CITY = "StandardCity";
     public static final String DEFAULT_CONTAINER_MUNICIPALITY = "GreaterStandardArea";

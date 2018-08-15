@@ -13,9 +13,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
@@ -23,6 +20,10 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cucumber.api.java.en.Given;
 
@@ -45,13 +46,13 @@ public class SmartMeterSteps extends BaseDeviceSteps {
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
         final SmartMeter smartMeter = new SmartMeter(deviceIdentification,
                 getString(settings, "Alias", PlatformDefaults.DEFAULT_ALIAS),
-                getString(settings, "ContainerCity", PlatformDefaults.DEFAULT_CONTAINER_CITY),
-                getString(settings, "ContainerPostalCode", PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
-                getString(settings, "ContainerStreet", PlatformDefaults.DEFAULT_CONTAINER_STREET),
-                getString(settings, "ContainerNumber", PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
-                getString(settings, "ContainerMunicipality", PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY),
-                getFloat(settings, "GPSLatitude", PlatformDefaults.DEFAULT_LATITUDE),
-                getFloat(settings, "GPSLongitude", PlatformDefaults.DEFAULT_LONGITUDE));
+                new Address(getString(settings, "ContainerCity", PlatformDefaults.DEFAULT_CONTAINER_CITY),
+                        getString(settings, "ContainerPostalCode", PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
+                        getString(settings, "ContainerStreet", PlatformDefaults.DEFAULT_CONTAINER_STREET),
+                        getString(settings, "ContainerNumber", PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
+                        getString(settings, "ContainerMunicipality", PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY)),
+                new GpsCoordinates(getFloat(settings, "GPSLatitude", PlatformDefaults.DEFAULT_LATITUDE),
+                        getFloat(settings, "GPSLongitude", PlatformDefaults.DEFAULT_LONGITUDE)));
 
         smartMeter.setSupplier(getString(settings, PlatformKeys.SUPPLIER, PlatformDefaults.DEFAULT_SUPPLIER));
 

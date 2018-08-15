@@ -15,6 +15,8 @@ import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> implements CucumberBuilder<SmartMeter> {
 
@@ -63,9 +65,10 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
 
     @Override
     public SmartMeter build() {
-        final SmartMeter device = new SmartMeter(this.deviceIdentification, this.alias, this.containerCity,
-                this.containerPostalCode, this.containerStreet, this.containerNumber, this.containerMunicipality,
-                this.gpsLatitude, this.gpsLongitude);
+        final SmartMeter device = new SmartMeter(
+                this.deviceIdentification, this.alias, new Address(this.containerCity, this.containerPostalCode,
+                        this.containerStreet, this.containerNumber, this.containerMunicipality),
+                new GpsCoordinates(this.gpsLatitude, this.gpsLongitude));
 
         device.setActivated(this.isActivated);
         device.updateRegistrationData(this.networkAddress, this.deviceType);

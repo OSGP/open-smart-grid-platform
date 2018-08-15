@@ -73,6 +73,9 @@ public class PlatformKeys extends Keys {
     public static final String KEY_ALIAS = "alias";
     public static final String KEY_BEGIN_DATE = "BeginDate";
 
+    public static final String KEY_CDMA_BATCH_NUMBER = "BatchNumber";
+    public static final String KEY_CDMA_MAST_SEGMENT = "MastSegment";
+
     public static final String KEY_CHANNEL = "Channel";
     public static final String KEY_CITY = "containerCity";
 

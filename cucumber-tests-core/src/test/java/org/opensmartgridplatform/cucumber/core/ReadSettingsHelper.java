@@ -161,7 +161,11 @@ public class ReadSettingsHelper {
     }
 
     public static Short getShort(final Map<String, String> settings, final String key) {
-        return Short.parseShort(settings.get(key));
+        Short value = null;
+        if (settings.containsKey(key) && !settings.get(key).equalsIgnoreCase("null")) {
+            value = Short.parseShort(settings.get(key));
+        }
+        return value;
     }
 
     /**
