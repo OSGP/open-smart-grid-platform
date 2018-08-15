@@ -13,16 +13,6 @@ import java.util.List;
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -57,6 +47,10 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetEven
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationAsyncRequest;
@@ -69,6 +63,7 @@ import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
@@ -79,6 +74,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 /**
  * Device Management Endpoint class
@@ -244,10 +248,10 @@ public class DeviceManagementEndpoint {
                     : new DateTime(request.getUntil().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
             // Get all events matching the request.
-            final Page<org.opensmartgridplatform.domain.core.entities.Event> result = this.deviceManagementService.findEvents(
-                    organisationIdentification, request.getDeviceIdentification(), request.getPageSize(),
-                    request.getPage(), from, until,
-                    this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class));
+            final Page<org.opensmartgridplatform.domain.core.entities.Event> result = this.deviceManagementService
+                    .findEvents(organisationIdentification, request.getDeviceIdentification(), request.getPageSize(),
+                            request.getPage(), from, until,
+                            this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class));
 
             response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
             response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());
@@ -275,10 +279,10 @@ public class DeviceManagementEndpoint {
         final FindDevicesResponse response = new FindDevicesResponse();
 
         try {
-            Page<org.opensmartgridplatform.domain.core.entities.Device> result = this.deviceManagementService.findDevices(
-                    organisationIdentification, request.getPageSize(), request.getPage(),
-                    this.deviceManagementMapper.map(request.getDeviceFilter(),
-                            org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class));
+            Page<org.opensmartgridplatform.domain.core.entities.Device> result = this.deviceManagementService
+                    .findDevices(organisationIdentification, request.getPageSize(), request.getPage(),
+                            this.deviceManagementMapper.map(request.getDeviceFilter(),
+                                    org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class));
 
             if (result != null && response.getDevices() != null) {
                 response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
@@ -642,6 +646,56 @@ public class DeviceManagementEndpoint {
             } catch (final Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "UpdateDeviceCdmaSettingsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public UpdateDeviceCdmaSettingsAsyncResponse updateDeviceCdmaSettingsRequest(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateDeviceCdmaSettingsRequest request) throws OsgpException {
+
+        LOGGER.info("UpdateDeviceCdmaSettingsRequest received for device: {} and organisation: {}.",
+                request.getDeviceIdentification(), organisationIdentification);
+
+        final UpdateDeviceCdmaSettingsAsyncResponse asyncResponse = new UpdateDeviceCdmaSettingsAsyncResponse();
+
+        try {
+            final CdmaSettings cdmaSettings = new CdmaSettings(request.getMastSegment(), request.getBatchNumber());
+            final String correlationUid = this.deviceManagementService.enqueueUpdateDeviceCdmaSettingsRequest(
+                    organisationIdentification, request.getDeviceIdentification(), cdmaSettings);
+
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceId(request.getDeviceIdentification());
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "UpdateDeviceCdmaSettingsAsyncRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public UpdateDeviceCdmaSettingsResponse getUpdateDeviceCdmaSettingsResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateDeviceCdmaSettingsAsyncRequest asyncRequest) throws OsgpException {
+
+        LOGGER.info("GetUpdateDeviceCdmaSettingsResponse received from organisation: {} with correlationUid: {}.",
+                organisationIdentification, asyncRequest.getCorrelationUid());
+
+        final UpdateDeviceCdmaSettingsResponse response = new UpdateDeviceCdmaSettingsResponse();
+
+        try {
+            final ResponseMessage message = this.deviceManagementService
+                    .dequeueUpdateDeviceCdmaSettingsResponse(asyncRequest.getCorrelationUid());
+            if (message != null) {
+                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
         }
 
         return response;
