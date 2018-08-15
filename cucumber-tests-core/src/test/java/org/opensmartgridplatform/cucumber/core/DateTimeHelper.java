@@ -40,7 +40,7 @@ public class DateTimeHelper {
      *
      * @throws Exception
      */
-    public static DateTime getDateTime(final String dateString) throws Exception {
+    public static DateTime getDateTime(final String dateString) {
 
         DateTime retval;
 
@@ -53,7 +53,7 @@ public class DateTimeHelper {
         final Matcher m = r.matcher(dateString);
 
         if (m.groupCount() > 4) {
-            throw new Exception("Incorrect dateString [" + dateString + "]");
+            throw new IllegalArgumentException("Invalid dateString [" + dateString + "]");
         }
 
         m.find();
@@ -83,7 +83,7 @@ public class DateTimeHelper {
             retval = DateTime.now();
             break;
         default:
-            throw new Exception("Incorrect dateString [" + dateString
+            throw new IllegalArgumentException("Invalid dateString [" + dateString
                     + "], expected the string to begin with tomorrow, yesterday or now or today");
         }
 
@@ -101,7 +101,8 @@ public class DateTimeHelper {
                 retval = retval.withHourOfDay(0);
                 break;
             default:
-                throw new Exception("Incorrect dateString [" + dateString + "], expected \"midday\" or \"midnight\"");
+                throw new IllegalArgumentException(
+                        "Invalid dateString [" + dateString + "], expected \"midday\" or \"midnight\"");
             }
             retval = retval.withMinuteOfHour(0);
             retval = retval.withSecondOfMinute(0);
@@ -154,7 +155,7 @@ public class DateTimeHelper {
         return retval;
     }
 
-    public static DateTime getDateTime2(final String startDate, final DateTime defaultStartDate) throws Exception {
+    public static DateTime getDateTime2(final String startDate, final DateTime defaultStartDate) {
         if (startDate == null) {
             return defaultStartDate;
         }
