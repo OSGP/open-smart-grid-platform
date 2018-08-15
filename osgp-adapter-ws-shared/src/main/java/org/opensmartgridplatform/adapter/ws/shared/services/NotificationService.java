@@ -7,14 +7,16 @@
  */
 package org.opensmartgridplatform.adapter.ws.shared.services;
 
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
+
 public interface NotificationService {
 
     void sendNotification(final String organisationIdentification, final String deviceIdentification,
             final String result, final String correlationUid, final String message, final Object notificationType);
 
-    default void sendNotification(final String organisationIdentification, final String applicationName,
-            final String deviceIdentification, final String result, final String correlationUid, final String message,
-            final Object notificationType) {
+    default void sendNotification(final NotificationWebServiceLookupKey endpointLookupKey,
+            final GenericNotification notification) {
 
         /*
          * The sendNotification method with an application name has been added
@@ -25,8 +27,9 @@ public interface NotificationService {
          * to accept the application name as input, stick with the earlier
          * notification behavior that is application agnostic.
          */
-        sendNotification(organisationIdentification, deviceIdentification, result, correlationUid, message,
-                notificationType);
+        sendNotification(endpointLookupKey.getOrganisationIdentification(), notification.getDeviceIdentification(),
+                notification.getResult(), notification.getCorrelationUid(), notification.getMessage(),
+                notification.getNotificationType());
     }
 
 }

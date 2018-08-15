@@ -23,7 +23,7 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509Certificate
 import org.opensmartgridplatform.adapter.ws.microgrids.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.adapter.ws.microgrids.application.exceptionhandling.SoapFaultMapper;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.SendNotificationRequest;
-import org.opensmartgridplatform.adapter.ws.shared.services.DataBasedNotificationService;
+import org.opensmartgridplatform.adapter.ws.shared.services.DefaultNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceBlackHole;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
@@ -200,7 +200,7 @@ public class WebServiceConfig extends AbstractConfig {
         }
         final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
         final MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
-        return new DataBasedNotificationService<>(templateFactory, notificationRequestType, mapper);
+        return new DefaultNotificationService<>(templateFactory, notificationRequestType, mapper);
     }
 
     @Bean

@@ -15,6 +15,19 @@ public class GenericNotification {
     private String correlationUid;
     private String notificationType;
 
+    public GenericNotification() {
+    }
+
+    public GenericNotification(final String message, final String result, final String deviceIdentification,
+            final String correlationUid, final String notificationType) {
+
+        this.deviceIdentification = deviceIdentification;
+        this.result = result;
+        this.correlationUid = correlationUid;
+        this.message = message;
+        this.notificationType = notificationType;
+    }
+
     /**
      * @return the message
      */

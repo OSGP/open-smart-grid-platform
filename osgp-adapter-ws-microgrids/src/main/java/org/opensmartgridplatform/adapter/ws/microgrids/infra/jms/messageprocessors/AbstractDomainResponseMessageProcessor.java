@@ -13,18 +13,19 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.NotificationType;
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -69,9 +70,10 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     }
 
     /**
-     * Initialization function executed after dependency injection has finished. The
-     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
-     * key for the HashMap is the integer value of the enumeration member.
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the HashMap of
+     * MessageProcessors. The key for the HashMap is the integer value of the
+     * enumeration member.
      */
     @PostConstruct
     public void init() {
@@ -156,8 +158,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     }
 
     /**
-     * In case of an error, this function can be used to send a response containing
-     * the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response
+     * containing the exception to the web-service-adapter.
      *
      * @param e
      *            The exception.
@@ -190,8 +192,10 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
          */
 
         try {
-            this.microgridsNotificationService.sendNotification(organisationIdentification, "ZownStream", deviceIdentification,
-                    result, correlationUid, message, notificationType);
+            this.microgridsNotificationService.sendNotification(
+                    new NotificationWebServiceLookupKey(organisationIdentification, "ZownStream"),
+                    new GenericNotification(message, result, deviceIdentification, correlationUid,
+                            notificationType.name()));
         } catch (final RuntimeException e) {
             LOGGER.error("Exception sending notification for {} response data with correlation UID {} and result {}",
                     notificationType, correlationUid, result, e);

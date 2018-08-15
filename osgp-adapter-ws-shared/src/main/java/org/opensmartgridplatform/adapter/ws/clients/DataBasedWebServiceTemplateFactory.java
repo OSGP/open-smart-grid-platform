@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.http.client.config.RequestConfig;
@@ -25,8 +24,8 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData;
-import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData.WebServiceConfigurationDataId;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.WebServiceConfigurationDataRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.CircuitBreaker;
@@ -46,8 +45,7 @@ public class DataBasedWebServiceTemplateFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataBasedWebServiceTemplateFactory.class);
 
     private static final String PROXY_SERVER = "proxy-server";
-    private static final String NO_APPLICATION_NAME = "";
-    private static final Map<WebServiceConfigurationDataId, WebServiceTemplate> webServiceTemplates = new ConcurrentHashMap<>();
+    private static final Map<NotificationWebServiceLookupKey, WebServiceTemplate> webServiceTemplates = new ConcurrentHashMap<>();
 
     private final WebServiceConfigurationDataRepository configRepository;
     private final WebServiceMessageFactory messageFactory;
@@ -75,16 +73,16 @@ public class DataBasedWebServiceTemplateFactory {
         }
     }
 
-    public WebServiceTemplate getTemplate(final String organisationIdentification, final String applicationName) {
-
-        final WebServiceConfigurationDataId templateKey = new WebServiceConfigurationDataId(organisationIdentification,
-                Optional.ofNullable(applicationName).orElse(NO_APPLICATION_NAME));
+    public WebServiceTemplate getTemplate(final NotificationWebServiceLookupKey templateKey) {
 
         return webServiceTemplates.computeIfAbsent(templateKey, key -> {
             try {
                 return this.createTemplate(key);
-            } catch (final WebServiceSecurityException ignored) {
+            } catch (@SuppressWarnings("squid:S1166") final WebServiceSecurityException ignored) {
                 /*
+                 * Suppressing squid:S1166: Exception handlers should preserve
+                 * the original exceptions
+                 *
                  * Details about the cause of the exception are logged at the
                  * location where ignored is created and thrown.
                  *
@@ -96,7 +94,7 @@ public class DataBasedWebServiceTemplateFactory {
         });
     }
 
-    private WebServiceTemplate createTemplate(final WebServiceConfigurationDataId id)
+    private WebServiceTemplate createTemplate(final NotificationWebServiceLookupKey id)
             throws WebServiceSecurityException {
 
         final WebServiceConfigurationData config = this.configRepository.findOne(id);

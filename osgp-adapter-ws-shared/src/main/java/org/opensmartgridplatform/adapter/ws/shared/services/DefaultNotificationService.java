@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.ws.shared.services;
 import java.util.Objects;
 
 import org.opensmartgridplatform.adapter.ws.clients.DataBasedWebServiceTemplateFactory;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
 import org.slf4j.Logger;
@@ -32,15 +33,13 @@ import ma.glasnost.orika.MapperFacade;
  * @param <T>
  *            specific type of notification request sent by this service.
  */
-public class DataBasedNotificationService<T> implements NotificationService {
+public class DefaultNotificationService<T> implements NotificationService {
 
     private static final String NO_NOTIFICATION_WILL_BE_SENT = "no notification will be sent about result {} for device {} with correlationUid {}";
-    private static final String NO_TEMPLATE_FACTORY_SET = "No template factory configured "
-            + NO_NOTIFICATION_WILL_BE_SENT + " for application {} of organisation {}";
     private static final String NO_TEMPLATE_AVAILABLE = "No web service template available for application {} of organisation {}, "
             + NO_NOTIFICATION_WILL_BE_SENT;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataBasedNotificationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultNotificationService.class);
 
     private final DataBasedWebServiceTemplateFactory templateFactory;
     private final Class<T> sendNotificationRequestType;
@@ -51,8 +50,7 @@ public class DataBasedNotificationService<T> implements NotificationService {
      * for which configuration is stored in the database.
      *
      * @param templateFactory
-     *            web service template factory, if {@code null} no notifications
-     *            will be sent
+     *            web service template factory
      * @param sendNotificationRequestType
      *            the specific type of notification request to be sent with this
      *            service
@@ -62,10 +60,10 @@ public class DataBasedNotificationService<T> implements NotificationService {
      *            by {@code sendNotificationRequestType}
      * @see GenericSendNotificationRequest
      */
-    public DataBasedNotificationService(final DataBasedWebServiceTemplateFactory templateFactory,
+    public DefaultNotificationService(final DataBasedWebServiceTemplateFactory templateFactory,
             final Class<T> sendNotificationRequestType, final MapperFacade mapper) {
 
-        this.templateFactory = templateFactory;
+        this.templateFactory = Objects.requireNonNull(templateFactory, "templateFactory must not be null");
         this.sendNotificationRequestType = Objects.requireNonNull(sendNotificationRequestType,
                 "sendNotificationRequestType must not be null");
         this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
@@ -75,54 +73,34 @@ public class DataBasedNotificationService<T> implements NotificationService {
     public void sendNotification(final String organisationIdentification, final String deviceIdentification,
             final String result, final String correlationUid, final String message, final Object notificationType) {
 
-        this.sendNotification(organisationIdentification, "", deviceIdentification, result, correlationUid, message,
-                notificationType);
+        this.sendNotification(new NotificationWebServiceLookupKey(organisationIdentification), new GenericNotification(
+                message, result, deviceIdentification, correlationUid, String.valueOf(notificationType)));
     }
 
     @Override
-    public void sendNotification(final String organisationIdentification, final String applicationName,
-            final String deviceIdentification, final String result, final String correlationUid, final String message,
-            final Object notificationType) {
+    public void sendNotification(final NotificationWebServiceLookupKey endpointLookupKey,
+            final GenericNotification notification) {
 
-        if (this.templateFactory == null) {
-            LOGGER.debug(NO_TEMPLATE_FACTORY_SET, result, deviceIdentification, correlationUid, applicationName,
-                    organisationIdentification);
-            return;
-        }
+        Objects.requireNonNull(endpointLookupKey, "endpointLookupKey must not be null");
+        Objects.requireNonNull(notification, "notification must not be null");
 
-        final WebServiceTemplate template = this.templateFactory.getTemplate(organisationIdentification,
-                applicationName);
-
+        final WebServiceTemplate template = this.templateFactory.getTemplate(endpointLookupKey);
         if (template == null) {
-            LOGGER.warn(NO_TEMPLATE_AVAILABLE, applicationName, organisationIdentification, result,
-                    deviceIdentification, correlationUid);
+            LOGGER.warn(NO_TEMPLATE_AVAILABLE, endpointLookupKey.getApplicationName(),
+                    endpointLookupKey.getOrganisationIdentification(), notification.getResult(),
+                    notification.getDeviceIdentification(), notification.getCorrelationUid());
             return;
         }
 
         LOGGER.info(
                 "sendNotification called with correlationUid: {}, type: {}, to application: {} for organisation: {}",
-                correlationUid, notificationType, applicationName, organisationIdentification);
+                notification.getCorrelationUid(), notification.getNotificationType(),
+                endpointLookupKey.getApplicationName(), endpointLookupKey.getOrganisationIdentification());
 
-        final GenericSendNotificationRequest genericNotificationRequest = this.genericNotificationRequest(
-                deviceIdentification, result, correlationUid, message, String.valueOf(notificationType));
-
-        final T notificationRequest = this.mapper.map(genericNotificationRequest, this.sendNotificationRequestType);
+        final T notificationRequest = this.mapper.map(new GenericSendNotificationRequest(notification),
+                this.sendNotificationRequestType);
 
         template.marshalSendAndReceive(notificationRequest);
-    }
-
-    private GenericSendNotificationRequest genericNotificationRequest(final String deviceIdentification,
-            final String result, final String correlationUid, final String message, final String notificationType) {
-
-        final GenericSendNotificationRequest sendNotificationRequest = new GenericSendNotificationRequest();
-        final GenericNotification notification = new GenericNotification();
-        notification.setMessage(message);
-        notification.setResult(result);
-        notification.setDeviceIdentification(deviceIdentification);
-        notification.setCorrelationUid(correlationUid);
-        notification.setNotificationType(notificationType);
-        sendNotificationRequest.setNotification(notification);
-        return sendNotificationRequest;
     }
 
 }

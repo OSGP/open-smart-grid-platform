@@ -10,13 +10,13 @@ package org.opensmartgridplatform.adapter.ws.domain.repositories;
 import java.util.List;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData;
-import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData.WebServiceConfigurationDataId;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WebServiceConfigurationDataRepository
-        extends JpaRepository<WebServiceConfigurationData, WebServiceConfigurationDataId> {
+        extends JpaRepository<WebServiceConfigurationData, NotificationWebServiceLookupKey> {
 
     List<WebServiceConfigurationData> findByIdOrganisationIdentification(String organisationIdentification);
 }

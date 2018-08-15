@@ -8,14 +8,15 @@
 package org.opensmartgridplatform.adapter.ws.microgrids.application.services;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.NotificationType;
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
+import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
+import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.NotificationType;
-import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
-import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 
 @Service(value = "resendNotificationServiceMicrogrids")
 @Transactional(value = "transactionManager")
@@ -33,10 +34,10 @@ public class ResendNotificationService extends AbstractResendNotificationService
             return;
         }
 
-        final NotificationType notificationType = NotificationType.valueOf(responseData.getMessageType());
-        this.microgridsNotificationService.sendNotification(responseData.getOrganisationIdentification(), "ZownStream",
-                responseData.getDeviceIdentification(), responseData.getResultType().name(),
-                responseData.getCorrelationUid(), this.getNotificationMessage(responseData.getMessageType()),
-                notificationType);
+        this.microgridsNotificationService.sendNotification(
+                new NotificationWebServiceLookupKey(responseData.getOrganisationIdentification(), "ZownStream"),
+                new GenericNotification(this.getNotificationMessage(responseData.getMessageType()),
+                        responseData.getResultType().name(), responseData.getDeviceIdentification(),
+                        responseData.getCorrelationUid(), responseData.getMessageType()));
     }
 }

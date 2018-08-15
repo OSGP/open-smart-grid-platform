@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.ws.domain.entities;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
@@ -32,62 +31,8 @@ public class WebServiceConfigurationData implements Serializable {
     public static final int DEFAULT_CIRCUIT_BREAKER_DURATION_MAXIMUM = 600000;
     public static final int DEFAULT_CIRCUIT_BREAKER_DURATION_MULTIPLIER = 4;
 
-    @Embeddable
-    public static final class WebServiceConfigurationDataId implements Serializable {
-
-        private static final long serialVersionUID = -6367887742782273500L;
-
-        private String organisationIdentification;
-        private String applicationName;
-
-        public WebServiceConfigurationDataId() {
-            /*
-             * Public no-argument constructor, required for JPA composite
-             * primary key class.
-             */
-        }
-
-        public WebServiceConfigurationDataId(final String organisationIdentification, final String applicationName) {
-            this.organisationIdentification = Objects.requireNonNull(organisationIdentification,
-                    "organisationIdentification must not be null");
-            this.applicationName = Objects.requireNonNull(applicationName, "applicationName must not be null");
-        }
-
-        public String getOrganisationIdentification() {
-            return this.organisationIdentification;
-        }
-
-        public String getApplicationName() {
-            return this.applicationName;
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (!(obj instanceof WebServiceConfigurationDataId)) {
-                return false;
-            }
-            final WebServiceConfigurationDataId other = (WebServiceConfigurationDataId) obj;
-            return Objects.equals(this.getOrganisationIdentification(), other.getOrganisationIdentification())
-                    && Objects.equals(this.getApplicationName(), other.getApplicationName());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.getOrganisationIdentification(), this.getApplicationName());
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s[organisation=%s, application=%s]", this.getClass().getSimpleName(),
-                    this.getOrganisationIdentification(), this.getApplicationName());
-        }
-    }
-
     @EmbeddedId
-    private WebServiceConfigurationDataId id;
+    private NotificationWebServiceLookupKey id;
     private String marshallerContextPath;
     private String targetUri;
     private boolean useKeyStore = DEFAULT_USE_KEY_STORE;
@@ -111,10 +56,10 @@ public class WebServiceConfigurationData implements Serializable {
         // No-argument constructor, required for JPA entity classes.
     }
 
-    public WebServiceConfigurationData(final WebServiceConfigurationDataId id, final String marshallerContextPath,
+    public WebServiceConfigurationData(final NotificationWebServiceLookupKey id, final String marshallerContextPath,
             final String targetUri) {
 
-        this.id = Objects.requireNonNull(id, "webServiceConfigurationDataId must not be null");
+        this.id = Objects.requireNonNull(id, "id must not be null");
         this.marshallerContextPath = Objects.requireNonNull(marshallerContextPath,
                 "marshallerContextPath must not be null");
         this.targetUri = Objects.requireNonNull(targetUri, "targetUri must not be null");
@@ -184,11 +129,11 @@ public class WebServiceConfigurationData implements Serializable {
                 threshold > 0 && durationInitial > 0 && durationMaximum > 0 && durationMultiplier > 0);
     }
 
-    public WebServiceConfigurationDataId getId() {
+    public NotificationWebServiceLookupKey getId() {
         return this.id;
     }
 
-    public void setId(final WebServiceConfigurationDataId id) {
+    public void setId(final NotificationWebServiceLookupKey id) {
         this.id = id;
     }
 
