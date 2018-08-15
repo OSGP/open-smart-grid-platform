@@ -10,16 +10,13 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.serv
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.adapter.domain.shared.FilterLightAndTariffValuesHelper;
 import org.opensmartgridplatform.adapter.domain.shared.GetStatusResponse;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -30,6 +27,7 @@ import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
@@ -51,7 +49,11 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainPublicLightingAdHocManagementService")
 @Transactional(value = "transactionManager")
@@ -125,14 +127,14 @@ public class AdHocManagementService extends AbstractService {
                 .map(allowedDomainType, org.opensmartgridplatform.dto.valueobjects.DomainTypeDto.class);
 
         final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType())
-                ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name()
-                : messageType;
+                ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name() : messageType;
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(final org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto deviceStatusDto,
+    public void handleGetStatusResponse(
+            final org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final int messagePriority, final ResponseMessageResultType deviceResult, final OsgpException exception) {
@@ -268,7 +270,8 @@ public class AdHocManagementService extends AbstractService {
                 device.getDeviceIdentification(), organisationIdentification);
 
         final TransitionMessageDataContainerDto transitionMessageDataContainerDto = new TransitionMessageDataContainerDto(
-                this.domainCoreMapper.map(transitionType, org.opensmartgridplatform.dto.valueobjects.TransitionTypeDto.class),
+                this.domainCoreMapper.map(transitionType,
+                        org.opensmartgridplatform.dto.valueobjects.TransitionTypeDto.class),
                 transitionTime);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
@@ -320,15 +323,45 @@ public class AdHocManagementService extends AbstractService {
             return;
         }
 
-        // Find all SSLDs which need to receive a SET_TRANSITION message.
-        final List<Ssld> ssldsToTransition = this.getSsldsToTransitionForLmd(lmd);
-
         // Determine the transition type based on the event of the LMD.
         final TransitionType transitionType = this.determineTransitionTypeForEvent(event);
 
+        // Find all SSLDs which need to receive a SET_TRANSITION message.
+        final List<CdmaDevice> devicesForLmd = this.ssldRepository.findCdmaBatchDevicesInUseForLmd(lmd,
+                DeviceLifecycleStatus.IN_USE);
+
+        final Map<String, List<CdmaDevice>> devicesToTransition = this.getCdmaDevicesPerMastSegment(lmd);
+
         // Send SET_TRANSITION messages to the SSLDs.
-        this.transitionSslds(ssldsToTransition, organisationIdentification, correlationUid, transitionType);
+        this.transitionDevices(devicesToTransition, organisationIdentification, correlationUid, transitionType);
     }
+
+    private Map<Boolean, TreeMap<String, TreeMap<Short, List<CdmaDevice>>>> getCdmaDevicesPerMastSegment(
+            final LightMeasurementDevice lmd) {
+
+        final List<CdmaDevice> devicesForLmd = this.ssldRepository.findCdmaBatchDevicesInUseForLmd(lmd,
+                DeviceLifecycleStatus.IN_USE);
+
+        final Stream<CdmaDevice> formattedDevices = devicesForLmd.stream().map(CdmaDevice::mapEmptyFields);
+
+        return formattedDevices.collect(this.partitionMastSegmentCollector());
+    }
+
+    /*
+     * Returns a collector which can create a map by dividing a stream of CDMA
+     * mast segments over items having the default CDMA mast segment and items
+     * having another CDMA mast segment.
+     *
+     * Example: (Boolean.TRUE, [(DEVICE-WITHOUT-MAST-SEGMENT, [(1, [cd6,
+     * cd1])])], Boolean.FALSE, [(2500/1, [(1, [cd6, cd1]), (2, [cd24, cd21])]),
+     * ....])
+     */
+    // private Collector<CdmaDevice, ?, Map<Boolean, TreeMap<String,
+    // TreeMap<Short, List<CdmaDevice>>>>> partitionMastSegmentCollector() {
+    // private Collector<CdmaDevice, ?, Map<Boolean, List<CdmaDevice>>>
+    // partitionMastSegmentCollector_old() {
+    // return Collectors.partitioningBy(CdmaDevice::hasDefaultMastSegment);
+    // }
 
     private LightMeasurementDevice updateLmdLastCommunicationTime(final LightMeasurementDevice lmd) {
         final DateTime now = DateTime.now();
@@ -353,15 +386,18 @@ public class AdHocManagementService extends AbstractService {
         return false;
     }
 
-    private List<Ssld> getSsldsToTransitionForLmd(final LightMeasurementDevice lmd) {
-        LOGGER.info("Find SSLDs for light measurement device: {}", lmd.getDeviceIdentification());
-        final List<Ssld> ssldsToTransition = this.ssldRepository
-                .findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
-                        lmd, DeviceLifecycleStatus.IN_USE);
-        LOGGER.info("For light measurement device: {}, {} SSLDs were found", lmd.getDeviceIdentification(),
-                ssldsToTransition.size());
-        return ssldsToTransition;
-    }
+    // private List<Ssld> getSsldsToTransitionForLmd(final
+    // LightMeasurementDevice lmd) {
+    // LOGGER.info("Find SSLDs for light measurement device: {}",
+    // lmd.getDeviceIdentification());
+    // final List<Ssld> ssldsToTransition = this.ssldRepository
+    // .findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
+    // lmd, DeviceLifecycleStatus.IN_USE);
+    // LOGGER.info("For light measurement device: {}, {} SSLDs were found",
+    // lmd.getDeviceIdentification(),
+    // ssldsToTransition.size());
+    // return ssldsToTransition;
+    // }
 
     private TransitionType determineTransitionTypeForEvent(final Event event) {
         final String transitionTypeFromLightMeasurementDevice = event.getEventType().name();
@@ -374,18 +410,54 @@ public class AdHocManagementService extends AbstractService {
         return transitionType;
     }
 
-    private void transitionSslds(final List<Ssld> ssldsToTransition, final String organisationIdentification,
-            final String correlationUid, final TransitionType transitionType) {
-        // Don't send time stamp to switch device.
-        final DateTime transitionTime = null;
-        for (final Ssld ssld : ssldsToTransition) {
-            try {
-                this.setTransition(organisationIdentification, ssld, correlationUid, transitionType, transitionTime,
-                        DeviceFunction.SET_TRANSITION.name(), MessagePriorityEnum.LOW.getPriority());
-            } catch (final Exception e) {
-                LOGGER.error("Caught unexpected Exception", e);
-            }
+    private void transitionDevices(final Map<String, List<CdmaDevice>> devicesToTransition,
+            final String organisationIdentification, final String correlationUid, final TransitionType transitionType) {
+        devicesToTransition.values().stream().forEach(x -> LOGGER.info(x.toString()));
+
+        for (final Map.Entry<String, List<CdmaDevice>> mastSegmentDevices : devicesToTransition.entrySet()) {
+            final TreeMap<Short, List<CdmaDevice>> deviceBatchesForMastSegment = mastSegmentDevices.getValue().stream()
+                    .collect(Collectors.groupingBy(CdmaDevice::getBatchNumber, TreeMap<Short, List<CdmaDevice>>::new,
+                            Collectors.toList()));
+            System.out.println(deviceBatchesForMastSegment.size());
         }
+
+        // Don't send time stamp to switch device.
+        // final DateTime transitionTime = null;
+        // for (final Ssld ssld : ssldsToTransition) {
+        // try {
+        // this.setTransition(organisationIdentification, ssld, correlationUid,
+        // transitionType, transitionTime,
+        // DeviceFunction.SET_TRANSITION.name(),
+        // MessagePriorityEnum.LOW.getPriority());
+        // } catch (final Exception e) {
+        // LOGGER.error("Caught unexpected Exception", e);
+        // }
+        // }
+    }
+
+    private void transitionDevices_v1(final Map<String, List<CdmaDevice>> devicesToTransition,
+            final String organisationIdentification, final String correlationUid, final TransitionType transitionType) {
+        devicesToTransition.values().stream().forEach(x -> LOGGER.info(x.toString()));
+
+        for (final Map.Entry<String, List<CdmaDevice>> mastSegmentDevices : devicesToTransition.entrySet()) {
+            final TreeMap<Short, List<CdmaDevice>> deviceBatchesForMastSegment = mastSegmentDevices.getValue().stream()
+                    .collect(Collectors.groupingBy(CdmaDevice::getBatchNumber, TreeMap<Short, List<CdmaDevice>>::new,
+                            Collectors.toList()));
+            System.out.println(deviceBatchesForMastSegment.size());
+        }
+
+        // Don't send time stamp to switch device.
+        // final DateTime transitionTime = null;
+        // for (final Ssld ssld : ssldsToTransition) {
+        // try {
+        // this.setTransition(organisationIdentification, ssld, correlationUid,
+        // transitionType, transitionTime,
+        // DeviceFunction.SET_TRANSITION.name(),
+        // MessagePriorityEnum.LOW.getPriority());
+        // } catch (final Exception e) {
+        // LOGGER.error("Caught unexpected Exception", e);
+        // }
+        // }
     }
 
     // === SET LIGHT MEASUREMENT DEVICE ===
