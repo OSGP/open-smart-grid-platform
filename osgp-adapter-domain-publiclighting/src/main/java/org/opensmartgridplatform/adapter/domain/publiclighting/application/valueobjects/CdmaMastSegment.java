@@ -7,32 +7,46 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 
 public class CdmaMastSegment implements Comparable<CdmaMastSegment> {
 
-    private final String mastSegment;
-    private List<CdmaDevice> cdmaDevices;
-    private TreeMap<Short, List<CdmaDevice>> rawCdmaBatches;
+    private final String mastSegmentName;
+    private SortedMap<Short, CdmaBatch> cdmaBatches;
 
-    public CdmaMastSegment(final String mastSegment, final List<CdmaDevice> cdmaDevices) {
-        this.mastSegment = mastSegment;
-        this.cdmaDevices = cdmaDevices;
+    public CdmaMastSegment(final CdmaDevice cdmaDevice) {
+        this.mastSegmentName = cdmaDevice.getMastSegmentName();
+
+        final CdmaBatch cdmaBatch = new CdmaBatch(cdmaDevice);
+        this.cdmaBatches = new TreeMap<>();
+        this.cdmaBatches.put(cdmaBatch.getBatchNumber(), cdmaBatch);
     }
 
-    public CdmaMastSegment(final String mastSegment, final TreeMap<Short, List<CdmaDevice>> rawCdmaBatches) {
-        this.mastSegment = mastSegment;
-        this.rawCdmaBatches = rawCdmaBatches;
+    public void addCdmaDevice(final CdmaDevice cdmaDevice) {
+        final Short batchNumber = cdmaDevice.getBatchNumber();
+
+        final CdmaBatch cdmaBatch = this.cdmaBatches.get(batchNumber);
+        if (cdmaBatch == null) {
+            final CdmaBatch newBatch = new CdmaBatch(cdmaDevice);
+            this.cdmaBatches.put(batchNumber, newBatch);
+        } else {
+            cdmaBatch.addCdmaDevice(cdmaDevice);
+        }
     }
 
     public String getMastSegment() {
-        return this.mastSegment;
+        return this.mastSegmentName;
     }
 
+    public SortedMap<Short, CdmaBatch> getCdmaBatches() {
+        return this.cdmaBatches;
+    }
+
+    /* @formatter:off
     public List<CdmaMastSegment> from(final TreeMap<String, TreeMap<Short, List<CdmaDevice>>> rawMastSegments) {
         final List<CdmaMastSegment> cdmaMastSegments = new ArrayList<>();
         for (final Entry<String, TreeMap<Short, List<CdmaDevice>>> rawMastSegment : rawMastSegments.entrySet()) {
@@ -42,10 +56,12 @@ public class CdmaMastSegment implements Comparable<CdmaMastSegment> {
 
         return cdmaMastSegments;
     }
+    * @formatter:on
+    */
 
     @Override
     public int hashCode() {
-        return this.mastSegment.hashCode();
+        return this.mastSegmentName.hashCode();
     }
 
     @Override
@@ -60,11 +76,11 @@ public class CdmaMastSegment implements Comparable<CdmaMastSegment> {
 
         final CdmaMastSegment other = (CdmaMastSegment) obj;
 
-        return Objects.equals(this.mastSegment, other.mastSegment);
+        return Objects.equals(this.mastSegmentName, other.mastSegmentName);
     }
 
     @Override
     public int compareTo(final CdmaMastSegment other) {
-        return this.mastSegment.compareTo(other.mastSegment);
+        return this.mastSegmentName.compareTo(other.mastSegmentName);
     }
 }

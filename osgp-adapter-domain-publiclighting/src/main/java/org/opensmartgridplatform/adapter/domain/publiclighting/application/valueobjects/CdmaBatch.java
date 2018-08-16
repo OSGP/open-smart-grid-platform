@@ -5,27 +5,70 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition;
+package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Objects;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 
-public class CdmaBatch {
+public class CdmaBatch implements Comparable<CdmaBatch> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CdmaBatch.class);
-    private List<CdmaMastSegment> cdmaMastSegments;
-    private List<CdmaDeviceList> allCdmaDeviceSeries;
+    private Short batchNumber;
+    private List<CdmaBatchDevice> cdmaBatchDevices;
 
+    public CdmaBatch(final CdmaDevice cdmaDevice) {
+        this.batchNumber = cdmaDevice.getBatchNumber();
+        if (this.batchNumber == null) {
+            throw new IllegalArgumentException("batchNumber is a mandory field, value null is not allowed");
+        }
+
+        final CdmaBatchDevice cdmaBatchDevice = new CdmaBatchDevice(cdmaDevice);
+        this.cdmaBatchDevices = new ArrayList<>();
+        this.cdmaBatchDevices.add(cdmaBatchDevice);
+    }
+
+    public void addCdmaDevice(final CdmaDevice cdmaDevice) {
+        final CdmaBatchDevice cdmaBatchDevice = new CdmaBatchDevice(cdmaDevice);
+        this.cdmaBatchDevices.add(cdmaBatchDevice);
+    }
+
+    public Short getBatchNumber() {
+        return this.batchNumber;
+    }
+
+    public List<CdmaBatchDevice> getCdmaBatchDevices() {
+        return this.cdmaBatchDevices;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.batchNumber.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof CdmaBatch)) {
+            return false;
+        }
+
+        final CdmaBatch other = (CdmaBatch) obj;
+
+        return Objects.equals(this.batchNumber, other.batchNumber);
+    }
+
+    @Override
+    public int compareTo(final CdmaBatch other) {
+        return this.batchNumber.compareTo(other.batchNumber);
+    }
+
+    /* @formatter:off
+    *
     public CdmaBatch(final List<CdmaDevice> devices) {
         LOGGER.info("Create CDMA batch for " + devices.size() + " devices.");
         this.initAllCdmaDeviceSeries(devices);
@@ -107,44 +150,6 @@ public class CdmaBatch {
     public CdmaDeviceList next() {
         return null;
     }
-
-    /*
-     * Returns a collector which can create a map by dividing a stream of CDMA
-     * mast segments over items having the default CDMA mast segment and items
-     * having another CDMA mast segment.
-     *
-     * Example: (Boolean.TRUE, [(DEVICE-WITHOUT-MAST-SEGMENT, [(1, [cd6,
-     * cd1])])], Boolean.FALSE, [(2500/1, [(1, [cd6, cd1]), (2, [cd24, cd21])]),
-     * ....])
+     * @formatter:on
      */
-    private Collector<CdmaDevice, ?, Map<Boolean, TreeMap<String, TreeMap<Short, List<CdmaDevice>>>>> partitionMastSegmentCollector() {
-        return Collectors.partitioningBy(CdmaDevice::hasDefaultMastSegment, this.mastSegmentCollector());
-    }
-
-    /*
-     * Returns a collector which can create a map by grouping a stream of CDMA
-     * device batches by their mast segment. The created map is ordered by mast
-     * segment. The batches within a mast segment are ordered by batch number.
-     *
-     * Example: (2500/1, [(1, [cd6, cd1]), (2, [cd24, cd21])]), (2500/2, [(1,
-     * [cd12, cd13]), (3, [cd20])]), ...
-     */
-    private Collector<CdmaDevice, ?, TreeMap<String, TreeMap<Short, List<CdmaDevice>>>> mastSegmentCollector() {
-        return Collectors.groupingBy(CdmaDevice::getMastSegment, TreeMap<String, TreeMap<Short, List<CdmaDevice>>>::new,
-                this.batchNumberCollector());
-    }
-
-    /*
-     * Returns a collector which can create a map by grouping a stream of CDMA
-     * devices by their batch number. The created map is ordered by batch
-     * number.
-     *
-     * Example: (1, [CdmaDevice6, CdmaDevice1]), (2, [CdmaDevice24,
-     * CdmaDevice21]), (5, [CdmaDevice12, CdmaDevice15]), ...
-     */
-    private Collector<CdmaDevice, ?, TreeMap<Short, List<CdmaDevice>>> batchNumberCollector() {
-        return Collectors.groupingBy(CdmaDevice::getBatchNumber, TreeMap<Short, List<CdmaDevice>>::new,
-                Collectors.toList());
-    }
-
 }

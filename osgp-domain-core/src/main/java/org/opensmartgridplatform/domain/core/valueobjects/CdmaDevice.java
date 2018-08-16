@@ -5,33 +5,27 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
+package org.opensmartgridplatform.domain.core.valueobjects;
 
 import java.net.InetAddress;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class CdmaDevice {
 
     private static final Short MAX_BATCH_NUMBER = (short) 99;
-    private static final String DEFAULT_MASTSEGMENT = "DEVICE-WITHOUT-MASTSEGMENT";
+    public static final String DEFAULT_MASTSEGMENT = "DEVICE-WITHOUT-MASTSEGMENT";
 
     private String deviceIdentification;
     private InetAddress networkAddress;
-    private String mastSegment;
+    private String mastSegmentName;
     private Short batchNumber;
 
-    public CdmaDevice(final String deviceIdentification, final InetAddress networkAddress, final String mastSegment) {
-        this(deviceIdentification, networkAddress, mastSegment, (short) 1);
-    }
-
-    public CdmaDevice(final String deviceIdentification, final InetAddress networkAddress, final String mastSegment,
+    public CdmaDevice(final String deviceIdentification, final InetAddress networkAddress, final String mastSegmentName,
             final Short batchNumber) {
         this.deviceIdentification = deviceIdentification;
         this.networkAddress = networkAddress;
-        this.mastSegment = mastSegment;
-        this.batchNumber = batchNumber;
+        this.mastSegmentName = mastSegmentName == null ? DEFAULT_MASTSEGMENT : mastSegmentName;
+        this.batchNumber = batchNumber == null ? MAX_BATCH_NUMBER : batchNumber;
     }
 
     public String getDeviceIdentification() {
@@ -42,27 +36,29 @@ public class CdmaDevice {
         return this.networkAddress;
     }
 
-    public String getMastSegment() {
-        return this.mastSegment;
+    public String getMastSegmentName() {
+        return this.mastSegmentName;
     }
 
     public boolean hasDefaultMastSegment() {
-        return DEFAULT_MASTSEGMENT.equals(this.mastSegment);
+        return DEFAULT_MASTSEGMENT.equals(this.mastSegmentName);
     }
 
     public Short getBatchNumber() {
         return this.batchNumber;
     }
 
-    public CdmaDevice mapEmptyFields() {
-        if (StringUtils.isNotEmpty(this.mastSegment) && this.batchNumber != null) {
-            return this;
-        }
-
-        final Short newBatchNumber = this.batchNumber == null ? MAX_BATCH_NUMBER : this.batchNumber;
-        final String newMastSegment = StringUtils.isEmpty(this.mastSegment) ? DEFAULT_MASTSEGMENT : this.mastSegment;
-        return new CdmaDevice(this.deviceIdentification, this.networkAddress, newMastSegment, newBatchNumber);
-    }
+    /*
+     * public CdmaDevice mapEmptyFields() { if
+     * (StringUtils.isNotEmpty(this.mastSegmentName) && this.batchNumber !=
+     * null) { return this; }
+     * 
+     * final Short newBatchNumber = this.batchNumber == null ? MAX_BATCH_NUMBER
+     * : this.batchNumber; final String newMastSegmentName =
+     * StringUtils.isEmpty(this.mastSegmentName) ? DEFAULT_MASTSEGMENT :
+     * this.mastSegmentName; return new CdmaDevice(this.deviceIdentification,
+     * this.networkAddress, newMastSegmentName, newBatchNumber); }
+     */
 
     @Override
     public int hashCode() {
@@ -91,6 +87,7 @@ public class CdmaDevice {
     @Override
     public String toString() {
         return "CdmaBatchDevice [deviceIdentification=" + this.deviceIdentification + ", networkAddress="
-                + this.networkAddress + ", mastSegment=" + this.mastSegment + ", batchNumber=" + this.batchNumber + "]";
+                + this.networkAddress + ", mastSegmentName=" + this.mastSegmentName + ", batchNumber="
+                + this.batchNumber + "]";
     }
 }

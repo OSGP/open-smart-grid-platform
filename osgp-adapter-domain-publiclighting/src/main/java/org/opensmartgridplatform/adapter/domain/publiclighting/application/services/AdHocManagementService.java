@@ -12,12 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaRun;
 import org.opensmartgridplatform.adapter.domain.shared.FilterLightAndTariffValuesHelper;
 import org.opensmartgridplatform.adapter.domain.shared.GetStatusResponse;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -28,6 +27,7 @@ import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
@@ -327,24 +327,25 @@ public class AdHocManagementService extends AbstractService {
         final TransitionType transitionType = this.determineTransitionTypeForEvent(event);
 
         // Find all SSLDs which need to receive a SET_TRANSITION message.
-        final List<CdmaDevice> devicesForLmd = this.ssldRepository.findCdmaBatchDevicesInUseForLmd(lmd,
-                DeviceLifecycleStatus.IN_USE);
+        // final List<CdmaDevice> devicesForLmd =
+        // this.ssldRepository.findCdmaBatchDevicesInUseForLmd(lmd,
+        // DeviceLifecycleStatus.IN_USE);
 
-        final Map<String, List<CdmaDevice>> devicesToTransition = this.getCdmaDevicesPerMastSegment(lmd);
+        final CdmaRun cdmaRun = this.getCdmaDevicesPerMastSegment(lmd);
 
         // Send SET_TRANSITION messages to the SSLDs.
-        this.transitionDevices(devicesToTransition, organisationIdentification, correlationUid, transitionType);
+        this.transitionDevices(cdmaRun, organisationIdentification, correlationUid, transitionType);
     }
 
-    private Map<Boolean, TreeMap<String, TreeMap<Short, List<CdmaDevice>>>> getCdmaDevicesPerMastSegment(
-            final LightMeasurementDevice lmd) {
+    private CdmaRun getCdmaDevicesPerMastSegment(final LightMeasurementDevice lmd) {
 
+        // Find all SSLDs which need to receive a SET_TRANSITION message.
         final List<CdmaDevice> devicesForLmd = this.ssldRepository.findCdmaBatchDevicesInUseForLmd(lmd,
                 DeviceLifecycleStatus.IN_USE);
 
-        final Stream<CdmaDevice> formattedDevices = devicesForLmd.stream().map(CdmaDevice::mapEmptyFields);
-
-        return formattedDevices.collect(this.partitionMastSegmentCollector());
+        // final Stream<CdmaDevice> nonEmptyDevices =
+        // devicesForLmd.stream().map(CdmaDevice::mapEmptyFields);
+        return devicesForLmd.stream().collect(CdmaRun::new, CdmaRun::add, CdmaRun::combine);
     }
 
     /*
@@ -410,16 +411,21 @@ public class AdHocManagementService extends AbstractService {
         return transitionType;
     }
 
-    private void transitionDevices(final Map<String, List<CdmaDevice>> devicesToTransition,
-            final String organisationIdentification, final String correlationUid, final TransitionType transitionType) {
-        devicesToTransition.values().stream().forEach(x -> LOGGER.info(x.toString()));
+    private void transitionDevices(final CdmaRun cdmaRun, final String organisationIdentification,
+            final String correlationUid, final TransitionType transitionType) {
 
-        for (final Map.Entry<String, List<CdmaDevice>> mastSegmentDevices : devicesToTransition.entrySet()) {
-            final TreeMap<Short, List<CdmaDevice>> deviceBatchesForMastSegment = mastSegmentDevices.getValue().stream()
-                    .collect(Collectors.groupingBy(CdmaDevice::getBatchNumber, TreeMap<Short, List<CdmaDevice>>::new,
-                            Collectors.toList()));
-            System.out.println(deviceBatchesForMastSegment.size());
-        }
+        /*
+         * devicesToTransition.values().stream().forEach(x ->
+         * LOGGER.info(x.toString()));
+         *
+         * for (final Map.Entry<String, List<CdmaDevice>> mastSegmentDevices :
+         * devicesToTransition.entrySet()) { final TreeMap<Short,
+         * List<CdmaDevice>> deviceBatchesForMastSegment =
+         * mastSegmentDevices.getValue().stream()
+         * .collect(Collectors.groupingBy(CdmaDevice::getBatchNumber,
+         * TreeMap<Short, List<CdmaDevice>>::new, Collectors.toList()));
+         * System.out.println(deviceBatchesForMastSegment.size()); }
+         */
 
         // Don't send time stamp to switch device.
         // final DateTime transitionTime = null;

@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.serv
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 
 import com.google.common.base.Objects;
 
@@ -27,7 +27,7 @@ public class CdmaDeviceList implements Comparable<CdmaDeviceList> {
             this.batchNumber = null;
         } else {
             final CdmaDevice firstDevice = devices.get(0);
-            this.mastSegment = firstDevice.getMastSegment();
+            this.mastSegment = firstDevice.getMastSegmentName();
             this.batchNumber = firstDevice.getBatchNumber();
         }
         this.iteration = iteration;

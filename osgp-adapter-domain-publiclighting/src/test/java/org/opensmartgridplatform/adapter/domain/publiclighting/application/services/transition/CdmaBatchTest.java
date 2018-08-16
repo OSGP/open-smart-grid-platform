@@ -21,7 +21,7 @@ import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,16 +54,16 @@ public class CdmaBatchTest {
         // "250/1", 1);
         // final CdmaDevice device4 = new CdmaDevice("device4", host4, "322/1",
         // 1);
-        final CdmaDevice device1 = new CdmaDevice();
-        final CdmaDevice device2 = new CdmaDevice();
-        final CdmaDevice device3 = new CdmaDevice();
-        final CdmaDevice device4 = new CdmaDevice();
+        final CdmaDevice device1 = null; // new CdmaDevice();
+        final CdmaDevice device2 = null; // new CdmaDevice();
+        final CdmaDevice device3 = null; // new CdmaDevice();
+        final CdmaDevice device4 = null; // new CdmaDevice();
         final CdmaDevice[] devicesArray = { device1, device2, device3, device4 };
         final List<CdmaDevice> devices = Arrays.asList(devicesArray);
 
         final Stream<CdmaDevice> devicesStream = devices.stream();
         final TreeMap<String, List<CdmaDevice>> myMap = devicesStream
-                .collect(Collectors.groupingBy(CdmaDevice::getMastSegment, TreeMap::new, Collectors.toList()));
+                .collect(Collectors.groupingBy(CdmaDevice::getMastSegmentName, TreeMap::new, Collectors.toList()));
 
         System.out.println("Inhoud map: " + myMap);
         // final CdmaBatch batch = new CdmaBatch(1, devices);

@@ -9,9 +9,9 @@ package org.opensmartgridplatform.domain.core.repositories;
 
 import java.util.List;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,14 +25,11 @@ public interface SsldRepository extends JpaRepository<Ssld, Long> {
     List<Ssld> findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
             LightMeasurementDevice lightMeasurementDevice, DeviceLifecycleStatus deviceLifecycleStatus);
 
-    @Query("SELECT new org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice(ssld.deviceIdentification, ssld.networkAddress, '2500/83') "
+    @Query("SELECT new org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice(ssld.deviceIdentification, ssld.networkAddress, ssld.mastSegment, ssld.batchNumber) "
             + "FROM Ssld ssld WHERE lightMeasurementDevice = :lightMeasurementDevice "
             + "AND isActivated=true AND inMaintenance=false AND protocolInfo IS NOT NULL "
             + "AND networkAddress IS NOT NULL AND technicalInstallationDate IS NOT NULL "
-            + "AND deviceLifecycleStatus = :deviceLifecycleStatus "
-    // + "ORDER BY mastSegment, batchNumber" => regel toevoegen, zodra de
-    // database is bijgewerkt met de wijzigingen van Sander
-    )
+            + "AND deviceLifecycleStatus = :deviceLifecycleStatus ")
     List<CdmaDevice> findCdmaBatchDevicesInUseForLmd(
             @Param("lightMeasurementDevice") LightMeasurementDevice lightMeasurementDevice,
             @Param("deviceLifecycleStatus") DeviceLifecycleStatus deviceLifecycleStatus);
