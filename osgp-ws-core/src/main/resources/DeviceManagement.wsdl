@@ -629,7 +629,7 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="UpdateDeviceCdmaSettingsResponse">
+    <wsdl:operation name="GetUpdateDeviceCdmaSettingsResponse">
       <soap:operation soapAction="" />
       <wsdl:input name="UpdateDeviceCdmaSettingsAsyncRequest">
         <soap:header message="tns:OsgpMessageHeader"
@@ -640,7 +640,7 @@
           part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="UpdateDeviceCdmaSettingsStatusResponse">
+      <wsdl:output name="UpdateDeviceCdmaSettingsResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
