@@ -18,18 +18,6 @@ import javax.validation.constraints.Min;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.QueryException;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specifications;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageType;
@@ -59,6 +47,7 @@ import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceActivatedFilterType;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceExternalManagedFilterType;
@@ -79,6 +68,17 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsCoreDeviceManagementService")
 @Validated
@@ -559,10 +559,8 @@ public class DeviceManagementService {
         }
 
         // Update the device
-        existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerCity(),
-                updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
-                updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
-                updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
+        existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerAddress(),
+                updateDevice.getGpsCoordinates());
 
         existingDevice.setActivated(updateDevice.isActivated());
         existingDevice.setDeviceLifecycleStatus(updateDevice.getDeviceLifecycleStatus());
@@ -773,6 +771,36 @@ public class DeviceManagementService {
     }
 
     public ResponseMessage dequeueSetDeviceLifecycleStatusResponse(final String correlationUid) throws OsgpException {
+        return this.commonResponseMessageFinder.findMessage(correlationUid);
+    }
+
+    public String enqueueUpdateDeviceCdmaSettingsRequest(final String organisationIdentification,
+            final String deviceIdentification, final CdmaSettings cdmaSettings) throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.UPDATE_DEVICE_CDMA_SETTINGS);
+
+        LOGGER.debug(
+                "enqueueUpdateDeviceCdmaSettingsRequest called with organisation {}, deviceIdentification {}, and {}",
+                organisationIdentification, deviceIdentification, cdmaSettings);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                CommonRequestMessageType.UPDATE_DEVICE_CDMA_SETTINGS.name());
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(cdmaSettings).build();
+
+        this.commonRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public ResponseMessage dequeueUpdateDeviceCdmaSettingsResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 }

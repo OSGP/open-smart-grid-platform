@@ -11,13 +11,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceModel;
@@ -26,7 +24,11 @@ import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.entities.Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverterHelper.class);
@@ -46,16 +48,16 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
             source.setGpsLongitude("0");
         }
         T destination;
+        final Address containerAddress = new Address(source.getContainerCity(), source.getContainerPostalCode(),
+                source.getContainerStreet(), source.getContainerNumber(), source.getContainerMunicipality());
+        final GpsCoordinates gpsCoordinates = new GpsCoordinates(Float.valueOf(source.getGpsLatitude()),
+                Float.valueOf(source.getGpsLongitude()));
         if (this.clazz.isAssignableFrom(SmartMeter.class)) {
-            destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(),
-                    source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
-                    source.getContainerNumber(), source.getContainerMunicipality(),
-                    Float.valueOf(source.getGpsLatitude()), Float.valueOf(source.getGpsLongitude()));
+            destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(), containerAddress,
+                    gpsCoordinates);
         } else {
-            destination = (T) new Ssld(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
-                    source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
-                    source.getContainerMunicipality(), Float.valueOf(source.getGpsLatitude()),
-                    Float.valueOf(source.getGpsLongitude()));
+            destination = (T) new Ssld(source.getDeviceIdentification(), source.getAlias(), containerAddress, gpsCoordinates,
+                    null);
         }
 
         if (source.isActivated() != null) {
@@ -90,21 +92,27 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
         destination.setDeviceLifecycleStatus(
                 org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus
                         .valueOf(source.getDeviceLifecycleStatus().name()));
-        destination.setContainerCity(source.getContainerCity());
-        destination.setContainerNumber(source.getContainerNumber());
-        destination.setContainerPostalCode(source.getContainerPostalCode());
-        destination.setContainerStreet(source.getContainerStreet());
-        destination.setContainerMunicipality(source.getContainerMunicipality());
+        if (!Objects.isNull(source.getContainerAddress())) {
+            final Address containerAddress = source.getContainerAddress();
+            destination.setContainerCity(containerAddress.getCity());
+            destination.setContainerNumber(containerAddress.getNumber());
+            destination.setContainerPostalCode(containerAddress.getPostalCode());
+            destination.setContainerStreet(containerAddress.getStreet());
+            destination.setContainerMunicipality(containerAddress.getMunicipality());
+        }
         destination.setDeviceIdentification(source.getDeviceIdentification());
         destination.setDeviceType(source.getDeviceType());
         destination.setTechnicalInstallationDate(
                 this.convertDateToXMLGregorianCalendar(source.getTechnicalInstallationDate()));
 
-        if (source.getGpsLatitude() != null) {
-            destination.setGpsLatitude(Float.toString(source.getGpsLatitude()));
-        }
-        if (source.getGpsLongitude() != null) {
-            destination.setGpsLongitude(Float.toString(source.getGpsLongitude()));
+        if (!Objects.isNull(source.getGpsCoordinates())) {
+            final GpsCoordinates gpsCoordinates = source.getGpsCoordinates();
+            if (gpsCoordinates.getLatitude() != null) {
+                destination.setGpsLatitude(Float.toString(gpsCoordinates.getLatitude()));
+            }
+            if (gpsCoordinates.getLongitude() != null) {
+                destination.setGpsLongitude(Float.toString(gpsCoordinates.getLongitude()));
+            }
         }
 
         destination

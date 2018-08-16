@@ -56,6 +56,7 @@
     <hibernate.version>4.2.16.Final</hibernate.version>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
     <junit.version>4.11</junit.version>
+    <assertj.version>3.9.1</assertj.version>
     <mockito.version>1.10.19</mockito.version>
     <joda.version>2.4</joda.version>
     <flyway.version>4.1.2</flyway.version>
@@ -63,7 +64,7 @@
     <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
     <apache.httpcomponents.version>4.3.5</apache.httpcomponents.version>
     <commons.codec.version>1.9</commons.codec.version>
-    <orika.version>1.5.1</orika.version>
+    <orika.version>1.5.2</orika.version>
     <jxr.version>2.5</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.7.1</maven.site.plugin>
@@ -519,6 +520,12 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

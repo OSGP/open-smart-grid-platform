@@ -13,11 +13,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceConverterTest {
@@ -35,7 +36,8 @@ public class DeviceConverterTest {
 
     @Test
     public void testDeviceConversion() throws UnknownHostException {
-        final Device device = new Device("id", "alias", "city", "postal", "street", "nr", "munic", 12f, 13f);
+        final Device device = new Device("id", "alias", new Address("city", "postal", "street", "nr", "munic"),
+                new GpsCoordinates(12f, 13f), null);
         device.updateRegistrationData(InetAddress.getByName("localhost"), "type");
 
         final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device jaxbDevice = this.deviceManagementMapper
@@ -57,13 +59,13 @@ public class DeviceConverterTest {
 
         assertEquals("id", mappedBack.getDeviceIdentification());
         assertEquals("alias", mappedBack.getAlias());
-        assertEquals("city", mappedBack.getContainerCity());
-        assertEquals("postal", mappedBack.getContainerPostalCode());
-        assertEquals("street", mappedBack.getContainerStreet());
-        assertEquals("nr", mappedBack.getContainerNumber());
-        assertEquals("munic", mappedBack.getContainerMunicipality());
-        assertTrue(12 == mappedBack.getGpsLatitude());
-        assertTrue(13 == mappedBack.getGpsLongitude());
+        assertEquals("city", mappedBack.getContainerAddress().getCity());
+        assertEquals("postal", mappedBack.getContainerAddress().getPostalCode());
+        assertEquals("street", mappedBack.getContainerAddress().getStreet());
+        assertEquals("nr", mappedBack.getContainerAddress().getNumber());
+        assertEquals("munic", mappedBack.getContainerAddress().getMunicipality());
+        assertTrue(12 == mappedBack.getGpsCoordinates().getLatitude());
+        assertTrue(13 == mappedBack.getGpsCoordinates().getLongitude());
         // alas networkaddress in jaxb device is just a string, need parsing to
         // convert that to InetAddress
         assertEquals(null, mappedBack.getNetworkAddress());
@@ -72,7 +74,8 @@ public class DeviceConverterTest {
 
     @Test
     public void testSmartMeterConversion() throws UnknownHostException {
-        final Device device = new SmartMeter("id", "alias", "city", "postal", "street", "nr", "munic", 12f, 13f);
+        final Device device = new SmartMeter("id", "alias", new Address("city", "postal", "street", "nr", "munic"),
+                new GpsCoordinates(12f, 13f));
         device.updateRegistrationData(InetAddress.getByName("localhost"), "type");
 
         final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device jaxbDevice = this.deviceManagementMapper
@@ -94,13 +97,13 @@ public class DeviceConverterTest {
 
         assertEquals("id", mappedBack.getDeviceIdentification());
         assertEquals("alias", mappedBack.getAlias());
-        assertEquals("city", mappedBack.getContainerCity());
-        assertEquals("postal", mappedBack.getContainerPostalCode());
-        assertEquals("street", mappedBack.getContainerStreet());
-        assertEquals("nr", mappedBack.getContainerNumber());
-        assertEquals("munic", mappedBack.getContainerMunicipality());
-        assertTrue(12 == mappedBack.getGpsLatitude());
-        assertTrue(13 == mappedBack.getGpsLongitude());
+        assertEquals("city", mappedBack.getContainerAddress().getCity());
+        assertEquals("postal", mappedBack.getContainerAddress().getPostalCode());
+        assertEquals("street", mappedBack.getContainerAddress().getStreet());
+        assertEquals("nr", mappedBack.getContainerAddress().getNumber());
+        assertEquals("munic", mappedBack.getContainerAddress().getMunicipality());
+        assertTrue(12 == mappedBack.getGpsCoordinates().getLatitude());
+        assertTrue(13 == mappedBack.getGpsCoordinates().getLongitude());
         // alas networkaddress in jaxb device is just a string, need parsing to
         // convert that to InetAddress
         assertEquals(null, mappedBack.getNetworkAddress());
@@ -109,7 +112,8 @@ public class DeviceConverterTest {
 
     @Test
     public void testSsldConversion() throws UnknownHostException {
-        final Ssld device = new Ssld("id", "alias", "city", "postal", "street", "nr", "munic", 12f, 13f);
+        final Ssld device = new Ssld("id", "alias", new Address("city", "postal", "street", "nr", "munic"),
+                new GpsCoordinates(12f, 13f), null);
         device.updateRegistrationData(InetAddress.getByName("localhost"), Ssld.SSLD_TYPE);
         device.getOutputSettings();
 
@@ -131,7 +135,8 @@ public class DeviceConverterTest {
         assertEquals(Ssld.SSLD_TYPE, jaxbDevice.getDeviceType());
         assertEquals(3, jaxbDevice.getOutputSettings().size());
         for (int i = 0; i < 3; i++) {
-            assertEquals(device.getOutputSettings().get(i).getAlias(), jaxbDevice.getOutputSettings().get(i).getAlias());
+            assertEquals(device.getOutputSettings().get(i).getAlias(),
+                    jaxbDevice.getOutputSettings().get(i).getAlias());
 
         }
 
@@ -139,20 +144,21 @@ public class DeviceConverterTest {
 
         assertEquals("id", mappedBack.getDeviceIdentification());
         assertEquals("alias", mappedBack.getAlias());
-        assertEquals("city", mappedBack.getContainerCity());
-        assertEquals("postal", mappedBack.getContainerPostalCode());
-        assertEquals("street", mappedBack.getContainerStreet());
-        assertEquals("nr", mappedBack.getContainerNumber());
-        assertEquals("munic", mappedBack.getContainerMunicipality());
-        assertTrue(12 == mappedBack.getGpsLatitude());
-        assertTrue(13 == mappedBack.getGpsLongitude());
+        assertEquals("city", mappedBack.getContainerAddress().getCity());
+        assertEquals("postal", mappedBack.getContainerAddress().getPostalCode());
+        assertEquals("street", mappedBack.getContainerAddress().getStreet());
+        assertEquals("nr", mappedBack.getContainerAddress().getNumber());
+        assertEquals("munic", mappedBack.getContainerAddress().getMunicipality());
+        assertTrue(12 == mappedBack.getGpsCoordinates().getLatitude());
+        assertTrue(13 == mappedBack.getGpsCoordinates().getLongitude());
         // alas networkaddress in jaxb device is just a string, need parsing to
         // convert that to InetAddress
         assertEquals(null, mappedBack.getNetworkAddress());
         assertEquals(Ssld.SSLD_TYPE, mappedBack.getDeviceType());
         assertEquals(3, mappedBack.getOutputSettings().size());
         for (int i = 0; i < 3; i++) {
-            assertEquals(device.getOutputSettings().get(i).getAlias(), mappedBack.getOutputSettings().get(i).getAlias());
+            assertEquals(device.getOutputSettings().get(i).getAlias(),
+                    mappedBack.getOutputSettings().get(i).getAlias());
 
         }
     }

@@ -17,8 +17,11 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -39,10 +42,12 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
-
 import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 /**
  * Entity class which is the base for all smart devices. Other smart device
@@ -102,46 +107,29 @@ public class Device implements Serializable {
     protected String alias;
 
     /**
-     * Location information of a device. City.
+     * Address of a device
      */
-    @Column(length = 255)
-    protected String containerCity;
+    @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "city", column = @Column(name = "container_city")),
+            @AttributeOverride(name = "street", column = @Column(name = "container_street")),
+            @AttributeOverride(name = "postalCode", column = @Column(name = "container_postal_code")),
+            @AttributeOverride(name = "number", column = @Column(name = "container_number")),
+            @AttributeOverride(name = "municipality", column = @Column(name = "container_municipality")) })
+    protected Address containerAddress;
 
     /**
-     * Location information of a device. Street name.
+     * Gps information of a device
      */
-    @Column(length = 255)
-    protected String containerStreet;
+    @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "latitude", column = @Column(name = "gps_latitude")),
+            @AttributeOverride(name = "longitude", column = @Column(name = "gps_longitude")) })
+    protected GpsCoordinates gpsCoordinates;
 
     /**
-     * Location information of a device. Postal Code.
+     * Cdma communication settings of a device
      */
-    @Column(length = 10)
-    protected String containerPostalCode;
-
-    /**
-     * Location information of a device. Street number.
-     */
-    @Column(length = 255)
-    protected String containerNumber;
-
-    /**
-     * Location information of a device. Municipality / City.
-     */
-    @Column(length = 255)
-    protected String containerMunicipality;
-
-    /**
-     * Location information of a device. Latitude.
-     */
-    @Column
-    protected Float gpsLatitude;
-
-    /**
-     * Location information of a device. Longitude.
-     */
-    @Column
-    protected Float gpsLongitude;
+    @Embedded
+    protected CdmaSettings cdmaSettings;
 
     /**
      * Indicates the type of the device. Example { @see Ssld.SSLD_TYPE }
@@ -224,18 +212,13 @@ public class Device implements Serializable {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public Device(final String deviceIdentification, final String alias, final String containerCity,
-            final String containerPostalCode, final String containerStreet, final String containerNumber,
-            final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
+    public Device(final String deviceIdentification, final String alias, final Address containerAddress,
+            final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaSettings) {
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
-        this.containerCity = containerCity;
-        this.containerPostalCode = containerPostalCode;
-        this.containerStreet = containerStreet;
-        this.containerNumber = containerNumber;
-        this.containerMunicipality = containerMunicipality;
-        this.gpsLatitude = gpsLatitude;
-        this.gpsLongitude = gpsLongitude;
+        this.containerAddress = containerAddress;
+        this.gpsCoordinates = gpsCoordinates;
+        this.cdmaSettings = cdmaSettings;
     }
 
     public DeviceAuthorization addAuthorization(final Organisation organisation,
@@ -284,24 +267,16 @@ public class Device implements Serializable {
         return this.authorizations;
     }
 
-    public String getContainerCity() {
-        return this.containerCity;
+    public CdmaSettings getCdmaSettings() {
+        return this.cdmaSettings;
     }
 
-    public String getContainerMunicipality() {
-        return this.containerMunicipality;
+    public Address getContainerAddress() {
+        return this.containerAddress;
     }
 
-    public String getContainerNumber() {
-        return this.containerNumber;
-    }
-
-    public String getContainerPostalCode() {
-        return this.containerPostalCode;
-    }
-
-    public String getContainerStreet() {
-        return this.containerStreet;
+    public void setContainerAddress(final Address containerAddress) {
+        this.containerAddress = containerAddress;
     }
 
     public final Date getCreationTime() {
@@ -312,16 +287,12 @@ public class Device implements Serializable {
         return this.deviceIdentification;
     }
 
+    public GpsCoordinates getGpsCoordinates() {
+        return this.gpsCoordinates;
+    }
+
     public String getDeviceType() {
         return this.deviceType;
-    }
-
-    public Float getGpsLatitude() {
-        return this.gpsLatitude;
-    }
-
-    public Float getGpsLongitude() {
-        return this.gpsLongitude;
     }
 
     public final Long getId() {
@@ -438,17 +409,14 @@ public class Device implements Serializable {
         this.alias = alias;
     }
 
-    public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
-            final String containerStreet, final String containerNumber, final String containerMunicipality,
-            final Float gpsLatitude, final Float gpsLongitude) {
+    public void updateCdmaSettings(final CdmaSettings cdmaSettings) {
+        this.cdmaSettings = cdmaSettings;
+    }
+
+    public void updateMetaData(final String alias, final Address address, final GpsCoordinates gpsCoordinates) {
         this.alias = alias;
-        this.containerCity = containerCity;
-        this.containerPostalCode = containerPostalCode;
-        this.containerStreet = containerStreet;
-        this.containerNumber = containerNumber;
-        this.containerMunicipality = containerMunicipality;
-        this.gpsLatitude = gpsLatitude;
-        this.gpsLongitude = gpsLongitude;
+        this.containerAddress = address;
+        this.gpsCoordinates = gpsCoordinates;
     }
 
     public void updateProtocol(final ProtocolInfo protocolInfo) {
