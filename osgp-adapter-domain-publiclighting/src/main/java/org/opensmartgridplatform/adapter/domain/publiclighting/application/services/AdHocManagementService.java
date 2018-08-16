@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.adapter.domain.shared.FilterLightAndTariffValuesHelper;
 import org.opensmartgridplatform.adapter.domain.shared.GetStatusResponse;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -27,7 +28,6 @@ import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;

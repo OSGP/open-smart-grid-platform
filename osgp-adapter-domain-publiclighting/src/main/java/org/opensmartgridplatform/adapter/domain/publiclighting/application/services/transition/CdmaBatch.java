@@ -15,13 +15,15 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CdmaBatch {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CdmaBatch.class);
+    private List<CdmaMastSegment> cdmaMastSegments;
     private List<CdmaDeviceList> allCdmaDeviceSeries;
 
     public CdmaBatch(final List<CdmaDevice> devices) {
@@ -30,52 +32,72 @@ public class CdmaBatch {
     }
 
     private void initAllCdmaDeviceSeries(final List<CdmaDevice> devices) {
-        this.allCdmaDeviceSeries = new ArrayList<>();
-        final int iteration = 0;
-
-        for (final CdmaDevice device : devices) {
-            final List<CdmaDevice> newBatch = new ArrayList<>();
-
-            final CdmaDeviceList cdmaDeviceList = new CdmaDeviceList(newBatch, iteration);
-            this.allCdmaDeviceSeries.add(cdmaDeviceList);
-        }
-
-        // aan einde: sorteren
-    }
-
-    private void initAllCdmaDeviceSeries_old(final List<CdmaDevice> devices) {
         final Stream<CdmaDevice> formattedDevices = devices.stream().map(CdmaDevice::mapEmptyFields);
 
         final Map<Boolean, TreeMap<String, TreeMap<Short, List<CdmaDevice>>>> cdmaDevices = formattedDevices
                 .collect(this.partitionMastSegmentCollector());
 
-        final TreeMap<String, TreeMap<Short, List<CdmaDevice>>> devicesHavingMastSegment = cdmaDevices
-                .get(Boolean.TRUE);
+        final TreeMap<String, TreeMap<Short, List<CdmaDevice>>> rawMastSegments = cdmaDevices.get(Boolean.TRUE);
+        this.cdmaMastSegments = null;
 
-        final TreeMap<String, TreeMap<Short, List<CdmaDevice>>> devicesWithoutMastSegment = cdmaDevices
-                .get(Boolean.FALSE);
+        final TreeMap<String, TreeMap<Short, List<CdmaDevice>>> rawNoMastSegment = cdmaDevices.get(Boolean.FALSE);
 
         this.allCdmaDeviceSeries = new ArrayList<>();
         int iteration = 0;
 
-        while (devicesHavingMastSegment != null || devicesWithoutMastSegment != null) {
-            if (devicesHavingMastSegment != null) {
-                for (final Map.Entry<String, TreeMap<Short, List<CdmaDevice>>> batches : devicesHavingMastSegment
-                        .entrySet()) {
+        while (rawMastSegments != null || rawNoMastSegment != null) {
+            if (rawMastSegments != null) {
+                for (final Map.Entry<String, TreeMap<Short, List<CdmaDevice>>> batches : rawMastSegments.entrySet()) {
                     for (final List<CdmaDevice> batchDevices : batches.getValue().values()) {
                         final CdmaDeviceList cdmaDeviceList = new CdmaDeviceList(batchDevices, iteration);
                         this.allCdmaDeviceSeries.add(cdmaDeviceList);
                     }
-                    devicesHavingMastSegment.remove(batches);
+                    rawMastSegments.remove(batches);
                 }
             }
 
-            if (devicesWithoutMastSegment != null) {
+            if (rawNoMastSegment != null) {
 
             }
 
             iteration++; // aan einde van de loop
         }
+    }
+
+    private void initAllCdmaDeviceSeries_alternative(final List<CdmaDevice> devices) {
+        this.allCdmaDeviceSeries = new ArrayList<>();
+
+        if (devices == null || devices.isEmpty()) {
+            return;
+        }
+
+        int iteration = 0;
+
+        final List<CdmaDevice> newBatch = new ArrayList<>();
+        final String currentMastSegment = devices.get(0).getMastSegment();
+        String newMastSegment = devices.get(0).getMastSegment();
+        for (final CdmaDevice device : devices) {
+            newMastSegment = device.getMastSegment();
+            if (currentMastSegment.equals(newMastSegment)) {
+                newBatch.add(device);
+            } else {
+                final CdmaDeviceList cdmaDeviceList = new CdmaDeviceList(newBatch, iteration);
+                iteration++;
+            }
+        }
+        for (final CdmaDevice device : devices) {
+            if (!device.getMastSegment().equals(currentMastSegment)) {
+
+            }
+            // final List<CdmaDevice> newBatch = new ArrayList<>();
+
+            final CdmaDeviceList cdmaDeviceList = new CdmaDeviceList(newBatch, iteration);
+            this.allCdmaDeviceSeries.add(cdmaDeviceList);
+
+            iteration++;
+        }
+
+        // aan einde: sorteren
     }
 
     public boolean hasNext() {

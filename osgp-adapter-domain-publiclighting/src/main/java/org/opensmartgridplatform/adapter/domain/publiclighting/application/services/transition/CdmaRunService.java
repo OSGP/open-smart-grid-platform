@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.serv
 
 import java.util.List;
 
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

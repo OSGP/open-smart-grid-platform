@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.core.valueobjects;
+package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
 import java.net.InetAddress;
 import java.util.Objects;

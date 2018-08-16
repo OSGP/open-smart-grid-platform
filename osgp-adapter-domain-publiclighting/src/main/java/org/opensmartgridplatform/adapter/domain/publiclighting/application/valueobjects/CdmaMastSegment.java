@@ -5,23 +5,42 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.core.valueobjects;
+package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class CdmaMastSegment implements Comparable<CdmaMastSegment> {
 
     private final String mastSegment;
-    private final List<CdmaDevice> cdmaDevices;
+    private List<CdmaDevice> cdmaDevices;
+    private TreeMap<Short, List<CdmaDevice>> rawCdmaBatches;
 
     public CdmaMastSegment(final String mastSegment, final List<CdmaDevice> cdmaDevices) {
         this.mastSegment = mastSegment;
         this.cdmaDevices = cdmaDevices;
     }
 
+    public CdmaMastSegment(final String mastSegment, final TreeMap<Short, List<CdmaDevice>> rawCdmaBatches) {
+        this.mastSegment = mastSegment;
+        this.rawCdmaBatches = rawCdmaBatches;
+    }
+
     public String getMastSegment() {
         return this.mastSegment;
+    }
+
+    public List<CdmaMastSegment> from(final TreeMap<String, TreeMap<Short, List<CdmaDevice>>> rawMastSegments) {
+        final List<CdmaMastSegment> cdmaMastSegments = new ArrayList<>();
+        for (final Entry<String, TreeMap<Short, List<CdmaDevice>>> rawMastSegment : rawMastSegments.entrySet()) {
+            final CdmaMastSegment cdmaMastSegment = new CdmaMastSegment(rawMastSegment.getKey(),
+                    rawMastSegment.getValue());
+        }
+
+        return cdmaMastSegments;
     }
 
     @Override

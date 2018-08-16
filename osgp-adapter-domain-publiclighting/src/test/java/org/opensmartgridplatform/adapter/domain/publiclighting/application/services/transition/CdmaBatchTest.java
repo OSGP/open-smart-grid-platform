@@ -21,7 +21,7 @@ import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

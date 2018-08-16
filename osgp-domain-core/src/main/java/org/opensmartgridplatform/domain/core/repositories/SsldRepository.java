@@ -9,9 +9,9 @@ package org.opensmartgridplatform.domain.core.repositories;
 
 import java.util.List;
 
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
