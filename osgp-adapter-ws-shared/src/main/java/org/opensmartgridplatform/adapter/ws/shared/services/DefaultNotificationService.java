@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.ws.shared.services;
 
 import java.util.Objects;
 
-import org.opensmartgridplatform.adapter.ws.clients.DataBasedWebServiceTemplateFactory;
+import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
@@ -27,7 +27,7 @@ import ma.glasnost.orika.MapperFacade;
  * varying namespaces. A {@link GenericSendNotificationRequest generic
  * notification} is created, which will be mapped to a specific type provided as
  * {@code sendNotificationRequestType} in the
- * {@link #DataBasedNotificationService(DataBasedWebServiceTemplateFactory, Class)
+ * {@link #DefaultNotificationService(NotificationWebServiceTemplateFactory, Class)
  * constructor} using the {@link MapperFacade} provided as {@code mapper}.
  *
  * @param <T>
@@ -41,7 +41,7 @@ public class DefaultNotificationService<T> implements NotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultNotificationService.class);
 
-    private final DataBasedWebServiceTemplateFactory templateFactory;
+    private final NotificationWebServiceTemplateFactory templateFactory;
     private final Class<T> sendNotificationRequestType;
     private final MapperFacade mapper;
 
@@ -60,7 +60,7 @@ public class DefaultNotificationService<T> implements NotificationService {
      *            by {@code sendNotificationRequestType}
      * @see GenericSendNotificationRequest
      */
-    public DefaultNotificationService(final DataBasedWebServiceTemplateFactory templateFactory,
+    public DefaultNotificationService(final NotificationWebServiceTemplateFactory templateFactory,
             final Class<T> sendNotificationRequestType, final MapperFacade mapper) {
 
         this.templateFactory = Objects.requireNonNull(templateFactory, "templateFactory must not be null");

@@ -9,14 +9,11 @@ package org.opensmartgridplatform.adapter.ws.schema.shared.notification;
 
 public class GenericNotification {
 
-    private String message;
-    private String result;
-    private String deviceIdentification;
-    private String correlationUid;
-    private String notificationType;
-
-    public GenericNotification() {
-    }
+    private final String message;
+    private final String result;
+    private final String deviceIdentification;
+    private final String correlationUid;
+    private final String notificationType;
 
     public GenericNotification(final String message, final String result, final String deviceIdentification,
             final String correlationUid, final String notificationType) {
@@ -36,26 +33,10 @@ public class GenericNotification {
     }
 
     /**
-     * @param message
-     *            the message to set
-     */
-    public void setMessage(final String message) {
-        this.message = message;
-    }
-
-    /**
      * @return the result
      */
     public String getResult() {
         return this.result;
-    }
-
-    /**
-     * @param result
-     *            the result to set
-     */
-    public void setResult(final String result) {
-        this.result = result;
     }
 
     /**
@@ -66,14 +47,6 @@ public class GenericNotification {
     }
 
     /**
-     * @param deviceIdentification
-     *            the deviceIdentification to set
-     */
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-    }
-
-    /**
      * @return the correlationUid
      */
     public String getCorrelationUid() {
@@ -81,26 +54,10 @@ public class GenericNotification {
     }
 
     /**
-     * @param correlationUid
-     *            the correlationUid to set
-     */
-    public void setCorrelationUid(final String correlationUid) {
-        this.correlationUid = correlationUid;
-    }
-
-    /**
      * @return the notificationType
      */
     public String getNotificationType() {
         return this.notificationType;
-    }
-
-    /**
-     * @param notificationType
-     *            the notificationType to set
-     */
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
     }
 
 }

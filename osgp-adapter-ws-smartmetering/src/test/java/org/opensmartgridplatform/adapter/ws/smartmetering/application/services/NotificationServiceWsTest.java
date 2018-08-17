@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
@@ -64,8 +63,8 @@ public class NotificationServiceWsTest {
 
     @Test
     public void testMappingFromGenericSendNotificationRequest() {
-        final GenericSendNotificationRequest genericRequest = new GenericSendNotificationRequest();
-        genericRequest.setNotification(this.createGenericNotification());
+        final GenericSendNotificationRequest genericRequest = new GenericSendNotificationRequest(
+                this.createGenericNotification());
 
         final SendNotificationRequest sendNotificationRequest = this.mapperFactory.getMapperFacade().map(genericRequest,
                 SendNotificationRequest.class);
@@ -79,13 +78,8 @@ public class NotificationServiceWsTest {
     }
 
     private GenericNotification createGenericNotification() {
-        final GenericNotification genericNotification = new GenericNotification();
-        genericNotification.setMessage(MESSAGE);
-        genericNotification.setResult(RESULT);
-        genericNotification.setDeviceIdentification(DEVICEIDENTIFICATION);
-        genericNotification.setCorrelationUid(CORRELATION_UID);
-        genericNotification.setNotificationType(NOTIFICATION_TYPE.toString());
-        return genericNotification;
+        return new GenericNotification(MESSAGE, RESULT, DEVICEIDENTIFICATION, CORRELATION_UID,
+                NOTIFICATION_TYPE.toString());
     }
 
 }

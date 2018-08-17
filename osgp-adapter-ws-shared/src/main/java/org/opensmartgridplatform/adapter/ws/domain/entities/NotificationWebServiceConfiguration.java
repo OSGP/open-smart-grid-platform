@@ -16,7 +16,7 @@ import javax.persistence.Entity;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
-public class WebServiceConfigurationData implements Serializable {
+public class NotificationWebServiceConfiguration implements Serializable {
 
     private static final long serialVersionUID = 6961792702877913333L;
 
@@ -52,11 +52,11 @@ public class WebServiceConfigurationData implements Serializable {
     private int circuitBreakerDurationMaximum = DEFAULT_CIRCUIT_BREAKER_DURATION_MAXIMUM;
     private int circuitBreakerDurationMultiplier = DEFAULT_CIRCUIT_BREAKER_DURATION_MULTIPLIER;
 
-    protected WebServiceConfigurationData() {
+    protected NotificationWebServiceConfiguration() {
         // No-argument constructor, required for JPA entity classes.
     }
 
-    public WebServiceConfigurationData(final NotificationWebServiceLookupKey id, final String marshallerContextPath,
+    public NotificationWebServiceConfiguration(final NotificationWebServiceLookupKey id, final String marshallerContextPath,
             final String targetUri) {
 
         this.id = Objects.requireNonNull(id, "id must not be null");
@@ -70,10 +70,10 @@ public class WebServiceConfigurationData implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof WebServiceConfigurationData)) {
+        if (!(obj instanceof NotificationWebServiceConfiguration)) {
             return false;
         }
-        final WebServiceConfigurationData other = (WebServiceConfigurationData) obj;
+        final NotificationWebServiceConfiguration other = (NotificationWebServiceConfiguration) obj;
         return Objects.equals(this.getId(), other.getId());
     }
 

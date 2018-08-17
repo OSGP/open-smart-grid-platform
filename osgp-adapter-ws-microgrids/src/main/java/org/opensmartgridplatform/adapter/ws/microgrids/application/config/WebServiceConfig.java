@@ -12,8 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.opensmartgridplatform.adapter.ws.clients.DataBasedWebServiceTemplateFactory;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.WebServiceConfigurationDataRepository;
+import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -194,7 +194,7 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public NotificationService microgridsNotificationService(final DataBasedWebServiceTemplateFactory templateFactory) {
+    public NotificationService microgridsNotificationService(final NotificationWebServiceTemplateFactory templateFactory) {
         if (!this.webserviceNotificationEnabled) {
             return new NotificationServiceBlackHole();
         }
@@ -204,14 +204,14 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public DataBasedWebServiceTemplateFactory dataBasedWebServiceTemplateFactory(
-            final WebServiceConfigurationDataRepository configRepository) {
+    public NotificationWebServiceTemplateFactory notificationWebServiceTemplateFactory(
+            final NotificationWebServiceConfigurationRepository configRepository) {
 
         final ClientInterceptor addOsgpHeadersInterceptor = OrganisationIdentificationClientInterceptor.newBuilder()
                 .withOrganisationIdentification(this.webserviceNotificationOrganisation)
                 .withUserName(this.webserviceNotificationUsername).withApplicationName("ZownStream").build();
 
-        return new DataBasedWebServiceTemplateFactory(configRepository, this.messageFactory(),
+        return new NotificationWebServiceTemplateFactory(configRepository, this.messageFactory(),
                 Arrays.asList(addOsgpHeadersInterceptor));
     }
 

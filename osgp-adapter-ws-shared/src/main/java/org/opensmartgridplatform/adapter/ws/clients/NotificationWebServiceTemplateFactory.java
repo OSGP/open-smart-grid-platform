@@ -25,8 +25,8 @@ import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
-import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.WebServiceConfigurationDataRepository;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.CircuitBreaker;
 import org.opensmartgridplatform.shared.infra.ws.CircuitBreakerInterceptor;
@@ -40,14 +40,14 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
-public class DataBasedWebServiceTemplateFactory {
+public class NotificationWebServiceTemplateFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataBasedWebServiceTemplateFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationWebServiceTemplateFactory.class);
 
     private static final String PROXY_SERVER = "proxy-server";
     private static final Map<NotificationWebServiceLookupKey, WebServiceTemplate> webServiceTemplates = new ConcurrentHashMap<>();
 
-    private final WebServiceConfigurationDataRepository configRepository;
+    private final NotificationWebServiceConfigurationRepository configRepository;
     private final WebServiceMessageFactory messageFactory;
     private final List<ClientInterceptor> fixedInterceptors = new ArrayList<>();
 
@@ -63,7 +63,7 @@ public class DataBasedWebServiceTemplateFactory {
      *            client interceptors that will always be configured, and do not
      *            depend on stored configuration
      */
-    public DataBasedWebServiceTemplateFactory(final WebServiceConfigurationDataRepository configRepository,
+    public NotificationWebServiceTemplateFactory(final NotificationWebServiceConfigurationRepository configRepository,
             final WebServiceMessageFactory messageFactory, final List<ClientInterceptor> fixedInterceptors) {
 
         this.configRepository = Objects.requireNonNull(configRepository, "configRepository must not be null");
@@ -97,7 +97,7 @@ public class DataBasedWebServiceTemplateFactory {
     private WebServiceTemplate createTemplate(final NotificationWebServiceLookupKey id)
             throws WebServiceSecurityException {
 
-        final WebServiceConfigurationData config = this.configRepository.findOne(id);
+        final NotificationWebServiceConfiguration config = this.configRepository.findOne(id);
         if (config == null) {
             LOGGER.warn("Unable to create template: no web service configuration data available for {}", id);
             return null;
@@ -105,7 +105,7 @@ public class DataBasedWebServiceTemplateFactory {
         return this.createTemplate(config);
     }
 
-    private WebServiceTemplate createTemplate(final WebServiceConfigurationData config)
+    private WebServiceTemplate createTemplate(final NotificationWebServiceConfiguration config)
             throws WebServiceSecurityException {
 
         LOGGER.info("About to create web service template for {}", config.getId());
@@ -134,14 +134,14 @@ public class DataBasedWebServiceTemplateFactory {
         return marshaller;
     }
 
-    private void setInterceptors(final WebServiceTemplate template, final WebServiceConfigurationData config) {
+    private void setInterceptors(final WebServiceTemplate template, final NotificationWebServiceConfiguration config) {
         final List<ClientInterceptor> interceptors = new ArrayList<>(this.fixedInterceptors);
         this.addCircuitBreakerInterceptor(interceptors, config);
         template.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
     }
 
     private void addCircuitBreakerInterceptor(final List<ClientInterceptor> interceptors,
-            final WebServiceConfigurationData config) {
+            final NotificationWebServiceConfiguration config) {
 
         if (config.isUseCircuitBreaker()) {
             final CircuitBreaker circuitBreaker = new CircuitBreaker.Builder()
@@ -153,7 +153,7 @@ public class DataBasedWebServiceTemplateFactory {
         }
     }
 
-    private void setMessageSender(final WebServiceTemplate template, final WebServiceConfigurationData config)
+    private void setMessageSender(final WebServiceTemplate template, final NotificationWebServiceConfiguration config)
             throws WebServiceSecurityException {
 
         final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -167,7 +167,7 @@ public class DataBasedWebServiceTemplateFactory {
         template.setMessageSender(new HttpComponentsMessageSender(clientBuilder.build()));
     }
 
-    private LayeredConnectionSocketFactory createSslConnectionSocketFactory(final WebServiceConfigurationData config)
+    private LayeredConnectionSocketFactory createSslConnectionSocketFactory(final NotificationWebServiceConfiguration config)
             throws WebServiceSecurityException {
 
         final SSLContextBuilder sslContextBuilder = SSLContexts.custom();
@@ -182,7 +182,7 @@ public class DataBasedWebServiceTemplateFactory {
         }
     }
 
-    private void loadKeyMaterial(final SSLContextBuilder sslContextBuilder, final WebServiceConfigurationData config)
+    private void loadKeyMaterial(final SSLContextBuilder sslContextBuilder, final NotificationWebServiceConfiguration config)
             throws WebServiceSecurityException {
 
         if (!config.isUseKeyStore()) {
@@ -196,7 +196,7 @@ public class DataBasedWebServiceTemplateFactory {
         }
     }
 
-    private KeyStore createKeyStore(final WebServiceConfigurationData config) throws WebServiceSecurityException {
+    private KeyStore createKeyStore(final NotificationWebServiceConfiguration config) throws WebServiceSecurityException {
         final KeyStoreFactoryBean keyStoreFactory = new KeyStoreFactoryBean();
         keyStoreFactory.setType(config.getKeyStoreType());
         keyStoreFactory.setLocation(new FileSystemResource(config.getKeyStoreLocation()));
@@ -214,7 +214,7 @@ public class DataBasedWebServiceTemplateFactory {
         }
     }
 
-    private void loadTrustMaterial(final SSLContextBuilder sslContextBuilder, final WebServiceConfigurationData config)
+    private void loadTrustMaterial(final SSLContextBuilder sslContextBuilder, final NotificationWebServiceConfiguration config)
             throws WebServiceSecurityException {
 
         if (!config.isUseTrustStore()) {
@@ -228,7 +228,7 @@ public class DataBasedWebServiceTemplateFactory {
         }
     }
 
-    private KeyStore createTrustStore(final WebServiceConfigurationData config) {
+    private KeyStore createTrustStore(final NotificationWebServiceConfiguration config) {
         final KeyStoreFactoryBean trustStoreFactory = new KeyStoreFactoryBean();
         trustStoreFactory.setType(config.getTrustStoreType());
         trustStoreFactory.setLocation(new FileSystemResource(config.getTrustStoreLocation()));
@@ -243,7 +243,7 @@ public class DataBasedWebServiceTemplateFactory {
         clientBuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
     }
 
-    private void setRequestConfig(final HttpClientBuilder clientBuilder, final WebServiceConfigurationData config) {
+    private void setRequestConfig(final HttpClientBuilder clientBuilder, final NotificationWebServiceConfiguration config) {
         final RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(config.getConnectionTimeout())
                 .build();
         clientBuilder.setDefaultRequestConfig(requestConfig);
