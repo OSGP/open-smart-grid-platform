@@ -7,10 +7,10 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws;
 
-import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 
-public class WebServiceConfigurationDataBuilder {
+public class NotificationWebServiceConfigurationBuilder {
 
     private String organisationIdentification = "test-org";
     private String applicationName = "ZownStream";
@@ -30,8 +30,8 @@ public class WebServiceConfigurationDataBuilder {
     private int circuitBreakerDurationMaximum = 600_000;
     private int circuitBreakerDurationMultiplier = 4;
 
-    public WebServiceConfigurationData build() {
-        final WebServiceConfigurationData config = new WebServiceConfigurationData(
+    public NotificationWebServiceConfiguration build() {
+        final NotificationWebServiceConfiguration config = new NotificationWebServiceConfiguration(
                 new NotificationWebServiceLookupKey(this.organisationIdentification, this.applicationName),
                 this.marshallerContextPath, this.targetUri);
         config.useKeyStore(this.keyStoreType, this.keyStoreLocation, this.keyStorePassword);
@@ -44,22 +44,22 @@ public class WebServiceConfigurationDataBuilder {
         return config;
     }
 
-    public WebServiceConfigurationDataBuilder withOrganisationIdentification(final String organisationIdentification) {
+    public NotificationWebServiceConfigurationBuilder withOrganisationIdentification(final String organisationIdentification) {
         this.organisationIdentification = organisationIdentification;
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withApplicationName(final String applicationName) {
+    public NotificationWebServiceConfigurationBuilder withApplicationName(final String applicationName) {
         this.applicationName = applicationName;
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withMarshallerContextPath(final String marshallerContextPath) {
+    public NotificationWebServiceConfigurationBuilder withMarshallerContextPath(final String marshallerContextPath) {
         this.marshallerContextPath = marshallerContextPath;
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withKeyStoreConfig(final String type, final String location,
+    public NotificationWebServiceConfigurationBuilder withKeyStoreConfig(final String type, final String location,
             final String password) {
 
         this.keyStoreType = type;
@@ -68,14 +68,14 @@ public class WebServiceConfigurationDataBuilder {
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withoutKeyStoreConfig() {
+    public NotificationWebServiceConfigurationBuilder withoutKeyStoreConfig() {
         this.keyStoreType = null;
         this.keyStoreLocation = null;
         this.keyStorePassword = null;
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withTrustStoreConfig(final String type, final String location,
+    public NotificationWebServiceConfigurationBuilder withTrustStoreConfig(final String type, final String location,
             final String password) {
 
         this.trustStoreType = type;
@@ -84,7 +84,7 @@ public class WebServiceConfigurationDataBuilder {
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withoutTrustStoreConfig() {
+    public NotificationWebServiceConfigurationBuilder withoutTrustStoreConfig() {
 
         this.trustStoreType = null;
         this.trustStoreLocation = null;
@@ -92,22 +92,22 @@ public class WebServiceConfigurationDataBuilder {
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withMaxConnectionsPerRoute(final int maxConnectionsPerRoute) {
+    public NotificationWebServiceConfigurationBuilder withMaxConnectionsPerRoute(final int maxConnectionsPerRoute) {
         this.maxConnectionsPerRoute = maxConnectionsPerRoute;
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withMaxConnectionsTotal(final int maxConnectionsTotal) {
+    public NotificationWebServiceConfigurationBuilder withMaxConnectionsTotal(final int maxConnectionsTotal) {
         this.maxConnectionsTotal = maxConnectionsTotal;
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withConnectionTimeout(final int connectionTimeout) {
+    public NotificationWebServiceConfigurationBuilder withConnectionTimeout(final int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withCircuitBreakerConfig(final int threshold, final int durationInitial,
+    public NotificationWebServiceConfigurationBuilder withCircuitBreakerConfig(final int threshold, final int durationInitial,
             final int durationMaximum, final int durationMultiplier) {
 
         this.circuitBreakerThreshold = threshold;
@@ -117,7 +117,7 @@ public class WebServiceConfigurationDataBuilder {
         return this;
     }
 
-    public WebServiceConfigurationDataBuilder withoutCircuitBreakerConfig() {
+    public NotificationWebServiceConfigurationBuilder withoutCircuitBreakerConfig() {
 
         this.circuitBreakerThreshold = 0;
         this.circuitBreakerDurationInitial = 0;

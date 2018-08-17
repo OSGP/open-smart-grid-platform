@@ -11,10 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
-import org.opensmartgridplatform.adapter.ws.domain.entities.WebServiceConfigurationData;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.WebServiceConfigurationDataRepository;
-import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.WebServiceConfigurationDataBuilder;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
 import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class Database {
     private ResponseDataRepository responseDataRepository;
 
     @Autowired
-    private WebServiceConfigurationDataRepository webServiceConfigurationDataRepository;
+    private NotificationWebServiceConfigurationRepository notificationWebServiceConfigurationRepository;
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
@@ -41,12 +41,12 @@ public class Database {
 
     @Transactional
     private void insertDefaultData() {
-        this.webServiceConfigurationDataRepository.save(this.notificationEndpointConfigurations());
+        this.notificationWebServiceConfigurationRepository.save(this.notificationEndpointConfigurations());
     }
 
-    private List<WebServiceConfigurationData> notificationEndpointConfigurations() {
-        final WebServiceConfigurationData testOrgConfig = new WebServiceConfigurationDataBuilder().build();
-        final WebServiceConfigurationData noOrganisationConfig = new WebServiceConfigurationDataBuilder()
+    private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
+        final NotificationWebServiceConfiguration testOrgConfig = new NotificationWebServiceConfigurationBuilder().build();
+        final NotificationWebServiceConfiguration noOrganisationConfig = new NotificationWebServiceConfigurationBuilder()
                 .withOrganisationIdentification("no-organisation").build();
         return Arrays.asList(testOrgConfig, noOrganisationConfig);
     }
