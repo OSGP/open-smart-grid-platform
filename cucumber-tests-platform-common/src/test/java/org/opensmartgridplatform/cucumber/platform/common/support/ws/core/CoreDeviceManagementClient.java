@@ -10,10 +10,6 @@ package org.opensmartgridplatform.cucumber.platform.common.support.ws.core;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
-
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
@@ -34,9 +30,16 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetEven
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsResponse;
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class CoreDeviceManagementClient extends BaseClient {
@@ -130,4 +133,20 @@ public class CoreDeviceManagementClient extends BaseClient {
                 this.getUserName());
         return (SetDeviceLifecycleStatusResponse) wst.marshalSendAndReceive(asyncRequest);
     }
+
+    public UpdateDeviceCdmaSettingsAsyncResponse updateDeviceCdmaSettings(final UpdateDeviceCdmaSettingsRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (UpdateDeviceCdmaSettingsAsyncResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public UpdateDeviceCdmaSettingsResponse getUpdateDeviceCdmaSettingsResponse(
+            final UpdateDeviceCdmaSettingsAsyncRequest asyncRequest)
+            throws WebServiceSecurityException, InterruptedException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (UpdateDeviceCdmaSettingsResponse) wst.marshalSendAndReceive(asyncRequest);
+    }
+
 }

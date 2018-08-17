@@ -94,6 +94,23 @@ public class ReadSettingsHelper {
      *            The settings
      * @param key
      *            The key in the settings for the float object.
+     * @return The float object.
+     */
+    public static Float getFloat(final Map<String, String> settings, final String key) {
+        if (StringUtils.isEmpty(settings.get(key))) {
+            return null;
+        }
+
+        return Float.parseFloat(settings.get(key));
+    }
+
+    /**
+     * Get a float object based on the settings if the key exists.
+     *
+     * @param settings
+     *            The settings
+     * @param key
+     *            The key in the settings for the float object.
      * @param defaultValue
      *            The default value to return if the key wasn't found.
      * @return The float object.
@@ -161,7 +178,11 @@ public class ReadSettingsHelper {
     }
 
     public static Short getShort(final Map<String, String> settings, final String key) {
-        return Short.parseShort(settings.get(key));
+        Short value = null;
+        if (settings.containsKey(key) && !settings.get(key).equalsIgnoreCase("null")) {
+            value = Short.parseShort(settings.get(key));
+        }
+        return value;
     }
 
     /**

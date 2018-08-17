@@ -12,6 +12,8 @@ import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements CucumberBuilder<Device> {
 
@@ -29,9 +31,10 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements C
 
     @Override
     public Device build() {
-        final Device device = new Device(this.deviceIdentification, this.alias, this.containerCity,
-                this.containerPostalCode, this.containerStreet, this.containerNumber, this.containerMunicipality,
-                this.gpsLatitude, this.gpsLongitude);
+        final Device device = new Device(
+                this.deviceIdentification, this.alias, new Address(this.containerCity, this.containerPostalCode,
+                        this.containerStreet, this.containerNumber, this.containerMunicipality),
+                new GpsCoordinates(this.gpsLatitude, this.gpsLongitude), null);
 
         device.updateProtocol(this.protocolInfo);
         device.updateInMaintenance(this.inMaintenance);

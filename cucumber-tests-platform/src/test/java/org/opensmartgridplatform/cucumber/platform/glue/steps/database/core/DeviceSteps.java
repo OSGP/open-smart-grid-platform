@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -26,6 +24,7 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 
@@ -76,25 +75,28 @@ public class DeviceSteps extends BaseDeviceSteps {
                     device.getOwner().getOrganisationIdentification());
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_POSTALCODE)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_POSTALCODE), device.getContainerPostalCode());
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_POSTALCODE), device.getContainerAddress().getPostalCode());
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_CITY)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_CITY), device.getContainerCity());
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_CITY), device.getContainerAddress().getCity());
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_STREET)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_STREET), device.getContainerStreet());
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_STREET), device.getContainerAddress().getStreet());
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_NUMBER)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_NUMBER), device.getContainerNumber());
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_NUMBER), device.getContainerAddress().getNumber());
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_MUNICIPALITY)) {
-            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_MUNICIPALITY), device.getContainerMunicipality());
+            Assert.assertEquals(settings.get(PlatformKeys.CONTAINER_MUNICIPALITY),
+                    device.getContainerAddress().getMunicipality());
         }
         if (settings.containsKey(PlatformKeys.KEY_LATITUDE)) {
-            Assert.assertTrue(Float.parseFloat(settings.get(PlatformKeys.KEY_LATITUDE)) == device.getGpsLatitude());
+            Assert.assertTrue(Float.parseFloat(settings.get(PlatformKeys.KEY_LATITUDE)) == device.getGpsCoordinates()
+                    .getLatitude());
         }
         if (settings.containsKey(PlatformKeys.KEY_LONGITUDE)) {
-            Assert.assertTrue(Float.parseFloat(settings.get(PlatformKeys.KEY_LONGITUDE)) == device.getGpsLongitude());
+            Assert.assertTrue(Float.parseFloat(settings.get(PlatformKeys.KEY_LONGITUDE)) == device.getGpsCoordinates()
+                    .getLongitude());
         }
         if (settings.containsKey(PlatformKeys.KEY_ACTIVATED)) {
             Assert.assertTrue(Boolean.parseBoolean(settings.get(PlatformKeys.KEY_ACTIVATED)) == device.isActivated());

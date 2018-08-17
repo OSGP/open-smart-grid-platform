@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -27,6 +25,7 @@ import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformDomain;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -37,7 +36,7 @@ import cucumber.api.java.en.Then;
 public class OrganizationSteps extends GlueBase {
 
     @Autowired
-    private OrganisationRepository repo;
+    private OrganisationRepository organisationRepository;
 
     /**
      * Generic method to create an organization.
@@ -47,12 +46,12 @@ public class OrganizationSteps extends GlueBase {
      * @throws Throwable
      */
     @Given("^an organization$")
-    public void anOrganization(final Map<String, String> settings) throws Throwable {
+    public void anOrganization(final Map<String, String> settings) {
 
         final String organizationIdentification = getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
-        Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
+        Organisation entity = this.organisationRepository.findByOrganisationIdentification(organizationIdentification);
         if (entity == null) {
             entity = new Organisation(
                     (organizationIdentification.isEmpty()) ? PlatformDefaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION
@@ -81,7 +80,7 @@ public class OrganizationSteps extends GlueBase {
         entity.setIsEnabled(
                 getBoolean(settings, PlatformKeys.KEY_ENABLED, PlatformDefaults.DEFAULT_ORGANIZATION_ENABLED));
 
-        this.repo.save(entity);
+        this.organisationRepository.save(entity);
     }
 
     /**
@@ -93,10 +92,10 @@ public class OrganizationSteps extends GlueBase {
      * @throws Throwable
      */
     @Then("^the entity organization exists$")
-    public void thenTheEntityOrganizationExists(final Map<String, String> expectedEntity) throws Throwable {
+    public void thenTheEntityOrganizationExists(final Map<String, String> expectedEntity) {
 
         Wait.until(() -> {
-            final Organisation entity = this.repo
+            final Organisation entity = this.organisationRepository
                     .findByOrganisationIdentification(expectedEntity.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
 
             Assert.assertEquals(
@@ -134,9 +133,9 @@ public class OrganizationSteps extends GlueBase {
      * @throws Throwable
      */
     @Given("^the organization exists$")
-    public void theOrganizationExists(final Map<String, String> expectedOrganization) throws Throwable {
+    public void theOrganizationExists(final Map<String, String> expectedOrganization) {
         final Organisation entity = Wait.untilAndReturn(() -> {
-            return this.repo.findByOrganisationIdentification(
+            return this.organisationRepository.findByOrganisationIdentification(
                     expectedOrganization.get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
         });
 
@@ -163,8 +162,8 @@ public class OrganizationSteps extends GlueBase {
      * Verify
      */
     @Then("^the organization with name \"([^\"]*)\" should not be created$")
-    public void theOrganizationWithNameShouldNotBeCreated(final String name) throws Throwable {
-        Assert.assertNull(this.repo.findByName(name));
+    public void theOrganizationWithNameShouldNotBeCreated(final String name) {
+        Assert.assertNull(this.organisationRepository.findByName(name));
     }
 
     /**
@@ -173,7 +172,7 @@ public class OrganizationSteps extends GlueBase {
     @Then("^the organization with organization identification \"([^\"]*)\" should be disabled$")
     public void theOrganizationWithOrganizationIdentificationShouldBeDisabled(final String organizationIdentification)
             throws Throwable {
-        final Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
+        final Organisation entity = this.organisationRepository.findByOrganisationIdentification(organizationIdentification);
 
         // Note: 'entity' could be 'null'
         Assert.assertTrue(!entity.isEnabled());
@@ -185,7 +184,7 @@ public class OrganizationSteps extends GlueBase {
     @Then("^the organization with organization identification \"([^\"]*)\" should be enabled")
     public void theOrganizationWithOrganizationIdentificationShouldBeEnabled(final String organizationIdentification)
             throws Throwable {
-        final Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
+        final Organisation entity = this.organisationRepository.findByOrganisationIdentification(organizationIdentification);
 
         Assert.assertTrue(entity.isEnabled());
     }

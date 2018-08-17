@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -38,8 +36,11 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EanRepository;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class BaseDeviceSteps extends GlueBase {
 
@@ -127,17 +128,23 @@ public abstract class BaseDeviceSteps extends GlueBase {
                     PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
         device.updateMetaData(getString(settings, PlatformKeys.KEY_ALIAS, PlatformDefaults.DEFAULT_ALIAS),
-                getString(settings, PlatformKeys.KEY_CITY, PlatformDefaults.DEFAULT_CONTAINER_CITY),
-                getString(settings, PlatformKeys.KEY_POSTCODE, PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
-                getString(settings, PlatformKeys.KEY_STREET, PlatformDefaults.DEFAULT_CONTAINER_STREET),
-                getString(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
-                getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY),
-                (settings.containsKey(PlatformKeys.KEY_LATITUDE) && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
-                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE) : null,
-                (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
-                        && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
-                                ? getFloat(settings, PlatformKeys.KEY_LONGITUDE, PlatformDefaults.DEFAULT_LONGITUDE)
-                                : null);
+                new Address(getString(settings, PlatformKeys.KEY_CITY, PlatformDefaults.DEFAULT_CONTAINER_CITY),
+                        getString(settings, PlatformKeys.KEY_POSTCODE, PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
+                        getString(settings, PlatformKeys.KEY_STREET, PlatformDefaults.DEFAULT_CONTAINER_STREET),
+                        getString(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
+                        getString(settings, PlatformKeys.KEY_MUNICIPALITY,
+                                PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY)),
+                new GpsCoordinates(
+                        (settings.containsKey(PlatformKeys.KEY_LATITUDE)
+                                && !settings.get(PlatformKeys.KEY_LATITUDE).isEmpty())
+                                        ? getFloat(settings, PlatformKeys.KEY_LATITUDE,
+                                                PlatformDefaults.DEFAULT_LATITUDE)
+                                        : null,
+                        (settings.containsKey(PlatformKeys.KEY_LONGITUDE)
+                                && !settings.get(PlatformKeys.KEY_LONGITUDE).isEmpty())
+                                        ? getFloat(settings, PlatformKeys.KEY_LONGITUDE,
+                                                PlatformDefaults.DEFAULT_LONGITUDE)
+                                        : null));
 
         device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformDefaults.DEFAULT_ACTIVATED));
 
