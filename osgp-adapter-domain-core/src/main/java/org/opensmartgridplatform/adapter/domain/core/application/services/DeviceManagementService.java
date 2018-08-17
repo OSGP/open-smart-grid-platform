@@ -9,12 +9,8 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
@@ -23,6 +19,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainCoreDeviceManagementService")
 @Transactional(value = "transactionManager")
@@ -48,7 +48,8 @@ public class DeviceManagementService extends AbstractService {
         final Device device = this.findActiveDevice(deviceIdentification);
 
         final List<org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto> eventNotificationsDto = this.domainCoreMapper
-                .mapAsList(eventNotifications, org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto.class);
+                .mapAsList(eventNotifications,
+                        org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto.class);
         final EventNotificationMessageDataContainerDto eventNotificationMessageDataContainer = new EventNotificationMessageDataContainerDto(
                 eventNotificationsDto);
 
@@ -109,6 +110,25 @@ public class DeviceManagementService extends AbstractService {
         final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
 
         device.setDeviceLifecycleStatus(deviceLifecycleStatus);
+        this.deviceDomainService.saveDevice(device);
+
+        final ResponseMessageResultType result = ResponseMessageResultType.OK;
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification).withResult(result).build();
+        this.webServiceResponseMessageSender.send(responseMessage);
+    }
+
+    public void updateDeviceCdmaSettings(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final CdmaSettings cdmaSettings) throws FunctionalException {
+        LOGGER.debug("UpdateDeviceCdmaSettings called with organisation {}, deviceIdentification {}, and {}",
+                organisationIdentification, deviceIdentification, cdmaSettings);
+
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
+
+        device.updateCdmaSettings(cdmaSettings);
         this.deviceDomainService.saveDevice(device);
 
         final ResponseMessageResultType result = ResponseMessageResultType.OK;
