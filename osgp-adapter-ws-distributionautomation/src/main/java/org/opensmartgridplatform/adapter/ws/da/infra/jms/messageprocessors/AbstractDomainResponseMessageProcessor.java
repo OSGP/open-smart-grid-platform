@@ -13,18 +13,17 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.ws.da.application.services.NotificationService;
-import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
+import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -51,7 +50,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
      */
     protected DeviceFunction deviceFunction;
     @Autowired
-    private NotificationService notificationService;
+    private NotificationService distributionAutomationNotificationService;
     @Autowired
     private ResponseDataService responseDataService;
 
@@ -119,7 +118,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
                     resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
+            this.distributionAutomationNotificationService.sendNotification(organisationIdentification, deviceIdentification,
                     resultType.name(), correlationUid, notificationMessage, notificationType);
 
         } catch (final Exception e) {
@@ -163,7 +162,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             final String deviceIdentification, final NotificationType notificationType) {
 
         LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType);
-        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
+        this.distributionAutomationNotificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
                 correlationUid, e.getMessage(), notificationType);
     }
 }

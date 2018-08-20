@@ -8,32 +8,32 @@
 package org.opensmartgridplatform.adapter.ws.da.application.services;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
+import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
+import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
 
 @Service(value = "resendNotificationServiceDistributionAutomation")
 @Transactional(value = "transactionManager")
 public class ResendNotificationService extends AbstractResendNotificationService {
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificationService distributionAutomationNotificationService;
 
     @Override
     public void resendNotification(final ResponseData responseData) {
 
         if (!EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
             this.logUnknownNotificationTypeError(responseData.getCorrelationUid(), responseData.getMessageType(),
-                    this.notificationService.getClass().getName());
+                    this.distributionAutomationNotificationService.getClass().getName());
             return;
         }
 
         final NotificationType notificationType = NotificationType.valueOf(responseData.getMessageType());
-        this.notificationService.sendNotification(responseData.getOrganisationIdentification(),
+        this.distributionAutomationNotificationService.sendNotification(responseData.getOrganisationIdentification(),
                 responseData.getDeviceIdentification(), responseData.getResultType().name(),
                 responseData.getCorrelationUid(), this.getNotificationMessage(responseData.getMessageType()),
                 notificationType);
