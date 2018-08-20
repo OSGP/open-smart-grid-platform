@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.database.ws;
+package org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
@@ -13,8 +13,8 @@ import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServi
 public class NotificationWebServiceConfigurationBuilder {
 
     private String organisationIdentification = "test-org";
-    private String applicationName = "ZownStream";
-    private String marshallerContextPath = "org.opensmartgridplatform.adapter.ws.schema.microgrids.notification";
+    private String applicationName = "application-name";
+    private String marshallerContextPath = "org.opensmartgridplatform.adapter.ws.schema";
     private String targetUri = "http://localhost:8088/notifications";
     private String keyStoreType = "pkcs12";
     private String keyStoreLocation = "/etc/ssl/certs/test-org.pfx";
@@ -44,7 +44,8 @@ public class NotificationWebServiceConfigurationBuilder {
         return config;
     }
 
-    public NotificationWebServiceConfigurationBuilder withOrganisationIdentification(final String organisationIdentification) {
+    public NotificationWebServiceConfigurationBuilder withOrganisationIdentification(
+            final String organisationIdentification) {
         this.organisationIdentification = organisationIdentification;
         return this;
     }
@@ -56,6 +57,11 @@ public class NotificationWebServiceConfigurationBuilder {
 
     public NotificationWebServiceConfigurationBuilder withMarshallerContextPath(final String marshallerContextPath) {
         this.marshallerContextPath = marshallerContextPath;
+        return this;
+    }
+
+    public NotificationWebServiceConfigurationBuilder withTargetUri(final String targetUri) {
+        this.targetUri = targetUri;
         return this;
     }
 
@@ -107,8 +113,8 @@ public class NotificationWebServiceConfigurationBuilder {
         return this;
     }
 
-    public NotificationWebServiceConfigurationBuilder withCircuitBreakerConfig(final int threshold, final int durationInitial,
-            final int durationMaximum, final int durationMultiplier) {
+    public NotificationWebServiceConfigurationBuilder withCircuitBreakerConfig(final int threshold,
+            final int durationInitial, final int durationMaximum, final int durationMultiplier) {
 
         this.circuitBreakerThreshold = threshold;
         this.circuitBreakerDurationInitial = durationInitial;

@@ -7,14 +7,19 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyRepository;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
+import org.opensmartgridplatform.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
 
 /**
  * DLMS related database steps.
@@ -34,12 +39,26 @@ public class DlmsDatabase {
     @Autowired
     private ResponseUrlDataRepository responseUrlDataRepo;
 
+    @Autowired
+    private NotificationWebServiceConfigurationRepository notificationWebServiceConfigurationRepository;
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: A default dlms gateway device.
      */
     private void insertDefaultData() {
-        // TODO insert here default devices.
+        this.notificationWebServiceConfigurationRepository.save(this.notificationEndpointConfigurations());
+    }
+
+    private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
+        final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
+                .withApplicationName("")
+                .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification")
+                .withTargetUri("http://localhost:8843/notifications");
+        final NotificationWebServiceConfiguration testOrgConfig = builder.build();
+        final NotificationWebServiceConfiguration noOrganisationConfig = builder
+                .withOrganisationIdentification("no-organisation").build();
+        return Arrays.asList(testOrgConfig, noOrganisationConfig);
     }
 
     /**
