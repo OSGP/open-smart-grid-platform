@@ -100,7 +100,12 @@ public class DefaultNotificationService<T> implements NotificationService {
         final T notificationRequest = this.mapper.map(new GenericSendNotificationRequest(notification),
                 this.sendNotificationRequestType);
 
-        template.marshalSendAndReceive(notificationRequest);
+        final String uri = this.getCustomTargetUri(endpointLookupKey, notification);
+        if (uri == null) {
+            template.marshalSendAndReceive(notificationRequest);
+        } else {
+            template.marshalSendAndReceive(uri, notificationRequest);
+        }
     }
 
 }

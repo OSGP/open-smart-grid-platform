@@ -15,6 +15,12 @@ public interface NotificationService {
     void sendNotification(final String organisationIdentification, final String deviceIdentification,
             final String result, final String correlationUid, final String message, final Object notificationType);
 
+    default String getCustomTargetUri(final NotificationWebServiceLookupKey endpointLookupKey,
+            final GenericNotification notification) {
+
+        return null;
+    }
+
     default void sendNotification(final NotificationWebServiceLookupKey endpointLookupKey,
             final GenericNotification notification) {
 
