@@ -7,6 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.config;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 import javax.annotation.Resource;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition.SetTransitionService;
@@ -31,6 +34,7 @@ public class ApplicationContext {
 
     private static final String PROPERTY_NAME_SET_TRANSITION_LOGS_RESPONSE = "public.lighting.set.transition.logs.response";
     private static final String PROPERTY_NAME_SET_TRANSITION_DELAY_BETWEEN_BATCH_SECONDS = "public.lighting.set.transition.delay.between.batch.seconds";
+    private static final String PROPERTY_NAME_SET_TRANSITION_POOL_SIZE = "public.lighting.set.transition.pool.size";
 
     @Bean
     public Boolean isSetTransitionResponseLoggingEnabled() {
@@ -39,10 +43,16 @@ public class ApplicationContext {
 
     @Bean
     public SetTransitionService setTransitionService() {
-        final int delayInSeconds = Integer.parseInt(
-                this.environment.getRequiredProperty(PROPERTY_NAME_SET_TRANSITION_DELAY_BETWEEN_BATCH_SECONDS));
-
-        return new SetTransitionService(delayInSeconds);
+        final ScheduledExecutorService executor = Executors.newScheduledThreadPool(this.poolSize());
+        return new SetTransitionService(executor, this.delayBetweenBatchSeconds());
     }
 
+    private Integer poolSize() {
+        return Integer.valueOf(this.environment.getRequiredProperty(PROPERTY_NAME_SET_TRANSITION_POOL_SIZE));
+    }
+
+    private Integer delayBetweenBatchSeconds() {
+        return Integer.valueOf(
+                this.environment.getRequiredProperty(PROPERTY_NAME_SET_TRANSITION_DELAY_BETWEEN_BATCH_SECONDS));
+    }
 }

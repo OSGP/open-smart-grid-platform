@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.serv
 
 import java.net.InetAddress;
 import java.util.Iterator;
+import java.util.concurrent.Executors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.TransitionType;
 @RunWith(MockitoJUnitRunner.class)
 public class CdmaRunTest {
 
-    @Mock(name = "domainPublicLightingOutgoingOsgpCoreRequestMessageSender")
+    @Mock
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Mock
@@ -45,7 +46,7 @@ public class CdmaRunTest {
     private static final String SET_TRANSITION = "SET_TRANSITION";
 
     @InjectMocks
-    private SetTransitionService service = new SetTransitionService(15);
+    private SetTransitionService service = new SetTransitionService(Executors.newScheduledThreadPool(1), 15);
 
     @Test
     public void emptyCdmaRun() {
@@ -112,7 +113,8 @@ public class CdmaRunTest {
 
     @Test
     public void threeBatchesNoDelayCdmaRun() {
-        this.service = new SetTransitionService(0);
+        // Set a delay of 0 seconds for this scenario
+        this.service = new SetTransitionService(Executors.newScheduledThreadPool(1), 0);
         MockitoAnnotations.initMocks(this);
 
         final CdmaRun run = new CdmaRun();

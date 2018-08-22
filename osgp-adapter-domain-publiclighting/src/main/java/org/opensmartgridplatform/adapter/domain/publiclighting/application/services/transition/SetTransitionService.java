@@ -12,11 +12,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PreDestroy;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
@@ -39,10 +38,11 @@ public class SetTransitionService extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetTransitionService.class);
 
-    private int delayBetweenBatchSeconds;
+    private final Integer delayBetweenBatchSeconds;
+    private final ScheduledExecutorService executor;
 
-    public SetTransitionService(final int delayBetweenBatchSeconds) {
-        LOGGER.info("Delay between batches (in seconds) {}", this.delayBetweenBatchSeconds);
+    public SetTransitionService(final ScheduledExecutorService executor, final int delayBetweenBatchSeconds) {
+        this.executor = executor;
         this.delayBetweenBatchSeconds = delayBetweenBatchSeconds;
     }
 
@@ -81,21 +81,36 @@ public class SetTransitionService extends AbstractService {
                 metadata.getMessageType(), metadata.getMessagePriority(), ipAddress);
     }
 
-    public void transitionCdmaRun(final CdmaRun cdmaRun, final String organisationIdentification,
+    public synchronized void transitionCdmaRun(final CdmaRun cdmaRun, final String organisationIdentification,
             final String correlationUid, final TransitionType transitionType) {
-        LOGGER.info("Perform transition run for " + cdmaRun);
-
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
-
-        final Iterator<CdmaMastSegment> mastSegments = cdmaRun.getMastSegmentIterator();
-        try {
-            mastSegments.forEachRemaining(mastSegment -> executor.submit(
-                    new MastSegmentRunnable(mastSegment, organisationIdentification, correlationUid, transitionType)));
-        } finally {
-            executor.shutdown();
+        if (this.executor.isShutdown()) {
+            throw new IllegalStateException("Executor is already shutdown. Starting a new CdmaRun is not allowed.");
         }
 
+        LOGGER.info("Perform transition run for " + cdmaRun);
+
+        final Iterator<CdmaMastSegment> mastSegments = cdmaRun.getMastSegmentIterator();
+        mastSegments.forEachRemaining(mastSegment -> this.executor.submit(
+                new MastSegmentRunnable(mastSegment, organisationIdentification, correlationUid, transitionType)));
+
         LOGGER.info("Task creation and submission complete for the mast segments");
+    }
+
+    @PreDestroy
+    public void destroy() {
+        LOGGER.info("Shutting down executor, cancelling running tasks");
+        this.executor.shutdownNow();
+
+        // Wait briefly for running tasks being cancelled
+        try {
+            if (!this.executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                LOGGER.warn("Executor pool for SetTransition did not shutdown");
+            }
+        } catch (final InterruptedException e) {
+            LOGGER.error("Shutdown executor pool interrupted", e);
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
     }
 
     private class MastSegmentRunnable implements Runnable {
@@ -116,34 +131,31 @@ public class SetTransitionService extends AbstractService {
         @Override
         public void run() {
             final Instant start = Instant.now();
-            final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
             final CdmaBatch firstCdmaBatch = this.mastSegment.popCdmaBatch();
-            this.submitCdmaBatch(executor, firstCdmaBatch, this.organisationIdentification, this.correlationUid,
+            this.submitCdmaBatch(firstCdmaBatch, this.organisationIdentification, this.correlationUid,
                     this.transitionType);
 
             // Create a scheduled task for the remaining batches of this
             // mastSegment
             if (!this.mastSegment.empty()) {
-                try {
-                    final Instant now = Instant.now();
-                    final Duration currentTaskDuration = Duration.between(now, start);
+                final Instant now = Instant.now();
+                final Duration currentTaskDuration = Duration.between(now, start);
 
-                    final long delayInMillis = Duration.ofSeconds(SetTransitionService.this.delayBetweenBatchSeconds)
-                            .minus(currentTaskDuration).toMillis();
-                    executor.schedule(new MastSegmentRunnable(this.mastSegment, this.organisationIdentification,
-                            this.correlationUid, this.transitionType), delayInMillis, TimeUnit.MILLISECONDS);
-                } finally {
-                    executor.shutdown();
-                }
+                final long delayInMillis = Duration.ofSeconds(SetTransitionService.this.delayBetweenBatchSeconds)
+                        .minus(currentTaskDuration).toMillis();
+                SetTransitionService.this.executor
+                        .schedule(
+                                new MastSegmentRunnable(this.mastSegment, this.organisationIdentification,
+                                        this.correlationUid, this.transitionType),
+                                delayInMillis, TimeUnit.MILLISECONDS);
             }
         }
 
-        private void submitCdmaBatch(final ExecutorService executor, final CdmaBatch cdmaBatch,
-                final String organisationIdentification, final String correlationUid,
-                final TransitionType transitionType) {
-            executor.submit(() -> {
-                LOGGER.info("Submit CdmaBatch {}", cdmaBatch);
+        private void submitCdmaBatch(final CdmaBatch cdmaBatch, final String organisationIdentification,
+                final String correlationUid, final TransitionType transitionType) {
+            SetTransitionService.this.executor.submit(() -> {
+                LOGGER.info("Send messages for {}", cdmaBatch);
                 final List<CdmaBatchDevice> devices = cdmaBatch.getCdmaBatchDevices();
 
                 // Send a message for each device
