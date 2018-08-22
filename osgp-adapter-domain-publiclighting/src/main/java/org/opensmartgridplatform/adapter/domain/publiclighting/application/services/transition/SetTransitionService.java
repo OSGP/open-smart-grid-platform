@@ -67,7 +67,7 @@ public class SetTransitionService extends AbstractService {
         final String organisationIdentification = metadata.getOrganisationIdentification();
         final String deviceIdentification = metadata.getDeviceIdentification();
 
-        LOGGER.info("Private setTransitionForDevice called for device {} with organisation {}", deviceIdentification,
+        LOGGER.debug("Private setTransitionForDevice called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
 
         final TransitionMessageDataContainerDto transitionMessageDataContainerDto = new TransitionMessageDataContainerDto(
@@ -143,7 +143,7 @@ public class SetTransitionService extends AbstractService {
                 final String organisationIdentification, final String correlationUid,
                 final TransitionType transitionType) {
             executor.submit(() -> {
-                LOGGER.info("Submit CdmaBatch {}", cdmaBatch.getBatchNumber());
+                LOGGER.info("Submit CdmaBatch {}", cdmaBatch);
                 final List<CdmaBatchDevice> devices = cdmaBatch.getCdmaBatchDevices();
 
                 // Send a message for each device

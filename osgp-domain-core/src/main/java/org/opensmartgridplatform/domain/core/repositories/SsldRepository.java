@@ -22,10 +22,8 @@ import org.springframework.stereotype.Repository;
 public interface SsldRepository extends JpaRepository<Ssld, Long> {
     Ssld findByDeviceIdentification(String deviceIdentification);
 
-    List<Ssld> findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
-            LightMeasurementDevice lightMeasurementDevice, DeviceLifecycleStatus deviceLifecycleStatus);
-
-    @Query("SELECT new org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice(ssld.deviceIdentification, ssld.networkAddress, ssld.cdmaSettings.mastSegment, ssld.cdmaSettings.batchNumber) "
+    @Query("SELECT new org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice(ssld.deviceIdentification, "
+            + "ssld.networkAddress, ssld.cdmaSettings.mastSegment, ssld.cdmaSettings.batchNumber) "
             + "FROM Ssld ssld WHERE lightMeasurementDevice = :lightMeasurementDevice "
             + "AND isActivated=true AND inMaintenance=false AND protocolInfo IS NOT NULL "
             + "AND networkAddress IS NOT NULL AND technicalInstallationDate IS NOT NULL "

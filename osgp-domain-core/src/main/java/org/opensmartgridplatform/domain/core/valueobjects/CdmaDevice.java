@@ -13,7 +13,7 @@ import java.util.Objects;
 public class CdmaDevice {
 
     private static final Short MAX_BATCH_NUMBER = (short) 99;
-    public static final String DEFAULT_MASTSEGMENT = "1DEVICE-WITHOUT-MASTSEGMENT";
+    public static final String DEFAULT_MASTSEGMENT = "DEVICE-WITHOUT-MASTSEGMENT";
 
     private String deviceIdentification;
     private InetAddress networkAddress;
@@ -44,18 +44,6 @@ public class CdmaDevice {
         return this.batchNumber;
     }
 
-    /*
-     * public CdmaDevice mapEmptyFields() { if
-     * (StringUtils.isNotEmpty(this.mastSegmentName) && this.batchNumber !=
-     * null) { return this; }
-     *
-     * final Short newBatchNumber = this.batchNumber == null ? MAX_BATCH_NUMBER
-     * : this.batchNumber; final String newMastSegmentName =
-     * StringUtils.isEmpty(this.mastSegmentName) ? DEFAULT_MASTSEGMENT :
-     * this.mastSegmentName; return new CdmaDevice(this.deviceIdentification,
-     * this.networkAddress, newMastSegmentName, newBatchNumber); }
-     */
-
     @Override
     public int hashCode() {
         return this.deviceIdentification.hashCode();
@@ -74,10 +62,6 @@ public class CdmaDevice {
         final CdmaDevice other = (CdmaDevice) obj;
 
         return Objects.equals(this.deviceIdentification, other.deviceIdentification);
-    }
-
-    public int getLength() {
-        return this.deviceIdentification.length();
     }
 
     @Override
