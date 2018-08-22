@@ -21,19 +21,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class ResendNotificationService extends AbstractResendNotificationService {
 
     @Autowired
-    private NotificationService distributionAutomationNotificationService;
+    private NotificationService notificationService;
 
     @Override
     public void resendNotification(final ResponseData responseData) {
 
         if (!EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
             this.logUnknownNotificationTypeError(responseData.getCorrelationUid(), responseData.getMessageType(),
-                    this.distributionAutomationNotificationService.getClass().getName());
+                    this.notificationService.getClass().getName());
             return;
         }
 
         final NotificationType notificationType = NotificationType.valueOf(responseData.getMessageType());
-        this.distributionAutomationNotificationService.sendNotification(responseData.getOrganisationIdentification(),
+        this.notificationService.sendNotification(responseData.getOrganisationIdentification(),
                 responseData.getDeviceIdentification(), responseData.getResultType().name(),
                 responseData.getCorrelationUid(), this.getNotificationMessage(responseData.getMessageType()),
                 notificationType);

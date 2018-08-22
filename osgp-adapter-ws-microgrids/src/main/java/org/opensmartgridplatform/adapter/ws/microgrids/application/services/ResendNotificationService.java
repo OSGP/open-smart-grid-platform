@@ -23,18 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class ResendNotificationService extends AbstractResendNotificationService {
 
     @Autowired
-    private NotificationService microgridsNotificationService;
+    private NotificationService notificationService;
 
     @Override
     public void resendNotification(final ResponseData responseData) {
 
         if (!EnumUtils.isValidEnum(NotificationType.class, responseData.getMessageType())) {
             this.logUnknownNotificationTypeError(responseData.getCorrelationUid(), responseData.getMessageType(),
-                    this.microgridsNotificationService.getClass().getName());
+                    this.notificationService.getClass().getName());
             return;
         }
 
-        this.microgridsNotificationService.sendNotification(
+        this.notificationService.sendNotification(
                 new NotificationWebServiceLookupKey(responseData.getOrganisationIdentification(), "ZownStream"),
                 new GenericNotification(this.getNotificationMessage(responseData.getMessageType()),
                         responseData.getResultType().name(), responseData.getDeviceIdentification(),

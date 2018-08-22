@@ -50,7 +50,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
      */
     protected DeviceFunction deviceFunction;
     @Autowired
-    private NotificationService distributionAutomationNotificationService;
+    private NotificationService notificationService;
     @Autowired
     private ResponseDataService responseDataService;
 
@@ -118,7 +118,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
                     resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
-            this.distributionAutomationNotificationService.sendNotification(organisationIdentification, deviceIdentification,
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
                     resultType.name(), correlationUid, notificationMessage, notificationType);
 
         } catch (final Exception e) {
@@ -162,7 +162,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             final String deviceIdentification, final NotificationType notificationType) {
 
         LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType);
-        this.distributionAutomationNotificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
+        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
                 correlationUid, e.getMessage(), notificationType);
     }
 }

@@ -49,7 +49,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     protected DomainResponseMessageProcessorMap domainResponseMessageProcessorMap;
 
     @Autowired
-    private NotificationService microgridsNotificationService;
+    private NotificationService notificationService;
 
     @Autowired
     private ResponseDataService responseDataService;
@@ -192,7 +192,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
          */
 
         try {
-            this.microgridsNotificationService.sendNotification(
+            this.notificationService.sendNotification(
                     new NotificationWebServiceLookupKey(organisationIdentification, "ZownStream"),
                     new GenericNotification(message, result, deviceIdentification, correlationUid,
                             notificationType.name()));
