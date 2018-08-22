@@ -19,19 +19,27 @@ public class CdmaBatch implements Comparable<CdmaBatch> {
     private List<CdmaBatchDevice> cdmaBatchDevices;
 
     public CdmaBatch(final CdmaDevice cdmaDevice) {
-        this.batchNumber = cdmaDevice.getBatchNumber();
-        if (this.batchNumber == null) {
-            throw new IllegalArgumentException("batchNumber is a mandory field, value null is not allowed");
-        }
-
-        final CdmaBatchDevice cdmaBatchDevice = new CdmaBatchDevice(cdmaDevice);
         this.cdmaBatchDevices = new ArrayList<>();
-        this.cdmaBatchDevices.add(cdmaBatchDevice);
+        this.addCdmaDevice(cdmaDevice);
+
+        this.batchNumber = cdmaDevice.getBatchNumber();
     }
 
     public void addCdmaDevice(final CdmaDevice cdmaDevice) {
+        this.validateCdmaDevice(cdmaDevice);
+
         final CdmaBatchDevice cdmaBatchDevice = new CdmaBatchDevice(cdmaDevice);
         this.cdmaBatchDevices.add(cdmaBatchDevice);
+    }
+
+    private void validateCdmaDevice(final CdmaDevice cdmaDevice) {
+        if (cdmaDevice == null) {
+            throw new IllegalArgumentException("cmdDevice is mandatory, null value is not allowed");
+        }
+
+        if (this.getBatchNumber() != null && !this.getBatchNumber().equals(cdmaDevice.getBatchNumber())) {
+            throw new IllegalArgumentException("cdmaDevice.batchNumber not equal to batchNumber of the CdmaBatch");
+        }
     }
 
     public Short getBatchNumber() {
@@ -63,93 +71,12 @@ public class CdmaBatch implements Comparable<CdmaBatch> {
     }
 
     @Override
+    public String toString() {
+        return "CdmaBatch [batchNumber=" + this.batchNumber + ", cdmaBatchDevices=" + this.cdmaBatchDevices + "]";
+    }
+
+    @Override
     public int compareTo(final CdmaBatch other) {
         return this.batchNumber.compareTo(other.batchNumber);
     }
-
-    /* @formatter:off
-    *
-    public CdmaBatch(final List<CdmaDevice> devices) {
-        LOGGER.info("Create CDMA batch for " + devices.size() + " devices.");
-        this.initAllCdmaDeviceSeries(devices);
-    }
-
-    private void initAllCdmaDeviceSeries(final List<CdmaDevice> devices) {
-        final Stream<CdmaDevice> formattedDevices = devices.stream().map(CdmaDevice::mapEmptyFields);
-
-        final Map<Boolean, TreeMap<String, TreeMap<Short, List<CdmaDevice>>>> cdmaDevices = formattedDevices
-                .collect(this.partitionMastSegmentCollector());
-
-        final TreeMap<String, TreeMap<Short, List<CdmaDevice>>> rawMastSegments = cdmaDevices.get(Boolean.TRUE);
-        this.cdmaMastSegments = null;
-
-        final TreeMap<String, TreeMap<Short, List<CdmaDevice>>> rawNoMastSegment = cdmaDevices.get(Boolean.FALSE);
-
-        this.allCdmaDeviceSeries = new ArrayList<>();
-        int iteration = 0;
-
-        while (rawMastSegments != null || rawNoMastSegment != null) {
-            if (rawMastSegments != null) {
-                for (final Map.Entry<String, TreeMap<Short, List<CdmaDevice>>> batches : rawMastSegments.entrySet()) {
-                    for (final List<CdmaDevice> batchDevices : batches.getValue().values()) {
-                        final CdmaDeviceList cdmaDeviceList = new CdmaDeviceList(batchDevices, iteration);
-                        this.allCdmaDeviceSeries.add(cdmaDeviceList);
-                    }
-                    rawMastSegments.remove(batches);
-                }
-            }
-
-            if (rawNoMastSegment != null) {
-
-            }
-
-            iteration++; // aan einde van de loop
-        }
-    }
-
-    private void initAllCdmaDeviceSeries_alternative(final List<CdmaDevice> devices) {
-        this.allCdmaDeviceSeries = new ArrayList<>();
-
-        if (devices == null || devices.isEmpty()) {
-            return;
-        }
-
-        int iteration = 0;
-
-        final List<CdmaDevice> newBatch = new ArrayList<>();
-        final String currentMastSegment = devices.get(0).getMastSegment();
-        String newMastSegment = devices.get(0).getMastSegment();
-        for (final CdmaDevice device : devices) {
-            newMastSegment = device.getMastSegment();
-            if (currentMastSegment.equals(newMastSegment)) {
-                newBatch.add(device);
-            } else {
-                final CdmaDeviceList cdmaDeviceList = new CdmaDeviceList(newBatch, iteration);
-                iteration++;
-            }
-        }
-        for (final CdmaDevice device : devices) {
-            if (!device.getMastSegment().equals(currentMastSegment)) {
-
-            }
-            // final List<CdmaDevice> newBatch = new ArrayList<>();
-
-            final CdmaDeviceList cdmaDeviceList = new CdmaDeviceList(newBatch, iteration);
-            this.allCdmaDeviceSeries.add(cdmaDeviceList);
-
-            iteration++;
-        }
-
-        // aan einde: sorteren
-    }
-
-    public boolean hasNext() {
-        return true;
-    }
-
-    public CdmaDeviceList next() {
-        return null;
-    }
-     * @formatter:on
-     */
 }

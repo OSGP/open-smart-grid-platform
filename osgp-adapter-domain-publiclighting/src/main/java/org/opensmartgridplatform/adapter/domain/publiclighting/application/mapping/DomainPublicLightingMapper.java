@@ -25,6 +25,5 @@ public class DomainPublicLightingMapper extends ConfigurableMapper {
         converterFactory.registerConverter(new PowerUsageDataConverter());
         converterFactory.registerConverter(new ScheduleConverter());
         converterFactory.registerConverter(new ScheduleEntryConverter());
-        converterFactory.registerConverter(new CdmaDeviceListToCdmaRunConverter());
     }
 }

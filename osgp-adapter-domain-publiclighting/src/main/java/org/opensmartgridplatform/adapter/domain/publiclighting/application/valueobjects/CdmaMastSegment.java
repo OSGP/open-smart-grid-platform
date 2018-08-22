@@ -7,9 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 
@@ -19,14 +21,15 @@ public class CdmaMastSegment implements Comparable<CdmaMastSegment> {
     private SortedMap<Short, CdmaBatch> cdmaBatches;
 
     public CdmaMastSegment(final CdmaDevice cdmaDevice) {
-        this.mastSegmentName = cdmaDevice.getMastSegmentName();
-
-        final CdmaBatch cdmaBatch = new CdmaBatch(cdmaDevice);
         this.cdmaBatches = new TreeMap<>();
-        this.cdmaBatches.put(cdmaBatch.getBatchNumber(), cdmaBatch);
+        this.addCdmaDevice(cdmaDevice);
+
+        this.mastSegmentName = cdmaDevice.getMastSegmentName();
     }
 
     public void addCdmaDevice(final CdmaDevice cdmaDevice) {
+        this.validateCdmaDevice(cdmaDevice);
+
         final Short batchNumber = cdmaDevice.getBatchNumber();
 
         final CdmaBatch cdmaBatch = this.cdmaBatches.get(batchNumber);
@@ -38,26 +41,42 @@ public class CdmaMastSegment implements Comparable<CdmaMastSegment> {
         }
     }
 
+    private void validateCdmaDevice(final CdmaDevice cdmaDevice) {
+        if (cdmaDevice == null) {
+            throw new IllegalArgumentException("cmdDevice is mandatory, null value is not allowed");
+        }
+
+        if (this.getMastSegment() != null && !this.getMastSegment().equals(cdmaDevice.getMastSegmentName())) {
+            throw new IllegalArgumentException(
+                    "cdmaDevice.mastSegmentName not equal to mastSegmentName of the CdmaMastSegment");
+        }
+    }
+
+    /**
+     * Returns the first (lowest) CdmaBatch of a CdmaMastSegment and removes the
+     * CdmaBatch from the CdmaMastSegment.
+     *
+     * @return when there are CdmaBatches, the first CdmaBatch. Otherwise null.
+     */
+    public CdmaBatch popCdmaBatch() {
+        if (this.cdmaBatches.isEmpty()) {
+            return null;
+        } else {
+            final Short firstKey = this.cdmaBatches.firstKey();
+            final CdmaBatch firstBatch = this.cdmaBatches.get(firstKey);
+            this.cdmaBatches.remove(firstKey);
+
+            return firstBatch;
+        }
+    }
+
     public String getMastSegment() {
         return this.mastSegmentName;
     }
 
-    public SortedMap<Short, CdmaBatch> getCdmaBatches() {
-        return this.cdmaBatches;
+    public boolean empty() {
+        return this.cdmaBatches.isEmpty();
     }
-
-    /* @formatter:off
-    public List<CdmaMastSegment> from(final TreeMap<String, TreeMap<Short, List<CdmaDevice>>> rawMastSegments) {
-        final List<CdmaMastSegment> cdmaMastSegments = new ArrayList<>();
-        for (final Entry<String, TreeMap<Short, List<CdmaDevice>>> rawMastSegment : rawMastSegments.entrySet()) {
-            final CdmaMastSegment cdmaMastSegment = new CdmaMastSegment(rawMastSegment.getKey(),
-                    rawMastSegment.getValue());
-        }
-
-        return cdmaMastSegments;
-    }
-    * @formatter:on
-    */
 
     @Override
     public int hashCode() {
@@ -80,7 +99,22 @@ public class CdmaMastSegment implements Comparable<CdmaMastSegment> {
     }
 
     @Override
+    public String toString() {
+        final List<String> batchNumbers = this.cdmaBatches.values().stream().map(x -> x.getBatchNumber().toString())
+                .collect(Collectors.toList());
+
+        return "CdmaMastSegment [mastSegmentName=" + this.mastSegmentName + ", cdmaBatches="
+                + String.join(",", batchNumbers) + "]";
+    }
+
+    @Override
     public int compareTo(final CdmaMastSegment other) {
+        if (this.mastSegmentName.equals(CdmaDevice.DEFAULT_MASTSEGMENT)) {
+            return this.mastSegmentName.equals(other.mastSegmentName) ? 0 : 1;
+        } else if (other.mastSegmentName.equals(CdmaDevice.DEFAULT_MASTSEGMENT)) {
+            return -1;
+        }
+
         return this.mastSegmentName.compareTo(other.mastSegmentName);
     }
 }

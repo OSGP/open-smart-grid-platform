@@ -1,15 +1,3 @@
-package org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.junit.Assert;
-
 /**
 
  * Copyright 2018 Smart Society Services B.V.
@@ -18,59 +6,65 @@ import org.junit.Assert;
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
+package org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition;
 
-import org.junit.Before;
+import java.net.InetAddress;
+
+import org.junit.Assert;
 import org.junit.Test;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatch;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdmaBatchTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CdmaBatchTest.class);
 
-    @Before
-    public void before() {
+    private final InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
+
+    @Test
+    public void newCdmaBatch() {
+        final CdmaDevice cd1 = new CdmaDevice("cd1", this.loopbackAddress, "200/1", (short) 1);
+        final CdmaDevice cd2 = new CdmaDevice("cd2", this.loopbackAddress, "200/1", (short) 1);
+
+        final CdmaBatch batch = new CdmaBatch(cd1);
+        batch.addCdmaDevice(cd2);
+
+        Assert.assertEquals(batch.getBatchNumber(), cd1.getBatchNumber());
+        Assert.assertEquals(batch.getCdmaBatchDevices().size(), 2);
     }
 
     @Test
-    public void groupBy() {
-        LOGGER.info("Test: groupBy");
-        InetAddress host1 = null;
-        InetAddress host2 = null;
-        InetAddress host3 = null;
-        final InetAddress host4 = null;
+    public void rejectDifferentBatchNumbers() {
+        final CdmaDevice cd1 = new CdmaDevice("cd1", this.loopbackAddress, "200/1", (short) 1);
+        final CdmaDevice cd2 = new CdmaDevice("cd2", this.loopbackAddress, "200/1", (short) 2);
+
+        final CdmaBatch batch = new CdmaBatch(cd1);
         try {
-            host1 = InetAddress.getLocalHost();
-            host2 = InetAddress.getByName("10.20.30.40");
-            host3 = InetAddress.getByName("11.22.33.44");
-        } catch (final UnknownHostException e) {
-            Assert.fail(e.getMessage());
+            batch.addCdmaDevice(cd2);
+            Assert.fail("Different batch numbers should be rejected");
+        } catch (final IllegalArgumentException e) {
+            // Test successful, because different the batch number of all
+            // devices in a batch have to be the same.
         }
-        // final CdmaDevice device1 = new CdmaDevice("device1", host1, "250/1",
-        // 1);
-        // final CdmaDevice device2 = new CdmaDevice("deviceNr2", host2,
-        // "322/2", 1);
-        // final CdmaDevice device3 = new CdmaDevice("deviceNo3", host3,
-        // "250/1", 1);
-        // final CdmaDevice device4 = new CdmaDevice("device4", host4, "322/1",
-        // 1);
-        final CdmaDevice device1 = null; // new CdmaDevice();
-        final CdmaDevice device2 = null; // new CdmaDevice();
-        final CdmaDevice device3 = null; // new CdmaDevice();
-        final CdmaDevice device4 = null; // new CdmaDevice();
-        final CdmaDevice[] devicesArray = { device1, device2, device3, device4 };
-        final List<CdmaDevice> devices = Arrays.asList(devicesArray);
+    }
 
-        final Stream<CdmaDevice> devicesStream = devices.stream();
-        final TreeMap<String, List<CdmaDevice>> myMap = devicesStream
-                .collect(Collectors.groupingBy(CdmaDevice::getMastSegmentName, TreeMap::new, Collectors.toList()));
+    @Test
+    public void equalsWhenBatchNumbersMatch() {
+        final CdmaDevice cdBatch1 = new CdmaDevice("cd1", this.loopbackAddress, "200/1", (short) 1);
+        final CdmaDevice cdBatch2 = new CdmaDevice("cd2", this.loopbackAddress, "333/5", (short) 1);
 
-        System.out.println("Inhoud map: " + myMap);
-        // final CdmaBatch batch = new CdmaBatch(1, devices);
-        // LOGGER.info("Inhoud batch: " + batch);
+        final CdmaBatch batch1 = new CdmaBatch(cdBatch1);
+        final CdmaBatch batch2 = new CdmaBatch(cdBatch2);
+        Assert.assertEquals("Batches with the same batch number should be equal", batch1, batch2);
+    }
 
-        // Assert.assertTrue("Batchnummer fout",
-        // Integer.valueOf(1).equals(batch.getBatchNumber()));
+    @Test
+    public void largerWhenBatchNumberLarger() {
+        final CdmaDevice cdBatch1 = new CdmaDevice("cd1", this.loopbackAddress, "200/1", (short) 3);
+        final CdmaDevice cdBatch2 = new CdmaDevice("cd2", this.loopbackAddress, "200/1", (short) 2);
+
+        final CdmaBatch batch1 = new CdmaBatch(cdBatch1);
+        final CdmaBatch batch2 = new CdmaBatch(cdBatch2);
+        Assert.assertNotEquals("Batches with different batch numbers should not be equal", batch1, batch2);
+        Assert.assertTrue(batch1.compareTo(batch2) > 0);
     }
 
 }

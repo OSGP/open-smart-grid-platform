@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.conf
 
 import javax.annotation.Resource;
 
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition.SetTransitionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = {"org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.domain.publiclighting"})
+@ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core",
+        "org.opensmartgridplatform.adapter.domain.publiclighting" })
 @EnableTransactionManagement
 public class ApplicationContext {
 
@@ -28,10 +30,19 @@ public class ApplicationContext {
     private Environment environment;
 
     private static final String PROPERTY_NAME_SET_TRANSITION_LOGS_RESPONSE = "public.lighting.set.transition.logs.response";
+    private static final String PROPERTY_NAME_SET_TRANSITION_DELAY_BETWEEN_BATCH_SECONDS = "public.lighting.set.transition.delay.between.batch.seconds";
 
     @Bean
     public Boolean isSetTransitionResponseLoggingEnabled() {
         return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_SET_TRANSITION_LOGS_RESPONSE));
+    }
+
+    @Bean
+    public SetTransitionService setTransitionService() {
+        final int delayInSeconds = Integer.parseInt(
+                this.environment.getRequiredProperty(PROPERTY_NAME_SET_TRANSITION_DELAY_BETWEEN_BATCH_SECONDS));
+
+        return new SetTransitionService(delayInSeconds);
     }
 
 }

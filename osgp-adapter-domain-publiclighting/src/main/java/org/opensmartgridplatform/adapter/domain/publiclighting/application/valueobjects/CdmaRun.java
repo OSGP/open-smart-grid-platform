@@ -7,33 +7,29 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 
 public class CdmaRun {
 
     private SortedMap<String, CdmaMastSegment> mastSegments;
-    // private List<CdmaBatch> batchesWithoutMastSegment;
 
     public CdmaRun() {
         this.mastSegments = new TreeMap<>();
-        // batchesWithoutMastSegment = new ArrayList<>();
     }
 
-    /*
-     * public CdmaRun(final List<CdmaMastSegment> mastSegments, final
-     * List<CdmaBatch> batchesWithoutMastSegment) { this.mastSegments =
-     * mastSegments; this.batchesWithoutMastSegment = batchesWithoutMastSegment;
-     * }
-     */
-
     public void add(final CdmaDevice cdmaDevice) {
-        final String mastSegmentName = cdmaDevice.getMastSegmentName();
+        String mastSegmentName = cdmaDevice.getMastSegmentName();
+        if (mastSegmentName == null) {
+            mastSegmentName = CdmaDevice.DEFAULT_MASTSEGMENT;
+        }
 
-        final CdmaMastSegment mastSegment = this.mastSegments.get(cdmaDevice.getMastSegmentName());
+        final CdmaMastSegment mastSegment = this.mastSegments.get(mastSegmentName);
         if (mastSegment == null) {
             final CdmaMastSegment newMastSegment = new CdmaMastSegment(cdmaDevice);
             this.mastSegments.put(mastSegmentName, newMastSegment);
@@ -42,17 +38,14 @@ public class CdmaRun {
         }
     }
 
-    public void combine(final CdmaRun otherCdmaRun) {
-        // TO DO: haal alle losse cdma devices uit de andere run en voeg die
-        // toe, liefst als set/lijst i.p.v. losse devices.
-        throw new NotImplementedException("Wordt deze aangeroepen? Ik moet deze nog maken!");
+    public Iterator<CdmaMastSegment> getMastSegmentIterator() {
+        return this.mastSegments.values().iterator();
     }
 
-    public SortedMap<String, CdmaMastSegment> getMastSegments() {
-        return this.mastSegments;
+    @Override
+    public String toString() {
+        final List<String> segmentNames = this.mastSegments.values().stream().map(CdmaMastSegment::getMastSegment)
+                .collect(Collectors.toList());
+        return "CdmaRun [mastSegments=" + String.join(",", segmentNames) + "]";
     }
-
-    // public List<CdmaBatch> getBatchesWithoutMastSegment() {
-    // return this.batchesWithoutMastSegment;
-    // }
 }

@@ -33,4 +33,10 @@ public class CdmaBatchDevice {
     public InetAddress getInetAddress() {
         return this.networkAddress;
     }
+
+    @Override
+    public String toString() {
+        return "CdmaBatchDevice [deviceIdentification=" + this.deviceIdentification + ", networkAddress="
+                + this.networkAddress + "]";
+    }
 }
