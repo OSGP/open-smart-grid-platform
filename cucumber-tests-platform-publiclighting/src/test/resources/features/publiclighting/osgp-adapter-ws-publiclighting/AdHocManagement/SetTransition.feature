@@ -26,7 +26,7 @@ Feature: PublicLightingAdhocManagement Set Transition
     Examples: 
       | Protocol    | TransitionType | Time   |
       | OSLP ELSTER | DAY_NIGHT      |        |
-      #| OSLP ESLTER | DAY_NIGHT      | 200000 |
+      | OSLP ELSTER | DAY_NIGHT      | 200000 |
       | OSLP ELSTER | NIGHT_DAY      |        |
       | OSLP ELSTER | NIGHT_DAY      | 080000 |
 
