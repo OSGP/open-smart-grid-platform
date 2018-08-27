@@ -30,6 +30,7 @@ import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceB
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseUrlService;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.NotificationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.CorrelationUidTargetedNotificationService;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.ws.OrganisationIdentificationClientInterceptor;
@@ -46,9 +47,6 @@ import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadM
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
@@ -98,13 +96,13 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Bean
     public NotificationService smartMeteringNotificationService(
-            final NotificationWebServiceTemplateFactory templateFactory, final ResponseUrlService responseUrlService) {
+            final NotificationWebServiceTemplateFactory templateFactory, final NotificationMapper mapper,
+            final ResponseUrlService responseUrlService) {
 
         if (!this.webserviceNotificationEnabled) {
             return new NotificationServiceBlackHole();
         }
         final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
-        final MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
         return new CorrelationUidTargetedNotificationService<>(templateFactory, notificationRequestType, mapper,
                 responseUrlService);
     }

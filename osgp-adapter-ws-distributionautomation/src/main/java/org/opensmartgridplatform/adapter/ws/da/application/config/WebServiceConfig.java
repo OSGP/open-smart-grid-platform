@@ -15,6 +15,7 @@ import java.util.Properties;
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.da.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.adapter.ws.da.application.exceptionhandling.SoapFaultMapper;
+import org.opensmartgridplatform.adapter.ws.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
@@ -41,9 +42,6 @@ import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadM
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
@@ -189,13 +187,13 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public NotificationService distributionAutomationNotificationService(
-            final NotificationWebServiceTemplateFactory templateFactory) {
+    public NotificationService notificationService(final NotificationWebServiceTemplateFactory templateFactory,
+            final DistributionAutomationMapper mapper) {
+
         if (!this.webserviceNotificationEnabled) {
             return new NotificationServiceBlackHole();
         }
         final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
-        final MapperFacade mapper = new DefaultMapperFactory.Builder().build().getMapperFacade();
         return new DefaultNotificationService<>(templateFactory, notificationRequestType, mapper);
     }
 
