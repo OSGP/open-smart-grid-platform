@@ -5,13 +5,13 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition;
+package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
 import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +19,6 @@ import javax.annotation.PreDestroy;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AbstractService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatch;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaBatchDevice;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaMastSegment;
@@ -46,7 +45,7 @@ public class SetTransitionService extends AbstractService {
         this.delayBetweenBatchSeconds = delayBetweenBatchSeconds;
     }
 
-    public void transitionDevice(final MessageMetadata metadata, @NotNull final TransitionType transitionType,
+    public void setTransitionForDevice(final MessageMetadata metadata, @NotNull final TransitionType transitionType,
             final DateTime transitionTime) throws FunctionalException {
 
         final String organisationIdentification = metadata.getOrganisationIdentification();
@@ -58,10 +57,10 @@ public class SetTransitionService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.transitionDevice(metadata, device.getIpAddress(), transitionType, transitionTime);
+        this.setTransitionForDevice(metadata, device.getIpAddress(), transitionType, transitionTime);
     }
 
-    private void transitionDevice(final MessageMetadata metadata, final String ipAddress,
+    private void setTransitionForDevice(final MessageMetadata metadata, final String ipAddress,
             @NotNull final TransitionType transitionType, final DateTime transitionTime) throws FunctionalException {
 
         final String organisationIdentification = metadata.getOrganisationIdentification();
@@ -81,7 +80,7 @@ public class SetTransitionService extends AbstractService {
                 metadata.getMessageType(), metadata.getMessagePriority(), ipAddress);
     }
 
-    public synchronized void transitionCdmaRun(final CdmaRun cdmaRun, final String organisationIdentification,
+    public synchronized void setTransitionForCdmaRun(final CdmaRun cdmaRun, final String organisationIdentification,
             final String correlationUid, final TransitionType transitionType) {
         if (this.executor.isShutdown()) {
             throw new IllegalStateException("Executor is already shutdown. Starting a new CdmaRun is not allowed.");
@@ -156,15 +155,15 @@ public class SetTransitionService extends AbstractService {
                 final String correlationUid, final TransitionType transitionType) {
             SetTransitionService.this.executor.submit(() -> {
                 LOGGER.info("Send messages for {}", cdmaBatch);
-                final List<CdmaBatchDevice> devices = cdmaBatch.getCdmaBatchDevices();
+                final Set<CdmaBatchDevice> devices = cdmaBatch.getCdmaBatchDevices();
 
                 // Send a message for each device
-                devices.forEach(device -> MastSegmentRunnable.this.transitionDeviceRunnable(device,
+                devices.forEach(device -> MastSegmentRunnable.this.setTransitionForDeviceRunnable(device,
                         organisationIdentification, correlationUid, transitionType));
             });
         }
 
-        private void transitionDeviceRunnable(final CdmaBatchDevice device, final String organisationIdentification,
+        private void setTransitionForDeviceRunnable(final CdmaBatchDevice device, final String organisationIdentification,
                 final String correlationUid, final TransitionType transitionType) {
             final MessageMetadata metadata = new MessageMetadata.Builder(correlationUid, organisationIdentification,
                     device.getDeviceIdentification(), DeviceFunction.SET_TRANSITION.name()).build();
@@ -174,14 +173,14 @@ public class SetTransitionService extends AbstractService {
 
             try {
                 if (inetAddress != null) {
-                    SetTransitionService.this.transitionDevice(metadata, inetAddress.getHostAddress(), transitionType,
+                    SetTransitionService.this.setTransitionForDevice(metadata, inetAddress.getHostAddress(), transitionType,
                             emptyTransitionTime);
                 } else {
                     LOGGER.warn("setTransition not possible, because InetAddress is null for device {}",
                             metadata.getDeviceIdentification());
                 }
             } catch (final Exception e) {
-                LOGGER.warn("Set transition failed failed for " + metadata, e);
+                LOGGER.warn("Set transition failed for " + metadata, e);
             }
         }
     }

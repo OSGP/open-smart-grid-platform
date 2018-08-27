@@ -6,13 +6,15 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition;
+package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
+
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.eq;
 
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -49,11 +51,11 @@ public class CdmaRunTest {
     private SetTransitionService service = new SetTransitionService(Executors.newScheduledThreadPool(1), 15);
 
     @Test
-    public void emptyCdmaRun() {
+    public void empty() {
         final CdmaRun run = new CdmaRun();
-        Assert.assertFalse("Empty CdmaRun iterator should not have items", run.getMastSegmentIterator().hasNext());
+        assertFalse("Empty CdmaRun iterator should not have items", run.getMastSegmentIterator().hasNext());
 
-        this.service.transitionCdmaRun(run, "LianderNetManagement", "zero-devices-cdma-run-test",
+        this.service.setTransitionForCdmaRun(run, "LianderNetManagement", "zero-devices-cdma-run-test",
                 TransitionType.DAY_NIGHT);
         this.verifySentMessages(0);
     }
@@ -66,39 +68,36 @@ public class CdmaRunTest {
         }
 
         final Iterator<CdmaMastSegment> iterator = run.getMastSegmentIterator();
-        try {
-            for (int i = 0; i < 5; i++) {
-                iterator.next();
-            }
-        } catch (final Exception e) {
-            Assert.fail("Iterating the mast segments failed");
+        for (int i = 0; i < 5; i++) {
+            iterator.next();
         }
-        Assert.assertFalse("Iterator should not have any items left", iterator.hasNext());
+
+        assertFalse("Iterator should not have any items left", iterator.hasNext());
     }
 
     @Test
-    public void oneDeviceCdmaRun() {
+    public void oneDevice() {
         final CdmaRun run = new CdmaRun();
         run.add(new CdmaDevice("cd1", this.loopbackAddress, "200/1", (short) 1));
-        this.service.transitionCdmaRun(run, "LianderNetManagement", "one-device-cdma-run-test",
+        this.service.setTransitionForCdmaRun(run, "LianderNetManagement", "one-device-cdma-run-test",
                 TransitionType.NIGHT_DAY);
         this.verifySentMessages(1);
     }
 
     @Test
-    public void tenDevicesCdmaRun() {
+    public void tenDevices() {
         final CdmaRun run = new CdmaRun();
         for (int i = 0; i < 10; i++) {
             run.add(new CdmaDevice("cd" + i, this.loopbackAddress, "200/1", (short) 1));
         }
 
-        this.service.transitionCdmaRun(run, "LianderNetManagement", "ten-devices-cdma-run-test",
+        this.service.setTransitionForCdmaRun(run, "LianderNetManagement", "ten-devices-cdma-run-test",
                 TransitionType.DAY_NIGHT);
         this.verifySentMessages(10);
     }
 
     @Test
-    public void twoBatchesCdmaRun() {
+    public void twoBatches() {
         // The CDMA run will contain two batches for mast segment 200/1.
         // Within the timeout of 1000 milliseconds, only the send for device cd1
         // should take place.
@@ -106,13 +105,13 @@ public class CdmaRunTest {
         run.add(new CdmaDevice("cd1", this.loopbackAddress, "200/1", (short) 1));
         run.add(new CdmaDevice("cd2", this.loopbackAddress, "200/1", (short) 2));
 
-        this.service.transitionCdmaRun(run, "LianderNetManagement", "two-batches-cdma-run-test",
+        this.service.setTransitionForCdmaRun(run, "LianderNetManagement", "two-batches-cdma-run-test",
                 TransitionType.NIGHT_DAY);
         this.verifySentMessages(1);
     }
 
     @Test
-    public void threeBatchesNoDelayCdmaRun() {
+    public void threeBatchesNoDelay() {
         // Set a delay of 0 seconds for this scenario
         this.service = new SetTransitionService(Executors.newScheduledThreadPool(1), 0);
         MockitoAnnotations.initMocks(this);
@@ -122,7 +121,7 @@ public class CdmaRunTest {
             run.add(new CdmaDevice("cd" + i, this.loopbackAddress, "200/1", i));
         }
 
-        this.service.transitionCdmaRun(run, "LianderNetManagement", "ten-batches-cdma-run-test",
+        this.service.setTransitionForCdmaRun(run, "LianderNetManagement", "ten-batches-cdma-run-test",
                 TransitionType.DAY_NIGHT);
         this.verifySentMessages(3);
     }
@@ -131,6 +130,6 @@ public class CdmaRunTest {
         // Verify the number of calls to the method, which sends out an ActiveMQ
         // message
         Mockito.verify(this.osgpCoreRequestMessageSender, Mockito.timeout(1000).times(noOfCalls)).send(Mockito.any(),
-                Mockito.eq(SET_TRANSITION), Mockito.eq(0), Mockito.eq(IP_ADDRESS));
+                eq(SET_TRANSITION), eq(0), eq(IP_ADDRESS));
     }
 }

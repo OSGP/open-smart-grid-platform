@@ -7,49 +7,36 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
-
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 
 public class CdmaMastSegment implements Comparable<CdmaMastSegment> {
+
+    public static final String DEFAULT_MASTSEGMENT = "DEVICE-WITHOUT-MASTSEGMENT";
 
     private final String mastSegmentName;
     private SortedMap<Short, CdmaBatch> cdmaBatches;
 
-    public CdmaMastSegment(final CdmaDevice cdmaDevice) {
+    public CdmaMastSegment(final String mastSegmentName) {
+        if (mastSegmentName == null) {
+            throw new IllegalArgumentException("mastSegmentName is not allowed to be null");
+        }
+
+        this.mastSegmentName = mastSegmentName;
         this.cdmaBatches = new TreeMap<>();
-        this.addCdmaDevice(cdmaDevice);
-
-        this.mastSegmentName = cdmaDevice.getMastSegmentName();
     }
 
-    public void addCdmaDevice(final CdmaDevice cdmaDevice) {
-        this.validateCdmaDevice(cdmaDevice);
+    public void addCdmaBatchDevice(final Short batchNumber, final CdmaBatchDevice cdmaBatchDevice) {
+        final Short nonNullBatchNumber = batchNumber == null ? CdmaBatch.MAX_BATCH_NUMBER : batchNumber;
 
-        final Short batchNumber = cdmaDevice.getBatchNumber();
+        CdmaBatch cdmaBatch = this.cdmaBatches.get(nonNullBatchNumber);
 
-        final CdmaBatch cdmaBatch = this.cdmaBatches.get(batchNumber);
         if (cdmaBatch == null) {
-            final CdmaBatch newBatch = new CdmaBatch(cdmaDevice);
-            this.cdmaBatches.put(batchNumber, newBatch);
-        } else {
-            cdmaBatch.addCdmaDevice(cdmaDevice);
+            cdmaBatch = new CdmaBatch(nonNullBatchNumber);
+            this.cdmaBatches.put(nonNullBatchNumber, cdmaBatch);
         }
-    }
-
-    private void validateCdmaDevice(final CdmaDevice cdmaDevice) {
-        if (cdmaDevice == null) {
-            throw new IllegalArgumentException("cmdDevice is mandatory, null value is not allowed");
-        }
-
-        if (this.getMastSegment() != null && !this.getMastSegment().equals(cdmaDevice.getMastSegmentName())) {
-            throw new IllegalArgumentException(
-                    "cdmaDevice.mastSegmentName not equal to mastSegmentName of the CdmaMastSegment");
-        }
+        cdmaBatch.addCdmaBatchDevice(cdmaBatchDevice);
     }
 
     /**
@@ -100,18 +87,15 @@ public class CdmaMastSegment implements Comparable<CdmaMastSegment> {
 
     @Override
     public String toString() {
-        final List<String> batchNumbers = this.cdmaBatches.values().stream().map(x -> x.getBatchNumber().toString())
-                .collect(Collectors.toList());
-
-        return "CdmaMastSegment [mastSegmentName=" + this.mastSegmentName + ", cdmaBatches="
-                + String.join(",", batchNumbers) + "]";
+        return "CdmaMastSegment [mastSegmentName=" + this.mastSegmentName + ", cdmaBatches=" + this.cdmaBatches.keySet()
+                + "]";
     }
 
     @Override
     public int compareTo(final CdmaMastSegment other) {
-        if (this.mastSegmentName.equals(CdmaDevice.DEFAULT_MASTSEGMENT)) {
+        if (this.mastSegmentName.equals(DEFAULT_MASTSEGMENT)) {
             return this.mastSegmentName.equals(other.mastSegmentName) ? 0 : 1;
-        } else if (other.mastSegmentName.equals(CdmaDevice.DEFAULT_MASTSEGMENT)) {
+        } else if (other.mastSegmentName.equals(DEFAULT_MASTSEGMENT)) {
             return -1;
         }
 

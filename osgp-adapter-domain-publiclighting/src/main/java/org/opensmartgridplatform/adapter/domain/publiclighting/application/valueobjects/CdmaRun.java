@@ -8,10 +8,8 @@
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
 
@@ -24,18 +22,18 @@ public class CdmaRun {
     }
 
     public void add(final CdmaDevice cdmaDevice) {
-        String mastSegmentName = cdmaDevice.getMastSegmentName();
-        if (mastSegmentName == null) {
-            mastSegmentName = CdmaDevice.DEFAULT_MASTSEGMENT;
-        }
+        final CdmaBatchDevice cdmaBatchDevice = new CdmaBatchDevice(cdmaDevice.getDeviceIdentification(),
+                cdmaDevice.getNetworkAddress());
 
-        final CdmaMastSegment mastSegment = this.mastSegments.get(mastSegmentName);
+        final String mastSegmentName = cdmaDevice.getMastSegmentName() == null ? CdmaMastSegment.DEFAULT_MASTSEGMENT
+                : cdmaDevice.getMastSegmentName();
+
+        CdmaMastSegment mastSegment = this.mastSegments.get(mastSegmentName);
         if (mastSegment == null) {
-            final CdmaMastSegment newMastSegment = new CdmaMastSegment(cdmaDevice);
-            this.mastSegments.put(mastSegmentName, newMastSegment);
-        } else {
-            mastSegment.addCdmaDevice(cdmaDevice);
+            mastSegment = new CdmaMastSegment(mastSegmentName);
+            this.mastSegments.put(mastSegmentName, mastSegment);
         }
+        mastSegment.addCdmaBatchDevice(cdmaDevice.getBatchNumber(), cdmaBatchDevice);
     }
 
     public Iterator<CdmaMastSegment> getMastSegmentIterator() {
@@ -44,8 +42,6 @@ public class CdmaRun {
 
     @Override
     public String toString() {
-        final List<String> segmentNames = this.mastSegments.values().stream().map(CdmaMastSegment::getMastSegment)
-                .collect(Collectors.toList());
-        return "CdmaRun [mastSegments=" + String.join(",", segmentNames) + "]";
+        return "CdmaRun [mastSegments=" + this.mastSegments.keySet() + "]";
     }
 }

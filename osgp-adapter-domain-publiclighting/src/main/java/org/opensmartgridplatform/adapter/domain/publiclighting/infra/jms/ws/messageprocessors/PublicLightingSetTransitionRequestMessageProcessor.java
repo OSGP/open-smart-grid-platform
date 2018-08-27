@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.mes
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition.SetTransitionService;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.SetTransitionService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
@@ -58,7 +58,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends WebServi
 
             final TransitionMessageDataContainer transitionMessageDataContainer = (TransitionMessageDataContainer) dataObject;
 
-            this.setTransitionService.transitionDevice(metadata,
+            this.setTransitionService.setTransitionForDevice(metadata,
                     transitionMessageDataContainer.getTransitionType(), transitionMessageDataContainer.getDateTime());
         } catch (final Exception e) {
             this.handleError(e, metadata.getCorrelationUid(), metadata.getOrganisationIdentification(),

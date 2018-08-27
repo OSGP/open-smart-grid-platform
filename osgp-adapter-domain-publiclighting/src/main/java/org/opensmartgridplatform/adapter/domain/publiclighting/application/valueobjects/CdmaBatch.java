@@ -7,46 +7,39 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
-
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaDevice;
+import java.util.Set;
 
 public class CdmaBatch implements Comparable<CdmaBatch> {
 
-    private Short batchNumber;
-    private List<CdmaBatchDevice> cdmaBatchDevices;
+    public static final Short MAX_BATCH_NUMBER = (short) 99;
 
-    public CdmaBatch(final CdmaDevice cdmaDevice) {
-        this.cdmaBatchDevices = new ArrayList<>();
-        this.addCdmaDevice(cdmaDevice);
+    private final Short batchNumber;
+    private Set<CdmaBatchDevice> cdmaBatchDevices;
 
-        this.batchNumber = cdmaDevice.getBatchNumber();
+    public CdmaBatch(final Short batchNumber) {
+        if (batchNumber == null) {
+            throw new IllegalArgumentException("batchNumber is not allowed to be null");
+        }
+
+        if (batchNumber > MAX_BATCH_NUMBER) {
+            throw new IllegalArgumentException("batchNumber is not allowed to be larger than " + MAX_BATCH_NUMBER);
+        }
+
+        this.batchNumber = batchNumber;
+        this.cdmaBatchDevices = new HashSet<>();
     }
 
-    public void addCdmaDevice(final CdmaDevice cdmaDevice) {
-        this.validateCdmaDevice(cdmaDevice);
-
-        final CdmaBatchDevice cdmaBatchDevice = new CdmaBatchDevice(cdmaDevice);
+    public void addCdmaBatchDevice(final CdmaBatchDevice cdmaBatchDevice) {
         this.cdmaBatchDevices.add(cdmaBatchDevice);
-    }
-
-    private void validateCdmaDevice(final CdmaDevice cdmaDevice) {
-        if (cdmaDevice == null) {
-            throw new IllegalArgumentException("cmdDevice is mandatory, null value is not allowed");
-        }
-
-        if (this.getBatchNumber() != null && !this.getBatchNumber().equals(cdmaDevice.getBatchNumber())) {
-            throw new IllegalArgumentException("cdmaDevice.batchNumber not equal to batchNumber of the CdmaBatch");
-        }
     }
 
     public Short getBatchNumber() {
         return this.batchNumber;
     }
 
-    public List<CdmaBatchDevice> getCdmaBatchDevices() {
+    public Set<CdmaBatchDevice> getCdmaBatchDevices() {
         return this.cdmaBatchDevices;
     }
 

@@ -12,7 +12,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.Resource;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition.SetTransitionService;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.SetTransitionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

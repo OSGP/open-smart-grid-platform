@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.transition.SetTransitionService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaRun;
 import org.opensmartgridplatform.adapter.domain.shared.FilterLightAndTariffValuesHelper;
 import org.opensmartgridplatform.adapter.domain.shared.GetStatusResponse;
@@ -34,6 +33,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContai
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionType;
+import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.LightValueMessageDataContainerDto;
 import org.opensmartgridplatform.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -132,11 +132,10 @@ public class AdHocManagementService extends AbstractService {
                 deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(
-            final org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto deviceStatusDto,
-            final DomainType allowedDomainType, final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType,
-            final int messagePriority, final ResponseMessageResultType deviceResult, final OsgpException exception) {
+    public void handleGetStatusResponse(final DeviceStatusDto deviceStatusDto, final DomainType allowedDomainType,
+            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+            final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
         final GetStatusResponse response = new GetStatusResponse();
@@ -296,7 +295,7 @@ public class AdHocManagementService extends AbstractService {
         final TransitionType transitionType = this.determineTransitionTypeForEvent(event);
 
         // Send SET_TRANSITION messages to the SSLDs.
-        this.setTransitionService.transitionCdmaRun(cdmaRun, organisationIdentification, correlationUid,
+        this.setTransitionService.setTransitionForCdmaRun(cdmaRun, organisationIdentification, correlationUid,
                 transitionType);
     }
 
