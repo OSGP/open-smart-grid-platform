@@ -10,18 +10,15 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.mes
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.SetTransitionService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing public lighting set transition request messages
@@ -35,8 +32,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends WebServi
             .getLogger(PublicLightingSetTransitionRequestMessageProcessor.class);
 
     @Autowired
-    @Qualifier("domainPublicLightingAdHocManagementService")
-    private AdHocManagementService adHocManagementService;
+    private SetTransitionService setTransitionService;
 
     public PublicLightingSetTransitionRequestMessageProcessor() {
         super(DeviceFunction.SET_TRANSITION);
@@ -46,42 +42,27 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends WebServi
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing public lighting set transition request message");
 
-        String correlationUid = null;
-        String messageType = null;
-        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        Object dataObject = null;
+        final MessageMetadata metadata;
+        Object dataObject;
 
         try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            messagePriority = message.getJMSPriority();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            metadata = MessageMetadata.fromMessage(message);
             dataObject = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("messagePriority: {}", messagePriority);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
 
         try {
-            LOGGER.info("Calling application service function: {}", messageType);
+            LOGGER.info("Calling application service function: {}", metadata.getMessageType());
 
             final TransitionMessageDataContainer transitionMessageDataContainer = (TransitionMessageDataContainer) dataObject;
 
-            this.adHocManagementService.setTransition(organisationIdentification, deviceIdentification, correlationUid,
-                    transitionMessageDataContainer.getTransitionType(), transitionMessageDataContainer.getDateTime(),
-                    messageType, messagePriority);
-
+            this.setTransitionService.setTransitionForDevice(metadata,
+                    transitionMessageDataContainer.getTransitionType(), transitionMessageDataContainer.getDateTime());
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
-                    messagePriority);
+            this.handleError(e, metadata.getCorrelationUid(), metadata.getOrganisationIdentification(),
+                    metadata.getDeviceIdentification(), metadata.getMessageType(), metadata.getMessagePriority());
         }
     }
 }

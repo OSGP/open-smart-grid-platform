@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.mapp
 import org.springframework.stereotype.Component;
 
 import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.converter.ConverterFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component
@@ -17,10 +18,12 @@ public class DomainPublicLightingMapper extends ConfigurableMapper {
 
     @Override
     protected void configure(final MapperFactory factory) {
-        factory.getConverterFactory().registerConverter(new LightTypeConverter());
-        factory.getConverterFactory().registerConverter(new LinkTypeConverter());
-        factory.getConverterFactory().registerConverter(new PowerUsageDataConverter());
-        factory.getConverterFactory().registerConverter(new ScheduleConverter());
-        factory.getConverterFactory().registerConverter(new ScheduleEntryConverter());
+        final ConverterFactory converterFactory = factory.getConverterFactory();
+
+        converterFactory.registerConverter(new LightTypeConverter());
+        converterFactory.registerConverter(new LinkTypeConverter());
+        converterFactory.registerConverter(new PowerUsageDataConverter());
+        converterFactory.registerConverter(new ScheduleConverter());
+        converterFactory.registerConverter(new ScheduleEntryConverter());
     }
 }
