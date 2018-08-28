@@ -15,9 +15,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -29,6 +26,8 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRep
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -55,7 +54,7 @@ public class DeviceAuthorizationSteps extends GlueBase {
      */
     @Given("^a device authorization$")
     @Transactional("txMgrCore")
-    public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
+    public void aDeviceAuthorization(final Map<String, String> settings) {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(getString(settings,
                 PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
