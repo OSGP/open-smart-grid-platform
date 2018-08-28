@@ -9,7 +9,7 @@
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
-	branch = OC-380-Make-NotificationService-suitable-for-multiple-endpoints
+	branch = development
 [submodule "Protocol-Adapter-DLMS"]
 	path = Protocol-Adapter-DLMS
 	url = https://github.com/OSGP/Protocol-Adapter-DLMS.git
