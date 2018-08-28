@@ -7,14 +7,19 @@
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.database;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
+import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
-import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
-import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
 
 @Component
 public class Database {
@@ -26,6 +31,9 @@ public class Database {
     private ResponseDataRepository responseDataRepository;
 
     @Autowired
+    private NotificationWebServiceConfigurationRepository notificationWebServiceConfigurationRepository;
+
+    @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
@@ -33,6 +41,17 @@ public class Database {
 
     @Transactional
     private void insertDefaultData() {
+        this.notificationWebServiceConfigurationRepository.save(this.notificationEndpointConfigurations());
+    }
+
+    private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
+        final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
+                .withApplicationName("ZownStream")
+                .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.microgrids.notification");
+        final NotificationWebServiceConfiguration testOrgConfig = builder.build();
+        final NotificationWebServiceConfiguration noOrganisationConfig = builder
+                .withOrganisationIdentification("no-organisation").build();
+        return Arrays.asList(testOrgConfig, noOrganisationConfig);
     }
 
     @Transactional("txMgrCoreMicrogrids")
