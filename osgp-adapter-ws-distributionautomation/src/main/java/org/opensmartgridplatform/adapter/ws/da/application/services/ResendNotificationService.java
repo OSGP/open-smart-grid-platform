@@ -8,13 +8,13 @@
 package org.opensmartgridplatform.adapter.ws.da.application.services;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
+import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
+import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
 
 @Service(value = "resendNotificationServiceDistributionAutomation")
 @Transactional(value = "transactionManager")

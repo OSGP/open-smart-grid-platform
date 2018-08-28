@@ -9,25 +9,27 @@ package org.opensmartgridplatform.adapter.ws.schema.shared.notification;
 
 public class GenericNotification {
 
-    private String message;
-    private String result;
-    private String deviceIdentification;
-    private String correlationUid;
-    private String notificationType;
+    private final String message;
+    private final String result;
+    private final String deviceIdentification;
+    private final String correlationUid;
+    private final String notificationType;
+
+    public GenericNotification(final String message, final String result, final String deviceIdentification,
+            final String correlationUid, final String notificationType) {
+
+        this.deviceIdentification = deviceIdentification;
+        this.result = result;
+        this.correlationUid = correlationUid;
+        this.message = message;
+        this.notificationType = notificationType;
+    }
 
     /**
      * @return the message
      */
     public String getMessage() {
         return this.message;
-    }
-
-    /**
-     * @param message
-     *            the message to set
-     */
-    public void setMessage(final String message) {
-        this.message = message;
     }
 
     /**
@@ -38,26 +40,10 @@ public class GenericNotification {
     }
 
     /**
-     * @param result
-     *            the result to set
-     */
-    public void setResult(final String result) {
-        this.result = result;
-    }
-
-    /**
      * @return the deviceIdentification
      */
     public String getDeviceIdentification() {
         return this.deviceIdentification;
-    }
-
-    /**
-     * @param deviceIdentification
-     *            the deviceIdentification to set
-     */
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
     }
 
     /**
@@ -68,26 +54,10 @@ public class GenericNotification {
     }
 
     /**
-     * @param correlationUid
-     *            the correlationUid to set
-     */
-    public void setCorrelationUid(final String correlationUid) {
-        this.correlationUid = correlationUid;
-    }
-
-    /**
      * @return the notificationType
      */
     public String getNotificationType() {
         return this.notificationType;
-    }
-
-    /**
-     * @param notificationType
-     *            the notificationType to set
-     */
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
     }
 
 }

@@ -8,16 +8,15 @@
 
 package org.opensmartgridplatform.adapter.ws.shared.services;
 
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
+import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
+import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.opensmartgridplatform.shared.infra.ws.WebserviceTemplateFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.WebServiceIOException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.SoapFaultClientException;
-
-import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
-import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
-import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
-import org.opensmartgridplatform.shared.infra.ws.WebserviceTemplateFactory;
 
 public abstract class AbstractNotificationServiceWs {
 
@@ -65,16 +64,9 @@ public abstract class AbstractNotificationServiceWs {
     protected GenericSendNotificationRequest genericNotificationRequest(final String deviceIdentification,
             final String result, final String correlationUid, final String message, final String notificationType) {
 
-        final GenericSendNotificationRequest sendNotificationRequest = new GenericSendNotificationRequest();
-        final GenericNotification notification = new GenericNotification();
-        // message is null, unless an error occurred
-        notification.setMessage(message);
-        notification.setResult(result);
-        notification.setDeviceIdentification(deviceIdentification);
-        notification.setCorrelationUid(correlationUid);
-        notification.setNotificationType(notificationType);
-        sendNotificationRequest.setNotification(notification);
-        return sendNotificationRequest;
+        final GenericNotification notification = new GenericNotification(message, result, deviceIdentification,
+                correlationUid, notificationType);
+        return new GenericSendNotificationRequest(notification);
     }
 
 }

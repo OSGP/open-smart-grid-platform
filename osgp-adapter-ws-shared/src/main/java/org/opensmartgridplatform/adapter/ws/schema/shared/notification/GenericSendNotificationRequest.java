@@ -9,21 +9,17 @@ package org.opensmartgridplatform.adapter.ws.schema.shared.notification;
 
 public class GenericSendNotificationRequest {
 
-    private GenericNotification notification;
+    private final GenericNotification notification;
+
+    public GenericSendNotificationRequest(final GenericNotification notification) {
+        this.notification = notification;
+    }
 
     /**
      * @return the notification
      */
     public GenericNotification getNotification() {
         return this.notification;
-    }
-
-    /**
-     * @param notification
-     *            the notification to set
-     */
-    public void setNotification(final GenericNotification notification) {
-        this.notification = notification;
     }
 
 }

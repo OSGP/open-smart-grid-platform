@@ -7,53 +7,51 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.application.config;
 
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.da.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.adapter.ws.da.application.exceptionhandling.SoapFaultMapper;
-import org.opensmartgridplatform.adapter.ws.da.application.services.NotificationService;
-import org.opensmartgridplatform.adapter.ws.da.application.services.NotificationServiceBlackHole;
-import org.opensmartgridplatform.adapter.ws.da.application.services.NotificationServiceWs;
-import org.opensmartgridplatform.adapter.ws.da.presentation.ws.SendNotificationServiceClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
-import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
-import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
-import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
-import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
-
+import org.opensmartgridplatform.adapter.ws.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
+import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.SendNotificationRequest;
+import org.opensmartgridplatform.adapter.ws.shared.services.DefaultNotificationService;
+import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
+import org.opensmartgridplatform.adapter.ws.shared.services.NotificationServiceBlackHole;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
-import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.opensmartgridplatform.shared.infra.ws.OrganisationIdentificationClientInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
+import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
+import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
+import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
 public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_GENERIC = "jaxb2.marshaller.context.path.distributionautomation.generic";
-    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_NOTIFICATION = "jaxb2.marshaller.context.path.distributionautomation.notification";
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
@@ -67,24 +65,10 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String SERVER = "SERVER";
     @Value("${web.service.notification.enabled}")
     private boolean webserviceNotificationEnabled;
-    @Value("${web.service.notification.url:#{null}}")
-    private String webserviceNotificationUrl;
     @Value("${web.service.notification.username:#{null}}")
     private String webserviceNotificationUsername;
     @Value("${web.service.notification.organisation:OSGP}")
     private String webserviceNotificationOrganisation;
-    @Value("${web.service.keystore.type}")
-    private String webserviceKeystoreType;
-    @Value("${web.service.keystore.location}")
-    private String webserviceKeystoreLocation;
-    @Value("${web.service.keystore.password}")
-    private String webserviceKeystorePassword;
-    @Value("${web.service.truststore.type}")
-    private String webserviceTruststoreType;
-    @Value("${web.service.truststore.location}")
-    private String webserviceTruststoreLocation;
-    @Value("${web.service.truststore.password}")
-    private String webserviceTruststorePassword;
 
     // === DISTRIBUTION AUTOMATION MARSHALLERS ===
 
@@ -202,14 +186,28 @@ public class WebServiceConfig extends AbstractConfig {
                 APPLICATION_NAME_HEADER);
     }
 
-    @Bean(value = "notificationServiceDistributionAutomation")
-    public NotificationService notificationService() throws GeneralSecurityException {
-        if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.webserviceNotificationUrl)) {
-            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.webserviceNotificationUrl,
-                    this.webserviceNotificationUsername, this.webserviceNotificationOrganisation);
-        } else {
+    @Bean
+    public NotificationService notificationService(final NotificationWebServiceTemplateFactory templateFactory,
+            final DistributionAutomationMapper mapper) {
+
+        if (!this.webserviceNotificationEnabled) {
             return new NotificationServiceBlackHole();
         }
+        final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
+        return new DefaultNotificationService<>(templateFactory, notificationRequestType, mapper);
+    }
+
+    @Bean
+    public NotificationWebServiceTemplateFactory notificationWebServiceTemplateFactory(
+            final NotificationWebServiceConfigurationRepository configRepository) {
+
+        final ClientInterceptor addOsgpHeadersInterceptor = OrganisationIdentificationClientInterceptor.newBuilder()
+                .withOrganisationIdentification(this.webserviceNotificationOrganisation)
+                .withUserName(this.webserviceNotificationUsername).withApplicationName("DISTRIBUTION_AUTOMATION")
+                .build();
+
+        return new NotificationWebServiceTemplateFactory(configRepository, this.messageFactory(),
+                Arrays.asList(addOsgpHeadersInterceptor));
     }
 
     @Bean
@@ -217,35 +215,4 @@ public class WebServiceConfig extends AbstractConfig {
         return new SaajSoapMessageFactory();
     }
 
-    @Bean
-    public KeyStoreFactoryBean webServiceTrustStoreFactory() {
-        final KeyStoreFactoryBean factory = new KeyStoreFactoryBean();
-        factory.setType(this.webserviceTruststoreType);
-        factory.setLocation(new FileSystemResource(this.webserviceTruststoreLocation));
-        factory.setPassword(this.webserviceTruststorePassword);
-
-        return factory;
-    }
-
-    @Bean
-    public Jaxb2Marshaller notificationSenderMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DISTRIBUTION_AUTOMATION_NOTIFICATION));
-        return marshaller;
-    }
-
-    @Bean
-    public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(
-                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
-    }
-
-    private DefaultWebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
-        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(marshaller)
-                .setMessageFactory(this.messageFactory()).setTargetUri(this.webserviceNotificationUrl)
-                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
-                .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName("ZownStream").build();
-    }
 }
