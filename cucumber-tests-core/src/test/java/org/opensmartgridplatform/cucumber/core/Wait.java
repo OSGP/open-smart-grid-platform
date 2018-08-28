@@ -7,18 +7,19 @@
  */
 package org.opensmartgridplatform.cucumber.core;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.opensmartgridplatform.cucumber.core.config.CoreApplicationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.cucumber.core.config.CoreApplicationConfiguration;
 
 /**
  * Generic class with wait methods.
@@ -56,13 +57,11 @@ public class Wait {
 
         T response = null;
         boolean success = false;
-        int count = 0;
+        final Instant startInstant = Instant.now();
+        final Instant timeoutInstant = startInstant.plusSeconds(configuration.getTimeout());
         while (!success) {
-            if (count / 1000 > configuration.getTimeout()) {
-                Assert.fail("Timeout after [" + (count / 1000) + "] seconds");
-            }
-            if (count > 0) {
-                logger.info("... polling in Wait.untilAndReturn (" + (count / 1000) + " seconds)...");
+            if (Instant.now().isAfter(timeoutInstant)) {
+                Assert.fail("Timeout after [" + configuration.getTimeout() + "] seconds.");
             }
 
             try {
@@ -82,7 +81,9 @@ public class Wait {
             } catch (final Exception ex) {
                 handleException(logger, ex);
             }
-            count += configuration.getSleepTime();
+
+            logger.info("... polling in Wait.until (" + Duration.between(startInstant, Instant.now()).getSeconds()
+                    + " seconds) ...");
             try {
                 TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
             } catch (final Exception ex) {
@@ -96,13 +97,11 @@ public class Wait {
         final Logger logger = LoggerFactory.getLogger(Wait.class);
 
         boolean success = false;
-        int count = 0;
+        final Instant startInstant = Instant.now();
+        final Instant timeoutInstant = startInstant.plusSeconds(configuration.getTimeout());
         while (!success) {
-            if (count / 1000 > configuration.getTimeout()) {
-                Assert.fail("Timeout after [" + (count / 1000) + "] seconds.");
-            }
-            if (count > 0) {
-                logger.info("... polling in Wait.until (" + (count / 1000) + " seconds) ...");
+            if (Instant.now().isAfter(timeoutInstant)) {
+                Assert.fail("Timeout after [" + configuration.getTimeout() + "] seconds.");
             }
 
             try {
@@ -122,7 +121,9 @@ public class Wait {
             } catch (final Exception ex) {
                 handleException(logger, ex);
             }
-            count += configuration.getSleepTime();
+
+            logger.info("... polling in Wait.until (" + Duration.between(startInstant, Instant.now()).getSeconds()
+                    + " seconds) ...");
             try {
                 TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
             } catch (final Exception ex) {
