@@ -15,6 +15,8 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.GlueBase;
@@ -22,7 +24,6 @@ import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.SsldDeviceSteps;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -43,7 +44,7 @@ public class OslpDeviceSteps extends GlueBase {
     private SsldDeviceSteps ssldDeviceSteps;
 
     @Given("^an ssld oslp device$")
-    public void anSsldOslpDevice(final Map<String, String> settings) {
+    public void anSsldOslpDevice(final Map<String, String> settings) throws Throwable {
 
         // First create the device itself
         this.ssldDeviceSteps.anSsldDevice(settings);

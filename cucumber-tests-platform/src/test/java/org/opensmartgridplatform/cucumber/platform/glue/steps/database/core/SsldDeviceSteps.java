@@ -20,6 +20,9 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -29,8 +32,6 @@ import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.RelayStatusRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -70,13 +71,13 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
      */
     @Given("^an ssld device$")
     @Transactional("txMgrCore")
-    public Ssld anSsldDevice(final Map<String, String> settings) {
+    public Ssld anSsldDevice(final Map<String, String> settings) throws Throwable {
         return this.createAnSsldDevice(settings);
     }
 
     @Given("^a relay status$")
     @Transactional("txMgrCore")
-    public void aRelayStatus(final Map<String, String> settings) {
+    public void aRelayStatus(final Map<String, String> settings) throws Exception {
 
         final Ssld ssld = this.ssldRepository.findByDeviceIdentification(getString(settings,
                 PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -126,10 +127,10 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
         this.deviceSteps.theDeviceContains(expectedEntity);
     }
 
-    private Ssld createAnSsldDevice(final Map<String, String> settings) {
+    private Ssld createAnSsldDevice(final Map<String, String> settings) throws Throwable {
         // Set the required stuff
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
-        final Ssld ssld = new Ssld(deviceIdentification);
+        Ssld ssld = new Ssld(deviceIdentification);
 
         ssld.setPublicKeyPresent(
                 getBoolean(settings, PlatformKeys.KEY_PUBLICKEYPRESENT, PlatformDefaults.DEFAULT_PUBLICKEYPRESENT));
