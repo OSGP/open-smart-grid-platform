@@ -36,7 +36,7 @@ public class CdmaMastSegmentTest {
         final CdmaBatchDevice cd1 = new CdmaBatchDevice("cd1", this.loopbackAddress);
         mastSegment.addCdmaBatchDevice(null, cd1);
         final CdmaBatch cdmaBatch = mastSegment.popCdmaBatch();
-        assertEquals(CdmaBatch.MAX_BATCH_NUMBER, cdmaBatch.getBatchNumber());
+        assertEquals("Batch should get maximum batch number", CdmaBatch.MAX_BATCH_NUMBER, cdmaBatch.getBatchNumber());
     }
 
     @Test
