@@ -12,10 +12,6 @@ import java.util.Objects;
 
 public class CdmaDevice {
 
-    // private static final Short MAX_BATCH_NUMBER = (short) 99;
-    // public static final String DEFAULT_MASTSEGMENT =
-    // "DEVICE-WITHOUT-MASTSEGMENT";
-
     private String deviceIdentification;
     private InetAddress networkAddress;
     private String mastSegmentName;
@@ -25,10 +21,8 @@ public class CdmaDevice {
             final Short batchNumber) {
         this.deviceIdentification = deviceIdentification;
         this.networkAddress = networkAddress;
-        this.mastSegmentName = mastSegmentName; // == null ? DEFAULT_MASTSEGMENT
-                                                // : mastSegmentName;
-        this.batchNumber = batchNumber; // == null ? MAX_BATCH_NUMBER :
-                                        // batchNumber;
+        this.mastSegmentName = mastSegmentName;
+        this.batchNumber = batchNumber;
     }
 
     public String getDeviceIdentification() {
