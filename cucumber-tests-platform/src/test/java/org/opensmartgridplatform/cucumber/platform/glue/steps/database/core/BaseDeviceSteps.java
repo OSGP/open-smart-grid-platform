@@ -174,7 +174,9 @@ public abstract class BaseDeviceSteps extends GlueBase {
                 PlatformDefaults.DEFAULT_CDMA_MAST_SEGMENT);
         final Short batchNumber = getShort(settings, PlatformKeys.KEY_CDMA_BATCH_NUMBER,
                 PlatformDefaults.DEFAULT_CDMA_BATCH_NUMBER);
-        final CdmaSettings cdmaSettings = new CdmaSettings(mastSegment, batchNumber);
+
+        final CdmaSettings cdmaSettings = (mastSegment == null && batchNumber == null) ? null
+                : new CdmaSettings(mastSegment, batchNumber);
         device.updateCdmaSettings(cdmaSettings);
 
         return device;
