@@ -24,8 +24,8 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
+import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.CircuitBreaker;
@@ -189,18 +189,37 @@ public class NotificationWebServiceTemplateFactory {
             return;
         }
         try {
-            sslContextBuilder.loadKeyMaterial(this.createKeyStore(config), config.getKeyStorePassword().toCharArray());
+            sslContextBuilder.loadKeyMaterial(this.createKeyStore(config.getKeyStoreType(),
+                    config.getKeyStoreLocation(), config.getKeyStorePassword()),
+                    config.getKeyStorePassword().toCharArray());
         } catch (final GeneralSecurityException e) {
             LOGGER.error("Exception loading key material", e);
             throw new WebServiceSecurityException("Unable to load key material for created KeyStore", e);
         }
     }
 
-    private KeyStore createKeyStore(final NotificationWebServiceConfiguration config) throws WebServiceSecurityException {
+    private void loadTrustMaterial(final SSLContextBuilder sslContextBuilder,
+            final NotificationWebServiceConfiguration config) throws WebServiceSecurityException {
+
+        if (!config.isUseTrustStore()) {
+            return;
+        }
+        try {
+            sslContextBuilder.loadTrustMaterial(this.createKeyStore(config.getTrustStoreType(),
+                    config.getTrustStoreLocation(), config.getTrustStorePassword()), new TrustSelfSignedStrategy());
+        } catch (final GeneralSecurityException e) {
+            LOGGER.error("Exception loading trust material", e);
+            throw new WebServiceSecurityException("Unable to load trust material for created trust store", e);
+        }
+    }
+
+    private KeyStore createKeyStore(final String type, final String location, final String password)
+            throws WebServiceSecurityException {
+
         final KeyStoreFactoryBean keyStoreFactory = new KeyStoreFactoryBean();
-        keyStoreFactory.setType(config.getKeyStoreType());
-        keyStoreFactory.setLocation(new FileSystemResource(config.getKeyStoreLocation()));
-        keyStoreFactory.setPassword(config.getKeyStorePassword());
+        keyStoreFactory.setType(type);
+        keyStoreFactory.setLocation(new FileSystemResource(location));
+        keyStoreFactory.setPassword(password);
         try {
             keyStoreFactory.afterPropertiesSet();
             final KeyStore keyStore = keyStoreFactory.getObject();
@@ -209,31 +228,9 @@ public class NotificationWebServiceTemplateFactory {
             }
             return keyStore;
         } catch (final GeneralSecurityException | IOException e) {
-            LOGGER.error("Exception creating key store", e);
+            LOGGER.error("Exception creating {} key store for file {}", type, location, e);
             throw new WebServiceSecurityException("Unable to create KeyStore", e);
         }
-    }
-
-    private void loadTrustMaterial(final SSLContextBuilder sslContextBuilder, final NotificationWebServiceConfiguration config)
-            throws WebServiceSecurityException {
-
-        if (!config.isUseTrustStore()) {
-            return;
-        }
-        try {
-            sslContextBuilder.loadTrustMaterial(this.createTrustStore(config), new TrustSelfSignedStrategy());
-        } catch (final GeneralSecurityException e) {
-            LOGGER.error("Exception loading trust material", e);
-            throw new WebServiceSecurityException("Unable to load trust material for created trust store", e);
-        }
-    }
-
-    private KeyStore createTrustStore(final NotificationWebServiceConfiguration config) {
-        final KeyStoreFactoryBean trustStoreFactory = new KeyStoreFactoryBean();
-        trustStoreFactory.setType(config.getTrustStoreType());
-        trustStoreFactory.setLocation(new FileSystemResource(config.getTrustStoreLocation()));
-        trustStoreFactory.setPassword(config.getTrustStorePassword());
-        return trustStoreFactory.getObject();
     }
 
     private void preventDuplicateHeaders(final HttpClientBuilder clientBuilder) {
