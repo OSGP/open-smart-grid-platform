@@ -15,9 +15,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -29,6 +26,8 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRep
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -51,11 +50,10 @@ public class DeviceAuthorizationSteps extends GlueBase {
      *
      * @param settings
      *            The settings for the device authorization to be used.
-     * @throws Throwable
      */
     @Given("^a device authorization$")
     @Transactional("txMgrCore")
-    public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
+    public void aDeviceAuthorization(final Map<String, String> settings) {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(getString(settings,
                 PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -78,10 +76,9 @@ public class DeviceAuthorizationSteps extends GlueBase {
      *
      * @param expectedEntity
      *            The expected settings.
-     * @throws Throwable
      */
     @Then("^the entity device authorization exists$")
-    public void thenTheEntityDeviceAuthorizationExists(final Map<String, String> expectedEntity) throws Throwable {
+    public void thenTheEntityDeviceAuthorizationExists(final Map<String, String> expectedEntity) {
         this.thenTheEntityDeviceAuthorizationsExist(expectedEntity);
     }
 
@@ -91,10 +88,9 @@ public class DeviceAuthorizationSteps extends GlueBase {
      *
      * @param expectedEntity
      *            The expected settings.
-     * @throws Throwable
      */
     @Then("^the entity device authorizations exist$")
-    public void thenTheEntityDeviceAuthorizationsExist(final Map<String, String> expectedEntity) throws Throwable {
+    public void thenTheEntityDeviceAuthorizationsExist(final Map<String, String> expectedEntity) {
         final String authorizationsStringList = expectedEntity.get(PlatformKeys.KEY_DEVICE_FUNCTION_GROUP);
         final String[] authorizations = StringUtils.split(authorizationsStringList, ',');
 
@@ -156,11 +152,9 @@ public class DeviceAuthorizationSteps extends GlueBase {
      *
      * @param expectedEntity
      *            The expected settings.
-     * @throws Throwable
      */
     @Then("^the entity device authorization does not exist$")
-    public void thenTheEntityDeviceAuthorizationDoesNotExist(final Map<String, String> expectedEntity)
-            throws Throwable {
+    public void thenTheEntityDeviceAuthorizationDoesNotExist(final Map<String, String> expectedEntity) {
         final String expectedAuthorization = expectedEntity.get(PlatformKeys.KEY_DEVICE_FUNCTION_GROUP);
         final Device device = this.deviceRepository
                 .findByDeviceIdentification(expectedEntity.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));

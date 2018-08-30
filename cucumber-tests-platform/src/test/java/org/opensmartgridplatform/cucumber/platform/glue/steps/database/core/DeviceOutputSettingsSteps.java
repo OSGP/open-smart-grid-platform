@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -26,6 +24,7 @@ import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.RelayStatusRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 
@@ -38,7 +37,7 @@ public class DeviceOutputSettingsSteps extends GlueBase {
     private RelayStatusRepository relayStatusRepository;
 
     @Given("^a device output setting$")
-    public void aDeviceOutputSetting(final Map<String, String> settings) throws Throwable {
+    public void aDeviceOutputSetting(final Map<String, String> settings) {
 
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
@@ -60,7 +59,7 @@ public class DeviceOutputSettingsSteps extends GlueBase {
     }
 
     @Given("^device output settings$")
-    public void deviceOutputSettings(final Map<String, String> settings) throws Throwable {
+    public void deviceOutputSettings(final Map<String, String> settings) {
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
@@ -83,7 +82,7 @@ public class DeviceOutputSettingsSteps extends GlueBase {
     }
 
     @Given("^device output settings for lightvalues$")
-    public void deviceOutputSettingsForLightValues(final Map<String, String> settings) throws Throwable {
+    public void deviceOutputSettingsForLightValues(final Map<String, String> settings) {
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
 
