@@ -19,85 +19,85 @@
 <link href="/web-device-simulator/static/css/bootstrap.min.css" rel="stylesheet">
 <style>
 body {
-	padding-top: 10px;
-	padding-bottom: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 </style>
 <link href="/web-device-simulator/static/css/bootstrap-responsive.css" rel="stylesheet">
 </head>
 
 <body>
-	<div class="container">
-		<div style="margin-bottom: 10px">
-			<img src="/web-device-simulator/static/img/opensmartgridplatform_logo.png" style="height:50px;" />
-			<div class="pull-right">${project.version}-${BUILD_TAG}</div>
-		</div>
+    <div class="container">
+        <div style="margin-bottom: 10px">
+            <img src="/web-device-simulator/static/img/opensmartgridplatform_logo.png" style="height:50px;" />
+            <div class="pull-right">${project.version}-${BUILD_TAG}</div>
+        </div>
 
-		<!-- menu -->
-		<div class="navbar">
-			<div class="navbar-inner">
-				<a class="brand" href="#"><spring:message code="org.opensmartgridplatform.webdevicesimulator.web.title" /></a>
-				<ul class="nav">
-					<li class="active"><a href="/web-device-simulator/devices">Devices</a></li>
-					<li class="inactive"><a href="<c:url value="/logs"/>">Logs</a></li>
-				</ul>
-			</div>
-		</div>
+        <!-- menu -->
+        <div class="navbar">
+            <div class="navbar-inner">
+                <a class="brand" href="#"><spring:message code="org.opensmartgridplatform.webdevicesimulator.web.title" /></a>
+                <ul class="nav">
+                    <li class="active"><a href="/web-device-simulator/devices">Devices</a></li>
+                    <li class="inactive"><a href="<c:url value="/logs"/>">Logs</a></li>
+                </ul>
+            </div>
+        </div>
 
-		<!-- align center -->
-		<div class="row">
-			<div class="offset1">
+        <!-- align center -->
+        <div class="row">
+            <div class="offset1">
 
-				<!-- notifications -->
-				<div class="row">
-					<div class="span10">
-						<div class="messages">
-							<c:if test="${feedbackMessage != null}">
-								<div class="alert alert-success">
-									<c:out value="${feedbackMessage}" />
-								</div>
-							</c:if>
-							<c:if test="${errorMessage != null}">
-								<div class="alert alert-error">
-									<c:out value="${errorMessage}" />
-								</div>
-							</c:if>
-						</div>
-					</div>
-				</div>
+                <!-- notifications -->
+                <div class="row">
+                    <div class="span10">
+                        <div class="messages">
+                            <c:if test="${feedbackMessage != null}">
+                                <div class="alert alert-success">
+                                    <c:out value="${feedbackMessage}" />
+                                </div>
+                            </c:if>
+                            <c:if test="${errorMessage != null}">
+                                <div class="alert alert-error">
+                                    <c:out value="${errorMessage}" />
+                                </div>
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
 
-				<!-- buttons -->
-				<div class="row">
-					<div class="span10">
-						<h1>
-							<spring:message code="device.list.page.title" />
-						</h1>
-						<a href="/web-device-simulator/devices/create" class="btn btn-primary"><spring:message code="device.create.link.label" /></a>
-							<spring:message code="device.edit.page.device.registration" />
-							<input id="devRegistration" name="devRegistration" type="checkbox"/>
-							<spring:message code="device.edit.page.device.reboot" />
-							<input id="devReboot" name="devReboot" type="checkbox"/>
-							<spring:message code="device.edit.page.device.tariff.switching" />
-							<input id="tariffSwitching" name="tariffSwitching" type="checkbox"/>
-							<spring:message code="device.edit.page.device.light.switching" />
-							<input id="lightSwitching" name="lightSwitching" type="checkbox"/>
-							<spring:message code="device.edit.page.device.event.notification" />
-							<input id="eventListener" name="eventListener" type="checkbox"/>
-					</div>
-				</div>
-				<div class="row" style="margin-top: 25px">
-				
-					<div class="span10">
-	                    <c:choose>
-	                        <c:when test="${escapedDeviceIdentification == null}">
-	                            <c:url var="baseurl" value="/devices" />
-	                        </c:when>
-	                        <c:otherwise>
-	                            <c:url var="baseurl" value="/devices/${escapedDeviceIdentification}" />
-	                        </c:otherwise>
-	                    </c:choose>
-	                    <c:set var="escapedDeviceIdentification"><c:out value="${deviceIdentification}" /></c:set>
-	                    <!-- filter -->
+                <!-- buttons -->
+                <div class="row">
+                    <div class="span10">
+                        <h1>
+                            <spring:message code="device.list.page.title" />
+                        </h1>
+                        <a href="/web-device-simulator/devices/create" class="btn btn-primary"><spring:message code="device.create.link.label" /></a>
+                            <spring:message code="device.edit.page.device.registration" />
+                            <input id="devRegistration" name="devRegistration" type="checkbox"/>
+                            <spring:message code="device.edit.page.device.reboot" />
+                            <input id="devReboot" name="devReboot" type="checkbox"/>
+                            <spring:message code="device.edit.page.device.tariff.switching" />
+                            <input id="tariffSwitching" name="tariffSwitching" type="checkbox"/>
+                            <spring:message code="device.edit.page.device.light.switching" />
+                            <input id="lightSwitching" name="lightSwitching" type="checkbox"/>
+                            <spring:message code="device.edit.page.device.event.notification" />
+                            <input id="eventListener" name="eventListener" type="checkbox"/>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 25px">
+                
+                    <div class="span10">
+                        <c:choose>
+                            <c:when test="${escapedDeviceIdentification == null}">
+                                <c:url var="baseurl" value="/devices" />
+                            </c:when>
+                            <c:otherwise>
+                                <c:url var="baseurl" value="/devices/${escapedDeviceIdentification}" />
+                            </c:otherwise>
+                        </c:choose>
+                        <c:set var="escapedDeviceIdentification"><c:out value="${deviceIdentification}" /></c:set>
+                        <!-- filter -->
                         <input id="deviceIdentification" type="text" placeholder="device" value="${escapedDeviceIdentification}" class="form-control" style="margin-top: 10px" />
                         <button id="setFilter" class="btn btn-primary">
                            <i class="fa fa-filter"></i> Filter
@@ -105,64 +105,64 @@ body {
                         
                         <!-- sort direction -->
                         <select class="btn btn-xs btn-default pull-right" id="sortDirection" style="margin-top: 10px; margin-left: 10px">
-		                    <c:forTokens items = "DESC,ASC" delims = "," var = "sort">
-		                        <option value="${sort}"<c:if test="${currentSortDirection == sort}"> selected="selected"</c:if>><c:out value="${sort}" /> <spring:message code="device.list.sortdirection.label"/></option>
-		                    </c:forTokens>
-		                </select>
+                            <c:forTokens items = "DESC,ASC" delims = "," var = "sort">
+                                <option value="${sort}"<c:if test="${currentSortDirection == sort}"> selected="selected"</c:if>><c:out value="${sort}" /> <spring:message code="device.list.sortdirection.label"/></option>
+                            </c:forTokens>
+                        </select>
                         
                         <!-- page size -->
                         <select class="btn btn-xs btn-default pull-right" id="filteredDevicesPerPage" style="margin-top: 10px">
-		                    <c:forTokens items = "5,10,20,50" delims = "," var = "numberOfDevices">
-		                        <option value="${numberOfDevices}"<c:if test="${devicesPerPage == numberOfDevices}"> selected="selected"</c:if>><c:out value="${numberOfDevices}" /> <spring:message code="device.list.devicesperpage.label"/></option>
-		                    </c:forTokens>
-		                </select>
+                            <c:forTokens items = "5,10,20,50" delims = "," var = "numberOfDevices">
+                                <option value="${numberOfDevices}"<c:if test="${devicesPerPage == numberOfDevices}"> selected="selected"</c:if>><c:out value="${numberOfDevices}" /> <spring:message code="device.list.devicesperpage.label"/></option>
+                            </c:forTokens>
+                        </select>
                     </div>
-				</div>
+                </div>
 
-				<!-- devices list -->
-				<div class="row" style="margin-top: 25px">
-					<div class="span10">
-						<table class="table table-striped table-bordered table-hover">
-							<thead>
-								<tr>
-									<th>Id</th>
-									<th><spring:message code="entity.device.deviceIdentification" /></th>
-									<th><spring:message code="entity.device.ipAddress" /></th>
-									<th><spring:message code="entity.device.deviceType" /></th>
-									<th><spring:message code="entity.device.preferredLinkType" /></th>
-									<th><spring:message code="entity.device.actualLinkType" /></th>
-									<th><spring:message code="entity.device.lightType" /></th>
-									<th><spring:message code="entity.device.lightOn" /></th>
-									<th><spring:message code="entity.device.dimValue" /></th>
-									<th><spring:message code="entity.device.selfTestActive" /></th>
-									<th><spring:message code="entity.device.sequenceNumber" /></th>
-									<th><spring:message code="entity.device.eventNotifications" /></th>
-								</tr>
-							</thead>
-							<tbody>
-								<c:forEach items="${devices}" var="device">
-									<tr>
-										<td><c:out value="${device.id}" /></td>
-										<td><a href="/web-device-simulator/devices/edit/${device.id}"><c:out value="${device.deviceIdentification}" /></a></td>
-										<td><c:out value="${device.ipAddress}" /></td>
-										<td><c:out value="${device.deviceType}" /></td>
-										<td id="preferredLinkType${device.id}"></td>
-										<td><c:out value="${device.actualLinkType}" /></td>
-										<td id="lightType${device.id}"></td>
-										<td id="lightState${device.id}"></td>
-										<td id="dimValue${device.id}"></td>
-										<td id="selfTestState${device.id}"></td>
-										<td id="sequenceNumber${device.id}"></td>
-										<td id="eventNotifications${device.id}"></td>
-									</tr>
-								</c:forEach>
-							</tbody>
-						</table>
-					</div>
-				</div>
-				
-				
-				
+                <!-- devices list -->
+                <div class="row" style="margin-top: 25px">
+                    <div class="span10">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th><spring:message code="entity.device.deviceIdentification" /></th>
+                                    <th><spring:message code="entity.device.ipAddress" /></th>
+                                    <th><spring:message code="entity.device.deviceType" /></th>
+                                    <th><spring:message code="entity.device.preferredLinkType" /></th>
+                                    <th><spring:message code="entity.device.actualLinkType" /></th>
+                                    <th><spring:message code="entity.device.lightType" /></th>
+                                    <th><spring:message code="entity.device.lightOn" /></th>
+                                    <th><spring:message code="entity.device.dimValue" /></th>
+                                    <th><spring:message code="entity.device.selfTestActive" /></th>
+                                    <th><spring:message code="entity.device.sequenceNumber" /></th>
+                                    <th><spring:message code="entity.device.eventNotifications" /></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach items="${devices}" var="device">
+                                    <tr>
+                                        <td><c:out value="${device.id}" /></td>
+                                        <td><a href="/web-device-simulator/devices/edit/${device.id}"><c:out value="${device.deviceIdentification}" /></a></td>
+                                        <td><c:out value="${device.ipAddress}" /></td>
+                                        <td><c:out value="${device.deviceType}" /></td>
+                                        <td id="preferredLinkType${device.id}"></td>
+                                        <td><c:out value="${device.actualLinkType}" /></td>
+                                        <td id="lightType${device.id}"></td>
+                                        <td id="lightState${device.id}"></td>
+                                        <td id="dimValue${device.id}"></td>
+                                        <td id="selfTestState${device.id}"></td>
+                                        <td id="sequenceNumber${device.id}"></td>
+                                        <td id="eventNotifications${device.id}"></td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                
+                
                     <!-- paging control -->
                     <div>
                         <ul id="paginationControl" class="pagination offset2" data="${numberOfPages}">
@@ -198,99 +198,99 @@ body {
                             </c:choose>
                         </ul>
                     </div>
-				
-			</div>
-		</div>
+                
+            </div>
+        </div>
 
-	</div>
+    </div>
 
-	<script type="text/javascript" src="/web-device-simulator/static/js/jquery-1.8.3.min.js"></script>
-	<script type="text/javascript" src="/web-device-simulator/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/web-device-simulator/static/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="/web-device-simulator/static/js/bootstrap.min.js"></script>
 
-	<script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(
                 function() {
-                	
-                	$('#devRegistration').change(function() {
-                		
-                	    var request = new Object();
-                	    request.autonomousStatus = $('#devRegistration').prop('checked');
-                		
-                	    $.ajax({
-                	        type : 'POST',
-                	        url : '/web-device-simulator/devices/deviceRegistrationCheck',
-                	        contentType : 'application/json',
-                	        dataType : 'json',
-                	        data : JSON.stringify(request),
-                	        async : true
-                	    });
+                    
+                    $('#devRegistration').change(function() {
+                        
+                        var request = new Object();
+                        request.autonomousStatus = $('#devRegistration').prop('checked');
+                        
+                        $.ajax({
+                            type : 'POST',
+                            url : '/web-device-simulator/devices/deviceRegistrationCheck',
+                            contentType : 'application/json',
+                            dataType : 'json',
+                            data : JSON.stringify(request),
+                            async : true
+                        });
 
-                		});
-                	
-                	$('#devReboot').change(function() {
-                		
-                	    var request = new Object();
-                	    request.autonomousStatus = $('#devReboot').prop('checked');
-                		
-                	    $.ajax({
-                	        type : 'POST',
-                	        url : '/web-device-simulator/devices/deviceRebootCheck',
-                	        contentType : 'application/json',
-                	        dataType : 'json',
-                	        data : JSON.stringify(request),
-                	        async : true
-                	    });
+                        });
+                    
+                    $('#devReboot').change(function() {
+                        
+                        var request = new Object();
+                        request.autonomousStatus = $('#devReboot').prop('checked');
+                        
+                        $.ajax({
+                            type : 'POST',
+                            url : '/web-device-simulator/devices/deviceRebootCheck',
+                            contentType : 'application/json',
+                            dataType : 'json',
+                            data : JSON.stringify(request),
+                            async : true
+                        });
 
-                		});
-                	
-                	$('#tariffSwitching').change(function() {
-                		
-                	    var request = new Object();
-                	    request.autonomousStatus = $('#tariffSwitching').prop('checked');
-                		
-                	    $.ajax({
-                	        type : 'POST',
-                	        url : '/web-device-simulator/devices/tariffSwitchingCheck',
-                	        contentType : 'application/json',
-                	        dataType : 'json',
-                	        data : JSON.stringify(request),
-                	        async : true
-                	    });
+                        });
+                    
+                    $('#tariffSwitching').change(function() {
+                        
+                        var request = new Object();
+                        request.autonomousStatus = $('#tariffSwitching').prop('checked');
+                        
+                        $.ajax({
+                            type : 'POST',
+                            url : '/web-device-simulator/devices/tariffSwitchingCheck',
+                            contentType : 'application/json',
+                            dataType : 'json',
+                            data : JSON.stringify(request),
+                            async : true
+                        });
 
-                		});
-                	
-                	$('#lightSwitching').change(function() {
-                		
-                	    var request = new Object();
-                	    request.autonomousStatus = $('#lightSwitching').prop('checked');
-                		
-                	    $.ajax({
-                	        type : 'POST',
-                	        url : '/web-device-simulator/devices/lightSwitchingCheck',
-                	        contentType : 'application/json',
-                	        dataType : 'json',
-                	        data : JSON.stringify(request),
-                	        async : true
-                	    });
+                        });
+                    
+                    $('#lightSwitching').change(function() {
+                        
+                        var request = new Object();
+                        request.autonomousStatus = $('#lightSwitching').prop('checked');
+                        
+                        $.ajax({
+                            type : 'POST',
+                            url : '/web-device-simulator/devices/lightSwitchingCheck',
+                            contentType : 'application/json',
+                            dataType : 'json',
+                            data : JSON.stringify(request),
+                            async : true
+                        });
 
-                		});
-                	
-                	$('#eventListener').change(function() {
-                		
-                	    var request = new Object();
-                	    request.autonomousStatus = $('#eventListener').prop('checked');
-                		
-                	    $.ajax({
-                	        type : 'POST',
-                	        url : '/web-device-simulator/devices/eventNotificationCheck',
-                	        contentType : 'application/json',
-                	        dataType : 'json',
-                	        data : JSON.stringify(request),
-                	        async : true
-                	    });
+                        });
+                    
+                    $('#eventListener').change(function() {
+                        
+                        var request = new Object();
+                        request.autonomousStatus = $('#eventListener').prop('checked');
+                        
+                        $.ajax({
+                            type : 'POST',
+                            url : '/web-device-simulator/devices/eventNotificationCheck',
+                            contentType : 'application/json',
+                            dataType : 'json',
+                            data : JSON.stringify(request),
+                            async : true
+                        });
 
-                		});
-                	
+                        });
+                    
                     refreshLightStates();
                     setInterval(refreshLightStates, 4000);
 
@@ -369,7 +369,7 @@ body {
                                 }
                             }
                         });
-						$.ajax({
+                        $.ajax({
                             type : 'GET',
                             url : '/web-device-simulator/devices/deviceRegistrationCheck/json',
                             dataType : 'json',
@@ -377,10 +377,10 @@ body {
                             async : true,
                             cache : false,
                             success : function(data) {
-                            	$('#devRegistration').prop("checked" , data);
-							}
-						});
-						$.ajax({
+                                $('#devRegistration').prop("checked" , data);
+                            }
+                        });
+                        $.ajax({
                             type : 'GET',
                             url : '/web-device-simulator/devices/deviceRebootCheck/json',
                             dataType : 'json',
@@ -388,10 +388,10 @@ body {
                             async : true,
                             cache : false,
                             success : function(data) {
-                            	$('#devReboot').prop("checked" , data);
-							}
-						});
-						$.ajax({
+                                $('#devReboot').prop("checked" , data);
+                            }
+                        });
+                        $.ajax({
                             type : 'GET',
                             url : '/web-device-simulator/devices/tariffSwitchingCheck/json',
                             dataType : 'json',
@@ -399,10 +399,10 @@ body {
                             async : true,
                             cache : false,
                             success : function(data) {
-                            	$('#tariffSwitching').prop("checked" , data);
-							}
-						});
-						$.ajax({
+                                $('#tariffSwitching').prop("checked" , data);
+                            }
+                        });
+                        $.ajax({
                             type : 'GET',
                             url : '/web-device-simulator/devices/lightSwitchingCheck/json',
                             dataType : 'json',
@@ -410,10 +410,10 @@ body {
                             async : true,
                             cache : false,
                             success : function(data) {
-                            	$('#lightSwitching').prop("checked" , data);
-							}
-						});
-						$.ajax({
+                                $('#lightSwitching').prop("checked" , data);
+                            }
+                        });
+                        $.ajax({
                             type : 'GET',
                             url : '/web-device-simulator/devices/eventNotificationCheck/json',
                             dataType : 'json',
@@ -421,9 +421,9 @@ body {
                             async : true,
                             cache : false,
                             success : function(data) {
-                            	$('#eventListener').prop("checked" , data);
-							}
-						});
+                                $('#eventListener').prop("checked" , data);
+                            }
+                        });
                     }
                 });
         
