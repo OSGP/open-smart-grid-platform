@@ -14,7 +14,7 @@
 
   <artifactId>parent-shared</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.30.0-SNAPSHOT</version>
+  <version>4.31.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-shared</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -46,7 +46,7 @@
 
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.30.0-SNAPSHOT</osgp.version>
+    <osgp.version>4.31.0-SNAPSHOT</osgp.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.5.RELEASE</spring.version>
