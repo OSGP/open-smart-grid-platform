@@ -86,7 +86,7 @@ body {
                     </div>
                 </div>
                 <div class="row" style="margin-top: 25px">
-                
+
                     <div class="span10">
                         <c:choose>
                             <c:when test="${escapedDeviceIdentification == null}">
@@ -102,14 +102,14 @@ body {
                         <button id="setFilter" class="btn btn-primary">
                            <i class="fa fa-filter"></i> Filter
                         </button>
-                        
+
                         <!-- sort direction -->
                         <select class="btn btn-xs btn-default pull-right" id="sortDirection" style="margin-top: 10px; margin-left: 10px">
                             <c:forTokens items = "DESC,ASC" delims = "," var = "sort">
                                 <option value="${sort}"<c:if test="${currentSortDirection == sort}"> selected="selected"</c:if>><c:out value="${sort}" /> <spring:message code="device.list.sortdirection.label"/></option>
                             </c:forTokens>
                         </select>
-                        
+
                         <!-- page size -->
                         <select class="btn btn-xs btn-default pull-right" id="filteredDevicesPerPage" style="margin-top: 10px">
                             <c:forTokens items = "5,10,20,50" delims = "," var = "numberOfDevices">
@@ -160,44 +160,42 @@ body {
                         </table>
                     </div>
                 </div>
-                
-                
-                
-                    <!-- paging control -->
-                    <div>
-                        <ul id="paginationControl" class="pagination offset2" data="${numberOfPages}">
+
+                <!-- paging control -->
+                <div>
+                    <ul id="paginationControl" class="pagination offset2" data="${numberOfPages}">
+                        <c:choose>
+                            <c:when test="${pageNumber == 1 || numberOfPages == 0}">
+                                <li class="disabled"><a>&lt;&lt;</a></li>
+                                <li class="disabled"><a>&lt;</a></li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="first"><a href="#">&lt;&lt;</a></li>
+                                <li class="previous"><a href="#">&lt;</a></li>
+                            </c:otherwise>
+                        </c:choose>
+                        <c:forEach var="i" begin="${pageBegin}" end="${pageEnd}">
                             <c:choose>
-                                <c:when test="${pageNumber == 1 || numberOfPages == 0}">
-                                    <li class="disabled"><a>&lt;&lt;</a></li>
-                                    <li class="disabled"><a>&lt;</a></li>
+                                <c:when test="${i == pageNumber}">
+                                    <li class="active"><a><c:out value="${i}" /></a></li>
                                 </c:when>
                                 <c:otherwise>
-                                    <li class="first"><a href="#">&lt;&lt;</a></li>
-                                    <li class="previous"><a href="#">&lt;</a></li>
+                                    <li><a href="#"><c:out value="${i}" /></a></li>
                                 </c:otherwise>
                             </c:choose>
-                            <c:forEach var="i" begin="${pageBegin}" end="${pageEnd}">
-                                <c:choose>
-                                    <c:when test="${i == pageNumber}">
-                                        <li class="active"><a><c:out value="${i}" /></a></li>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <li><a href="#"><c:out value="${i}" /></a></li>
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:forEach>
-                            <c:choose>
-                                <c:when test="${pageNumber == numberOfPages || numberOfPages == 0}">
-                                    <li class="disabled"><a>&gt;</a></li>
-                                    <li class="disabled"><a>&gt;&gt;</a></li>
-                                </c:when>
-                                <c:otherwise>
-                                    <li class="next"><a href="#">&gt;</a></li>
-                                    <li class="last"><a href="#">&gt;&gt;</a></li>
-                                </c:otherwise>
-                            </c:choose>
-                        </ul>
-                    </div>
+                        </c:forEach>
+                        <c:choose>
+                            <c:when test="${pageNumber == numberOfPages || numberOfPages == 0}">
+                                <li class="disabled"><a>&gt;</a></li>
+                                <li class="disabled"><a>&gt;&gt;</a></li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="next"><a href="#">&gt;</a></li>
+                                <li class="last"><a href="#">&gt;&gt;</a></li>
+                            </c:otherwise>
+                        </c:choose>
+                    </ul>
+                </div>
                 
             </div>
         </div>
@@ -209,224 +207,214 @@ body {
 
     <script type="text/javascript">
         $(document).ready(
-                function() {
-                    
-                    $('#devRegistration').change(function() {
-                        
-                        var request = new Object();
-                        request.autonomousStatus = $('#devRegistration').prop('checked');
-                        
-                        $.ajax({
-                            type : 'POST',
-                            url : '/web-device-simulator/devices/deviceRegistrationCheck',
-                            contentType : 'application/json',
-                            dataType : 'json',
-                            data : JSON.stringify(request),
-                            async : true
-                        });
+            function() {
 
-                        });
-                    
-                    $('#devReboot').change(function() {
-                        
-                        var request = new Object();
-                        request.autonomousStatus = $('#devReboot').prop('checked');
-                        
-                        $.ajax({
-                            type : 'POST',
-                            url : '/web-device-simulator/devices/deviceRebootCheck',
-                            contentType : 'application/json',
-                            dataType : 'json',
-                            data : JSON.stringify(request),
-                            async : true
-                        });
+                $('#devRegistration').change(function() {
+                    var request = new Object();
+                    request.autonomousStatus = $('#devRegistration').prop('checked');
 
-                        });
-                    
-                    $('#tariffSwitching').change(function() {
-                        
-                        var request = new Object();
-                        request.autonomousStatus = $('#tariffSwitching').prop('checked');
-                        
-                        $.ajax({
-                            type : 'POST',
-                            url : '/web-device-simulator/devices/tariffSwitchingCheck',
-                            contentType : 'application/json',
-                            dataType : 'json',
-                            data : JSON.stringify(request),
-                            async : true
-                        });
-
-                        });
-                    
-                    $('#lightSwitching').change(function() {
-                        
-                        var request = new Object();
-                        request.autonomousStatus = $('#lightSwitching').prop('checked');
-                        
-                        $.ajax({
-                            type : 'POST',
-                            url : '/web-device-simulator/devices/lightSwitchingCheck',
-                            contentType : 'application/json',
-                            dataType : 'json',
-                            data : JSON.stringify(request),
-                            async : true
-                        });
-
-                        });
-                    
-                    $('#eventListener').change(function() {
-                        
-                        var request = new Object();
-                        request.autonomousStatus = $('#eventListener').prop('checked');
-                        
-                        $.ajax({
-                            type : 'POST',
-                            url : '/web-device-simulator/devices/eventNotificationCheck',
-                            contentType : 'application/json',
-                            dataType : 'json',
-                            data : JSON.stringify(request),
-                            async : true
-                        });
-
-                        });
-                    
-                    refreshLightStates();
-                    setInterval(refreshLightStates, 4000);
-
-                    function refreshLightStates() {
-                        $.ajax({
-                            type : 'GET',
-                            url : '/web-device-simulator/devices/json',
-                            dataType : 'json',
-                            contentType : 'application/json',
-                            async : true,
-                            cache : false,
-                            success : function(data) {
-                                for (var i = 0; i < data.length; i++) {
-                                    // Set preferred link type
-                                    if (data[i].preferredLinkType == null) {
-                                        $('#preferredLinkType' + data[i].id).html('');
-                                    } else {
-                                        $('#preferredLinkType' + data[i].id).html(data[i].preferredLinkType);
-                                    }
-
-                                    // Set light type
-                                    if (data[i].lightType == null) {
-                                        $('#lightType' + data[i].id).html('');
-                                    } else {
-                                        $('#lightType' + data[i].id).html(data[i].lightType);
-                                    }
-
-                                    // Set light state
-                                    var isOn = data[i].lightOn;
-                                    var dimVal = data[i].dimValue;
-
-                                    if (isOn) {
-                                        if (dimVal != null) {
-                                            $('#lightState' + data[i].id).html(
-                                                    '<img src="/web-device-simulator/static/img/light_bulb_on.png" style="height: 40px; width: 40px; opacity:' + dimVal/100 + ';" />');
-                                        } else {
-                                            $('#lightState' + data[i].id).html('<img src="/web-device-simulator/static/img/light_bulb_on.png" style="height: 40px; width: 40px;" />');
-                                        }
-                                    } else {
-                                        $('#lightState' + data[i].id).html('<img src="/web-device-simulator/static/img/light_bulb_off.png" style="height: 40px; width: 40px;" />');
-                                    }
-
-                                    // Set dim values
-                                    if (data[i].dimValue == null) {
-                                        $('#dimValue' + data[i].id).html('');
-                                    } else {
-                                        $('#dimValue' + data[i].id).html(data[i].dimValue);
-                                    }
-
-                                    // Set selftest
-                                    if (data[i].selftestActive) {
-                                        $('#selfTestState' + data[i].id).html('<span class="badge badge-Success">Started</span>');
-                                    } else {
-                                        $('#selfTestState' + data[i].id).html('<span class="badge">Stopped</span>');
-                                    }
-
-                                    // Set sequence number
-                                    if (data[i].sequenceNumber == null) {
-                                        $('#sequenceNumber' + data[i].id).html('');
-                                    } else {
-                                        $('#sequenceNumber' + data[i].id).html(data[i].sequenceNumber);
-                                    }
-
-                                    // Set event notifications
-                                    if (data[i].eventNotifications == null) {
-                                        $('#eventNotifications' + data[i].id).html('');
-                                    } else {
-                                        var split = data[i].eventNotifications.split(',');
-                                        var list = '';
-                                        for (var j = 0; j < split.length; j++) {
-                                            list += split[j] + '<br />';
-                                        }
-                                        $('#eventNotifications' + data[i].id).html(list);
-                                    }
-
-                                }
-                            }
-                        });
-                        $.ajax({
-                            type : 'GET',
-                            url : '/web-device-simulator/devices/deviceRegistrationCheck/json',
-                            dataType : 'json',
-                            contentType : 'application/json',
-                            async : true,
-                            cache : false,
-                            success : function(data) {
-                                $('#devRegistration').prop("checked" , data);
-                            }
-                        });
-                        $.ajax({
-                            type : 'GET',
-                            url : '/web-device-simulator/devices/deviceRebootCheck/json',
-                            dataType : 'json',
-                            contentType : 'application/json',
-                            async : true,
-                            cache : false,
-                            success : function(data) {
-                                $('#devReboot').prop("checked" , data);
-                            }
-                        });
-                        $.ajax({
-                            type : 'GET',
-                            url : '/web-device-simulator/devices/tariffSwitchingCheck/json',
-                            dataType : 'json',
-                            contentType : 'application/json',
-                            async : true,
-                            cache : false,
-                            success : function(data) {
-                                $('#tariffSwitching').prop("checked" , data);
-                            }
-                        });
-                        $.ajax({
-                            type : 'GET',
-                            url : '/web-device-simulator/devices/lightSwitchingCheck/json',
-                            dataType : 'json',
-                            contentType : 'application/json',
-                            async : true,
-                            cache : false,
-                            success : function(data) {
-                                $('#lightSwitching').prop("checked" , data);
-                            }
-                        });
-                        $.ajax({
-                            type : 'GET',
-                            url : '/web-device-simulator/devices/eventNotificationCheck/json',
-                            dataType : 'json',
-                            contentType : 'application/json',
-                            async : true,
-                            cache : false,
-                            success : function(data) {
-                                $('#eventListener').prop("checked" , data);
-                            }
-                        });
-                    }
+                    $.ajax({
+                        type : 'POST',
+                        url : '/web-device-simulator/devices/deviceRegistrationCheck',
+                        contentType : 'application/json',
+                        dataType : 'json',
+                        data : JSON.stringify(request),
+                        async : true
+                    });
                 });
-        
+
+                $('#devReboot').change(function() {
+                    var request = new Object();
+                    request.autonomousStatus = $('#devReboot').prop('checked');
+
+                    $.ajax({
+                        type : 'POST',
+                        url : '/web-device-simulator/devices/deviceRebootCheck',
+                        contentType : 'application/json',
+                        dataType : 'json',
+                        data : JSON.stringify(request),
+                        async : true
+                    });
+                });
+                
+                $('#tariffSwitching').change(function() {
+                    var request = new Object();
+                    request.autonomousStatus = $('#tariffSwitching').prop('checked');
+
+                    $.ajax({
+                        type : 'POST',
+                        url : '/web-device-simulator/devices/tariffSwitchingCheck',
+                        contentType : 'application/json',
+                        dataType : 'json',
+                        data : JSON.stringify(request),
+                        async : true
+                    });
+                });
+
+                $('#lightSwitching').change(function() {
+                    var request = new Object();
+                    request.autonomousStatus = $('#lightSwitching').prop('checked');
+
+                    $.ajax({
+                        type : 'POST',
+                        url : '/web-device-simulator/devices/lightSwitchingCheck',
+                        contentType : 'application/json',
+                        dataType : 'json',
+                        data : JSON.stringify(request),
+                        async : true
+                    });
+                });
+
+                $('#eventListener').change(function() {
+                    var request = new Object();
+                    request.autonomousStatus = $('#eventListener').prop('checked');
+
+                    $.ajax({
+                        type : 'POST',
+                        url : '/web-device-simulator/devices/eventNotificationCheck',
+                        contentType : 'application/json',
+                        dataType : 'json',
+                        data : JSON.stringify(request),
+                        async : true
+                    });
+                });
+
+                refreshLightStates();
+                setInterval(refreshLightStates, 4000);
+
+                function refreshLightStates() {
+                    $.ajax({
+                        type : 'GET',
+                        url : '/web-device-simulator/devices/json',
+                        dataType : 'json',
+                        contentType : 'application/json',
+                        async : true,
+                        cache : false,
+                        success : function(data) {
+                            for (var i = 0; i < data.length; i++) {
+                                // Set preferred link type
+                                if (data[i].preferredLinkType == null) {
+                                    $('#preferredLinkType' + data[i].id).html('');
+                                } else {
+                                    $('#preferredLinkType' + data[i].id).html(data[i].preferredLinkType);
+                                }
+
+                                // Set light type
+                                if (data[i].lightType == null) {
+                                    $('#lightType' + data[i].id).html('');
+                                } else {
+                                    $('#lightType' + data[i].id).html(data[i].lightType);
+                                }
+
+                                // Set light state
+                                var isOn = data[i].lightOn;
+                                var dimVal = data[i].dimValue;
+
+                                if (isOn) {
+                                    if (dimVal != null) {
+                                        $('#lightState' + data[i].id).html(
+                                                '<img src="/web-device-simulator/static/img/light_bulb_on.png" style="height: 40px; width: 40px; opacity:' + dimVal/100 + ';" />');
+                                    } else {
+                                        $('#lightState' + data[i].id).html('<img src="/web-device-simulator/static/img/light_bulb_on.png" style="height: 40px; width: 40px;" />');
+                                    }
+                                } else {
+                                    $('#lightState' + data[i].id).html('<img src="/web-device-simulator/static/img/light_bulb_off.png" style="height: 40px; width: 40px;" />');
+                                }
+
+                                // Set dim values
+                                if (data[i].dimValue == null) {
+                                    $('#dimValue' + data[i].id).html('');
+                                } else {
+                                    $('#dimValue' + data[i].id).html(data[i].dimValue);
+                                }
+
+                                // Set selftest
+                                if (data[i].selftestActive) {
+                                    $('#selfTestState' + data[i].id).html('<span class="badge badge-Success">Started</span>');
+                                } else {
+                                    $('#selfTestState' + data[i].id).html('<span class="badge">Stopped</span>');
+                                }
+
+                                // Set sequence number
+                                if (data[i].sequenceNumber == null) {
+                                    $('#sequenceNumber' + data[i].id).html('');
+                                } else {
+                                    $('#sequenceNumber' + data[i].id).html(data[i].sequenceNumber);
+                                }
+
+                                // Set event notifications
+                                if (data[i].eventNotifications == null) {
+                                    $('#eventNotifications' + data[i].id).html('');
+                                } else {
+                                    var split = data[i].eventNotifications.split(',');
+                                    var list = '';
+                                    for (var j = 0; j < split.length; j++) {
+                                        list += split[j] + '<br />';
+                                    }
+                                    $('#eventNotifications' + data[i].id).html(list);
+                                }
+
+                            }
+                        }
+                    });
+                    $.ajax({
+                        type : 'GET',
+                        url : '/web-device-simulator/devices/deviceRegistrationCheck/json',
+                        dataType : 'json',
+                        contentType : 'application/json',
+                        async : true,
+                        cache : false,
+                        success : function(data) {
+                            $('#devRegistration').prop("checked" , data);
+                        }
+                    });
+                    $.ajax({
+                        type : 'GET',
+                        url : '/web-device-simulator/devices/deviceRebootCheck/json',
+                        dataType : 'json',
+                        contentType : 'application/json',
+                        async : true,
+                        cache : false,
+                        success : function(data) {
+                            $('#devReboot').prop("checked" , data);
+                        }
+                    });
+                    $.ajax({
+                        type : 'GET',
+                        url : '/web-device-simulator/devices/tariffSwitchingCheck/json',
+                        dataType : 'json',
+                        contentType : 'application/json',
+                        async : true,
+                        cache : false,
+                        success : function(data) {
+                            $('#tariffSwitching').prop("checked" , data);
+                        }
+                    });
+                    $.ajax({
+                        type : 'GET',
+                        url : '/web-device-simulator/devices/lightSwitchingCheck/json',
+                        dataType : 'json',
+                        contentType : 'application/json',
+                        async : true,
+                        cache : false,
+                        success : function(data) {
+                            $('#lightSwitching').prop("checked" , data);
+                        }
+                    });
+                    $.ajax({
+                        type : 'GET',
+                        url : '/web-device-simulator/devices/eventNotificationCheck/json',
+                        dataType : 'json',
+                        contentType : 'application/json',
+                        async : true,
+                        cache : false,
+                        success : function(data) {
+                            $('#eventListener').prop("checked" , data);
+                        }
+                    });
+                }
+            });
+
         // Get the device identification filter input field
         var input = document.getElementById("deviceIdentification");
 
@@ -440,7 +428,7 @@ body {
               document.getElementById("setFilter").click();
             }
         });
-        
+
         // a list of illegal tokens
         var illegalTokens = ['~', '`', '!', '@', '#', '$', '¤', '€', '%', '^', '&', '*', '(', ')', '=', '+', 
                              '{', '}', '[', ']', '|', '\\', ':',
@@ -449,7 +437,7 @@ body {
         function contains(input, token) {
             return (input.indexOf(token) > -1);
         }
-        
+
         $('#setFilter').click(function() {
             // get the filter criteria entered by the user
             var devId = $('#deviceIdentification').val();
@@ -467,7 +455,7 @@ body {
                         var messageToken = token === ' ' ? 'spatie' : token;
                         $('#errorMessage').html('Dit teken mag niet worden gebruikt voor een apparaat identificatie: ' + messageToken);
                         $('#errorMessage').show();
-                        
+
                         // and quit
                         return;
                     }
@@ -475,7 +463,7 @@ body {
             }
             gotoUrl(devId, 1, $('#filteredDevicesPerPage').val(), $('#sortDirection').val());
         });
-        
+
         // Make sure the number of devices per page from the drop-down select is set on the hidden filter field.
         $('#filterDevicesPerPage').val($('#filteredDevicesPerPage').val());
         $('#filteredDevicesPerPage').change(function() {
@@ -483,7 +471,7 @@ body {
             $('#filterPageNumber').val(1);
             gotoUrl($('#deviceIdentification').val(), 1, $('#filteredDevicesPerPage').val(), $('#sortDirection').val());
         });
-        
+
         // Make sure the sort direction for devices from the drop-down select is set on the hidden filter field.
         $('#devicesSortDirection').val($('#sortDirection').val());
         $('#sortDirection').change(function() {
@@ -491,7 +479,7 @@ body {
             $('#filterPageNumber').val(1);
             gotoUrl($('#deviceIdentification').val(), 1, $('#filteredDevicesPerPage').val(), $('#sortDirection').val());
         });
-        
+
         // Make sure the page selected on the pagination control is set on the hidden filter field.
         $('ul.pagination li:not(.active,.disabled) a').click(function() {
             var linkText = $(this).text();
@@ -515,7 +503,7 @@ body {
             $('#filterPageNumber').val(pageNumber);
             gotoUrl($('#deviceIdentification').val(), pageNumber, $('#filteredDevicesPerPage').val(), $('#sortDirection').val());
         });
-        
+
         function gotoUrl(devId, pageNumber, pageSize, sortDirection) {
             var deviceIdentification = '';
             var page = '';
@@ -534,7 +522,7 @@ body {
             if (sortDirection) {
                 sort = '&sort=' + sortDirection; 
             }
-            
+
             window.location.href = '<c:url value="/devices"/>' + deviceIdentification + page + size + sort;
         }
     </script>
