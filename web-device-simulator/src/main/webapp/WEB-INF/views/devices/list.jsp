@@ -85,6 +85,39 @@ body {
 							<input id="eventListener" name="eventListener" type="checkbox"/>
 					</div>
 				</div>
+				<div class="row" style="margin-top: 25px">
+				
+					<div class="span10">
+	                    <c:choose>
+	                        <c:when test="${escapedDeviceIdentification == null}">
+	                            <c:url var="baseurl" value="/devices" />
+	                        </c:when>
+	                        <c:otherwise>
+	                            <c:url var="baseurl" value="/devices/${escapedDeviceIdentification}" />
+	                        </c:otherwise>
+	                    </c:choose>
+	                    <c:set var="escapedDeviceIdentification"><c:out value="${deviceIdentification}" /></c:set>
+	                    <!-- filter -->
+                        <input id="deviceIdentification" type="text" placeholder="device" value="${escapedDeviceIdentification}" class="form-control" style="margin-top: 10px" />
+                        <button id="setFilter" class="btn btn-primary">
+                           <i class="fa fa-filter"></i> Filter
+                        </button>
+                        
+                        <!-- sort direction -->
+                        <select class="btn btn-xs btn-default pull-right" id="sortDirection" style="margin-top: 10px; margin-left: 10px">
+		                    <c:forTokens items = "DESC,ASC" delims = "," var = "sort">
+		                        <option value="${sort}"<c:if test="${currentSortDirection == sort}"> selected="selected"</c:if>><c:out value="${sort}" /> <spring:message code="device.list.sortdirection.label"/></option>
+		                    </c:forTokens>
+		                </select>
+                        
+                        <!-- page size -->
+                        <select class="btn btn-xs btn-default pull-right" id="filteredDevicesPerPage" style="margin-top: 10px">
+		                    <c:forTokens items = "5,10,20,50" delims = "," var = "numberOfDevices">
+		                        <option value="${numberOfDevices}"<c:if test="${devicesPerPage == numberOfDevices}"> selected="selected"</c:if>><c:out value="${numberOfDevices}" /> <spring:message code="device.list.devicesperpage.label"/></option>
+		                    </c:forTokens>
+		                </select>
+                    </div>
+				</div>
 
 				<!-- devices list -->
 				<div class="row" style="margin-top: 25px">
@@ -127,6 +160,45 @@ body {
 						</table>
 					</div>
 				</div>
+				
+				
+				
+                    <!-- paging control -->
+                    <div>
+                        <ul id="paginationControl" class="pagination offset2" data="${numberOfPages}">
+                            <c:choose>
+                                <c:when test="${pageNumber == 1 || numberOfPages == 0}">
+                                    <li class="disabled"><a>&lt;&lt;</a></li>
+                                    <li class="disabled"><a>&lt;</a></li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li class="first"><a href="#">&lt;&lt;</a></li>
+                                    <li class="previous"><a href="#">&lt;</a></li>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:forEach var="i" begin="${pageBegin}" end="${pageEnd}">
+                                <c:choose>
+                                    <c:when test="${i == pageNumber}">
+                                        <li class="active"><a><c:out value="${i}" /></a></li>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <li><a href="#"><c:out value="${i}" /></a></li>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                            <c:choose>
+                                <c:when test="${pageNumber == numberOfPages || numberOfPages == 0}">
+                                    <li class="disabled"><a>&gt;</a></li>
+                                    <li class="disabled"><a>&gt;&gt;</a></li>
+                                </c:when>
+                                <c:otherwise>
+                                    <li class="next"><a href="#">&gt;</a></li>
+                                    <li class="last"><a href="#">&gt;&gt;</a></li>
+                                </c:otherwise>
+                            </c:choose>
+                        </ul>
+                    </div>
+				
 			</div>
 		</div>
 
@@ -354,7 +426,121 @@ body {
 						});
                     }
                 });
+        
+        // Get the device identification filter input field
+        var input = document.getElementById("deviceIdentification");
+
+        // Execute a function when the user releases a key on the keyboard
+        input.addEventListener("keyup", function(event) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+              // Trigger the button element with a click
+              document.getElementById("setFilter").click();
+            }
+        });
+        
+        // a list of illegal tokens
+        var illegalTokens = ['~', '`', '!', '@', '#', '$', '¤', '€', '%', '^', '&', '*', '(', ')', '=', '+', 
+                             '{', '}', '[', ']', '|', '\\', ':',
+                             ';', '\'', '"', '<', '>', ',', '.', '?', '/', ' '];
+        // check if 'input' contains the 'token'
+        function contains(input, token) {
+            return (input.indexOf(token) > -1);
+        }
+        
+        $('#setFilter').click(function() {
+            // get the filter criteria entered by the user
+            var devId = $('#deviceIdentification').val();
+            
+            // check if the filter criteria is present
+            if (devId) {
+                // loop through the list of illegal token
+                for (var i = 0; i < illegalTokens.length; i++) {
+                    var token = illegalTokens[i];
+                    // check if the illegal token is present in the filter criteria
+                    if (contains(devId, token)) {
+                        //alert('Dit teken mag niet worden gebruikt voor een deviceId: ' + token);
+                        
+                        // preset the user with a clear error message
+                        var messageToken = token === ' ' ? 'spatie' : token;
+                        $('#errorMessage').html('Dit teken mag niet worden gebruikt voor een apparaat identificatie: ' + messageToken);
+                        $('#errorMessage').show();
+                        
+                        // and quit
+                        return;
+                    }
+                }
+            }
+            gotoUrl(devId, 1, $('#filteredDevicesPerPage').val(), $('#sortDirection').val());
+        });
+        
+        // Make sure the number of devices per page from the drop-down select is set on the hidden filter field.
+        $('#filterDevicesPerPage').val($('#filteredDevicesPerPage').val());
+        $('#filteredDevicesPerPage').change(function() {
+            $('#filterDevicesPerPage').val($('#filteredDevicesPerPage').val());
+            $('#filterPageNumber').val(1);
+            gotoUrl($('#deviceIdentification').val(), 1, $('#filteredDevicesPerPage').val(), $('#sortDirection').val());
+        });
+        
+        // Make sure the sort direction for devices from the drop-down select is set on the hidden filter field.
+        $('#devicesSortDirection').val($('#sortDirection').val());
+        $('#sortDirection').change(function() {
+            $('#devicesSortDirection').val($('#sortDirection').val());
+            $('#filterPageNumber').val(1);
+            gotoUrl($('#deviceIdentification').val(), 1, $('#filteredDevicesPerPage').val(), $('#sortDirection').val());
+        });
+        
+        // Make sure the page selected on the pagination control is set on the hidden filter field.
+        $('ul.pagination li:not(.active,.disabled) a').click(function() {
+            var linkText = $(this).text();
+            var currentPage = Number($('ul.pagination li.active a').text());
+            if (!currentPage) {
+                currentPage = 1;
+            }
+            var totalPages = $('ul.pagination').attr('data');
+            var pageNumber;
+            if (linkText == '<<') {
+                pageNumber = 1;
+            } else if (linkText == '<') {
+                pageNumber = currentPage - 1;
+            } else if (linkText == '>>') {
+                pageNumber = totalPages;
+            } else if (linkText == '>') {
+                pageNumber = currentPage + 1;
+            } else {
+                pageNumber = linkText;
+            }
+            $('#filterPageNumber').val(pageNumber);
+            gotoUrl($('#deviceIdentification').val(), pageNumber, $('#filteredDevicesPerPage').val(), $('#sortDirection').val());
+        });
+        
+        function gotoUrl(devId, pageNumber, pageSize, sortDirection) {
+            var deviceIdentification = '';
+            var page = '';
+            var size = '';
+            var sort = '';
+            
+            if (devId) {
+                deviceIdentification = '/' + devId;
+            }
+            if (pageNumber) {
+                page = '/' + pageNumber;
+            }
+            if (pageSize) {
+                size = '?devicesPerPage=' + pageSize;
+            }
+            if (sortDirection) {
+                sort = '&sort=' + sortDirection; 
+            }
+            
+            window.location.href = '<c:url value="/devices"/>' + deviceIdentification + page + size + sort;
+        }
     </script>
 
+    <input type="hidden" id="devicesSortDirection" name="devicesSortDirection" />
+    <input type="hidden" id="filterDevicesPerPage" name="devicesPerPage" />
+    <input type="hidden" id="filterPageNumber" name="pageNumber" value="${pageCurrent}" />
 </body>
 </html>

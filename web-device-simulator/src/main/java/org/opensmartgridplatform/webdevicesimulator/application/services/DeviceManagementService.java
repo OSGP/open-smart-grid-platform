@@ -10,20 +10,23 @@ package org.opensmartgridplatform.webdevicesimulator.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
 import org.opensmartgridplatform.webdevicesimulator.domain.repositories.DeviceRepository;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.EventNotificationToBeSent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DeviceManagementService {
 
+    private static final List<EventNotificationToBeSent> EVENT_NOTIFICATION_TO_BE_SENT = new ArrayList<>();
+
     @Autowired
     private DeviceRepository deviceRepository;
-
-    private static final List<EventNotificationToBeSent> EVENT_NOTIFICATION_TO_BE_SENT = new ArrayList<>();
 
     @Autowired
     private Boolean checkboxDeviceRegistrationValue;
@@ -50,6 +53,18 @@ public class DeviceManagementService {
 
     public List<Device> findAllDevices() {
         return this.deviceRepository.findAllOrderById();
+    }
+
+    public Page<Device> findPageOfDevices(final String deviceIdentification, final int pageNumber, final int pageSize,
+            final String sortDirection) {
+        final PageRequest request = new PageRequest(pageNumber, pageSize,
+                Sort.Direction.fromStringOrNull(sortDirection), "id");
+
+        if (!StringUtils.isEmpty(deviceIdentification)) {
+            return this.deviceRepository.findByDeviceIdentification(deviceIdentification, request);
+        }
+
+        return this.deviceRepository.findAll(request);
     }
 
     public Device findDevice(final Long id) {
@@ -107,5 +122,4 @@ public class DeviceManagementService {
     public void setEventNotification(final Boolean eventNotification) {
         this.checkboxEventNotificationValue = eventNotification;
     }
-
 }
