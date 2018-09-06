@@ -95,3 +95,32 @@ Feature: PublicLightingAdhocManagement GetStatus
       | DeviceIdentification | TEST1024000000001 |
     Then the get status response contains soap fault
       | Message | UNREGISTERED_DEVICE |
+
+  Scenario: getting the device status updates the last known status, but not the last switching event status
+    Given an ssld oslp device
+      | DeviceIdentification | TEST1024000000001 |
+    And a device relay status
+      | DeviceIdentification    | TEST1024000000001   |
+      | Index                   |                   2 |
+      | LastSwitchingEventState | Off                 |
+      | LastSwitchingEventTime  | 2018-08-01T10:00:00 |
+      | LastKnownState          | Off                 |
+      | LastKnownStateTime      | 2018-08-01T10:00:00 |
+    And the device returns a get status response "OK" over "OSLP ELSTER"
+      | PreferredLinkType | LINK_NOT_SET |
+      | ActualLinkType    | LINK_NOT_SET |
+      | LightType         | LT_NOT_SET   |
+      | LightValues       | 2,true,100   |
+    When receiving a get status request
+      | DeviceIdentification | TEST1024000000001 |
+    Then the get status async response contains
+      | DeviceIdentification | TEST1024000000001 |
+    And a get status "OSLP ELSTER" message is sent to device "TEST1024000000001"
+    And the platform buffers a get status response message for device "TEST1024000000001"
+      | Result | OK |
+    And there is a device relay status with a recent last known state time
+      | DeviceIdentification    | TEST1024000000001   |
+      | Index                   |                   2 |
+      | LastSwitchingEventState | Off                 |
+      | LastSwitchingEventTime  | 2018-08-01T10:00:00 |
+      | LastKnownState          | On                  |

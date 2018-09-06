@@ -61,6 +61,22 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
     }
 
     /**
+     * Retrieves an Ssld by its device identification.
+     *
+     * @param settings
+     *            Settings containing the Ssld identification.
+     * @return the retrieved Ssld.
+     */
+    public Ssld findByDeviceIdentification(final Map<String, String> settings) {
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+        return this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+    }
+
+    public Ssld saveSsld(final Ssld ssld) {
+        return this.ssldRepository.save(ssld);
+    }
+
+    /**
      * Generic method which adds an SSLD device using the settings.
      *
      * @param settings
@@ -73,17 +89,17 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
         return this.createAnSsldDevice(settings);
     }
 
-    @Given("^a relay status$")
+    @Given("^a switching event relay status$")
     @Transactional("txMgrCore")
-    public void aRelayStatus(final Map<String, String> settings) {
+    public void aSwitchingEventRelayStatus(final Map<String, String> settings) {
 
         final Ssld ssld = this.ssldRepository.findByDeviceIdentification(getString(settings,
                 PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final String[] deviceOutputSettings = getString(settings, PlatformKeys.DEVICE_OUTPUT_SETTINGS,
-                PlatformDefaults.DEVICE_OUTPUT_SETTINGS).replaceAll(" ", "").split(PlatformKeys.SEPARATOR_SEMICOLON),
-                relayStatuses = getString(settings, PlatformKeys.RELAY_STATUSES, PlatformDefaults.RELAY_STATUSES)
-                        .replaceAll(" ", "").split(PlatformKeys.SEPARATOR_SEMICOLON);
+                PlatformDefaults.DEVICE_OUTPUT_SETTINGS).replaceAll(" ", "").split(PlatformKeys.SEPARATOR_SEMICOLON);
+        final String[] relayStatuses = getString(settings, PlatformKeys.RELAY_STATUSES, PlatformDefaults.RELAY_STATUSES)
+                .replaceAll(" ", "").split(PlatformKeys.SEPARATOR_SEMICOLON);
 
         final List<DeviceOutputSetting> dosList = new ArrayList<>();
 
@@ -99,15 +115,15 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
         for (final String rs : relayStatuses) {
             final String[] relayStatus = rs.split(PlatformKeys.SEPARATOR_COMMA);
             final int index = Integer.parseInt(relayStatus[0]);
-            final boolean lastKnownState = Boolean.parseBoolean(relayStatus[1]);
-            final Date lastKnownSwitchingTime = getDateTime2(relayStatus[2], DateTime.now()).toDate();
+            final boolean lastSwitchingEventState = Boolean.parseBoolean(relayStatus[1]);
+            final Date lastSwitchingEventTime = getDateTime2(relayStatus[2], DateTime.now()).toDate();
 
             final RelayStatus currentRelayStatus = ssld.getRelayStatusByIndex(index);
             if (currentRelayStatus == null) {
-                this.relayStatusRepository.save(new RelayStatus(ssld, index, lastKnownState, lastKnownSwitchingTime));
+                this.relayStatusRepository.save(new RelayStatus.Builder(ssld, index)
+                        .withLastSwitchingEventState(lastSwitchingEventState, lastSwitchingEventTime).build());
             } else {
-                currentRelayStatus.setLastKnownState(lastKnownState);
-                currentRelayStatus.setLastKnowSwitchingTime(lastKnownSwitchingTime);
+                currentRelayStatus.updateLastSwitchingEventState(lastSwitchingEventState, lastSwitchingEventTime);
                 this.relayStatusRepository.save(currentRelayStatus);
             }
         }

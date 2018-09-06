@@ -191,7 +191,9 @@ public class PlatformDefaults {
     public static final Integer REQUESTED_PAGE = 0;
 
     public static final Integer RELAY_OVERVIEW_INDEX = 1;
+    public static final Boolean LAST_SWITCHING_EVENT_STATE = false;
     public static final Boolean LAST_KNOWN_STATE = false;
+
     public static final DateTime DATE_NOW = DateTime.now();
     public static final String TODAY = "today";
     public static final String DEVICE_UID = "dGVzdDEyMzQ1Njc4";

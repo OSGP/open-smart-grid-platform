@@ -12,6 +12,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInte
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -117,11 +118,8 @@ public class DeviceOutputSettingsSteps extends GlueBase {
 
         // Create a dummy relay status for each device output setting
         for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettings) {
-            final RelayStatus relayStatus = new RelayStatus();
-            relayStatus.setDevice(device);
-            relayStatus.setIndex(deviceOutputSetting.getExternalId());
-            relayStatus.setLastKnownState(false);
-            relayStatus.setLastKnowSwitchingTime(new java.util.Date());
+            final RelayStatus relayStatus = new RelayStatus.Builder(device, deviceOutputSetting.getExternalId())
+                    .withLastSwitchingEventState(false, new Date()).build();
 
             this.relayStatusRepository.save(relayStatus);
         }

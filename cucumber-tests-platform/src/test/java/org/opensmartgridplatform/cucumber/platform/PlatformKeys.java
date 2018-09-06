@@ -325,7 +325,10 @@ public class PlatformKeys extends Keys {
     public static final String KEY_RELAY = "Relais";
     public static final String KEY_RELAYFUNCTION = "Function";
 
+    public static final String LAST_SWITCHING_EVENT_STATE = "LastSwitchingEventState";
+    public static final String LAST_SWITCHING_EVENT_TIME = "LastSwitchingEventTime";
     public static final String LAST_KNOWN_STATE = "LastKnownState";
+    public static final String LAST_KNOWN_STATE_TIME = "LastKnownStateTime";
 
     public static final String RELAY_STATUSES = "RelayStatuses";
     public static final String NUMBER_OF_STATUSES = "NumberOfStatuses";

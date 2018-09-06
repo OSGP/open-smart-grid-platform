@@ -19,8 +19,6 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.cucumber.core.GlueBase;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -33,6 +31,7 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -49,7 +48,7 @@ public class EventSteps extends GlueBase {
     private EventRepository eventRepository;
 
     @Given("^an event$")
-    public void anEvent(final Map<String, String> data) throws Exception {
+    public void anEvent(final Map<String, String> data) {
         final Device device = this.deviceRepository
                 .findByDeviceIdentification(getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
@@ -62,7 +61,7 @@ public class EventSteps extends GlueBase {
     }
 
     @Then("^the (?:event is|events are) stored$")
-    public void theEventIsStored(final Map<String, String> expectedEntity) throws Throwable {
+    public void theEventIsStored(final Map<String, String> expectedEntity) {
 
         // Convert comma separated events into a mutable list (for comparison)
         final List<String> expectedEvents = new ArrayList<>(
@@ -101,7 +100,7 @@ public class EventSteps extends GlueBase {
             for (final Event actualEvent : actualEvents) {
                 int foundEventIndex = -1;
 
-                final Integer actualIndex = Character.getNumericValue(actualEvent.getIndex());
+                final Integer actualIndex = actualEvent.getIndex();
 
                 // Try to find each event and corresponding index in the
                 // expected events list
@@ -130,7 +129,7 @@ public class EventSteps extends GlueBase {
             Wait.until(() -> {
                 final Ssld ssld = this.ssldRepository
                         .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
-                final List<RelayStatus> relayStatuses = ssld.getRelayStatusses();
+                final List<RelayStatus> relayStatuses = ssld.getRelayStatuses();
 
                 Assert.assertTrue("Number of relay_status records = " + relayStatuses.size()
                         + ", wait until this equals " + numStatuses, relayStatuses.size() == numStatuses);

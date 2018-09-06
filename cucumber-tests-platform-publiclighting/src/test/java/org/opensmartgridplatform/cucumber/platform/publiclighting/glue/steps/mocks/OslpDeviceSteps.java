@@ -28,9 +28,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -75,6 +72,9 @@ import org.opensmartgridplatform.oslp.Oslp.UpdateFirmwareRequest;
 import org.opensmartgridplatform.oslp.Oslp.Weekday;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+
 import com.google.protobuf.ByteString;
 
 import cucumber.api.java.en.Given;
@@ -989,8 +989,10 @@ public class OslpDeviceSteps {
 
         try {
             final OslpEnvelope request = this
-                    .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
-                            PlatformPubliclightingDefaults.DEVICE_UID), this.oslpMockServer.getSequenceNumber())
+                    .createEnvelopeBuilder(
+                            getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
+                                    PlatformPubliclightingDefaults.DEVICE_UID),
+                            this.oslpMockServer.getSequenceNumber())
                     .withPayloadMessage(
                             Message.newBuilder()
                                     .setRegisterDeviceRequest(Oslp.RegisterDeviceRequest.newBuilder()
@@ -1027,13 +1029,16 @@ public class OslpDeviceSteps {
         this.oslpMockServer.doNextSequenceNumber();
 
         final Oslp.EventNotification.Builder builder = Oslp.EventNotification.newBuilder()
-                .setEvent(getEnum(settings, PlatformPubliclightingKeys.KEY_EVENT, Event.class))
-                .setDescription(getString(settings, PlatformPubliclightingKeys.KEY_DESCRIPTION));
+                .setEvent(getEnum(settings, PlatformKeys.KEY_EVENT, Event.class))
+                .setDescription(getString(settings, PlatformKeys.KEY_DESCRIPTION));
+        final String timeStamp = getString(settings, PlatformKeys.TIMESTAMP);
+        if (timeStamp != null) {
+            builder.setTimestamp(timeStamp);
+        }
 
-        builder.setIndex((settings.containsKey(PlatformPubliclightingKeys.KEY_INDEX)
-                && !settings.get(PlatformPubliclightingKeys.KEY_INDEX).equals("EMPTY"))
-                        ? ByteString.copyFrom(getString(settings, PlatformPubliclightingKeys.KEY_INDEX).getBytes())
-                        : ByteString.copyFrom("0".getBytes()));
+        final String indexValue = getString(settings, PlatformPubliclightingKeys.KEY_INDEX);
+        final Integer index = indexValue == null || "EMPTY".equals(indexValue) ? 0 : Integer.valueOf(indexValue);
+        builder.setIndex(ByteString.copyFrom(new byte[] { index.byteValue() }));
 
         final OslpEnvelope request = this
                 .createEnvelopeBuilder(getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_UID,
@@ -1064,8 +1069,12 @@ public class OslpDeviceSteps {
         for (int i = 0; i < events.length; i++) {
             if (!events[i].isEmpty() && !indexes[i].isEmpty()) {
                 builder.setEvent(Event.valueOf(events[i].trim()));
-                builder.setIndex((!indexes[i].equals("EMPTY")) ? ByteString.copyFrom(indexes[i].getBytes())
-                        : ByteString.copyFrom("0".getBytes()));
+
+                final String indexValue = indexes[i];
+                final Integer index = indexValue == null || "EMPTY".equals(indexValue) ? 0
+                        : Integer.valueOf(indexValue);
+                builder.setIndex(ByteString.copyFrom(new byte[] { index.byteValue() }));
+
                 requestBuilder.addNotifications(builder.build());
             }
         }
