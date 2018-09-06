@@ -7,16 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.domain.tariffswitching.application.services;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import org.opensmartgridplatform.adapter.domain.shared.FilterLightAndTariffValuesHelper;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -36,6 +30,11 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainTariffSwitchingAdHocManagementService")
 @Transactional(value = "transactionManager")
@@ -88,7 +87,8 @@ public class AdHocManagementService extends AbstractService {
                 deviceIdentification, allowedDomainTypeDto), messageType, messagePriority, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(final org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto deviceStatusDto,
+    public void handleGetStatusResponse(
+            final org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final int messagePriority, final ResponseMessageResultType deviceResult, final OsgpException exception)
@@ -148,21 +148,20 @@ public class AdHocManagementService extends AbstractService {
      *             Thrown when an invalid device identification is given.
      */
     private void updateDeviceRelayOverview(final Ssld device, final DeviceStatusMapped deviceStatusMapped) {
-        final List<RelayStatus> relayStatuses = device.getRelayStatusses();
+        final List<RelayStatus> relayStatuses = device.getRelayStatuses();
 
         for (final TariffValue tariffValue : deviceStatusMapped.getTariffValues()) {
             boolean updated = false;
             for (final RelayStatus relayStatus : relayStatuses) {
                 if (relayStatus.getIndex() == tariffValue.getIndex()) {
-                    relayStatus.setLastKnownState(tariffValue.isHigh());
-                    relayStatus.setLastKnowSwitchingTime(DateTime.now().toDate());
+                    relayStatus.updateLastKnownState(tariffValue.isHigh(), new Date());
                     updated = true;
                     break;
                 }
             }
             if (!updated) {
-                final RelayStatus newRelayStatus = new RelayStatus(device, tariffValue.getIndex(), tariffValue.isHigh(),
-                        DateTime.now().toDate());
+                final RelayStatus newRelayStatus = new RelayStatus.Builder(device, tariffValue.getIndex())
+                        .withLastKnownState(tariffValue.isHigh(), new Date()).build();
                 relayStatuses.add(newRelayStatus);
             }
         }

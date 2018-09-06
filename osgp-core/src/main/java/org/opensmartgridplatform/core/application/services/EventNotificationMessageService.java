@@ -17,11 +17,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
@@ -37,6 +32,10 @@ import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EventNotificationMessageService {
@@ -188,7 +187,7 @@ public class EventNotificationMessageService {
             LOGGER.info("calling ssld.updateRelayStatuses() for device: {} with lastRelayStatusPerIndex.size(): {}",
                     ssld.getDeviceIdentification(), lastRelayStatusPerIndex.size());
 
-            ssld.updateRelayStatusses(lastRelayStatusPerIndex);
+            ssld.updateSwitchingEventRelayStatuses(lastRelayStatusPerIndex);
             this.eventNotificationHelperService.saveSsld(ssld);
 
             this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, ssld.getDeviceIdentification(), null);
@@ -210,9 +209,10 @@ public class EventNotificationMessageService {
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
 
         if (lastRelayStatusPerIndex.get(relayIndex) == null || switchingEvent.getDateTime()
-                .after(lastRelayStatusPerIndex.get(relayIndex).getLastKnowSwitchingTime())) {
-            lastRelayStatusPerIndex.put(relayIndex,
-                    new RelayStatus(device, relayIndex, isRelayOn, switchingEvent.getDateTime()));
+                .after(lastRelayStatusPerIndex.get(relayIndex).getLastSwitchingEventTime())) {
+            final RelayStatus relayStatus = new RelayStatus.Builder(device, relayIndex)
+                    .withLastSwitchingEventState(isRelayOn, switchingEvent.getDateTime()).build();
+            lastRelayStatusPerIndex.put(relayIndex, relayStatus);
         }
     }
 
@@ -225,11 +225,11 @@ public class EventNotificationMessageService {
             final Ssld ssld = this.eventNotificationHelperService.findSsld(device.getId());
             for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                 if (deviceOutputSetting.getOutputType().equals(RelayType.LIGHT)) {
-                    this.updateRelayStatus(deviceOutputSetting.getExternalId(), device, dateTime, eventType);
+                    this.updateRelayStatusForEvent(deviceOutputSetting.getExternalId(), device, dateTime, eventType);
                 }
             }
         } else {
-            this.updateRelayStatus(index, device, dateTime, eventType);
+            this.updateRelayStatusForEvent(index, device, dateTime, eventType);
         }
 
         this.eventNotificationHelperService.saveDevice(device);
@@ -237,24 +237,28 @@ public class EventNotificationMessageService {
         this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, device.getDeviceIdentification(), null);
     }
 
-    private void updateRelayStatus(final int index, final Device device, final Date dateTime, final EventType eventType)
-            throws UnknownEntityException {
+    private void updateRelayStatusForEvent(final int index, final Device device, final Date dateTime,
+            final EventType eventType) throws UnknownEntityException {
 
         final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
 
         // Only handle the event if the relay doesn't have a status yet, or
-        // if the state has changed.
+        // if the timestamp of the event is after the timestamp of the last
+        // switching event in the DB.
         final Ssld ssld = this.eventNotificationHelperService.findSsld(device.getId());
-        if ((ssld.getRelayStatusByIndex(index) == null)
-                || (ssld.getRelayStatusByIndex(index).isLastKnownState() != isRelayOn)) {
+        final RelayStatus oldRelayStatus = ssld.getRelayStatusByIndex(index);
+        final Date eventTime = dateTime == null ? DateTime.now().toDate() : dateTime;
+        if (oldRelayStatus == null || eventTime.after(oldRelayStatus.getLastSwitchingEventTime())) {
             LOGGER.info("Handling new event {} for device {} to update the relay status for index {} with date {}.",
                     eventType.name(), device.getDeviceIdentification(), index, dateTime);
 
             if (ssld.getRelayStatusByIndex(index) == null
-                    || dateTime.after(ssld.getRelayStatusByIndex(index).getLastKnowSwitchingTime())) {
-                ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, isRelayOn,
-                        dateTime == null ? DateTime.now().toDate() : dateTime));
+                    || eventTime.after(ssld.getRelayStatusByIndex(index).getLastSwitchingEventTime())) {
+                final RelayStatus newRelayState = new RelayStatus.Builder(device, index)
+                        .withLastSwitchingEventState(isRelayOn, eventTime).build();
+
+                ssld.addOrUpdateRelayStatus(newRelayState);
             }
         }
     }

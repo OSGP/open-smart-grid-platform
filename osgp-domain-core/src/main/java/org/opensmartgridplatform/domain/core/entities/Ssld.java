@@ -28,8 +28,8 @@ import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 
@@ -68,7 +68,7 @@ public class Ssld extends Device {
     @OneToMany(mappedBy = "device", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     @OrderBy("index ASC")
-    private List<RelayStatus> relayStatusses;
+    private List<RelayStatus> relayStatuses = new ArrayList<>();
 
     @ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
     @JoinColumn(name = "light_measurement_device_id")
@@ -173,12 +173,35 @@ public class Ssld extends Device {
         return this.outputSettings;
     }
 
-    public List<RelayStatus> getRelayStatusses() {
-        return this.relayStatusses;
+    public List<RelayStatus> getRelayStatuses() {
+        return this.relayStatuses;
     }
 
-    public void setRelayStatusses(final List<RelayStatus> relayStatusses) {
-        this.relayStatusses = relayStatusses;
+    public void setRelayStatuses(final List<RelayStatus> relayStatuses) {
+        if (relayStatuses == null) {
+            this.relayStatuses = new ArrayList<>();
+        } else {
+            this.relayStatuses = relayStatuses;
+        }
+    }
+
+    /**
+     * Updates the {@link RelayStatus} for the given index if it exists. If a
+     * status doesn't exist yet, it is created.
+     *
+     * @param relayStatus
+     *            The status for the relay to add/update.
+     */
+    public void addOrUpdateRelayStatus(final RelayStatus relayStatus) {
+        final RelayStatus currentRelayStatus = this.getRelayStatusByIndex(relayStatus.getIndex());
+        if (currentRelayStatus == null) {
+            this.relayStatuses.add(relayStatus);
+        } else {
+            currentRelayStatus.updateLastKnownState(relayStatus.isLastKnownState(),
+                    relayStatus.getLastKnownStateTime());
+            currentRelayStatus.updateLastSwitchingEventState(relayStatus.isLastSwitchingEventState(),
+                    relayStatus.getLastSwitchingEventTime());
+        }
     }
 
     /**
@@ -186,13 +209,12 @@ public class Ssld extends Device {
      * doesn't exist.
      */
     public RelayStatus getRelayStatusByIndex(final int index) {
-        if (this.relayStatusses != null) {
-            for (final RelayStatus r : this.relayStatusses) {
-                if (r.getIndex() == index) {
-                    return r;
-                }
+        for (final RelayStatus r : this.relayStatuses) {
+            if (r.getIndex() == index) {
+                return r;
             }
         }
+
         return null;
     }
 
@@ -205,38 +227,26 @@ public class Ssld extends Device {
     }
 
     /**
-     * Updates the {@link RelayStatus} for the given index if it exists.
+     * Updates the {@link RelayStatus} of the last switching event for the
+     * indexes in relayStatusBy Index. If there's no status for a certain index
+     * yet, it is created.
+     *
+     * @param relayStatusByIndex
+     *            The status per index for the device.
      */
-    public void updateRelayStatusByIndex(final int index, final RelayStatus relayStatus) {
-
-        boolean found = false;
-        if (this.relayStatusses != null) {
-            for (final RelayStatus r : this.relayStatusses) {
-                if (r.getIndex() == index) {
-                    r.updateStatus(relayStatus.isLastKnownState(), relayStatus.getLastKnowSwitchingTime());
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                this.relayStatusses.add(relayStatus);
+    public void updateSwitchingEventRelayStatuses(final Map<Integer, RelayStatus> relayStatusByIndex) {
+        if (this.relayStatuses == null) {
+            this.relayStatuses = new ArrayList<>();
+        }
+        final Map<Integer, RelayStatus> unhandledStatusesByIndex = new TreeMap<>(relayStatusByIndex);
+        for (final RelayStatus r : this.relayStatuses) {
+            final RelayStatus newStatus = unhandledStatusesByIndex.remove(r.getIndex());
+            if (newStatus != null && newStatus.getLastSwitchingEventTime().after(r.getLastSwitchingEventTime())) {
+                r.updateLastSwitchingEventState(newStatus.isLastSwitchingEventState(),
+                        newStatus.getLastSwitchingEventTime());
             }
         }
-    }
-
-    public void updateRelayStatusses(final Map<Integer, RelayStatus> relayStatusByIndex) {
-        if (this.relayStatusses == null) {
-            this.relayStatusses = new ArrayList<>();
-        }
-        final Map<Integer, RelayStatus> unhandledStatussesByIndex = new TreeMap<>(relayStatusByIndex);
-        for (final RelayStatus r : this.relayStatusses) {
-            final RelayStatus newStatus = unhandledStatussesByIndex.remove(r.getIndex());
-            if (newStatus != null && newStatus.getLastKnowSwitchingTime().after(r.getLastKnowSwitchingTime())) {
-                r.updateStatus(newStatus.isLastKnownState(), newStatus.getLastKnowSwitchingTime());
-            }
-        }
-        this.relayStatusses.addAll(unhandledStatussesByIndex.values());
+        this.relayStatuses.addAll(unhandledStatusesByIndex.values());
     }
 
     /**

@@ -34,58 +34,65 @@ public class RelayStatus extends AbstractEntity {
     private int index;
 
     @Column
+    private boolean lastSwitchingEventState;
+
+    @Column
+    private Date lastSwitchingEventTime;
+
+    @Column
     private boolean lastKnownState;
 
     @Column
-    private Date lastKnowSwitchingTime;
+    private Date lastKnownStateTime;
 
     public RelayStatus() {
-        // Default constructor
+        // Default constructor for Hibernate
     }
 
-    public RelayStatus(final Device device, final int index, final boolean lastKnownState,
-            final Date lastKnowSwitchingTime) {
-        this.device = device;
-        this.index = index;
-        this.lastKnownState = lastKnownState;
-        this.lastKnowSwitchingTime = lastKnowSwitchingTime;
+    private RelayStatus(final Builder builder) {
+        this.device = builder.device;
+        this.index = builder.index;
+
+        this.updateLastKnownState(builder.lastKnownState, builder.lastKnownStateTime);
+        this.updateLastSwitchingEventState(builder.lastSwitchingEventState, builder.lastSwitchingEventTime);
     }
 
-    public void updateStatus(final boolean lastKnownState, final Date lastKnowSwitchingTime) {
-        this.lastKnownState = lastKnownState;
-        this.lastKnowSwitchingTime = lastKnowSwitchingTime;
+    public void updateLastSwitchingEventState(final boolean state, final Date time) {
+        this.lastSwitchingEventState = state;
+        this.lastSwitchingEventTime = time;
+
+        if (time != null && (this.lastKnownStateTime == null || this.lastKnownStateTime.before(time))) {
+            this.updateLastKnownState(state, time);
+        }
+    }
+
+    public void updateLastKnownState(final boolean state, final Date time) {
+        this.lastKnownState = state;
+        this.lastKnownStateTime = time;
+    }
+
+    public boolean isLastSwitchingEventState() {
+        return this.lastSwitchingEventState;
+    }
+
+    public Date getLastSwitchingEventTime() {
+        return this.lastSwitchingEventTime;
     }
 
     public boolean isLastKnownState() {
         return this.lastKnownState;
     }
 
-    public void setLastKnownState(final boolean lastKnownState) {
-        this.lastKnownState = lastKnownState;
-    }
-
-    public Date getLastKnowSwitchingTime() {
-        return this.lastKnowSwitchingTime;
-    }
-
-    public void setLastKnowSwitchingTime(final Date lastKnowSwitchingTime) {
-        this.lastKnowSwitchingTime = lastKnowSwitchingTime;
+    public Date getLastKnownStateTime() {
+        return this.lastKnownStateTime;
     }
 
     public Device getDevice() {
         return this.device;
     }
 
-    public void setDevice(final Device device) {
-        this.device = device;
-    }
-
     public int getIndex() {
         return this.index;
-    }
-
-    public void setIndex(final int index) {
-        this.index = index;
     }
 
     @Override
@@ -110,7 +117,46 @@ public class RelayStatus extends AbstractEntity {
 
     @Override
     public String toString() {
-        return String.format("index: %d, lastKnownState: %s, lastKnownSwitchingTime: %s", this.index,
-                this.lastKnownState, Instant.ofEpochMilli(this.lastKnowSwitchingTime.getTime()).toString());
+        return String.format(
+                "index: %d, lastSwitchingEventState: %s, lastSwitchingEventTime: %s, lastKnownState: %s, lastKnownStateTime: %s",
+                this.index, this.lastSwitchingEventState,
+                Instant.ofEpochMilli(this.lastSwitchingEventTime.getTime()).toString(), this.lastKnownState,
+                Instant.ofEpochMilli(this.lastKnownStateTime.getTime()).toString());
+    }
+
+    public static class Builder {
+
+        private Device device;
+        private int index;
+        private boolean lastSwitchingEventState;
+        private Date lastSwitchingEventTime;
+        private boolean lastKnownState;
+        private Date lastKnownStateTime;
+
+        public Builder(final Device device, final int index) {
+            this.device = device;
+            this.index = index;
+        }
+
+        public Builder(final int index) {
+            this.index = index;
+        }
+
+        public Builder withLastSwitchingEventState(final boolean lastSwitchingEventState,
+                final Date lastSwitchingEventTime) {
+            this.lastSwitchingEventState = lastSwitchingEventState;
+            this.lastSwitchingEventTime = lastSwitchingEventTime;
+            return this;
+        }
+
+        public Builder withLastKnownState(final boolean lastKnownState, final Date lastKnownStateTime) {
+            this.lastKnownState = lastKnownState;
+            this.lastKnownStateTime = lastKnownStateTime;
+            return this;
+        }
+
+        public RelayStatus build() {
+            return new RelayStatus(this);
+        }
     }
 }

@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -207,7 +208,7 @@ public class AdHocManagementService extends AbstractService {
                     status.getEventNotificationsMask());
 
             // Update the relay overview with the relay information.
-            this.updateDeviceRelayOverview(ssld, deviceStatusMapped);
+            this.updateDeviceRelayStatusForGetStatus(ssld, deviceStatusMapped);
 
             // Return mapped status using GetStatusResponse instance.
             response.setDeviceStatusMapped(deviceStatusMapped);
@@ -395,30 +396,28 @@ public class AdHocManagementService extends AbstractService {
     }
 
     /**
-     * Updates the relay overview from a device based on the given device
-     * status.
+     * Updates the relay overview from a device for a get status response, based
+     * on the given device status.
      *
      * @param device
      *            The device to update.
      * @param deviceStatus
      *            The device status to update the relay overview with.
      */
-    private void updateDeviceRelayOverview(final Ssld device, final DeviceStatusMapped deviceStatusMapped) {
-        final List<RelayStatus> relayStatuses = device.getRelayStatusses();
-
+    private void updateDeviceRelayStatusForGetStatus(final Ssld device, final DeviceStatusMapped deviceStatusMapped) {
+        final List<RelayStatus> relayStatuses = device.getRelayStatuses();
         for (final LightValue lightValue : deviceStatusMapped.getLightValues()) {
             boolean updated = false;
             for (final RelayStatus relayStatus : relayStatuses) {
                 if (relayStatus.getIndex() == lightValue.getIndex()) {
-                    relayStatus.setLastKnownState(lightValue.isOn());
-                    relayStatus.setLastKnowSwitchingTime(DateTime.now().toDate());
+                    relayStatus.updateLastKnownState(lightValue.isOn(), new Date());
                     updated = true;
                     break;
                 }
             }
             if (!updated) {
-                final RelayStatus newRelayStatus = new RelayStatus(device, lightValue.getIndex(), lightValue.isOn(),
-                        DateTime.now().toDate());
+                final RelayStatus newRelayStatus = new RelayStatus.Builder(device, lightValue.getIndex())
+                        .withLastKnownState(lightValue.isOn(), new Date()).build();
                 relayStatuses.add(newRelayStatus);
             }
         }
