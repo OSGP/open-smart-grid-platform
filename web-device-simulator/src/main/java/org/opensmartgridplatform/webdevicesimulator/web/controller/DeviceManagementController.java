@@ -14,9 +14,16 @@ import java.util.Random;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.opensmartgridplatform.oslp.Oslp.DeviceType;
+import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.webdevicesimulator.application.services.DeviceManagementService;
+import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
+import org.opensmartgridplatform.webdevicesimulator.domain.entities.DeviceMessageStatus;
+import org.opensmartgridplatform.webdevicesimulator.service.RegisterDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,16 +32,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import org.opensmartgridplatform.oslp.Oslp.DeviceType;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
-import org.opensmartgridplatform.webdevicesimulator.application.services.DeviceManagementService;
-import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
-import org.opensmartgridplatform.webdevicesimulator.domain.entities.DeviceMessageStatus;
-import org.opensmartgridplatform.webdevicesimulator.service.RegisterDevice;
 
 @Controller
 @SessionAttributes
@@ -90,6 +91,19 @@ public class DeviceManagementController extends AbstractController {
 
     private static final String FAILURE_URL = "failure";
 
+    private static final int PAGING_LIMITER_MIN = 5;
+    private static final int PAGING_LIMITER_MAX = 10;
+
+    protected static final String MODEL_ATTRIBUTE_DEVICE_IDENTIFICATION = "deviceIdentification";
+    protected static final String MODEL_ATTRIBUTE_PAGE_TOTAL = "numberOfPages";
+    protected static final String MODEL_ATTRIBUTE_PAGE_BEGIN = "pageBegin";
+    protected static final String MODEL_ATTRIBUTE_PAGE_END = "pageEnd";
+    protected static final String MODEL_ATTRIBUTE_PAGE_CURRENT = "pageCurrent";
+    protected static final String MODEL_ATTRIBUTE_DEVICES_PER_PAGE = "devicesPerPage";
+    protected static final String MODEL_ATTRIBUTE_SORT_DIRECTION = "currentSortDirection";
+
+    protected static final String DEFAULT_SORT_DIRECTION = "DESC";
+
     @Resource
     private DeviceManagementService deviceManagementService;
 
@@ -97,8 +111,62 @@ public class DeviceManagementController extends AbstractController {
     private RegisterDevice registerDevice;
 
     @RequestMapping(value = DEVICES_URL, method = RequestMethod.GET)
-    public String showDevices(final Model model) {
-        model.addAttribute(MODEL_ATTRIBUTE_DEVICES, this.deviceManagementService.findAllDevices());
+    public String showDevices(
+            @RequestParam(value = "devicesPerPage", required = false, defaultValue = "20") final Integer devicesPerPage,
+            @RequestParam(value = "sort", required = false, defaultValue = DEFAULT_SORT_DIRECTION) final String sort,
+            final Model model) {
+        this.fetchData(model, null, null, devicesPerPage, sort);
+
+        return DEVICES_VIEW;
+    }
+
+    @RequestMapping(value = "/devices/{pageNumber}", method = RequestMethod.GET)
+    public String showPageOFDevices(@PathVariable final Integer pageNumber,
+            @RequestParam(value = "devicesPerPage", required = false, defaultValue = "20") final Integer devicesPerPage,
+            @RequestParam(value = "sort", required = false, defaultValue = DEFAULT_SORT_DIRECTION) final String sort,
+            final Model model) {
+        this.fetchData(model, null, pageNumber, devicesPerPage, sort);
+
+        return DEVICES_VIEW;
+    }
+
+    @RequestMapping(value = "/devices/{deviceIdentification}/{pageNumber}", method = RequestMethod.GET)
+    public String showPageOFDevices(@PathVariable final String deviceIdentification,
+            @PathVariable final Integer pageNumber,
+            @RequestParam(value = "devicesPerPage", required = false, defaultValue = "20") final Integer devicesPerPage,
+            @RequestParam(value = "sort", required = false, defaultValue = DEFAULT_SORT_DIRECTION) final String sort,
+            final Model model) {
+        this.fetchData(model, deviceIdentification, pageNumber, devicesPerPage, sort);
+
+        return DEVICES_VIEW;
+    }
+
+    private void fetchData(final Model model, final String deviceIdentification, final Integer pageNumber,
+            final Integer devicesPerPage, final String sortDirection) {
+        int pageNr;
+        if (pageNumber == null) {
+            pageNr = 1;
+        } else {
+            pageNr = pageNumber;
+        }
+
+        final Page<Device> page = this.deviceManagementService.findPageOfDevices(deviceIdentification, pageNr - 1,
+                devicesPerPage, sortDirection);
+
+        // Set the correct model elements
+        final int current = pageNr;
+        final int begin = Math.max(1, current - PAGING_LIMITER_MIN);
+        final int end = Math.min(begin + PAGING_LIMITER_MAX, page.getTotalPages());
+
+        model.addAttribute(MODEL_ATTRIBUTE_DEVICE_IDENTIFICATION, deviceIdentification);
+        model.addAttribute(MODEL_ATTRIBUTE_PAGE_TOTAL, page.getTotalPages());
+        model.addAttribute(MODEL_ATTRIBUTE_PAGE_BEGIN, begin);
+        model.addAttribute(MODEL_ATTRIBUTE_PAGE_END, end);
+        model.addAttribute(MODEL_ATTRIBUTE_PAGE_CURRENT, current);
+
+        model.addAttribute(MODEL_ATTRIBUTE_DEVICES_PER_PAGE, devicesPerPage);
+        model.addAttribute(MODEL_ATTRIBUTE_SORT_DIRECTION, sortDirection);
+        model.addAttribute(MODEL_ATTRIBUTE_DEVICES, page.getContent());
 
         final List<String> deviceTypes = new ArrayList<>();
         for (final DeviceType devicetype : DeviceType.values()) {
@@ -106,7 +174,7 @@ public class DeviceManagementController extends AbstractController {
         }
         model.addAttribute(MODEL_ATTRIBUTE_DEVICETYPES, deviceTypes);
 
-        return DEVICES_VIEW;
+        LOGGER.debug("Fetched data: {} records, {} pages", page.getContent().size(), page.getTotalPages());
     }
 
     @RequestMapping(value = DEVICE_REGISTRATION_CHECK_URL, method = RequestMethod.POST)
@@ -272,8 +340,8 @@ public class DeviceManagementController extends AbstractController {
 
         // Find device
         final Device device = this.deviceManagementService.findDevice(request.getDeviceId());
-        final DeviceMessageStatus status = this.registerDevice.sendConfirmDeviceRegistrationCommand(request
-                .getDeviceId());
+        final DeviceMessageStatus status = this.registerDevice
+                .sendConfirmDeviceRegistrationCommand(request.getDeviceId());
         if (status == DeviceMessageStatus.OK) {
             return this.getFeedbackMessage(FEEDBACK_MESSAGE_KEY_DEVICE_REGISTERED_CONFIRM,
                     device.getDeviceIdentification());
