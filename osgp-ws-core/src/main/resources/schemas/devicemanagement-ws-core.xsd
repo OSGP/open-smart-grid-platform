@@ -458,9 +458,13 @@
   <xsd:complexType name="RelayStatus">
     <xsd:sequence>
       <xsd:element name="Index" type="xsd:int" minOccurs="0" />
+      <xsd:element name="LastSwitchingEventState" type="xsd:boolean"
+        minOccurs="0" />
+      <xsd:element name="LastSwitchingEventTime" type="xsd:dateTime"
+        minOccurs="0" />
       <xsd:element name="LastKnownState" type="xsd:boolean"
         minOccurs="0" />
-      <xsd:element name="LastKnowSwitchingTime" type="xsd:dateTime"
+      <xsd:element name="LastKnownStateTime" type="xsd:dateTime"
         minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
