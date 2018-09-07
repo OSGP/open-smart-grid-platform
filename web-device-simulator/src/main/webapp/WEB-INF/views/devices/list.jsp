@@ -279,84 +279,9 @@ body {
                     });
                 });
 
-                refreshLightStates();
-                setInterval(refreshLightStates, 4000);
+                setInterval(refreshPage, 10000);
 
-                function refreshLightStates() {
-                    $.ajax({
-                        type : 'GET',
-                        url : '/web-device-simulator/devices/json',
-                        dataType : 'json',
-                        contentType : 'application/json',
-                        async : true,
-                        cache : false,
-                        success : function(data) {
-                            for (var i = 0; i < data.length; i++) {
-                                // Set preferred link type
-                                if (data[i].preferredLinkType == null) {
-                                    $('#preferredLinkType' + data[i].id).html('');
-                                } else {
-                                    $('#preferredLinkType' + data[i].id).html(data[i].preferredLinkType);
-                                }
-
-                                // Set light type
-                                if (data[i].lightType == null) {
-                                    $('#lightType' + data[i].id).html('');
-                                } else {
-                                    $('#lightType' + data[i].id).html(data[i].lightType);
-                                }
-
-                                // Set light state
-                                var isOn = data[i].lightOn;
-                                var dimVal = data[i].dimValue;
-
-                                if (isOn) {
-                                    if (dimVal != null) {
-                                        $('#lightState' + data[i].id).html(
-                                                '<img src="/web-device-simulator/static/img/light_bulb_on.png" style="height: 40px; width: 40px; opacity:' + dimVal/100 + ';" />');
-                                    } else {
-                                        $('#lightState' + data[i].id).html('<img src="/web-device-simulator/static/img/light_bulb_on.png" style="height: 40px; width: 40px;" />');
-                                    }
-                                } else {
-                                    $('#lightState' + data[i].id).html('<img src="/web-device-simulator/static/img/light_bulb_off.png" style="height: 40px; width: 40px;" />');
-                                }
-
-                                // Set dim values
-                                if (data[i].dimValue == null) {
-                                    $('#dimValue' + data[i].id).html('');
-                                } else {
-                                    $('#dimValue' + data[i].id).html(data[i].dimValue);
-                                }
-
-                                // Set selftest
-                                if (data[i].selftestActive) {
-                                    $('#selfTestState' + data[i].id).html('<span class="badge badge-Success">Started</span>');
-                                } else {
-                                    $('#selfTestState' + data[i].id).html('<span class="badge">Stopped</span>');
-                                }
-
-                                // Set sequence number
-                                if (data[i].sequenceNumber == null) {
-                                    $('#sequenceNumber' + data[i].id).html('');
-                                } else {
-                                    $('#sequenceNumber' + data[i].id).html(data[i].sequenceNumber);
-                                }
-
-                                // Set event notifications
-                                if (data[i].eventNotifications == null) {
-                                    $('#eventNotifications' + data[i].id).html('');
-                                } else {
-                                    var split = data[i].eventNotifications.split(',');
-                                    var list = '';
-                                    for (var j = 0; j < split.length; j++) {
-                                        list += split[j] + '<br />';
-                                    }
-                                    $('#eventNotifications' + data[i].id).html(list);
-                                }
-
-                            }
-                        }
-                    });
+                function refreshPage() {
                     $.ajax({
                         type : 'GET',
                         url : '/web-device-simulator/devices/deviceRegistrationCheck/json',
@@ -412,6 +337,7 @@ body {
                             $('#eventListener').prop("checked" , data);
                         }
                     });
+                    window.location.reload();
                 }
             });
 
