@@ -7,12 +7,6 @@
  */
 package org.opensmartgridplatform.core.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -23,9 +17,12 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 public class DeviceRequestMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageService.class);
