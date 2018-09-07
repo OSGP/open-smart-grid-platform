@@ -17,8 +17,8 @@ BEGIN
     COMMENT ON COLUMN relay_status.last_switching_event_state IS 'The state of the relay as derived from latest events of an SSLD.';
     COMMENT ON COLUMN relay_status.last_switching_event_time IS 'The timestamp of the latest switching event for the relay of an SSLD.';
     
-    ALTER TABLE relay_status ADD COLUMN last_known_state boolean NOT NULL;
-    ALTER TABLE relay_status ADD COLUMN last_known_state_time timestamp without time zone NOT NULL;
+    ALTER TABLE relay_status ADD COLUMN last_known_state boolean;
+    ALTER TABLE relay_status ADD COLUMN last_known_state_time timestamp without time zone;
     
     COMMENT ON COLUMN relay_status.last_known_state IS 'The state of the relay as derived from latest events and status retrieval of an SSLD.';
     COMMENT ON COLUMN relay_status.last_known_state_time IS 'The timestamp of the last known state for the relay of an SSLD.';
@@ -26,6 +26,9 @@ BEGIN
     UPDATE relay_status
     SET last_known_state = last_switching_event_state
     , last_known_state_time = last_switching_event_time;
+    
+    ALTER TABLE relay_status ALTER COLUMN last_known_state SET NOT NULL;
+    ALTER TABLE relay_status ALTER COLUMN last_known_state_time SET NOT NULL;
   END IF;
 
 END;
