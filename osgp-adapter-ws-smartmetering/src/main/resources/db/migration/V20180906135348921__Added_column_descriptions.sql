@@ -2,7 +2,7 @@ COMMENT ON COLUMN response_data.organisation_identification IS 'Identification o
 COMMENT ON COLUMN response_data.device_identification IS 'Identification of the device the response data belongs with.';
 COMMENT ON COLUMN response_data.message_type IS 'Indicates which device function was executed that lead to this response.';
 COMMENT ON COLUMN response_data.correlation_uid IS 'Unique identifier correlating all actions related to the request this response is for.';
-COMMENT ON COLUMN response_data.message_data bytea IS 'Serialized response object.';
+COMMENT ON COLUMN response_data.message_data IS 'Serialized response object.';
 COMMENT ON COLUMN response_data.result_type IS 'Message result type [OK, NOT_FOUND, NOT_OK].';
 COMMENT ON COLUMN response_data.number_of_notifications_sent IS 'Number of notifications that has been sent after the initial one to notify a response is available for the request with this records correlation_uid.';
 
