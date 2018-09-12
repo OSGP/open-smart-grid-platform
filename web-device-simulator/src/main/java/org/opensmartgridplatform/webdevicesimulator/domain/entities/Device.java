@@ -23,12 +23,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Transient;
 
 import org.apache.commons.codec.binary.Base64;
-
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.LightType;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.LinkType;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.OutputType;
+
 import com.google.common.base.Joiner;
 
 /**

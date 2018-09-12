@@ -142,18 +142,40 @@ body {
                             <tbody>
                                 <c:forEach items="${devices}" var="device">
                                     <tr>
-                                        <td><c:out value="${device.id}" /></td>
-                                        <td><a href="/web-device-simulator/devices/edit/${device.id}"><c:out value="${device.deviceIdentification}" /></a></td>
-                                        <td><c:out value="${device.ipAddress}" /></td>
-                                        <td><c:out value="${device.deviceType}" /></td>
-                                        <td id="preferredLinkType${device.id}"></td>
-                                        <td><c:out value="${device.actualLinkType}" /></td>
-                                        <td id="lightType${device.id}"></td>
-                                        <td id="lightState${device.id}"></td>
-                                        <td id="dimValue${device.id}"></td>
-                                        <td id="selfTestState${device.id}"></td>
-                                        <td id="sequenceNumber${device.id}"></td>
-                                        <td id="eventNotifications${device.id}"></td>
+                                        <td id="id${device.id}"><c:out value="${device.id}" /></td>
+                                        <td id="deviceIdentification${device.id}"><a href="/web-device-simulator/devices/edit/${device.id}"><c:out value="${device.deviceIdentification}" /></a></td>
+                                        <td id="ipAddress${device.id}"><c:out value="${device.ipAddress}" /></td>
+                                        <td id="deviceType${device.id}"><c:out value="${device.deviceType}" /></td>
+                                        <td id="preferredLinkType${device.id}"><c:out value="${device.preferredLinkType}" /></td>
+                                        <td id="actualLightType${device.id}"><c:out value="${device.actualLinkType}" /></td>
+                                        <td id="lightType${device.id}"><c:out value="${device.lightType}" /></td>
+                                        <td id="lightState${device.id}">
+                                            <c:choose>
+                                                <c:when test="${device.dimValue >= 0}">
+                                                    <%-- if a dim value is present, use it to calculate the opacity for the image --%>
+                                                    <img src="/web-device-simulator/static/img/light_bulb_on.png" style="height: 40px; width: 40px; opacity:${device.dimValue/100};" />
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <%-- no dim value present, just show on/off --%>
+                                                    <c:choose>
+                                                    <c:when test="${device.lightOn}">
+                                                        <img src="/web-device-simulator/static/img/light_bulb_on.png" style="height: 40px; width: 40px;" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <img src="/web-device-simulator/static/img/light_bulb_off.png" style="height: 40px; width: 40px;" />
+                                                    </c:otherwise>
+                                                    </c:choose>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td id="dimValue${device.id}"><c:out value="${device.dimValue}" /></td>
+                                        <td id="selfTestState${device.id}"><c:out value="${device.selftestActive}" /></td>
+                                        <td id="sequenceNumber${device.id}"><c:out value="${device.sequenceNumber}" /></td>
+                                        <td id="eventNotifications${device.id}">
+	                                        <c:forTokens items="${device.eventNotifications}" delims="," var="eventNotification">
+	                                             <c:out value="${eventNotification}"/>
+	                                        </c:forTokens>
+                                        </td>
                                     </tr>
                                 </c:forEach>
                             </tbody>
