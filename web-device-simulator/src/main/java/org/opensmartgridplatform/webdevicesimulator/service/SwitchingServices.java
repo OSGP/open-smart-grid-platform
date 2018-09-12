@@ -7,10 +7,9 @@
  */
 package org.opensmartgridplatform.webdevicesimulator.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.webdevicesimulator.application.services.DeviceManagementService;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class SwitchingServices {
 
@@ -19,28 +18,28 @@ public class SwitchingServices {
 
     public void tariffSwitchHigh(final long deviceId) {
         // Find device
-        Device device = this.deviceManagementService.findDevice(deviceId);
-        device.setTariffOn(true);
+        final Device device = this.deviceManagementService.findDevice(deviceId);
+        device.setTariffOn(false);
         this.deviceManagementService.updateDevice(device);
     }
 
     public void tariffSwitchLow(final long deviceId) {
         // Find device
-        Device device = this.deviceManagementService.findDevice(deviceId);
+        final Device device = this.deviceManagementService.findDevice(deviceId);
         device.setTariffOn(true);
         this.deviceManagementService.updateDevice(device);
     }
 
     public void lightSwitchOn(final long deviceId) {
         // Find device
-        Device device = this.deviceManagementService.findDevice(deviceId);
+        final Device device = this.deviceManagementService.findDevice(deviceId);
         device.setLightOn(true);
         this.deviceManagementService.updateDevice(device);
     }
 
     public void lightSwitchOff(final long deviceId) {
         // Find device
-        Device device = this.deviceManagementService.findDevice(deviceId);
+        final Device device = this.deviceManagementService.findDevice(deviceId);
         device.setLightOn(false);
         this.deviceManagementService.updateDevice(device);
     }

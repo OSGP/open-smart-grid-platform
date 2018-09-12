@@ -40,11 +40,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
-
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.ConfirmRegisterDeviceResponse;
 import org.opensmartgridplatform.oslp.Oslp.DaliConfiguration;
@@ -91,6 +86,11 @@ import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.LinkType
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.OutputType;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.ProtocolType;
 import org.opensmartgridplatform.webdevicesimulator.exceptions.DeviceSimulatorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+
 import com.google.protobuf.ByteString;
 
 public class OslpChannelHandler extends SimpleChannelHandler {
@@ -404,7 +404,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             if (channelFuture.getChannel() != null && channelFuture.getChannel().isConnected()) {
                 LOGGER.info("Connection established to: {}", address);
             } else {
-                LOGGER.info("The connnection to the device {} is not successfull", deviceIdentification);
+                LOGGER.info("The connnection to OSGP from device {} is not successful", deviceIdentification);
                 LOGGER.warn("Unable to connect to: {}", address);
                 throw new IOException("Unable to connect");
             }
