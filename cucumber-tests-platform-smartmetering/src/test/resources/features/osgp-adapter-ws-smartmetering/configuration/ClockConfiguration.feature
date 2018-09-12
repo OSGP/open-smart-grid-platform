@@ -1,10 +1,10 @@
-@SmartMetering @Platform
-Feature: SmartMetering Clock configuration
+@SmartMetering @Platform @SmartMeteringConfiguration
+Feature: SmartMetering Configuration - Clock configuration
   As a grid operator
   I want to be able to change the clock configuration of a meter
   So the meter works with localized time settings
 
-  Background: 
+  Background:
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |

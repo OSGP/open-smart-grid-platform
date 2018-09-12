@@ -1,5 +1,5 @@
 @SmartMetering @Platform
-Feature: SmartMetering Bundle
+Feature: SmartMetering Bundle - Multiple Operations
   As a grid operator
   I want to be able to perform operations on a device via a bundle request
   In order to ...

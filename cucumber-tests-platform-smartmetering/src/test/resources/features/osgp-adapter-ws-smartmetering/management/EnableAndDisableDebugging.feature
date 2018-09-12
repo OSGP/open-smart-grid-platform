@@ -1,5 +1,5 @@
-@SmartMetering @Platform
-Feature: SmartMetering Enable and disable debugging
+@SmartMetering @Platform @SmartMeteringManagement
+Feature: SmartMetering Management - Enable and disable debugging
   As a grid operator
   I want to turn debugging of a device on or off
   So I can see extra information of a meter under investigation

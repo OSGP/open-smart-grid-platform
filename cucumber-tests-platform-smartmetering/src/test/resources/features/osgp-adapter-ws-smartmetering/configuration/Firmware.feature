@@ -1,5 +1,5 @@
-@SmartMetering @Platform @SmartMeteringFirmware
-Feature: SmartMetering Firmware
+@SmartMetering @Platform @SmartMeteringConfiguration @SmartMeteringFirmware
+Feature: SmartMetering Configuration - Firmware
   As a grid operator
   I want to be able to perform SmartMeteringFirmware operations on a device
   In order to ...
