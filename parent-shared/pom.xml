@@ -81,6 +81,7 @@
     <license.maven.plugin>2.11</license.maven.plugin>
     <quartz.version>2.3.0</quartz.version>
     <hikaricp.version>2.6.0</hikaricp.version>
+    <micrometer.version>1.0.6</micrometer.version>
   </properties>
 
   <repositories>
@@ -392,6 +393,18 @@
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
         <version>${quartz.version}</version>
+      </dependency>
+
+      <!-- Micrometer -->
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-core</artifactId>
+        <version>${micrometer.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-prometheus</artifactId>
+        <version>${micrometer.version}</version>
       </dependency>
 
     </dependencies>
