@@ -13,10 +13,6 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
@@ -31,9 +27,13 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.serv
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -52,12 +52,12 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
     /**
      * Each MessageProcessor should register it's MessageType at construction.
      *
-     * @param deviceRequestMessageType
+     * @param messageType
      *            The MessageType the MessageProcessor implementation can
      *            process.
      */
-    protected DaRtuDeviceRequestMessageProcessor(final DeviceRequestMessageType deviceRequestMessageType) {
-        this.deviceRequestMessageType = deviceRequestMessageType;
+    protected DaRtuDeviceRequestMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
     }
 
     /**
@@ -72,13 +72,11 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
     /**
      * Initialization function executed after dependency injection has finished.
      * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        this.iec61850RequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
-                this.deviceRequestMessageType.name(), this);
+        this.iec61850RequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     @Override

@@ -9,9 +9,9 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuDeviceService;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -30,23 +30,21 @@ public abstract class RtuDeviceRequestMessageProcessor extends BaseMessageProces
     /**
      * Each MessageProcessor should register it's MessageType at construction.
      *
-     * @param deviceRequestMessageType
+     * @param messageType
      *            The MessageType the MessageProcessor implementation can
      *            process.
      */
-    protected RtuDeviceRequestMessageProcessor(final DeviceRequestMessageType deviceRequestMessageType) {
-        this.deviceRequestMessageType = deviceRequestMessageType;
+    protected RtuDeviceRequestMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
     }
 
     /**
      * Initialization function executed after dependency injection has finished.
      * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        this.iec61850RequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
-                this.deviceRequestMessageType.name(), this);
+        this.iec61850RequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 }

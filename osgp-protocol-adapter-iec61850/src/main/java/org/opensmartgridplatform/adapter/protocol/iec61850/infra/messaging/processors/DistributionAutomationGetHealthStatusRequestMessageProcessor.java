@@ -8,13 +8,9 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
 import org.openmuc.openiec61850.Fc;
-import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -22,6 +18,9 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.Health;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing distribution automation get health status request
@@ -30,7 +29,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 @Component("iec61850DistributionAutomationGetHealthStatusRequestMessageProcessor")
 public class DistributionAutomationGetHealthStatusRequestMessageProcessor extends DaRtuDeviceRequestMessageProcessor {
     public DistributionAutomationGetHealthStatusRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_HEALTH_STATUS);
+        super(MessageType.GET_HEALTH_STATUS);
     }
 
     @Override

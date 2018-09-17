@@ -10,16 +10,11 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.proc
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
@@ -30,9 +25,13 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing microgrids get data request messages
@@ -45,7 +44,7 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
     private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsGetDataRequestMessageProcessor.class);
 
     public MicrogridsGetDataRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_DATA);
+        super(MessageType.GET_DATA);
     }
 
     @Override

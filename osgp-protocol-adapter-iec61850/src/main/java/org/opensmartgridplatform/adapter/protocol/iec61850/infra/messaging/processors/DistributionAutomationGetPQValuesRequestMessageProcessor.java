@@ -29,19 +29,18 @@ import org.openmuc.openiec61850.LogicalDevice;
 import org.openmuc.openiec61850.LogicalNode;
 import org.openmuc.openiec61850.ModelNode;
 import org.openmuc.openiec61850.ServerModel;
+import org.opensmartgridplatform.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
+import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.Function;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.dto.da.iec61850.DataSampleDto;
 import org.opensmartgridplatform.dto.da.iec61850.LogicalDeviceDto;
 import org.opensmartgridplatform.dto.da.iec61850.LogicalNodeDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.Function;
 
 /**
  * Class for processing distribution automation get pq values request messages
@@ -49,7 +48,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 @Component("iec61850DistributionAutomationGetPQValuesRequestMessageProcessor")
 public class DistributionAutomationGetPQValuesRequestMessageProcessor extends DaRtuDeviceRequestMessageProcessor {
     public DistributionAutomationGetPQValuesRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_POWER_QUALITY_VALUES);
+        super(MessageType.GET_POWER_QUALITY_VALUES);
     }
 
     @Override
