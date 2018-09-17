@@ -40,10 +40,11 @@ import io.micrometer.prometheus.PrometheusMeterRegistry;
  *     return new PrometheusMetricsServer(prometheusMeterRegistry);
  * }</pre>
  *  </li>
- * <li>In the application properties, specify port and path to use to publish the metrics:
+ * <li>In the application properties, specify port and path to use to publish the metrics, and the name of the component:
  * <pre>
  * metrics.prometheus.port=9101
- * metrics.prometheus.path=/metrics</pre>
+ * metrics.prometheus.path=/metrics
+ * metrics.componentname=smart-meter-integration</pre>
  * </li>
  * <li>Start writing metrics, using the meter registry bean configured in step 1. For example:
  * <pre>
@@ -62,13 +63,16 @@ public class PrometheusMetricsServer {
     @Value("${metrics.prometheus.path}")
     private String path;
 
+    @Value("${metrics.componentname}")
+    private String componentName;
+
     private final PrometheusMeterRegistry prometheusMeterRegistry;
     private HttpServer server;
 
     @Autowired
     public PrometheusMetricsServer(final PrometheusMeterRegistry prometheusMeterRegistry) {
         this.prometheusMeterRegistry = prometheusMeterRegistry;
-        prometheusMeterRegistry.config().commonTags("component", "smart-meter-integration");
+        prometheusMeterRegistry.config().commonTags("component", componentName);
     }
 
     @PostConstruct
