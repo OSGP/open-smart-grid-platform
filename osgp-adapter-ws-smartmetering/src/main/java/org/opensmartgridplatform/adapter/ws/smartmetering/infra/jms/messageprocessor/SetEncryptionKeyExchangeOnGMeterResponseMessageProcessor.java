@@ -9,15 +9,14 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class SetEncryptionKeyExchangeOnGMeterResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SetEncryptionKeyExchangeOnGMeterResponseMessageProcessor() {
-        super(DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER);
+        super(MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER);
     }
 
 }

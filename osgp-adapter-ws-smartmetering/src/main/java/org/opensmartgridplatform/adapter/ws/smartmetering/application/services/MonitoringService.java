@@ -7,17 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
@@ -33,6 +26,12 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.CorrelationUidException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsSmartMeteringMonitoringService")
 @Validated
@@ -68,13 +67,11 @@ public class MonitoringService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.REQUEST_PERIODIC_METER_DATA.name(),
+                messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -97,13 +94,11 @@ public class MonitoringService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.REQUEST_ACTUAL_METER_DATA.name(),
+                messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -126,13 +121,11 @@ public class MonitoringService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.READ_ALARM_REGISTER.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.READ_ALARM_REGISTER.name(), messagePriority,
+                scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -155,8 +148,8 @@ public class MonitoringService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GET_PROFILE_GENERIC_DATA.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.GET_PROFILE_GENERIC_DATA.name(),
+                messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
@@ -187,13 +180,11 @@ public class MonitoringService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.CLEAR_ALARM_REGISTER.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.CLEAR_ALARM_REGISTER.name(), messagePriority,
+                scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 

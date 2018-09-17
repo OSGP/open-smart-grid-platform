@@ -10,21 +10,20 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms.core.messageproc
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
+import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common get configuration response messages
@@ -41,7 +40,7 @@ public class CommonGetConfigurationResponseMessageProcessor extends OsgpCoreResp
     private ConfigurationManagementService configurationManagementService;
 
     protected CommonGetConfigurationResponseMessageProcessor() {
-        super(DeviceFunction.GET_CONFIGURATION);
+        super(MessageType.GET_CONFIGURATION);
     }
 
     @Override

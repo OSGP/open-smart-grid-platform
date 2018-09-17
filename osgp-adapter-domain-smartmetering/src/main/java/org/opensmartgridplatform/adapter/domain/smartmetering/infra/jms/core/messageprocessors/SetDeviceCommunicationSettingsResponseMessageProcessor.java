@@ -7,15 +7,14 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class SetDeviceCommunicationSettingsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -24,7 +23,7 @@ public class SetDeviceCommunicationSettingsResponseMessageProcessor extends Osgp
     private ManagementService managementService;
 
     protected SetDeviceCommunicationSettingsResponseMessageProcessor() {
-        super(DeviceFunction.SET_DEVICE_COMMUNICATION_SETTINGS);
+        super(MessageType.SET_DEVICE_COMMUNICATION_SETTINGS);
     }
 
     @Override

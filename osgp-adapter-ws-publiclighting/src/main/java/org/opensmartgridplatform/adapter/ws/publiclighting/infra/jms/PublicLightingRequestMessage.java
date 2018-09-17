@@ -10,8 +10,8 @@ package org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms;
 import java.io.Serializable;
 
 import org.joda.time.DateTime;
-
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 public class PublicLightingRequestMessage extends RequestMessage {
@@ -19,8 +19,9 @@ public class PublicLightingRequestMessage extends RequestMessage {
     /**
      * Generated Serial Version UID.
      */
-    private static final long serialVersionUID = 7881466312299271185L;
-    private final PublicLightingRequestMessageType messageType;
+    private static final long serialVersionUID = 8981706563226676098L;
+
+    private final MessageType messageType;
     private final DateTime scheduleTime;
     private final Integer messagePriority;
 
@@ -28,7 +29,7 @@ public class PublicLightingRequestMessage extends RequestMessage {
             final Serializable request) {
         super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
                 deviceMessageMetadata.getDeviceIdentification(), ipAddress, request);
-        this.messageType = PublicLightingRequestMessageType.valueOf(deviceMessageMetadata.getMessageType());
+        this.messageType = MessageType.valueOf(deviceMessageMetadata.getMessageType());
         this.messagePriority = deviceMessageMetadata.getMessagePriority();
         if (deviceMessageMetadata.getScheduleTime() == null) {
             this.scheduleTime = null;
@@ -37,7 +38,7 @@ public class PublicLightingRequestMessage extends RequestMessage {
         }
     }
 
-    public PublicLightingRequestMessageType getMessageType() {
+    public MessageType getMessageType() {
         return this.messageType;
     }
 

@@ -7,16 +7,15 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.in.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.NotificationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.OsgpCoreRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing smart metering push notification alarm request messages.
@@ -28,7 +27,7 @@ public class PushNotificationAlarmRequestMessageProcessor extends OsgpCoreReques
     private NotificationService notificationService;
 
     protected PushNotificationAlarmRequestMessageProcessor() {
-        super(DeviceFunction.PUSH_NOTIFICATION_ALARM);
+        super(MessageType.PUSH_NOTIFICATION_ALARM);
     }
 
     @Override

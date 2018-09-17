@@ -7,9 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 /**
  * Class for processing smart metering find events response messages
@@ -18,6 +17,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 public class FindEventsResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     public FindEventsResponseMessageProcessor() {
-        super(DeviceFunction.FIND_EVENTS);
+        super(MessageType.FIND_EVENTS);
     }
 }

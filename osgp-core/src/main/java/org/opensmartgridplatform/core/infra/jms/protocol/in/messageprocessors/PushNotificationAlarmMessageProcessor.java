@@ -13,12 +13,6 @@ import java.util.List;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
@@ -37,7 +31,13 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component("dlmsPushNotificationAlarmMessageProcessor")
 @Transactional(value = "transactionManager")
@@ -61,7 +61,7 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     protected PushNotificationAlarmMessageProcessor() {
-        super(DeviceFunction.PUSH_NOTIFICATION_ALARM);
+        super(MessageType.PUSH_NOTIFICATION_ALARM);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
              * This message processor handles messages that came in on the
              * osgp-core.1_0.protocol-dlms.1_0.requests queue. Therefore lookup
              * the DomainInfo for DLMS (domain: SMART_METERING) version 1.0.
-             * 
+             *
              * At some point in time there may be a cleaner solution, where the
              * DomainInfo can be derived from information in the message or JMS
              * metadata, but for now this will have to do.

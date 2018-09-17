@@ -9,16 +9,15 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 @Component
 public class SetPushSetupAlarmRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -28,7 +27,7 @@ public class SetPushSetupAlarmRequestMessageProcessor extends WebServiceRequestM
     private ConfigurationService configurationService;
 
     protected SetPushSetupAlarmRequestMessageProcessor() {
-        super(DeviceFunction.SET_PUSH_SETUP_ALARM);
+        super(MessageType.SET_PUSH_SETUP_ALARM);
     }
 
     @Override

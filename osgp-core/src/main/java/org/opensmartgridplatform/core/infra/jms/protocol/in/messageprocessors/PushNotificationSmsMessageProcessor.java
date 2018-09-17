@@ -13,24 +13,20 @@ import java.util.Date;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
+import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationSmsDto;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
-import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
-import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRepository;
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationSmsDto;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 @Component("dlmsPushNotificationSmsMessageProcessor")
 @Transactional(value = "transactionManager")
@@ -42,19 +38,10 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
     private EventNotificationMessageService eventNotificationMessageService;
 
     @Autowired
-    private DomainRequestService domainRequestService;
-
-    @Autowired
-    private DomainInfoRepository domainInfoRepository;
-
-    @Autowired
     private DeviceRepository deviceRepository;
 
-    @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
-
     protected PushNotificationSmsMessageProcessor() {
-        super(DeviceFunction.PUSH_NOTIFICATION_SMS);
+        super(MessageType.PUSH_NOTIFICATION_SMS);
     }
 
     @Override
@@ -110,8 +97,8 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
              * Date() as time with the notification.
              */
             this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(), new Date(),
-                    org.opensmartgridplatform.domain.core.valueobjects.EventType.SMS_NOTIFICATION, pushNotificationSms
-                            .getIpAddress().toString(), 0);
+                    org.opensmartgridplatform.domain.core.valueobjects.EventType.SMS_NOTIFICATION,
+                    pushNotificationSms.getIpAddress(), 0);
         } catch (final UnknownEntityException uee) {
             LOGGER.warn("Unable to store event for Push Notification Sms from unknown device: {}", pushNotificationSms,
                     uee);

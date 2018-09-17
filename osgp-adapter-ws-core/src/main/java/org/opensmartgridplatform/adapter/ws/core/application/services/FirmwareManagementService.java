@@ -23,17 +23,8 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceFirmwareFileRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
@@ -62,7 +53,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsCoreFirmwareManagementService")
 @Transactional(value = "transactionManager")
@@ -134,8 +133,8 @@ public class FirmwareManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.UPDATE_FIRMWARE.name(),
-                messagePriority, scheduledTime == null ? null : scheduledTime.getMillis());
+                organisationIdentification, correlationUid, MessageType.UPDATE_FIRMWARE.name(), messagePriority,
+                scheduledTime == null ? null : scheduledTime.getMillis());
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(firmwareUpdateMessageDataContainer).build();
@@ -166,8 +165,7 @@ public class FirmwareManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.GET_FIRMWARE_VERSION.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.GET_FIRMWARE_VERSION.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
@@ -193,7 +191,7 @@ public class FirmwareManagementService {
      * Returns a manufacturers in the Platform
      */
     @Transactional(value = "writableTransactionManager")
-    public Manufacturer findManufacturer(final String manufacturerName) throws FunctionalException {
+    public Manufacturer findManufacturer(final String manufacturerName) {
         return this.manufacturerRepository.findByName(manufacturerName);
     }
 
@@ -628,10 +626,10 @@ public class FirmwareManagementService {
          */
         final Set<DeviceModel> existingDeviceModels = changedFirmwareFile.getDeviceModels();
         if (existingDeviceModels.size() > 1) {
-            LOGGER.warn("Change Firmware (FirmwareFile id={}) with {} existing DeviceModels ({}), adding {}",
+            LOGGER.warn("Change Firmware (FirmwareFile id={}) with {} existing DeviceModels, adding {}",
                     changedFirmwareFile.getId(), existingDeviceModels.size(), databaseDeviceModel);
         } else {
-            LOGGER.warn("Change Firmware (FirmwareFile id={}) with existing DeviceModel ({}), replacing by {}",
+            LOGGER.warn("Change Firmware (FirmwareFile id={}) with {} existing DeviceModel(s), replacing by {}",
                     changedFirmwareFile.getId(), existingDeviceModels.size(), databaseDeviceModel);
             existingDeviceModels.clear();
         }
@@ -742,8 +740,7 @@ public class FirmwareManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.SWITCH_FIRMWARE.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.SWITCH_FIRMWARE.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(version).build();

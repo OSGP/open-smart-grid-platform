@@ -10,8 +10,8 @@ package org.opensmartgridplatform.adapter.ws.core.infra.jms;
 import java.io.Serializable;
 
 import org.joda.time.DateTime;
-
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 public class CommonRequestMessage extends RequestMessage {
@@ -19,7 +19,7 @@ public class CommonRequestMessage extends RequestMessage {
      * Generated serial version
      */
     private static final long serialVersionUID = 6094774737635965756L;
-    private final CommonRequestMessageType messageType;
+    private final MessageType messageType;
     private final DateTime scheduleTime;
     private final Integer messagePriority;
 
@@ -27,7 +27,7 @@ public class CommonRequestMessage extends RequestMessage {
             final Serializable request) {
         super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
                 deviceMessageMetadata.getDeviceIdentification(), ipAddress, request);
-        this.messageType = CommonRequestMessageType.valueOf(deviceMessageMetadata.getMessageType());
+        this.messageType = MessageType.valueOf(deviceMessageMetadata.getMessageType());
         this.messagePriority = deviceMessageMetadata.getMessagePriority();
         if (deviceMessageMetadata.getScheduleTime() == null) {
             this.scheduleTime = null;
@@ -36,7 +36,7 @@ public class CommonRequestMessage extends RequestMessage {
         }
     }
 
-    public CommonRequestMessageType getMessageType() {
+    public MessageType getMessageType() {
         return this.messageType;
     }
 

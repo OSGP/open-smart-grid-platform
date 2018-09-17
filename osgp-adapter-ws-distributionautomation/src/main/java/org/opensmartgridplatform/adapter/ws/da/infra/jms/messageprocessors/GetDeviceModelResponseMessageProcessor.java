@@ -7,13 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.infra.jms.messageprocessors;
 
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetDeviceModelResponseMessageProcessor extends AbstractDomainResponseMessageProcessor {
 
     protected GetDeviceModelResponseMessageProcessor() {
-        super(DeviceFunction.GET_DEVICE_MODEL);
+        super(MessageType.GET_DEVICE_MODEL);
     }
 }

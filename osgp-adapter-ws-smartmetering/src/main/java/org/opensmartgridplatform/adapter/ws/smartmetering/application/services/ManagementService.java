@@ -11,22 +11,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.syncrequest.FindMessageLogsSyncRequestExecutor;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
@@ -44,6 +33,16 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsSmartMeteringManagementService")
 @Transactional(value = "transactionManager")
@@ -97,8 +96,8 @@ public class ManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.FIND_EVENTS.toString(),
-                messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.FIND_EVENTS.name(), messagePriority,
+                scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
@@ -177,8 +176,8 @@ public class ManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.ENABLE_DEBUGGING.toString(),
-                messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.ENABLE_DEBUGGING.name(), messagePriority,
+                scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
@@ -203,8 +202,8 @@ public class ManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.DISABLE_DEBUGGING.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.DISABLE_DEBUGGING.name(), messagePriority,
+                scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
@@ -250,9 +249,8 @@ public class ManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_DEVICE_COMMUNICATION_SETTINGS.toString(), messagePriority,
-                scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_DEVICE_COMMUNICATION_SETTINGS.name(),
+                messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(dataRequest).build();
@@ -277,9 +275,8 @@ public class ManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL.toString(), messagePriority,
-                scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL.name(),
+                messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();

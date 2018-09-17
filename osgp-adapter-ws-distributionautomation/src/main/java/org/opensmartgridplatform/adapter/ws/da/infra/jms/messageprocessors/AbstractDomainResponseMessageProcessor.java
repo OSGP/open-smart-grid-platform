@@ -17,9 +17,9 @@ import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     /**
      * The message type that a message processor implementation can handle.
      */
-    protected DeviceFunction deviceFunction;
+    protected MessageType messageType;
     @Autowired
     private NotificationService notificationService;
     @Autowired
@@ -57,22 +57,21 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     /**
      * Construct a message processor instance by passing in the message type.
      *
-     * @param deviceFunction
+     * @param messageType
      *            The message type a message processor can handle.
      */
-    protected AbstractDomainResponseMessageProcessor(final DeviceFunction deviceFunction) {
-        this.deviceFunction = deviceFunction;
+    protected AbstractDomainResponseMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
     }
 
     /**
-     * Initialization function executed after dependency injection has finished. The
-     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
-     * key for the HashMap is the integer value of the enumeration member.
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the HashMap of
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        this.domainResponseMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(),
-                this.deviceFunction.name(), this);
+        this.domainResponseMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     @Override

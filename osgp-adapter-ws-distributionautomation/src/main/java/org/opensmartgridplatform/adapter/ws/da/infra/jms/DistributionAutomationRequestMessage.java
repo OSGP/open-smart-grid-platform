@@ -10,23 +10,24 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.infra.jms;
 
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-
 import java.io.Serializable;
+
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 public class DistributionAutomationRequestMessage extends RequestMessage {
 
-    private static final long serialVersionUID = -1212784820197545949L;
+    private static final long serialVersionUID = 8139039766689984959L;
 
-    private final DistributionAutomationRequestMessageType messageType;
+    private final MessageType messageType;
 
-    public DistributionAutomationRequestMessage(final DistributionAutomationRequestMessageType messageType, final String correlationUid,
+    public DistributionAutomationRequestMessage(final MessageType messageType, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification, final Serializable request) {
         super(correlationUid, organisationIdentification, deviceIdentification, request);
         this.messageType = messageType;
     }
 
-    public DistributionAutomationRequestMessageType getMessageType() {
+    public MessageType getMessageType() {
         return this.messageType;
     }
 }

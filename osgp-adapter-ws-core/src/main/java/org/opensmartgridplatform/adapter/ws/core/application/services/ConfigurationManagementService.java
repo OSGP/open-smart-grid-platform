@@ -10,16 +10,8 @@ package org.opensmartgridplatform.adapter.ws.core.application.services;
 import javax.validation.Valid;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
@@ -30,7 +22,14 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsCoreConfigurationManagementService")
 @Transactional("transactionManager")
@@ -72,8 +71,8 @@ public class ConfigurationManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.SET_CONFIGURATION.name(),
-                messagePriority, scheduledTime == null ? null : scheduledTime.getMillis());
+                organisationIdentification, correlationUid, MessageType.SET_CONFIGURATION.name(), messagePriority,
+                scheduledTime == null ? null : scheduledTime.getMillis());
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(configuration).build();
@@ -103,8 +102,7 @@ public class ConfigurationManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.GET_CONFIGURATION.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.GET_CONFIGURATION.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
@@ -134,7 +132,7 @@ public class ConfigurationManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.SWITCH_CONFIGURATION_BANK.name(),
+                organisationIdentification, correlationUid, MessageType.SWITCH_CONFIGURATION_BANK.name(),
                 messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()

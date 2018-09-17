@@ -7,14 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class GenerateAndReplaceKeysResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected GenerateAndReplaceKeysResponseMessageProcessor() {
-        super(DeviceFunction.GENERATE_AND_REPLACE_KEYS);
+        super(MessageType.GENERATE_AND_REPLACE_KEYS);
     }
 }

@@ -9,15 +9,14 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class SetDeviceCommunicationSettingsResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SetDeviceCommunicationSettingsResponseMessageProcessor() {
-        super(DeviceFunction.SET_DEVICE_COMMUNICATION_SETTINGS);
+        super(MessageType.SET_DEVICE_COMMUNICATION_SETTINGS);
     }
 
 }

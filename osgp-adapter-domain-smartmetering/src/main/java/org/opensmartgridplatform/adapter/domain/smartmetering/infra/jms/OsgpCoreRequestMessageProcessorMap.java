@@ -7,48 +7,14 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.springframework.stereotype.Component;
 
 @Component("domainSmartMeteringOsgpCoreRequestMessageProcessorMap")
 public class OsgpCoreRequestMessageProcessorMap extends BaseMessageProcessorMap {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageProcessorMap.class);
 
     protected OsgpCoreRequestMessageProcessorMap() {
         super("OsgpCoreRequestMessageProcessorMap");
     }
 
-    @Override
-    public MessageProcessor getMessageProcessor(final ObjectMessage message) throws JMSException {
-
-        if (message.getJMSType() == null) {
-            LOGGER.error("No JMS type in ObjectMessage");
-            throw new JMSException("No message type");
-        }
-
-        try {
-
-            final DeviceFunctionDto messageType = DeviceFunctionDto.valueOf(message.getJMSType());
-            final MessageProcessor messageProcessor = this.messageProcessors.get(messageType.ordinal());
-            if (messageProcessor == null) {
-                throw new IllegalArgumentException("No message processor registered for type " + messageType.name()
-                        + ", ordinal: " + messageType.ordinal());
-            }
-            return messageProcessor;
-
-        } catch (final Exception e) {
-
-            LOGGER.error("No message processor found for message type: " + message.getJMSType(), e);
-            throw new JMSException("No message processor found for message type");
-        }
-    }
 }

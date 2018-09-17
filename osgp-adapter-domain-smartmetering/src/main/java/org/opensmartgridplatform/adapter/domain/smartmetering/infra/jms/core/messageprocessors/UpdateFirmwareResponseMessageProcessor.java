@@ -7,19 +7,18 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class UpdateFirmwareResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -28,7 +27,7 @@ public class UpdateFirmwareResponseMessageProcessor extends OsgpCoreResponseMess
     private ConfigurationService configurationService;
 
     protected UpdateFirmwareResponseMessageProcessor() {
-        super(DeviceFunction.UPDATE_FIRMWARE);
+        super(MessageType.UPDATE_FIRMWARE);
     }
 
     @Override

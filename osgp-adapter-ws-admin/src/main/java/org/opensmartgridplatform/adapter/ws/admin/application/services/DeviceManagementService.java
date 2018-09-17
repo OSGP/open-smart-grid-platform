@@ -14,21 +14,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.orm.jpa.JpaSystemException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessage;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminRequestMessageType;
 import org.opensmartgridplatform.adapter.ws.admin.infra.jms.AdminResponseMessageFinder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
@@ -63,7 +50,19 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsAdminDeviceManagementService")
 @Transactional(value = "transactionManager")
@@ -458,7 +457,7 @@ public class DeviceManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final AdminRequestMessage message = new AdminRequestMessage(AdminRequestMessageType.UPDATE_KEY, correlationUid,
+        final AdminRequestMessage message = new AdminRequestMessage(MessageType.UPDATE_KEY, correlationUid,
                 organisationIdentification, deviceIdentification, publicKey);
 
         this.adminRequestMessageSender.send(message);
@@ -495,7 +494,7 @@ public class DeviceManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final AdminRequestMessage message = new AdminRequestMessage(AdminRequestMessageType.REVOKE_KEY, correlationUid,
+        final AdminRequestMessage message = new AdminRequestMessage(MessageType.REVOKE_KEY, correlationUid,
                 organisationIdentification, deviceIdentification, null);
 
         this.adminRequestMessageSender.send(message);

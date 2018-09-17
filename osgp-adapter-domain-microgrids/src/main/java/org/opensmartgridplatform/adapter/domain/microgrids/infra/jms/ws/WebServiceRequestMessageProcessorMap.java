@@ -7,47 +7,14 @@
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.ws;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.springframework.stereotype.Component;
 
 @Component("domainMicrogridsWebServiceRequestMessageProcessorMap")
 public class WebServiceRequestMessageProcessorMap extends BaseMessageProcessorMap {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceRequestMessageProcessorMap.class);
 
     protected WebServiceRequestMessageProcessorMap() {
         super("WebServiceRequestMessageProcessorMap");
     }
 
-    @Override
-    public MessageProcessor getMessageProcessor(final ObjectMessage message) throws JMSException {
-
-        if (message.getJMSType() == null) {
-            LOGGER.error("Unknown message type: {}", message.getJMSType());
-            throw new JMSException("Unknown message type");
-        }
-
-        final DeviceFunction messageType = DeviceFunction.valueOf(message.getJMSType());
-
-        if (messageType.name() == null) {
-            LOGGER.error("No message processor found for message type: {}", message.getJMSType());
-            throw new JMSException("Unknown message processor");
-        }
-
-        final MessageProcessor mp = this.messageProcessors.get(messageType.ordinal());
-        if (mp == null) {
-            LOGGER.error("No message processor found for message type: {}, key {}", message.getJMSType(),
-                    messageType.ordinal());
-            throw new JMSException("Unknown message processor");
-        }
-        return mp;
-    }
 }

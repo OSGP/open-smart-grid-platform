@@ -7,20 +7,20 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.infra.jms;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
 
 /**
  * Class for sending distribution automation request messages to a queue
@@ -83,7 +83,7 @@ public class DistributionAutomationRequestMessageSender {
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-                objectMessage.setJMSType(requestMessage.getMessageType().toString());
+                objectMessage.setJMSType(requestMessage.getMessageType().name());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,

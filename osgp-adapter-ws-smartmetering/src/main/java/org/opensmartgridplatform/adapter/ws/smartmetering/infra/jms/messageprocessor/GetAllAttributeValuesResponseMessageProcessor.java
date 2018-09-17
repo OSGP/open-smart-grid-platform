@@ -8,15 +8,14 @@
 
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class GetAllAttributeValuesResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     public GetAllAttributeValuesResponseMessageProcessor() {
-        super(DeviceFunction.GET_ALL_ATTRIBUTE_VALUES);
+        super(MessageType.GET_ALL_ATTRIBUTE_VALUES);
     }
 
 }

@@ -9,19 +9,19 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.messageprocessors;
 
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+
 import org.opensmartgridplatform.adapter.domain.da.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesRequest;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 
 /**
  * Class for processing da get pq values request messages
@@ -38,7 +38,7 @@ public class GetPQValuesRequestMessageProcessor extends AbstractWebServiceReques
     private MonitoringService monitoringService;
 
     public GetPQValuesRequestMessageProcessor() {
-        super(DeviceFunction.GET_POWER_QUALITY_VALUES);
+        super(MessageType.GET_POWER_QUALITY_VALUES);
     }
 
     @Override

@@ -14,20 +14,19 @@ import java.util.List;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.Ssld;
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.dto.valueobjects.DeviceRegistrationDataDto;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.domain.core.entities.Ssld;
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.dto.valueobjects.DeviceRegistrationDataDto;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 @Component("oslpRegisterDeviceMessageProcessor")
 @Transactional(value = "transactionManager")
@@ -41,7 +40,7 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
     private static final String LOCAL_HOST = "127.0.0.1";
 
     protected RegisterDeviceMessageProcessor() {
-        super(DeviceFunction.REGISTER_DEVICE);
+        super(MessageType.REGISTER_DEVICE);
     }
 
     @Override

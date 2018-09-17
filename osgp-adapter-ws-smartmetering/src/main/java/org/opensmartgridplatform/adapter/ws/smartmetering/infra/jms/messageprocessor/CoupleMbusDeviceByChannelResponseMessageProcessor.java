@@ -7,14 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class CoupleMbusDeviceByChannelResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected CoupleMbusDeviceByChannelResponseMessageProcessor() {
-        super(DeviceFunction.COUPLE_MBUS_DEVICE_BY_CHANNEL);
+        super(MessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL);
     }
 }

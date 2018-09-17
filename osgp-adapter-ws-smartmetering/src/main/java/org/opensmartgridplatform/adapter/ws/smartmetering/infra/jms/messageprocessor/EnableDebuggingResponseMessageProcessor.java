@@ -7,15 +7,14 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class EnableDebuggingResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected EnableDebuggingResponseMessageProcessor() {
-        super(DeviceFunction.ENABLE_DEBUGGING);
+        super(MessageType.ENABLE_DEBUGGING);
     }
 
 }

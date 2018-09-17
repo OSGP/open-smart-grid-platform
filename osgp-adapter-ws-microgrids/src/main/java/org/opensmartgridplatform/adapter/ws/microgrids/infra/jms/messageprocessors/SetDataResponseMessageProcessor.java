@@ -7,14 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.messageprocessors;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class SetDataResponseMessageProcessor extends AbstractDomainResponseMessageProcessor {
 
     protected SetDataResponseMessageProcessor() {
-        super(DeviceFunction.SET_DATA);
+        super(MessageType.SET_DATA);
     }
 }

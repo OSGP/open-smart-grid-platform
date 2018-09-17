@@ -7,15 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
@@ -37,6 +30,12 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialD
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsSmartMeteringConfigurationService")
 @Validated
@@ -83,13 +82,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_ADMINISTRATIVE_STATUS.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_ADMINISTRATIVE_STATUS.name(),
+                messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -133,13 +130,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GET_FIRMWARE_VERSION.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.GET_FIRMWARE_VERSION.name(), messagePriority,
+                scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -163,8 +158,8 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.UPDATE_FIRMWARE.toString(),
-                messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.UPDATE_FIRMWARE.name(), messagePriority,
+                scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(updateFirmwareRequestData).build();
@@ -198,13 +193,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.GET_ADMINISTRATIVE_STATUS.name(),
+                messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(AdministrativeStatusType.UNDEFINED).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -227,13 +220,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.SET_SPECIAL_DAYS.toString(),
-                messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_SPECIAL_DAYS.name(), messagePriority,
+                scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -256,13 +247,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_CONFIGURATION_OBJECT.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_CONFIGURATION_OBJECT.name(),
+                messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -285,13 +274,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_PUSH_SETUP_ALARM.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_PUSH_SETUP_ALARM.name(), messagePriority,
+                scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupAlarm).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -314,13 +301,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_PUSH_SETUP_SMS.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_PUSH_SETUP_SMS.name(), messagePriority,
+                scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupSms).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -343,13 +328,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_ALARM_NOTIFICATIONS.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_ALARM_NOTIFICATIONS.name(), messagePriority,
+                scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(alarmSwitches).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -372,14 +355,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER.toString(), messagePriority,
-                scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER.name(),
+                messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -402,9 +382,8 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GET_MBUS_ENCRYPTION_KEY_STATUS.toString(), messagePriority,
-                scheduleTime);
+                organisationIdentification, correlationUid, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS.name(),
+                messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
@@ -432,8 +411,7 @@ public class ConfigurationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL.toString(), messagePriority,
-                scheduleTime);
+                MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL.name(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
@@ -460,13 +438,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_ACTIVITY_CALENDAR.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_ACTIVITY_CALENDAR.name(), messagePriority,
+                scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(activityCalendar).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -489,8 +465,8 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.REPLACE_KEYS.toString(),
-                messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.REPLACE_KEYS.name(), messagePriority,
+                scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(keySet).build();
@@ -517,8 +493,8 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_CLOCK_CONFIGURATION.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_CLOCK_CONFIGURATION.name(), messagePriority,
+                scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(clockConfigurationRequestData).build();
@@ -544,8 +520,8 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECT.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.GET_CONFIGURATION_OBJECT.name(),
+                messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
@@ -590,13 +566,11 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GENERATE_AND_REPLACE_KEYS.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.GENERATE_AND_REPLACE_KEYS.name(),
+                messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -620,9 +594,8 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE.toString(), messagePriority,
-                scheduleTime);
+                organisationIdentification, correlationUid, MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE.name(),
+                messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(definableLoadProfileConfigurationData).build();
@@ -649,8 +622,8 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_MBUS_USER_KEY_BY_CHANNEL.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.SET_MBUS_USER_KEY_BY_CHANNEL.name(),
+                messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(setMbusUserKeyByChannelRequestData).build();

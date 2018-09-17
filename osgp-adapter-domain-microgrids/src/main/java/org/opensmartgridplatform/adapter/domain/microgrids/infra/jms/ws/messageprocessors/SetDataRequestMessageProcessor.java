@@ -10,17 +10,16 @@ package org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.ws.message
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.microgrids.application.services.AdHocManagementService;
+import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.domain.microgrids.valueobjects.SetDataRequest;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.microgrids.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.microgrids.valueobjects.SetDataRequest;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 
 /**
  * Class for processing microgrids set data request messages
@@ -37,7 +36,7 @@ public class SetDataRequestMessageProcessor extends AbstractWebServiceRequestMes
     private AdHocManagementService adHocManagementService;
 
     public SetDataRequestMessageProcessor() {
-        super(DeviceFunction.SET_DATA);
+        super(MessageType.SET_DATA);
     }
 
     @Override

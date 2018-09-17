@@ -8,16 +8,15 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.AdhocService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GetSpecificAttributeValueRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -27,7 +26,7 @@ public class GetSpecificAttributeValueRequestMessageProcessor extends WebService
     private AdhocService adhocService;
 
     protected GetSpecificAttributeValueRequestMessageProcessor() {
-        super(DeviceFunction.GET_SPECIFIC_ATTRIBUTE_VALUE);
+        super(MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE);
     }
 
     @Override

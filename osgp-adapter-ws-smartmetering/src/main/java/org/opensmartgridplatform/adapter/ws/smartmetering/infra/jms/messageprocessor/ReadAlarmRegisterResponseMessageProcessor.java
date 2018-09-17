@@ -7,15 +7,14 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class ReadAlarmRegisterResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected ReadAlarmRegisterResponseMessageProcessor() {
-        super(DeviceFunction.READ_ALARM_REGISTER);
+        super(MessageType.READ_ALARM_REGISTER);
     }
 
 }

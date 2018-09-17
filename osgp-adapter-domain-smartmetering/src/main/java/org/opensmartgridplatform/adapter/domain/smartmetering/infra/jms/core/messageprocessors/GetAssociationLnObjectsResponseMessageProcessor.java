@@ -8,17 +8,16 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.AdhocService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GetAssociationLnObjectsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -28,7 +27,7 @@ public class GetAssociationLnObjectsResponseMessageProcessor extends OsgpCoreRes
     private AdhocService adhocService;
 
     public GetAssociationLnObjectsResponseMessageProcessor() {
-        super(DeviceFunction.GET_ASSOCIATION_LN_OBJECTS);
+        super(MessageType.GET_ASSOCIATION_LN_OBJECTS);
     }
 
     @Override

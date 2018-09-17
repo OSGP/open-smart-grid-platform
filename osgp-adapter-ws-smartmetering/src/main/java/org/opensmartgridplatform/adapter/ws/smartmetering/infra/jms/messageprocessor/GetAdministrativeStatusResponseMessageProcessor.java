@@ -7,14 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class GetAdministrativeStatusResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected GetAdministrativeStatusResponseMessageProcessor() {
-        super(DeviceFunction.GET_ADMINISTRATIVE_STATUS);
+        super(MessageType.GET_ADMINISTRATIVE_STATUS);
     }
 }

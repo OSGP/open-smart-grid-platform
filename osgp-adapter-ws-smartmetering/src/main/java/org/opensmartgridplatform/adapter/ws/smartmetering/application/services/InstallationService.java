@@ -7,15 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
@@ -27,6 +20,12 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMb
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsSmartMeteringInstallationService")
 @Validated
@@ -54,13 +53,11 @@ public class InstallationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.ADD_METER.toString(),
-                messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.ADD_METER.name(), messagePriority,
+                scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(addSmartMeterRequest).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -96,8 +93,8 @@ public class InstallationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.COUPLE_MBUS_DEVICE.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.COUPLE_MBUS_DEVICE.name(), messagePriority,
+                scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
@@ -140,8 +137,8 @@ public class InstallationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.DE_COUPLE_MBUS_DEVICE.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, MessageType.DE_COUPLE_MBUS_DEVICE.name(), messagePriority,
+                scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
@@ -179,9 +176,8 @@ public class InstallationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL.toString(), messagePriority,
-                scheduleTime);
+                organisationIdentification, correlationUid, MessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL.name(),
+                messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(new CoupleMbusDeviceByChannelRequestData(channel))

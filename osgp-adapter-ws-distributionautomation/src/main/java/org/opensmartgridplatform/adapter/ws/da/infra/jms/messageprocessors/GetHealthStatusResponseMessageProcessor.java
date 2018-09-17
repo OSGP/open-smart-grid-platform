@@ -7,13 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.infra.jms.messageprocessors;
 
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetHealthStatusResponseMessageProcessor extends AbstractDomainResponseMessageProcessor {
 
     protected GetHealthStatusResponseMessageProcessor() {
-        super(DeviceFunction.GET_HEALTH_STATUS);
+        super(MessageType.GET_HEALTH_STATUS);
     }
 }

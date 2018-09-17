@@ -12,18 +12,17 @@ import java.util.List;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
+import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
+import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
+import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 @Component("oslpEventNotificationMessageProcessor")
 public class EventNotificationMessageProcessor extends ProtocolRequestMessageProcessor {
@@ -34,7 +33,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
     private EventNotificationMessageService eventNotificationMessageService;
 
     protected EventNotificationMessageProcessor() {
-        super(DeviceFunction.ADD_EVENT_NOTIFICATION);
+        super(MessageType.ADD_EVENT_NOTIFICATION);
     }
 
     @Override
