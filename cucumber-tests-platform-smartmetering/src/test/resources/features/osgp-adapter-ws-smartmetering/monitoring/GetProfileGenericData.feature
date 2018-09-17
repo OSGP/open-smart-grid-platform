@@ -1,76 +1,15 @@
-@SmartMetering @Platform
-Feature: SmartMetering Monitoring
+@SmartMetering @Platform @SmartMeteringMonitoring
+Feature: SmartMetering Monitoring - Profile Generic Data
   As a grid operator
-  I want to be able to perform SmartMeteringMonitoring operations on a device
-  In order to ...
+  I want to be able to get profile generic data from a device
+  So I am able to retrieve profile data regardless if a web service exists that
+  offers more specific support or not
 
-  Background: 
+  Background:
     Given a dlms device
       | DeviceIdentification     | TEST1024000000001 |
       | DeviceType               | SMART_METER_E     |
       | SelectiveAccessSupported | true              |
-    And a dlms device
-      | DeviceIdentification        | TESTG102400000001 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     |                 1 |
-
-  Scenario: Get the actual meter reads from a device
-    When the get actual meter reads request is received
-      | DeviceIdentification | TEST1024000000001 |
-    Then the actual meter reads result should be returned
-      | DeviceIdentification | TEST1024000000001 |
-
-  Scenario: Get the actual meter reads from a gas device
-    When the get actual meter reads gas request is received
-      | DeviceIdentification | TESTG102400000001 |
-    Then the actual meter reads gas result should be returned
-      | DeviceIdentification | TESTG102400000001 |
-
-  Scenario Outline: Get the periodic meter reads from a device
-    When the get "<PeriodType>" meter reads request is received
-      | DeviceIdentification | TEST1024000000001 |
-      | PeriodType           | <PeriodType>      |
-      | BeginDate            | <BeginDate>       |
-      | EndDate              | <EndDate>         |
-    Then the "<PeriodType>" meter reads result should be returned
-      | DeviceIdentification | TEST1024000000001 |
-
-    Examples: 
-      | PeriodType | BeginDate                | EndDate                  |
-      | INTERVAL   | 2015-09-01T00:00:00.000Z | 2015-10-01T00:00:00.000Z |
-      | MONTHLY    | 2016-01-01T00:00:00.000Z | 2016-09-01T00:00:00.000Z |
-
-  Scenario Outline: Get the meter reads from a gas device
-    When the get "<PeriodType>" meter reads gas request is received
-      | DeviceIdentification | TESTG102400000001 |
-      | PeriodType           | <PeriodType>      |
-      | BeginDate            | <BeginDate>       |
-      | EndDate              | <EndDate>         |
-    Then the "<PeriodType>" meter reads gas result should be returned
-      | DeviceIdentification | TESTG102400000001 |
-
-    Examples: 
-      | PeriodType | BeginDate                | EndDate                  |
-      | INTERVAL   | 2015-09-01T00:00:00.000Z | 2015-10-01T00:00:00.000Z |
-      | MONTHLY    | 2016-01-01T00:00:00.000Z | 2016-09-01T00:00:00.000Z |
-
-  Scenario: Read the alarm register from a device
-    Given device "TEST1024000000001" has some alarms registered
-    When the get read alarm register request is received
-      | DeviceIdentification | TEST1024000000001 |
-    Then the alarm register should be returned
-      | DeviceIdentification | TEST1024000000001 |
-
-  Scenario: Do not refuse an operation with an inactive device
-    Given a dlms device
-      | DeviceIdentification  | E9998000014123414 |
-      | DeviceType            | SMART_METER_E     |
-      | DeviceLifecycleStatus | NEW_IN_INVENTORY  |
-    When the get actual meter reads request is received
-      | DeviceIdentification | E9998000014123414 |
-    Then the actual meter reads result should be returned
-      | DeviceIdentification | E9998000014123414 |
 
   Scenario: Get the profile generic data from a device
     When the get profile generic data request is received
@@ -178,10 +117,3 @@ Feature: SmartMetering Monitoring
       | CaptureObject_DataIndex_3      |                 0 |
       | CaptureObject_Unit_3           | KWH               |
       | NumberOfProfileEntries         |                 7 |
-
-  Scenario: Clear alarm register
-    When the Clear Alarm Code request is received
-      | DeviceIdentification | TEST1024000000001 |
-    Then the Clear Alarm Code response should be returned
-      | DeviceIdentification | TEST1024000000001 |
-      | Result               | OK                |

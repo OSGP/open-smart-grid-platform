@@ -1,18 +1,14 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @SmartMeteringAdHoc
 Feature: SmartMetering AdHoc
   As a grid operator
-  I want to be able to perform SmartMeteringAdhoc operations on a device
+  I want to be able to get a specific attribute value from a device
+  So I can examine what the device holds for a particular attribute, even if
+  there is no supported to retrieve the value with a more specific operation
 
-  Background: 
+  Background:
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-
-  Scenario: Get All Attribute Values Request
-    When the get all attribute values request is received
-      | DeviceIdentification | TEST1024000000001 |
-    Then a get all attribute values response should be returned
-      | Result | OK |
 
   Scenario: Retrieve COSEM Logical Device Name in a bundle
     When the get specific attribute value request is received
@@ -58,15 +54,3 @@ Feature: SmartMetering AdHoc
     Then a get specific attribute value response should be returned
       | Result       | OK            |
       | ResponsePart | bytes[65, 66] |
-
-  Scenario: Retrieve the association LN objectlist from a device
-    When receiving a retrieve association LN objectlist request
-      | DeviceIdentification | TEST1024000000001 |
-    Then the objectlist should be returned
-      | DeviceIdentification | TEST1024000000001 |
-
-  Scenario: Retrieve SynchronizeTime result from a device
-    When receiving a get synchronize time request
-      | DeviceIdentification | TEST1024000000001 |
-    Then the date and time is synchronized on the device
-      | DeviceIdentification | TEST1024000000001 |
