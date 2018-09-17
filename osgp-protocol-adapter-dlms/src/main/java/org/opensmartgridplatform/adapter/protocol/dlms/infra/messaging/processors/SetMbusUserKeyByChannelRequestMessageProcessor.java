@@ -13,12 +13,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing Set M-Bus User Key By Channel request messages
@@ -30,7 +29,7 @@ public class SetMbusUserKeyByChannelRequestMessageProcessor extends DeviceReques
     private ConfigurationService configurationService;
 
     public SetMbusUserKeyByChannelRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_MBUS_USER_KEY_BY_CHANNEL);
+        super(MessageType.SET_MBUS_USER_KEY_BY_CHANNEL);
     }
 
     @Override

@@ -14,12 +14,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -28,7 +27,7 @@ public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequ
     private AdhocService adhocService;
 
     protected GetSpecificAttributeValueRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_SPECIFIC_ATTRIBUTE_VALUE);
+        super(MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE);
     }
 
     @Override

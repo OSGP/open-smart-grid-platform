@@ -12,12 +12,11 @@ import java.io.Serializable;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing add meter request messages
@@ -29,7 +28,7 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     private InstallationService installationService;
 
     public AddMeterRequestMessageProcessor() {
-        super(DeviceRequestMessageType.ADD_METER);
+        super(MessageType.ADD_METER);
     }
 
     @Override

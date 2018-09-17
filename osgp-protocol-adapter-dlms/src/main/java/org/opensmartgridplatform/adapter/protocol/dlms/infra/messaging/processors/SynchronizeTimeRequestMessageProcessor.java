@@ -14,11 +14,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 
 /**
  * Class for processing Synchronize Time Request messages
@@ -30,7 +29,7 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
     private AdhocService adhocService;
 
     public SynchronizeTimeRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SYNCHRONIZE_TIME);
+        super(MessageType.SYNCHRONIZE_TIME);
     }
 
     @Override

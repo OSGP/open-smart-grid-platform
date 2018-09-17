@@ -12,12 +12,11 @@ import java.io.Serializable;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class SetDeviceCommunicationSettingsRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -26,7 +25,7 @@ public class SetDeviceCommunicationSettingsRequestMessageProcessor extends Devic
     private ManagementService managementService;
 
     public SetDeviceCommunicationSettingsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_DEVICE_COMMUNICATION_SETTINGS);
+        super(MessageType.SET_DEVICE_COMMUNICATION_SETTINGS);
     }
 
     @Override

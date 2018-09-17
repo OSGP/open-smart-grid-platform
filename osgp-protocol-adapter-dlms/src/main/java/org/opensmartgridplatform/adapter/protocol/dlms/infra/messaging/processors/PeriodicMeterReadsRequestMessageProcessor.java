@@ -13,12 +13,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Moni
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing Periodic Meter Request messages
@@ -30,7 +29,7 @@ public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMess
     private MonitoringService monitoringService;
 
     public PeriodicMeterReadsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_PERIODIC_METER_DATA);
+        super(MessageType.REQUEST_PERIODIC_METER_DATA);
     }
 
     @Override

@@ -20,18 +20,17 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsConnectionMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -54,32 +53,32 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     @Autowired
     protected DomainHelperService domainHelperService;
 
-    protected final OsgpRequestMessageType osgpRequestMessageType;
+    protected final MessageType messageType;
 
     /**
      * Each MessageProcessor should register it's MessageType at construction.
      *
-     * @param osgpRequestMessageType
-     *            The MessageType the MessageProcessor implementation can process.
+     * @param messageType
+     *            The MessageType the MessageProcessor implementation can
+     *            process.
      */
-    protected OsgpResponseMessageProcessor(final OsgpRequestMessageType osgpRequestMessageType) {
-        this.osgpRequestMessageType = osgpRequestMessageType;
+    protected OsgpResponseMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
     }
 
     /**
-     * Initialization function executed after dependency injection has finished. The
-     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
-     * key for the HashMap is the integer value of the enumeration member.
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the HashMap of
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        this.osgpResponseMessageProcessorMap.addMessageProcessor(this.osgpRequestMessageType.ordinal(),
-                this.osgpRequestMessageType.name(), this);
+        this.osgpResponseMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing {} request message", this.osgpRequestMessageType);
+        LOGGER.debug("Processing {} request message", this.messageType);
         MessageMetadata messageMetadata = null;
         DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
@@ -102,7 +101,7 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
             // Return original request + exception
-            LOGGER.error("Unexpected exception during {}", this.osgpRequestMessageType.name(), exception);
+            LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, message.getObject());

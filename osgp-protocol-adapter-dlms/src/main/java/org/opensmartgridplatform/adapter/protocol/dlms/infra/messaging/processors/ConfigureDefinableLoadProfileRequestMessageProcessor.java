@@ -13,12 +13,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ConfigureDefinableLoadProfileRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -27,7 +26,7 @@ public class ConfigureDefinableLoadProfileRequestMessageProcessor extends Device
     private ConfigurationService configurationService;
 
     public ConfigureDefinableLoadProfileRequestMessageProcessor() {
-        super(DeviceRequestMessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE);
+        super(MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE);
     }
 
     @Override

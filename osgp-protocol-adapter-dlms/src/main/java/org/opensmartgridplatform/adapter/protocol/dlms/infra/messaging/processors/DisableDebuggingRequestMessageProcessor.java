@@ -12,11 +12,10 @@ import java.io.Serializable;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 @Component
 public class DisableDebuggingRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -25,7 +24,7 @@ public class DisableDebuggingRequestMessageProcessor extends DeviceRequestMessag
     private ManagementService managementService;
 
     public DisableDebuggingRequestMessageProcessor() {
-        super(DeviceRequestMessageType.DISABLE_DEBUGGING);
+        super(MessageType.DISABLE_DEBUGGING);
     }
 
     @Override

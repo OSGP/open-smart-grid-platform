@@ -17,18 +17,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Firm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 @Component
 public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -45,12 +43,12 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
     private OsgpRequestMessageSender osgpRequestMessageSender;
 
     protected UpdateFirmwareRequestMessageProcessor() {
-        super(DeviceRequestMessageType.UPDATE_FIRMWARE);
+        super(MessageType.UPDATE_FIRMWARE);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing {} request message", this.deviceRequestMessageType);
+        LOGGER.debug("Processing {} request message", this.messageType);
         MessageMetadata messageMetadata = null;
 
         try {
@@ -106,7 +104,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
                     response);
         } catch (final Exception exception) {
             // Return original request + exception
-            LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
+            LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, firmwareIdentification);
@@ -118,7 +116,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
     private void sendGetFirmwareFileRequest(final MessageMetadata messageMetadata,
             final String firmwareIdentification) {
         final RequestMessage message = this.createRequestMessage(messageMetadata, firmwareIdentification);
-        this.osgpRequestMessageSender.send(message, OsgpRequestMessageType.GET_FIRMWARE_FILE.name(), messageMetadata);
+        this.osgpRequestMessageSender.send(message, MessageType.GET_FIRMWARE_FILE.name(), messageMetadata);
     }
 
     private RequestMessage createRequestMessage(final MessageMetadata messageMetadata, final Serializable messageData) {

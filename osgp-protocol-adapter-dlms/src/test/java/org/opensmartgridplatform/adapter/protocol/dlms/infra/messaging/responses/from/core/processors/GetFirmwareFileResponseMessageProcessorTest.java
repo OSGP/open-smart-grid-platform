@@ -35,11 +35,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRes
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -90,8 +90,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         // arrange
         final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
-        final ObjectMessage message = new ObjectMessageBuilder()
-                .withMessageType(OsgpRequestMessageType.GET_FIRMWARE_FILE.name()).withObject(responseMessage).build();
+        final ObjectMessage message = new ObjectMessageBuilder().withMessageType(MessageType.GET_FIRMWARE_FILE.name())
+                .withObject(responseMessage).build();
         final UpdateFirmwareResponseDto updateFirmwareResponseDto = new UpdateFirmwareResponseDto(
                 firmwareFileDto.getFirmwareIdentification(), new LinkedList<>());
 

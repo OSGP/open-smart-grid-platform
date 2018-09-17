@@ -13,12 +13,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing set push setup sms request messages
@@ -30,7 +29,7 @@ public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessage
     private ConfigurationService configurationService;
 
     public SetPushSetupSmsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_PUSH_SETUP_SMS);
+        super(MessageType.SET_PUSH_SETUP_SMS);
     }
 
     @Override
