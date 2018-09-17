@@ -9,14 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.servi
 
 import java.io.Serializable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessorMap;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.SigningServerRequestMessageSender;
@@ -26,9 +19,15 @@ import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OslpSigningService {
@@ -138,13 +137,11 @@ public class OslpSigningService {
         LOGGER.debug("unsignedOslpEnvelopeDto.isScheduled() : {}", unsignedOslpEnvelopeDto.isScheduled());
         LOGGER.debug(LINES);
 
-        // Try to convert message type to DeviceRequestMessageType member.
-        final DeviceRequestMessageType deviceRequestMessageType = DeviceRequestMessageType
-                .valueOf(unsignedOslpEnvelopeDto.getMessageType());
+        final MessageType messageType = MessageType.valueOf(unsignedOslpEnvelopeDto.getMessageType());
 
         // Handle message for message type.
         final OslpEnvelopeProcessor messageProcessor = this.deviceRequestMessageProcessorMap
-                .getOslpEnvelopeProcessor(deviceRequestMessageType);
+                .getOslpEnvelopeProcessor(messageType);
         if (messageProcessor == null) {
             LOGGER.error("No message processor for messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
             return;

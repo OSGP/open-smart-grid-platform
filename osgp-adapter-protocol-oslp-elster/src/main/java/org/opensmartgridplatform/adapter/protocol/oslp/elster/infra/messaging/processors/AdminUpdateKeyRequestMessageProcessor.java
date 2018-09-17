@@ -10,15 +10,14 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.p
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
-import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 /**
  * Class for processing common update key request messages
@@ -37,7 +36,7 @@ public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageP
     private DeviceManagementService deviceManagementService;
 
     public AdminUpdateKeyRequestMessageProcessor() {
-        super(DeviceRequestMessageType.UPDATE_KEY);
+        super(MessageType.UPDATE_KEY);
     }
 
     @Override
