@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.shared.infra.jms;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import javax.jms.JMSException;
@@ -23,7 +23,7 @@ public abstract class BaseMessageProcessorMap implements MessageProcessorMap {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseMessageProcessorMap.class);
 
-    protected Map<Integer, MessageProcessor> messageProcessors = new HashMap<>();
+    protected Map<MessageType, MessageProcessor> messageProcessors = new EnumMap<>(MessageType.class);
 
     protected final String messageProcessorMapName;
 
@@ -32,19 +32,49 @@ public abstract class BaseMessageProcessorMap implements MessageProcessorMap {
     }
 
     @Override
-    public void setMessageProcessors(final Map<Integer, MessageProcessor> messageProcessors) {
-        this.messageProcessors = messageProcessors;
+    public void setMessageProcessors(final Map<MessageType, MessageProcessor> messageProcessors) {
+        LOGGER.info("Setting MessageProcessors in {} for MessageTypes: {}", this.messageProcessorMapName,
+                messageProcessors.keySet());
+        this.messageProcessors.clear();
+        this.messageProcessors.putAll(messageProcessors);
     }
 
     @Override
-    public void addMessageProcessor(final Integer key, final String messageType, final MessageProcessor messageProcessor) {
-
-        LOGGER.info("Putting MessageProcessor in {} with key: {} for MessageType: {}", this.messageProcessorMapName,
-                key, messageType);
-
-        this.messageProcessors.put(key, messageProcessor);
+    public void addMessageProcessor(final MessageType messageType, final MessageProcessor messageProcessor) {
+        LOGGER.info("Putting MessageProcessor in {} for MessageType: {}", this.messageProcessorMapName, messageType);
+        this.messageProcessors.put(messageType, messageProcessor);
     }
 
     @Override
-    public abstract MessageProcessor getMessageProcessor(ObjectMessage message) throws JMSException;
+    public MessageProcessor getMessageProcessor(final ObjectMessage message) throws JMSException {
+        return this.getMessageProcessor(this.getJmsType(message));
+    }
+
+    private MessageProcessor getMessageProcessor(final String jmsType) throws JMSException {
+        final MessageProcessor messageProcessor = this.messageProcessors.get(this.getMessageType(jmsType));
+        if (messageProcessor == null) {
+            LOGGER.error("No message processor found for message type: {}", jmsType);
+            throw new JMSException("Message processor not configured");
+        }
+        return messageProcessor;
+    }
+
+    private String getJmsType(final ObjectMessage message) throws JMSException {
+        final String jmsType = message.getJMSType();
+        if (jmsType == null) {
+            LOGGER.error("Message type not set for message with JMS correlation ID: {}", message.getJMSCorrelationID());
+            throw new JMSException("Message type not set");
+        }
+        return jmsType;
+    }
+
+    private MessageType getMessageType(final String jmsType) throws JMSException {
+        try {
+            return MessageType.valueOf(jmsType);
+        } catch (final IllegalArgumentException e) {
+            LOGGER.error("Unknown message type: {}", jmsType);
+            throw new JMSException("Unknown message type");
+        }
+    }
+
 }
