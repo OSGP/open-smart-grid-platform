@@ -76,7 +76,6 @@ public class PrometheusMetricsServer {
     @Autowired
     public PrometheusMetricsServer(final PrometheusMeterRegistry prometheusMeterRegistry) {
         this.prometheusMeterRegistry = prometheusMeterRegistry;
-        prometheusMeterRegistry.config().commonTags("component", componentName);
     }
 
     @PostConstruct
@@ -84,6 +83,8 @@ public class PrometheusMetricsServer {
         requireNonNull(this.port, "Port not set");
         requireNonNull(this.path, "Path not set");
         requireNonNull(this.componentName, "Component name not set");
+
+        prometheusMeterRegistry.config().commonTags("component", componentName);
         createHttpServer();
         LOGGER.debug("Prometheus metrics server created.");
 
