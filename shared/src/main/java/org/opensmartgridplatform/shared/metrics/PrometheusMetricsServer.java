@@ -83,6 +83,7 @@ public class PrometheusMetricsServer {
     public void start() throws IOException {
         requireNonNull(this.port, "Port not set");
         requireNonNull(this.path, "Path not set");
+        requireNonNull(this.componentName, "Component name not set");
         createHttpServer();
         LOGGER.debug("Prometheus metrics server created.");
 
