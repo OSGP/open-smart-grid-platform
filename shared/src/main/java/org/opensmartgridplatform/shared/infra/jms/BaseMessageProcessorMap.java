@@ -53,7 +53,8 @@ public abstract class BaseMessageProcessorMap implements MessageProcessorMap {
     private MessageProcessor getMessageProcessor(final String jmsType) throws JMSException {
         final MessageProcessor messageProcessor = this.messageProcessors.get(this.getMessageType(jmsType));
         if (messageProcessor == null) {
-            LOGGER.error("No message processor found for message type: {}", jmsType);
+            LOGGER.error("No message processor found in {} for message type: {}", this.messageProcessorMapName,
+                    jmsType);
             throw new JMSException("Message processor not configured");
         }
         return messageProcessor;
@@ -62,7 +63,8 @@ public abstract class BaseMessageProcessorMap implements MessageProcessorMap {
     private String getJmsType(final ObjectMessage message) throws JMSException {
         final String jmsType = message.getJMSType();
         if (jmsType == null) {
-            LOGGER.error("Message type not set for message with JMS correlation ID: {}", message.getJMSCorrelationID());
+            LOGGER.error("Message type not set for message with JMS correlation ID: {} in {}",
+                    message.getJMSCorrelationID(), this.messageProcessorMapName);
             throw new JMSException("Message type not set");
         }
         return jmsType;
@@ -72,7 +74,7 @@ public abstract class BaseMessageProcessorMap implements MessageProcessorMap {
         try {
             return MessageType.valueOf(jmsType);
         } catch (final IllegalArgumentException e) {
-            LOGGER.error("Unknown message type: {}", jmsType);
+            LOGGER.error("Unknown message type: {} in {}", jmsType, this.messageProcessorMapName);
             throw new JMSException("Unknown message type");
         }
     }
