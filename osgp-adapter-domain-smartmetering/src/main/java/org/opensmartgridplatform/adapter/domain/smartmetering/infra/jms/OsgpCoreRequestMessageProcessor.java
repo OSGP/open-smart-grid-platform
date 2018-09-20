@@ -14,10 +14,12 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -49,10 +51,11 @@ public abstract class OsgpCoreRequestMessageProcessor extends AbstractRequestMes
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     /**
-     * The hash map of message processor instances.
+     * The map of message processor instances.
      */
+    @Qualifier("domainSmartMeteringOsgpCoreRequestMessageProcessorMap")
     @Autowired
-    protected OsgpCoreRequestMessageProcessorMap osgpCoreRequestMessageProcessorMap;
+    protected MessageProcessorMap osgpCoreRequestMessageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.

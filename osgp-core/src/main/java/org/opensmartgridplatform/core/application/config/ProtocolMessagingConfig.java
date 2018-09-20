@@ -11,6 +11,16 @@ import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.opensmartgridplatform.core.infra.jms.JmsTemplateSettings;
+import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolRequestMessageJmsTemplateFactory;
+import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolResponseMessageListenerContainerFactory;
+import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageListenerContainerFactory;
+import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolResponseMessageJmsTemplateFactory;
+import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
+import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +28,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-
-import org.opensmartgridplatform.core.infra.jms.JmsTemplateSettings;
-import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolRequestMessageJmsTemplateFactory;
-import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolResponseMessageListenerContainerFactory;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageListenerContainerFactory;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessorMap;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolResponseMessageJmsTemplateFactory;
-import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
-import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySource("classpath:osgp-core.properties")
@@ -73,9 +73,11 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolMessagingConfig.class);
 
-    @Autowired
+    @Bean
     @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap")
-    private ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
+    public MessageProcessorMap protocolRequestMessageProcessorMap() {
+        return new BaseMessageProcessorMap("ProtocolRequestMessageProcessorMap");
+    }
 
     @Bean(destroyMethod = "stop")
     public PooledConnectionFactory protocolPooledConnectionFactory() {
@@ -168,10 +170,10 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     // beans used for receiving incoming protocol request messages
 
     @Bean
-    public ProtocolRequestMessageListenerContainerFactory protocolRequestMessageListenerContainer() {
+    public ProtocolRequestMessageListenerContainerFactory protocolRequestMessageListenerContainer(
+            @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         final ProtocolRequestMessageListenerContainerFactory messageListenerContainer = new ProtocolRequestMessageListenerContainerFactory(
-                this.protocolInfoRepository.findAll(), this.domainInfoRepository.findAll(),
-                this.protocolRequestMessageProcessorMap);
+                this.protocolInfoRepository.findAll(), this.domainInfoRepository.findAll(), messageProcessorMap);
         messageListenerContainer.setConnectionFactory(this.protocolPooledConnectionFactory());
         messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_REQUESTS_CONCURRENT_CONSUMERS)));

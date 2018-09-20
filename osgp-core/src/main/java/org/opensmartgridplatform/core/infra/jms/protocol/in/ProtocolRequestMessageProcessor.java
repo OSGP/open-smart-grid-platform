@@ -10,8 +10,10 @@ package org.opensmartgridplatform.core.infra.jms.protocol.in;
 import javax.annotation.PostConstruct;
 
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -23,10 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class ProtocolRequestMessageProcessor implements MessageProcessor {
 
     /**
-     * The hash map of message processor instances.
+     * The map of message processor instances.
      */
+    @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap")
     @Autowired
-    protected ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
+    protected MessageProcessorMap protocolRequestMessageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.

@@ -19,6 +19,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -49,11 +50,11 @@ public abstract class AbstractOsgpCoreResponseMessageProcessor implements Messag
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     /**
-     * The hash map of message processor instances.
+     * The map of message processor instances.
      */
     @Autowired
     @Qualifier("domainDistributionAutomationOsgpCoreResponseMessageProcessorMap")
-    protected OsgpCoreResponseMessageProcessorMap osgpCoreResponseMessageProcessorMap;
+    protected MessageProcessorMap osgpCoreResponseMessageProcessorMap;
 
     /**
      * The message types that a message processor implementation can handle.

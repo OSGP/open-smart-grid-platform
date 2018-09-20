@@ -13,14 +13,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.activemq.command.ActiveMQQueue;
+import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
+import org.opensmartgridplatform.domain.core.entities.DomainInfo;
+import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
-import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
-import org.opensmartgridplatform.domain.core.entities.DomainInfo;
-import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 
 public class ProtocolRequestMessageListenerContainerFactory extends DefaultMessageListenerContainer {
 
@@ -33,13 +33,12 @@ public class ProtocolRequestMessageListenerContainerFactory extends DefaultMessa
 
     private List<DomainInfo> domainInfos;
 
-    private ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
+    private MessageProcessorMap protocolRequestMessageProcessorMap;
 
     private Map<String, DefaultMessageListenerContainer> containers = new HashMap<>();
 
     public ProtocolRequestMessageListenerContainerFactory(final List<ProtocolInfo> protocolInfos,
-            final List<DomainInfo> domainInfos,
-            final ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap) {
+            final List<DomainInfo> domainInfos, final MessageProcessorMap protocolRequestMessageProcessorMap) {
         this.protocolInfos = protocolInfos;
         this.domainInfos = domainInfos;
         this.protocolRequestMessageProcessorMap = protocolRequestMessageProcessorMap;

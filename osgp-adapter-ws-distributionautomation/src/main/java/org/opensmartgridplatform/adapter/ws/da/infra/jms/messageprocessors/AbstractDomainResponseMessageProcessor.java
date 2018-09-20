@@ -19,11 +19,13 @@ import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -41,10 +43,11 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDomainResponseMessageProcessor.class);
 
     /**
-     * The hash map of message processor instances.
+     * The map of message processor instances.
      */
+    @Qualifier("domainDistributionAutomationResponseMessageProcessorMap")
     @Autowired
-    protected DomainResponseMessageProcessorMap domainResponseMessageProcessorMap;
+    protected MessageProcessorMap domainResponseMessageProcessorMap;
     /**
      * The message type that a message processor implementation can handle.
      */

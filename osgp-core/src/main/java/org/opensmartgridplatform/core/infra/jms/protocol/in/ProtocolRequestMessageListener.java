@@ -14,14 +14,14 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // This class should fetch request messages from protocol incoming requests queue.
 public class ProtocolRequestMessageListener implements MessageListener {
@@ -30,11 +30,10 @@ public class ProtocolRequestMessageListener implements MessageListener {
 
     private DomainRequestService domainRequestService;
     private List<DomainInfo> domainInfos;
-    private ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
+    private MessageProcessorMap protocolRequestMessageProcessorMap;
 
     public ProtocolRequestMessageListener(final DomainRequestService domainRequestService,
-            final List<DomainInfo> domainInfos,
-            final ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap) {
+            final List<DomainInfo> domainInfos, final MessageProcessorMap protocolRequestMessageProcessorMap) {
         this.domainRequestService = domainRequestService;
         this.domainInfos = domainInfos;
         this.protocolRequestMessageProcessorMap = protocolRequestMessageProcessorMap;

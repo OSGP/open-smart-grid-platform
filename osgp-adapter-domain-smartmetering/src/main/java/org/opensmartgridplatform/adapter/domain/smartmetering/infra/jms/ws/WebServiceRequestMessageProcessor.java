@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.Abstract
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,10 +54,11 @@ MessageProcessor {
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     /**
-     * The hash map of message processor instances.
+     * The map of message processor instances.
      */
+    @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap")
     @Autowired
-    protected WebServiceRequestMessageProcessorMap webServiceRequestMessageProcessorMap;
+    protected MessageProcessorMap webServiceRequestMessageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.

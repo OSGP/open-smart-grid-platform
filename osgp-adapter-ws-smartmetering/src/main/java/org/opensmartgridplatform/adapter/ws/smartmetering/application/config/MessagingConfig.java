@@ -7,13 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageListener;
@@ -21,15 +14,20 @@ import org.opensmartgridplatform.shared.application.config.AbstractMessagingConf
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 @Configuration
 @PropertySource(value = "classpath:osgp-adapter-ws-smartmetering.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
 public class MessagingConfig extends AbstractMessagingConfig {
-
-    @Autowired
-    public SmartMeteringResponseMessageListener smartMeteringResponseMessageListener;
 
     @Bean
     public JmsConfiguration requestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
@@ -62,6 +60,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public DefaultMessageListenerContainer smartMeteringResponseMessageListenerContainer(
             final JmsConfiguration responseJmsConfiguration) {
         return responseJmsConfiguration.getMessageListenerContainer();
+    }
+
+    @Bean
+    @Qualifier("domainSmartMeteringResponseMessageProcessorMap")
+    public MessageProcessorMap smartMeteringResponseMessageProcessorMap() {
+        return new BaseMessageProcessorMap("domainResponseMessageProcessorMap");
     }
 
     @Bean

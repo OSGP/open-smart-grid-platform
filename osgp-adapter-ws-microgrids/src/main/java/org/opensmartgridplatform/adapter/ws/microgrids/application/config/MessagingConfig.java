@@ -7,13 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.microgrids.application.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageSender;
 import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageListener;
@@ -21,6 +14,15 @@ import org.opensmartgridplatform.shared.application.config.AbstractMessagingConf
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
@@ -66,6 +68,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public MicrogridsResponseMessageListener microgridsResponseMessageListener() {
         return new MicrogridsResponseMessageListener();
+    }
+
+    @Bean
+    @Qualifier("domainMicrogridsResponseMessageProcessorMap")
+    public MessageProcessorMap microgridsResponseMessageProcessorMap() {
+        return new BaseMessageProcessorMap("domainResponseMessageProcessorMap");
     }
 
     // === JMS SETTINGS: MICROGRIDS LOGGING ===

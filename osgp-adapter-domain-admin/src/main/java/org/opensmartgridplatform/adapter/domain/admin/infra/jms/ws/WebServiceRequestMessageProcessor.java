@@ -14,6 +14,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -55,8 +56,9 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
     /**
      * The hash map of message processor instances.
      */
+    @Qualifier("domainAdminWebServiceRequestMessageProcessorMap")
     @Autowired
-    protected WebServiceRequestMessageProcessorMap webServiceRequestMessageProcessorMap;
+    protected MessageProcessorMap webServiceRequestMessageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.
