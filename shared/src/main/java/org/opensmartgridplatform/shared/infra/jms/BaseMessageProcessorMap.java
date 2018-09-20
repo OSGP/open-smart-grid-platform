@@ -16,7 +16,7 @@ import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class BaseMessageProcessorMap implements MessageProcessorMap {
+public class BaseMessageProcessorMap implements MessageProcessorMap {
 
     /**
      * Logger for this class
