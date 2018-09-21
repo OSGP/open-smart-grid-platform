@@ -40,19 +40,21 @@ public class ProtocolInfo extends AbstractEntity {
     @Column(nullable = false, length = 255)
     private String outgoingProtocolResponsesQueue;
 
-    public ProtocolInfo() {
+    @Column
+    private boolean parallelRequestsAllowed;
+
+    protected ProtocolInfo() {
         // Default constructor
     }
 
-    public ProtocolInfo(final String protocol, final String protocolVersion,
-            final String outgoingProtocolRequestsQueue, final String incomingProtocolResponsesQueue,
-            final String incomingProtocolRequestsQueue, final String outgoingProtocolResponsesQueue) {
-        this.protocol = protocol;
-        this.protocolVersion = protocolVersion;
-        this.outgoingProtocolRequestsQueue = outgoingProtocolRequestsQueue;
-        this.incomingProtocolResponsesQueue = incomingProtocolResponsesQueue;
-        this.incomingProtocolRequestsQueue = incomingProtocolRequestsQueue;
-        this.outgoingProtocolResponsesQueue = outgoingProtocolResponsesQueue;
+    private ProtocolInfo(final Builder builder) {
+        this.protocol = builder.protocol;
+        this.protocolVersion = builder.protocolVersion;
+        this.outgoingProtocolRequestsQueue = builder.outgoingProtocolRequestsQueue;
+        this.incomingProtocolResponsesQueue = builder.incomingProtocolResponsesQueue;
+        this.incomingProtocolRequestsQueue = builder.incomingProtocolRequestsQueue;
+        this.outgoingProtocolResponsesQueue = builder.outgoingProtocolResponsesQueue;
+        this.parallelRequestsAllowed = builder.parallelRequestsAllowed;
     }
 
     public static String getKey(final String protocol, final String protocolVersion) {
@@ -109,5 +111,62 @@ public class ProtocolInfo extends AbstractEntity {
 
     public String getOutgoingProtocolResponsesQueue() {
         return this.outgoingProtocolResponsesQueue;
+    }
+
+    public boolean isParallelRequestsAllowed() {
+        return this.parallelRequestsAllowed;
+    }
+
+    private static class Builder {
+        private String protocol;
+        private String protocolVersion;
+        private String outgoingProtocolRequestsQueue;
+        private String incomingProtocolResponsesQueue;
+        private String incomingProtocolRequestsQueue;
+        private String outgoingProtocolResponsesQueue;
+        private Boolean parallelRequestsAllowed;
+
+        public Builder() {
+            // Default constructor.
+        }
+
+        public Builder withProtocol(final String protocol) {
+            this.protocol = protocol;
+            return this;
+        }
+
+        public Builder withProtocolVersion(final String protocolVersion) {
+            this.protocolVersion = protocolVersion;
+            return this;
+        }
+
+        public Builder withOutgoingProtocolRequestsQueue(final String queue) {
+            this.outgoingProtocolRequestsQueue = queue;
+            return this;
+        }
+
+        public Builder withIncomingProtocolResponsesQueue(final String queue) {
+            this.incomingProtocolResponsesQueue = queue;
+            return this;
+        }
+
+        public Builder withIncomingProtocolRequestsQueue(final String queue) {
+            this.incomingProtocolRequestsQueue = queue;
+            return this;
+        }
+
+        public Builder withOutgoingProtocolResponsesQueue(final String queue) {
+            this.outgoingProtocolResponsesQueue = queue;
+            return this;
+        }
+
+        public Builder withParallelRequestsAllowed(final boolean parallelRequestsAllowed) {
+            this.parallelRequestsAllowed = parallelRequestsAllowed;
+            return this;
+        }
+
+        public ProtocolInfo build() {
+            return new ProtocolInfo(this);
+        }
     }
 }

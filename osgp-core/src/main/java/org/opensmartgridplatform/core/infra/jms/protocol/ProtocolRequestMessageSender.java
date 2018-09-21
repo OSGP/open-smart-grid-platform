@@ -12,12 +12,6 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
-
 import org.opensmartgridplatform.core.domain.model.protocol.ProtocolRequestService;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessage;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessageSender;
@@ -25,6 +19,11 @@ import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 /**
  * This class sends protocol request messages to the requests queue for the
@@ -33,6 +32,9 @@ import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageSender.class);
+
+    @Autowired
+    private int messageGroupCacheSize;
 
     @Autowired
     private CoreLogItemRequestMessageSender coreLogItemRequestMessageSender;
@@ -59,10 +61,11 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
                 protocolInfo.getOutgoingProtocolRequestsQueue(), protocolInfo.getProtocol(),
                 protocolInfo.getProtocolVersion());
 
-        this.sendMessage(message, jmsTemplate);
+        this.sendMessage(message, protocolInfo, jmsTemplate);
     }
 
-    private void sendMessage(final ProtocolRequestMessage requestMessage, final JmsTemplate jmsTemplate) {
+    private void sendMessage(final ProtocolRequestMessage requestMessage, final ProtocolInfo protocolInfo,
+            final JmsTemplate jmsTemplate) {
         LOGGER.info("Sending request message to protocol requests queue");
 
         final Long originalTimeToLive = jmsTemplate.getTimeToLive();
@@ -76,6 +79,9 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
+
+                final String deviceIdentification = requestMessage.getDeviceIdentification();
+
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setJMSType(requestMessage.getMessageType());
@@ -84,12 +90,20 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
                 objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         requestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        requestMessage.getDeviceIdentification());
+                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, deviceIdentification);
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
                 objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
+
+                if (!protocolInfo.isParallelRequestsAllowed()) {
+                    final String messageGroupId = ProtocolRequestMessageSender.this
+                            .getMessageGroupId(deviceIdentification);
+                    LOGGER.debug("Setting message group property for device {} to: {}", deviceIdentification,
+                            messageGroupId);
+                    objectMessage.setStringProperty(Constants.MESSAGE_GROUP, messageGroupId);
+                }
+
                 return objectMessage;
             }
 
@@ -109,5 +123,9 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
         if (isCustomTimeToLiveSet) {
             jmsTemplate.setTimeToLive(originalTimeToLive);
         }
+    }
+
+    protected String getMessageGroupId(final String deviceIdentification) {
+        return String.valueOf(Math.abs(deviceIdentification.hashCode() % this.messageGroupCacheSize));
     }
 }
