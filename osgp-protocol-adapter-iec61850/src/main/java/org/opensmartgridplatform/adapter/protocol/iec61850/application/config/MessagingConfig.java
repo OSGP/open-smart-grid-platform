@@ -16,8 +16,11 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessag
 import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -65,6 +68,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public int maxRedeliveriesForIec61850Requests(final JmsConfiguration iec61850RequestJmsConfiguration) {
         return iec61850RequestJmsConfiguration.getRedeliveryPolicy().getMaximumRedeliveries();
+    }
+
+    @Bean
+    @Qualifier("iec61850DeviceRequestMessageProcessorMap")
+    public MessageProcessorMap microgridsResponseMessageProcessorMap() {
+        return new BaseMessageProcessorMap("DeviceRequestMessageProcessorMap");
     }
 
     // === JMS SETTINGS: IEC61850 RESPONSES ===

@@ -14,19 +14,18 @@ import org.openmuc.openiec61850.LogicalDevice;
 import org.openmuc.openiec61850.LogicalNode;
 import org.openmuc.openiec61850.ModelNode;
 import org.openmuc.openiec61850.ServerModel;
+import org.opensmartgridplatform.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
+import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.Function;
 import org.opensmartgridplatform.dto.da.GetDeviceModelResponseDto;
 import org.opensmartgridplatform.dto.da.iec61850.LogicalDeviceDto;
 import org.opensmartgridplatform.dto.da.iec61850.LogicalNodeDto;
 import org.opensmartgridplatform.dto.da.iec61850.PhysicalDeviceDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.da.rtu.DaDeviceRequest;
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DaRtuDeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.Function;
 
 /**
  * Class for processing distribution automation get device model request
@@ -35,7 +34,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 @Component("iec61850DistributionAutomationGetDeviceModelRequestMessageProcessor")
 public class DistributionAutomationGetDeviceModelRequestMessageProcessor extends DaRtuDeviceRequestMessageProcessor {
     public DistributionAutomationGetDeviceModelRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_DEVICE_MODEL);
+        super(MessageType.GET_DEVICE_MODEL);
     }
 
     @Override

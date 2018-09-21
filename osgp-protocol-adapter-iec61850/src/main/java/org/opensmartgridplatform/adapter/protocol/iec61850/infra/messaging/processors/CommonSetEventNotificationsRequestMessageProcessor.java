@@ -10,18 +10,17 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.proc
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetEventNotificationsDeviceRequest;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationMessageDataContainerDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing common set event notifications request messages
@@ -35,7 +34,7 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends SsldDevi
             .getLogger(CommonSetEventNotificationsRequestMessageProcessor.class);
 
     public CommonSetEventNotificationsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS);
+        super(MessageType.SET_EVENT_NOTIFICATIONS);
     }
 
     @Override

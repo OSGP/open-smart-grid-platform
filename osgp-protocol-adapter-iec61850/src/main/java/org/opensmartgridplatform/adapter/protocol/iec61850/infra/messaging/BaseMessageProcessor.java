@@ -10,12 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.support.JmsUtils;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
@@ -26,9 +20,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.support.JmsUtils;
 
 public abstract class BaseMessageProcessor implements MessageProcessor {
 
@@ -47,7 +47,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     @Qualifier("iec61850DeviceRequestMessageProcessorMap")
     protected MessageProcessorMap iec61850RequestMessageProcessorMap;
 
-    protected DeviceRequestMessageType deviceRequestMessageType;
+    protected MessageType messageType;
 
     protected void printDomainInfo(final RequestMessageData requestMessageData) {
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", requestMessageData.getMessageType(),

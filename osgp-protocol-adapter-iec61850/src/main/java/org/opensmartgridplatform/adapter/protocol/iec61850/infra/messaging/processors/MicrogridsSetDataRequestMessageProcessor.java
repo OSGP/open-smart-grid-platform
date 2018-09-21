@@ -10,18 +10,17 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.proc
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.SetDataRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing microgrids set data request messages
@@ -34,7 +33,7 @@ public class MicrogridsSetDataRequestMessageProcessor extends RtuDeviceRequestMe
     private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsSetDataRequestMessageProcessor.class);
 
     public MicrogridsSetDataRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_DATA);
+        super(MessageType.SET_DATA);
     }
 
     @Override

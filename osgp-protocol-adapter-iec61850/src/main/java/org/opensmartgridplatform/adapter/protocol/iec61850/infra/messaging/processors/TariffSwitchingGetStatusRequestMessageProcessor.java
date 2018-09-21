@@ -10,18 +10,17 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.proc
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing tariff switching get status request messages
@@ -34,7 +33,7 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends SsldDeviceR
     private static final Logger LOGGER = LoggerFactory.getLogger(TariffSwitchingGetStatusRequestMessageProcessor.class);
 
     public TariffSwitchingGetStatusRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_TARIFF_STATUS);
+        super(MessageType.GET_TARIFF_STATUS);
     }
 
     @Override
