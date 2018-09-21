@@ -14,9 +14,9 @@ import javax.jms.ObjectMessage;
 
 public interface MessageProcessorMap {
 
-    void setMessageProcessors(Map<Integer, MessageProcessor> messageProcessors);
+    void setMessageProcessors(Map<MessageType, MessageProcessor> messageProcessors);
 
-    void addMessageProcessor(Integer key, String messageType, MessageProcessor messageProcessor);
+    void addMessageProcessor(MessageType messageType, MessageProcessor messageProcessor);
 
     MessageProcessor getMessageProcessor(ObjectMessage message) throws JMSException;
 
