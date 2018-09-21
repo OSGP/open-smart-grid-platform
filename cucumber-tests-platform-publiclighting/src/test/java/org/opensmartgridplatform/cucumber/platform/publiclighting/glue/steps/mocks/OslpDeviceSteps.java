@@ -28,7 +28,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -72,6 +71,7 @@ import org.opensmartgridplatform.oslp.Oslp.UpdateFirmwareRequest;
 import org.opensmartgridplatform.oslp.Oslp.Weekday;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
@@ -94,19 +94,6 @@ public class OslpDeviceSteps {
     private MockOslpServer oslpMockServer;
 
     /**
-     * Verify that a get actual power usage OSLP message is sent to the device.
-     *
-     */
-    @Then("^a get actual power usage OSLP message is sent to the device$")
-    public void aGetActualPowerUsageOslpMessageIsSentToTheDevice() {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasGetActualPowerUsageRequest());
-
-        message.getGetActualPowerUsageRequest();
-    }
-
-    /**
      * Verify that a get configuration OSLP message is sent to the device.
      *
      * @param deviceIdentification
@@ -115,7 +102,7 @@ public class OslpDeviceSteps {
      */
     @Then("^a get configuration \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aGetConfigurationOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_CONFIGURATION);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_CONFIGURATION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetConfigurationRequest());
     }
@@ -129,7 +116,7 @@ public class OslpDeviceSteps {
      */
     @Then("^a get firmware version \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aGetFirmwareVersionOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_FIRMWARE_VERSION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetFirmwareVersionRequest());
 
@@ -145,7 +132,7 @@ public class OslpDeviceSteps {
     @Then("^a get power usage history \"([^\"]*)\" message is sent to the device$")
     public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final String protocol,
             final Map<String, String> expectedParameters) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_POWER_USAGE_HISTORY);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
 
@@ -181,7 +168,7 @@ public class OslpDeviceSteps {
      */
     @Then("^a get status \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aGetStatusOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_STATUS);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_STATUS);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetStatusRequest());
     }
@@ -195,7 +182,7 @@ public class OslpDeviceSteps {
      */
     @Then("^an update firmware \"([^\"]*)\" message is sent to the device$")
     public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.UPDATE_FIRMWARE);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasUpdateFirmwareRequest());
 
@@ -204,7 +191,7 @@ public class OslpDeviceSteps {
 
     @Then("^an update key \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void anUpdateKeyOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_KEY);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.UPDATE_KEY);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetDeviceVerificationKeyRequest());
     }
@@ -219,7 +206,7 @@ public class OslpDeviceSteps {
     @Then("^a resume schedule \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aResumeScheduleOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedRequest) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.RESUME_SCHEDULE);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.RESUME_SCHEDULE);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasResumeScheduleRequest());
 
@@ -243,7 +230,7 @@ public class OslpDeviceSteps {
     @Then("^a set configuration \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aSetConfigurationOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedResponseData) {
-        final Message receivedMessage = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_CONFIGURATION);
+        final Message receivedMessage = this.oslpMockServer.waitForRequest(MessageType.SET_CONFIGURATION);
         Assert.assertNotNull(receivedMessage);
         Assert.assertTrue(receivedMessage.hasSetConfigurationRequest());
 
@@ -402,7 +389,7 @@ public class OslpDeviceSteps {
     @Then("^a set event notification \"([^\"]*)\" message is sent to device \"([^\"]*)\"")
     public void aSetEventNotificationOslpMessageIsSentToDevice(final String protocol,
             final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_EVENT_NOTIFICATIONS);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetEventNotificationsRequest());
     }
@@ -415,7 +402,7 @@ public class OslpDeviceSteps {
      */
     @Then("^a set light \"([^\"]*)\" message with \"([^\"]*)\" lightvalues is sent to the device$")
     public void aSetLightOslpMessageWithLightValuesIsSentToTheDevice(final String protocol, final int nofLightValues) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_LIGHT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetLightRequest());
 
@@ -431,7 +418,7 @@ public class OslpDeviceSteps {
     @Then("^a set light \"([^\"]*)\" message with one light value is sent to the device$")
     public void aSetLightOSLPMessageWithOneLightvalueIsSentToTheDevice(final String protocol,
             final Map<String, String> expectedParameters) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_LIGHT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetLightRequest());
 
@@ -462,7 +449,7 @@ public class OslpDeviceSteps {
     @Then("^a set light schedule \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aSetLightScheduleOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedRequest) {
-        this.checkAndValidateRequest(DeviceRequestMessageType.SET_LIGHT_SCHEDULE, expectedRequest);
+        this.checkAndValidateRequest(MessageType.SET_LIGHT_SCHEDULE, expectedRequest);
     }
 
     /**
@@ -474,7 +461,7 @@ public class OslpDeviceSteps {
      */
     @Then("^a set reboot \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aSetRebootOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_REBOOT);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_REBOOT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetRebootRequest());
 
@@ -508,7 +495,7 @@ public class OslpDeviceSteps {
     @Then("^a set tariff schedule \"([^\"]*)\" message is sent to device \"(?:([^\"]*))\"$")
     public void aSetTariffScheduleOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedRequest) {
-        this.checkAndValidateRequest(DeviceRequestMessageType.SET_TARIFF_SCHEDULE, expectedRequest);
+        this.checkAndValidateRequest(MessageType.SET_TARIFF_SCHEDULE, expectedRequest);
     }
 
     /**
@@ -521,7 +508,7 @@ public class OslpDeviceSteps {
     @Then("^a set transition \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aSetTransitionOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedResult) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_TRANSITION);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.SET_TRANSITION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetTransitionRequest());
 
@@ -546,7 +533,7 @@ public class OslpDeviceSteps {
      */
     @Then("^a start device \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aStartDeviceOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.START_SELF_TEST);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.START_SELF_TEST);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasStartSelfTestRequest());
     }
@@ -560,7 +547,7 @@ public class OslpDeviceSteps {
      */
     @Then("^a stop device \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void aStopDeviceOSLPMessageIsSentToDevice(final String protocol, final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.STOP_SELF_TEST);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.STOP_SELF_TEST);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasStopSelfTestRequest());
     }
@@ -568,12 +555,11 @@ public class OslpDeviceSteps {
     /**
      * Setup method to get a status which should be returned by the mock.
      */
-    private void callMockSetScheduleResponse(final String result, final DeviceRequestMessageType type) {
+    private void callMockSetScheduleResponse(final String result, final MessageType type) {
         this.oslpMockServer.mockSetScheduleResponse(type, Enum.valueOf(Status.class, result));
     }
 
-    private void checkAndValidateRequest(final DeviceRequestMessageType type,
-            final Map<String, String> expectedRequest) {
+    private void checkAndValidateRequest(final MessageType type, final Map<String, String> expectedRequest) {
         final Message message = this.oslpMockServer.waitForRequest(type);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetScheduleRequest());
@@ -581,7 +567,7 @@ public class OslpDeviceSteps {
         final SetScheduleRequest request = message.getSetScheduleRequest();
 
         for (final Schedule schedule : request.getSchedulesList()) {
-            if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
+            if (type == MessageType.SET_LIGHT_SCHEDULE) {
                 Assert.assertEquals(
                         getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, Weekday.class),
                         schedule.getWeekday());
@@ -599,7 +585,7 @@ public class OslpDeviceSteps {
                 Assert.assertEquals(endDay, schedule.getEndDay());
             }
 
-            if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
+            if (type == MessageType.SET_LIGHT_SCHEDULE) {
                 Assert.assertEquals(
                         getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_ACTIONTIME, ActionTime.class),
                         schedule.getActionTime());
@@ -613,24 +599,23 @@ public class OslpDeviceSteps {
                 Assert.assertEquals(expectedTime, schedule.getTime());
             }
             final String scheduleLightValue = getString(expectedRequest,
-                    (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE)
-                            ? PlatformPubliclightingKeys.SCHEDULE_LIGHTVALUES
+                    (type == MessageType.SET_LIGHT_SCHEDULE) ? PlatformPubliclightingKeys.SCHEDULE_LIGHTVALUES
                             : PlatformPubliclightingKeys.SCHEDULE_TARIFFVALUES);
             final String[] scheduleLightValues = scheduleLightValue.split(";");
             Assert.assertEquals(scheduleLightValues.length, schedule.getValueCount());
             for (int i = 0; i < scheduleLightValues.length; i++) {
                 final Integer index = OslpUtils.byteStringToInteger(schedule.getValue(i).getIndex()),
                         dimValue = OslpUtils.byteStringToInteger(schedule.getValue(i).getDimValue());
-                if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
+                if (type == MessageType.SET_LIGHT_SCHEDULE) {
                     Assert.assertEquals(scheduleLightValues[i], String.format("%s,%s,%s", (index != null) ? index : "",
                             schedule.getValue(i).getOn(), (dimValue != null) ? dimValue : ""));
-                } else if (type == DeviceRequestMessageType.SET_TARIFF_SCHEDULE) {
+                } else if (type == MessageType.SET_TARIFF_SCHEDULE) {
                     Assert.assertEquals(scheduleLightValues[i],
                             String.format("%s,%s", (index != null) ? index : "", !schedule.getValue(i).getOn()));
                 }
             }
 
-            if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
+            if (type == MessageType.SET_LIGHT_SCHEDULE) {
                 Assert.assertEquals(
                         (!getString(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE).isEmpty())
                                 ? getEnum(expectedRequest, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE,
@@ -674,47 +659,6 @@ public class OslpDeviceSteps {
 
         // Save the OSLP response for later validation.
         ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.oslpMockServer.sendRequest(message));
-    }
-
-    /**
-     * Setup method to get an actual power usage which should be returned by the
-     * mock.
-     *
-     * @param responseData
-     *            The data to respond.
-     */
-    @Given("^the device returns a get actual power usage response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsAGetActualPowerUsageOverOSLP(final String result,
-            final Map<String, String> responseData) {
-
-        // Note: This piece of code has been made because there are multiple
-        // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.
-        MeterType meterType;
-        final String sMeterType = getString(responseData, PlatformPubliclightingKeys.METER_TYPE);
-        if (!sMeterType.contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
-            final String[] sMeterTypeArray = sMeterType.split("");
-            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
-        } else {
-            meterType = getEnum(responseData, PlatformPubliclightingKeys.METER_TYPE, MeterType.class);
-        }
-
-        this.oslpMockServer.mockGetActualPowerUsageResponse(Enum.valueOf(Status.class, result),
-                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER, null), meterType,
-                getDate(responseData, PlatformPubliclightingKeys.RECORD_TIME).toDateTime(DateTimeZone.UTC)
-                        .toString("yyyyMMddHHmmss"),
-                getInteger(responseData, PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY, null),
-                getInteger(responseData, PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS, null),
-                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_CURRENT1, null),
-                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_CURRENT2, null),
-                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_CURRENT3, null),
-                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_POWER1, null),
-                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_POWER2, null),
-                getInteger(responseData, PlatformPubliclightingKeys.ACTUAL_POWER3, null),
-                getInteger(responseData, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR1, null),
-                getInteger(responseData, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR2, null),
-                getInteger(responseData, PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR3, null),
-                getString(responseData, PlatformPubliclightingKeys.RELAY_DATA, null));
     }
 
     @Given("^the device returns a get configuration status over \"([^\"]*)\"$")
@@ -908,7 +852,7 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns a set light schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final String result, final String protocol) {
-        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
+        this.callMockSetScheduleResponse(result, MessageType.SET_LIGHT_SCHEDULE);
     }
 
     /**
@@ -926,7 +870,7 @@ public class OslpDeviceSteps {
 
     @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result, final String protocol) {
-        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
+        this.callMockSetScheduleResponse(result, MessageType.SET_TARIFF_SCHEDULE);
     }
 
     /**
@@ -1185,7 +1129,7 @@ public class OslpDeviceSteps {
     @Then("^an update firmware \"([^\"]*)\" message is sent to device \"([^\"]*)\"$")
     public void anUpdateFirmwareOSLPMessageIsSentToTheDevice(final String protocol, final String deviceIdentification,
             final Map<String, String> expectedParameters) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
+        final Message message = this.oslpMockServer.waitForRequest(MessageType.UPDATE_FIRMWARE);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasUpdateFirmwareRequest());
 
