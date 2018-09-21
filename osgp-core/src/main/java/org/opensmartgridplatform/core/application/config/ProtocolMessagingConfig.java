@@ -76,7 +76,7 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
 
-    @Autowired
+    @Bean
     @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap")
     public MessageProcessorMap protocolRequestMessageProcessorMap() {
         return new BaseMessageProcessorMap("ProtocolRequestMessageProcessorMap");
