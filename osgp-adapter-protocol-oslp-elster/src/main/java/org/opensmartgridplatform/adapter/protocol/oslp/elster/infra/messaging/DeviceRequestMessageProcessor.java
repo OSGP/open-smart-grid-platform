@@ -12,11 +12,6 @@ import java.io.Serializable;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.EmptyDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.DeviceService;
@@ -30,9 +25,14 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -58,19 +58,19 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     @Qualifier("protocolOslpDeviceRequestMessageProcessorMap")
     protected MessageProcessorMap oslpRequestMessageProcessorMap;
 
-    protected final DeviceRequestMessageType deviceRequestMessageType;
+    protected final MessageType messageType;
 
     protected static final String UNEXPECTED_EXCEPTION = "An unknown error occurred";
 
     /**
      * Each MessageProcessor should register it's MessageType at construction.
      *
-     * @param deviceRequestMessageType
+     * @param messageType
      *            The MessageType the MessageProcessor implementation can
      *            process.
      */
-    protected DeviceRequestMessageProcessor(final DeviceRequestMessageType deviceRequestMessageType) {
-        this.deviceRequestMessageType = deviceRequestMessageType;
+    protected DeviceRequestMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
     }
 
     protected void printDomainInfo(final String messageType, final String domain, final String domainVersion) {
@@ -80,13 +80,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     /**
      * Initialization function executed after dependency injection has finished.
      * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        this.oslpRequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
-                this.deviceRequestMessageType.name(), this);
+        this.oslpRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     protected void handleEmptyDeviceResponse(final DeviceResponse deviceResponse,

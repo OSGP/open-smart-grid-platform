@@ -13,17 +13,12 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.GetPowerUsageHistoryDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.GetPowerUsageHistoryDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.dto.valueobjects.HistoryTermTypeDto;
@@ -38,8 +33,12 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing public lighting get power usage history request messages
@@ -54,7 +53,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             .getLogger(PublicLightingGetPowerUsageHistoryRequestMessageProcessor.class);
 
     public PublicLightingGetPowerUsageHistoryRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY);
+        super(MessageType.GET_POWER_USAGE_HISTORY);
     }
 
     @Override

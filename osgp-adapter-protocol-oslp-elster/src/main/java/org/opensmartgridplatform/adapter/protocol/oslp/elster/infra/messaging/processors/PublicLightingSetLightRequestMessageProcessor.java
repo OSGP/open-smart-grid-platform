@@ -12,11 +12,6 @@ import java.io.IOException;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
@@ -25,7 +20,6 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.Re
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.SetLightDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.EmptyDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.dto.valueobjects.LightValueMessageDataContainerDto;
 import org.opensmartgridplatform.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
@@ -33,6 +27,11 @@ import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing public lighting set light request messages
@@ -49,7 +48,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
     private PublicLightingResumeScheduleRequestMessageProcessor publicLightingResumeScheduleRequestMessageProcessor;
 
     public PublicLightingSetLightRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_LIGHT);
+        super(MessageType.SET_LIGHT);
     }
 
     @Override
@@ -133,14 +132,13 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
                 0, false);
 
         final DeviceResponseHandler resumeScheduleDeviceResponseHandler = this.publicLightingResumeScheduleRequestMessageProcessor
-                .createResumeScheduleDeviceResponseHandler(domain, domainVersion,
-                        DeviceRequestMessageType.RESUME_SCHEDULE.name(), retryCount, resumeScheduleMessageDataContainer,
-                        isScheduled);
+                .createResumeScheduleDeviceResponseHandler(domain, domainVersion, MessageType.RESUME_SCHEDULE.name(),
+                        retryCount, resumeScheduleMessageDataContainer, isScheduled);
 
         final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest = new ResumeScheduleDeviceRequest(DeviceRequest
                 .newBuilder().organisationIdentification(organisationIdentification)
                 .deviceIdentification(deviceIdentification).correlationUid(correlationUid).domain(domain)
-                .domainVersion(domainVersion).messageType(DeviceRequestMessageType.RESUME_SCHEDULE.name())
+                .domainVersion(domainVersion).messageType(MessageType.RESUME_SCHEDULE.name())
                 .messagePriority(messagePriority).ipAddress(ipAddress).retryCount(retryCount).isScheduled(isScheduled),
                 resumeScheduleMessageDataContainer);
 

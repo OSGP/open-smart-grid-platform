@@ -12,22 +12,21 @@ import java.io.IOException;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.SetConfigurationDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing common set configuration request messages
@@ -41,7 +40,7 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonSetConfigurationRequestMessageProcessor.class);
 
     public CommonSetConfigurationRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_CONFIGURATION);
+        super(MessageType.SET_CONFIGURATION);
     }
 
     @Override

@@ -12,18 +12,12 @@ import java.io.IOException;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.FirmwareLocation;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.UpdateFirmwareDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.DeviceService;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareUpdateMessageDataContainer;
@@ -31,6 +25,11 @@ import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for processing common update firmware request messages
@@ -50,7 +49,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
     private FirmwareLocation firmwareLocation;
 
     public CommonUpdateFirmwareRequestMessageProcessor() {
-        super(DeviceRequestMessageType.UPDATE_FIRMWARE);
+        super(MessageType.UPDATE_FIRMWARE);
     }
 
     // IDEA: the FirmwareLocation class in domain and dto can/must be deleted!
