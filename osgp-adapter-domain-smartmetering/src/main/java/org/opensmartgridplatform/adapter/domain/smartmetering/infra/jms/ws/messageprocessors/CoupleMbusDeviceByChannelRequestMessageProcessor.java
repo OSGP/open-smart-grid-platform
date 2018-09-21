@@ -8,24 +8,27 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.InstallationService;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CoupleMbusDeviceByChannelRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class CoupleMbusDeviceByChannelRequestMessageProcessor extends BaseRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringInstallationService")
     private InstallationService installationService;
 
-    protected CoupleMbusDeviceByChannelRequestMessageProcessor() {
-        super(MessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL);
+    @Autowired
+    protected CoupleMbusDeviceByChannelRequestMessageProcessor(
+            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(messageProcessorMap, MessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL);
     }
 
     @Override

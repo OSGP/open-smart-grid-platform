@@ -11,9 +11,14 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.admin.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.domain.admin.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.admin.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +29,7 @@ import org.springframework.stereotype.Component;
  * Class for processing admin revoke key request messages
  */
 @Component
-public class AdminRevokeKeyRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class AdminRevokeKeyRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -34,8 +39,11 @@ public class AdminRevokeKeyRequestMessageProcessor extends WebServiceRequestMess
     @Qualifier("domainAdminDeviceManagementService")
     private DeviceManagementService deviceManagementService;
 
-    public AdminRevokeKeyRequestMessageProcessor() {
-        super(MessageType.REVOKE_KEY);
+    @Autowired
+    public AdminRevokeKeyRequestMessageProcessor(@Qualifier("domainAdminOutgoingWebServiceResponseMessageSender") WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainAdminWebServiceRequestMessageProcessorMap")MessageProcessorMap webServiceRequestMessageProcessorMap) {
+        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.REVOKE_KEY,
+                ComponentType.DOMAIN_ADMIN);
     }
 
     @Override
@@ -68,7 +76,8 @@ public class AdminRevokeKeyRequestMessageProcessor extends WebServiceRequestMess
                     messageType);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    MessagePriorityEnum.DEFAULT.getPriority());
         }
     }
 }

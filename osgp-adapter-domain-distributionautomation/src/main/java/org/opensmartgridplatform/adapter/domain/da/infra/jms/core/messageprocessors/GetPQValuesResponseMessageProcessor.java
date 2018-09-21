@@ -13,11 +13,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.MonitoringService;
-import org.opensmartgridplatform.adapter.domain.da.infra.jms.core.AbstractOsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ import org.springframework.stereotype.Component;
  * Class for processing da get pq values response messages
  */
 @Component("domainDistributionAutomationGetPQValuesResponseMessageProcessor")
-public class GetPQValuesResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
+public class GetPQValuesResponseMessageProcessor extends BaseNotificationMessageProcessor {
     /**
      * Logger for this class
      */
@@ -40,8 +42,11 @@ public class GetPQValuesResponseMessageProcessor extends AbstractOsgpCoreRespons
     @Qualifier("domainDistributionAutomationMonitoringService")
     private MonitoringService monitoringService;
 
-    protected GetPQValuesResponseMessageProcessor() {
-        super(MessageType.GET_POWER_QUALITY_VALUES);
+    @Autowired
+    protected GetPQValuesResponseMessageProcessor(
+            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_POWER_QUALITY_VALUES);
     }
 
     @Override

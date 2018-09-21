@@ -11,9 +11,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,7 @@ import org.springframework.stereotype.Component;
  * Class for processing common get configuration request messages
  */
 @Component("domainCoreCommonGetConfigurationRequestMessageProcessor")
-public class CommonGetConfigurationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class CommonGetConfigurationRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -35,8 +38,11 @@ public class CommonGetConfigurationRequestMessageProcessor extends WebServiceReq
     @Qualifier("domainCoreConfigurationManagementService")
     private ConfigurationManagementService configurationManagementService;
 
-    public CommonGetConfigurationRequestMessageProcessor() {
-        super(MessageType.GET_CONFIGURATION);
+    @Autowired
+    public CommonGetConfigurationRequestMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_CONFIGURATION, ComponentType.DOMAIN_CORE);
     }
 
     @Override

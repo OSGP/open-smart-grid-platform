@@ -11,9 +11,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
@@ -26,7 +29,7 @@ import org.springframework.stereotype.Component;
  * Class for processing public lighting resume schedule request messages
  */
 @Component("domainPublicLightingResumeScheduleRequestMessageProcessor")
-public class PublicLightingResumeScheduleRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class PublicLightingResumeScheduleRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +40,12 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends WebServ
     @Qualifier("domainPublicLightingAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    public PublicLightingResumeScheduleRequestMessageProcessor() {
-        super(MessageType.RESUME_SCHEDULE);
+    @Autowired
+    public PublicLightingResumeScheduleRequestMessageProcessor(
+            WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
+        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.RESUME_SCHEDULE,
+                ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

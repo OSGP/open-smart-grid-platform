@@ -9,13 +9,17 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,8 +33,11 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
     @Autowired
     private InstallationService installationService;
 
-    protected AddMeterResponseMessageProcessor() {
-        super(MessageType.ADD_METER);
+    @Autowired
+    protected AddMeterResponseMessageProcessor(
+            WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.ADD_METER, ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override

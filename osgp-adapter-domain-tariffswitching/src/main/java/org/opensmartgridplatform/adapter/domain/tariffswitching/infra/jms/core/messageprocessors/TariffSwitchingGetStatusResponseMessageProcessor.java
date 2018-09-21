@@ -11,11 +11,14 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -30,7 +33,7 @@ import org.springframework.stereotype.Component;
  * Class for processing tariff switching get status response messages
  */
 @Component("domainTariffSwitchingGetStatusResponseMessageProcessor")
-public class TariffSwitchingGetStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class TariffSwitchingGetStatusResponseMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -41,8 +44,12 @@ public class TariffSwitchingGetStatusResponseMessageProcessor extends OsgpCoreRe
     @Qualifier("domainTariffSwitchingAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    protected TariffSwitchingGetStatusResponseMessageProcessor() {
-        super(MessageType.GET_TARIFF_STATUS);
+    @Autowired
+    protected TariffSwitchingGetStatusResponseMessageProcessor(
+            WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainTariffSwitchingOsgpCoreResponseMessageProcessorMap")MessageProcessorMap responseMessageProcessorMap) {
+        super(webServiceResponseMessageSender, responseMessageProcessorMap, MessageType.GET_TARIFF_STATUS,
+                ComponentType.DOMAIN_TARIFF_SWITCHING);
     }
 
     @Override

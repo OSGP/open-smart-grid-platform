@@ -11,9 +11,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValueMessageDataContainer;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
@@ -26,7 +29,7 @@ import org.springframework.stereotype.Component;
  * Class for processing public lighting set light request messages
  */
 @Component("domainPublicLightingSetLightRequestMessageProcessor")
-public class PublicLightingSetLightRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class PublicLightingSetLightRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -36,8 +39,12 @@ public class PublicLightingSetLightRequestMessageProcessor extends WebServiceReq
     @Qualifier("domainPublicLightingAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    public PublicLightingSetLightRequestMessageProcessor() {
-        super(MessageType.SET_LIGHT);
+    @Autowired
+    public PublicLightingSetLightRequestMessageProcessor(
+            WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
+        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.SET_LIGHT,
+                ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

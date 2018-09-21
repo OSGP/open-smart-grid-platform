@@ -13,10 +13,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.MonitoringService;
-import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesPeriodicRequest;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,7 @@ import org.springframework.stereotype.Component;
  * Class for processing da get pq values periodic request messages
  */
 @Component("domainDistributionAutomationGetPQValuesPeriodicRequestMessageProcessor")
-public class GetPQValuesPeriodicRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
+public class GetPQValuesPeriodicRequestMessageProcessor extends BaseNotificationMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +40,11 @@ public class GetPQValuesPeriodicRequestMessageProcessor extends AbstractWebServi
     @Qualifier("domainDistributionAutomationMonitoringService")
     private MonitoringService monitoringService;
 
-    public GetPQValuesPeriodicRequestMessageProcessor() {
-        super(MessageType.GET_POWER_QUALITY_VALUES_PERIODIC);
+    @Autowired
+    public GetPQValuesPeriodicRequestMessageProcessor(
+            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_POWER_QUALITY_VALUES_PERIODIC);
     }
 
     @Override

@@ -11,11 +11,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.microgrids.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.core.AbstractOsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.EmptyResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -28,7 +30,7 @@ import org.springframework.stereotype.Component;
  * Class for processing microgrids set data response messages
  */
 @Component("domainMicrogridsSetDataResponseMessageProcessor")
-public class SetDataResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
+public class SetDataResponseMessageProcessor extends BaseNotificationMessageProcessor {
     /**
      * Logger for this class
      */
@@ -38,8 +40,11 @@ public class SetDataResponseMessageProcessor extends AbstractOsgpCoreResponseMes
     @Qualifier("domainMicrogridsAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    protected SetDataResponseMessageProcessor() {
-        super(MessageType.SET_DATA);
+    @Autowired
+    protected SetDataResponseMessageProcessor(
+            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainMicrogridsOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.SET_DATA);
     }
 
     @Override

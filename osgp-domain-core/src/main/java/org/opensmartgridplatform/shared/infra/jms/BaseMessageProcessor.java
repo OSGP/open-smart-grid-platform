@@ -5,23 +5,19 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws;
+package org.opensmartgridplatform.shared.infra.jms;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
-import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -30,39 +26,30 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  */
-public abstract class WebServiceRequestMessageProcessor implements MessageProcessor {
+// TODO (RvM): move eventually to shared (same package)
+public abstract class BaseMessageProcessor implements MessageProcessor {
 
     /**
      * Logger for this class.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseMessageProcessor.class);
 
     /**
      * This is the message sender needed for the message processor
-     * implementations to handle the forwarding of messages to OSGP-CORE.
+     * implementation to forward response messages to web service adapter.
      */
-    @Qualifier("domainPublicLightingOutgoingOsgpCoreRequestMessageSender")
-    @Autowired
-    protected OsgpCoreRequestMessageSender coreRequestMessageSender;
-
-    /**
-     * This is the message sender needed for the message processor
-     * implementation to handle an error.
-     */
-    @Autowired
-    protected WebServiceResponseMessageSender webServiceResponseMessageSender;
+    protected final ResponseMessageSender responseMessageSender;
 
     /**
      * The map of message processor instances.
      */
-    @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap")
-    @Autowired
-    protected MessageProcessorMap webServiceRequestMessageProcessorMap;
+    protected final MessageProcessorMap messageProcessorMap;
+    private final ComponentType componentType;
 
     /**
-     * The message type that a message processor implementation can handle.
+     * The message types that a message processor implementation can handle.
      */
-    protected MessageType messageType;
+    protected final List<MessageType> messageTypes = new ArrayList<>();
 
     /**
      * Construct a message processor instance by passing in the message type.
@@ -70,8 +57,25 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
      * @param messageType
      *            The message type a message processor can handle.
      */
-    protected WebServiceRequestMessageProcessor(final MessageType messageType) {
-        this.messageType = messageType;
+    protected BaseMessageProcessor(final ResponseMessageSender responseMessageSender,
+            final MessageProcessorMap messageProcessorMap,
+            final MessageType messageType,
+            final ComponentType componentType) {
+        this.responseMessageSender = responseMessageSender;
+        this.messageProcessorMap = messageProcessorMap;
+        this.messageTypes.add(messageType);
+        this.componentType = componentType;
+    }
+
+    /**
+     * In case a message processor instance can process multiple message types,
+     * a message type can be added.
+     *
+     * @param messageType
+     *            The message type a message processor can handle.
+     */
+    protected void addMessageType(final MessageType messageType) {
+        this.messageTypes.add(messageType);
     }
 
     /**
@@ -81,14 +85,16 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
      */
     @PostConstruct
     public void init() {
-        this.webServiceRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
+        for (final MessageType messageType : this.messageTypes) {
+            this.messageProcessorMap.addMessageProcessor(messageType, this);
+        }
     }
 
     /**
-     * In case of an error, this function can be used to send a response
-     * containing the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response containing
+     * the exception to the web-service-adapter.
      *
-     * @param e
+     *  @param e
      *            The exception.
      * @param correlationUid
      *            The correlation UID.
@@ -103,18 +109,18 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType, final int messagePriority) {
-        LOGGER.error("Handling error for message type: {}", messageType, e);
-        OsgpException osgpException;
+        LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
+        OsgpException osgpException = null;
         if (e instanceof OsgpException) {
             osgpException = (OsgpException) e;
         } else {
-            osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING, "An unknown error occurred",
-                    e);
+            osgpException = new TechnicalException(componentType, "An unknown error occurred", e);
         }
+
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.NOT_OK)
                 .withOsgpException(osgpException).withDataObject(e).withMessagePriority(messagePriority).build();
-        this.webServiceResponseMessageSender.send(responseMessage);
+        this.responseMessageSender.send(responseMessage);
     }
 }

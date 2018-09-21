@@ -12,12 +12,15 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,7 @@ import org.springframework.stereotype.Component;
  * Class for processing public lighting set transition response messages
  */
 @Component("domainPublicLightingSetTransitionResponseMessageProcessor")
-public class PublicLightingSetTransitionResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class PublicLightingSetTransitionResponseMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -47,8 +50,12 @@ public class PublicLightingSetTransitionResponseMessageProcessor extends OsgpCor
     @Autowired
     private Boolean isSetTransitionResponseLoggingEnabled;
 
-    protected PublicLightingSetTransitionResponseMessageProcessor() {
-        super(MessageType.SET_TRANSITION);
+    @Autowired
+    protected PublicLightingSetTransitionResponseMessageProcessor(
+            ResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.SET_TRANSITION,
+                ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

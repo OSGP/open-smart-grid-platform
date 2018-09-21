@@ -20,7 +20,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 
 public class BundleResponseMessageProcessorTest {
 
-    final BundleResponseMessageProcessor processor = new BundleResponseMessageProcessor();
+    final BundleResponseMessageProcessor processor = new BundleResponseMessageProcessor(null, null);
     final List<FaultResponseParameterDto> parameters = new ArrayList<>();
     final String defaultMessage = "some error occurred";
     final ComponentType defaultComponent = ComponentType.DOMAIN_SMART_METERING;

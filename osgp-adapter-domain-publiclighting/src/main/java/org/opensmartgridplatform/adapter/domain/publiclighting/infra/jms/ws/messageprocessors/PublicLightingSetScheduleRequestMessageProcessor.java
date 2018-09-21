@@ -11,9 +11,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.ScheduleManagementService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
@@ -26,7 +29,7 @@ import org.springframework.stereotype.Component;
  * Class for processing public lighting set schedule request messages
  */
 @Component("domainPublicLightingSetScheduleRequestMessageProcessor")
-public class PublicLightingSetScheduleRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class PublicLightingSetScheduleRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +40,12 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends WebService
     @Qualifier("domainPublicLightingScheduleManagementService")
     private ScheduleManagementService scheduleManagementService;
 
-    public PublicLightingSetScheduleRequestMessageProcessor() {
-        super(MessageType.SET_LIGHT_SCHEDULE);
+    @Autowired
+    public PublicLightingSetScheduleRequestMessageProcessor(
+            WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
+        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.SET_LIGHT_SCHEDULE,
+                ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

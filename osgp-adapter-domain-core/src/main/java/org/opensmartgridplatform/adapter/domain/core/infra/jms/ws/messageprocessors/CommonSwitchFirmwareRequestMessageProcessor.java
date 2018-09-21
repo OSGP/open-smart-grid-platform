@@ -11,9 +11,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.FirmwareManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,7 @@ import org.springframework.stereotype.Component;
  * Class for processing common switch firmware request messages
  */
 @Component("domainCoreCommonSwitchFirmwareRequestMessageProcessor")
-public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class CommonSwitchFirmwareRequestMessageProcessor extends BaseMessageProcessor {
 
     /**
      * Logger for this class
@@ -36,8 +39,11 @@ public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceReque
     @Qualifier("domainCoreFirmwareManagementService")
     private FirmwareManagementService firmwareManagementService;
 
-    public CommonSwitchFirmwareRequestMessageProcessor() {
-        super(MessageType.SWITCH_FIRMWARE);
+    @Autowired
+    public CommonSwitchFirmwareRequestMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.SWITCH_FIRMWARE, ComponentType.DOMAIN_CORE);
     }
 
     @Override

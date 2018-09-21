@@ -11,9 +11,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,7 @@ import org.springframework.stereotype.Component;
  * Class for processing common reboot request messages
  */
 @Component("domainCoreCommonRebootRequestMessageProcessor")
-public class CommonRebootRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class CommonRebootRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -35,8 +38,11 @@ public class CommonRebootRequestMessageProcessor extends WebServiceRequestMessag
     @Qualifier("domainCoreAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    public CommonRebootRequestMessageProcessor() {
-        super(MessageType.SET_REBOOT);
+    @Autowired
+    public CommonRebootRequestMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.SET_REBOOT, ComponentType.DOMAIN_CORE);
     }
 
     @Override
