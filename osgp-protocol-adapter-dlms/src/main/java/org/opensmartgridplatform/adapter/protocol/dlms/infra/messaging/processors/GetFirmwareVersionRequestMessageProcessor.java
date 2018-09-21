@@ -13,11 +13,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 @Component
 public class GetFirmwareVersionRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -26,7 +25,7 @@ public class GetFirmwareVersionRequestMessageProcessor extends DeviceRequestMess
     private ConfigurationService configurationService;
 
     protected GetFirmwareVersionRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
+        super(MessageType.GET_FIRMWARE_VERSION);
     }
 
     @Override

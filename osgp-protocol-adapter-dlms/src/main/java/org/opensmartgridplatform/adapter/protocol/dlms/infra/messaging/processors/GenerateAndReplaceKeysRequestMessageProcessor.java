@@ -13,11 +13,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 @Component
 public class GenerateAndReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -26,7 +25,7 @@ public class GenerateAndReplaceKeysRequestMessageProcessor extends DeviceRequest
     private ConfigurationService configurationService;
 
     public GenerateAndReplaceKeysRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GENERATE_AND_REPLACE_KEYS);
+        super(MessageType.GENERATE_AND_REPLACE_KEYS);
     }
 
     @Override

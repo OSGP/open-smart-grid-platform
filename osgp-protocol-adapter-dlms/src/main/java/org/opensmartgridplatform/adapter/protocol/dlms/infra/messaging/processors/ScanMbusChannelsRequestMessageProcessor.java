@@ -13,12 +13,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Adho
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ScanMbusChannelsRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -27,7 +26,7 @@ public class ScanMbusChannelsRequestMessageProcessor extends DeviceRequestMessag
     private AdhocService adhocService;
 
     public ScanMbusChannelsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SCAN_MBUS_CHANNELS);
+        super(MessageType.SCAN_MBUS_CHANNELS);
     }
 
     @Override

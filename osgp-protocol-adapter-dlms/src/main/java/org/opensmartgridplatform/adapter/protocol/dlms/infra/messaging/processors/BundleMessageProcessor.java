@@ -14,11 +14,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 
 /**
  * Class for processing find events request messages
@@ -30,7 +29,7 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
     private BundleService bundleService;
 
     public BundleMessageProcessor() {
-        super(DeviceRequestMessageType.HANDLE_BUNDLED_ACTIONS);
+        super(MessageType.HANDLE_BUNDLED_ACTIONS);
     }
 
     @Override

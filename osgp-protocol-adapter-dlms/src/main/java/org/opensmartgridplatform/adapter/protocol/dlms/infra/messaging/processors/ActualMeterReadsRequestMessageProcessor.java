@@ -13,12 +13,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Moni
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -27,7 +26,7 @@ public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessag
     private MonitoringService monitoringService;
 
     protected ActualMeterReadsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_ACTUAL_METER_DATA);
+        super(MessageType.REQUEST_ACTUAL_METER_DATA);
     }
 
     @Override

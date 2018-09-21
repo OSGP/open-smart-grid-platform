@@ -13,11 +13,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Adho
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 @Component
 public class GetAllAttributeValuesRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -26,7 +25,7 @@ public class GetAllAttributeValuesRequestMessageProcessor extends DeviceRequestM
     private AdhocService adhocService;
 
     protected GetAllAttributeValuesRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_ALL_ATTRIBUTE_VALUES);
+        super(MessageType.GET_ALL_ATTRIBUTE_VALUES);
     }
 
     @Override

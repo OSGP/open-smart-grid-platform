@@ -16,19 +16,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Firm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageType;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessageProcessor {
@@ -39,12 +38,12 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
     private FirmwareService firmwareService;
 
     protected GetFirmwareFileResponseMessageProcessor() {
-        super(OsgpRequestMessageType.GET_FIRMWARE_FILE);
+        super(MessageType.GET_FIRMWARE_FILE);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing {} response message", this.osgpRequestMessageType.name());
+        LOGGER.debug("Processing {} response message", this.messageType.name());
         MessageMetadata messageMetadata = null;
 
         DlmsConnectionHolder conn = null;
@@ -73,7 +72,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
             // Return original request + exception
-            LOGGER.error("Unexpected exception during {}", this.osgpRequestMessageType.name(), exception);
+            LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, message.getObject());

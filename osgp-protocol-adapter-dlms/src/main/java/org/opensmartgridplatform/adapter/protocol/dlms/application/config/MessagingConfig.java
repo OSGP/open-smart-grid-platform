@@ -14,28 +14,28 @@ import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
+import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
+import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
+import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-dlms.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-protocol-dlms.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true)
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
@@ -63,6 +63,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public DefaultMessageListenerContainer dlmsRequestsMessageListenerContainer(
             final JmsConfiguration dlmsRequestJmsConfiguration) {
         return dlmsRequestJmsConfiguration.getMessageListenerContainer();
+    }
+
+    @Bean
+    @Qualifier("protocolDlmsDeviceRequestMessageProcessorMap")
+    public MessageProcessorMap dlmsRequestMessageProcessorMap() {
+        return new BaseMessageProcessorMap("DeviceRequestMessageProcessorMap");
     }
 
     // Configuration beans for outgoing dlms responses
@@ -108,6 +114,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public DefaultMessageListenerContainer osgpResponsesMessageListenerContainer(
             final JmsConfiguration osgpResponseJmsConfiguration) {
         return osgpResponseJmsConfiguration.getMessageListenerContainer();
+    }
+
+    @Bean
+    @Qualifier("protocolDlmsOsgpResponseMessageProcessorMap")
+    public MessageProcessorMap osgpResponseMessageProcessorMap() {
+        return new BaseMessageProcessorMap("OsgpResponseMessageProcessorMap");
     }
 
     // Configuration beans for outgoing osgp requests

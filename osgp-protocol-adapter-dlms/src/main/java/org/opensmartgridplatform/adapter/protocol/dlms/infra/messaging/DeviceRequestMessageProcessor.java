@@ -16,16 +16,16 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -48,32 +48,32 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     @Autowired
     protected DomainHelperService domainHelperService;
 
-    protected final DeviceRequestMessageType deviceRequestMessageType;
+    protected final MessageType messageType;
 
     /**
      * Each MessageProcessor should register it's MessageType at construction.
      *
-     * @param deviceRequestMessageType
-     *            The MessageType the MessageProcessor implementation can process.
+     * @param messageType
+     *            The MessageType the MessageProcessor implementation can
+     *            process.
      */
-    protected DeviceRequestMessageProcessor(final DeviceRequestMessageType deviceRequestMessageType) {
-        this.deviceRequestMessageType = deviceRequestMessageType;
+    protected DeviceRequestMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
     }
 
     /**
-     * Initialization function executed after dependency injection has finished. The
-     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
-     * key for the HashMap is the integer value of the enumeration member.
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the HashMap of
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        this.dlmsRequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
-                this.deviceRequestMessageType.name(), this);
+        this.dlmsRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing {} request message", this.deviceRequestMessageType);
+        LOGGER.debug("Processing {} request message", this.messageType);
 
         MessageMetadata messageMetadata = null;
         DlmsConnectionHolder conn = null;
@@ -88,7 +88,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
              * call in the addMeter flow. The AddMeterRequestMessageProcessor will throw the
              * appropriate 'dlmsDevice already exists' error if the dlmsDevice does exists!
              */
-            if (!DeviceRequestMessageType.ADD_METER.name().equals(messageMetadata.getMessageType())) {
+            if (!MessageType.ADD_METER.name().equals(messageMetadata.getMessageType())) {
                 device = this.domainHelperService.findDlmsDevice(messageMetadata);
             }
 
@@ -110,7 +110,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
             // Return original request + exception
-            LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
+            LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
                     this.responseMessageSender, message.getObject());
