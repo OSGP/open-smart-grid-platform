@@ -8,28 +8,25 @@
 package org.opensmartgridplatform.adapter.ws.da.application.config;
 
 import org.opensmartgridplatform.adapter.ws.da.infra.jms.DistributionAutomationRequestMessageSender;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
-import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.adapter.ws.da.infra.jms.DistributionAutomationResponseMessageListener;
+import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.shared.application.config.AbstractMessagingConfig;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterWsDistributionAutomation/config}", ignoreResourceNotFound = true)
 public class MessagingConfig extends AbstractMessagingConfig {
-
-    @Autowired
-    public DistributionAutomationResponseMessageListener distributionautomationResponseMessageListener;
 
     // === JMS SETTINGS: DistributionAutomation REQUESTS ===
 
@@ -51,9 +48,10 @@ public class MessagingConfig extends AbstractMessagingConfig {
     // === JMS SETTINGS: DistributionAutomation RESPONSES ===
 
     @Bean
-    public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+    public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory,
+            final DistributionAutomationResponseMessageListener distributionautomationResponseMessageListener) {
         return jmsConfigurationFactory.initializeConfiguration("jms.distributionautomation.responses",
-                this.distributionautomationResponseMessageListener);
+                distributionautomationResponseMessageListener);
     }
 
     @Bean(name = "wsDistributionAutomationIncomingResponsesJmsTemplate")
@@ -71,6 +69,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public DistributionAutomationResponseMessageListener distributionautomationResponseMessageListener() {
         return new DistributionAutomationResponseMessageListener();
+    }
+
+    @Bean
+    @Qualifier("domainDistributionAutomationResponseMessageProcessorMap")
+    public MessageProcessorMap distributionAutomationResponseMessageProcessorMap() {
+        return new BaseMessageProcessorMap("domainResponseMessageProcessorMap");
     }
 
     // === JMS SETTINGS: DISTRIBUTION AUTOMATION LOGGING ===

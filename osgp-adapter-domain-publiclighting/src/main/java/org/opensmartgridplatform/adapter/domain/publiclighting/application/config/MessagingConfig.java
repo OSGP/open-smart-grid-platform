@@ -8,15 +8,6 @@
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.config;
 
 import org.apache.activemq.RedeliveryPolicy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.OsgpCoreRequestMessageListener;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreResponseMessageListener;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageListener;
@@ -26,14 +17,23 @@ import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.jms.JmsPropertyNames;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-domain-publiclighting.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterDomainPublicLighting/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-domain-publiclighting.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterDomainPublicLighting/config}", ignoreResourceNotFound = true)
 public class MessagingConfig extends AbstractMessagingConfig {
 
     private static final String PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_RESPONSE_TIME_TO_LIVE = "jms.get.power.usage.history.response.time.to.live";
@@ -83,6 +83,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return incomingWebServiceRequestsJmsConfiguration.getMessageListenerContainer();
     }
 
+    @Bean
+    @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap")
+    public MessageProcessorMap incomingWebServiceRequestMessageProcessorMap() {
+        return new BaseMessageProcessorMap("WebServiceRequestMessageProcessorMap");
+    }
+
     // JMS SETTINGS: OUTGOING WEB SERVICE RESPONSES
 
     @Bean
@@ -130,6 +136,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public DefaultMessageListenerContainer incomingOsgpCoreResponsesMessageListenerContainer(
             final JmsConfiguration incomingOsgpCoreResponsesJmsConfiguration) {
         return incomingOsgpCoreResponsesJmsConfiguration.getMessageListenerContainer();
+    }
+
+    @Bean
+    @Qualifier("domainPublicLightingOsgpCoreResponseMessageProcessorMap")
+    public MessageProcessorMap incomingOsgpCoreResponseMessageProcessorMap() {
+        return new BaseMessageProcessorMap("OsgpCoreResponseMessageProcessorMap");
     }
 
     // JMS SETTINGS: INCOMING OSGP CORE REQUESTS (receiving requests from OSGP

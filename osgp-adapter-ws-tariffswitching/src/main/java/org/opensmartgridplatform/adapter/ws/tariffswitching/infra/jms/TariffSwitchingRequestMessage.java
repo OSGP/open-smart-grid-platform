@@ -10,8 +10,8 @@ package org.opensmartgridplatform.adapter.ws.tariffswitching.infra.jms;
 import java.io.Serializable;
 
 import org.joda.time.DateTime;
-
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 public class TariffSwitchingRequestMessage extends RequestMessage {
@@ -19,8 +19,9 @@ public class TariffSwitchingRequestMessage extends RequestMessage {
     /**
      * Generated Serial Version UID.
      */
-    private static final long serialVersionUID = -5243444329883870241L;
-    private final TariffSwitchingRequestMessageType messageType;
+    private static final long serialVersionUID = -5747625524754499878L;
+
+    private final MessageType messageType;
     private final DateTime scheduleTime;
     private final Integer messagePriority;
 
@@ -28,7 +29,7 @@ public class TariffSwitchingRequestMessage extends RequestMessage {
             final Serializable request) {
         super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
                 deviceMessageMetadata.getDeviceIdentification(), ipAddress, request);
-        this.messageType = TariffSwitchingRequestMessageType.valueOf(deviceMessageMetadata.getMessageType());
+        this.messageType = MessageType.valueOf(deviceMessageMetadata.getMessageType());
         this.messagePriority = deviceMessageMetadata.getMessagePriority();
         if (deviceMessageMetadata.getScheduleTime() == null) {
             this.scheduleTime = null;
@@ -37,7 +38,7 @@ public class TariffSwitchingRequestMessage extends RequestMessage {
         }
     }
 
-    public TariffSwitchingRequestMessageType getMessageType() {
+    public MessageType getMessageType() {
         return this.messageType;
     }
 

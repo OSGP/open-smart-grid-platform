@@ -14,7 +14,13 @@ import javax.validation.constraints.NotNull;
 import org.opensmartgridplatform.adapter.ws.da.application.exceptionhandling.ResponseNotFoundException;
 import org.opensmartgridplatform.adapter.ws.da.infra.jms.DistributionAutomationRequestMessage;
 import org.opensmartgridplatform.adapter.ws.da.infra.jms.DistributionAutomationRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.da.infra.jms.DistributionAutomationRequestMessageType;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
+import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
+import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
+import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.da.entities.RtuDevice;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelResponse;
@@ -23,24 +29,17 @@ import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesPeriodicRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesResponse;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-
-import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
-import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
-import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
-import org.opensmartgridplatform.domain.core.validation.Identification;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 
 @Service
 @Transactional(value = "transactionManager")
@@ -73,8 +72,7 @@ public class DistributionAutomationService {
                 deviceIdentification);
 
         return this.processRequest(organisationIdentification, deviceIdentification, getPQValuesRequest,
-                DeviceFunction.GET_POWER_QUALITY_VALUES,
-                DistributionAutomationRequestMessageType.GET_POWER_QUALITY_VALUES);
+                DeviceFunction.GET_POWER_QUALITY_VALUES, MessageType.GET_POWER_QUALITY_VALUES);
     }
 
     public GetPQValuesResponse dequeueGetPQValuesResponse(final String correlationUid) throws OsgpException {
@@ -92,8 +90,7 @@ public class DistributionAutomationService {
                 organisationIdentification, deviceIdentification);
 
         return this.processRequest(organisationIdentification, deviceIdentification, getPQValuesPeriodicRequest,
-                DeviceFunction.GET_POWER_QUALITY_VALUES,
-                DistributionAutomationRequestMessageType.GET_POWER_QUALITY_VALUES_PERIODIC);
+                DeviceFunction.GET_POWER_QUALITY_VALUES, MessageType.GET_POWER_QUALITY_VALUES_PERIODIC);
     }
 
     public GetPQValuesResponse dequeueGetPQValuesPeriodicResponse(final String correlationUid) throws OsgpException {
@@ -108,7 +105,7 @@ public class DistributionAutomationService {
         LOGGER.debug("enqueueGetDeviceModelRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
         return this.processRequest(organisationIdentification, deviceIdentification, getDeviceModelRequest,
-                DeviceFunction.GET_DEVICE_MODEL, DistributionAutomationRequestMessageType.GET_DEVICE_MODEL);
+                DeviceFunction.GET_DEVICE_MODEL, MessageType.GET_DEVICE_MODEL);
     }
 
     public GetDeviceModelResponse dequeueGetDeviceModelResponse(final String correlationUid) throws OsgpException {
@@ -124,7 +121,7 @@ public class DistributionAutomationService {
         LOGGER.debug("enqueueGetHealthStatusRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
         return this.processRequest(organisationIdentification, deviceIdentification, getHealthStatusRequest,
-                DeviceFunction.GET_HEALTH_STATUS, DistributionAutomationRequestMessageType.GET_HEALTH_STATUS);
+                DeviceFunction.GET_HEALTH_STATUS, MessageType.GET_HEALTH_STATUS);
     }
 
     public GetHealthStatusResponse dequeueGetHealthResponse(final String correlationUid) throws OsgpException {
@@ -134,8 +131,8 @@ public class DistributionAutomationService {
     }
 
     private String processRequest(final String organisationIdentification, final String deviceIdentification,
-            final Serializable request, final DeviceFunction deviceFunction,
-            final DistributionAutomationRequestMessageType messageType) throws OsgpException {
+            final Serializable request, final DeviceFunction deviceFunction, final MessageType messageType)
+            throws OsgpException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,

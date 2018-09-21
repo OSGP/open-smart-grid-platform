@@ -8,15 +8,6 @@
 package org.opensmartgridplatform.adapter.domain.core.application.config;
 
 import org.apache.activemq.RedeliveryPolicy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.OsgpCoreRequestMessageListener;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageListener;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageListener;
@@ -27,11 +18,20 @@ import org.opensmartgridplatform.shared.application.config.jms.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.jms.JmsPropertyNames;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-domain-core.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterDomainCore/config}", ignoreResourceNotFound = true), })
+@PropertySource("classpath:osgp-adapter-domain-core.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterDomainCore/config}", ignoreResourceNotFound = true)
 public class MessagingConfig extends AbstractMessagingConfig {
 
     @Autowired
@@ -78,6 +78,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
         return commonWsRequestsJmsConfiguration.getMessageListenerContainer();
     }
 
+    @Bean
+    @Qualifier("domainCoreWebServiceRequestMessageProcessorMap")
+    public MessageProcessorMap incomingWebServiceRequestMessageProcessorMap() {
+        return new BaseMessageProcessorMap("WebServiceRequestMessageProcessorMap");
+    }
+
     // === JMS SETTINGS: COMMON WEB SERVICE RESPONSES ===
 
     @Bean
@@ -119,6 +125,12 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public DefaultMessageListenerContainer osgpCoreResponsesMessageListenerContainer(
             final JmsConfiguration osgpCoreResponsesJmsConfiguration) {
         return osgpCoreResponsesJmsConfiguration.getMessageListenerContainer();
+    }
+
+    @Bean
+    @Qualifier("domainCoreOsgpCoreResponseMessageProcessorMap")
+    public MessageProcessorMap osgpCoreResponseMessageProcessorMap() {
+        return new BaseMessageProcessorMap("OsgpCoreResponseMessageProcessorMap");
     }
 
     // === JMS SETTINGS: OSGP DOMAIN CORE INCOMING REQUESTS ===

@@ -9,18 +9,10 @@ package org.opensmartgridplatform.adapter.ws.microgrids.application.services;
 
 import javax.validation.constraints.NotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.microgrids.application.exceptionhandling.ResponseNotFoundException;
 import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessage;
 import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageType;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
@@ -35,7 +27,14 @@ import org.opensmartgridplatform.domain.microgrids.valueobjects.SetDataRequest;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
 @Transactional(value = "transactionManager")
@@ -75,8 +74,8 @@ public class MicrogridsService {
         final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_DATA);
 
-        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MicrogridsRequestMessageType.GET_DATA,
-                correlationUid, organisationIdentification, deviceIdentification, dataRequest, null);
+        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MessageType.GET_DATA, correlationUid,
+                organisationIdentification, deviceIdentification, dataRequest, null);
 
         try {
             this.requestMessageSender.send(message);
@@ -126,8 +125,8 @@ public class MicrogridsService {
         final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DATA);
 
-        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MicrogridsRequestMessageType.SET_DATA,
-                correlationUid, organisationIdentification, deviceIdentification, setDataRequest, null);
+        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MessageType.SET_DATA, correlationUid,
+                organisationIdentification, deviceIdentification, setDataRequest, null);
 
         try {
             this.requestMessageSender.send(message);

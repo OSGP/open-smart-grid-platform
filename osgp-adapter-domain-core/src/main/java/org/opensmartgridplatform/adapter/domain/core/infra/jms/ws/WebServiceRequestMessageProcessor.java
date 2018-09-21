@@ -9,19 +9,19 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms.ws;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -56,34 +56,33 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
     /**
      * The hash map of message processor instances.
      */
+    @Qualifier("domainCoreWebServiceRequestMessageProcessorMap")
     @Autowired
-    protected WebServiceRequestMessageProcessorMap webServiceRequestMessageProcessorMap;
+    protected MessageProcessorMap webServiceRequestMessageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.
      */
-    protected DeviceFunction deviceFunction;
+    protected MessageType messageType;
 
     /**
      * Construct a message processor instance by passing in the message type.
      *
-     * @param deviceFunction
+     * @param messageType
      *            The message type a message processor can handle.
      */
-    protected WebServiceRequestMessageProcessor(final DeviceFunction deviceFunction) {
-        this.deviceFunction = deviceFunction;
+    protected WebServiceRequestMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
     }
 
     /**
      * Initialization function executed after dependency injection has finished.
      * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        this.webServiceRequestMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(),
-                this.deviceFunction.name(), this);
+        this.webServiceRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     /**
@@ -103,7 +102,7 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType, final int messagePriority) {
-        LOGGER.error("Handling error for message type: " + messageType, e);
+        LOGGER.error("Handling error for message type: {}", messageType, e);
         OsgpException osgpException = null;
         if (e instanceof OsgpException) {
             osgpException = (OsgpException) e;

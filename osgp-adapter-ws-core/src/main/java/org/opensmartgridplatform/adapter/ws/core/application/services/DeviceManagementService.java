@@ -20,7 +20,6 @@ import org.hibernate.QueryException;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting;
@@ -67,6 +66,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +194,7 @@ public class DeviceManagementService {
             throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}",
-                new Object[] { organisationIdentification, deviceIdentification, pageNumber });
+                organisationIdentification, deviceIdentification, pageNumber);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
@@ -489,7 +489,7 @@ public class DeviceManagementService {
                 eventNotifications);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.SET_EVENT_NOTIFICATIONS.name(),
+                organisationIdentification, correlationUid, MessageType.SET_EVENT_NOTIFICATIONS.name(),
                 messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
@@ -692,8 +692,8 @@ public class DeviceManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                CommonRequestMessageType.UPDATE_DEVICE_SSL_CERTIFICATION.name(), messagePriority);
+                organisationIdentification, correlationUid, MessageType.UPDATE_DEVICE_SSL_CERTIFICATION.name(),
+                messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(certification).build();
@@ -724,7 +724,7 @@ public class DeviceManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.SET_DEVICE_VERIFICATION_KEY.name(),
+                organisationIdentification, correlationUid, MessageType.SET_DEVICE_VERIFICATION_KEY.name(),
                 messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
@@ -759,8 +759,7 @@ public class DeviceManagementService {
                 .valueOf(deviceLifecycleStatus.name());
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                CommonRequestMessageType.SET_DEVICE_LIFECYCLE_STATUS.name());
+                organisationIdentification, correlationUid, MessageType.SET_DEVICE_LIFECYCLE_STATUS.name());
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(newDeviceLifecycleStatus).build();
@@ -789,8 +788,7 @@ public class DeviceManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                CommonRequestMessageType.UPDATE_DEVICE_CDMA_SETTINGS.name());
+                organisationIdentification, correlationUid, MessageType.UPDATE_DEVICE_CDMA_SETTINGS.name());
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(cdmaSettings).build();

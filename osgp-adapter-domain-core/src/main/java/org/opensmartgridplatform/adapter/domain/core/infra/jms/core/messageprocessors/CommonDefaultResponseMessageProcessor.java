@@ -10,20 +10,19 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms.core.messageproc
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.core.application.services.DefaultDeviceResponseService;
+import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.core.application.services.DefaultDeviceResponseService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common default response messages
@@ -40,16 +39,16 @@ public class CommonDefaultResponseMessageProcessor extends OsgpCoreResponseMessa
     private DefaultDeviceResponseService defaultDeviceResponseService;
 
     protected CommonDefaultResponseMessageProcessor() {
-        super(DeviceFunction.SET_CONFIGURATION);
-        this.addMessageType(DeviceFunction.UPDATE_FIRMWARE);
-        this.addMessageType(DeviceFunction.SET_REBOOT);
-        this.addMessageType(DeviceFunction.SET_EVENT_NOTIFICATIONS);
-        this.addMessageType(DeviceFunction.START_SELF_TEST);
-        this.addMessageType(DeviceFunction.STOP_SELF_TEST);
-        this.addMessageType(DeviceFunction.SWITCH_CONFIGURATION_BANK);
-        this.addMessageType(DeviceFunction.SWITCH_FIRMWARE);
-        this.addMessageType(DeviceFunction.UPDATE_DEVICE_SSL_CERTIFICATION);
-        this.addMessageType(DeviceFunction.SET_DEVICE_VERIFICATION_KEY);
+        super(MessageType.SET_CONFIGURATION);
+        this.addMessageType(MessageType.UPDATE_FIRMWARE);
+        this.addMessageType(MessageType.SET_REBOOT);
+        this.addMessageType(MessageType.SET_EVENT_NOTIFICATIONS);
+        this.addMessageType(MessageType.START_SELF_TEST);
+        this.addMessageType(MessageType.STOP_SELF_TEST);
+        this.addMessageType(MessageType.SWITCH_CONFIGURATION_BANK);
+        this.addMessageType(MessageType.SWITCH_FIRMWARE);
+        this.addMessageType(MessageType.UPDATE_DEVICE_SSL_CERTIFICATION);
+        this.addMessageType(MessageType.SET_DEVICE_VERIFICATION_KEY);
     }
 
     @Override

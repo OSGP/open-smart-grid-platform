@@ -10,16 +10,15 @@ package org.opensmartgridplatform.adapter.domain.admin.infra.jms.ws.messageproce
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.admin.application.services.DeviceManagementService;
+import org.opensmartgridplatform.adapter.domain.admin.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.admin.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.domain.admin.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 
 /**
  * Class for processing admin revoke key request messages
@@ -36,7 +35,7 @@ public class AdminRevokeKeyRequestMessageProcessor extends WebServiceRequestMess
     private DeviceManagementService deviceManagementService;
 
     public AdminRevokeKeyRequestMessageProcessor() {
-        super(DeviceFunction.REVOKE_KEY);
+        super(MessageType.REVOKE_KEY);
     }
 
     @Override

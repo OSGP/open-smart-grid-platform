@@ -10,19 +10,18 @@ package org.opensmartgridplatform.adapter.domain.admin.infra.jms.core.messagepro
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.admin.application.services.DeviceManagementService;
+import org.opensmartgridplatform.adapter.domain.admin.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.admin.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.domain.admin.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing admin revoke key messages
@@ -39,7 +38,7 @@ public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMess
     private DeviceManagementService deviceManagementService;
 
     protected AdminUpdateKeyResponseMessageProcessor() {
-        super(DeviceFunction.UPDATE_KEY);
+        super(MessageType.UPDATE_KEY);
     }
 
     @Override

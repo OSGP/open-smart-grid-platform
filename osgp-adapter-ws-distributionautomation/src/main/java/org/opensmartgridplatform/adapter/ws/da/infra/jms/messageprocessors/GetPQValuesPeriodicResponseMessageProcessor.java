@@ -7,13 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.ws.da.infra.jms.messageprocessors;
 
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetPQValuesPeriodicResponseMessageProcessor extends AbstractDomainResponseMessageProcessor {
 
     protected GetPQValuesPeriodicResponseMessageProcessor() {
-        super(DeviceFunction.GET_POWER_QUALITY_VALUES_PERIODIC);
+        super(MessageType.GET_POWER_QUALITY_VALUES_PERIODIC);
     }
 }

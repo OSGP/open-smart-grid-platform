@@ -12,19 +12,19 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -49,50 +49,47 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     /**
-     * The hash map of message processor instances.
+     * The map of message processor instances.
      */
     @Autowired
     @Qualifier("domainCoreOsgpCoreResponseMessageProcessorMap")
-    protected OsgpCoreResponseMessageProcessorMap osgpCoreResponseMessageProcessorMap;
+    protected MessageProcessorMap osgpCoreResponseMessageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.
      */
-    protected List<DeviceFunction> deviceFunctions;
+    protected List<MessageType> messageTypes = new ArrayList<>();
 
     /**
      * Construct a message processor instance by passing in the message type.
      *
-     * @param deviceFunction
+     * @param messageType
      *            The message type a message processor can handle.
      */
-    protected OsgpCoreResponseMessageProcessor(final DeviceFunction deviceFunction) {
-        this.deviceFunctions = new ArrayList<>();
-        this.deviceFunctions.add(deviceFunction);
+    protected OsgpCoreResponseMessageProcessor(final MessageType messageType) {
+        this.messageTypes.add(messageType);
     }
 
     /**
      * In case a message processor instance can process multiple message types,
      * a message type can be added.
      *
-     * @param deviceFunction
+     * @param messageType
      *            The message type a message processor can handle.
      */
-    protected void addMessageType(final DeviceFunction deviceFunction) {
-        this.deviceFunctions.add(deviceFunction);
+    protected void addMessageType(final MessageType messageType) {
+        this.messageTypes.add(messageType);
     }
 
     /**
      * Initialization function executed after dependency injection has finished.
      * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        for (final DeviceFunction deviceFunction : this.deviceFunctions) {
-            this.osgpCoreResponseMessageProcessorMap.addMessageProcessor(deviceFunction.ordinal(),
-                    deviceFunction.name(), this);
+        for (final MessageType messageType : this.messageTypes) {
+            this.osgpCoreResponseMessageProcessorMap.addMessageProcessor(messageType, this);
         }
     }
 

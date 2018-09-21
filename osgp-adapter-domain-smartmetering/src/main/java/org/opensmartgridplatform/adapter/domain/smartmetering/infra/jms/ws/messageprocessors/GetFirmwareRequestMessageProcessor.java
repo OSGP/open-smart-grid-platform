@@ -7,18 +7,17 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersion;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersion;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 
 /**
  * Class for processing common get firmware request messages
@@ -33,7 +32,7 @@ public class GetFirmwareRequestMessageProcessor extends WebServiceRequestMessage
     private ConfigurationService configurationService;
 
     public GetFirmwareRequestMessageProcessor() {
-        super(DeviceFunction.GET_FIRMWARE_VERSION);
+        super(MessageType.GET_FIRMWARE_VERSION);
     }
 
     @Override

@@ -7,14 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class SetDeviceLifecycleStatusByChannelResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SetDeviceLifecycleStatusByChannelResponseMessageProcessor() {
-        super(DeviceFunction.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL);
+        super(MessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL);
     }
 }

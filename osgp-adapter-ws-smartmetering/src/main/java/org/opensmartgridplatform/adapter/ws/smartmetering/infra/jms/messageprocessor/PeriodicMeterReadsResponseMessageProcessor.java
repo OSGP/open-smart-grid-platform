@@ -7,15 +7,14 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class PeriodicMeterReadsResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected PeriodicMeterReadsResponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
+        super(MessageType.REQUEST_PERIODIC_METER_DATA);
     }
 
 }

@@ -7,14 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 @Component
 public class SetClockConfigurationResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SetClockConfigurationResponseMessageProcessor() {
-        super(DeviceFunction.SET_CLOCK_CONFIGURATION);
+        super(MessageType.SET_CLOCK_CONFIGURATION);
     }
 }

@@ -7,16 +7,15 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -25,7 +24,7 @@ public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResp
     private ConfigurationService configurationService;
 
     public GetAdministrativeStateResponseMessageProcessor() {
-        super(DeviceFunction.GET_ADMINISTRATIVE_STATUS);
+        super(MessageType.GET_ADMINISTRATIVE_STATUS);
     }
 
     @Override

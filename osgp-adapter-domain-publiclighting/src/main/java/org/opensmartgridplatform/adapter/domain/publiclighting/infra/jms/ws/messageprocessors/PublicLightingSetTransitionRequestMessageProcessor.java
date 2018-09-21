@@ -12,9 +12,9 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.SetTransitionService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends WebServi
     private SetTransitionService setTransitionService;
 
     public PublicLightingSetTransitionRequestMessageProcessor() {
-        super(DeviceFunction.SET_TRANSITION);
+        super(MessageType.SET_TRANSITION);
     }
 
     @Override

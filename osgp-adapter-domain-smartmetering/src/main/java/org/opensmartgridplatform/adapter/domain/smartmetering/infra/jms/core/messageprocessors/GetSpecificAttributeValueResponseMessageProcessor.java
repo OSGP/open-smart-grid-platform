@@ -8,16 +8,15 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.AdhocService;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.AdhocService;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 
 @Component
 public class GetSpecificAttributeValueResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -27,7 +26,7 @@ public class GetSpecificAttributeValueResponseMessageProcessor extends OsgpCoreR
     private AdhocService adhocService;
 
     public GetSpecificAttributeValueResponseMessageProcessor() {
-        super(DeviceFunction.GET_SPECIFIC_ATTRIBUTE_VALUE);
+        super(MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE);
     }
 
     @Override

@@ -7,15 +7,14 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ClearAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -24,7 +23,7 @@ public class ClearAlarmRegisterResponseMessageProcessor extends OsgpCoreResponse
     private MonitoringService monitoringService;
 
     protected ClearAlarmRegisterResponseMessageProcessor() {
-        super(DeviceFunction.CLEAR_ALARM_REGISTER);
+        super(MessageType.CLEAR_ALARM_REGISTER);
     }
 
     @Override

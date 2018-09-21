@@ -13,8 +13,8 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class CommonUpdateDeviceCdmaSettingsRequestMessageProcessor extends WebSe
     private DeviceManagementService deviceManagementService;
 
     public CommonUpdateDeviceCdmaSettingsRequestMessageProcessor() {
-        super(DeviceFunction.UPDATE_DEVICE_CDMA_SETTINGS);
+        super(MessageType.UPDATE_DEVICE_CDMA_SETTINGS);
     }
 
     @Override

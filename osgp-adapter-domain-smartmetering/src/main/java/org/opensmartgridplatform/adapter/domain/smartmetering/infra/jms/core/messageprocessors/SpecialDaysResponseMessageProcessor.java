@@ -9,16 +9,15 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 
 @Component
 public class SpecialDaysResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -28,7 +27,7 @@ public class SpecialDaysResponseMessageProcessor extends OsgpCoreResponseMessage
     private ConfigurationService configurationService;
 
     protected SpecialDaysResponseMessageProcessor() {
-        super(DeviceFunction.SET_SPECIAL_DAYS);
+        super(MessageType.SET_SPECIAL_DAYS);
     }
 
     @Override

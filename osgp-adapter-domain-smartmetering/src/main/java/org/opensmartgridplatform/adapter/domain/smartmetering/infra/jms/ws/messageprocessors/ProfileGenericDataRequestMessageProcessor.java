@@ -7,16 +7,15 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ProfileGenericDataRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -26,7 +25,7 @@ public class ProfileGenericDataRequestMessageProcessor extends WebServiceRequest
     private MonitoringService monitoringService;
 
     protected ProfileGenericDataRequestMessageProcessor() {
-        super(DeviceFunction.GET_PROFILE_GENERIC_DATA);
+        super(MessageType.GET_PROFILE_GENERIC_DATA);
     }
 
     @Override

@@ -9,19 +9,19 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.messageprocessors;
 
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+
 import org.opensmartgridplatform.adapter.domain.da.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
 import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 
 /**
  * Class for processing da get health status request messages
@@ -38,7 +38,7 @@ public class GetHealthStatusRequestMessageProcessor extends AbstractWebServiceRe
     private DeviceManagementService deviceManagementService;
 
     public GetHealthStatusRequestMessageProcessor() {
-        super(DeviceFunction.GET_HEALTH_STATUS);
+        super(MessageType.GET_HEALTH_STATUS);
     }
 
     @Override

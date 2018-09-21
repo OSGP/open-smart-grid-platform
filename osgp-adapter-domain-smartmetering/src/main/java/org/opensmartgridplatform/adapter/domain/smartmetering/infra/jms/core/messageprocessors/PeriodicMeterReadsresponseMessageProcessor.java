@@ -7,18 +7,17 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.MonitoringService;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.MonitoringService;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 
 @Component
 public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -28,7 +27,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
     private MonitoringService monitoringService;
 
     protected PeriodicMeterReadsresponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
+        super(MessageType.REQUEST_PERIODIC_METER_DATA);
     }
 
     @Override

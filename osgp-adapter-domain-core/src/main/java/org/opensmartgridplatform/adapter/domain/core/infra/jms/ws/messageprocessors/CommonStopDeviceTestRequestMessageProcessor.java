@@ -10,17 +10,16 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.messageproces
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceInstallationService;
+import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceInstallationService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common stop device test request message
@@ -37,7 +36,7 @@ public class CommonStopDeviceTestRequestMessageProcessor extends WebServiceReque
     private DeviceInstallationService deviceInstallationService;
 
     public CommonStopDeviceTestRequestMessageProcessor() {
-        super(DeviceFunction.STOP_SELF_TEST);
+        super(MessageType.STOP_SELF_TEST);
     }
 
     @Override

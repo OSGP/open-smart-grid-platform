@@ -7,9 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 /**
  * Class for processing smart metering bundle response messages
@@ -18,6 +17,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 public class BundleResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     public BundleResponseMessageProcessor() {
-        super(DeviceFunction.HANDLE_BUNDLED_ACTIONS);
+        super(MessageType.HANDLE_BUNDLED_ACTIONS);
     }
 }

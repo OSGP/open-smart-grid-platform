@@ -7,9 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 
 /**
  * Class for processing smart metering default response messages
@@ -18,7 +17,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 public class AddMeterResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected AddMeterResponseMessageProcessor() {
-        super(DeviceFunction.ADD_METER);
+        super(MessageType.ADD_METER);
     }
 
 }

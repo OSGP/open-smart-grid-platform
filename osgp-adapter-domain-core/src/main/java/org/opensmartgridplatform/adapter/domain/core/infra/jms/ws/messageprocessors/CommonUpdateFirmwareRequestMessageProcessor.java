@@ -10,18 +10,17 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.messageproces
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.core.application.services.FirmwareManagementService;
+import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.core.application.services.FirmwareManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common update firmware request messages
@@ -38,7 +37,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends WebServiceReque
     private FirmwareManagementService firmwareManagementService;
 
     public CommonUpdateFirmwareRequestMessageProcessor() {
-        super(DeviceFunction.UPDATE_FIRMWARE);
+        super(MessageType.UPDATE_FIRMWARE);
     }
 
     @Override

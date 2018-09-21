@@ -9,19 +9,20 @@ package org.opensmartgridplatform.adapter.ws.admin.infra.jms;
 
 import java.io.Serializable;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 public class AdminRequestMessage extends RequestMessage {
-    private AdminRequestMessageType messageType;
+    private MessageType messageType;
 
-    public AdminRequestMessage(final AdminRequestMessageType messageType, final String correlationUid,
+    public AdminRequestMessage(final MessageType messageType, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification, final Serializable ovlRequest) {
         super(correlationUid, organisationIdentification, deviceIdentification, ovlRequest);
 
         this.messageType = messageType;
     }
 
-    public AdminRequestMessageType getMessageType() {
+    public MessageType getMessageType() {
         return this.messageType;
     }
 }

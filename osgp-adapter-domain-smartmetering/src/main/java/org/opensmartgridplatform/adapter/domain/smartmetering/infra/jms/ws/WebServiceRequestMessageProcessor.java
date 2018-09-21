@@ -11,16 +11,16 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.AbstractRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.AbstractRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -54,24 +54,25 @@ MessageProcessor {
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     /**
-     * The hash map of message processor instances.
+     * The map of message processor instances.
      */
+    @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap")
     @Autowired
-    protected WebServiceRequestMessageProcessorMap webServiceRequestMessageProcessorMap;
+    protected MessageProcessorMap webServiceRequestMessageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.
      */
-    protected DeviceFunction deviceFunction;
+    protected MessageType messageType;
 
     /**
      * Construct a message processor instance by passing in the message type.
      *
-     * @param deviceFunction
+     * @param messageType
      *            The message type a message processor can handle.
      */
-    protected WebServiceRequestMessageProcessor(final DeviceFunction deviceFunction) {
-        this.deviceFunction = deviceFunction;
+    protected WebServiceRequestMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
     }
 
     /**
@@ -82,8 +83,7 @@ MessageProcessor {
      */
     @PostConstruct
     public void init() {
-        this.webServiceRequestMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(),
-                this.deviceFunction.name(), this);
+        this.webServiceRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     /**

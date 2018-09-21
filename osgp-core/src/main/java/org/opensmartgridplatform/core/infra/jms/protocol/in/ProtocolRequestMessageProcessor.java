@@ -9,10 +9,11 @@ package org.opensmartgridplatform.core.infra.jms.protocol.in;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -24,35 +25,34 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 public abstract class ProtocolRequestMessageProcessor implements MessageProcessor {
 
     /**
-     * The hash map of message processor instances.
+     * The map of message processor instances.
      */
+    @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap")
     @Autowired
-    protected ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
+    protected MessageProcessorMap protocolRequestMessageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.
      */
-    protected DeviceFunction deviceFunction;
+    protected MessageType messageType;
 
     /**
      * Construct a message processor instance by passing in the message type.
      *
-     * @param deviceFunction
+     * @param messageType
      *            The message type a message processor can handle.
      */
-    protected ProtocolRequestMessageProcessor(final DeviceFunction deviceFunction) {
-        this.deviceFunction = deviceFunction;
+    protected ProtocolRequestMessageProcessor(final MessageType messageType) {
+        this.messageType = messageType;
     }
 
     /**
      * Initialization function executed after dependency injection has finished.
      * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        this.protocolRequestMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(),
-                this.deviceFunction.name(), this);
+        this.protocolRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 }

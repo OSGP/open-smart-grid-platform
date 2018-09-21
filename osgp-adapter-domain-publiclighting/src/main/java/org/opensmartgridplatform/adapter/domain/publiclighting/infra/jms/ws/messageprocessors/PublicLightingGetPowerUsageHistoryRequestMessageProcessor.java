@@ -10,18 +10,17 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.mes
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DeviceMonitoringService;
+import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.domain.core.valueobjects.PowerUsageHistoryMessageDataContainer;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DeviceMonitoringService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.PowerUsageHistoryMessageDataContainer;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing public lighting get power usage history request messages
@@ -39,7 +38,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends W
     private DeviceMonitoringService deviceMonitoringService;
 
     public PublicLightingGetPowerUsageHistoryRequestMessageProcessor() {
-        super(DeviceFunction.GET_POWER_USAGE_HISTORY);
+        super(MessageType.GET_POWER_USAGE_HISTORY);
     }
 
     @Override

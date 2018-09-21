@@ -12,20 +12,8 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageType;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingResponseMessageFinder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
@@ -40,7 +28,18 @@ import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataC
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsPublicLightingAdHocManagementService")
 @Transactional(value = "transactionManager")
@@ -104,8 +103,7 @@ public class AdHocManagementService {
                 lightValues);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, PublicLightingRequestMessageType.SET_LIGHT.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.SET_LIGHT.name(), messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(lightValueMessageDataContainer).build();
@@ -134,8 +132,7 @@ public class AdHocManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, PublicLightingRequestMessageType.GET_LIGHT_STATUS.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.GET_LIGHT_STATUS.name(), messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
@@ -167,8 +164,7 @@ public class AdHocManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, PublicLightingRequestMessageType.RESUME_SCHEDULE.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.RESUME_SCHEDULE.name(), messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(resumeScheduleData).build();
@@ -200,8 +196,7 @@ public class AdHocManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, PublicLightingRequestMessageType.SET_TRANSITION.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.SET_TRANSITION.name(), messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(transitionMessageDataContainer).build();
@@ -249,8 +244,8 @@ public class AdHocManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                PublicLightingRequestMessageType.SET_LIGHT_MEASUREMENT_DEVICE.name(), messagePriority);
+                organisationIdentification, correlationUid, MessageType.SET_LIGHT_MEASUREMENT_DEVICE.name(),
+                messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(lightMeasurementDeviceIdentification).build();

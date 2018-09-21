@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateMidnight;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
@@ -39,6 +38,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -209,8 +209,7 @@ public class DeviceInstallationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.GET_STATUS.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.GET_STATUS.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
@@ -245,8 +244,7 @@ public class DeviceInstallationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.START_SELF_TEST.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.START_SELF_TEST.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();
@@ -283,8 +281,7 @@ public class DeviceInstallationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, CommonRequestMessageType.STOP_SELF_TEST.name(),
-                messagePriority);
+                organisationIdentification, correlationUid, MessageType.STOP_SELF_TEST.name(), messagePriority);
 
         final CommonRequestMessage message = new CommonRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).build();

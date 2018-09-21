@@ -10,16 +10,8 @@ package org.opensmartgridplatform.adapter.ws.publiclighting.application.services
 import javax.validation.Valid;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessage;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageSender;
-import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageType;
 import org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms.PublicLightingResponseMessageFinder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
@@ -30,7 +22,14 @@ import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service(value = "wsPublicLightingScheduleManagementService")
 @Transactional(value = "transactionManager")
@@ -74,8 +73,8 @@ public class ScheduleManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, PublicLightingRequestMessageType.SET_LIGHT_SCHEDULE.name(),
-                messagePriority, scheduledTime == null ? null : scheduledTime.getMillis());
+                organisationIdentification, correlationUid, MessageType.SET_LIGHT_SCHEDULE.name(), messagePriority,
+                scheduledTime == null ? null : scheduledTime.getMillis());
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(schedule).build();
