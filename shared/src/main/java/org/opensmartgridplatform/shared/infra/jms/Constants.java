@@ -192,6 +192,11 @@ public class Constants {
      */
     public static final String BYPASS_RETRY = "BypassRetry";
 
+    /**
+     * JMS constant for message group.
+     */
+    public static final String MESSAGE_GROUP = "JMSXGroupID";
+
     // === DEPRECATED ===
 
     /**
