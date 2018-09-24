@@ -11,6 +11,8 @@ import org.quartz.Job;
 
 public class SchedulingConfigProperties {
 
+    private static final String DEFAULT_MAX_CONNECTIONS = "10";
+
     private final Class<? extends Job> jobClass;
     private final String threadCountKey;
     private final String cronExpressionKey;
@@ -18,6 +20,7 @@ public class SchedulingConfigProperties {
     private final String jobStoreDbUsername;
     private final String jobStoreDbPassword;
     private final String jobStoreDbDriver;
+    private final String maxConnections;
 
     private SchedulingConfigProperties(final Builder builder) {
         this.jobClass = builder.jobClass;
@@ -27,6 +30,7 @@ public class SchedulingConfigProperties {
         this.jobStoreDbUsername = builder.jobStoreDbUsername;
         this.jobStoreDbPassword = builder.jobStoreDbPassword;
         this.jobStoreDbDriver = builder.jobStoreDbDriver;
+        this.maxConnections = builder.maxConnections;
     }
 
     public static class Builder {
@@ -38,6 +42,7 @@ public class SchedulingConfigProperties {
         private String jobStoreDbUsername = null;
         private String jobStoreDbPassword = null;
         private String jobStoreDbDriver = null;
+        private String maxConnections = DEFAULT_MAX_CONNECTIONS;
 
         public SchedulingConfigProperties build() {
             return new SchedulingConfigProperties(this);
@@ -77,6 +82,11 @@ public class SchedulingConfigProperties {
             this.jobStoreDbDriver = jobStoreDbDriver;
             return this;
         }
+
+        public Builder withMaxConnections(final String maxConnections) {
+            this.maxConnections = maxConnections;
+            return this;
+        }
     }
 
     public static Builder newBuilder() {
@@ -109,6 +119,10 @@ public class SchedulingConfigProperties {
 
     public String getJobStoreDbDriver() {
         return this.jobStoreDbDriver;
+    }
+
+    public String getMaxConnections() {
+        return this.maxConnections;
     }
 
 }

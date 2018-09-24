@@ -109,7 +109,10 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         properties.put("org.quartz.dataSource.quartzDefault.user", schedulingConfigProperties.getJobStoreDbUsername());
         properties.put("org.quartz.dataSource.quartzDefault.password",
                 schedulingConfigProperties.getJobStoreDbPassword());
+
         properties.put("org.quartz.dataSource.quartzDefault.provider", "hikaricp");
+        properties.put("org.quartz.dataSource.quartzDefault.maxConnections",
+                schedulingConfigProperties.getMaxConnections());
 
         return properties;
     }
