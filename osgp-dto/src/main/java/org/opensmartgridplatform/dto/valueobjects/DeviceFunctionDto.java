@@ -7,6 +7,10 @@
  */
 package org.opensmartgridplatform.dto.valueobjects;
 
+/**
+ * @deprecated Use org.opensmartgridplatform.shared.infra.jms.MessageType instead.
+ */
+@Deprecated
 public enum DeviceFunctionDto {
     START_SELF_TEST,
     STOP_SELF_TEST,
@@ -89,5 +93,5 @@ public enum DeviceFunctionDto {
     CLEAR_ALARM_REGISTER,
     GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL,
     SCAN_MBUS_CHANNELS,
-    UPDATE_DEVICE_CDMA_SETTINGS;
+    UPDATE_DEVICE_CDMA_SETTINGS
 }
