@@ -13,7 +13,6 @@ import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSen
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
-// TODO (RvM): remove duplication with BaseMessageProcessor
 public abstract class AbstractRequestMessageProcessor {
 
     /**
