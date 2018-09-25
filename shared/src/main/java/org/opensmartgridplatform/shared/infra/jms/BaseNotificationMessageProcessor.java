@@ -34,7 +34,6 @@ public abstract class BaseNotificationMessageProcessor implements MessageProcess
      * Logger for this class.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseNotificationMessageProcessor.class);
-
     /**
      * This is the message sender needed for the message processor implementation to
      * handle an error.
@@ -44,12 +43,13 @@ public abstract class BaseNotificationMessageProcessor implements MessageProcess
     /**
      * The map of message processor instances.
      */
-    protected MessageProcessorMap messageProcessorMap;
+    protected final MessageProcessorMap messageProcessorMap;
+    private final ComponentType componentType;
 
     /**
      * The message types that a message processor implementation can handle.
      */
-    protected List<MessageType> messageTypes = new ArrayList<>();
+    protected final List<MessageType> messageTypes = new ArrayList<>();
 
     /**
      * Construct a message processor instance by passing in the message type.
@@ -62,6 +62,7 @@ public abstract class BaseNotificationMessageProcessor implements MessageProcess
         this.responseMessageSender = responseMessageSender;
         this.messageProcessorMap = messageProcessorMap;
         this.messageTypes.add(messageType);
+        this.componentType = ComponentType.UNKNOWN;
     }
 
     /**
@@ -105,12 +106,19 @@ public abstract class BaseNotificationMessageProcessor implements MessageProcess
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
-        final OsgpException osgpException = new TechnicalException(ComponentType.UNKNOWN, "An unknown error occurred",
-                e);
+        final OsgpException osgpException = osgpExceptionOf(e);
+
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.NOT_OK)
                 .withOsgpException(osgpException).withDataObject(e).build();
         this.responseMessageSender.send(responseMessage, messageType);
+    }
+
+    private OsgpException osgpExceptionOf(Exception e) {
+        if (e instanceof OsgpException) {
+            return  (OsgpException) e;
+        }
+        return new TechnicalException(componentType, "An unknown error occurred", e);
     }
 }

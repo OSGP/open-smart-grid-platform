@@ -57,8 +57,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
      *            The message type a message processor can handle.
      */
     protected BaseMessageProcessor(final ResponseMessageSender responseMessageSender,
-            final MessageProcessorMap messageProcessorMap,
-            final MessageType messageType,
+            final MessageProcessorMap messageProcessorMap, final MessageType messageType,
             final ComponentType componentType) {
         this.responseMessageSender = responseMessageSender;
         this.messageProcessorMap = messageProcessorMap;
@@ -109,17 +108,19 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType, final int messagePriority) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
-        OsgpException osgpException = null;
-        if (e instanceof OsgpException) {
-            osgpException = (OsgpException) e;
-        } else {
-            osgpException = new TechnicalException(componentType, "An unknown error occurred", e);
-        }
+        final OsgpException osgpException = osgpExceptionOf(e);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification).withResult(ResponseMessageResultType.NOT_OK)
                 .withOsgpException(osgpException).withDataObject(e).withMessagePriority(messagePriority).build();
         this.responseMessageSender.send(responseMessage);
+    }
+
+    private OsgpException osgpExceptionOf(Exception e) {
+        if (e instanceof OsgpException) {
+            return  (OsgpException) e;
+        }
+        return new TechnicalException(componentType, "An unknown error occurred", e);
     }
 }
