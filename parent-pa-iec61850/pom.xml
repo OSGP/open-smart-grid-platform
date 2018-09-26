@@ -81,7 +81,7 @@
     <guava.version>18.0</guava.version>
     <license.maven.plugin>2.11</license.maven.plugin>
     <hikaricp.version>2.4.0</hikaricp.version>
-    <openmuc.openiec61850.version>1.5.0</openmuc.openiec61850.version>
+    <openmuc.openiec61850.version>1.6.0</openmuc.openiec61850.version>
   </properties>
 
   <repositories>
