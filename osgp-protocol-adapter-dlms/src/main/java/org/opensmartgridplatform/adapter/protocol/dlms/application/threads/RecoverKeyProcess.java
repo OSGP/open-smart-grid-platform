@@ -147,7 +147,7 @@ public class RecoverKeyProcess implements Runnable {
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(authenticationKey)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
-                .setGlobalUnicastEncryptionKey(encryptionKey).setEncryptionMechanism(EncryptionMechanism.AES_GMC_128)
+                .setGlobalUnicastEncryptionKey(encryptionKey).setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
                 .build();
 
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(

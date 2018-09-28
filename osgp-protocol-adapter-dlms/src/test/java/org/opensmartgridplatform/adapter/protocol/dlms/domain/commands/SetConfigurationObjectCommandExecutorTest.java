@@ -164,8 +164,7 @@ public class SetConfigurationObjectCommandExecutorTest {
         final SetParameter capturedSetParameter = new SetParameter(attributeAddress, dataObject);
 
         // Verify AttributeAddress
-        final AttributeAddress capturedAttributeAddress = (AttributeAddress) Whitebox
-                .getInternalState(capturedSetParameter, "attributeAddress");
+        final AttributeAddress capturedAttributeAddress = capturedSetParameter.getAddress();
 
         final int resultingClassId = (Integer) Whitebox.getInternalState(capturedAttributeAddress, "classId");
         final ObisCode resultingObisCode = (ObisCode) Whitebox.getInternalState(capturedAttributeAddress, "instanceId");
@@ -180,8 +179,7 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     private DlmsDevice getDlmsDevice() {
-        final DlmsDevice device = new DlmsDevice(DEVICE_IDENTIFICATION);
-        return device;
+        return new DlmsDevice(DEVICE_IDENTIFICATION);
     }
 
     private List<ConfigurationFlagDto> getAllForbiddenFlags() {

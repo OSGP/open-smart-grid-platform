@@ -110,7 +110,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(dlmsAuthenticationKey)
                 .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
                 .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
-                .setEncryptionMechanism(EncryptionMechanism.AES_GMC_128).build();
+                .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128).build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
     }
