@@ -77,7 +77,7 @@
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
     <netty.version>3.9.4.Final</netty.version>
-    <openmuc.jdlms.version>1.5.3</openmuc.jdlms.version>
+    <openmuc.jdlms.version>1.6.0</openmuc.jdlms.version>
     <javax.inject.version>1</javax.inject.version>
     <license.maven.plugin>2.11</license.maven.plugin>
   </properties>
