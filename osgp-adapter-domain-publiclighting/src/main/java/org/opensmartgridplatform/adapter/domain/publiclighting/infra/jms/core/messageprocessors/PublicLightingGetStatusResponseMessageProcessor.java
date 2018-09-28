@@ -11,14 +11,17 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +33,7 @@ import org.springframework.stereotype.Component;
  * Class for processing public lighting get status response messages
  */
 @Component("domainPublicLightingGetStatusResponseMessageProcessor")
-public class PublicLightingGetStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class PublicLightingGetStatusResponseMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -40,8 +43,12 @@ public class PublicLightingGetStatusResponseMessageProcessor extends OsgpCoreRes
     @Qualifier("domainPublicLightingAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    protected PublicLightingGetStatusResponseMessageProcessor() {
-        super(MessageType.GET_LIGHT_STATUS);
+    @Autowired
+    protected PublicLightingGetStatusResponseMessageProcessor(
+            ResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.GET_LIGHT_STATUS,
+                ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

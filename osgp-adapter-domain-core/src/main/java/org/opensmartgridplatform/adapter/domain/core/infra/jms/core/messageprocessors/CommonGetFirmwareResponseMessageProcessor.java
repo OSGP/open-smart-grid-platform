@@ -13,10 +13,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.FirmwareManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -31,7 +34,7 @@ import org.springframework.stereotype.Component;
  * Class for processing common get firmware response messages
  */
 @Component("domainCoreCommonGetFirmwareResponseMessageProcessor")
-public class CommonGetFirmwareResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class CommonGetFirmwareResponseMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -41,8 +44,12 @@ public class CommonGetFirmwareResponseMessageProcessor extends OsgpCoreResponseM
     @Qualifier("domainCoreFirmwareManagementService")
     private FirmwareManagementService firmwareManagementService;
 
-    protected CommonGetFirmwareResponseMessageProcessor() {
-        super(MessageType.GET_FIRMWARE_VERSION);
+    @Autowired
+    protected CommonGetFirmwareResponseMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainCoreOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.GET_FIRMWARE_VERSION,
+                ComponentType.DOMAIN_CORE);
     }
 
     @Override

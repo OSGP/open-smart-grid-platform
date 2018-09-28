@@ -11,10 +11,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.microgrids.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataRequest;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,7 @@ import org.springframework.stereotype.Component;
  * Class for processing microgrids get data request messages
  */
 @Component("domainMicrogridsGetDataRequestMessageProcessor")
-public class GetDataRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
+public class GetDataRequestMessageProcessor extends BaseNotificationMessageProcessor {
     /**
      * Logger for this class
      */
@@ -35,8 +38,10 @@ public class GetDataRequestMessageProcessor extends AbstractWebServiceRequestMes
     @Qualifier("domainMicrogridsAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    public GetDataRequestMessageProcessor() {
-        super(MessageType.GET_DATA);
+    public GetDataRequestMessageProcessor(
+            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainMicrogridsWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_DATA);
     }
 
     @Override

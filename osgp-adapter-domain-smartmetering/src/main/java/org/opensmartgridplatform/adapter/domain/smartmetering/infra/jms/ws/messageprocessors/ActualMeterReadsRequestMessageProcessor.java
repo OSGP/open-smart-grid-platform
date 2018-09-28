@@ -8,24 +8,27 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.MonitoringService;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ActualMeterReadsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class ActualMeterReadsRequestMessageProcessor extends BaseRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringMonitoringService")
     private MonitoringService monitoringService;
 
-    public ActualMeterReadsRequestMessageProcessor() {
-        super(MessageType.REQUEST_ACTUAL_METER_DATA);
+    @Autowired
+    public ActualMeterReadsRequestMessageProcessor(
+            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(messageProcessorMap, MessageType.REQUEST_ACTUAL_METER_DATA);
     }
 
     @Override

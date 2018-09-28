@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.core.infra.jms.protocol;
 
+import static org.opensmartgridplatform.shared.infra.jms.MessageType.GET_POWER_USAGE_HISTORY;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
@@ -16,7 +18,6 @@ import org.opensmartgridplatform.core.domain.model.protocol.ProtocolRequestServi
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessage;
 import org.opensmartgridplatform.core.infra.messaging.CoreLogItemRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
-import org.opensmartgridplatform.dto.valueobjects.DeviceFunctionDto;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.slf4j.Logger;
@@ -70,7 +71,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
         final Long originalTimeToLive = jmsTemplate.getTimeToLive();
         boolean isCustomTimeToLiveSet = false;
-        if (requestMessage.getMessageType().equals(DeviceFunctionDto.GET_POWER_USAGE_HISTORY.toString())) {
+        if (requestMessage.getMessageType().equals(GET_POWER_USAGE_HISTORY.toString())) {
             jmsTemplate.setTimeToLive(this.getPowerUsageHistoryRequestTimeToLive);
             isCustomTimeToLiveSet = true;
         }

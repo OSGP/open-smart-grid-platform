@@ -10,8 +10,11 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.AdhocService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +28,12 @@ public class GetAllAttributeValuesResponseMessageProcessor extends OsgpCoreRespo
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    public GetAllAttributeValuesResponseMessageProcessor() {
-        super(MessageType.GET_ALL_ATTRIBUTE_VALUES);
+    @Autowired
+    public GetAllAttributeValuesResponseMessageProcessor(
+            WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_ALL_ATTRIBUTE_VALUES,
+                ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override

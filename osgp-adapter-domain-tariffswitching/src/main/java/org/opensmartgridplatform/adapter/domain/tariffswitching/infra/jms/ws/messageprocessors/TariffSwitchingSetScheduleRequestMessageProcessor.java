@@ -11,10 +11,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.ScheduleManagementService;
-import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +29,7 @@ import org.springframework.stereotype.Component;
  * Class for processing tariff switching set schedule request messages
  */
 @Component("domainTariffSwitchingSetScheduleRequestMessageProcessor")
-public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class TariffSwitchingSetScheduleRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +40,12 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServic
     @Qualifier("domainTariffSwitchingScheduleManagementService")
     private ScheduleManagementService scheduleManagementService;
 
-    public TariffSwitchingSetScheduleRequestMessageProcessor() {
-        super(MessageType.SET_TARIFF_SCHEDULE);
+    @Autowired
+    public TariffSwitchingSetScheduleRequestMessageProcessor(
+            ResponseMessageSender responseMessageSender,
+            @Qualifier("domainTariffSwitchingWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.SET_TARIFF_SCHEDULE,
+                ComponentType.DOMAIN_TARIFF_SWITCHING);
     }
 
     @Override

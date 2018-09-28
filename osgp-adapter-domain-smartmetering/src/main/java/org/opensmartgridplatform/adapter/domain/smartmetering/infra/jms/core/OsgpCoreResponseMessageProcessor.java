@@ -25,10 +25,9 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -49,28 +48,31 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      * This is the message sender needed for the message processor implementation to
      * forward response messages to web service adapter.
      */
-    @Autowired
-    protected WebServiceResponseMessageSender webServiceResponseMessageSender;
+    protected final WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     /**
      * The map of message processor instances.
      */
-    @Autowired
-    @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap")
-    protected MessageProcessorMap osgpCoreResponseMessageProcessorMap;
+    protected final MessageProcessorMap osgpCoreResponseMessageProcessorMap;
+    private final ComponentType componentType;
 
     /**
      * The message types that a message processor implementation can handle.
      */
-    protected List<MessageType> messageTypes = new ArrayList<>();
+    protected final List<MessageType> messageTypes = new ArrayList<>();
 
     /**
      * Construct a message processor instance by passing in the message type.
      *
      * @param messageType
      *            The message type a message processor can handle.
+     * @param componentType
      */
-    protected OsgpCoreResponseMessageProcessor(final MessageType messageType) {
+    protected OsgpCoreResponseMessageProcessor(WebServiceResponseMessageSender webServiceResponseMessageSender,
+            MessageProcessorMap osgpCoreResponseMessageProcessorMap, final MessageType messageType, ComponentType componentType) {
+        this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+        this.osgpCoreResponseMessageProcessorMap = osgpCoreResponseMessageProcessorMap;
+        this.componentType = componentType;
         this.messageTypes.add(messageType);
     }
 
@@ -216,6 +218,6 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
             return (OsgpException) e;
         }
 
-        return new TechnicalException(ComponentType.DOMAIN_SMART_METERING, "An unknown error occurred", e);
+        return new TechnicalException(componentType, "An unknown error occurred", e);
     }
 }

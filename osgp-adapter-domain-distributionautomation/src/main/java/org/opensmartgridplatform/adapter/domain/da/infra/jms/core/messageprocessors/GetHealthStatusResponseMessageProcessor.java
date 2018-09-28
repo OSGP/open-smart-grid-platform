@@ -13,11 +13,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.domain.da.infra.jms.core.AbstractOsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ import org.springframework.stereotype.Component;
  * Class for processing da get health status response messages
  */
 @Component("domainDistributionAutomationGetHealthStatusResponseMessageProcessor")
-public class GetHealthStatusResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
+public class GetHealthStatusResponseMessageProcessor extends BaseNotificationMessageProcessor {
     /**
      * Logger for this class
      */
@@ -40,8 +42,11 @@ public class GetHealthStatusResponseMessageProcessor extends AbstractOsgpCoreRes
     @Qualifier("domainDistributionAutomationDeviceManagementService")
     private DeviceManagementService deviceManagementService;
 
-    protected GetHealthStatusResponseMessageProcessor() {
-        super(MessageType.GET_HEALTH_STATUS);
+    @Autowired
+    protected GetHealthStatusResponseMessageProcessor(
+            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_HEALTH_STATUS);
     }
 
     @Override

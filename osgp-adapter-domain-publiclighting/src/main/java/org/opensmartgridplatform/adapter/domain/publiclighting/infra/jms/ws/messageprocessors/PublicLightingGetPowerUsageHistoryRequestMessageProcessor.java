@@ -11,9 +11,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DeviceMonitoringService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.PowerUsageHistoryMessageDataContainer;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
@@ -26,7 +29,7 @@ import org.springframework.stereotype.Component;
  * Class for processing public lighting get power usage history request messages
  */
 @Component("domainPublicLightingGetPowerUsageHistoryRequestMessageProcessor")
-public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +40,12 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends W
     @Qualifier("domainPublicLightingDeviceMonitoringService")
     private DeviceMonitoringService deviceMonitoringService;
 
-    public PublicLightingGetPowerUsageHistoryRequestMessageProcessor() {
-        super(MessageType.GET_POWER_USAGE_HISTORY);
+    @Autowired
+    public PublicLightingGetPowerUsageHistoryRequestMessageProcessor(
+            WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
+        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.GET_POWER_USAGE_HISTORY,
+                ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

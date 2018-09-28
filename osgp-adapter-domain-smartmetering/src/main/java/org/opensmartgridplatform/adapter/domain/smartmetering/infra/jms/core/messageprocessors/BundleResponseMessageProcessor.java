@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.BundleService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
@@ -22,6 +23,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +37,12 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
     @Qualifier("domainSmartMeteringBundleService")
     private BundleService bundleService;
 
-    public BundleResponseMessageProcessor() {
-        super(MessageType.HANDLE_BUNDLED_ACTIONS);
+    @Autowired
+    public BundleResponseMessageProcessor(
+            WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.HANDLE_BUNDLED_ACTIONS,
+                ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override

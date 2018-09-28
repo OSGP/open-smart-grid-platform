@@ -11,10 +11,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -29,7 +32,7 @@ import org.springframework.stereotype.Component;
  * Class for processing common get configuration response messages
  */
 @Component("domainCoreCommonGetConfigurationResponseMessageProcessor")
-public class CommonGetConfigurationResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class CommonGetConfigurationResponseMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -39,8 +42,12 @@ public class CommonGetConfigurationResponseMessageProcessor extends OsgpCoreResp
     @Qualifier("domainCoreConfigurationManagementService")
     private ConfigurationManagementService configurationManagementService;
 
-    protected CommonGetConfigurationResponseMessageProcessor() {
-        super(MessageType.GET_CONFIGURATION);
+    @Autowired
+    protected CommonGetConfigurationResponseMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainCoreOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.GET_CONFIGURATION,
+                ComponentType.DOMAIN_CORE);
     }
 
     @Override

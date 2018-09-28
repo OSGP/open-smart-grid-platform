@@ -11,15 +11,12 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -29,33 +26,18 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * MessageProcessors after dependency injection has completed.
  *
  */
-public abstract class OsgpCoreRequestMessageProcessor extends AbstractRequestMessageProcessor implements
+public abstract class BaseRequestMessageProcessor extends AbstractRequestMessageProcessor implements
         MessageProcessor {
 
     /**
      * Logger for this class.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageProcessor.class);
-
-    /**
-     * This is the message sender needed for the message processor
-     * implementations to handle the forwarding of messages to WS-SmartMetering.
-     * <p>
-     * Requests from OSGP-Core (which should be notifications not based on an
-     * earlier request) are handled as the existing notification responses (that
-     * do belong with earlier requests) from here. In this way, the system
-     * handling the notifications does not have to make a distinction in the way
-     * of handling these notification types.
-     */
-    @Autowired
-    protected WebServiceResponseMessageSender webServiceResponseMessageSender;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseRequestMessageProcessor.class);
 
     /**
      * The map of message processor instances.
      */
-    @Qualifier("domainSmartMeteringOsgpCoreRequestMessageProcessorMap")
-    @Autowired
-    protected MessageProcessorMap osgpCoreRequestMessageProcessorMap;
+    protected MessageProcessorMap messageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.
@@ -65,10 +47,12 @@ public abstract class OsgpCoreRequestMessageProcessor extends AbstractRequestMes
     /**
      * Construct a message processor instance by passing in the message type.
      *
+     * @param messageProcessorMap
      * @param messageType
-     *            The message type a message processor can handle.
+ *            The message type a message processor can handle.
      */
-    protected OsgpCoreRequestMessageProcessor(final MessageType messageType) {
+    protected BaseRequestMessageProcessor(MessageProcessorMap messageProcessorMap, final MessageType messageType) {
+        this.messageProcessorMap = messageProcessorMap;
         this.messageType = messageType;
     }
 
@@ -80,7 +64,17 @@ public abstract class OsgpCoreRequestMessageProcessor extends AbstractRequestMes
      */
     @PostConstruct
     public void init() {
-        this.osgpCoreRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
+        this.messageProcessorMap.addMessageProcessor(this.messageType, this);
+    }
+
+    /**
+     * Indicates if the message processor contains a dataobject that should be
+     * handled. Normally requests do contains some data, so the default is TRUE.
+     *
+     * @return Does the message contain a dataobject to be processed.
+     */
+    public boolean messageContainsDataObject() {
+        return true;
     }
 
     @Override
@@ -93,16 +87,23 @@ public abstract class OsgpCoreRequestMessageProcessor extends AbstractRequestMes
             dataObject = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug(deviceMessageMetadata.toString());
+            LOGGER.debug("device metadata: {}", deviceMessageMetadata);
             return;
         }
 
         try {
             LOGGER.info("Calling application service function: {}", deviceMessageMetadata.getMessageType());
+            if (this.messageContainsDataObject()) {
             this.handleMessage(deviceMessageMetadata, dataObject);
+            } else {
+                this.handleMessage(deviceMessageMetadata);
+            }
 
         } catch (final Exception e) {
-            this.handleError(e, deviceMessageMetadata, "Unexpected exception while retrieving message");
+            this.handleError(e, deviceMessageMetadata.getCorrelationUid(),
+                    deviceMessageMetadata.getOrganisationIdentification(),
+                    deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getMessageType(),
+                    deviceMessageMetadata.getMessagePriority());
         }
     }
 

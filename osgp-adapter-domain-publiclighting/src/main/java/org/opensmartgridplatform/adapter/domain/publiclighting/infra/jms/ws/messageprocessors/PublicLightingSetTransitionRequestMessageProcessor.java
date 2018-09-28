@@ -11,20 +11,24 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.SetTransitionService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
  * Class for processing public lighting set transition request messages
  */
 @Component("domainPublicLightingSetTransitionRequestMessageProcessor")
-public class PublicLightingSetTransitionRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class PublicLightingSetTransitionRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -34,8 +38,12 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends WebServi
     @Autowired
     private SetTransitionService setTransitionService;
 
-    public PublicLightingSetTransitionRequestMessageProcessor() {
-        super(MessageType.SET_TRANSITION);
+    @Autowired
+    public PublicLightingSetTransitionRequestMessageProcessor(
+            WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
+        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.SET_TRANSITION,
+                ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

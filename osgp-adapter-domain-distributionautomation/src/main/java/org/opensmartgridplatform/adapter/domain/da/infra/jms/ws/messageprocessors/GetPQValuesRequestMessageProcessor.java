@@ -13,10 +13,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.MonitoringService;
-import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.domain.da.valueobjects.GetPQValuesRequest;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,7 @@ import org.springframework.stereotype.Component;
  * Class for processing da get pq values request messages
  */
 @Component("domainDistributionAutomationGetPQValuesRequestMessageProcessor")
-public class GetPQValuesRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
+public class GetPQValuesRequestMessageProcessor extends BaseNotificationMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +40,11 @@ public class GetPQValuesRequestMessageProcessor extends AbstractWebServiceReques
     @Qualifier("domainDistributionAutomationMonitoringService")
     private MonitoringService monitoringService;
 
-    public GetPQValuesRequestMessageProcessor() {
-        super(MessageType.GET_POWER_QUALITY_VALUES);
+    @Autowired
+    public GetPQValuesRequestMessageProcessor(
+            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_POWER_QUALITY_VALUES);
     }
 
     @Override

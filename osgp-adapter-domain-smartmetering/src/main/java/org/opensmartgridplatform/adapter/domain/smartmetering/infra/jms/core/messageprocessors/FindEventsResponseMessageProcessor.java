@@ -9,9 +9,12 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +28,11 @@ public class FindEventsResponseMessageProcessor extends OsgpCoreResponseMessageP
     @Qualifier("domainSmartMeteringManagementService")
     private ManagementService managementService;
 
-    public FindEventsResponseMessageProcessor() {
-        super(MessageType.FIND_EVENTS);
+    @Autowired
+    public FindEventsResponseMessageProcessor(
+            WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.FIND_EVENTS, ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override

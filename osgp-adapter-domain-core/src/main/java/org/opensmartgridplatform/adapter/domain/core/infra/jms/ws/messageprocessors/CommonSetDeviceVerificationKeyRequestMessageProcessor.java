@@ -11,9 +11,12 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +28,7 @@ import org.springframework.stereotype.Component;
  * Class for processing common set device verification key request messages
  */
 @Component("domainCoreCommonSetDeviceVerificationKeyRequestMessageProcessor")
-public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends BaseMessageProcessor {
 
     /**
      * Logger for this class
@@ -37,8 +40,12 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebSe
     @Qualifier("domainCoreDeviceManagementService")
     private DeviceManagementService deviceManagementService;
 
-    public CommonSetDeviceVerificationKeyRequestMessageProcessor() {
-        super(MessageType.SET_DEVICE_VERIFICATION_KEY);
+    @Autowired
+    public CommonSetDeviceVerificationKeyRequestMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.SET_DEVICE_VERIFICATION_KEY,
+                ComponentType.DOMAIN_CORE);
     }
 
     @Override
