@@ -14,12 +14,6 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.listener.SessionAwareMessageListener;
-
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -30,6 +24,11 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.listener.SessionAwareMessageListener;
 
 public class DeviceRequestMessageListener implements SessionAwareMessageListener<Message> {
 
@@ -52,16 +51,19 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
     @Override
     public void onMessage(final Message message, final Session session) throws JMSException {
         final ObjectMessage objectMessage = (ObjectMessage) message;
+        String correlationUid = null;
         String messageType = null;
         int messagePriority;
         MessageProcessor processor;
         try {
+            correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             messagePriority = message.getJMSPriority();
-            LOGGER.info("Received message of type: {} with message priority: {}", messageType, messagePriority);
+            LOGGER.info("Received message [correlationUid={}, messageType={}, messagePriority={}]", correlationUid,
+                    messageType, messagePriority);
             processor = this.iec61850RequestMessageProcessorMap.getMessageProcessor(objectMessage);
         } catch (final IllegalArgumentException | JMSException e) {
-            LOGGER.error("Unexpected IllegalArgumentException | JMSExceptionduring during onMessage(Message)", e);
+            LOGGER.error("Unexpected exception for message [correlationUid={}]", correlationUid, e);
             this.createAndSendException(objectMessage, messageType);
             return;
         }

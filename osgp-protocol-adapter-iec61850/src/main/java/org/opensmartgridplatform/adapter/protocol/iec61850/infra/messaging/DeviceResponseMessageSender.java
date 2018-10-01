@@ -13,6 +13,11 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceConnectionService;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +26,6 @@ import org.springframework.jms.IllegalStateException;
 import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-
-import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceConnectionService;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 
 public class DeviceResponseMessageSender implements ResponseMessageSender {
 
@@ -108,9 +107,10 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
     private void sendMessage(final ProtocolResponseMessage responseMessage) {
 
-        LOGGER.info("Sending protocol response message for device: {} of message type: {} with message priority: {}",
-                responseMessage.getDeviceIdentification(), responseMessage.getMessageType(),
-                responseMessage.getMessagePriority());
+        LOGGER.info(
+                "Sending protocol response message [correlationUid={}, device={}, messageType={}, messagePriority={}]",
+                responseMessage.getCorrelationUid(), responseMessage.getDeviceIdentification(),
+                responseMessage.getMessageType(), responseMessage.getMessagePriority());
 
         this.iec61850ResponsesJmsTemplate.send(new MessageCreator() {
             @Override
