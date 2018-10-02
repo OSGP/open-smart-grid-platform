@@ -22,14 +22,13 @@ import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.Report;
-import org.springframework.util.CollectionUtils;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.EventTypeDto;
+import org.springframework.util.CollectionUtils;
 
 public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventListener {
 
@@ -45,8 +44,8 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
 
     private static final Map<Short, String> TRG_TYPE_DESCRIPTION_PER_CODE = new TreeMap<>();
 
-    private static final Comparator<EventNotificationDto> NOTIFICATIONS_BY_TIME =
-            (o1, o2) -> o1.getDateTime().compareTo(o2.getDateTime());
+    private static final Comparator<EventNotificationDto> NOTIFICATIONS_BY_TIME = (o1, o2) -> o1.getDateTime()
+            .compareTo(o2.getDateTime());
 
     static {
         TRG_TYPE_DESCRIPTION_PER_CODE.put((short) 1, "light trigger (sensor trigger)");

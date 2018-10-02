@@ -13,9 +13,6 @@ import java.util.Set;
 
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -35,6 +32,8 @@ import org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LightTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LightValueDto;
 import org.opensmartgridplatform.dto.valueobjects.LinkTypeDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Iec61850GetStatusCommand {
 
@@ -63,7 +62,8 @@ public class Iec61850GetStatusCommand {
                     LOGGER.info(String.format("Got status of relay %d => %s", deviceOutputSetting.getInternalId(),
                             on ? "on" : "off"));
 
-                    deviceMessageLog.addVariable(logicalNode, DataAttribute.POSITION, Fc.ST, Boolean.toString(on));
+                    deviceMessageLog.addVariable(logicalNode, DataAttribute.POSITION, Fc.ST, SubDataAttribute.STATE,
+                            Boolean.toString(on));
                 }
 
                 final NodeContainer eventBuffer = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
@@ -74,7 +74,7 @@ public class Iec61850GetStatusCommand {
                 LOGGER.info("Got EvnBuf.enbEvnType filter {}", filter);
 
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.EVENT_BUFFER, Fc.CF,
-                        filter);
+                        SubDataAttribute.EVENT_BUFFER_FILTER, filter);
 
                 final Set<EventNotificationTypeDto> notificationTypes = EventType.getNotificationTypesForFilter(filter);
                 int eventNotificationsMask = 0;
@@ -94,7 +94,7 @@ public class Iec61850GetStatusCommand {
                 final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue);
 
                 deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION,
-                        DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, lightTypeValue);
+                        DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF, SubDataAttribute.LIGHT_TYPE, lightTypeValue);
 
                 DeviceMessageLoggingService.logMessage(deviceMessageLog, deviceConnection.getDeviceIdentification(),
                         deviceConnection.getOrganisationIdentification(), false);
