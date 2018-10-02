@@ -198,8 +198,9 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private final Random random = new Random();
 
-    private static final int CUMALATIVE_BURNING_MINUTES = 600;
-    private static int INITIAL_BURNING_MINUTES = 100000;
+    private static final int CUMULATIVE_BURNING_MINUTES = 600;
+    private static final int INITIAL_BURNING_MINUTES = 100000;
+    private static int burningMinutes = INITIAL_BURNING_MINUTES;
 
     public static class OutOfSequenceEvent {
         private final Long deviceId;
@@ -294,7 +295,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
                 callback.handle(message);
             } else {
-                LOGGER.info("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
+                final String oslpRequest = message.getPayloadMessage().toString().split(" ")[0];
+                LOGGER.info("Received OSLP Request: {}", oslpRequest);
 
                 // Sequence number logic
                 byte[] sequenceNumber = message.getSequenceNumber();
@@ -341,7 +343,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 LOGGER.info("sending OSLP response with sequence number: {}",
                         this.convertByteArrayToInteger(response.getSequenceNumber()));
                 e.getChannel().write(response);
-                LOGGER.info("Send OSLP Response: {}", response.getPayloadMessage().toString().split(" ")[0]);
+                final String oslpResponse = response.getPayloadMessage().toString().split(" ")[0];
+                LOGGER.info("Sent OSLP Response: {}", oslpResponse);
             }
         } else {
             LOGGER.warn("Received message wasn't properly secured.");
@@ -421,7 +424,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             LOGGER.info("Received OSLP response (after callback): {}", response.getPayloadMessage());
 
             /*
-             * Devices expect the channel to be closed if (and only if) the
+             * Devices expect the channel to be closed if - and only if - the
              * platform initiated the conversation. If the device initiated the
              * conversation it needs to close the channel itself.
              */
@@ -490,11 +493,13 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
         // If responseDelayTime (and optional responseDelayRandomRange) are set,
         // sleep for a little while
-        if (this.responseDelayTime != null && this.reponseDelayRandomRange == null) {
-            this.sleep(this.responseDelayTime);
-        } else if (this.responseDelayTime != null && this.reponseDelayRandomRange != null) {
-            final Long randomDelay = (long) (this.reponseDelayRandomRange * this.random.nextDouble());
-            this.sleep(this.responseDelayTime + randomDelay);
+        if (this.responseDelayTime != null) {
+            if (this.reponseDelayRandomRange == null) {
+                this.sleep(this.responseDelayTime);
+            } else {
+                final Long randomDelay = (long) (this.reponseDelayRandomRange * this.random.nextDouble());
+                this.sleep(this.responseDelayTime + randomDelay);
+            }
         }
 
         // Handle only expected messages
@@ -567,7 +572,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                     request.getConfirmRegisterDeviceRequest().getRandomPlatform());
         } else {
             // Handle errors by logging
-            LOGGER.error("Did not expect request, ignoring: " + request.toString());
+            LOGGER.error("Did not expect request, ignoring: {}", request);
         }
 
         // Update device
@@ -575,7 +580,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         this.deviceManagementService.updateDevice(device);
 
         // Write log entry for response
-        LOGGER.debug("Responding: " + response);
+        LOGGER.debug("Responding: {}", response);
 
         return response;
     }
@@ -624,17 +629,17 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 device.getDeviceIdentification(), setScheduleRequest.getSchedulesCount());
     }
 
-    private static Message createStartSelfTestResponse() throws IOException {
+    private static Message createStartSelfTestResponse() {
         return Oslp.Message.newBuilder()
                 .setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
-    private static Message createStopSelfTestResponse() throws IOException {
+    private static Message createStopSelfTestResponse() {
         return Oslp.Message.newBuilder().setStopSelfTestResponse(StopSelfTestResponse.newBuilder()
                 .setStatus(Oslp.Status.OK).setSelfTestResult(ByteString.copyFrom(new byte[] { 0 }))).build();
     }
 
-    private static Message createSetLightResponse() throws IOException {
+    private static Message createSetLightResponse() {
         return Oslp.Message.newBuilder().setSetLightResponse(SetLightResponse.newBuilder().setStatus(Oslp.Status.OK))
                 .build();
     }
@@ -760,7 +765,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         // Fill page with items
         for (int i = 0; i < itemsOnPage; i++) {
             final int range = (100) + 1;
-            final int randomCumulativeMinutes = (int) (Math.random() * range) + 100;
+            final int randomCumulativeMinutes = new Random().nextInt(range) + 100;
 
             // Increase the meter
             final double random = usagePerItem - (usagePerItem / 50d * Math.random());
@@ -774,17 +779,17 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                             .setActualPower1(10).setActualPower2(20).setActualPower3(30).setAveragePowerFactor1(10)
                             .setAveragePowerFactor2(20).setAveragePowerFactor3(30)
                             .addRelayData(Oslp.RelayData.newBuilder().setIndex(ByteString.copyFrom(new byte[] { 2 }))
-                                    .setTotalLightingMinutes(INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
+                                    .setTotalLightingMinutes(burningMinutes - randomCumulativeMinutes))
                             .addRelayData(Oslp.RelayData.newBuilder().setIndex(ByteString.copyFrom(new byte[] { 3 }))
-                                    .setTotalLightingMinutes(INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
+                                    .setTotalLightingMinutes(burningMinutes - randomCumulativeMinutes))
                             .addRelayData(Oslp.RelayData.newBuilder().setIndex(ByteString.copyFrom(new byte[] { 4 }))
-                                    .setTotalLightingMinutes(INITIAL_BURNING_MINUTES - randomCumulativeMinutes)))
+                                    .setTotalLightingMinutes(burningMinutes - randomCumulativeMinutes)))
                     .build();
 
             powerUsageDataList.add(powerUsageData);
             pageStartTime = pageStartTime.minusMinutes(intervalMinutes);
 
-            INITIAL_BURNING_MINUTES -= CUMALATIVE_BURNING_MINUTES;
+            burningMinutes -= CUMULATIVE_BURNING_MINUTES;
         }
 
         return createUsageMessage(currentPageNumber, itemsPerPage, numberOfPages, powerUsageDataList);
@@ -969,7 +974,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         builder.setEventNotificationMask(device.getEventNotificationMask());
 
         LOGGER.info("device.getProtocol(): {}", device.getProtocol());
-        LOGGER.info("ProtocolType.OSLP_ELSTER.name(): {}", ProtocolType.OSLP_ELSTER.name());
+        LOGGER.info("ProtocolType.OSLP_ELSTER.name(): {}", ProtocolType.OSLP_ELSTER);
 
         if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
             builder.setNumberOfOutputs(4);
@@ -1131,6 +1136,8 @@ osgp_core=# select * from event where device = (select id from device where devi
     }
 
     private void handleUpdateFirmwareRequest(final Device device, final UpdateFirmwareRequest request) {
+        LOGGER.debug("handle UpdateFirmwareRequest for device: {}, with serialized size of {}",
+                device.getDeviceIdentification(), request.getSerializedSize());
         // For now, do nothing, perhaps store firmware version, so that it can
         // be displayed ???
     }
@@ -1157,16 +1164,21 @@ osgp_core=# select * from event where device = (select id from device where devi
         }
     }
 
-    private void handleGetConfigurationRequest(final Device device,
-            final Oslp.GetConfigurationRequest getConfigurationRequest) {
+    private void handleGetConfigurationRequest(final Device device, final Oslp.GetConfigurationRequest request) {
+        LOGGER.debug("handle GetConfigurationRequest for device: {}, with serialized size of {}",
+                device.getDeviceIdentification(), request.getSerializedSize());
         // Do nothing for now.
     }
 
     private void handleGetActualPowerUsageRequest(final Device device, final GetActualPowerUsageRequest request) {
+        LOGGER.debug("handle GetActualPowerUsageRequest for device: {}, with serialized size of {}",
+                device.getDeviceIdentification(), request.getSerializedSize());
         // Do nothing for now.
     }
 
     private void handleGetPowerUsageHistoryRequest(final Device device, final GetPowerUsageHistoryRequest request) {
+        LOGGER.debug("handle GetPowerUsageHistoryRequest for device: {}, with serialized size of {}",
+                device.getDeviceIdentification(), request.getSerializedSize());
         // Do nothing for now.
     }
 
