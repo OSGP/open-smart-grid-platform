@@ -21,9 +21,6 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import org.opensmartgridplatform.cucumber.core.GlueBase;
@@ -38,6 +35,8 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -57,6 +56,18 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
     @Autowired
     private CoreDeviceManagementClient client;
 
+    @Given("^all events$")
+    public void allEvents(final Map<String, String> data) {
+        final Device device = this.deviceRepository
+                .findByDeviceIdentification(getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+
+        for (final EventType eventType : EventType.values()) {
+            final Event event = new Event(device, getDateTime(PlatformDefaults.TIMESTAMP).toDate(), eventType,
+                    PlatformDefaults.DEFAULT_EVENT_DESCRIPTION, PlatformDefaults.DEFAULT_INDEX);
+            this.eventRepository.save(event);
+        }
+    }
+
     @Given("^(\\d+) events?$")
     public void anEvent(final int amount, final Map<String, String> data) throws Exception {
         final Device device = this.deviceRepository
@@ -66,7 +77,7 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
             final Event event = new Event(device,
                     getDateTime(getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP)).toDate(),
                     getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
-                    getString(data, PlatformKeys.KEY_DESCRIPTION),
+                    getString(data, PlatformKeys.KEY_DESCRIPTION, PlatformDefaults.DEFAULT_EVENT_DESCRIPTION),
                     getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
 
             this.eventRepository.save(event);
@@ -102,7 +113,8 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
                 .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE));
 
-        final List<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event> events = response.getEvents();
+        final List<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event> events = response
+                .getEvents();
 
         Assert.assertFalse(events.isEmpty());
 
@@ -128,6 +140,19 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
                         PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE));
 
         Assert.assertEquals(totalPages, (response.getPage().getTotalPages()));
+    }
+
+    @Then("^the retrieve event notification request response should contain (\\d+) pages and the current page should contain (\\d+) events$")
+    public void theRetrieveEventNotificationRequestIsReceivedAndTheCurrentPageContains(final int totalPages,
+            final int numberOfEvents, final Map<String, String> expectedResponse) {
+
+        final FindEventsResponse response = (FindEventsResponse) ScenarioContext.current()
+                .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                        PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE));
+
+        Assert.assertEquals(totalPages, (response.getPage().getTotalPages()));
+        Assert.assertEquals(numberOfEvents, (response.getEvents().size()));
+
     }
 
     @Then("^the stored events from \"([^\"]*)\" are filtered and retrieved$")
@@ -160,8 +185,7 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
 
         for (final Event e : events) {
             Assert.assertEquals(getEnum(expectedResponse, PlatformKeys.EVENT_TYPE, EventType.class), e.getEventType());
-            Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION),
-                    e.getDescription());
+            Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION), e.getDescription());
             Assert.assertEquals(
                     (int) getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX),
                     (int) e.getIndex());

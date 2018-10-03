@@ -68,6 +68,7 @@ public class PlatformDefaults {
 
     public static final String DEFAULT_EAN_DESCRIPTION = "dummy EAN description";
     public static final String DEFAULT_END_DATE = "";
+    public static final String DEFAULT_EVENT_DESCRIPTION = "Event description";
     public static final String DEFAULT_EVENTNOTIFICATIONS = "";
     public static final String DEFAULT_EVENTNOTIFICATIONTYPES = "";
     public static final Integer DEFAULT_EXTERNALID = 0;
