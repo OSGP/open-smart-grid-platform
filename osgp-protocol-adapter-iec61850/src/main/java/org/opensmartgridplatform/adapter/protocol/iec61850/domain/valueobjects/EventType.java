@@ -40,8 +40,9 @@ public enum EventType {
     NTP_SERVER_NOT_REACH(22, "NTP_SERVER_NOT_REACH", EventNotificationTypeDto.COMM_EVENTS, EventTypeDto.NTP_SERVER_NOT_REACH),
     NTP_SYNC_ALARM_OFFSET(23, "NTP_SYNC_ALARM_OFFSET", EventNotificationTypeDto.COMM_EVENTS, EventTypeDto.NTP_SYNC_ALARM_OFFSET),
     NTP_SYNC_MAX_OFFSET(24, "NTP_SYNC_MAX_OFFSET", EventNotificationTypeDto.COMM_EVENTS, EventTypeDto.NTP_SYNC_MAX_OFFSET),
-    AUTHENTICATION_FAIL(25, "AUTHENTICATION_FAIL", EventNotificationTypeDto.SECURITY_EVENTS, EventTypeDto.AUTHENTICATION_FAIL);
-    
+    AUTHENTICATION_FAIL(25, "AUTHENTICATION_FAIL", EventNotificationTypeDto.SECURITY_EVENTS, EventTypeDto.AUTHENTICATION_FAIL),
+    NTP_SYNC_SUCCESS(26, "NTP_SYNC_SUCCESS", EventNotificationTypeDto.COMM_EVENTS, EventTypeDto.NTP_SYNC_SUCCESS);
+
     private final int code;
     private final String description;
     private final EventNotificationTypeDto notificationType;
