@@ -122,10 +122,7 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
             Assert.assertNotNull(e.getTimestamp());
             Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                     PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION), e.getDeviceIdentification());
-            Assert.assertEquals(
-                    getEnum(expectedResponse, PlatformKeys.EVENT_TYPE,
-                            org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.EventType.class),
-                    e.getEventType());
+            Assert.assertEquals(getString(expectedResponse, PlatformKeys.EVENT_TYPE), e.getEventType());
             Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION), e.getDescription());
             Assert.assertEquals(getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX),
                     e.getIndex());
