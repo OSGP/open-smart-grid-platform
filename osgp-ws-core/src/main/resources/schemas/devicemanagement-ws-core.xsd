@@ -100,7 +100,7 @@
         <xsd:element name="PageSize" type="xsd:int"
           minOccurs="0" />
         <xsd:element name="Page" type="xsd:int" minOccurs="0" />
-        <xsd:element name="EventTypes" type="tns:EventType"
+        <xsd:element name="EventTypes" type="xsd:string"
           minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
@@ -613,63 +613,11 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:simpleType name="EventType">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="DIAG_EVENTS_GENERAL" />
-      <xsd:enumeration value="DIAG_EVENTS_UNKNOWN_MESSAGE_TYPE" />
-      <xsd:enumeration value="HARDWARE_FAILURE_RELAY" />
-      <xsd:enumeration value="HARDWARE_FAILURE_FLASH_WRITE_ERROR" />
-      <xsd:enumeration value="HARDWARE_FAILURE_FLASH_MEMORY_CORRUPT" />
-      <xsd:enumeration value="HARDWARE_FAILURE_RTC_NOT_SET" />
-      <xsd:enumeration value="LIGHT_FAILURE_DALI_COMMUNICATION" />
-      <xsd:enumeration value="LIGHT_FAILURE_BALLAST" />
-      <xsd:enumeration value="LIGHT_EVENTS_LIGHT_ON" />
-      <xsd:enumeration value="LIGHT_EVENTS_LIGHT_OFF" />
-      <xsd:enumeration value="MONITOR_EVENTS_LONG_BUFFER_FULL" />
-      <xsd:enumeration value="FIRMWARE_EVENTS_ACTIVATING" />
-      <xsd:enumeration value="FIRMWARE_EVENTS_DOWNLOAD_NOTFOUND" />
-      <xsd:enumeration value="FIRMWARE_EVENTS_DOWNLOAD_FAILED" />
-      <xsd:enumeration value="LIGHT_FAILURE_TARIFF_SWITCH_ATTEMPT" />
-      <xsd:enumeration value="TARIFF_EVENTS_TARIFF_ON" />
-      <xsd:enumeration value="TARIFF_EVENTS_TARIFF_OFF" />
-      <xsd:enumeration value="MONITOR_FAILURE_P1_COMMUNICATION" />
-      <xsd:enumeration value="COMM_EVENTS_ALTERNATIVE_CHANNEL" />
-      <xsd:enumeration value="COMM_EVENTS_RECOVERED_CHANNEL" />
-      <xsd:enumeration value="SECURITY_EVENTS_OUT_OF_SEQUENCE" />
-      <xsd:enumeration value="SECURITY_EVENTS_OSLP_VERIFICATION_FAILED" />
-      <xsd:enumeration value="SECURITY_EVENTS_INVALID_CERTIFICATE" />
-      <xsd:enumeration value="MONITOR_SHORT_DETECTED" />
-      <xsd:enumeration value="MONITOR_SHORT_RESOLVED" />
-      <xsd:enumeration value="MONITOR_DOOR_OPENED" />
-      <xsd:enumeration value="MONITOR_DOOR_CLOSED" />
-      <xsd:enumeration value="ALARM_NOTIFICATION" />
-      <xsd:enumeration value="SMS_NOTIFICATION" />
-      <xsd:enumeration value="MONITOR_EVENTS_TEST_RELAY_ON" />
-      <xsd:enumeration value="MONITOR_EVENTS_TEST_RELAY_OFF" />
-      <xsd:enumeration value="MONITOR_EVENTS_LOSS_OF_POWER" />
-      <xsd:enumeration value="MONITOR_EVENTS_LOCAL_MODE" />
-      <xsd:enumeration value="MONITOR_EVENTS_REMOTE_MODE" />
-      <xsd:enumeration value="FIRMWARE_EVENTS_CONFIGURATION_CHANGED" />
-      <xsd:enumeration value="FIRMWARE_EVENTS_DOWNLOAD_SUCCESS" />
-      <xsd:enumeration value="CA_FILE_EVENTS_ACTIVATING" />
-      <xsd:enumeration value="CA_FILE_FIRMWARE_EVENTS_DOWNLOAD_NOT_FOUND" />
-      <xsd:enumeration value="CA_FILE_EVENTS_DOWNLOAD_FAILED" />
-      <xsd:enumeration value="CA_FILE_EVENTS_DOWNLOAD_SUCCESS" />
-      <xsd:enumeration value="NTP_SERVER_NOT_REACH" />
-      <xsd:enumeration value="NTP_SYNC_ALARM_OFFSET" />
-      <xsd:enumeration value="NTP_SYNC_MAX_OFFSET" />
-      <xsd:enumeration value="NTP_SYNC_SUCCESS" />
-      <xsd:enumeration value="AUTHENTICATION_FAIL" />
-      <xsd:enumeration value="LIGHT_SENSOR_REPORTS_DARK" />
-      <xsd:enumeration value="LIGHT_SENSOR_REPORTS_LIGHT" />
-    </xsd:restriction>
-  </xsd:simpleType>
-
   <xsd:complexType name="Event">
     <xsd:sequence>
       <xsd:element name="deviceIdentification" type="common:Identification" />
       <xsd:element name="timestamp" type="xsd:dateTime" />
-      <xsd:element name="eventType" type="tns:EventType" />
+      <xsd:element name="eventType" type="xsd:string" />
       <xsd:element name="description" type="xsd:string" />
       <xsd:element name="index" type="xsd:int" minOccurs="0" />
     </xsd:sequence>
