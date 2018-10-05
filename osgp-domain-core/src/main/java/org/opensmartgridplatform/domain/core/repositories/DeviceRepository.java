@@ -11,6 +11,10 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.DeviceModel;
+import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,11 +24,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.domain.core.entities.DeviceModel;
-import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 
 @Repository
 @Transactional
@@ -37,6 +36,10 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
             + "WHERE d.deviceIdentification = :deviceIdentification")
     Device findByDeviceIdentificationWithFirmware(@Param("deviceIdentification") String deviceIdentification);
 
+    @Query("SELECT d FROM Device d LEFT JOIN FETCH d.deviceFirmwareModules dfm LEFT JOIN FETCH dfm.firmwareModule fm "
+            + "WHERE d.deviceIdentification = :deviceIdentification")
+    Device findByDeviceIdentificationWithFirmwareModules(@Param("deviceIdentification") String deviceIdentification);
+
     List<Device> findByNetworkAddress(InetAddress address);
 
     @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id "
@@ -45,7 +48,8 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
 
     @Query("SELECT d " + "FROM Device d " + "WHERE NOT EXISTS " + "(" + "	SELECT auth.id "
             + "	FROM d.authorizations auth "
-            + "	WHERE auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER" + ")")
+            + "	WHERE auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER"
+            + ")")
     List<Device> findDevicesWithNoOwner();
 
     @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id "

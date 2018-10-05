@@ -650,6 +650,9 @@ public class ConfigurationService {
         this.webServiceResponseMessageSender.send(
                 responseMessage,
                 deviceMessageMetadata.getMessageType());
+
+        this.firmwareService.saveFirmwareVersionsReturnedFromDevice(deviceMessageMetadata.getDeviceIdentification(),
+                firmwareVersions);
     }
 
     public void requestUpdateFirmware(final DeviceMessageMetadata deviceMessageMetadata,

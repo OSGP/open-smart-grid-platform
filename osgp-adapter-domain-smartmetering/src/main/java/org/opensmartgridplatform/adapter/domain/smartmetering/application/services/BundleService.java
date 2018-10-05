@@ -7,21 +7,19 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessageRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersion;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -29,6 +27,12 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainSmartMeteringBundleService")
 @Transactional(value = "transactionManager")
@@ -57,6 +61,12 @@ public class BundleService {
 
     @Autowired
     private ManagementService managementService;
+
+    @Autowired
+    private ConfigurationMapper configurationMapper;
+
+    @Autowired
+    private FirmwareService firmwareService;
 
     public BundleService() {
         // Parameterless constructor required for transactions...
@@ -116,6 +126,11 @@ public class BundleService {
             } else if (action instanceof SetDeviceLifecycleStatusByChannelResponseDto) {
                 this.managementService
                         .setDeviceLifecycleStatusByChannel((SetDeviceLifecycleStatusByChannelResponseDto) action);
+            } else if (action instanceof FirmwareVersionResponseDto) {
+                final List<FirmwareVersion> firmwareVersions = this.configurationMapper
+                        .mapAsList(((FirmwareVersionResponseDto) action).getFirmwareVersions(), FirmwareVersion.class);
+                this.firmwareService.saveFirmwareVersionsReturnedFromDevice(
+                        deviceMessageMetadata.getDeviceIdentification(), firmwareVersions);
             }
         }
     }

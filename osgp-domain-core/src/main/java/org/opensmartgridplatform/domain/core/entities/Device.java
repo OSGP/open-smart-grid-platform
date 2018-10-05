@@ -10,12 +10,17 @@ package org.opensmartgridplatform.domain.core.entities;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -203,6 +208,10 @@ public class Device implements Serializable {
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     @Sort(type = SortType.NATURAL)
     private final SortedSet<DeviceFirmwareFile> deviceFirmwareFiles = new TreeSet<>();
+
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Sort(type = SortType.NATURAL)
+    private final SortedSet<DeviceFirmwareModule> deviceFirmwareModules = new TreeSet<>();
 
     public Device() {
         // Default constructor
@@ -469,6 +478,43 @@ public class Device implements Serializable {
             return null;
         }
         return this.deviceFirmwareFiles.last().getFirmwareFile();
+    }
+
+    public Map<FirmwareModule, String> getFirmwareVersions() {
+        return this.deviceFirmwareModules.stream().collect(
+                Collectors.toMap(DeviceFirmwareModule::getFirmwareModule, DeviceFirmwareModule::getModuleVersion));
+    }
+
+    public void setFirmwareVersions(final Map<FirmwareModule, String> firmwareVersions) {
+        this.setFirmwareVersions(this.asDeviceFirmwareModules(firmwareVersions));
+    }
+
+    private Set<DeviceFirmwareModule> asDeviceFirmwareModules(final Map<FirmwareModule, String> firmwareVersions) {
+        if (firmwareVersions == null) {
+            return Collections.emptySet();
+        }
+        return firmwareVersions.entrySet().stream().map(e -> new DeviceFirmwareModule(this, e.getKey(), e.getValue()))
+                .collect(Collectors.toSet());
+    }
+
+    public void setFirmwareVersions(final Collection<DeviceFirmwareModule> deviceFirmwareModules) {
+        if (deviceFirmwareModules == null) {
+            this.setFirmwareVersions(Collections.emptyList());
+            return;
+        }
+
+        this.clearDeviceFirmwareModules();
+        deviceFirmwareModules.forEach(dfm -> {
+            if (this.equals(dfm.getDevice())) {
+                this.deviceFirmwareModules.add(dfm);
+            }
+        });
+    }
+
+    private void clearDeviceFirmwareModules() {
+        final TreeSet<DeviceFirmwareModule> old = new TreeSet<>(this.deviceFirmwareModules);
+        this.deviceFirmwareModules.clear();
+        old.forEach(DeviceFirmwareModule::prepareForRemoval);
     }
 
     public DeviceLifecycleStatus getDeviceLifecycleStatus() {
