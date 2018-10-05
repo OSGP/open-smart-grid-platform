@@ -6,8 +6,11 @@ Feature: SmartMetering Configuration - Firmware
 
   Scenario: Get the firmware version from device
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | DeviceIdentification      | TEST1024000000001 |
+      | DeviceType                | SMART_METER_E     |
+      | FirmwareModuleVersionComm | V 1.1             |
+      | FirmwareModuleVersionMa   | V 1.2             |
+      | FirmwareModuleVersionFunc | V 1.3             |
     And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
@@ -16,7 +19,16 @@ Feature: SmartMetering Configuration - Firmware
     When the get firmware version request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the firmware version result should be returned
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification      | TEST1024000000001      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+    And the database should be updated with the device firmware version
+      | DeviceIdentification      | TEST1024000000001      |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
+      | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareIsForSmartMeters  | true                   |
 
   Scenario: successful upgrade of firmware
     Given a manufacturer
@@ -86,6 +98,8 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionFunc | M57 4836               |
     And the database should be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002 |
+      | FirmwareModuleVersionComm | Telit 10.00.154        |
+      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836          |
 
   Scenario: upgrade of firmware, installation file not available

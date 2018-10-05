@@ -7,20 +7,16 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
@@ -31,12 +27,17 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.U
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.DeviceFirmwareModuleSteps;
+import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.ScenarioContextHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.UpdateFirmwareRequestFactory;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -49,6 +50,9 @@ public class UpdateFirmware {
 
     @Autowired
     private SmartMeteringConfigurationClient client;
+
+    @Autowired
+    private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
 
     @When("^the request for a firmware upgrade is received$")
     public void theRequestForAFirmwareUpgradeIsReceived(final Map<String, String> settings) throws Throwable {
@@ -128,14 +132,29 @@ public class UpdateFirmware {
         final FirmwareFile activeFirmware = device.getActiveFirmwareFile();
         assertNotNull("No active firmware found for device " + deviceIdentification + ".", activeFirmware);
 
-        final String moduleVersionComm = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM);
-        final String moduleVersionMa = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_MA);
-        final String moduleVersionFunc = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC);
-        assertEquals(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, moduleVersionComm,
-                activeFirmware.getModuleVersionComm());
-        assertEquals(PlatformKeys.FIRMWARE_MODULE_VERSION_MA, moduleVersionMa, activeFirmware.getModuleVersionMa());
-        assertEquals(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, moduleVersionFunc,
-                activeFirmware.getModuleVersionFunc());
+        /*
+         * Check if the firmware module versions from the latest installed
+         * firmware file match the expected versions. It is OK for a firmware
+         * module not to be present in the firmware file, as it may have only a
+         * subset of all possible modules.
+         */
+        if (activeFirmware.getModuleVersionComm() != null) {
+            final String moduleVersionComm = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM);
+            assertEquals(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, moduleVersionComm,
+                    activeFirmware.getModuleVersionComm());
+        }
+        if (activeFirmware.getModuleVersionMa() != null) {
+            final String moduleVersionMa = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_MA);
+            assertEquals(PlatformKeys.FIRMWARE_MODULE_VERSION_MA, moduleVersionMa, activeFirmware.getModuleVersionMa());
+        }
+        if (activeFirmware.getModuleVersionFunc() != null) {
+            final String moduleVersionFunc = settings.get(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC);
+            assertEquals(PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, moduleVersionFunc,
+                    activeFirmware.getModuleVersionFunc());
+        }
+
+        this.deviceFirmwareModuleSteps.theDatabaseShouldBeUpdatedWithTheDeviceFirmwareVersion(
+                SettingsHelper.addDefault(settings, "FirmwareIsForSmartMeters", "true"));
     }
 
     @Then("^the database should not be updated with the new device firmware$")
