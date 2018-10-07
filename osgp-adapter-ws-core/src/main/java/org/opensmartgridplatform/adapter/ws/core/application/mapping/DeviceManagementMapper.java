@@ -11,6 +11,7 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
+import org.opensmartgridplatform.adapter.ws.core.application.mapping.ws.EventTypeConverter;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.ws.ScheduledTaskConverter;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
@@ -54,6 +55,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 .toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
         mapperFactory.getConverterFactory().registerConverter(new SmartMeterConverter());
         mapperFactory.getConverterFactory().registerConverter(new DeviceConverter());
         mapperFactory.getConverterFactory().registerConverter(new LightMeasurementDeviceConverter());
