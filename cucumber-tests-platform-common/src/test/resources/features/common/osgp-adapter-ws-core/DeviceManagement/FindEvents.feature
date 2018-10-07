@@ -13,11 +13,11 @@ Feature: CoreDeviceManagement Find Events
       | DeviceIdentification       | <DeviceIdentification> |
       | EventType                  | <EventType>            |
       | Description                | Event description      |
-    When retrieve event notification request is send
+    When a retrieve event notification request is sent
       | DeviceIdentification | <DeviceIdentification> |
       | PageSize             |                     25 |
       | RequestedPage        |                      0 |
-    Then the retrieve event notification request contains
+    Then the retrieve event notification response contains
       | DeviceIdentification | <DeviceIdentification> |
       | EventType            | <EventType>            |
       | Description          | Event description      |
@@ -41,6 +41,7 @@ Feature: CoreDeviceManagement Find Events
       | LIGHT_FAILURE_TARIFF_SWITCH_ATTEMPT        | TEST-1024000000001   |
       | TARIFF_EVENTS_TARIFF_ON                    | TEST-1024000000001   |
       | TARIFF_EVENTS_TARIFF_OFF                   | TEST-1024000000001   |
+      | MONITOR_FAILURE_P1_COMMUNICATION           | TEST-1024000000001   |
       | COMM_EVENTS_ALTERNATIVE_CHANNEL            | TEST-1024000000001   |
       | COMM_EVENTS_RECOVERED_CHANNEL              | TEST-1024000000001   |
       | SECURITY_EVENTS_OUT_OF_SEQUENCE            | TEST-1024000000001   |
@@ -75,18 +76,16 @@ Feature: CoreDeviceManagement Find Events
     Given a device
       | OrganizationIdentification | test-org               |
       | DeviceIdentification       | <DeviceIdentification> |
-    # There are 47 events enumerated by org.opensmartgridplatform.domain.core.valueobjects.EventType.java
-    # This step will create an event record for every event type.
-    And all events
+    And all events are present for device
       | DeviceIdentification | <DeviceIdentification> |
-    When retrieve event notification request is send
+    When a retrieve event notification request is sent
       | DeviceIdentification | <DeviceIdentification> |
       | PageSize             | <PageSize>             |
       | RequestedPage        | <RequestedPage>        |
     Then the stored events are filtered and retrieved
       | DeviceIdentification | <DeviceIdentification> |
       | Result               | <ActualNumberOfEvents> |
-    And the retrieve event notification request response should contain <NumberOfPages> pages and the current page should contain <numberOfEventsInPage> events
+    And the retrieve event notifications response should contain <numberOfEventsInPage> events on the current page and a total of <NumberOfPages> pages
       | DeviceIdentification | <DeviceIdentification> |
 
     Examples: 

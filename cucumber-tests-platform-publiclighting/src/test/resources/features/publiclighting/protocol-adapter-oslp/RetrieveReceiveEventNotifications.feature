@@ -15,9 +15,9 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       #| DeviceIdentification | TESTDEVICE0000001 |
       #| EventType            | <EventType>       |
       #| Description          | <Description>     |
-    #When retrieve event notification request is send
+    #When a retrieve event notification request is sent
       #| DeviceIdentification | TESTDEVICE0000001 |
-    #Then the retrieve event notification request contains
+    #Then the retrieve event notification response contains
       #| DeviceIdentification | TESTDEVICE0000001 |
       #| EventType            | <EventType>       |
       #| Description          | <Description>     |
@@ -74,9 +74,9 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       #| TimeStamp            | now at midnight + <Hour> hours |
       #| EventType            | LIGHT_EVENTS_LIGHT_ON          |
       #| Description          | light is on                    |
-    #When retrieve event notification request is send
+    #When a retrieve event notification request is sent
       #| DeviceIdentification | TESTDEVICE0000001 |
-    #Then the retrieve event notification request contains
+    #Then the retrieve event notification response contains
       #| DeviceIdentification | TESTDEVICE0000001     |
       #| EventType            | LIGHT_EVENTS_LIGHT_ON |
       #| Description          | light is on           |
@@ -124,15 +124,15 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       | DeviceIdentification | TESTDEVICE0000002      |
       | EventType            | LIGHT_EVENTS_LIGHT_OFF |
       | Description          | light is off           |
-    When retrieve event notification request is send
+    When a retrieve event notification request is sent
       | DeviceIdentification | TESTDEVICE0000001 |
-    And retrieve event notification request is send
+    And a retrieve event notification request is sent
       | DeviceIdentification | TESTDEVICE0000002 |
-    Then the retrieve event notification request contains
+    Then the retrieve event notification response contains
       | DeviceIdentification | TESTDEVICE0000001     |
       | EventType            | LIGHT_EVENTS_LIGHT_ON |
       | Description          | light is on           |
-    And the retrieve event notification request contains
+    And the retrieve event notification response contains
       | DeviceIdentification | TESTDEVICE0000002      |
       | EventType            | LIGHT_EVENTS_LIGHT_OFF |
       | Description          | light is off           |
@@ -159,7 +159,7 @@ Feature: OslpAdapter Retrieve Received Event Notifications
       | DeviceIdentification | TESTDEVICE0000001     |
       | EventType            | LIGHT_EVENTS_LIGHT_ON |
       | Description          | light is on           |
-    When retrieve event notification request is send
+    When a retrieve event notification request is sent
       | DeviceIdentification | TESTDEVICE0000001 |
       | RequestedPage        | <RequestedPage>   |
       | PageSize             | <PageSize>        |

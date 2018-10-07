@@ -56,7 +56,12 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
     @Autowired
     private CoreDeviceManagementClient client;
 
-    @Given("^all events$")
+    /**
+     * There are 47 events enumerated by
+     * {@link org.opensmartgridplatform.domain.core.valueobjects.EventType}.
+     * This step will create an event record for every event type.
+     */
+    @Given("^all events are present for device$")
     public void allEvents(final Map<String, String> data) {
         final Device device = this.deviceRepository
                 .findByDeviceIdentification(getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
@@ -84,7 +89,7 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
         }
     }
 
-    @When("^retrieve event notification request is send$")
+    @When("^a retrieve event notification request is sent$")
     public void retrieveEventNotificationRequestIsSend(final Map<String, String> settings)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
@@ -107,8 +112,8 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
         }
     }
 
-    @Then("^the retrieve event notification request contains$")
-    public void theRetrieveEventNotificationRequestContains(final Map<String, String> expectedResponse) {
+    @Then("^the retrieve event notification response contains$")
+    public void theRetrieveEventNotificationResponseContains(final Map<String, String> expectedResponse) {
         final FindEventsResponse response = (FindEventsResponse) ScenarioContext.current()
                 .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                         PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION).concat("_").concat(PlatformKeys.RESPONSE));
@@ -122,7 +127,7 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
             Assert.assertNotNull(e.getTimestamp());
             Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                     PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION), e.getDeviceIdentification());
-            Assert.assertEquals(getString(expectedResponse, PlatformKeys.EVENT_TYPE), e.getEventType());
+            Assert.assertEquals(getString(expectedResponse, PlatformKeys.EVENT_TYPE), e.getEventType().value());
             Assert.assertEquals(getString(expectedResponse, PlatformKeys.KEY_DESCRIPTION), e.getDescription());
             Assert.assertEquals(getInteger(expectedResponse, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX),
                     e.getIndex());
@@ -139,9 +144,9 @@ public class RetrieveReceivedEventNotifications extends GlueBase {
         Assert.assertEquals(totalPages, (response.getPage().getTotalPages()));
     }
 
-    @Then("^the retrieve event notification request response should contain (\\d+) pages and the current page should contain (\\d+) events$")
-    public void theRetrieveEventNotificationRequestIsReceivedAndTheCurrentPageContains(final int totalPages,
-            final int numberOfEvents, final Map<String, String> expectedResponse) {
+    @Then("^the retrieve event notifications response should contain (\\d+) events on the current page and a total of (\\d+) pages$")
+    public void theRetrieveEventNotificationRequestIsReceivedAndTheCurrentPageContains(final int numberOfEvents,
+            final int totalPages, final Map<String, String> expectedResponse) {
 
         final FindEventsResponse response = (FindEventsResponse) ScenarioContext.current()
                 .get(getString(expectedResponse, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
