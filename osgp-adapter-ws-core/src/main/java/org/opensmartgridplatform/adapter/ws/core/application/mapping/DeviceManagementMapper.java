@@ -11,13 +11,12 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.ws.EventTypeConverter;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.ws.ScheduledTaskConverter;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;

@@ -13,9 +13,8 @@ import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
-public class EventTypeConverter
-        extends CustomConverter<EventType, org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.EventType> {
-
+public class EventTypeConverter extends
+        CustomConverter<EventType, org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.EventType> {
     @Override
     public org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.EventType convert(final EventType source,
             final Type<? extends org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.EventType> destinationType,
