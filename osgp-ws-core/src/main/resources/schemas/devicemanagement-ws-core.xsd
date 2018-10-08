@@ -658,6 +658,7 @@
       <xsd:enumeration value="NTP_SERVER_NOT_REACH" />
       <xsd:enumeration value="NTP_SYNC_ALARM_OFFSET" />
       <xsd:enumeration value="NTP_SYNC_MAX_OFFSET" />
+      <xsd:enumeration value="NTP_SYNC_SUCCESS" />
       <xsd:enumeration value="AUTHENTICATION_FAIL" />
       <xsd:enumeration value="LIGHT_SENSOR_REPORTS_DARK" />
       <xsd:enumeration value="LIGHT_SENSOR_REPORTS_LIGHT" />
