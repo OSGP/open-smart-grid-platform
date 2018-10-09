@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.microgrids.entities.RtuDevice;
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;

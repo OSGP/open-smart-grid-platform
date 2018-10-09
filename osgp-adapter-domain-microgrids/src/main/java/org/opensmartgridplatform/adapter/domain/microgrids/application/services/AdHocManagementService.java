@@ -13,7 +13,7 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderUUIDService;
-import org.opensmartgridplatform.domain.microgrids.entities.RtuDevice;
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.EmptyResponse;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataRequest;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataResponse;

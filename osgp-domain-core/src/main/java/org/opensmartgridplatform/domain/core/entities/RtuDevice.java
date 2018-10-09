@@ -5,15 +5,13 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.microgrids.entities;
+package org.opensmartgridplatform.domain.core.entities;
 
 import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import org.opensmartgridplatform.domain.core.entities.Device;
 
 @Entity
 public class RtuDevice extends Device {

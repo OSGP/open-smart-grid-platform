@@ -23,7 +23,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(transactionManagerRef = "coreTransactionManager", entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = {
         org.opensmartgridplatform.domain.core.repositories.DeviceRepository.class,
-        org.opensmartgridplatform.domain.da.repositories.RtuDeviceRepository.class })
+        org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository.class })
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)

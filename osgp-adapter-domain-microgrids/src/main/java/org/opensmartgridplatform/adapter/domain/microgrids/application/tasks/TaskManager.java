@@ -10,9 +10,9 @@ package org.opensmartgridplatform.adapter.domain.microgrids.application.tasks;
 import java.util.Date;
 
 import org.joda.time.DateTime;
-import org.opensmartgridplatform.domain.microgrids.entities.Task;
-import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
-import org.opensmartgridplatform.domain.microgrids.valueobjects.TaskStatusType;
+import org.opensmartgridplatform.domain.core.entities.Task;
+import org.opensmartgridplatform.domain.core.repositories.TaskRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.TaskStatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;

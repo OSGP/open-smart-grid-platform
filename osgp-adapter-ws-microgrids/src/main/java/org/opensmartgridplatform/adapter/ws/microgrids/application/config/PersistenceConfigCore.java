@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.ws.microgrids.application.config;
 
 import javax.sql.DataSource;
 
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(transactionManagerRef = "coreTransactionManager", entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = {
         org.opensmartgridplatform.domain.core.repositories.DeviceRepository.class,
-        org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository.class })
+        RtuDeviceRepository.class })
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-microgrids.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
