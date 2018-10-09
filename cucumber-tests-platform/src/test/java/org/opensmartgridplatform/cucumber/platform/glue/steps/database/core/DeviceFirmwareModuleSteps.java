@@ -73,9 +73,24 @@ public class DeviceFirmwareModuleSteps {
     public Map<FirmwareModule, String> getFirmwareModuleVersions(final Map<String, String> settings,
             final boolean isForSmartMeters) {
 
-        final String comm = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, null);
-        final String func = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, null);
-        final String ma = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA, null);
+        final String comm;
+        if (isForSmartMeters && settings.containsKey(FirmwareModuleData.MODULE_DESCRIPTION_COMM)) {
+            comm = getNullOrNonEmptyString(settings, FirmwareModuleData.MODULE_DESCRIPTION_COMM, null);
+        } else {
+            comm = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, null);
+        }
+        final String func;
+        if (isForSmartMeters && settings.containsKey(FirmwareModuleData.MODULE_DESCRIPTION_FUNC_SMART_METERING)) {
+            func = getNullOrNonEmptyString(settings, FirmwareModuleData.MODULE_DESCRIPTION_FUNC_SMART_METERING, null);
+        } else {
+            func = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, null);
+        }
+        final String ma;
+        if (isForSmartMeters && settings.containsKey(FirmwareModuleData.MODULE_DESCRIPTION_MA)) {
+            ma = getNullOrNonEmptyString(settings, FirmwareModuleData.MODULE_DESCRIPTION_MA, null);
+        } else {
+            ma = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA, null);
+        }
         final String mbus = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS, null);
         final String sec = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC, null);
 
