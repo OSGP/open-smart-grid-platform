@@ -13,10 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncRequest;
@@ -24,10 +20,16 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.DeviceFirmwareModuleSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.FirmwareVersionRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetFirmwareVersionRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
+import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -37,6 +39,12 @@ public class GetFirmwareVersion {
 
     @Autowired
     private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
+
+    @Autowired
+    private FirmwareModuleRepository firmwareModuleRepository;
+
+    @Autowired
+    private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
 
     @When("^the get firmware version request is received$")
     public void theGetFirmwareVersionRequestIsReceived(final Map<String, String> requestData) throws Throwable {
@@ -57,8 +65,6 @@ public class GetFirmwareVersion {
     public void theFirmwareVersionResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
         final GetFirmwareVersionAsyncRequest getFirmwareVersionAsyncRequest = FirmwareVersionRequestFactory
                 .fromScenarioContext();
-        final int EXPECTED_FIRMWARE_VERSION_SIZE = 3;
-
         final GetFirmwareVersionResponse getFirmwareVersionResponse = this.smartMeteringConfigurationClient
                 .retrieveGetFirmwareVersionResponse(getFirmwareVersionAsyncRequest);
 
@@ -66,14 +72,34 @@ public class GetFirmwareVersion {
         assertEquals("Response should be OK", OsgpResultType.OK, getFirmwareVersionResponse.getResult());
 
         final List<FirmwareVersion> firmwareVersions = getFirmwareVersionResponse.getFirmwareVersion();
-        assertEquals(firmwareVersions.size(), EXPECTED_FIRMWARE_VERSION_SIZE);
+
+        this.checkFirmwareVersionResult(settings, firmwareVersions);
+    }
+
+    public void checkFirmwareVersionResult(final Map<String, String> settings,
+            final List<FirmwareVersion> firmwareVersions) {
+
+        final Map<FirmwareModule, String> expectedVersionsByModule = this.deviceFirmwareModuleSteps
+                .getFirmwareModuleVersions(settings, true);
+
+        assertEquals("Number of firmware modules", expectedVersionsByModule.size(), firmwareVersions.size());
 
         for (final FirmwareVersion receivedFirmwareVersion : firmwareVersions) {
-            LOGGER.info("The received firmware module type: {}", receivedFirmwareVersion.getFirmwareModuleType());
             assertNotNull("The received firmware module type is null", receivedFirmwareVersion.getFirmwareModuleType());
-
-            LOGGER.info("The received firmware version: {}", receivedFirmwareVersion.getVersion());
             assertNotNull("The received firmware version is null", receivedFirmwareVersion.getVersion());
+            final String moduleDescription = receivedFirmwareVersion.getFirmwareModuleType().name();
+            final String moduleVersion = receivedFirmwareVersion.getVersion();
+
+            final FirmwareModule firmwareModule = this.firmwareModuleRepository
+                    .findByDescriptionIgnoreCase(moduleDescription);
+            assertNotNull("Received version \"" + moduleVersion + "\" for unknown firmware module \""
+                    + moduleDescription + "\"", firmwareModule);
+
+            final String expectedVersion = expectedVersionsByModule.get(firmwareModule);
+            assertNotNull("Received version \"" + moduleVersion + "\" for firmware module \"" + moduleDescription
+                    + "\" which was not expected", expectedVersion);
+            assertEquals("Version for firmware module \"" + moduleDescription + "\"", expectedVersion, moduleVersion);
         }
     }
+
 }

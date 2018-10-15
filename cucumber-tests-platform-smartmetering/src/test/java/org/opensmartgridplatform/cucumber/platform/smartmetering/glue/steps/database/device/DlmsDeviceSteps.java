@@ -7,15 +7,15 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.device;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
-import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
-import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -26,11 +26,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.DeviceFirmwareModuleSteps;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.DeviceSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
@@ -40,6 +38,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entiti
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
+import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
@@ -52,6 +51,8 @@ import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -88,6 +89,9 @@ public class DlmsDeviceSteps {
 
     @Autowired
     private DeviceSteps deviceSteps;
+
+    @Autowired
+    private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
 
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
@@ -387,7 +391,8 @@ public class DlmsDeviceSteps {
         Device device;
         final ProtocolInfo protocolInfo = this.getProtocolInfo(inputSettings);
         final DeviceModel deviceModel = this.getDeviceModel(inputSettings);
-        if (this.isSmartMeter(inputSettings)) {
+        final boolean isSmartMeter = this.isSmartMeter(inputSettings);
+        if (isSmartMeter) {
             final SmartMeter smartMeter = new SmartMeterBuilder().withSettings(inputSettings)
                     .setProtocolInfo(protocolInfo).setDeviceModel(deviceModel).build();
             device = this.smartMeterRepository.save(smartMeter);
@@ -395,7 +400,14 @@ public class DlmsDeviceSteps {
         } else {
             device = new DeviceBuilder(this.deviceRepository).withSettings(inputSettings).setProtocolInfo(protocolInfo)
                     .setDeviceModel(deviceModel).build();
-            this.deviceRepository.save(device);
+            device = this.deviceRepository.save(device);
+        }
+
+        final Map<FirmwareModule, String> firmwareModuleVersions = this.deviceFirmwareModuleSteps
+                .getFirmwareModuleVersions(inputSettings, isSmartMeter);
+        if (!firmwareModuleVersions.isEmpty()) {
+            device.setFirmwareVersions(firmwareModuleVersions);
+            device = this.deviceRepository.save(device);
         }
 
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.GATEWAY_DEVICE_IDENTIFICATION)) {

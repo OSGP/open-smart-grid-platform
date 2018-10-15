@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getNullOrNonEmptyString;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.io.File;
@@ -20,10 +19,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -35,9 +30,13 @@ import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
-import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.io.Files;
 
 import cucumber.api.java.en.Given;
@@ -47,6 +46,8 @@ import cucumber.api.java.en.Then;
  * The firmware file related steps.
  */
 public class FirmwareFileSteps {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareFileSteps.class);
 
     @Autowired
     private SsldRepository ssldRepository;
@@ -58,9 +59,6 @@ public class FirmwareFileSteps {
     private FirmwareFileRepository firmwareFileRepository;
 
     @Autowired
-    private FirmwareModuleRepository firmwareModuleRepository;
-
-    @Autowired
     private DeviceFirmwareFileRepository deviceFirmwareFileRepository;
 
     @Value("${firmware.file.path}")
@@ -68,6 +66,9 @@ public class FirmwareFileSteps {
 
     @Autowired
     private DeviceModelSteps deviceModelSteps;
+
+    @Autowired
+    private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
 
     /**
      * Generic method which adds a firmware using the settings.
@@ -99,35 +100,9 @@ public class FirmwareFileSteps {
             deviceModel = deviceModels.get(0);
         }
 
-        final String comm = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
-                PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM);
-        final String func = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
-                PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC);
-        final String ma = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
-                PlatformDefaults.FIRMWARE_MODULE_VERSION_MA);
-        final String mbus = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
-                PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS);
-        final String sec = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
-                PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC);
-
-        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec);
-        /*
-         * The model for storing firmware module versions has changed from
-         * firmware table columns to more flexible mappings for potentially more
-         * types of firmware modules. In the earlier implementation the 'func'
-         * version could refer to different firmware modules depending if smart
-         * meters or other devices were involved.
-         *
-         * A cleaner way to integrate the new model for firmware version modules
-         * in the test steps will have to be worked out, but for now a hack is
-         * introduced to set "FirmwareIsForSmartMeters" to true in the settings
-         * for smart meter firmware (see insertCoreFirmware in
-         * org.opensmartgridplatform.cucumber.smartmetering.integration.glue.steps.
-         * FirmwareSteps).
-         */
         final boolean isForSmartMeters = getBoolean(settings, "FirmwareIsForSmartMeters", false);
-        final Map<FirmwareModule, String> versionsByModule = firmwareModuleData
-                .getVersionsByModule(this.firmwareModuleRepository, isForSmartMeters);
+        final Map<FirmwareModule, String> versionsByModule = this.deviceFirmwareModuleSteps
+                .getFirmwareModuleVersions(settings, isForSmartMeters);
 
         /*
          * Using the filename as firmware identification is necessary as long as
@@ -183,8 +158,7 @@ public class FirmwareFileSteps {
             try {
                 firmwareFile.createNewFile();
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error("Create new firmware file failed: {}/{}/{}", manufacturerCode, modelCode, filename, e);
             }
         }
     }

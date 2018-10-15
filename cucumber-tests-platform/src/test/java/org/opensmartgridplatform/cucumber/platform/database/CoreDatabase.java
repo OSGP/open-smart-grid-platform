@@ -7,18 +7,13 @@
  */
 package org.opensmartgridplatform.cucumber.platform.database;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareFileRepository;
+import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EanRepository;
@@ -35,6 +30,11 @@ import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformDomain;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class CoreDatabase {
@@ -46,6 +46,9 @@ public class CoreDatabase {
 
     @Autowired
     private DeviceFirmwareFileRepository deviceFirmwareFileRepository;
+
+    @Autowired
+    private DeviceFirmwareModuleRepository deviceFirmwareModuleRepository;
 
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
@@ -116,7 +119,7 @@ public class CoreDatabase {
         this.manufacturerRepository.save(manufacturer);
 
         // Create the default test model
-        DeviceModel deviceModel = new DeviceModel(manufacturer, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
+        final DeviceModel deviceModel = new DeviceModel(manufacturer, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
                 PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, true);
         this.deviceModelRepository.save(deviceModel);
     }
@@ -139,6 +142,7 @@ public class CoreDatabase {
         this.eanRepository.deleteAllEans();
         this.deviceRepository.deleteDeviceOutputSettings();
         this.deviceFirmwareFileRepository.deleteAllInBatch();
+        this.deviceFirmwareModuleRepository.deleteAllInBatch();
         this.eventRepository.deleteAllInBatch();
         this.smartMeterRepository.deleteAllInBatch();
         this.relayStatusRepository.deleteAllInBatch();
@@ -160,6 +164,7 @@ public class CoreDatabase {
         this.eanRepository.deleteAllEans();
         this.deviceRepository.deleteDeviceOutputSettings();
         this.deviceFirmwareFileRepository.deleteAll();
+        this.deviceFirmwareModuleRepository.deleteAll();
         this.eventRepository.deleteAll();
         this.smartMeterRepository.deleteAll();
         this.relayStatusRepository.deleteAll();
