@@ -15,5 +15,5 @@ import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 @Repository
 public interface FirmwareModuleRepository extends JpaRepository<FirmwareModule, Long> {
 
-    FirmwareModule findByDescription(String description);
+    FirmwareModule findByDescriptionIgnoreCase(String description);
 }

@@ -135,7 +135,7 @@ public class FirmwareModuleData implements Serializable {
             final FirmwareModuleRepository firmwareModuleRepository, final String moduleVersion,
             final String moduleDescription) {
         if (!StringUtils.isEmpty(moduleVersion)) {
-            versionsByModule.put(firmwareModuleRepository.findByDescription(moduleDescription), moduleVersion);
+            versionsByModule.put(firmwareModuleRepository.findByDescriptionIgnoreCase(moduleDescription), moduleVersion);
         }
     }
 }

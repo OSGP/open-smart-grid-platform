@@ -16,16 +16,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
+import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
@@ -35,6 +32,11 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainSmartMeteringFirmwareService")
 @Transactional(value = "transactionManager")
@@ -51,6 +53,9 @@ public class FirmwareService {
 
     @Autowired
     private FirmwareModuleRepository firmwareModuleRepository;
+
+    @Autowired
+    private DeviceFirmwareModuleRepository deviceFirmwareModuleRepository;
 
     @Autowired
     private SmartMeterRepository smartMeterRepository;
@@ -224,6 +229,8 @@ public class FirmwareService {
             final List<FirmwareVersion> firmwareVersions, final String organisationIdentification)
             throws FunctionalException {
 
+        this.saveFirmwareVersionsReturnedFromDevice(smartMeter, firmwareVersions);
+
         final Map<FirmwareModuleType, String> firmwareVersionByModuleType = this
                 .getFirmwareVersionByModuleType(firmwareVersions);
 
@@ -241,6 +248,31 @@ public class FirmwareService {
 
         smartMeter.addFirmwareFile(firmwareFile, organisationIdentification);
         return this.smartMeterRepository.save(smartMeter);
+    }
+
+    public void saveFirmwareVersionsReturnedFromDevice(final String deviceIdentification,
+            final List<FirmwareVersion> firmwareVersions) {
+
+        this.saveFirmwareVersionsReturnedFromDevice(
+                this.smartMeterRepository.findByDeviceIdentification(deviceIdentification), firmwareVersions);
+    }
+
+    private void saveFirmwareVersionsReturnedFromDevice(final Device device,
+            final List<FirmwareVersion> firmwareVersions) {
+
+        for (final FirmwareVersion firmwareVersion : firmwareVersions) {
+            final FirmwareModule firmwareModule = this.firmwareModuleRepository
+                    .findByDescriptionIgnoreCase(firmwareVersion.getType().getDescription());
+            if (firmwareModule == null) {
+                LOGGER.error(
+                        "Unable to store firmware version {} for device {}, no firmware module found for description \"{}\"",
+                        firmwareVersion, device.getDeviceIdentification(), firmwareVersion.getType().getDescription());
+                continue;
+            }
+            final DeviceFirmwareModule deviceFirmwareModule = new DeviceFirmwareModule(device, firmwareModule,
+                    firmwareVersion.getVersion());
+            this.deviceFirmwareModuleRepository.save(deviceFirmwareModule);
+        }
     }
 
     public Map<FirmwareModuleType, String> getFirmwareVersionByModuleType(final List<FirmwareVersion> firmwareVersions)
@@ -272,7 +304,7 @@ public class FirmwareService {
             final String moduleDescription, final String deviceIdentification) throws FunctionalException {
 
         final String versionToBeInstalled = moduleVersionsInFirmwareFile
-                .get(this.firmwareModuleRepository.findByDescription(moduleDescription));
+                .get(this.firmwareModuleRepository.findByDescriptionIgnoreCase(moduleDescription));
 
         if (StringUtils.isBlank(versionToBeInstalled)) {
             /*
