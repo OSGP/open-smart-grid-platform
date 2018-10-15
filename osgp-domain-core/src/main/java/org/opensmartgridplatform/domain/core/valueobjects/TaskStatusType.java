@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.microgrids.valueobjects;
+package org.opensmartgridplatform.domain.core.valueobjects;
 
 public enum TaskStatusType {
     AVAILABLE,

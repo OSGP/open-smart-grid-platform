@@ -17,11 +17,11 @@ import org.opensmartgridplatform.adapter.ws.da.infra.jms.DistributionAutomationR
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.exceptions.ArgumentNullOrEmptyException;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.domain.core.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.da.entities.RtuDevice;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelRequest;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelResponse;
 import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest;

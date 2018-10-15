@@ -17,7 +17,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 
 @EnableJpaRepositories(basePackageClasses = { RtuDeviceRepository.class,

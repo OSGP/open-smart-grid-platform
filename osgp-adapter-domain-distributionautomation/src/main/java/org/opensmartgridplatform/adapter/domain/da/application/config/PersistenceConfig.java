@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.domain.da.application.config;
 
 import javax.annotation.PreDestroy;
 
-import org.opensmartgridplatform.domain.da.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;

@@ -13,11 +13,11 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.da.application.services.CommunicationRecoveryService;
-import org.opensmartgridplatform.domain.da.entities.RtuDevice;
-import org.opensmartgridplatform.domain.da.entities.Task;
-import org.opensmartgridplatform.domain.da.repositories.RtuDeviceRepository;
-import org.opensmartgridplatform.domain.da.repositories.TaskRepository;
-import org.opensmartgridplatform.domain.da.valueobjects.TaskStatusType;
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
+import org.opensmartgridplatform.domain.core.entities.Task;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.core.repositories.TaskRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.TaskStatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

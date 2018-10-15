@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.microgrids.repositories;
+package org.opensmartgridplatform.domain.core.repositories;
 
 import java.util.Date;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
-import org.opensmartgridplatform.domain.microgrids.entities.RtuDevice;
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 
 @Repository
 public interface RtuDeviceRepository extends JpaRepository<RtuDevice, Long> {

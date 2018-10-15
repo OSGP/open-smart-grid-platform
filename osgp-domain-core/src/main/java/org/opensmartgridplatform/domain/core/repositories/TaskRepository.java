@@ -5,11 +5,11 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.domain.microgrids.repositories;
+package org.opensmartgridplatform.domain.core.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 
-import org.opensmartgridplatform.domain.microgrids.entities.Task;
+import org.opensmartgridplatform.domain.core.entities.Task;
 
 public interface TaskRepository extends CrudRepository<Task, Long> {
     Task findByTaskIdentification(String taskIdentification);
