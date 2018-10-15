@@ -21,7 +21,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import org.opensmartgridplatform.cucumber.platform.config.CorePersistenceConfig;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 
 @Configuration
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCoreMicrogrids", transactionManagerRef = "txMgrCoreMicrogrids", basePackageClasses = {

@@ -15,8 +15,8 @@ import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServi
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
-import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
-import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.core.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

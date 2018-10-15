@@ -18,8 +18,8 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
-import org.opensmartgridplatform.domain.microgrids.entities.RtuDevice;
-import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 
 import cucumber.api.java.en.Given;
 
