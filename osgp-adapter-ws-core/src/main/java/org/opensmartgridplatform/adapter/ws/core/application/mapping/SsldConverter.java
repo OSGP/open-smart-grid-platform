@@ -8,12 +8,8 @@
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.RelayType;
@@ -161,26 +157,13 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.RelayStatus output = null;
 
         if (status != null) {
-
             output = new org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.RelayStatus();
             output.setIndex(status.getIndex());
             output.setLastKnownState(status.isLastKnownState());
             output.setLastSwitchingEventState(status.isLastSwitchingEventState());
-
-            final GregorianCalendar switchingEventCalendar = new GregorianCalendar();
-            switchingEventCalendar.setTime(status.getLastSwitchingEventTime());
-
-            final GregorianCalendar lastKnownCalendar = new GregorianCalendar();
-            lastKnownCalendar.setTime(status.getLastKnownStateTime());
-
-            try {
-                output.setLastSwitchingEventTime(
-                        DatatypeFactory.newInstance().newXMLGregorianCalendar(switchingEventCalendar));
-                output.setLastKnownStateTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(lastKnownCalendar));
-            } catch (final DatatypeConfigurationException e) {
-                // This won't happen, so no further action is needed.
-                LOGGER.error("Bad date format in one of the Relay Status dates", e);
-            }
+            output.setLastSwitchingEventTime(
+                    this.helper.convertDateToXMLGregorianCalendar(status.getLastSwitchingEventTime()));
+            output.setLastKnownStateTime(this.helper.convertDateToXMLGregorianCalendar(status.getLastKnownStateTime()));
         }
         return output;
     }

@@ -56,8 +56,8 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
             destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(), containerAddress,
                     gpsCoordinates);
         } else {
-            destination = (T) new Ssld(source.getDeviceIdentification(), source.getAlias(), containerAddress, gpsCoordinates,
-                    null);
+            destination = (T) new Ssld(source.getDeviceIdentification(), source.getAlias(), containerAddress,
+                    gpsCoordinates, null);
         }
 
         if (source.isActivated() != null) {
@@ -163,7 +163,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
         return destination;
     }
 
-    private XMLGregorianCalendar convertDateToXMLGregorianCalendar(final Date date) {
+    public XMLGregorianCalendar convertDateToXMLGregorianCalendar(final Date date) {
         XMLGregorianCalendar xmlCalendar = null;
         if (date != null) {
             final GregorianCalendar gCalendar = new GregorianCalendar();
