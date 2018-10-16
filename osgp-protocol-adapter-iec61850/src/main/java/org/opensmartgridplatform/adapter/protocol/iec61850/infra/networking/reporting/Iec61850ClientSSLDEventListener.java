@@ -142,7 +142,7 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
     }
 
     private void addEventNotificationForReportedData(final FcModelNode evnRpn, final DateTime timeOfEntry,
-            final String reportDescription) throws ProtocolAdapterException {
+            final String reportDescription) {
 
         final EventTypeDto eventType = this.determineEventType(evnRpn, reportDescription);
         final Integer index = this.determineRelayIndex(evnRpn, reportDescription);
@@ -169,8 +169,7 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         return eventType.getOsgpEventType();
     }
 
-    private Integer determineRelayIndex(final FcModelNode evnRpn, final String reportDescription)
-            throws ProtocolAdapterException {
+    private Integer determineRelayIndex(final FcModelNode evnRpn, final String reportDescription) {
 
         final BdaInt8U swNumNode = (BdaInt8U) evnRpn.getChild(EVENT_NODE_SWITCH_NUMBER);
         if (swNumNode == null) {
