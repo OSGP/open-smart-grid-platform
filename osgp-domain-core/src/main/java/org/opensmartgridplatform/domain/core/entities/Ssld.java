@@ -241,7 +241,8 @@ public class Ssld extends Device {
         final Map<Integer, RelayStatus> unhandledStatusesByIndex = new TreeMap<>(relayStatusByIndex);
         for (final RelayStatus r : this.relayStatuses) {
             final RelayStatus newStatus = unhandledStatusesByIndex.remove(r.getIndex());
-            if (newStatus != null && newStatus.getLastSwitchingEventTime().after(r.getLastSwitchingEventTime())) {
+            if (newStatus != null && (r.getLastSwitchingEventTime() == null
+                    || newStatus.getLastSwitchingEventTime().after(r.getLastSwitchingEventTime()))) {
                 r.updateLastSwitchingEventState(newStatus.isLastSwitchingEventState(),
                         newStatus.getLastSwitchingEventTime());
             }

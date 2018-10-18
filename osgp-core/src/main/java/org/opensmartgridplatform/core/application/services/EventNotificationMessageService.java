@@ -184,7 +184,8 @@ public class EventNotificationMessageService {
         this.printRelayStatuses(lastRelayStatusPerIndex, device.getDeviceIdentification());
 
         if (!lastRelayStatusPerIndex.isEmpty()) {
-            LOGGER.info("calling ssld.updateRelayStatuses() for device: {} with lastRelayStatusPerIndex.size(): {}",
+            LOGGER.info(
+                    "calling ssld.updateSwitchingEventRelayStatuses() for device: {} with lastRelayStatusPerIndex.size(): {}",
                     ssld.getDeviceIdentification(), lastRelayStatusPerIndex.size());
 
             ssld.updateSwitchingEventRelayStatuses(lastRelayStatusPerIndex);
