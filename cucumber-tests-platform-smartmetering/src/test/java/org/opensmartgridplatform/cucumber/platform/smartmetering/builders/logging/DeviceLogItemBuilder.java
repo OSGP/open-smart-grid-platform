@@ -30,8 +30,12 @@ public class DeviceLogItemBuilder {
     private int payloadMessageSerializedSize = 0;
 
     public DeviceLogItem build() {
-        return new DeviceLogItem(this.organisationIdentification, this.deviceIdentification, this.deviceIdentification,
-                this.incoming, this.valid, this.encoded, this.decoded, this.payloadMessageSerializedSize);
+        return new DeviceLogItem.Builder()
+                .withOrganisationIdentification(this.organisationIdentification)
+                .withDeviceUid(this.deviceIdentification).withDeviceIdentification(this.deviceIdentification)
+                .withIncoming(this.incoming).withValid(this.valid).withEncodedMessage(this.encoded)
+                .withDecodedMessage(this.decoded).withPayloadMessageSerializedSize(this.payloadMessageSerializedSize)
+                .build();
     }
 
     public DeviceLogItemBuilder withDeviceIdentification(final String deviceIdentification) {

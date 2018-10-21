@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 public class ResponseDataBuilder {
@@ -25,8 +26,10 @@ public class ResponseDataBuilder {
     private Short numberOfNotificationsSent = 0;
 
     public ResponseData build() {
-        return new ResponseData(this.organisationIdentification, this.messageType, this.deviceIdentification,
-                this.correlationUid, this.resultType, this.messageData, this.numberOfNotificationsSent);
+        final CorrelationIds ids = new CorrelationIds(this.organisationIdentification, this.deviceIdentification,
+                this.correlationUid);
+        return new ResponseData(ids, this.messageType, this.resultType, this.messageData,
+                this.numberOfNotificationsSent);
     }
 
     public ResponseDataBuilder fromSettings(final Map<String, String> settings) {
