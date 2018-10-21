@@ -47,12 +47,12 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
-import org.opensmartgridplatform.domain.core.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+import org.opensmartgridplatform.shared.validation.Identification;
 
 /**
  * Entity class which is the base for all smart devices. Other smart device
@@ -337,11 +337,9 @@ public class Device implements Serializable {
      * @return The organisation when an owner was set, null otherwise.
      */
     public Organisation getOwner() {
-        if (this.authorizations != null) {
-            for (final DeviceAuthorization authorization : this.authorizations) {
-                if (authorization.getFunctionGroup().equals(DeviceFunctionGroup.OWNER)) {
-                    return authorization.getOrganisation();
-                }
+        for (final DeviceAuthorization authorization : this.authorizations) {
+            if (authorization.getFunctionGroup().equals(DeviceFunctionGroup.OWNER)) {
+                return authorization.getOrganisation();
             }
         }
 

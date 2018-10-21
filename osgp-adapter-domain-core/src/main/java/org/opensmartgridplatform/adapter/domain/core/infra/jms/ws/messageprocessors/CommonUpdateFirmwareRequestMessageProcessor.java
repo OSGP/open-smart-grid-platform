@@ -12,6 +12,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.FirmwareManagementService;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -85,8 +86,10 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends BaseMessageProc
 
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.firmwareManagementService.updateFirmware(organisationIdentification, deviceIdentification,
-                    correlationUid, firmwareUpdateMessageDataContainer, scheduleTime, messageType, messagePriority);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.firmwareManagementService.updateFirmware(ids, firmwareUpdateMessageDataContainer, scheduleTime,
+                    messageType, messagePriority);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.MeterValue;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActiveEnergyValues;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit;
@@ -39,8 +40,8 @@ public class MeterReadsMappingTest {
 
         // build test data
         final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(VALUE, OSGP_UNIT);
-        final MeterReads meterReads = new MeterReads(DATE, osgpMeterValue, osgpMeterValue, osgpMeterValue,
-                osgpMeterValue, osgpMeterValue, osgpMeterValue);
+        final MeterReads meterReads = new MeterReads(DATE, new ActiveEnergyValues(osgpMeterValue, osgpMeterValue, osgpMeterValue,
+                osgpMeterValue, osgpMeterValue, osgpMeterValue));
 
         // actual mapping
         final ActualMeterReadsResponse actualMeterReadsResponse = this.monitoringMapper.map(meterReads,

@@ -35,7 +35,7 @@ public class DeviceLogItemMessageSender {
     /**
      * Method for sending a logging message to the queue.
      *
-     * @param loggingRequestMessage
+     * @param loggingMessage
      *            The LoggingRequestMessage request message to send.
      */
     public void send(final LoggingRequestMessage loggingMessage) {
@@ -46,7 +46,7 @@ public class DeviceLogItemMessageSender {
     /**
      * Method for sending a logging message to the logger queue.
      *
-     * @param requestMessage
+     * @param loggingMessage
      *            The LoggingRequestMessage request message to send.
      */
     private void sendMessage(final LoggingRequestMessage loggingMessage) {
@@ -64,9 +64,10 @@ public class DeviceLogItemMessageSender {
                         loggingMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.USER_NAME, loggingMessage.getUserName());
                 objectMessage.setStringProperty(Constants.APPLICATION_NAME, loggingMessage.getApplicationName());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, loggingMessage.getDeviceID());
+                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
+                        loggingMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESPONSE_RESULT, loggingMessage.getResponseResult());
-                objectMessage.setIntProperty(Constants.RESPONSE_DATA_SIZE, loggingMessage.getResposeDataSize());
+                objectMessage.setIntProperty(Constants.RESPONSE_DATA_SIZE, loggingMessage.getResponseDataSize());
                 return objectMessage;
             }
         });

@@ -15,27 +15,12 @@ public class MeterReads extends ActionResponse implements Serializable {
 
     private final Date logTime;
 
-    private final OsgpMeterValue activeEnergyImport;
-    private final OsgpMeterValue activeEnergyExport;
-    private final OsgpMeterValue activeEnergyImportTariffOne;
-    // may be null
-    private final OsgpMeterValue activeEnergyImportTariffTwo;
-    private final OsgpMeterValue activeEnergyExportTariffOne;
-    // may be null
-    private final OsgpMeterValue activeEnergyExportTariffTwo;
+    private final ActiveEnergyValues activeEnergyValues;
 
-    public MeterReads(final Date logTime, final OsgpMeterValue activeEnergyImport,
-            final OsgpMeterValue activeEnergyExport, final OsgpMeterValue activeEnergyImportTariffOne,
-            final OsgpMeterValue activeEnergyImportTariffTwo, final OsgpMeterValue activeEnergyExportTariffOne,
-            final OsgpMeterValue activeEnergyExportTariffTwo) {
+    public MeterReads(final Date logTime, final ActiveEnergyValues activeEnergyValues) {
         super();
         this.logTime = new Date(logTime.getTime());
-        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
-        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
-        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
-        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
-        this.activeEnergyImport = activeEnergyImport;
-        this.activeEnergyExport = activeEnergyExport;
+        this.activeEnergyValues = activeEnergyValues;
     }
 
     public Date getLogTime() {
@@ -43,36 +28,37 @@ public class MeterReads extends ActionResponse implements Serializable {
     }
 
     public OsgpMeterValue getActiveEnergyImportTariffOne() {
-        return this.activeEnergyImportTariffOne;
+        return this.activeEnergyValues.getActiveEnergyImportTariffOne();
     }
 
     public OsgpMeterValue getActiveEnergyImportTariffTwo() {
-        return this.activeEnergyImportTariffTwo;
+        return this.activeEnergyValues.getActiveEnergyImportTariffTwo();
     }
 
     public OsgpMeterValue getActiveEnergyExportTariffOne() {
-        return this.activeEnergyExportTariffOne;
+        return this.activeEnergyValues.getActiveEnergyExportTariffOne();
     }
 
     public OsgpMeterValue getActiveEnergyExportTariffTwo() {
-        return this.activeEnergyExportTariffTwo;
+        return this.activeEnergyValues.getActiveEnergyExportTariffTwo();
     }
 
     public OsgpMeterValue getActiveEnergyImport() {
-        return this.activeEnergyImport;
+        return this.activeEnergyValues.getActiveEnergyImport();
     }
 
     public OsgpMeterValue getActiveEnergyExport() {
-        return this.activeEnergyExport;
+        return this.activeEnergyValues.getActiveEnergyExport();
     }
 
     @Override
     public String toString() {
-        return "MeterReads [logTime=" + this.logTime + ", activeEnergyImport=" + this.activeEnergyImport
-                + ", activeEnergyExport=" + this.activeEnergyExport + ", activeEnergyImportTariffOne="
-                + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo="
-                + this.activeEnergyImportTariffTwo + ", activeEnergyExportTariffOne="
-                + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
-                + this.activeEnergyExportTariffTwo + "]";
+        return "MeterReads [logTime=" + this.logTime + ", activeEnergyImport="
+                + this.activeEnergyValues.getActiveEnergyImport() + ", activeEnergyExport="
+                + this.activeEnergyValues.getActiveEnergyExport() + ", activeEnergyImportTariffOne="
+                + this.activeEnergyValues.getActiveEnergyImportTariffOne() + ", activeEnergyImportTariffTwo="
+                + this.activeEnergyValues.getActiveEnergyImportTariffTwo() + ", activeEnergyExportTariffOne="
+                + this.activeEnergyValues.getActiveEnergyExportTariffOne() + ", activeEnergyExportTariffTwo="
+                + this.activeEnergyValues.getActiveEnergyExportTariffTwo() + "]";
     }
 }

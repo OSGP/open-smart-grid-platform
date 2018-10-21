@@ -13,6 +13,7 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceInstallationService;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
@@ -60,10 +61,10 @@ public class CommonGetStatusResponseMessageProcessor extends BaseMessageProcesso
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        ResponseMessage responseMessage = null;
+        ResponseMessage responseMessage;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
-        Object dataObject = null;
+        Object dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -94,9 +95,10 @@ public class CommonGetStatusResponseMessageProcessor extends BaseMessageProcesso
 
             final DeviceStatusDto deviceStatusDto = (DeviceStatusDto) dataObject;
 
-            this.deviceInstallationService.handleGetStatusResponse(deviceStatusDto, deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, messagePriority, responseMessageResultType,
-                    osgpException);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.deviceInstallationService.handleGetStatusResponse(deviceStatusDto, ids, messageType, messagePriority,
+                    responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

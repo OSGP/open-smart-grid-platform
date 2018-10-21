@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
@@ -55,13 +56,12 @@ public class ResponseData extends AbstractEntity {
 
     }
 
-    public ResponseData(final String organisationIdentification, final String messageType,
-            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
+    public ResponseData(final CorrelationIds ids, final String messageType, final ResponseMessageResultType resultType,
             final Serializable messageData, final Short numberOfNotificationsSent) {
-        this.organisationIdentification = organisationIdentification;
+        this.organisationIdentification = ids.getOrganisationIdentification();
         this.messageType = messageType;
-        this.deviceIdentification = deviceIdentification;
-        this.correlationUid = correlationUid;
+        this.deviceIdentification = ids.getDeviceIdentification();
+        this.correlationUid = ids.getCorrelationUid();
         this.resultType = resultType;
         this.messageData = messageData;
         this.numberOfNotificationsSent = numberOfNotificationsSent;

@@ -39,90 +39,102 @@ public class DeviceFilter {
         // Default constructor.
     }
 
-    public DeviceFilter(final String organisationIdentification, final String deviceIdentification, final String street,
-            final String city, final String postalCode, final String alias, final String number,
-            final String municipality, final DeviceExternalManagedFilterType deviceExternalManaged,
-            final DeviceActivatedFilterType deviceActivated, final DeviceInMaintenanceFilterType deviceInMaintenance,
-            final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation, final String owner,
-            final String deviceType, final String manufacturer, final String model,
-            final FirmwareModuleFilterType firmwareModuleType, final String firmwareModuleVersion,
-            final boolean exactMatch, final List<String> deviceIdentificationsToUse,
-            final List<String> deviceIdentificationsToExclude) {
-        this.organisationIdentification = organisationIdentification;
-        this.deviceIdentification = deviceIdentification;
-        this.alias = alias;
-        this.city = city;
-        this.postalCode = postalCode;
-        this.street = street;
-        this.number = number;
-        this.municipality = municipality;
-        this.deviceExternalManaged = deviceExternalManaged;
-        this.deviceActivated = deviceActivated;
-        this.deviceInMaintenance = deviceInMaintenance;
-        this.sortDir = sortDir;
-        this.sortedBy = sortedBy;
-        this.hasTechnicalInstallation = hasTechnicalInstallation;
-        this.owner = owner;
-        this.deviceType = deviceType;
-        this.manufacturer = manufacturer;
-        this.model = model;
-        this.firmwareModuleType = firmwareModuleType;
-        this.firmwareModuleVersion = firmwareModuleVersion;
-        this.exactMatch = exactMatch;
-        this.deviceIdentificationsToUse = deviceIdentificationsToUse;
-        this.deviceIdentificationsToExclude = deviceIdentificationsToExclude;
-    }
-
     public String getOrganisationIdentification() {
         return this.organisationIdentification;
+    }
+
+    public void setOrganisationIdentification(String organisationIdentification) {
+        this.organisationIdentification = organisationIdentification;
     }
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
 
+    public void setDeviceIdentification(String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+    }
+
     public String getAlias() {
         return this.alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public String getCity() {
         return this.city;
     }
 
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public String getPostalCode() {
         return this.postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
     public String getStreet() {
         return this.street;
     }
 
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
     public String getNumber() {
         return this.number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public String getMunicipality() {
         return this.municipality;
     }
 
+    public void setMunicipality(String municipality) {
+        this.municipality = municipality;
+    }
+
     public DeviceExternalManagedFilterType getDeviceExternalManaged() {
         return this.deviceExternalManaged;
+    }
+
+    public void setDeviceExternalManaged(
+            DeviceExternalManagedFilterType deviceExternalManaged) {
+        this.deviceExternalManaged = deviceExternalManaged;
     }
 
     public DeviceActivatedFilterType getDeviceActivated() {
         return this.deviceActivated;
     }
 
+    public void setDeviceActivated(
+            DeviceActivatedFilterType deviceActivated) {
+        this.deviceActivated = deviceActivated;
+    }
+
     public String getSortDir() {
         return this.sortDir;
+    }
+
+    public void setSortDir(String sortDir) {
+        this.sortDir = sortDir;
     }
 
     public String getSortedBy() {
         return this.sortedBy;
     }
 
-    public void updateOrganisationIdentification(final String organisationIdentification) {
-        this.organisationIdentification = organisationIdentification;
+    public void setSortedBy(String sortedBy) {
+        this.sortedBy = sortedBy;
     }
 
     public DeviceInMaintenanceFilterType getDeviceInMaintenance() {
@@ -193,6 +205,10 @@ public class DeviceFilter {
         return this.exactMatch;
     }
 
+    public void setExactMatch(boolean exactMatch) {
+        this.exactMatch = exactMatch;
+    }
+
     public List<String> getDeviceIdentificationsToUse() {
         return this.deviceIdentificationsToUse;
     }
@@ -208,4 +224,5 @@ public class DeviceFilter {
     public void setDeviceIdentificationsToExclude(final List<String> deviceIdentificationsToExclude) {
         this.deviceIdentificationsToExclude = deviceIdentificationsToExclude;
     }
+
 }

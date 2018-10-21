@@ -11,6 +11,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
@@ -60,7 +61,7 @@ public class PublicLightingDefaultResponseMessageProcessor extends BaseMessagePr
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        ResponseMessage responseMessage = null;
+        ResponseMessage responseMessage;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
 
@@ -90,9 +91,10 @@ public class PublicLightingDefaultResponseMessageProcessor extends BaseMessagePr
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, messagePriority, responseMessageResultType,
-                    osgpException);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.defaultDeviceResponseService.handleDefaultDeviceResponse(ids, messageType, messagePriority,
+                    responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

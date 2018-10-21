@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -89,11 +90,11 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        String notificationMessage = null;
-        NotificationType notificationType = null;
-        ResponseMessageResultType resultType = null;
-        String resultDescription = null;
-        Serializable dataObject = null;
+        String notificationMessage;
+        NotificationType notificationType;
+        ResponseMessageResultType resultType;
+        String resultDescription;
+        Serializable dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -120,8 +121,9 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}",
                     messageType, correlationUid);
 
-            this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid,
-                    resultType, resultDescription, dataObject);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
@@ -132,9 +134,8 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
         }
     }
 
-    protected void handleMessage(final String organisationIdentification, final String messageType,
-            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
-            final String resultDescription, final Serializable dataObject) {
+    protected void handleMessage(final CorrelationIds ids, final String messageType,
+            final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
 
         final short numberOfNotificationsSent = 0;
         Serializable meterResponseObject;
@@ -144,8 +145,8 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             meterResponseObject = dataObject;
         }
 
-        final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
-                deviceIdentification, correlationUid, resultType, meterResponseObject, numberOfNotificationsSent);
+        final ResponseData responseData = new ResponseData(ids, messageType, resultType, meterResponseObject,
+                numberOfNotificationsSent);
         this.responseDataService.enqueue(responseData);
     }
 

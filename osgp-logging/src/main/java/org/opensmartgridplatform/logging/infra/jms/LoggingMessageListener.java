@@ -20,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
 
+import org.opensmartgridplatform.logging.domain.entities.MethodResult;
 import org.opensmartgridplatform.logging.domain.entities.WebServiceMonitorLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 
 // Fetch incoming log messages from the logging requests queue.
@@ -45,15 +47,15 @@ public class LoggingMessageListener implements SessionAwareMessageListener<Messa
 
             // Create a log item.
             final Date timestamp = new Date(objectMessage.getLongProperty(Constants.TIME_STAMP));
-            final WebServiceMonitorLogItem webServiceMonitorLogItem = new WebServiceMonitorLogItem(timestamp,
-                    objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION),
-                    objectMessage.getStringProperty(Constants.USER_NAME),
-                    objectMessage.getStringProperty(Constants.APPLICATION_NAME),
-                    objectMessage.getStringProperty(Constants.CLASS_NAME),
-                    objectMessage.getStringProperty(Constants.METHOD_NAME),
-                    objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION),
-                    objectMessage.getJMSCorrelationID(), objectMessage.getStringProperty(Constants.RESPONSE_RESULT),
-                    objectMessage.getIntProperty(Constants.RESPONSE_DATA_SIZE));
+            final String organisationIdentification =
+                    objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            final String correlationUid = objectMessage.getJMSCorrelationID();
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            final MethodResult methodResult = methodResultFor(objectMessage);
+            final WebServiceMonitorLogItem webServiceMonitorLogItem = new WebServiceMonitorLogItem(timestamp, ids,
+                    objectMessage.getStringProperty(Constants.USER_NAME), methodResult);
 
             // Save the log item in the data base.
             this.webServiceMonitorLogRepository.save(webServiceMonitorLogItem);
@@ -61,5 +63,13 @@ public class LoggingMessageListener implements SessionAwareMessageListener<Messa
         } catch (final JMSException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
         }
+    }
+
+    private MethodResult methodResultFor(final ObjectMessage objectMessage) throws JMSException {
+        return new MethodResult(objectMessage.getStringProperty(Constants.APPLICATION_NAME),
+                objectMessage.getStringProperty(Constants.CLASS_NAME),
+                objectMessage.getStringProperty(Constants.METHOD_NAME),
+                objectMessage.getStringProperty(Constants.RESPONSE_RESULT),
+                objectMessage.getIntProperty(Constants.RESPONSE_DATA_SIZE));
     }
 }

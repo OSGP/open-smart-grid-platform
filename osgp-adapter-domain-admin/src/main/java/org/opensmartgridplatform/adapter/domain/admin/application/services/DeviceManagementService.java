@@ -19,7 +19,7 @@ import org.opensmartgridplatform.domain.core.exceptions.PlatformException;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
-import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.validation.PublicKey;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;

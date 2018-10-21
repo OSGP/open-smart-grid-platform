@@ -29,6 +29,7 @@ import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataSystemIdenti
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementFilterDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.SystemFilterDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
@@ -55,8 +56,6 @@ public class CommunicationRecoveryService extends BaseService {
      * done by putting a GetDataResponse on the queue with an alarm value. When
      * this response is received by the webservice adapter, it can send a
      * notification to the client.
-     *
-     * @param rtu
      */
     public void signalConnectionLost(final RtuDevice rtu) {
         LOGGER.info("Sending connection lost signal for device {}.", rtu.getDeviceIdentification());
@@ -69,8 +68,9 @@ public class CommunicationRecoveryService extends BaseService {
         final String organisationIdentification = rtu.getOwner().getOrganisationIdentification();
         final String deviceIdentification = rtu.getDeviceIdentification();
 
-        this.adHocManagementService.handleGetDataResponse(dataResponse, deviceIdentification,
-                organisationIdentification, correlationUid, DeviceFunction.GET_DATA.toString(),
+        CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+        this.adHocManagementService.handleGetDataResponse(dataResponse, ids,
+                DeviceFunction.GET_DATA.toString(),
                 ResponseMessageResultType.OK, null);
     }
 

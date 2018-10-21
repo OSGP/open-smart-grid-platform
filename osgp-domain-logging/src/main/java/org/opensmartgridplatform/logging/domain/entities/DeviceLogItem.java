@@ -45,17 +45,15 @@ public class DeviceLogItem extends AbstractEntity {
         // Empty constructor for Hibernate.
     }
 
-    public DeviceLogItem(final String organisationIdentification, final String deviceUid,
-            final String deviceIdentification, final boolean incoming, final boolean valid,
-            final String encodedMessage, final String decodedMessage, final int payloadMessageSerializedSize) {
-        this.organisationIdentification = organisationIdentification;
-        this.deviceUid = deviceUid;
-        this.deviceIdentification = deviceIdentification;
-        this.incoming = incoming;
-        this.valid = valid;
-        this.encodedMessage = encodedMessage;
-        this.decodedMessage = decodedMessage;
-        this.payloadMessageSerializedSize = payloadMessageSerializedSize;
+    public DeviceLogItem(Builder builder) {
+        this.incoming = builder.incoming;
+        this.deviceUid = builder.deviceUid;
+        this.encodedMessage = builder.encodedMessage;
+        this.decodedMessage = builder.decodedMessage;
+        this.deviceIdentification = builder.deviceIdentification;
+        this.organisationIdentification = builder.organisationIdentification;
+        this.valid = builder.valid;
+        this.payloadMessageSerializedSize = builder.payloadMessageSerializedSize;
     }
 
     public boolean isIncoming() {
@@ -88,5 +86,60 @@ public class DeviceLogItem extends AbstractEntity {
 
     public int getPayloadMessageSerializedSize() {
         return this.payloadMessageSerializedSize;
+    }
+
+    public static class Builder {
+        private boolean incoming;
+        private String deviceUid;
+        private String encodedMessage;
+        private String decodedMessage;
+        private String deviceIdentification;
+        private String organisationIdentification;
+        private boolean valid;
+        private int payloadMessageSerializedSize;
+
+        public Builder withIncoming(boolean incoming) {
+            this.incoming = incoming;
+            return this;
+        }
+
+        public Builder withDeviceUid(String deviceUid) {
+            this.deviceUid = deviceUid;
+            return this;
+        }
+
+        public Builder withEncodedMessage(String encodedMessage) {
+            this.encodedMessage = encodedMessage;
+            return this;
+        }
+
+        public Builder withDecodedMessage(String decodedMessage) {
+            this.decodedMessage = decodedMessage;
+            return this;
+        }
+
+        public Builder withDeviceIdentification(String deviceIdentification) {
+            this.deviceIdentification = deviceIdentification;
+            return this;
+        }
+
+        public Builder withOrganisationIdentification(String organisationIdentification) {
+            this.organisationIdentification = organisationIdentification;
+            return this;
+        }
+
+        public Builder withValid(boolean valid) {
+            this.valid = valid;
+            return this;
+        }
+
+        public Builder withPayloadMessageSerializedSize(int payloadMessageSerializedSize) {
+            this.payloadMessageSerializedSize = payloadMessageSerializedSize;
+            return this;
+        }
+
+        public DeviceLogItem build() {
+            return new DeviceLogItem(this);
+        }
     }
 }

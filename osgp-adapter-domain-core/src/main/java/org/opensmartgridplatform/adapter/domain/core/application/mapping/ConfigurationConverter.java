@@ -7,6 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.domain.core.application.mapping;
 
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
 import org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFixedIp;
@@ -16,10 +20,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
 import org.opensmartgridplatform.domain.core.valueobjects.MeterType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayConfiguration;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFixedIpDto;
-
-import ma.glasnost.orika.MappingContext;
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
 
 public class ConfigurationConverter
         extends BidirectionalConverter<org.opensmartgridplatform.dto.valueobjects.ConfigurationDto, Configuration> {
@@ -49,42 +49,46 @@ public class ConfigurationConverter
         final LongTermIntervalType longTermHistoryIntervalType = this.mapperFacade
                 .map(source.getLongTermHistoryIntervalType(), LongTermIntervalType.class);
 
-        final Configuration configuration = new Configuration(lightType, daliConfiguration, relayConfiguration,
-                shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
-                longTermHistoryIntervalType);
+        Configuration.Builder builder = new Configuration.Builder()
+                .withLightType(lightType)
+                .withDaliConfiguration(daliConfiguration)
+                .withRelayConfiguration(relayConfiguration)
+                .withShortTemHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
+                .withPreferredLinkType(preferredLinkType).withMeterType(meterType)
+                .withLongTermHistoryInterval(longTermHistoryInterval)
+                .withLongTermHistoryIntervalType(longTermHistoryIntervalType)
+                .withTimeSyncFrequency(source.getTimeSyncFrequency())
+                .withDhcpEnabled(source.isDhcpEnabled())
+                .withTlsEnabled(source.isTlsEnabled())
+                .withTlsPortNumber(source.getTlsPortNumber())
+                .withCommonNameString(source.getCommonNameString())
+                .withCommunicationTimeout(source.getCommunicationTimeout())
+                .withCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries())
+                .withCommunicationPauseTimeBetweenConnectionTrials(
+                        source.getCommunicationPauseTimeBetweenConnectionTrials())
+                .withOsgpIpAddress(source.getOsgpIpAddres())
+                .withOsgpPortNumber(source.getOsgpPortNumber())
+                .withNtpHost(source.getNtpHost())
+                .withNtpEnabled(source.getNtpEnabled())
+                .withNtpSyncInterval(source.getNtpSyncInterval())
+                .withTestButtonEnabled(source.isTestButtonEnabled())
+                .withAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled())
+                .withAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset())
+                .withAstroGateSunSetOffset(source.getAstroGateSunSetOffset())
+                .withSwitchingDelays(source.getSwitchingDelays())
+                .withRelayRefreshing(source.isRelayRefreshing())
+                .withSummerTimeDetails(source.getSummerTimeDetails())
+                .withWinterTimeDetails(source.getWinterTimeDetails());
 
-        configuration.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
-        configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
-        configuration.setAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled());
-        configuration.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
-        configuration.setCommunicationPauseTimeBetweenConnectionTrials(
-                source.getCommunicationPauseTimeBetweenConnectionTrials());
-        configuration.setCommunicationTimeout(source.getCommunicationTimeout());
-        configuration.setDhcpEnabled(source.isDhcpEnabled());
-        configuration.setTlsEnabled(source.isTlsEnabled());
-        configuration.setTlsPortNumber(source.getTlsPortNumber());
-        configuration.setCommonNameString(source.getCommonNameString());
-        configuration.setOsgpPortNumber(source.getOsgpPortNumber());
-        configuration.setOsgpIpAddress(source.getOsgpIpAddres());
-        configuration.setNtpHost(source.getNtpHost());
-        configuration.setNtpEnabled(source.getNtpEnabled());
-        configuration.setNtpSyncInterval(source.getNtpSyncInterval());
-        configuration.setRelayRefreshing(source.isRelayRefreshing());
-        configuration.setSummerTimeDetails(source.getSummerTimeDetails());
-        configuration.setSwitchingDelays(source.getSwitchingDelays());
-        configuration.setTestButtonEnabled(source.isTestButtonEnabled());
-        configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
-        configuration.setWinterTimeDetails(source.getWinterTimeDetails());
         if (source.getRelayLinking() != null) {
-            configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(),
+            builder.withRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(),
                     org.opensmartgridplatform.domain.core.valueobjects.RelayMatrix.class));
         }
-
         if (source.getDeviceFixedIp() != null) {
-            configuration.setDeviceFixedIp(this.mapperFacade.map(source.getDeviceFixedIp(), DeviceFixedIp.class));
+            builder.withDeviceFixedIp(this.mapperFacade.map(source.getDeviceFixedIp(), DeviceFixedIp.class));
         }
 
-        return configuration;
+        return builder.build();
     }
 
     @Override

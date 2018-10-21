@@ -106,7 +106,6 @@ public class InstallationService {
         final SmartMeteringDevice smartMeteringDeviceValueObject = addSmartMeterRequest.getDevice();
 
         if (device == null) {
-
             device = this.mapperFactory.getMapperFacade().map(smartMeteringDeviceValueObject, SmartMeter.class);
 
             final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion("DSMR",
@@ -150,8 +149,6 @@ public class InstallationService {
     /**
      * In case of errors that prevented adding the meter to the protocol database,
      * the meter should be removed from the core database as well.
-     *
-     * @param deviceMessageMetadata
      */
     @Transactional
     public void removeMeter(final DeviceMessageMetadata deviceMessageMetadata) {

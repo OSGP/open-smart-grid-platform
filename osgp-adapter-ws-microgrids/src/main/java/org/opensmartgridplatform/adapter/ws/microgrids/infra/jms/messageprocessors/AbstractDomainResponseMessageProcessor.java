@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.Notif
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -89,11 +90,11 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        String notificationMessage = null;
-        NotificationType notificationType = null;
-        ResponseMessageResultType resultType = null;
-        String resultDescription = null;
-        Serializable dataObject = null;
+        String notificationMessage;
+        NotificationType notificationType;
+        ResponseMessageResultType resultType;
+        String resultDescription;
+        Serializable dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -119,8 +120,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid,
-                    resultType, resultDescription, dataObject);
+            CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+            this.handleMessage(ids, messageType, resultType, resultDescription, dataObject);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
@@ -139,9 +140,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
                 notificationMessage, notificationType);
     }
 
-    protected void handleMessage(final String organisationIdentification, final String messageType,
-            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
-            final String resultDescription, final Serializable dataObject) {
+    protected void handleMessage(final CorrelationIds ids, final String messageType,
+            final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
 
         final short numberOfNotificationsSent = 0;
         Serializable responseDataObject;
@@ -151,8 +151,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             responseDataObject = dataObject;
         }
 
-        final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
-                deviceIdentification, correlationUid, resultType, responseDataObject, numberOfNotificationsSent);
+        final ResponseData responseData = new ResponseData(ids, messageType, resultType, responseDataObject,
+                numberOfNotificationsSent);
         this.responseDataService.enqueue(responseData);
     }
 

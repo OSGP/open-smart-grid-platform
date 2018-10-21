@@ -12,6 +12,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
@@ -68,7 +69,7 @@ public class PublicLightingSetTransitionResponseMessageProcessor extends BaseMes
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        ResponseMessage responseMessage = null;
+        ResponseMessage responseMessage;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
 
@@ -99,12 +100,14 @@ public class PublicLightingSetTransitionResponseMessageProcessor extends BaseMes
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             if (this.isSetTransitionResponseLoggingEnabled) {
-                this.adHocManagementService.handleSetTransitionResponse(deviceIdentification,
-                        organisationIdentification, correlationUid, messageType, messagePriority,
+                final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                        correlationUid);
+                this.adHocManagementService.handleSetTransitionResponse(ids, messageType, messagePriority,
                         responseMessageResultType, osgpException);
             } else {
-                this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
-                        organisationIdentification, correlationUid, messageType, messagePriority,
+                final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                        correlationUid);
+                this.defaultDeviceResponseService.handleDefaultDeviceResponse(ids, messageType, messagePriority,
                         responseMessageResultType, osgpException);
             }
         } catch (final Exception e) {

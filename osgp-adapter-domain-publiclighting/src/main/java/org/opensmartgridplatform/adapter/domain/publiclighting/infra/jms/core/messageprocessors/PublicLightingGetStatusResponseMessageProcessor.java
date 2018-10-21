@@ -11,8 +11,8 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
-import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
@@ -61,10 +61,10 @@ public class PublicLightingGetStatusResponseMessageProcessor extends BaseMessage
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        ResponseMessage responseMessage = null;
+        ResponseMessage responseMessage;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
-        Object dataObject = null;
+        Object dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -95,8 +95,9 @@ public class PublicLightingGetStatusResponseMessageProcessor extends BaseMessage
 
             final DeviceStatusDto deviceLightStatus = (DeviceStatusDto) dataObject;
 
-            this.adHocManagementService.handleGetStatusResponse(deviceLightStatus, DomainType.PUBLIC_LIGHTING,
-                    deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.adHocManagementService.handleGetStatusResponse(deviceLightStatus, ids, messageType, messagePriority,
                     responseMessageResultType, osgpException);
 
         } catch (final Exception e) {

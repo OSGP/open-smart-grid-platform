@@ -16,6 +16,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.PowerUsageHistoryMessa
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
@@ -57,7 +58,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends B
         int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
-        Object dataObject = null;
+        Object dataObject;
         Long scheduleTime = null;
 
         try {
@@ -85,8 +86,10 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends B
 
             final PowerUsageHistoryMessageDataContainer powerUsageHistoryMessageDataContainer = (PowerUsageHistoryMessageDataContainer) dataObject;
 
-            this.deviceMonitoringService.getPowerUsageHistory(organisationIdentification, deviceIdentification,
-                    correlationUid, powerUsageHistoryMessageDataContainer.getTimePeriod(),
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.deviceMonitoringService.getPowerUsageHistory(ids,
+                    powerUsageHistoryMessageDataContainer.getTimePeriod(),
                     powerUsageHistoryMessageDataContainer.getHistoryTermType(), scheduleTime, messageType,
                     messagePriority);
 

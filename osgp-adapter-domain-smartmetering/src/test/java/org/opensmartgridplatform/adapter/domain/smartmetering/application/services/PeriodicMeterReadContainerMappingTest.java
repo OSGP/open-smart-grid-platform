@@ -3,11 +3,13 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,9 +25,14 @@ import java.util.TreeSet;
 import org.junit.Test;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActiveEnergyValues;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpUnit;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActiveEnergyValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
@@ -79,11 +87,12 @@ public class PeriodicMeterReadContainerMappingTest {
 
         final Set<AmrProfileStatusCodeFlagDto> amrProfileStatusCodeFlagSet = new TreeSet<>();
         amrProfileStatusCodeFlagSet.add(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR);
-        final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(amrProfileStatusCodeFlagSet);
+        final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(
+                amrProfileStatusCodeFlagSet);
 
         final PeriodicMeterReadsResponseItemDto periodicMeterReadsDto = new PeriodicMeterReadsResponseItemDto(
                 new Date(), activeEnergyImport, activeEnergyExport, amrProfileStatusCodeDto);
-        final List<PeriodicMeterReadsResponseItemDto> meterReads = new ArrayList<PeriodicMeterReadsResponseItemDto>();
+        final List<PeriodicMeterReadsResponseItemDto> meterReads = new ArrayList<>();
         meterReads.add(periodicMeterReadsDto);
 
         final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
@@ -119,5 +128,35 @@ public class PeriodicMeterReadContainerMappingTest {
 
         assertTrue(periodicMeterReadsContainer.getPeriodicMeterReads().get(0).getAmrProfileStatusCode()
                 .getAmrProfileStatusCodeFlags().contains(AmrProfileStatusCodeFlag.CRITICAL_ERROR));
+    }
+
+    @Test
+    public void mapsPeriodicMeterReadsResponseItemDto() {
+        final Date logTime = new Date();
+        final ActiveEnergyValuesDto valuesDto = new ActiveEnergyValuesDto(
+                new DlmsMeterValueDto(new BigDecimal("12.34"), DlmsUnitTypeDto.M3),
+                new DlmsMeterValueDto(new BigDecimal("12.35"), DlmsUnitTypeDto.M3),
+                new DlmsMeterValueDto(new BigDecimal("12.36"), DlmsUnitTypeDto.M3),
+                new DlmsMeterValueDto(new BigDecimal("12.37"), DlmsUnitTypeDto.M3),
+                new DlmsMeterValueDto(new BigDecimal("12.38"), DlmsUnitTypeDto.M3),
+                new DlmsMeterValueDto(new BigDecimal("12.39"), DlmsUnitTypeDto.M3));
+        final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(new HashSet<>(asList(
+                AmrProfileStatusCodeFlagDto.CRITICAL_ERROR, AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED)));
+        final PeriodicMeterReadsResponseItemDto source = new PeriodicMeterReadsResponseItemDto(logTime, valuesDto,
+                amrProfileStatusCodeDto);
+
+        final PeriodicMeterReads readsResult = this.monitoringMapper.map(source, PeriodicMeterReads.class);
+
+        final ActiveEnergyValues expectedValues = new ActiveEnergyValues(
+                new OsgpMeterValue(new BigDecimal("12.340"), OsgpUnit.M3),
+                new OsgpMeterValue(new BigDecimal("12.350"), OsgpUnit.M3),
+                new OsgpMeterValue(new BigDecimal("12.360"), OsgpUnit.M3),
+                new OsgpMeterValue(new BigDecimal("12.370"), OsgpUnit.M3),
+                new OsgpMeterValue(new BigDecimal("12.380"), OsgpUnit.M3),
+                new OsgpMeterValue(new BigDecimal("12.390"), OsgpUnit.M3));
+        final AmrProfileStatusCode amrProfileStatusCode = new AmrProfileStatusCode(new HashSet<>(asList(
+                AmrProfileStatusCodeFlag.CRITICAL_ERROR, AmrProfileStatusCodeFlag.CLOCK_ADJUSTED)));
+        final PeriodicMeterReads expectedReads = new PeriodicMeterReads(logTime, expectedValues, amrProfileStatusCode);
+        assertThat(readsResult).isEqualToComparingFieldByFieldRecursively(expectedReads);
     }
 }

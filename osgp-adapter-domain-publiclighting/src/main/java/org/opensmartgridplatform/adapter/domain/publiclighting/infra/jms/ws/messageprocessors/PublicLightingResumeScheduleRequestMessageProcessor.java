@@ -13,6 +13,7 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -57,7 +58,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends BaseMes
         int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
-        Object dataObject = null;
+        Object dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -80,9 +81,10 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends BaseMes
             LOGGER.info("Calling application service function: {}", messageType);
 
             final ResumeScheduleData resumeScheduleData = (ResumeScheduleData) dataObject;
-
-            this.adHocManagementService.resumeSchedule(organisationIdentification, deviceIdentification, correlationUid,
-                    resumeScheduleData.getIndex(), resumeScheduleData.getIsImmediate(), messageType, messagePriority);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.adHocManagementService.resumeSchedule(ids, resumeScheduleData.getIndex(),
+                    resumeScheduleData.getIsImmediate(), messageType, messagePriority);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

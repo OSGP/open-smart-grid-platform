@@ -12,6 +12,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DeviceMonitoringService;
 import org.opensmartgridplatform.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
@@ -61,10 +62,10 @@ public class PublicLightingPowerUsageHistoryResponseMessageProcessor extends Bas
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        ResponseMessage responseMessage = null;
+        ResponseMessage responseMessage;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
-        Object dataObject = null;
+        Object dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -95,9 +96,11 @@ public class PublicLightingPowerUsageHistoryResponseMessageProcessor extends Bas
 
             final PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainer = (PowerUsageHistoryResponseMessageDataContainerDto) dataObject;
 
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
             this.deviceMonitoringService.handleGetPowerUsageHistoryResponse(
-                    powerUsageHistoryResponseMessageDataContainer, organisationIdentification, deviceIdentification,
-                    correlationUid, messageType, messagePriority, responseMessageResultType, osgpException);
+                    powerUsageHistoryResponseMessageDataContainer, ids, messageType, messagePriority,
+                    responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

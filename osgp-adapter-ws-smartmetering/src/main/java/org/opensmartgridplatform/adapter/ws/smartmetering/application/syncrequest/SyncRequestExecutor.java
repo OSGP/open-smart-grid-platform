@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.No
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 /**
@@ -53,9 +54,6 @@ public abstract class SyncRequestExecutor {
      * To be called after a request was succesfully performed. This will hande the
      * behaviour to act as a asynchronous request.
      *
-     * @param organisationIdentification
-     * @param deviceIdentification
-     * @param correlationUid
      * @param data
      *            Response data
      */
@@ -79,11 +77,6 @@ public abstract class SyncRequestExecutor {
     /**
      * To be called when an exception occurred. This will store the exception
      * message and send a NOT_OK status notification.
-     *
-     * @param organisationIdentification
-     * @param deviceIdentification
-     * @param correlationUid
-     * @param exception
      */
     void handleException(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Exception exception) {
@@ -100,9 +93,10 @@ public abstract class SyncRequestExecutor {
     private void storeResponseData(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final ResponseMessageResultType resultType, final Serializable data) {
         final short numberOfNotificationsSent = 0;
-
-        final ResponseData responseData = new ResponseData(organisationIdentification, this.getMessageType().name(),
-                deviceIdentification, correlationUid, resultType, data, numberOfNotificationsSent);
+        final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                correlationUid);
+        final ResponseData responseData = new ResponseData(ids, this.getMessageType().name(), resultType, data,
+                numberOfNotificationsSent);
         this.responseDataService.enqueue(responseData);
     }
 

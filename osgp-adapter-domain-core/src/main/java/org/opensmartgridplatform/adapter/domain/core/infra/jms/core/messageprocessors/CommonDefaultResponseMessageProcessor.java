@@ -12,6 +12,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.DefaultDeviceResponseService;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
@@ -68,7 +69,7 @@ public class CommonDefaultResponseMessageProcessor extends BaseMessageProcessor 
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        ResponseMessage responseMessage = null;
+        ResponseMessage responseMessage;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
 
@@ -98,9 +99,10 @@ public class CommonDefaultResponseMessageProcessor extends BaseMessageProcessor 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, messagePriority, responseMessageResultType,
-                    osgpException);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.defaultDeviceResponseService.handleDefaultDeviceResponse(ids, messageType, messagePriority,
+                    responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

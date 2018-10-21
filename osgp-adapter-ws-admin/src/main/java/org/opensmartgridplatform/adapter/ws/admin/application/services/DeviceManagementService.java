@@ -36,7 +36,7 @@ import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderServi
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.services.OrganisationDomainService;
 import org.opensmartgridplatform.domain.core.services.SecurityService;
-import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.validation.PublicKey;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
@@ -327,7 +327,7 @@ public class DeviceManagementService {
             throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}",
-                new Object[] { organisationIdentification, deviceIdentification, pageNumber });
+                organisationIdentification, deviceIdentification, pageNumber);
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);

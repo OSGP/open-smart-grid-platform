@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.domain.tariffswitching.application.serv
 import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
@@ -62,10 +63,10 @@ public class TariffSwitchingGetStatusResponseMessageProcessor extends BaseMessag
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        ResponseMessage responseMessage = null;
+        ResponseMessage responseMessage;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
-        Object dataObject = null;
+        Object dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -96,9 +97,10 @@ public class TariffSwitchingGetStatusResponseMessageProcessor extends BaseMessag
 
             final DeviceStatusDto deviceLightStatus = (DeviceStatusDto) dataObject;
 
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
             this.adHocManagementService.handleGetStatusResponse(deviceLightStatus, DomainType.TARIFF_SWITCHING,
-                    deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
-                    responseMessageResultType, osgpException);
+                    ids, messagePriority, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

@@ -29,7 +29,7 @@ import org.opensmartgridplatform.domain.core.exceptions.NotAuthorizedException;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
-import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
@@ -107,7 +107,7 @@ public class DeviceInstallationService {
                     new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
         }
 
-        Ssld ssld = null;
+        Ssld ssld;
 
         if (existingDevice != null) {
             // Update existing device

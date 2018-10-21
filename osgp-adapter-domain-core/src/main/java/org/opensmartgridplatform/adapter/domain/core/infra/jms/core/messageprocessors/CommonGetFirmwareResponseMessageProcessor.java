@@ -15,6 +15,7 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.core.application.services.FirmwareManagementService;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
@@ -62,10 +63,10 @@ public class CommonGetFirmwareResponseMessageProcessor extends BaseMessageProces
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        ResponseMessage responseMessage = null;
+        ResponseMessage responseMessage;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
-        Object dataObject = null;
+        Object dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -96,10 +97,10 @@ public class CommonGetFirmwareResponseMessageProcessor extends BaseMessageProces
 
             @SuppressWarnings("unchecked")
             final List<FirmwareVersionDto> firmwareVersions = (List<FirmwareVersionDto>) dataObject;
-
-            this.firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersions, deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, messagePriority, responseMessageResultType,
-                    osgpException);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersions, ids, messageType,
+                    messagePriority, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

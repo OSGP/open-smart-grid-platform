@@ -37,6 +37,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.TransitionType;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.LightValueMessageDataContainerDto;
 import org.opensmartgridplatform.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -133,8 +134,7 @@ public class AdHocManagementService extends AbstractService {
                 deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(final DeviceStatusDto deviceStatusDto, final DomainType allowedDomainType,
-            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+    public void handleGetStatusResponse(final DeviceStatusDto deviceStatusDto, final CorrelationIds ids,
             final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
@@ -148,22 +148,20 @@ public class AdHocManagementService extends AbstractService {
         } else {
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
             try {
-                final Device dev = this.deviceDomainService.searchDevice(deviceIdentification);
+                final Device dev = this.deviceDomainService.searchDevice(ids.getDeviceIdentification());
                 if (LightMeasurementDevice.LMD_TYPE.equals(dev.getDeviceType())) {
                     this.handleLmd(status, response);
                 } else {
-                    this.handleSsld(deviceIdentification, status, allowedDomainType, response);
+                    this.handleSsld(ids.getDeviceIdentification(), status, DomainType.PUBLIC_LIGHTING, response);
                 }
             } catch (final FunctionalException e) {
                 LOGGER.error("Caught FunctionalException", e);
             }
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(response.getResult())
-                .withOsgpException(response.getOsgpException()).withDataObject(response.getDeviceStatusMapped())
-                .withMessagePriority(messagePriority).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
+                .withResult(response.getResult()).withOsgpException(response.getOsgpException())
+                .withDataObject(response.getDeviceStatusMapped()).withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 
@@ -223,26 +221,24 @@ public class AdHocManagementService extends AbstractService {
 
     // === RESUME SCHEDULE ===
 
-    public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Integer index, final boolean isImmediate, final String messageType,
-            final int messagePriority) throws FunctionalException {
+    public void resumeSchedule(final CorrelationIds ids, final Integer index, final boolean isImmediate,
+            final String messageType, final int messagePriority) throws FunctionalException {
 
-        this.findOrganisation(organisationIdentification);
-        final Device device = this.findActiveDevice(deviceIdentification);
+        this.findOrganisation(ids.getOrganisationIdentification());
+        final Device device = this.findActiveDevice(ids.getDeviceIdentification());
         final Ssld ssld = this.findSsldForDevice(device);
 
         if (!ssld.getHasSchedule()) {
             throw new FunctionalException(FunctionalExceptionType.UNSCHEDULED_DEVICE,
                     ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(
-                            String.format("Device %1$s does not have a schedule.", deviceIdentification)));
+                            String.format("Device %1$s does not have a schedule.", ids.getDeviceIdentification())));
         }
 
         final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainerDto = new ResumeScheduleMessageDataContainerDto(
                 index, isImmediate);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, resumeScheduleMessageDataContainerDto), messageType, messagePriority,
-                device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(ids, resumeScheduleMessageDataContainerDto),
+                messageType, messagePriority, device.getIpAddress());
     }
 
     // === TRANSITION MESSAGE FROM LIGHT MEASUREMENT DEVICE ===
@@ -401,8 +397,6 @@ public class AdHocManagementService extends AbstractService {
      *
      * @param device
      *            The device to update.
-     * @param deviceStatus
-     *            The device status to update the relay overview with.
      */
     private void updateDeviceRelayStatusForGetStatus(final Ssld device, final DeviceStatusMapped deviceStatusMapped) {
         final List<RelayStatus> relayStatuses = device.getRelayStatuses();
@@ -428,20 +422,20 @@ public class AdHocManagementService extends AbstractService {
     /**
      * Logs the response of SET_TRANSITION calls.
      */
-    public void handleSetTransitionResponse(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
+    public void handleSetTransitionResponse(final CorrelationIds ids, final String messageType,
+            final int messagePriority, final ResponseMessageResultType responseMessageResultType,
+            final OsgpException osgpException) {
 
         if (osgpException == null) {
             LOGGER.info(
                     "Received response: {} for messageType: {}, messagePriority: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
-                    responseMessageResultType.getValue(), messageType, messagePriority, deviceIdentification,
-                    organisationIdentification, correlationUid);
+                    responseMessageResultType.getValue(), messageType, messagePriority, ids.getDeviceIdentification(),
+                    ids.getOrganisationIdentification(), ids.getCorrelationUid());
         } else {
             LOGGER.error(
                     "Exception: {} for response: {} for messageType: {}, messagePriority: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
                     osgpException.getMessage(), responseMessageResultType.getValue(), messageType, messagePriority,
-                    deviceIdentification, organisationIdentification, correlationUid);
+                    ids.getDeviceIdentification(), ids.getOrganisationIdentification(), ids.getCorrelationUid());
         }
 
     }

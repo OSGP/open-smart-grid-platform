@@ -58,18 +58,6 @@ public class SmartMeter extends Device {
         this.channel = channel;
     }
 
-    public SmartMeter(final String supplier, final Short channel, final Long mbusIdentificationNumber,
-            final String mbusManufacturerIdentification, final Short mbusVersion,
-            final Short mbusdeviceTypeIdentification, final Short mbusPrimaryAddress) {
-        this.supplier = supplier;
-        this.channel = channel;
-        this.mbusIdentificationNumber = mbusIdentificationNumber;
-        this.mbusManufacturerIdentification = mbusManufacturerIdentification;
-        this.mbusVersion = mbusVersion;
-        this.mbusDeviceTypeIdentification = mbusdeviceTypeIdentification;
-        this.mbusPrimaryAddress = mbusPrimaryAddress;
-    }
-
     public void setDeviceType(final String deviceType) {
         this.deviceType = deviceType;
     }

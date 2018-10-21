@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notifi
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -86,11 +87,11 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        String notificationMessage = null;
-        NotificationType notificationType = null;
-        ResponseMessageResultType resultType = null;
-        String resultDescription = null;
-        Serializable dataObject = null;
+        String notificationMessage;
+        NotificationType notificationType;
+        ResponseMessageResultType resultType;
+        String resultDescription;
+        Serializable dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -116,7 +117,9 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid,
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.handleMessage(ids, messageType,
                     resultType, resultDescription, dataObject);
 
             // Send notification indicating data is available.
@@ -128,9 +131,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         }
     }
 
-    protected void handleMessage(final String organisationIdentification, final String messageType,
-            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
-            final String resultDescription, final Serializable dataObject) {
+    protected void handleMessage(final CorrelationIds ids, final String messageType,
+            final ResponseMessageResultType resultType, final String resultDescription, final Serializable dataObject) {
 
         final short numberOfNotificationsSent = 0;
         Serializable meterResponseObject;
@@ -140,8 +142,8 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             meterResponseObject = dataObject;
         }
 
-        final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
-                deviceIdentification, correlationUid, resultType, meterResponseObject, numberOfNotificationsSent);
+        final ResponseData responseData = new ResponseData(ids, messageType, resultType, meterResponseObject,
+                numberOfNotificationsSent);
         this.responseDataService.enqueue(responseData);
     }
 

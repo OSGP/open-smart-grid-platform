@@ -97,18 +97,38 @@ public class Configuration implements Serializable {
 
     private DateTime winterTimeDetails;
 
-    public Configuration(final LightType lightType, final DaliConfiguration daliConfiguration,
-            final RelayConfiguration relayConfiguration, final Integer shortTermHistoryIntervalMinutes,
-            final LinkType preferredLinkType, final MeterType meterType, final Integer longTermHistoryInterval,
-            final LongTermIntervalType longTermHistoryIntervalType) {
-        this.lightType = lightType;
-        this.daliConfiguration = daliConfiguration;
-        this.relayConfiguration = relayConfiguration;
-        this.shortTermHistoryIntervalMinutes = shortTermHistoryIntervalMinutes;
-        this.preferredLinkType = preferredLinkType;
-        this.meterType = meterType;
-        this.longTermHistoryInterval = longTermHistoryInterval;
-        this.longTermHistoryIntervalType = longTermHistoryIntervalType;
+    private Configuration(Configuration.Builder builder) {
+        this.lightType = builder.lightType;
+        this.daliConfiguration = builder.daliConfiguration;
+        this.relayConfiguration = builder.relayConfiguration;
+        this.shortTermHistoryIntervalMinutes = builder.shortTermHistoryIntervalMinutes;
+        this.preferredLinkType = builder.preferredLinkType;
+        this.meterType = builder.meterType;
+        this.longTermHistoryInterval = builder.longTermHistoryInterval;
+        this.longTermHistoryIntervalType = builder.longTermHistoryIntervalType;
+        this.timeSyncFrequency = builder.timeSyncFrequency;
+        this.deviceFixedIp = builder.deviceFixedIp;
+        this.dhcpEnabled = builder.dhcpEnabled;
+        this.tlsEnabled = builder.tlsEnabled;
+        this.tlsPortNumber = builder.tlsPortNumber;
+        this.commonNameString = builder.commonNameString;
+        this.communicationTimeout = builder.communicationTimeout;
+        this.communicationNumberOfRetries = builder.communicationNumberOfRetries;
+        this.communicationPauseTimeBetweenConnectionTrials = builder.communicationPauseTimeBetweenConnectionTrials;
+        this.osgpIpAddress = builder.osgpIpAddress;
+        this.osgpPortNumber = builder.osgpPortNumber;
+        this.ntpHost = builder.ntpHost;
+        this.ntpEnabled = builder.ntpEnabled;
+        this.ntpSyncInterval = builder.ntpSyncInterval;
+        this.testButtonEnabled = builder.testButtonEnabled;
+        this.automaticSummerTimingEnabled = builder.automaticSummerTimingEnabled;
+        this.astroGateSunRiseOffset = builder.astroGateSunRiseOffset;
+        this.astroGateSunSetOffset = builder.astroGateSunSetOffset;
+        this.switchingDelays = builder.switchingDelays;
+        this.relayLinking = builder.relayLinking;
+        this.relayRefreshing = builder.relayRefreshing;
+        this.summerTimeDetails = builder.summerTimeDetails;
+        this.winterTimeDetails = builder.winterTimeDetails;
     }
 
     public MeterType getMeterType() {
@@ -147,165 +167,80 @@ public class Configuration implements Serializable {
         return this.timeSyncFrequency;
     }
 
-    public void setTimeSyncFrequency(final Integer timeSyncFrequency) {
-        this.timeSyncFrequency = timeSyncFrequency;
-    }
-
     public DeviceFixedIp getDeviceFixedIp() {
         return this.deviceFixedIp;
-    }
-
-    public void setDeviceFixedIp(final DeviceFixedIp deviceFixedIp) {
-        this.deviceFixedIp = deviceFixedIp;
     }
 
     public Boolean isDhcpEnabled() {
         return this.dhcpEnabled;
     }
 
-    public void setDhcpEnabled(final Boolean dhcpEnabled) {
-        this.dhcpEnabled = dhcpEnabled;
-    }
-
     public Boolean isTlsEnabled() {
         return this.tlsEnabled;
-    }
-
-    public void setTlsEnabled(final Boolean tlsEnabled) {
-        this.tlsEnabled = tlsEnabled;
     }
 
     public Integer getTlsPortNumber() {
         return this.tlsPortNumber;
     }
 
-    public void setTlsPortNumber(final Integer tlsPortNumber) {
-        this.tlsPortNumber = tlsPortNumber;
-    }
-
     public String getCommonNameString() {
         return this.commonNameString;
-    }
-
-    public void setCommonNameString(final String commonNameString) {
-        this.commonNameString = commonNameString;
     }
 
     public Integer getCommunicationTimeout() {
         return this.communicationTimeout;
     }
 
-    public void setCommunicationTimeout(final Integer communicationTimeout) {
-        this.communicationTimeout = communicationTimeout;
-    }
-
     public Integer getCommunicationNumberOfRetries() {
         return this.communicationNumberOfRetries;
-    }
-
-    public void setCommunicationNumberOfRetries(final Integer communicationNumberOfRetries) {
-        this.communicationNumberOfRetries = communicationNumberOfRetries;
     }
 
     public Integer getCommunicationPauseTimeBetweenConnectionTrials() {
         return this.communicationPauseTimeBetweenConnectionTrials;
     }
 
-    public void setCommunicationPauseTimeBetweenConnectionTrials(
-            final Integer communicationPauseTimeBetweenConnectionTrials) {
-        this.communicationPauseTimeBetweenConnectionTrials = communicationPauseTimeBetweenConnectionTrials;
-    }
-
     public String getOsgpIpAddress() {
         return this.osgpIpAddress;
-    }
-
-    public void setOsgpIpAddress(final String osgpIpAddress) {
-        this.osgpIpAddress = osgpIpAddress;
     }
 
     public Integer getOsgpPortNumber() {
         return this.osgpPortNumber;
     }
 
-    public void setOsgpPortNumber(final Integer osgpPortNumber) {
-        this.osgpPortNumber = osgpPortNumber;
-    }
-
     public String getNtpHost() {
         return this.ntpHost;
-    }
-
-    public void setNtpHost(final String ntpHost) {
-        this.ntpHost = ntpHost;
     }
 
     public Boolean getNtpEnabled() {
         return this.ntpEnabled;
     }
 
-    public void setNtpEnabled(final Boolean ntpEnabled) {
-        this.ntpEnabled = ntpEnabled;
-    }
-
     public Integer getNtpSyncInterval() {
         return this.ntpSyncInterval;
-    }
-
-    public void setNtpSyncInterval(final Integer ntpSyncInterval) {
-        this.ntpSyncInterval = ntpSyncInterval;
     }
 
     public Boolean isTestButtonEnabled() {
         return this.testButtonEnabled;
     }
 
-    public void setTestButtonEnabled(final Boolean testButtonEnabled) {
-        this.testButtonEnabled = testButtonEnabled;
-    }
-
     public Boolean isAutomaticSummerTimingEnabled() {
         return this.automaticSummerTimingEnabled;
-    }
-
-    public void setAutomaticSummerTimingEnabled(final Boolean automaticSummerTimingEnabled) {
-        this.automaticSummerTimingEnabled = automaticSummerTimingEnabled;
-    }
-
-    public void setRelayLinking(final List<RelayMatrix> relayLinking) {
-        this.relayLinking = relayLinking;
     }
 
     public Integer getAstroGateSunRiseOffset() {
         return this.astroGateSunRiseOffset;
     }
 
-    public void setAstroGateSunRiseOffset(final Integer astroGateSunRiseOffset) {
-        this.astroGateSunRiseOffset = astroGateSunRiseOffset;
-    }
-
     public Integer getAstroGateSunSetOffset() {
         return this.astroGateSunSetOffset;
-    }
-
-    public void setAstroGateSunSetOffset(final Integer astroGateSunSetOffset) {
-        this.astroGateSunSetOffset = astroGateSunSetOffset;
     }
 
     public Boolean isRelayRefreshing() {
         return this.relayRefreshing;
     }
 
-    public void setRelayRefreshing(final Boolean relayRefreshing) {
-        this.relayRefreshing = relayRefreshing;
-    }
-
     public List<Integer> getSwitchingDelays() {
         return this.switchingDelays;
-    }
-
-    public void setSwitchingDelays(final List<Integer> switchingDelays) {
-        this.switchingDelays = switchingDelays;
     }
 
     public List<RelayMatrix> getRelayLinking() {
@@ -320,11 +255,196 @@ public class Configuration implements Serializable {
         return this.winterTimeDetails;
     }
 
-    public void setSummerTimeDetails(final DateTime summerTimeDetails) {
-        this.summerTimeDetails = summerTimeDetails;
-    }
+    public static class Builder {
+        private LightType lightType;
+        private DaliConfiguration daliConfiguration;
+        private RelayConfiguration relayConfiguration;
+        private Integer shortTermHistoryIntervalMinutes;
+        private LinkType preferredLinkType;
+        private MeterType meterType;
+        private Integer longTermHistoryInterval;
+        private LongTermIntervalType longTermHistoryIntervalType;
+        private Integer timeSyncFrequency;
+        private DeviceFixedIp deviceFixedIp;
+        private Boolean dhcpEnabled;
+        private Boolean tlsEnabled;
+        private Integer tlsPortNumber;
+        private String commonNameString;
+        private Integer communicationTimeout;
+        private Integer communicationNumberOfRetries;
+        private Integer communicationPauseTimeBetweenConnectionTrials;
+        private String osgpIpAddress;
+        private Integer osgpPortNumber;
+        private String ntpHost;
+        private Boolean ntpEnabled;
+        private Integer ntpSyncInterval;
+        private Boolean testButtonEnabled;
+        private Boolean automaticSummerTimingEnabled;
+        private Integer astroGateSunRiseOffset;
+        private Integer astroGateSunSetOffset;
+        private List<Integer> switchingDelays;
+        private List<RelayMatrix> relayLinking;
+        private Boolean relayRefreshing;
+        private DateTime summerTimeDetails;
+        private DateTime winterTimeDetails;
 
-    public void setWinterTimeDetails(final DateTime winterTimeDetails) {
-        this.winterTimeDetails = winterTimeDetails;
+        public Builder withLightType(LightType lightType) {
+            this.lightType = lightType;
+            return this;
+        }
+
+        public Builder withDaliConfiguration(DaliConfiguration daliConfiguration) {
+            this.daliConfiguration = daliConfiguration;
+            return this;
+        }
+
+        public Builder withRelayConfiguration(RelayConfiguration relayConfiguration) {
+            this.relayConfiguration = relayConfiguration;
+            return this;
+        }
+
+        public Builder withShortTemHistoryIntervalMinutes(Integer shortTermHistoryIntervalMinutes) {
+            this.shortTermHistoryIntervalMinutes = shortTermHistoryIntervalMinutes;
+            return this;
+        }
+
+        public Builder withPreferredLinkType(LinkType preferredLinkType) {
+            this.preferredLinkType = preferredLinkType;
+            return this;
+        }
+
+        public Builder withMeterType(MeterType meterType) {
+            this.meterType = meterType;
+            return this;
+        }
+
+        public Builder withLongTermHistoryInterval(Integer longTermHistoryInterval) {
+            this.longTermHistoryInterval = longTermHistoryInterval;
+            return this;
+        }
+
+        public Builder withLongTermHistoryIntervalType(LongTermIntervalType longTermHistoryIntervalType) {
+            this.longTermHistoryIntervalType = longTermHistoryIntervalType;
+            return this;
+        }
+
+        public Builder withTimeSyncFrequency(Integer timeSyncFrequency) {
+            this.timeSyncFrequency = timeSyncFrequency;
+            return this;
+        }
+
+        public Builder withDeviceFixedIp(DeviceFixedIp deviceFixedIp) {
+            this.deviceFixedIp = deviceFixedIp;
+            return this;
+        }
+
+        public Builder withDhcpEnabled(Boolean dhcpEnabled) {
+            this.dhcpEnabled = dhcpEnabled;
+            return this;
+        }
+
+        public Builder withTlsEnabled(Boolean tlsEnabled) {
+            this.tlsEnabled = tlsEnabled;
+            return this;
+        }
+
+        public Builder withTlsPortNumber(Integer tlsPortNumber) {
+            this.tlsPortNumber = tlsPortNumber;
+            return this;
+        }
+
+        public Builder withCommonNameString(String commonNameString) {
+            this.commonNameString = commonNameString;
+            return this;
+        }
+
+        public Builder withCommunicationTimeout(Integer communicationTimeout) {
+            this.communicationTimeout = communicationTimeout;
+            return this;
+        }
+
+        public Builder withCommunicationNumberOfRetries(Integer communicationNumberOfRetries) {
+            this.communicationNumberOfRetries = communicationNumberOfRetries;
+            return this;
+        }
+
+        public Builder withCommunicationPauseTimeBetweenConnectionTrials(Integer communicationPauseTimeBetweenConnectionTrials) {
+            this.communicationPauseTimeBetweenConnectionTrials = communicationPauseTimeBetweenConnectionTrials;
+            return this;
+        }
+
+        public Builder withOsgpIpAddress(String osgpIpAddress){
+            this.osgpIpAddress = osgpIpAddress;
+            return this;
+        }
+
+        public Builder withOsgpPortNumber(Integer osgpPortNumber) {
+            this.osgpPortNumber = osgpPortNumber;
+            return this;
+        }
+
+        public Builder withNtpHost(String ntpHost) {
+            this.ntpHost = ntpHost;
+            return this;
+        }
+
+        public Builder withNtpEnabled(Boolean ntpEnabled) {
+            this.ntpEnabled = ntpEnabled;
+            return this;
+        }
+
+        public Builder withNtpSyncInterval(Integer ntpSyncInterval) {
+            this.ntpSyncInterval = ntpSyncInterval;
+            return this;
+        }
+
+        public Builder withTestButtonEnabled(Boolean testButtonEnabled) {
+            this.testButtonEnabled = testButtonEnabled;
+            return this;
+        }
+
+        public Builder withAutomaticSummerTimingEnabled(Boolean automaticSummerTimingEnabled) {
+            this.automaticSummerTimingEnabled = automaticSummerTimingEnabled;
+            return this;
+        }
+
+        public Builder withAstroGateSunRiseOffset(Integer astroGateSunRiseOffset) {
+            this.astroGateSunRiseOffset = astroGateSunRiseOffset;
+            return this;
+        }
+
+        public Builder withAstroGateSunSetOffset(Integer astroGateSunSetOffset) {
+            this.astroGateSunSetOffset = astroGateSunSetOffset;
+            return this;
+        }
+
+        public Builder withSwitchingDelays(List<Integer> switchingDelays) {
+            this.switchingDelays = switchingDelays;
+            return this;
+        }
+
+        public Builder withRelayLinking(List<RelayMatrix> relayLinking) {
+            this.relayLinking = relayLinking;
+            return this;
+        }
+
+        public Builder withRelayRefreshing(Boolean relayRefreshing) {
+            this.relayRefreshing = relayRefreshing;
+            return this;
+        }
+
+        public Builder withSummerTimeDetails(DateTime summerTimeDetails) {
+            this.summerTimeDetails = summerTimeDetails;
+            return this;
+        }
+
+        public Builder withWinterTimeDetails(DateTime winterTimeDetails) {
+            this.winterTimeDetails = winterTimeDetails;
+            return this;
+        }
+
+        public Configuration build() {
+            return new Configuration(this);
+        }
     }
 }

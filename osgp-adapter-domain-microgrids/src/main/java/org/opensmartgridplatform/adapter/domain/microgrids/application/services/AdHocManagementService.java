@@ -22,6 +22,7 @@ import org.opensmartgridplatform.dto.valueobjects.microgrids.EmptyResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.SetDataRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -73,9 +74,9 @@ public class AdHocManagementService extends BaseService {
                 device.getIpAddress());
     }
 
-    public void handleGetDataResponse(final GetDataResponseDto dataResponseDto, final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
+    public void handleGetDataResponse(final GetDataResponseDto dataResponseDto, final CorrelationIds ids,
+            final String messageType, final ResponseMessageResultType responseMessageResultType,
+            final OsgpException osgpException) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
@@ -89,7 +90,7 @@ public class AdHocManagementService extends BaseService {
                 throw osgpException;
             }
 
-            this.handleResponseMessageReceived(deviceIdentification);
+            this.handleResponseMessageReceived(ids.getDeviceIdentification());
 
             dataResponse = this.mapper.map(dataResponseDto, GetDataResponse.class);
 
@@ -100,15 +101,14 @@ public class AdHocManagementService extends BaseService {
         }
 
         // Support for Push messages, generate correlationUid
-        String actualCorrelationUid = correlationUid;
+        String actualCorrelationUid = ids.getCorrelationUid();
         if ("no-correlationUid".equals(actualCorrelationUid)) {
             actualCorrelationUid = this.correlationIdProviderUUIDService.getCorrelationId("DeviceGenerated",
-                    deviceIdentification);
+                    ids.getDeviceIdentification());
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(actualCorrelationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
+                .withIds(ids).withCorrelationUid(actualCorrelationUid).withResult(result).withOsgpException(exception)
                 .withDataObject(dataResponse).build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
@@ -131,9 +131,9 @@ public class AdHocManagementService extends BaseService {
                 device.getIpAddress());
     }
 
-    public void handleSetDataResponse(final EmptyResponseDto emptyResponseDto, final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
+    public void handleSetDataResponse(final EmptyResponseDto emptyResponseDto, final CorrelationIds ids,
+            final String messageType, final ResponseMessageResultType responseMessageResultType,
+            final OsgpException osgpException) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
@@ -147,7 +147,7 @@ public class AdHocManagementService extends BaseService {
                 throw osgpException;
             }
 
-            this.handleResponseMessageReceived(deviceIdentification);
+            this.handleResponseMessageReceived(ids.getDeviceIdentification());
 
             emptyResponse = this.mapper.map(emptyResponseDto, EmptyResponse.class);
 
@@ -157,10 +157,8 @@ public class AdHocManagementService extends BaseService {
             exception = this.ensureOsgpException(e, "Exception occurred while setting data");
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(exception)
-                .withDataObject(emptyResponse).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
+                .withResult(result).withOsgpException(exception).withDataObject(emptyResponse).build();
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 

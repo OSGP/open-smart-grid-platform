@@ -12,6 +12,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.ScheduleManagementService;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -58,7 +59,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends BaseMessa
         String organisationIdentification = null;
         String deviceIdentification = null;
         Long scheduleTime = null;
-        Object dataObject = null;
+        Object dataObject;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -84,9 +85,10 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends BaseMessa
             LOGGER.info("Calling application service function: {}", messageType);
 
             final Schedule tariffSchedule = (Schedule) dataObject;
-
-            this.scheduleManagementService.setTariffSchedule(organisationIdentification, deviceIdentification,
-                    correlationUid, tariffSchedule.getScheduleEntries(), scheduleTime, messageType, messagePriority);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.scheduleManagementService.setTariffSchedule(ids, tariffSchedule.getScheduleEntries(),
+                    scheduleTime, messageType, messagePriority);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

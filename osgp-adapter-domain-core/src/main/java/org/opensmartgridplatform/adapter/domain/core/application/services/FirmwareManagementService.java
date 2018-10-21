@@ -16,9 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -42,19 +43,19 @@ public class FirmwareManagementService extends AbstractService {
 
     // === UPDATE FIRMWARE ===
 
-    public void updateFirmware(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer,
-            final Long scheduleTime, final String messageType, final int messagePriority) throws FunctionalException {
+    public void updateFirmware(final CorrelationIds ids,
+            final FirmwareUpdateMessageDataContainer firmwareUpdateMessageDataContainer, final Long scheduleTime,
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("Update firmware called with organisation [{}], device [{}], firmwareIdentification [{}].",
-                organisationIdentification, deviceIdentification, firmwareUpdateMessageDataContainer.getFirmwareUrl());
+                ids.getOrganisationIdentification(), ids.getDeviceIdentification(),
+                firmwareUpdateMessageDataContainer.getFirmwareUrl());
 
-        this.findOrganisation(organisationIdentification);
-        final Device device = this.findActiveDevice(deviceIdentification);
+        this.findOrganisation(ids.getOrganisationIdentification());
+        final Device device = this.findActiveDevice(ids.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                        this.domainCoreMapper.map(firmwareUpdateMessageDataContainer,
+                new RequestMessage(ids, this.domainCoreMapper.map(firmwareUpdateMessageDataContainer,
                                 org.opensmartgridplatform.dto.valueobjects.FirmwareUpdateMessageDataContainer.class)),
                 messageType, messagePriority, device.getIpAddress(), scheduleTime);
     }
@@ -77,9 +78,8 @@ public class FirmwareManagementService extends AbstractService {
     }
 
     public void handleGetFirmwareVersionResponse(final List<FirmwareVersionDto> firmwareVersions,
-            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
-            final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+            final CorrelationIds ids, final String messageType, final int messagePriority,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
@@ -98,10 +98,9 @@ public class FirmwareManagementService extends AbstractService {
                     "Exception occurred while getting device firmware version", e);
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject((Serializable) firmwareVersions).withMessagePriority(messagePriority).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
+                .withResult(result).withOsgpException(osgpException).withDataObject((Serializable) firmwareVersions)
+                .withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 

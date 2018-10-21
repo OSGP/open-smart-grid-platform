@@ -13,6 +13,7 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.ScheduleManagementService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -57,7 +58,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends BaseMessag
         int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         String organisationIdentification = null;
         String deviceIdentification = null;
-        Object dataObject = null;
+        Object dataObject;
         Long scheduleTime = null;
 
         try {
@@ -84,9 +85,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends BaseMessag
             LOGGER.info("Calling application service function: {}", messageType);
 
             final Schedule schedule = (Schedule) dataObject;
-
-            this.scheduleManagementService.setLightSchedule(organisationIdentification, deviceIdentification,
-                    correlationUid, schedule, scheduleTime, messageType, messagePriority);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.scheduleManagementService.setLightSchedule(ids, schedule, scheduleTime, messageType, messagePriority);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,

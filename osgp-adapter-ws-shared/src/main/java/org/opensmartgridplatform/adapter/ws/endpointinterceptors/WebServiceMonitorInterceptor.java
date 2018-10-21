@@ -36,9 +36,12 @@ import org.springframework.ws.soap.SoapMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import org.opensmartgridplatform.adapter.ws.infra.jms.EndpointClassAndMethod;
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingRequestMessage;
+import org.opensmartgridplatform.adapter.ws.infra.jms.ResponseResultAndDataSize;
 import org.opensmartgridplatform.domain.core.exceptions.WebServiceMonitorInterceptorException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 
 @Transactional(value = "transactionManager")
 public class WebServiceMonitorInterceptor implements EndpointInterceptor {
@@ -49,8 +52,6 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     @Qualifier("loggingMessageSender")
     private LoggingMessageSender loggingMessageSender;
 
-    private static final String CLASS_NAME = "className";
-    private static final String METHOD_NAME = "methodName";
     private static final String CORRELATION_UID = "correlationUid";
     private static final String DEVICE_ID = "deviceId";
     private static final String RESPONSE_RESULT = "result";
@@ -62,15 +63,15 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
 
     private static final String FAULT_RESPONSE_RESULT = "SOAP_FAULT";
 
-    private final String organisationIdentification;
-    private final String userName;
-    private final String applicationName;
+    private final String organisationIdentificationHeader;
+    private final String userNameHeader;
+    private final String applicationNameHeader;
 
-    public WebServiceMonitorInterceptor(final String organisationIdentification, final String userName,
-            final String applicationName) {
-        this.organisationIdentification = organisationIdentification;
-        this.userName = userName;
-        this.applicationName = applicationName;
+    public WebServiceMonitorInterceptor(final String organisationIdentificationHeader, final String userNameHeader,
+            final String applicationNameHeader) {
+        this.organisationIdentificationHeader = organisationIdentificationHeader;
+        this.userNameHeader = userNameHeader;
+        this.applicationNameHeader = applicationNameHeader;
     }
 
     @Override
@@ -111,19 +112,18 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
      *
      * @param endpoint
      *            Object representing the end point class.
-     *
-     * @return Map containing CLASS_NAME and METHOD_NAME.
      */
-    private Map<String, String> getEndPointClassAndMethod(final Object endpoint) {
+    private EndpointClassAndMethod getEndPointClassAndMethod(final Object endpoint) {
         final MethodEndpoint method = (MethodEndpoint) endpoint;
-        final String className = method.getBean().toString();
-        final String methodName = method.getMethod().getName();
+        return new EndpointClassAndMethod(classNameFrom(method), methodNameFrom(method));
+    }
 
-        final Map<String, String> classAndMethod = new HashMap<String, String>(2);
-        classAndMethod.put(CLASS_NAME, className.split("@")[0]);
-        classAndMethod.put(METHOD_NAME, methodName + "()");
+    private String classNameFrom(MethodEndpoint method) {
+        return method.getBean().toString().split("@")[0];
+    }
 
-        return classAndMethod;
+    private String methodNameFrom(MethodEndpoint method) {
+        return method.getMethod().getName() + "()";
     }
 
     /**
@@ -179,7 +179,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
             final String result = this.evaluateXPathExpression(document, XML_ELEMENT_OSP_RESULT_TYPE);
 
             // Create the Map containing the output.
-            final Map<String, Object> map = new HashMap<String, Object>(4);
+            final Map<String, Object> map = new HashMap<>();
             map.put(CORRELATION_UID, correlationUid);
             map.put(DEVICE_ID, deviceId);
             map.put(RESPONSE_RESULT, result);
@@ -242,7 +242,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         final Date now = new Date();
 
         // Get EndPointClass and EndPointMethod.
-        final Map<String, String> classAndMethod = this.getEndPointClassAndMethod(endpoint);
+        final EndpointClassAndMethod classAndMethod = this.getEndPointClassAndMethod(endpoint);
 
         // Get the request.
         Assert.isInstanceOf(SoapMessage.class, messageContext.getRequest());
@@ -252,13 +252,13 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         final SoapHeader soapHeader = request.getSoapHeader();
 
         // Read OrganisationIdentification from header from request.
-        final String orgIdentification = this.getHeaderValue(soapHeader, this.organisationIdentification);
+        final String organisationIdentification = this.getHeaderValue(soapHeader, this.organisationIdentificationHeader);
 
         // Read UserName from header from request.
-        final String usrName = this.getHeaderValue(soapHeader, this.userName);
+        final String usrName = this.getHeaderValue(soapHeader, this.userNameHeader);
 
         // Read ApplicationName from header from request.
-        final String appName = this.getHeaderValue(soapHeader, this.applicationName);
+        final String appName = this.getHeaderValue(soapHeader, this.applicationNameHeader);
 
         // Read correlationUid and deviceId from request.
         final Map<String, Object> requestData = this.parseSoapMessage(request);
@@ -282,15 +282,22 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         }
 
         // Check response for correlationId, otherwise request
-        String correlationId = (String) responseData.get(CORRELATION_UID);
-        if (StringUtils.isEmpty(correlationId)) {
-            correlationId = (String) requestData.get(CORRELATION_UID);
+        String correlationUid = (String) responseData.get(CORRELATION_UID);
+        if (StringUtils.isEmpty(correlationUid)) {
+            correlationUid = (String) requestData.get(CORRELATION_UID);
         }
 
         // Creating the logging request message
-        return new LoggingRequestMessage(now, orgIdentification, usrName, appName, classAndMethod.get(CLASS_NAME),
-                classAndMethod.get(METHOD_NAME), (String) requestData.get(DEVICE_ID), correlationId,
-                (String) responseData.get(RESPONSE_RESULT), (int) responseData.get(RESPONSE_DATA_SIZE));
+        final String deviceIdentification = (String) requestData.get(DEVICE_ID);
+        final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                correlationUid);
+
+        return new LoggingRequestMessage(now, ids, usrName, appName, classAndMethod,
+                resultAndDataSizeFrom(responseData));
+    }
+
+    private ResponseResultAndDataSize resultAndDataSizeFrom(Map<String, Object> responseData) {
+        return new ResponseResultAndDataSize((String) responseData.get(RESPONSE_RESULT), (int) responseData.get(RESPONSE_DATA_SIZE));
     }
 
     /**

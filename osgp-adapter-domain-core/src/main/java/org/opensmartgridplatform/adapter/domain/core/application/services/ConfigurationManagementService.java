@@ -26,6 +26,7 @@ import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayMapDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -49,15 +50,14 @@ public class ConfigurationManagementService extends AbstractService {
 
     // === SET CONFIGURATION ===
 
-    public void setConfiguration(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Configuration configuration, final Long scheduleTime,
+    public void setConfiguration(final CorrelationIds ids, final Configuration configuration, final Long scheduleTime,
             final String messageType, final int messagePriority) throws FunctionalException {
 
-        LOGGER.debug("setConfiguration called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+        LOGGER.debug("setConfiguration called with organisation {} and device {}", ids.getOrganisationIdentification(),
+                ids.getDeviceIdentification());
 
-        this.findOrganisation(organisationIdentification);
-        final Device device = this.findActiveDevice(deviceIdentification);
+        this.findOrganisation(ids.getOrganisationIdentification());
+        final Device device = this.findActiveDevice(ids.getDeviceIdentification());
 
         if (configuration == null) {
             LOGGER.info("Configuration is empty, skip sending a request to device");
@@ -81,9 +81,8 @@ public class ConfigurationManagementService extends AbstractService {
         final org.opensmartgridplatform.dto.valueobjects.ConfigurationDto configurationDto = this.domainCoreMapper
                 .map(configuration, org.opensmartgridplatform.dto.valueobjects.ConfigurationDto.class);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, configurationDto),
-                messageType, messagePriority, device.getIpAddress(), scheduleTime);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(ids, configurationDto), messageType, messagePriority,
+                device.getIpAddress(), scheduleTime);
     }
 
     private void updateDeviceOutputSettings(final Device device, final Configuration configuration) {
@@ -127,9 +126,7 @@ public class ConfigurationManagementService extends AbstractService {
                 messagePriority, device.getIpAddress());
     }
 
-    public void handleGetConfigurationResponse(
-            final org.opensmartgridplatform.dto.valueobjects.ConfigurationDto configurationDto,
-            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+    public void handleGetConfigurationResponse(final ConfigurationDto configurationDto, final CorrelationIds ids,
             final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
@@ -143,7 +140,7 @@ public class ConfigurationManagementService extends AbstractService {
                 throw osgpException;
             }
 
-            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(ids.getDeviceIdentification());
             final List<DeviceOutputSetting> outputSettings = ssld.getOutputSettings();
 
             this.replaceEmptyOutputSettings(configurationDto, outputSettings);
@@ -168,10 +165,9 @@ public class ConfigurationManagementService extends AbstractService {
             osgpException = new TechnicalException(ComponentType.UNKNOWN, e.getMessage(), e);
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(configuration).withMessagePriority(messagePriority).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
+                .withResult(result).withOsgpException(osgpException).withDataObject(configuration)
+                .withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 

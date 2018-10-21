@@ -65,8 +65,10 @@ import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
+import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -249,8 +251,8 @@ public class DeviceManagementEndpoint {
 
             // Get all events matching the request.
             final Page<org.opensmartgridplatform.domain.core.entities.Event> result = this.deviceManagementService
-                    .findEvents(organisationIdentification, request.getDeviceIdentification(), request.getPageSize(),
-                            request.getPage(), from, until,
+                    .findEvents(organisationIdentification, request.getDeviceIdentification(), this.pageFrom(request),
+                            from, until,
                             this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class));
 
             response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
@@ -269,6 +271,10 @@ public class DeviceManagementEndpoint {
         return response;
     }
 
+    private PageSpecifier pageFrom(final FindEventsRequest request) {
+        return new PageSpecifier(request.getPageSize(), request.getPage());
+    }
+
     @PayloadRoot(localPart = "FindDevicesRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
     public FindDevicesResponse findDevices(@OrganisationIdentification final String organisationIdentification,
@@ -279,10 +285,9 @@ public class DeviceManagementEndpoint {
         final FindDevicesResponse response = new FindDevicesResponse();
 
         try {
+            final PageSpecifier pageSpecifier = this.pageFrom(request);
             Page<org.opensmartgridplatform.domain.core.entities.Device> result = this.deviceManagementService
-                    .findDevices(organisationIdentification, request.getPageSize(), request.getPage(),
-                            this.deviceManagementMapper.map(request.getDeviceFilter(),
-                                    org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class));
+                    .findDevices(organisationIdentification, pageSpecifier, this.deviceFilterFrom(request));
 
             if (result != null && response.getDevices() != null) {
                 response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
@@ -296,9 +301,8 @@ public class DeviceManagementEndpoint {
                 int calls = 0;
                 while ((calls += 1) < result.getTotalPages()) {
                     request.setPage(calls);
-                    result = this.deviceManagementService.findDevices(organisationIdentification, request.getPageSize(),
-                            request.getPage(), this.deviceManagementMapper.map(request.getDeviceFilter(),
-                                    org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class));
+                    result = this.deviceManagementService.findDevices(organisationIdentification, pageSpecifier,
+                            this.deviceFilterFrom(request));
                     response.getDevices()
                             .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
                 }
@@ -313,6 +317,14 @@ public class DeviceManagementEndpoint {
         }
 
         return response;
+    }
+
+    private DeviceFilter deviceFilterFrom(final FindDevicesRequest request) {
+        return this.deviceManagementMapper.map(request.getDeviceFilter(), DeviceFilter.class);
+    }
+
+    private PageSpecifier pageFrom(final FindDevicesRequest request) {
+        return new PageSpecifier(request.getPageSize(), request.getPage());
     }
 
     @PayloadRoot(localPart = "FindScheduledTasksRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)

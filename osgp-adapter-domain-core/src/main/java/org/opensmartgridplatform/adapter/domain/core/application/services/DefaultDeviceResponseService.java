@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
@@ -27,9 +28,8 @@ public class DefaultDeviceResponseService {
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-    public void handleDefaultDeviceResponse(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+    public void handleDefaultDeviceResponse(final CorrelationIds ids, final String messageType,
+            final int messagePriority, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
 
@@ -45,10 +45,8 @@ public class DefaultDeviceResponseService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withMessagePriority(messagePriority).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
+                .withResult(result).withOsgpException(osgpException).withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 }

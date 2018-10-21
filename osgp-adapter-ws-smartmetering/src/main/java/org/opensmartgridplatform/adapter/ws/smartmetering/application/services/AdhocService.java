@@ -12,7 +12,7 @@ import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeterin
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
-import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest;

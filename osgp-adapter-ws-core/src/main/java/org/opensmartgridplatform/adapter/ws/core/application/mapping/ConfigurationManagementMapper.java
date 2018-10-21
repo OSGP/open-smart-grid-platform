@@ -23,5 +23,6 @@ public class ConfigurationManagementMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new MeterTypeConverter());
         mapperFactory.getConverterFactory().registerConverter(new DaliConfigurationConverter());
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ConfigurationConverter());
     }
 }

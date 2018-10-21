@@ -22,6 +22,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduleEntry;
 import org.opensmartgridplatform.dto.valueobjects.ScheduleDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -45,15 +46,14 @@ public class ScheduleManagementService extends AbstractService {
     /**
      * Set a tariff schedule.
      */
-    public void setTariffSchedule(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<ScheduleEntry> schedules, final Long scheduleTime,
-            final String messageType, final int messagePriority) throws FunctionalException {
+    public void setTariffSchedule(final CorrelationIds ids, final List<ScheduleEntry> schedules,
+            final Long scheduleTime, final String messageType, final int messagePriority) throws FunctionalException {
 
-        LOGGER.info("setTariffSchedule called with organisation {} and device {}.", organisationIdentification,
-                deviceIdentification);
+        LOGGER.info("setTariffSchedule called with organisation {} and device {}.", ids.getOrganisationIdentification(),
+                ids.getDeviceIdentification());
 
-        this.findOrganisation(organisationIdentification);
-        final Device device = this.findActiveDevice(deviceIdentification);
+        this.findOrganisation(ids.getOrganisationIdentification());
+        final Device device = this.findActiveDevice(ids.getDeviceIdentification());
         if (Ssld.PSLD_TYPE.equals(device.getDeviceType())) {
             throw new FunctionalException(FunctionalExceptionType.TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD,
                     ComponentType.DOMAIN_TARIFF_SWITCHING,
@@ -79,8 +79,7 @@ public class ScheduleManagementService extends AbstractService {
 
         LOGGER.info("Sending message");
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, scheduleDto),
-                messageType, messagePriority, device.getIpAddress(), scheduleTime);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(ids, scheduleDto), messageType, messagePriority,
+                device.getIpAddress(), scheduleTime);
     }
 }

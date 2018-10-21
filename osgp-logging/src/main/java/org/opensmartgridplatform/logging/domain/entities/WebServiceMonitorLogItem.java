@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -59,21 +60,18 @@ public class WebServiceMonitorLogItem extends AbstractEntity {
 
     }
 
-    public WebServiceMonitorLogItem(final Date timeStamp, final String organisationIdentification,
-            final String userName, final String applicationName, final String className, final String methodName,
-            final String requestDeviceId, final String correlationUid, final String responseResult,
-            final int responseDataSize) {
-
+    public WebServiceMonitorLogItem(final Date timeStamp, final CorrelationIds ids, final String userName,
+            final MethodResult methodResult) {
         this.timeStamp = (Date) timeStamp.clone();
-        this.organisationIdentification = organisationIdentification;
+        this.organisationIdentification = ids.getOrganisationIdentification();
         this.userName = userName;
-        this.applicationName = applicationName;
-        this.className = className;
-        this.methodName = methodName;
-        this.requestDeviceIdentification = requestDeviceId;
-        this.correlationUid = correlationUid;
-        this.responseResult = responseResult;
-        this.responseDataSize = responseDataSize;
+        this.applicationName = methodResult.getApplicationName();
+        this.className = methodResult.getClassName();
+        this.methodName = methodResult.getMethodName();
+        this.requestDeviceIdentification = ids.getDeviceIdentification();
+        this.correlationUid = ids.getCorrelationUid();
+        this.responseResult = methodResult.getResponseResult();
+        this.responseDataSize = methodResult.getResponseDataSize();
     }
 
     public Date getTimeStamp() {

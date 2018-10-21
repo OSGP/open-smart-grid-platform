@@ -22,11 +22,13 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
-import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
+import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
@@ -67,8 +69,7 @@ public class DeviceInstallationService extends AbstractService {
                 actualMessageType, messagePriority, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(final org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto deviceStatusDto,
-            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+    public void handleGetStatusResponse(final DeviceStatusDto deviceStatusDto, final CorrelationIds ids,
             final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
@@ -82,22 +83,20 @@ public class DeviceInstallationService extends AbstractService {
         } else {
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
             try {
-                final Device dev = this.deviceDomainService.searchDevice(deviceIdentification);
+                final Device dev = this.deviceDomainService.searchDevice(ids.getDeviceIdentification());
                 if (LightMeasurementDevice.LMD_TYPE.equals(dev.getDeviceType())) {
                     this.handleLmd(status, response);
                 } else {
-                    this.handleSsld(deviceIdentification, status, response);
+                    this.handleSsld(ids.getDeviceIdentification(), status, response);
                 }
             } catch (final FunctionalException e) {
                 LOGGER.error("Caught FunctionalException", e);
             }
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(response.getResult())
-                .withOsgpException(response.getOsgpException()).withDataObject(response.getDeviceStatusMapped())
-                .withMessagePriority(messagePriority).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
+                .withResult(response.getResult()).withOsgpException(response.getOsgpException())
+                .withDataObject(response.getDeviceStatusMapped()).withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 

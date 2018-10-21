@@ -21,7 +21,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformDomain;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
@@ -58,7 +58,7 @@ public class Organisation extends AbstractEntity {
 
     @OneToMany(mappedBy = "organisation", targetEntity = DeviceAuthorization.class)
     @Cascade(value = { CascadeType.DELETE })
-    private final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
+    private final List<DeviceAuthorization> authorizations = new ArrayList<>();
 
     @Column(nullable = false)
     private PlatformFunctionGroup functionGroup;
@@ -175,7 +175,7 @@ public class Organisation extends AbstractEntity {
     }
 
     public List<PlatformDomain> getDomains() {
-        final List<PlatformDomain> result = new ArrayList<PlatformDomain>();
+        final List<PlatformDomain> result = new ArrayList<>();
 
         if (StringUtils.isEmpty(this.domains)) {
             return result;

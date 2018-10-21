@@ -49,13 +49,17 @@ public class ProtocolLogItemRequestMessageListener implements MessageListener {
         final String organisationIdentification = objectMessage
                 .getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
 
-        final DeviceLogItem deviceLogItem = new DeviceLogItem(organisationIdentification,
-                objectMessage.getStringProperty(Constants.DEVICE_UID), deviceIdentification,
-                Boolean.parseBoolean(objectMessage.getStringProperty(Constants.IS_INCOMING)),
-                Boolean.parseBoolean(objectMessage.getStringProperty(Constants.IS_VALID)),
-                objectMessage.getStringProperty(Constants.ENCODED_MESSAGE),
-                objectMessage.getStringProperty(Constants.DECODED_MESSAGE),
-                objectMessage.getIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE));
+        final DeviceLogItem deviceLogItem = new DeviceLogItem.Builder()
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceUid(objectMessage.getStringProperty(Constants.DEVICE_UID))
+                .withDeviceIdentification(deviceIdentification)
+                .withIncoming(Boolean.parseBoolean(objectMessage.getStringProperty(Constants.IS_INCOMING)))
+                .withValid(Boolean.parseBoolean(objectMessage.getStringProperty(Constants.IS_VALID)))
+                .withEncodedMessage(objectMessage.getStringProperty(Constants.ENCODED_MESSAGE))
+                .withDecodedMessage(objectMessage.getStringProperty(Constants.DECODED_MESSAGE))
+                .withPayloadMessageSerializedSize(
+                        objectMessage.getIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE))
+                .build();
         this.deviceLogRepository.save(deviceLogItem);
     }
 }

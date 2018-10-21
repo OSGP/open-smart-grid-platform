@@ -9,34 +9,31 @@ package org.opensmartgridplatform.adapter.ws.infra.jms;
 
 import java.util.Date;
 
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
+
 public class LoggingRequestMessage {
 
     private final Date timeStamp;
-    private final String correlationUid;
-    private final String organisationIdentification;
+    private final CorrelationIds ids;
     private final String userName;
     private final String applicationName;
     private final String className;
     private final String methodName;
-    private final String deviceID;
     private String responseResult;
-    private final int resposeDataSize;
+    private final int responseDataSize;
 
     // Logging items.
-    public LoggingRequestMessage(final Date timeStamp, final String organisationIdentification, final String userName,
-            final String applicationName, final String className, final String methodName, final String deviceID,
-            final String correlationUid, final String responseResult, final int resposeDataSize) {
-
+    public LoggingRequestMessage(final Date timeStamp, final CorrelationIds ids, final String userName,
+            final String applicationName, EndpointClassAndMethod classAndMethod,
+            final ResponseResultAndDataSize responseResultAndDataSize) {
+        this.ids = ids;
         this.timeStamp = (Date) timeStamp.clone();
-        this.organisationIdentification = organisationIdentification;
         this.userName = userName;
         this.applicationName = applicationName;
-        this.correlationUid = correlationUid;
-        this.className = className;
-        this.methodName = methodName;
-        this.deviceID = deviceID;
-        this.responseResult = responseResult;
-        this.resposeDataSize = resposeDataSize;
+        this.className = classAndMethod.getClassName();
+        this.methodName = classAndMethod.getMethodName();
+        this.responseResult = responseResultAndDataSize.getResult();
+        this.responseDataSize = responseResultAndDataSize.getDataSize();
     }
 
     public Date getTimeStamp() {
@@ -44,7 +41,7 @@ public class LoggingRequestMessage {
     }
 
     public String getOrganisationIdentification() {
-        return this.organisationIdentification;
+        return this.ids.getOrganisationIdentification();
     }
 
     public String getUserName() {
@@ -63,20 +60,20 @@ public class LoggingRequestMessage {
         return this.methodName;
     }
 
-    public String getDeviceID() {
-        return this.deviceID;
+    public String getDeviceIdentification() {
+        return this.ids.getDeviceIdentification();
     }
 
     public String getCorrelationUid() {
-        return this.correlationUid;
+        return this.ids.getCorrelationUid();
     }
 
     public String getResponseResult() {
         return this.responseResult;
     }
 
-    public int getResposeDataSize() {
-        return this.resposeDataSize;
+    public int getResponseDataSize() {
+        return this.responseDataSize;
     }
 
     public void setResponseResult(final String responseResult) {

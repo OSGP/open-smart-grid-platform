@@ -12,6 +12,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
 import org.opensmartgridplatform.domain.core.valueobjects.Configuration;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -85,8 +86,10 @@ public class CommonSetConfigurationRequestMessageProcessor extends BaseMessagePr
 
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.configurationManagementService.setConfiguration(organisationIdentification, deviceIdentification,
-                    correlationUid, configuration, scheduleTime, messageType, messagePriority);
+            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
+                    correlationUid);
+            this.configurationManagementService.setConfiguration(ids, configuration, scheduleTime, messageType,
+                    messagePriority);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
