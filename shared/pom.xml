@@ -142,6 +142,12 @@
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
 
+    <!-- Hibernate validator -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+
     <!-- Flyway (DB Migration) -->
     <dependency>
       <groupId>org.flywaydb</groupId>

@@ -11,19 +11,18 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.joda.time.DateTime;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.Type;
-
-import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 public class XMLGregorianCalendarToDateTimeConverterTest {
 
@@ -68,26 +67,35 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
     }
 
     @Test
-    public void mapXMLGregorianCalenderToDateTime() {
-        try {
-            final DateTime dateTime = DateTime.now();
-            final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                    dateTime.toGregorianCalendar());
+    public void mapXMLGregorianCalenderWithTimeZoneToDateTime() throws DatatypeConfigurationException {
+        final String withTimeZone = "2010-06-30T01:20:30+02:00";
+        final DateTime dateTime = DateTime.parse(withTimeZone);
+        final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
+                .newXMLGregorianCalendar(withTimeZone);
 
-            // Try to map to Yoda version.
-            final DateTime mappedYodaDateTime = this.mapper.map(xmlGregorianCalendar, DateTime.class);
-            Assert.assertEquals(dateTime, mappedYodaDateTime);
-        } catch (final DatatypeConfigurationException e) {
-            Assert.fail(e.getMessage());
-        }
+        // Try to map to Joda version.
+        final DateTime mappedJodaDateTime = this.mapper.map(xmlGregorianCalendar, DateTime.class);
+        Assert.assertEquals(dateTime, mappedJodaDateTime);
+    }
+
+    @Test
+    public void mapXMLGregorianWithoutTimeZoneCalenderToDateTime() throws DatatypeConfigurationException {
+        final String withoutTimeZone = "2010-06-30T01:20:30";
+        final DateTime dateTime = DateTime.parse(withoutTimeZone);
+        final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
+                .newXMLGregorianCalendar(withoutTimeZone);
+
+        // Try to map to Joda version.
+        final DateTime mappedJodaDateTime = this.mapper.map(xmlGregorianCalendar, DateTime.class);
+        Assert.assertEquals(dateTime, mappedJodaDateTime);
     }
 
     @Test
     public void mapDateTimeToXMLGregorianCalender() {
         try {
             final DateTime dateTime = DateTime.now();
-            final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                    dateTime.toGregorianCalendar());
+            final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
+                    .newXMLGregorianCalendar(dateTime.toGregorianCalendar());
 
             // Try to map to XML version.
             final XMLGregorianCalendar mappedXMLGregorianCalendar = this.mapper.map(dateTime,
@@ -102,9 +110,9 @@ public class XMLGregorianCalendarToDateTimeConverterTest {
     public void mapStringToDateTime() {
         final String stringTime = DateTime.now().toString();
 
-        // Try to map to Yoda version.
-        final DateTime mappedYodaTime = this.mapper.map(stringTime, DateTime.class);
-        Assert.assertNotNull("Not expecting NULL but a DateTime instance.", mappedYodaTime);
+        // Try to map to Joda version.
+        final DateTime mappedJodaTime = this.mapper.map(stringTime, DateTime.class);
+        Assert.assertNotNull("Not expecting NULL but a DateTime instance.", mappedJodaTime);
     }
 
     @Test

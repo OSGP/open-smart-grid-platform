@@ -36,7 +36,11 @@ public class PagingSettings {
         return this.pageNumber;
     }
 
-    public void updatePagingSettings(final Integer pageSize, final Integer pageNumber) {
+    public void updatePagingSettings(final PageSpecifier pageSpecifier) {
+        updatePagingSettings(pageSpecifier.getPageSize(), pageSpecifier.getPageNumber());
+    }
+
+    private void updatePagingSettings(final Integer pageSize, final Integer pageNumber) {
         this.pageSize = pageSize == null ? this.defaultPageSize
                 : (pageSize > this.maximumPageSize ? this.maximumPageSize : pageSize);
         this.pageNumber = pageNumber == null ? 0 : pageNumber;

@@ -22,6 +22,11 @@ public class RequestMessage implements Serializable {
     protected String ipAddress;
     protected Serializable request;
 
+    public RequestMessage(final CorrelationIds ids, final Serializable request) {
+        this(ids.getCorrelationUid(), ids.getOrganisationIdentification(), ids.getDeviceIdentification(), null,
+                request);
+    }
+
     public RequestMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final Serializable request) {
         this(correlationUid, organisationIdentification, deviceIdentification, null, request);

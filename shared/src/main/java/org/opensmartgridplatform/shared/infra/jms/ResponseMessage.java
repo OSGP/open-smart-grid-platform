@@ -52,6 +52,13 @@ public class ResponseMessage implements Serializable {
         private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
         private boolean bypassRetry = DEFAULT_BYPASS_RETRY;
 
+        public Builder withIds(final CorrelationIds ids) {
+            this.organisationIdentification = ids.getOrganisationIdentification();
+            this.deviceIdentification = ids.getDeviceIdentification();
+            this.correlationUid = ids.getCorrelationUid();
+            return this;
+        }
+
         public Builder withCorrelationUid(final String correlationUid) {
             this.correlationUid = correlationUid;
             return this;
