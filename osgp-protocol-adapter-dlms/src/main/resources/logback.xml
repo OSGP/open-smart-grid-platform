@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+<!--
+  <appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+    <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+      <driverClass>org.postgresql.Driver</driverClass>
+      <url>jdbc:postgresql://localhost/osgp_logging</url>
+      <user>osp_admin</user>
+      <password>1234</password>
+    </connectionSource>
+  </appender>
+-->
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/var/log/osp/logs/osgp-adapter-protocol-dlms.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>/var/log/osp/logs/osgp-adapter-protocol-dlms.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+      <!-- keep X days' worth of history -->
+      <maxHistory>10</maxHistory>
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.springframework.ws.server.MessageTracing" level="TRACE" additivity="false">
+    <appender-ref ref="CONSOLE" />
+  </logger>
+
+  <logger name="org.springframework.ws.client.MessageTracing" level="TRACE" additivity="false">
+    <appender-ref ref="CONSOLE" />
+  </logger>
+
+  <root level="INFO" additivity="false">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="FILE"/>
+<!--
+    <appender-ref ref="DB"/>
+-->
+  </root>
+
+</configuration>

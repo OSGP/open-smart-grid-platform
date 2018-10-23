@@ -1,0 +1,54 @@
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>osgp-dlms</artifactId>
+  <name>osgp-dlms</name>
+  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+  <description>DLMS library.</description>
+
+  <parent>
+    <groupId>org.opensmartgridplatform</groupId>
+    <artifactId>parent-pa-dlms</artifactId>
+    <version>4.32.0-SNAPSHOT</version>
+    <relativePath>../parent-pa-dlms/pom.xml</relativePath>
+  </parent>
+
+  <properties>
+    <display.version>${project.version}-${BUILD_TAG}</display.version>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>shared</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-dto</artifactId>
+    </dependency>
+
+        <!-- Joda Time (Date/Time util) -->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+
+        <!-- OpenMUC Dependencies -->
+    <dependency>
+      <groupId>org.openmuc</groupId>
+      <artifactId>jdlms</artifactId>
+    </dependency>
+
+  </dependencies>
+</project>
