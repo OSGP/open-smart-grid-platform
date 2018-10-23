@@ -1,0 +1,610 @@
+// import "nanopb.proto";
+
+package oslp;
+
+option java_package = "org.opensmartgridplatform.oslp";
+
+message Message {
+    optional RegisterDeviceRequest registerDeviceRequest = 1;
+    optional RegisterDeviceResponse registerDeviceResponse = 2;
+    optional StartSelfTestRequest startSelfTestRequest = 3;
+    optional StartSelfTestResponse startSelfTestResponse = 4;
+    optional StopSelfTestRequest stopSelfTestRequest = 5;
+    optional StopSelfTestResponse stopSelfTestResponse = 6;
+    optional UpdateFirmwareRequest updateFirmwareRequest = 7;
+    optional UpdateFirmwareResponse updateFirmwareResponse = 8;
+    optional SetLightRequest setLightRequest = 9;
+    optional SetLightResponse setLightResponse = 10;
+    optional GetStatusRequest getStatusRequest = 11;
+    optional GetStatusResponse getStatusResponse = 12;
+    optional ResumeScheduleRequest resumeScheduleRequest = 13;
+    optional ResumeScheduleResponse resumeScheduleResponse = 14;
+    optional SetEventNotificationsRequest setEventNotificationsRequest = 15;
+    optional SetEventNotificationsResponse setEventNotificationsResponse = 16;
+    optional EventNotificationRequest eventNotificationRequest = 17;
+    optional EventNotificationResponse eventNotificationResponse = 18;
+    optional GetFirmwareVersionRequest getFirmwareVersionRequest = 19;
+    optional GetFirmwareVersionResponse getFirmwareVersionResponse = 20;
+    optional SetScheduleRequest setScheduleRequest = 21;
+    optional SetScheduleResponse setScheduleResponse = 22;
+    optional SetConfigurationRequest setConfigurationRequest = 25;
+    optional SetConfigurationResponse setConfigurationResponse = 26;
+    optional GetPowerUsageHistoryRequest getPowerUsageHistoryRequest = 27;
+    optional GetPowerUsageHistoryResponse getPowerUsageHistoryResponse = 28;
+    optional GetActualPowerUsageRequest getActualPowerUsageRequest = 29;
+    optional GetActualPowerUsageResponse getActualPowerUsageResponse = 30;
+    optional SetRebootRequest setRebootRequest = 31;
+    optional SetRebootResponse setRebootResponse = 32;
+    optional SetTransitionRequest setTransitionRequest = 33;
+    optional SetTransitionResponse setTransitionResponse = 34;
+    optional GetConfigurationRequest getConfigurationRequest = 35;
+    optional GetConfigurationResponse getConfigurationResponse = 36;
+    optional ConfirmRegisterDeviceRequest confirmRegisterDeviceRequest = 37;
+    optional ConfirmRegisterDeviceResponse confirmRegisterDeviceResponse =  38;
+    optional UpdateDeviceSslCertificationRequest updateDeviceSslCertificationRequest = 39;
+    optional UpdateDeviceSslCertificationResponse updateDeviceSslCertificationResponse = 40;
+    optional SetDeviceVerificationKeyRequest setDeviceVerificationKeyRequest = 41;
+    optional SetDeviceVerificationKeyResponse setDeviceVerificationKeyResponse = 42;
+    optional SwitchFirmwareRequest switchFirmwareRequest = 43;
+    optional SwitchFirmwareResponse switchFirmwareResponse = 44;
+    optional SwitchConfigurationRequest switchConfigurationRequest = 45;
+    optional SwitchConfigurationResponse switchConfigurationResponse = 46;
+}
+
+// ========= Device Installation
+message RegisterDeviceRequest {
+    required string deviceIdentification = 1; // [(nanopb).max_size = 41];
+    required bytes ipAddress = 2; // [(nanopb).max_size = 4];
+    required DeviceType deviceType = 3;
+    required bool hasSchedule = 4;
+    required uint32 randomDevice = 5; // 16 bits
+}
+
+message RegisterDeviceResponse {
+    required Status status = 1;
+    required string currentTime = 2; // [(nanopb).max_size = 15];// - Format YYYYMMDDhhmmss UTC.
+    required uint32 randomDevice = 3;
+    required uint32 randomPlatform = 4;
+    optional LocationInfo locationInfo = 5; // Location information of device.
+}
+
+message StartSelfTestRequest {
+    optional bool present = 1 [default = true];
+}
+
+message StartSelfTestResponse {
+    required Status status = 1;
+}
+
+message StopSelfTestRequest {
+    optional bool present = 1 [default = true];
+}
+
+message StopSelfTestResponse {
+    required Status status = 1;
+    required bytes selfTestResult = 2; // [(nanopb).max_size = 1];
+}
+
+// ========= Firmware Management
+message GetFirmwareVersionRequest {
+    optional bool present = 1 [default = true];
+}
+
+message GetFirmwareVersionResponse {
+    required string firmwareVersion = 1; // [(nanopb).max_size = 7]; // RXX
+}
+
+message UpdateFirmwareRequest {
+    required string firmwareDomain = 1; // [(nanopb).max_size = 100]; // Server-name without protocol like this example: localhost.
+    required string firmwareUrl = 2; // [(nanopb).max_size = 255]; // Relative URL like this example: /firmware/PSLD/RXX.
+}
+
+message UpdateFirmwareResponse {
+    required Status status = 1;
+}
+
+message SwitchFirmwareRequest {
+    required string newFirmwareVersion = 1; // [(nanopb).max_size = 6]; // The version of the firmware which should be installed. 
+}
+
+message SwitchFirmwareResponse {
+    required Status status = 1; // FIRMWARE_EVENTS_ACTIVATING Event will be sent, after the firmware change has completed.
+}
+
+// ========= Ad-Hoc & Status
+message SetLightRequest {
+    repeated LightValue values = 1; // [(nanopb).max_count = 6];
+}
+
+message SetLightResponse {
+    required Status status = 1;
+}
+
+message GetStatusRequest {
+    optional bool present = 1 [default = true];
+}
+
+message GetStatusResponse {
+    required Status status = 1;
+    repeated LightValue value = 2; // [(nanopb).max_count = 6];
+    required LinkType preferredLinktype = 3;
+    required LinkType actualLinktype = 4;
+    required LightType lightType = 5;
+    required uint32 eventNotificationMask = 6;         // Bitmask for max 32 events, using NotificationBit for bit positions.
+    optional uint32 numberOfOutputs = 7;               // Hardware - The number of outputs of this device.
+    optional uint32 dcOutputVoltageMaximum = 8;        // Hardware - DC output voltage MAXimum (in mV).
+    optional uint32 dcOutputVoltageCurrent = 9;        // Hardware - DC output current voltage (in mV).
+    optional uint32 maximumOutputPowerOnDcOutput = 10; // Hardware - Maximum output power on DC output (mW). 
+    optional bytes serialNumber = 11; // [(nanopb).max_size = 18]; // Hardware - Serial number of this device.
+    optional bytes macAddress = 12; // [(nanopb).max_size = 6]; // Hardware - MAC-address of this device.
+    optional string hardwareId = 13; // [(nanopb).min_size = 10, (nanopd).max_size = 25] ; // Hardware - The hardware ID of this device.
+    optional uint32 internalFlashMemSize = 14;         // Hardware - The internal flash memory size.
+    optional uint32 externalFlashMemSize = 15;         // Hardware - The external flash memory size.
+    optional uint32 lastInternalTestResultCode = 16;   // Hardware - The last internal test result code.
+    optional uint32 startupCounter = 17;               // Hardware - The startup counter.
+    optional string bootLoaderVersion = 18;            // Software - The boot loader version.
+    optional string firmwareVersion = 19;              // Software - The firmware version.
+    optional bytes currentConfigurationBackUsed = 20; // [(nanopb).max_size = 6]; // Software - The current configuration bank in use.
+    optional string name = 21;                         // Device - The name of this device.
+    optional string currentTime = 22;                  // Device - Not UTC, the time used in timing operations (adjusted "offset" + summer timing). YYYYMMDDhhmmss format.
+    optional string currentIp = 23;                    // Device - The current IP address of this device.
+}
+
+message ResumeScheduleRequest {
+    optional bytes index = 1; // [(nanopb).max_size = 1]; // Index number of connected light (DALI), none means all connected lights.
+    required bool immediate = 2; // [default = true];     // Resume at next schedule item or direct.
+}
+
+message ResumeScheduleResponse {
+    required Status status = 1;
+}
+
+message SetRebootRequest {
+    optional bool present = 1 [default = true];
+}
+
+message SetRebootResponse {
+    required Status status = 1;
+}
+
+message SetTransitionRequest {
+    required TransitionType transitionType = 1; // Night-Day or Day-Night transition.
+    optional string time = 2; // [(nanopb).max_size = 7]; // - Format hhmmss UTC.
+}
+
+message SetTransitionResponse {
+    required Status status = 1;
+}
+
+message SetEventNotificationsRequest {
+    required uint32 NotificationMask = 1; // Bitmask for max 32 events, using NotificationBit for bit positions.
+}
+
+message SetEventNotificationsResponse {
+    required Status status = 1;
+}
+
+message EventNotificationRequest {
+    repeated EventNotification notifications = 1; // [(nanopb).max_count = 6];
+}
+
+message EventNotificationResponse {
+    required Status status = 1;
+}
+
+// ========= Scheduling
+message SetScheduleRequest {
+    repeated Schedule schedules = 1; // [(nanopb).max_count = 50];
+    optional PageInfo pageInfo = 2;
+    required RelayType scheduleType = 3; // RT_NOT_SET is NOT supported!
+}
+
+message SetScheduleResponse {
+    required Status status = 1;
+}
+
+// ========= Configuration
+message SetConfigurationRequest {
+    optional LightType lightType = 1;
+    optional DaliConfiguration daliConfiguration = 2;                                    // Contains specific configuration for DALI controllers.
+    optional RelayConfiguration relayConfiguration = 3;                                  // Contains specific configuration for Relay.
+    optional uint32 shortTermHistoryIntervalMinutes = 4; 
+    optional LinkType preferredLinkType = 5;
+    optional MeterType meterType = 6;
+    optional uint32 longTermHistoryInterval = 7; 
+    optional LongTermIntervalType longTermHistoryIntervalType = 8;
+    optional uint32 timeSyncFrequency = 9 [default = 86400];                             // Time synch frequency (seconds).
+    optional bytes deviceFixIpValue = 10; // [(nanopb).max_count = 4];                   // The fixed IP address of this device.
+    optional bytes netMask = 11; // [(nanopb).max_count = 4];                            // Network mask for fixed IP address.
+    optional bytes gateWay = 12; // [(nanopb).max_count = 4];                            // Gateway address for fixed IP address.
+    optional bool isDhcpEnabled = 13 [default = true];                                   // Is DHCP enabled for this device?
+//    optional bool isTlsEnabled = 14;                                                     // Defines if TLS is enabled.
+//    optional uint32 oslpBindPortNumber = 15;                                             // The port used for TLS connections.
+//    optional string commonNameString = 16 [default = 'TLS Test']; //[default = 'TLS Test',(nanopb).max_count = 25]; // The common name (CN) used when isTlsEnabled equals true.
+    optional uint32 communicationTimeout = 14 [default = 20];                            // Communication Timeouts (seconds) (wait for answer, socket establish, or server response = comm watchdog for local mode).
+    optional uint32 communicationNumberOfRetries = 15 [default = 3];                     // Communication number of retries.
+    optional uint32 communicationPauseTimeBetweenConnectionTrials = 16 [default = 60];   // Time between communication attempts.
+    optional bytes ospgIpAddress = 17; // [(nanopb).max_count = 4];                      // The IP address of the platform.
+    optional uint32 osgpPortNumber = 18;                                                 // The port number of the platform.
+    optional bool isTestButtonEnabled = 19 [default = true];                             // Is the test button enabled for this device?
+    optional bool isAutomaticSummerTimingEnabled = 20 [default = true];                  // Is the automatic summer timing enabled for this device?
+    optional sint32 astroGateSunRiseOffset = 21 [default = 0];                           // The calculated sunrise time modified by this value. Time is moved earlier (if offset is negative) or later (if offset is positive). In seconds.
+    optional sint32 astroGateSunSetOffset = 22 [default = 0];                            // The calculated sunset time modified by this value. Time is moved earlier (if offset is negative) or later (if offset is positive). In seconds.
+    repeated uint32 switchingDelay = 23; // [(nanopb).max_count = 4];                    // Switching delay (seconds), array of 4 values. Default 0, 0, 0, 0.
+    repeated RelayMatrix relayLinking = 24;                                              // Relay linking is a software linking, to may link each relay with each other relay. It is a matrix. Example, if relay 1 is linked with relay 3, if relay 1 will be switched (by OSGP or local by internal scheduler), the relay 3 will switch automatically (on or off, as it set) without new command.
+    optional bool relayRefreshing = 25 [default = true];                                 // Is relayRefreshing enabled for this device? Set minutely the nominal relay state and status according to active schedule after power outage and missed switching or anti manipulation.
+    optional string summerTimeDetails = 26 [default = '0360100']; //[default = '0360100',(nanopb).max_count = 7]; // The time point for DST for Europe is not identical in every country. It should be added as parameters the weekday, month and time point for DST/summer and winter.
+    optional string winterTimeDetails = 27 [default = '1060200']; //[default = '1060200',(nanopb).max_count = 7]; // The time point for DST for Europe is not identical in every country. It should be added as parameters the weekday, month and time point for DST/summer and winter.
+}
+// summerTimeDetails string, winterTimeDetails:
+//MMWHHmi
+//
+//where: (note, north hemisphere summer begins at the end of march)
+//MM: month
+//W:  day of the week (0- Monday, 6- Sunday)
+//HH: hour of the changing time
+//mi: minutes of the changing time
+
+message SetConfigurationResponse {
+    required Status status = 1;
+}
+
+message GetConfigurationRequest {
+    optional bool present = 1 [default = true];
+}
+
+message GetConfigurationResponse {
+    required Status status = 1;
+    optional LightType lightType = 2;
+    optional DaliConfiguration daliConfiguration = 3;                                    // Contains specific configuration for DALI controllers.
+    optional RelayConfiguration relayConfiguration = 4;                                  // Contains specific configuration for Relay.
+    optional uint32 shortTermHistoryIntervalMinutes = 5; 
+    optional LinkType preferredLinkType = 6;
+    optional MeterType meterType = 7;
+    optional uint32 longTermHistoryInterval = 8; 
+    optional LongTermIntervalType longTermHistoryIntervalType = 9;
+    optional uint32 timeSyncFrequency = 10 [default = 86400];                            // Time synch frequency (seconds).
+    optional bytes deviceFixIpValue = 11; // [(nanopb).max_count = 4];                   // The fixed IP address of this device.
+    optional bytes netMask = 12; // [(nanopb).max_count = 4];                            // Network mask for fixed IP address.
+    optional bytes gateWay = 13; // [(nanopb).max_count = 4];                            // Gateway address for fixed IP address.
+    optional bool isDhcpEnabled = 14 [default = true];                                   // Is DHCP enabled for this device?
+//    optional bool isTlsEnabled = 15;                                                     // Defines if TLS is enabled.
+//    optional uint32 oslpBindPortNumber = 16;                                             // The port used for TLS connections.
+//    optional string commonNameString = 17 [default = 'TLS Test']; //[default = 'TLS Test',(nanopb).max_count = 25]; // The common name (CN) used when isTlsEnabled equals true.
+    optional uint32 communicationTimeout = 15 [default = 20];                            // Communication Timeouts (seconds) (wait for answer, socket establish, or server response = comm watchdog for local mode).
+    optional uint32 communicationNumberOfRetries = 16 [default = 3];                     // Communication number of retries.
+    optional uint32 communicationPauseTimeBetweenConnectionTrials = 17 [default = 60];   // Time between communication attempts.
+    optional bytes ospgIpAddress = 18; // [(nanopb).max_count = 4];                      // The IP address of the platform.
+    optional uint32 osgpPortNumber = 19;                                                 // The port number of the platform.
+    optional bool isTestButtonEnabled = 20 [default = true];                             // Is the test button enabled for this device?
+    optional bool isAutomaticSummerTimingEnabled = 21 [default = true];                  // Is the automatic summer timing enabled for this device?
+    optional sint32 astroGateSunRiseOffset = 22 [default = 0];                           // The calculated sunrise time modified by this value. Time is moved earlier (if offset is negative) or later (if offset is positive). In seconds.
+    optional sint32 astroGateSunSetOffset = 23 [default = 0];                            // The calculated sunset time modified by this value. Time is moved earlier (if offset is negative) or later (if offset is positive). In seconds.
+    repeated uint32 switchingDelay = 24; // [(nanopb).max_count = 4];                    // Switching delay (seconds), array of 4 values. Default 0, 0, 0, 0.
+    repeated RelayMatrix relayLinking = 25;                                              // Relay linking is a software linking, to may link each relay with each other relay. It is a matrix. Example, if relay 1 is linked with relay 3, if relay 1 will be switched (by OSGP or local by internal scheduler), the relay 3 will switch automatically (on or off, as it set) without new command.
+    optional bool relayRefreshing = 26 [default = true];                                 // Is relayRefreshing enabled for this device? Set minutely the nominal relay state and status according to active schedule after power outage and missed switching or anti manipulation.
+    optional string summerTimeDetails = 27 [default = '0360100']; //[default = '0360100',(nanopb).max_count = 7]; // The time point for DST for Europe is not identical in every country. It should be added as parameters the weekday, month and time point for DST/summer and winter.
+    optional string winterTimeDetails = 28 [default = '1060200']; //[default = '1060200',(nanopb).max_count = 7]; // The time point for DST for Europe is not identical in every country. It should be added as parameters the weekday, month and time point for DST/summer and winter.
+}
+
+message SwitchConfigurationRequest {
+    required bytes newConfigurationSet = 1; // [(nanopb).max_count = 1]; // The index of the configuration set (0,1).
+}
+
+message SwitchConfigurationResponse {
+    required Status status = 1; // FIRMWARE_EVENTS_CONFIGURATION_CHANGED Event will be sent, after the Configuration change.
+}
+
+message ConfirmRegisterDeviceRequest {
+    required uint32 randomDevice = 1;
+    required uint32 randomPlatform = 2;
+}
+
+message ConfirmRegisterDeviceResponse {
+    required Status status = 1;
+    required uint32 randomDevice = 2;
+    required uint32 randomPlatform = 3;
+    required uint32 sequenceWindow = 4;
+}
+
+// ========= Monitoring
+message GetPowerUsageHistoryRequest {
+    required TimePeriod timePeriod = 1;
+    optional uint32 page = 2;
+    required HistoryTermType termType = 3;
+}
+
+message GetPowerUsageHistoryResponse {
+    required Status status = 1;
+    repeated PowerUsageData powerUsageData = 2; // [(nanopb).max_count = 20]; 
+    optional PageInfo pageInfo = 3;
+}
+
+message GetActualPowerUsageRequest {
+    optional bool present = 1 [default = true];
+}
+
+message GetActualPowerUsageResponse {
+    required Status status = 1;
+    required PowerUsageData powerUsageData = 2;
+}
+
+// ========= Certificate Management
+message UpdateDeviceSslCertificationRequest {
+    required string certificateDomain = 1; // [(nanopb).max_size = 100]; // The domain name of the certificate Server.
+    required string certificateUrl = 2; // [(nanopb).max_size = 255];    // The relative path of the certificate.
+}
+
+message UpdateDeviceSslCertificationResponse {
+    required Status status = 1;
+}
+
+// ========= Key Management
+message SetDeviceVerificationKeyRequest {
+    required bytes certificateChunk = 1; // [(nanopb).max_size = 138]; // Verification key / public key of the platform to check the validity of an incoming message.
+}
+
+message SetDeviceVerificationKeyResponse {
+    required Status status = 1;
+}
+
+// ========= Types
+message LocationInfo {
+    optional sint32 timeOffset = 1; // Correction in minutes with respect to UTC.
+    optional sint32 latitude = 2;   // Divide by 1000000 to get float value.
+    optional sint32 longitude = 3;  // Divide by 1000000 to get float value.
+}
+
+message LightValue {
+    optional bytes index = 1; // [(nanopb).max_size = 1]; // Index number of connected light (DALI), none means all connected lights.
+    required bool on = 2;
+    optional bytes dimValue = 3; // [(nanopb).max_size = 1]; // 1 - 100 %
+}
+
+message EventNotification {
+    required Event event = 1;
+    optional bytes index = 2; // [(nanopb).max_size=1];
+    optional string description = 3; // [(nanopb).max_size = 81];
+    optional string timestamp = 4; // [(nanopb).max_size = 15]; // - Format YYYYMMDDhhmmss UTC, indicates the date and time of the event.
+}
+
+message Schedule {
+    required Weekday weekday = 1;
+    optional string startDay = 2; // [(nanopb).max_size = 9]; //- Format YYYYMMDD UTC, indicates the range of a schedule entry, from startDay.
+    optional string endDay = 3; // [(nanopb).max_size = 9]; // - Format YYYYMMDD UTC, including endDay.
+    required ActionTime actionTime = 4;
+    optional string time = 5; // [(nanopb).max_size = 7]; // - Format hhmmss localtime set when actionTime = ABSOLUTETIME.
+    optional Window window = 6;           // Window to wait for light sensor trigger.
+    repeated LightValue value = 7; // [(nanopb).max_count = 6];
+    optional TriggerType triggerType = 8; // React to setTransition or switch astronomical.
+    optional uint32 minimumLightsOn = 9;  // Minimal time (in seconds) the lights should burn before deciding to switch the lights on.
+    optional uint32 index = 10;           // Index of schedule entry in the schedule list.
+    optional bool isEnabled = 11;         // Is this schedule entry enabled?
+}
+
+message Window {
+    required uint32 minutesBefore = 1; // Minutes before sunset / sunrise.
+    required uint32 minutesAfter = 2;  // Minutes after sunset / sunrise.
+}
+
+message DaliConfiguration {
+    optional bytes numberOfLights = 1; // [(nanopb).max_size = 1]; // Number of lights connected to DALI controller.
+    repeated IndexAddressMap addressMap = 2; // [(nanopb).max_count = 4];
+}
+
+message RelayConfiguration {
+    repeated IndexAddressMap addressMap = 1; // [(nanopb).max_count = 6];
+}
+
+message RelayMatrix {
+    required bytes masterRelayIndex = 1;  // [(nanopb).max_count = 1];
+    required bool masterRelayOn = 2; // [(nanopb).max_count = 1];
+    optional bytes indicesOfControlledRelaysOn = 3; // [(nanopb).max_count = 4];  // IndexNumber of output Relay to switch ON if Master Relay state changes as determined by masterRelayOn.
+    optional bytes indicesOfControlledRelaysOff = 4; // [(nanopb).max_count = 4]; // IndexNumber of output Relay to switch OFF if Master Relay sate changes as determined by MasterRelayOff.
+}
+
+message IndexAddressMap {
+    required bytes index = 1; // [(nanopb).max_size = 1];   // External index, for example 1.
+    required bytes address = 2; // [(nanopb).max_size = 1]; // Internal address, for example 2.
+    required RelayType relayType = 3;
+}
+
+message PageInfo {
+    required uint32 currentPage = 1; // Pages start from 1.
+    required uint32 pageSize = 2;
+    required uint32 totalPages = 3;
+}
+
+message TimePeriod {
+    required string startTime = 1; // [(nanopb).max_size = 15]; // - Format YYYYMMDDhhmmss UTC.
+    required string endTime = 2; // [(nanopb).max_size = 15];   // - format YYYYMMDDhhmmss UTC.
+}
+
+message PowerUsageData {
+    required string recordTime = 1; // [(nanopb).max_size = 15];    // Record time - format YYYYMMDDhhmmss UTC.
+    required MeterType meterType = 2;                               // Meter type (P1, Pulse, Aux).
+    required uint64 totalConsumedEnergy = 3;                        // Electricity delivered to client (Tariff I + Tarrif II) in 0,001 kWh.
+    required uint32 actualConsumedPower = 4;                        // Actual Electricity power delivered in W.
+    optional PsldData psldData = 5;
+    optional SsldData ssldData = 6;
+}
+
+message PsldData {
+    required uint32 totalLightingHours = 1; // Total lighting hours
+}
+
+message SsldData {
+    required uint32 actualCurrent1 = 1;             // Instantaneous current L1 in mA.
+    required uint32 actualCurrent2 = 2;             // Instantaneous current L2 in mA.
+    required uint32 actualCurrent3 = 3;             // Instantaneous current L3 in mA.
+    required uint32 actualPower1 = 4;               // Instantaneous active power L1 in W.
+    required uint32 actualPower2 = 5;               // Instantaneous active power L2 in W.
+    required uint32 actualPower3 = 6;               // Instantaneous active power L3 in W.
+    required uint32 averagePowerFactor1 = 7;        // Power factor L1 (in 1/2^32) in steps of 0.1, 10 equals a power factor of 1.
+    required uint32 averagePowerFactor2 = 8;        // Power factor L2 (in 1/2^32) in steps of 0.1, 10 equals a power factor of 1.
+    required uint32 averagePowerFactor3 = 9;        // Power factor L3 (in 1/2^32) in steps of 0.1, 10 equals a power factor of 1.
+    repeated RelayData relayData = 10; // [(nanopb).max_count = 4]; // Measurement data per relay.
+}
+
+message RelayData {
+    required bytes index = 1; // [(nanopb).max_size = 1]; // external index, for example 1
+    required uint32 totalLightingMinutes = 2; // Total lighting minutes for lighting relay
+}
+
+// ========= Enumerations
+
+// ========= Event Notification
+enum NotificationBit {
+    DIAG_EVENTS = 1;
+    HARDWARE_FAILURE = 2;
+    LIGHT_EVENTS = 4;      // For example LightValue changes.
+    TARIFF_EVENTS = 8;     // For example Tariff changes.
+    MONITOR_EVENTS = 16;   // For example monitor buffer is almost full.
+    FIRMWARE_EVENTS = 32;  // For example firmware activation.
+    COMM_EVENTS = 64;      // For example alternative channel.
+    SECURITY_EVENTS = 128; // For example out of sequence.
+}
+
+//Events must map to their notification bit:
+//EG: 0000-0999 =1
+//    1000-1999 =2
+//    2000-2999 =4
+//    3000-3999 =8
+//    4000-4999 =16
+//    5000-5999 =32
+//    6000-6999 =64
+//    7000-7999 =128
+// OR to check  2^((event num)/1000)=notification bit
+
+enum Event {
+    // 0 - 999 Diagnostics
+    DIAG_EVENTS_GENERAL = 0;              // Multi-purpose event, see description of event notification for more information.
+    DIAG_EVENTS_UNKNOWN_MESSAGE_TYPE = 1; // Message type unknown by device.
+
+    // 1000 - 1999 Hardware Failures
+    HARDWARE_FAILURE_RELAY = 1000;                // Index indicates relay (not supported yet).
+    HARDWARE_FAILURE_FLASH_WRITE_ERROR = 1001;    // Error while writing to flash memory.
+    HARDWARE_FAILURE_FLASH_MEMORY_CORRUPT = 1002; // Error while reading from flash memory, flash memory corrupt.
+    HARDWARE_FAILURE_RTC_NOT_SET = 1003;          // Real Time Clock has not set.
+
+    // 2000 - 2999 Light Events
+    LIGHT_EVENTS_LIGHT_ON = 2000;               // Index indicates light.
+    LIGHT_EVENTS_LIGHT_OFF = 2001;              // Index indicates light.
+    LIGHT_FAILURE_DALI_COMMUNICATION = 2500;    // DALI communication failure.
+    LIGHT_FAILURE_BALLAST = 2501;               // Ballast failure detected (DALI only).
+    LIGHT_FAILURE_TARIFF_SWITCH_ATTEMPT = 2502; // Attempt to switch an end-point configured as tariff from OVL schedule or manual override (index indicates end-point).
+
+    // 3000 - 3999 Tariff Events
+    TARIFF_EVENTS_TARIFF_ON = 3000;  // Tariff switched on.
+    TARIFF_EVENTS_TARIFF_OFF = 3001; // Tariff switched off.
+
+    // 4000 - 4999
+    MONITOR_EVENTS_LONG_BUFFER_FULL = 4000;  // Long term monitoring buffer overrun occurred.
+    MONITOR_FAILURE_P1_COMMUNICATION = 4500; // P1 meter could not be read.
+    MONITOR_SHORT_DETECTED = 4600;           // A short has been detected.
+    MONITOR_SHORT_RESOLVED = 4601;           // A short has been resolved.
+    MONITOR_DOOR_OPENED = 4700;              // Indicates that the enclose of the has been opened. 
+    MONITOR_DOOR_CLOSED = 4701;              // Indicates that the enclosure of the device has been closed.
+    MONITOR_EVENTS_TEST_RELAY_ON = 4702;     // Relay was switched on by self-test function.
+    MONITOR_EVENTS_TEST_RELAY_OFF = 4703;    // Relay was switched off by self-test function.
+    MONITOR_EVENTS_LOSS_OF_POWER = 4800;     // The device had a power outage.
+    MONITOR_EVENTS_LOCAL_MODE = 4900;        // Device switched to local mode.
+    MONITOR_EVENTS_REMOTE_MODE = 4901;       // Device switched to remote mode.
+
+    // 5000 - 5999 Firmware Events
+    FIRMWARE_EVENTS_ACTIVATING = 5000;            // Start activating new firmware, after downloading. Or indicates that the device has switched from one firmware bank to another.
+    FIRMWARE_EVENTS_DOWNLOAD_NOTFOUND = 5501;     // Download of firmware failed, i.e. location incorrect.
+    FIRMWARE_EVENTS_DOWNLOAD_FAILED = 5502;       // Download of firmware failed, image incorrect.
+    FIRMWARE_EVENTS_CONFIGURATION_CHANGED = 5503; // Configuration changed from one bank to other (after request from platform).
+
+    // 6000 – 6999
+    COMM_EVENTS_ALTERNATIVE_CHANNEL = 6000; // Alternative channel selected for communication (description contains selected channel GPRS/CDMA/Ethernet).
+    COMM_EVENTS_RECOVERED_CHANNEL = 6001;   // Communication has been recovered for this channel.
+
+    // 7000 - 7999
+    SECURITY_EVENTS_OUT_OF_SEQUENCE = 7000;          // Out of sequence occurred and sequence number is renegotiated.
+    SECURITY_EVENTS_OSLP_VERIFICATION_FAILED = 7001; // OSLP message could not be verified.
+    SECURITY_EVENTS_INVALID_CERTIFICATE = 7002;      // Invalid TLS certificate.
+}
+
+// ========= Enums
+enum TriggerType {
+    TT_NOT_SET = 0;
+    LIGHT_TRIGGER = 1;
+    ASTRONOMICAL = 2;
+}
+
+enum TransitionType {
+    NIGHT_DAY = 0;
+    DAY_NIGHT = 1;
+}
+
+enum Weekday {
+    MONDAY = 1;
+    TUESDAY = 2;
+    WEDNESDAY = 3;
+    THURSDAY = 4;
+    FRIDAY = 5;
+    SATURDAY = 6;
+    SUNDAY = 7;
+    WEEKDAY = 8;
+    WEEKEND = 9;
+    ABSOLUTEDAY = 10;
+    ALL = 11;
+}
+
+enum ActionTime {
+    ABSOLUTETIME = 1;
+    SUNRISE = 2;
+    SUNSET = 3;
+}
+
+enum DeviceType {
+    PSLD = 0;
+    SSLD = 1;
+}
+
+enum Status {
+    OK = 0;
+    FAILURE = 1;  // General failure.
+    REJECTED = 2; // Request received in wrong state.
+}
+
+enum LightType {
+    LT_NOT_SET = 0;
+    RELAY = 1;
+    ONE_TO_TEN_VOLT = 2;
+    ONE_TO_TEN_VOLT_REVERSE = 3;
+    DALI = 4;
+}
+
+enum RelayType {
+    RT_NOT_SET = 0;
+    LIGHT = 1;
+    TARIFF = 2;
+}
+
+enum MeterType {
+    MT_NOT_SET = 0;
+    P1 = 1;
+    PULSE = 2;
+    AUX = 3;
+}
+
+enum LinkType {
+    LINK_NOT_SET = 0;
+    GPRS = 1;
+    CDMA = 2;
+    ETHERNET = 3;
+}
+
+enum LongTermIntervalType {
+    LT_INT_NOT_SET = 0;
+    DAYS = 1;
+    MONTHS = 2;
+}
+
+enum HistoryTermType {
+    Short = 0;
+    Long = 1;
+}
